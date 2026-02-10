@@ -1,7 +1,7 @@
 import { useSOPs } from "@/hooks/use-data";
 import { useUser } from "@/context/UserContext";
 import { Lock, FileText, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { ProModal } from "@/components/ProModal";
 import clsx from "clsx";
