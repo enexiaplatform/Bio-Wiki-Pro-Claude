@@ -1,28 +1,54 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { UserProvider } from "@/context/UserContext";
+import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
 import NotFound from "@/pages/not-found";
+
+// Pages
+import Academy from "@/pages/Academy";
+import LabTools from "@/pages/LabTools";
+import Compliance from "@/pages/Compliance";
+import Career from "@/pages/Career";
+import Solutions from "@/pages/Solutions";
+import Settings from "@/pages/Settings";
 
 function Router() {
   return (
-    <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen bg-background text-foreground pb-20 md:pb-0 md:pt-16">
+      <DesktopNav />
+      <MobileHeader />
+      
+      <main className="animate-in fade-in duration-500">
+        <Switch>
+          <Route path="/academy" component={Academy} />
+          <Route path="/tools" component={LabTools} />
+          <Route path="/compliance" component={Compliance} />
+          <Route path="/career" component={Career} />
+          <Route path="/solutions" component={Solutions} />
+          <Route path="/settings" component={Settings} />
+          
+          <Route path="/">
+            <Redirect to="/academy" />
+          </Route>
+          
+          <Route component={NotFound} />
+        </Switch>
+      </main>
+
+      <BottomNav />
+    </div>
   );
 }
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
+      <UserProvider>
         <Router />
-      </TooltipProvider>
+        <Toaster />
+      </UserProvider>
     </QueryClientProvider>
   );
 }
