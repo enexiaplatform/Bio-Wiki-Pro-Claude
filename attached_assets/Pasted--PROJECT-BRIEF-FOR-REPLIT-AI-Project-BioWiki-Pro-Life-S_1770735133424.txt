@@ -1,0 +1,404 @@
+# PROJECT BRIEF FOR REPLIT AI
+
+## Project
+**BioWiki Pro — Life Science Knowledge & Career Hub (Mobile-first PWA Prototype)**
+
+## Your Role
+You are a **Senior Full-Stack Engineer + Product Designer** specializing in **React + TypeScript + Tailwind** and high-quality **mobile-first PWA** experiences.
+
+## Objective
+Build a polished, fully interactive prototype of **BioWiki Pro** — a pocket mentor app for students and professionals in Biotech/Pharma/Life Science.
+
+---
+
+## Tech Stack (strict)
+- **React + Vite**
+- **TypeScript**
+- **Tailwind CSS**
+- **React Router DOM**
+- **React Context API** (User + Pro status)
+- **Lucide React** (icons)
+- **Framer Motion** (page/tab transitions, modal animation)
+
+Optional (if needed):
+- clsx
+- date-fns
+
+---
+
+## Core Product Requirements
+
+### 1) App Shell + Navigation
+Create a mobile-first app shell with:
+- Sticky top header (title + settings/profile access)
+- Sticky bottom tab navigation (5 tabs)
+- Main content area scrollable
+- Safe-area friendly layout for mobile
+
+Bottom Tabs (exact):
+1. Academy (Book)
+2. Lab Tools (FlaskConical)
+3. Compliance (ShieldCheck)
+4. Career (BriefcaseBusiness)
+5. Solutions (ShoppingBag)
+
+Use React Router routes for each tab:
+- `/academy`
+- `/tools`
+- `/compliance`
+- `/career`
+- `/solutions`
+
+Default route: `/academy`
+
+---
+
+### 2) Feature Details Per Tab
+
+## Tab A — Academy (Knowledge Base)
+Features:
+- Search bar (filter by term/title/category/tags)
+- Category chips: Molecular Biology, Microbiology, Cell Culture, Analytical, Regulatory
+- Scrollable term list cards
+- Detail view route: `/academy/:slug`
+
+Detail page must include:
+- Term title
+- Short definition
+- “Why it matters” section
+- “Common mistakes” section
+- Diagram placeholder block
+- “Watch Video” CTA button (mock action)
+
+Data source: `src/data/knowledgeData.ts`
+Include at least 8 rich entries:
+- PCR
+- Sterility Test
+- HPLC
+- Cell Culture
+- GMP
+- Endotoxin (LAL)
+- Bioburden
+- Environmental Monitoring
+
+Each item fields:
+```ts
+id, slug, title, category, tags[], summary, whyItMatters, commonMistakes[], videoUrl, difficulty, readTimeMin
+Tab B — Lab Tools (Calculators)
+Display tools as responsive cards/grid.
+
+Tool 1: Molarity Calculator
+Inputs:
+
+Mass (g)
+
+Molecular Weight (g/mol)
+
+Volume (L)
+Formula:
+
+Molarity (M) = mass / (MW * volume)
+
+Tool 2: Dilution Calculator
+Inputs:
+
+C1
+
+V1 (optional)
+
+C2
+
+V2 (optional)
+Formula:
+
+C1V1 = C2V2
+If one variable missing (V1 or V2), solve for it.
+
+Requirements:
+
+Strong validation (no negative, no zero where invalid)
+
+Inline error messages
+
+Unit hints
+
+“Calculate” button + auto-recompute on valid input change
+
+“Reset” button
+
+Result card with interpretation text
+
+Tab C — Compliance (Locked Premium Content)
+Show SOP list cards:
+
+Sterility Testing USP <71>
+
+Environmental Monitoring
+
+Aseptic Process Simulation (Media Fill)
+
+Cleaning Validation
+
+CAPA Basics
+
+Free User behavior:
+
+Cards appear blurred/locked
+
+Show lock icon + short preview text only
+
+Click opens Upgrade to Pro modal
+
+Pro User behavior:
+
+Full SOP content visible
+
+Click opens SOP detail page/modal
+
+Create Pro upgrade modal:
+
+Benefits list
+
+Monthly/yearly mock pricing
+
+“Upgrade now” (mock)
+
+“Not now”
+
+Smooth Framer Motion animation
+
+Tab D — Career (Path + Jobs)
+Section 1: Career timeline (vertical)
+
+Lab Technician → QC Specialist → QA Manager → Plant Manager
+Each stage:
+
+Typical years of experience
+
+Core skills
+
+Certification suggestion
+
+Section 2: Job Board (mock cards)
+Each job item:
+
+ts
+Copy code
+id, title, company, location, level, salaryRange, requiredSkills[], postedAt
+Add at least 6 sample jobs.
+
+Filters:
+
+Level (Entry/Mid/Senior)
+
+Domain (QC/QA/RA/Manufacturing)
+
+Search by keyword
+
+Tab E — Solutions (Ecosystem/Product Cards)
+Show professional product cards for:
+
+CertaBlue
+
+Ian Microbs
+
+BioTrace LIMS
+
+SteriFlow Isolator Support
+
+Each card:
+
+Product name
+
+One-line value proposition
+
+3 feature bullets
+
+“Request Quote” button
+
+“View details” button
+
+Mock “Request Quote” flow:
+
+Open modal with simple form (name, email, company, need)
+
+Validate required fields
+
+Submit success toast (mock)
+
+3) User + Settings + Pro Toggle
+In header menu/settings:
+
+User profile mock block
+
+Toggle: “Switch to Pro Member”
+
+Store state in Context + localStorage persistence
+
+Toggle should immediately affect Compliance tab lock state
+
+Context shape:
+
+ts
+Copy code
+type UserContextType = {
+  isPro: boolean;
+  togglePro: () => void;
+  user: { name: string; role: string };
+};
+Design System (strict)
+Theme: Scientific, clean, premium
+
+Colors:
+
+Primary: #0f172a (Deep Navy)
+
+Accent: #14b8a6 (Bio Teal)
+
+Highlight option: #84cc16 (Neon Green, sparing use)
+
+Background: #f8fafc
+
+Text primary: #0f172a
+
+Text secondary: #475569
+
+UI rules:
+
+Rounded cards: rounded-xl / rounded-2xl
+
+Soft shadows
+
+Clear spacing rhythm (8px system)
+
+Inter font (fallback sans-serif)
+
+Touch-friendly hit areas (>=44px)
+
+Smooth micro-interactions via Framer Motion
+
+Do NOT use overly bright gradients
+
+Folder Structure (must generate)
+bash
+Copy code
+src/
+  app/
+    router.tsx
+    AppLayout.tsx
+  components/
+    common/
+      BottomNav.tsx
+      Header.tsx
+      SearchBar.tsx
+      EmptyState.tsx
+      Badge.tsx
+      Modal.tsx
+    academy/
+      TermCard.tsx
+      CategoryChips.tsx
+    tools/
+      MolarityCalculator.tsx
+      DilutionCalculator.tsx
+    compliance/
+      SOPCard.tsx
+      UpgradeModal.tsx
+    career/
+      Timeline.tsx
+      JobCard.tsx
+      JobFilters.tsx
+    solutions/
+      ProductCard.tsx
+      QuoteModal.tsx
+  pages/
+    AcademyPage.tsx
+    AcademyDetailPage.tsx
+    ToolsPage.tsx
+    CompliancePage.tsx
+    CareerPage.tsx
+    SolutionsPage.tsx
+    SettingsPage.tsx
+  context/
+    UserContext.tsx
+  data/
+    knowledgeData.ts
+    sopData.ts
+    jobsData.ts
+    solutionsData.ts
+  types/
+    index.ts
+  hooks/
+    useLocalStorage.ts
+  utils/
+    calculators.ts
+    validators.ts
+  styles/
+    globals.css
+main.tsx
+Quality Requirements (Definition of Done)
+No TypeScript errors
+
+Mobile-first UI works cleanly at 360x800 and 390x844
+
+Bottom nav + header always usable
+
+Context + Pro toggle persists after refresh
+
+Calculators validate correctly and never crash
+
+All tabs populated with rich mock data (not empty placeholders)
+
+Basic accessibility:
+
+semantic headings
+
+labeled form inputs
+
+visible focus states
+
+button aria-labels where needed
+
+Clean code, reusable components, no dead imports
+
+Output Format (how you should work)
+Work in phases and show progress after each:
+
+Phase 1
+Initialize project
+
+Install dependencies
+
+Configure Tailwind
+
+Create folder structure
+
+Setup routes + app shell + bottom nav + header
+
+Phase 2
+Build Academy + detail page + search/filter
+
+Build Tools calculators with validation
+
+Phase 3
+Build Compliance locked/pro logic + upgrade modal
+
+Build Career timeline + job board + filters
+
+Phase 4
+Build Solutions cards + request quote modal
+
+Build Settings page + Pro toggle persistence
+
+Phase 5
+Final polish, animation refinement, responsive checks, bug fix pass
+
+At the end provide:
+
+Final file tree
+
+Short changelog
+
+Any TODOs for backend integration
+
+less
+Copy code
