@@ -38,10 +38,14 @@ export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
 
 // Mock Data Types (used in frontend for the static data files)
+export type TermMode = "STUDENT" | "QC" | "SALES";
+export type ContentStatus = "READY" | "COMING_SOON";
+
 export interface Term {
   id: string;
   slug: string;
   title: string;
+  mode: TermMode;
   category: string;
   tags: string[];
   summary: string;
@@ -50,6 +54,8 @@ export interface Term {
   videoUrl?: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   readTimeMin: number;
+  status: ContentStatus;
+  diagramLabel?: string;
 }
 
 export interface Job {
@@ -69,6 +75,24 @@ export interface Product {
   name: string;
   tagline: string;
   features: string[];
+  targetUsers?: string[];
+  painPoint?: string;
+  salesTalkingPoints?: string[];
+}
+
+export interface LabTool {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  status: ContentStatus;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  description: string;
+  audience: TermMode;
 }
 
 export interface SOP {
