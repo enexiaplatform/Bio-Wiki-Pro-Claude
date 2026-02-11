@@ -42,6 +42,29 @@ export default function Solutions() {
                 ))}
               </ul>
 
+              {product.painPoint && (
+                <div 
+                  className="mb-6 p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"
+                  data-testid="callout-pain-point"
+                >
+                  {product.painPoint}
+                </div>
+              )}
+
+              {product.targetUsers && product.targetUsers.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-6" data-testid="badge-container-target-users">
+                  {product.targetUsers.map((user, i) => (
+                    <span 
+                      key={i} 
+                      className="px-2.5 py-1 rounded-full bg-white/5 text-white/80 text-[10px] font-medium border border-white/10"
+                      data-testid={`badge-target-user-${i}`}
+                    >
+                      {user}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <QuoteDialog productName={product.name} />
             </div>
           ))

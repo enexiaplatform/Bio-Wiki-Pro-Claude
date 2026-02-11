@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calculator, FlaskConical, Beaker } from "lucide-react";
+import { Calculator, FlaskConical, Beaker, FlaskRound, Pipette, Gauge, Scale, TestTubes, Microscope, Activity, RotateCcw, Lock, ArrowRightLeft, Grid3x3, ShieldAlert, ChartLine, TrendingUp, RefreshCw } from "lucide-react";
 import clsx from "clsx";
+import { useLabTools } from "@/hooks/use-data";
+import { Badge } from "@/components/ui/badge";
 
 type CalculatorType = "molarity" | "dilution";
 
 export default function LabTools() {
   const [activeTab, setActiveTab] = useState<CalculatorType>("molarity");
+  const { data: tools } = useLabTools();
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-3xl mx-auto px-4">
+    <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">Lab Tools</h1>
         <p className="text-muted-foreground">Essential calculators for your daily experiments.</p>
@@ -49,6 +52,19 @@ export default function LabTools() {
           {activeTab === "molarity" ? <MolarityCalculator /> : <DilutionCalculator />}
         </motion.div>
       </AnimatePresence>
+
+      <div className="mt-16">
+        <div className="mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Tool Catalog</h2>
+          <p className="text-muted-foreground">Explore our growing collection of lab tools.</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {tools?.map((tool) => (
+            <ToolCard key={tool.id} tool={tool} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -183,6 +199,68 @@ function InputGroup({ label, value, onChange, placeholder }: { label: string, va
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+    </div>
+  );
+}
+
+function getIconComponent(iconName: string | undefined) {
+  const iconMap: Record<string, React.ReactNode> = {
+    "flask": <FlaskConical className="w-5 h-5" />,
+    "beaker": <Beaker className="w-5 h-5" />,
+    "test-tubes": <TestTubes className="w-5 h-5" />,
+    "arrow-right-left": <ArrowRightLeft className="w-5 h-5" />,
+    "flask-round": <FlaskRound className="w-5 h-5" />,
+    "grid-3x3": <Grid3x3 className="w-5 h-5" />,
+    "shield-alert": <ShieldAlert className="w-5 h-5" />,
+    "chart-line": <ChartLine className="w-5 h-5" />,
+    "trending-up": <TrendingUp className="w-5 h-5" />,
+    "refresh-cw": <RefreshCw className="w-5 h-5" />,
+  };
+  return iconMap[iconName || ""] || <Calculator className="w-5 h-5" />;
+}
+
+interface ToolCardProps {
+  tool: {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    status: "READY" | "COMING_SOON";
+  };
+}
+
+function ToolCard({ tool }: ToolCardProps) {
+  const isComingSoon = tool.status === "COMING_SOON";
+
+  return (
+    <div
+      data-testid={`card-tool-${tool.id}`}
+      className={clsx(
+        "bg-card border border-white/5 rounded-2xl p-4 transition-all",
+        isComingSoon && "opacity-60"
+      )}
+    >
+      <div className="flex flex-col h-full">
+        <div className="flex items-start justify-between mb-3">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+            {getIconComponent(tool.icon)}
+          </div>
+          <Badge
+            variant={isComingSoon ? "outline" : "default"}
+            className={clsx(
+              "text-xs",
+              isComingSoon && "text-muted-foreground border-muted-foreground/20"
+            )}
+          >
+            {isComingSoon ? "Coming Soon" : "Available"}
+          </Badge>
+        </div>
+
+        <h3 className="font-bold text-sm mb-2 flex-shrink-0">{tool.name}</h3>
+        <p className="text-xs text-muted-foreground leading-relaxed flex-grow">
+          {tool.description}
+        </p>
+      </div>
     </div>
   );
 }

@@ -1,12 +1,13 @@
-import { useJobs } from "@/hooks/use-data";
+import { useJobs, useSkills } from "@/hooks/use-data";
 import { useUser } from "@/context/UserContext";
-import { MapPin, Building, DollarSign, Clock, Filter, Lock } from "lucide-react";
+import { MapPin, Building, DollarSign, Clock, Filter, Lock, Award, GraduationCap, Briefcase, Target } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
 import { ProModal } from "@/components/ProModal";
 
 export default function Career() {
   const { data: jobs, isLoading } = useJobs();
+  const { data: skills, isLoading: skillsLoading } = useSkills();
   const { isPro } = useUser();
   const [filter, setFilter] = useState("All");
   const [showProModal, setShowProModal] = useState(false);
@@ -116,6 +117,55 @@ export default function Career() {
             })
           )}
         </div>
+      </div>
+
+      {/* Skill Matrix Section */}
+      <div className="mb-8">
+        <div className="mb-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Skill Matrix</h2>
+          <p className="text-muted-foreground">Key competencies for biotech professionals.</p>
+        </div>
+
+        {skillsLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-40 bg-card/50 animate-pulse rounded-2xl" />)}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {skills?.map(skill => {
+              const audienceBgColor = 
+                skill.audience === "STUDENT" ? "bg-blue-500/20 text-blue-300" :
+                skill.audience === "QC" ? "bg-green-500/20 text-green-300" :
+                "bg-violet-500/20 text-violet-300";
+
+              return (
+                <div
+                  key={skill.id}
+                  className="bg-card border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all group"
+                  data-testid={`card-skill-${skill.id}`}
+                >
+                  <div className="mb-4">
+                    <h3 className="text-lg font-bold group-hover:text-primary transition-colors mb-2">
+                      {skill.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {skill.description}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className={clsx(
+                      "text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded",
+                      audienceBgColor
+                    )} data-testid={`badge-audience-${skill.id}`}>
+                      {skill.audience}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <ProModal isOpen={showProModal} onClose={() => setShowProModal(false)} />

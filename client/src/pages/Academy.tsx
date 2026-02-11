@@ -4,10 +4,12 @@ import { Search, Clock, ChevronRight, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
+import { TermMode } from "@shared/schema";
 
 export default function Academy() {
   const { data: terms, isLoading } = useAcademyTerms();
   const [search, setSearch] = useState("");
+  const [selectedMode, setSelectedMode] = useState<TermMode | "All">("All");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
   const categories = ["All", ...Array.from(new Set(terms?.map(t => t.category) || []))];
@@ -15,8 +17,9 @@ export default function Academy() {
   const filteredTerms = terms?.filter(term => {
     const matchesSearch = term.title.toLowerCase().includes(search.toLowerCase()) || 
                           term.summary.toLowerCase().includes(search.toLowerCase());
+    const matchesMode = selectedMode === "All" || term.mode === selectedMode;
     const matchesCategory = selectedCategory === "All" || term.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    return matchesSearch && matchesMode && matchesCategory;
   });
 
   return (
@@ -38,12 +41,38 @@ export default function Academy() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
+
+        {/* Mode Filter */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {["All", "Student", "QC Professional", "Sales Insight"].map(mode => {
+            const modeValue: TermMode | "All" = mode === "All" ? "All" : 
+                                                  mode === "Student" ? "STUDENT" :
+                                                  mode === "QC Professional" ? "QC" :
+                                                  "SALES";
+            return (
+              <button
+                key={mode}
+                onClick={() => setSelectedMode(modeValue)}
+                data-testid={`button-mode-filter-${modeValue.toLowerCase()}`}
+                className={clsx(
+                  "px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border",
+                  selectedMode === modeValue
+                    ? "bg-primary text-white border-primary"
+                    : "bg-card text-muted-foreground border-border hover:border-primary/50"
+                )}
+              >
+                {mode}
+              </button>
+            );
+          })}
+        </div>
         
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
+              data-testid={`button-category-filter-${cat.toLowerCase().replace(/\s+/g, '-')}`}
               className={clsx(
                 "px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border",
                 selectedCategory === cat
@@ -82,9 +111,17 @@ export default function Academy() {
                       <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-1 rounded-md">
                         {term.category}
                       </span>
-                      <div className="flex items-center gap-1 text-muted-foreground text-xs">
-                        <Clock className="w-3 h-3" />
-                        <span>{term.readTimeMin} min</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-medium bg-white/5 px-2 py-1 rounded text-muted-foreground" data-testid={`badge-difficulty-${term.id}`}>
+                          {term.difficulty}
+                        </span>
+                        <span className="text-[10px] font-medium bg-white/5 px-2 py-1 rounded text-muted-foreground" data-testid={`badge-status-${term.id}`}>
+                          {term.status === "READY" ? "Ready" : "Coming Soon"}
+                        </span>
+                        <div className="flex items-center gap-1 text-muted-foreground text-[10px] bg-white/5 px-2 py-1 rounded">
+                          <Clock className="w-3 h-3" />
+                          <span>{term.readTimeMin} min</span>
+                        </div>
                       </div>
                     </div>
 
@@ -123,9 +160,20 @@ export default function Academy() {
                       <div className="grid md:grid-cols-2 gap-6">
                         <div>
                           <h4 className="text-lg font-bold mb-3 text-blue-400">Why It Matters</h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed bg-blue-500/5 border border-blue-500/20 p-4 rounded-xl">
-                            {term.whyItMatters}
-                          </p>
+                          <div className="text-sm text-muted-foreground leading-relaxed bg-blue-500/5 border border-blue-500/20 p-4 rounded-xl">
+                            {typeof term.whyItMatters === "string" && term.whyItMatters.includes(". ") ? (
+                              <ul className="space-y-2">
+                                {term.whyItMatters.split(". ").map((point, i) => (
+                                  <li key={i} className="flex gap-2 items-start">
+                                    <span className="text-blue-400 font-bold">•</span>
+                                    <span>{point}{i < term.whyItMatters.split(". ").length - 1 ? "." : ""}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p>{term.whyItMatters}</p>
+                            )}
+                          </div>
                         </div>
                         <div>
                           <h4 className="text-lg font-bold mb-3 text-red-400">Common Mistakes</h4>
