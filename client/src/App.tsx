@@ -16,7 +16,7 @@ import Settings from "@/pages/Settings";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20 md:pb-0 md:pt-16">
+    <div className="min-h-screen bg-background text-foreground pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16">
       <DesktopNav />
       <MobileHeader />
       

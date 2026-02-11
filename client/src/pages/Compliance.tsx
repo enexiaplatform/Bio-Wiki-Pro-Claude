@@ -101,13 +101,23 @@ export default function Compliance() {
                   )}
                 </AnimatePresence>
                 
-                {/* Locked Blur Effect */}
+                {/* Locked State UI */}
                 {isLocked && (
-                  <div className="absolute inset-0 bg-background/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all">
-                    <div className="bg-card px-4 py-2 rounded-full shadow-lg border border-white/10 flex items-center gap-2">
-                       <Lock className="w-3 h-3 text-primary" />
-                       <span className="text-xs font-bold text-white">Click to Unlock</span>
+                  <div className="absolute inset-0 bg-background/60 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-3">
+                      <Lock className="w-6 h-6 text-primary" />
                     </div>
+                    <h4 className="font-bold text-lg mb-1">Premium Content</h4>
+                    <p className="text-sm text-muted-foreground mb-4">Upgrade to BioWiki Pro to unlock full SOP guidelines and compliance tools.</p>
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowProModal(true);
+                      }}
+                      className="bg-primary text-primary-foreground px-6 py-2 rounded-full text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+                    >
+                      Unlock Now
+                    </button>
                   </div>
                 )}
               </motion.div>
