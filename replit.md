@@ -2,7 +2,14 @@
 
 ## Overview
 
-BioWiki Pro is a mobile-first PWA (Progressive Web App) serving as a pocket mentor for students and professionals in Biotech, Pharma, and Life Science. It provides a knowledge hub with five main sections: Academy (learning terms/concepts), Lab Tools (scientific calculators), Compliance (SOPs and guidelines), Career (job listings), and Solutions (lab equipment/reagent marketplace with quote requests). The app features a freemium model with a "Pro" upgrade that unlocks gated content.
+BioWiki Pro is a mobile-first PWA (Progressive Web App) serving as a pocket mentor for students and professionals in Biotech, Pharma, and Life Science. It provides a knowledge hub with five main sections: Academy (learning terms/concepts with mode filters), Lab Tools (scientific calculators + tool catalog), Compliance (SOPs and guidelines), Career (job listings + skill matrix), and Solutions (lab equipment/reagent marketplace with quote requests). The app features a freemium model with a "Pro" upgrade that unlocks gated content.
+
+### Content Counts (as of Feb 2026)
+- Academy: 45 topics (15 Student, 15 QC, 15 Sales) with mode filtering
+- Compliance: 18 SOPs (2 free, 16 Pro-locked)
+- Lab Tools: 10 tools (2 ready calculators, 8 coming soon)
+- Career: 20 job listings + 15 skills in Skill Matrix
+- Solutions: 12 products with enriched cards (pain points, target users, sales talking points)
 
 ## User Preferences
 
