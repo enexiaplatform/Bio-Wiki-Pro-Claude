@@ -1,29 +1,27 @@
 import { useState } from "react";
 import { useAcademyTerms } from "@/hooks/use-data";
-import { Search, Clock, ChevronRight, BookOpen, GraduationCap } from "lucide-react";
+import { Search, Clock, ChevronRight, BookOpen, FlaskConical, Microscope, Bug, Thermometer } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
 
-const learningPath = [
-  { step: 1, label: "Lab Safety", slug: "lab-safety-fundamentals" },
-  { step: 2, label: "PCR Basics", slug: "pcr-basics" },
-  { step: 3, label: "Cell Culture", slug: "cell-culture" },
-  { step: 4, label: "Western Blot", slug: "western-blot" },
-  { step: 5, label: "ELISA", slug: "elisa" },
-  { step: 6, label: "Data Analysis", slug: "biostatistics-fundamentals" },
+const workflows = [
+  { name: "Sterility Testing", icon: FlaskConical, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", desc: "Membrane filtration & direct inoculation" },
+  { name: "Environmental Monitoring", icon: Thermometer, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", desc: "Settle plates, air sampling & surface swabs" },
+  { name: "Bioburden", icon: Bug, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", desc: "Microbial limits per USP <61>" },
+  { name: "Endotoxin", icon: Microscope, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", desc: "LAL kinetic turbidimetric & gel-clot" },
 ];
 
-export default function Academy() {
+export default function QCHub() {
   const { data: terms, isLoading } = useAcademyTerms();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const studentTerms = terms?.filter(t => t.mode === "STUDENT") || [];
-  const categories = ["All", ...Array.from(new Set(studentTerms.map(t => t.category)))];
+  const qcTerms = terms?.filter(t => t.mode === "QC") || [];
+  const categories = ["All", ...Array.from(new Set(qcTerms.map(t => t.category)))];
 
-  const filteredTerms = studentTerms.filter(term => {
-    const matchesSearch = term.title.toLowerCase().includes(search.toLowerCase()) || 
+  const filteredTerms = qcTerms.filter(term => {
+    const matchesSearch = term.title.toLowerCase().includes(search.toLowerCase()) ||
                           term.summary.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory === "All" || term.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -32,34 +30,27 @@ export default function Academy() {
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Academy</h1>
-        <p className="text-muted-foreground">Master the fundamentals of biotech.</p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">QC Hub</h1>
+        <p className="text-muted-foreground">Professional workflows and knowledge for Quality Control.</p>
         <div className="flex gap-3 mt-3">
-          <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-muted-foreground" data-testid="stat-topics">Topics: {studentTerms.length}</span>
+          <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-muted-foreground" data-testid="stat-topics">Topics: {qcTerms.length}</span>
         </div>
       </div>
 
       <div className="mb-10">
-        <div className="flex items-center gap-2 mb-4">
-          <GraduationCap className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-bold">Learning Path</h2>
-        </div>
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-          {learningPath.map((step, i) => (
+        <h2 className="text-lg font-bold mb-4">Quick Workflows</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {workflows.map(wf => (
             <div
-              key={step.slug}
-              className="flex items-center gap-2 shrink-0"
-              data-testid={`learning-step-${step.step}`}
+              key={wf.name}
+              className={clsx("bg-card border rounded-2xl p-4 cursor-pointer hover:border-primary/30 transition-colors", wf.border)}
+              data-testid={`card-workflow-${wf.name.toLowerCase().replace(/\s+/g, '-')}`}
             >
-              <div className="flex flex-col items-center">
-                <div className="w-9 h-9 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center text-primary text-sm font-bold">
-                  {step.step}
-                </div>
-                <span className="text-[10px] text-muted-foreground mt-1 whitespace-nowrap">{step.label}</span>
+              <div className={clsx("w-10 h-10 rounded-xl flex items-center justify-center mb-3", wf.bg, wf.color)}>
+                <wf.icon className="w-5 h-5" />
               </div>
-              {i < learningPath.length - 1 && (
-                <div className="w-8 h-px bg-white/10 mt-[-14px]" />
-              )}
+              <h3 className="text-sm font-bold mb-1">{wf.name}</h3>
+              <p className="text-[11px] text-muted-foreground leading-snug">{wf.desc}</p>
             </div>
           ))}
         </div>
@@ -70,20 +61,20 @@ export default function Academy() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search topics, techniques..."
+            placeholder="Search QC topics..."
             className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            data-testid="input-search-academy"
+            data-testid="input-search-qc"
           />
         </div>
-        
+
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              data-testid={`button-category-filter-${cat.toLowerCase().replace(/\s+/g, '-')}`}
+              data-testid={`button-qc-category-${cat.toLowerCase().replace(/\s+/g, '-')}`}
               className={clsx(
                 "px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all border",
                 selectedCategory === cat
@@ -112,7 +103,7 @@ export default function Academy() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="bg-card border border-white/5 rounded-2xl p-5 cursor-pointer hover:border-primary/30 transition-colors group relative overflow-hidden"
-                  data-testid={`card-academy-topic-${term.id}`}
+                  data-testid={`card-qc-topic-${term.id}`}
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-primary/10 transition-colors" />
                   <div className="relative z-10">
@@ -121,7 +112,7 @@ export default function Academy() {
                         {term.category}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-medium bg-white/5 px-2 py-1 rounded text-muted-foreground" data-testid={`badge-difficulty-${term.id}`}>
+                        <span className="text-[10px] font-medium bg-white/5 px-2 py-1 rounded text-muted-foreground">
                           {term.difficulty}
                         </span>
                         <div className="flex items-center gap-1 text-muted-foreground text-[10px] bg-white/5 px-2 py-1 rounded">
@@ -206,8 +197,8 @@ export default function Academy() {
 
       {!isLoading && filteredTerms.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
-          <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-30" />
-          <p className="text-lg font-medium">No topics found</p>
+          <FlaskConical className="w-12 h-12 mx-auto mb-4 opacity-30" />
+          <p className="text-lg font-medium">No QC topics found</p>
           <p className="text-sm mt-1">Try adjusting your search or category filter.</p>
         </div>
       )}

@@ -1,14 +1,23 @@
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, ShoppingBag, User } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, User } from "lucide-react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 
-const tabs = [
+const mobileTabs = [
+  { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
   { name: "Academy", icon: BookOpen, path: "/academy" },
-  { name: "Lab Tools", icon: Calculator, path: "/tools" },
+  { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { name: "Career", icon: Briefcase, path: "/career" },
-  { name: "Solutions", icon: ShoppingBag, path: "/solutions" },
+];
+
+const desktopTabs = [
+  { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
+  { name: "Academy", icon: BookOpen, path: "/academy" },
+  { name: "Tools", icon: Calculator, path: "/tools" },
+  { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
+  { name: "Career", icon: Briefcase, path: "/career" },
+  { name: "Insights", icon: TrendingUp, path: "/insights" },
 ];
 
 export function BottomNav() {
@@ -17,10 +26,10 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-4 pb-safe pt-2 z-50 md:hidden">
       <div className="flex justify-between items-center max-w-md mx-auto">
-        {tabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/academy");
+        {mobileTabs.map((tab) => {
+          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
           return (
-            <Link key={tab.name} href={tab.path} className="flex flex-col items-center gap-1 p-2 w-full">
+            <Link key={tab.name} href={tab.path} className="flex flex-col items-center gap-1 p-2 w-full" data-testid={`nav-mobile-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <div className={clsx(
                 "relative p-1.5 rounded-xl transition-all duration-300",
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
@@ -58,13 +67,13 @@ export function DesktopNav() {
       </div>
 
       <nav className="flex items-center gap-1">
-        {tabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/academy");
+        {desktopTabs.map((tab) => {
+          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
           return (
             <Link key={tab.name} href={tab.path} className={clsx(
               "px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
               isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-            )}>
+            )} data-testid={`nav-desktop-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <tab.icon className="w-4 h-4" />
               {tab.name}
             </Link>
@@ -73,7 +82,7 @@ export function DesktopNav() {
       </nav>
 
       <div className="ml-auto flex items-center gap-4">
-        <Link href="/settings" className="p-2 text-muted-foreground hover:text-foreground transition-colors">
+        <Link href="/settings" className="p-2 text-muted-foreground hover:text-foreground transition-colors" data-testid="nav-desktop-settings">
           <User className="w-5 h-5" />
         </Link>
       </div>
@@ -90,7 +99,7 @@ export function MobileHeader() {
         </div>
         <span className="font-display font-bold text-lg tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
       </div>
-      <Link href="/settings" className="p-2 -mr-2 text-muted-foreground active:text-foreground">
+      <Link href="/settings" className="p-2 -mr-2 text-muted-foreground active:text-foreground" data-testid="nav-mobile-settings">
         <User className="w-5 h-5" />
       </Link>
     </header>

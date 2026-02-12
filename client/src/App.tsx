@@ -6,8 +6,9 @@ import { UserProvider } from "@/context/UserContext";
 import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
 import NotFound from "@/pages/not-found";
 
-// Pages
+import QCHub from "@/pages/QCHub";
 import Academy from "@/pages/Academy";
+import Insights from "@/pages/Insights";
 import LabTools from "@/pages/LabTools";
 import Compliance from "@/pages/Compliance";
 import Career from "@/pages/Career";
@@ -22,7 +23,9 @@ function Router() {
       
       <main className="animate-in fade-in duration-500">
         <Switch>
+          <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
+          <Route path="/insights" component={Insights} />
           <Route path="/tools" component={LabTools} />
           <Route path="/compliance" component={Compliance} />
           <Route path="/career" component={Career} />
@@ -30,7 +33,7 @@ function Router() {
           <Route path="/settings" component={Settings} />
           
           <Route path="/">
-            <Redirect to="/academy" />
+            <Redirect to="/qc-hub" />
           </Route>
           
           <Route component={NotFound} />
