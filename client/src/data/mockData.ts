@@ -1363,70 +1363,140 @@ export const labToolsData: LabTool[] = [
     name: "Molarity Calculator",
     description: "Calculate the molarity of a solution given mass, molecular weight, and volume. Supports common unit conversions for grams, milligrams, liters, and milliliters.",
     icon: "flask",
-    status: "READY"
+    category: "Solution Prep",
+    tags: ["molarity", "concentration", "solution"],
+    difficulty: "Basic",
+    timeLabel: "~30 sec",
+    audience: ["Student", "QC"],
+    isMostUsed: true,
+    status: "FREE",
+    available: true
   },
   {
     id: "lt2",
     name: "Dilution Calculator",
     description: "Apply the C1V1 = C2V2 equation to determine the volume or concentration needed for serial or simple dilutions of stock solutions.",
     icon: "beaker",
-    status: "READY"
+    category: "Solution Prep",
+    tags: ["dilution", "C1V1", "stock solution"],
+    difficulty: "Basic",
+    timeLabel: "~30 sec",
+    audience: ["Student", "QC"],
+    isMostUsed: true,
+    status: "FREE",
+    available: true
   },
   {
     id: "lt3",
     name: "Serial Dilution Planner",
     description: "Plan multi-step serial dilution series with configurable dilution factors and volumes. Generates a step-by-step pipetting guide.",
     icon: "test-tubes",
-    status: "COMING_SOON"
+    category: "Solution Prep",
+    tags: ["serial dilution", "pipetting", "protocol"],
+    difficulty: "Intermediate",
+    timeLabel: "~1 min",
+    audience: ["Student", "QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt4",
     name: "Unit Converter",
     description: "Convert between common laboratory units including mass, volume, concentration, temperature, and pressure.",
     icon: "arrow-right-left",
-    status: "COMING_SOON"
+    category: "Analytical & Quantification",
+    tags: ["units", "conversion", "mass", "volume"],
+    difficulty: "Basic",
+    timeLabel: "~15 sec",
+    audience: ["Student", "QC"],
+    isMostUsed: true,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt5",
     name: "Buffer Recipe Tool",
     description: "Calculate the amounts of acid, base, and salt components needed to prepare buffers at a target pH and ionic strength.",
     icon: "flask-round",
-    status: "COMING_SOON"
+    category: "Solution Prep",
+    tags: ["buffer", "pH", "recipe"],
+    difficulty: "Intermediate",
+    timeLabel: "~1 min",
+    audience: ["Student", "QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt6",
     name: "Cell Counting Calculator",
     description: "Calculate cell concentration and viability from hemocytometer or automated cell counter readings, including dilution factor corrections.",
     icon: "grid-3x3",
-    status: "COMING_SOON"
+    category: "Cell & Microbiology",
+    tags: ["cell count", "hemocytometer", "viability"],
+    difficulty: "Basic",
+    timeLabel: "~30 sec",
+    audience: ["Student", "QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt7",
     name: "Endotoxin Calculator",
     description: "Determine the endotoxin limit and maximum valid dilution for bacterial endotoxin testing based on dose, route, and product concentration.",
     icon: "shield-alert",
-    status: "COMING_SOON"
+    category: "Cell & Microbiology",
+    tags: ["endotoxin", "LAL", "pyrogen"],
+    difficulty: "Intermediate",
+    timeLabel: "~1 min",
+    audience: ["QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt8",
     name: "Protein Concentration",
     description: "Estimate protein concentration from absorbance data using Beer-Lambert law, BCA standard curves, or Bradford assay readings.",
     icon: "chart-line",
-    status: "COMING_SOON"
+    category: "Analytical & Quantification",
+    tags: ["protein", "BCA", "Bradford", "absorbance"],
+    difficulty: "Intermediate",
+    timeLabel: "~1 min",
+    audience: ["Student", "QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt9",
     name: "OD600 Growth Tracker",
     description: "Log optical density readings at 600 nm over time to track bacterial growth curves and estimate doubling times.",
     icon: "trending-up",
-    status: "COMING_SOON"
+    category: "Cell & Microbiology",
+    tags: ["OD600", "growth curve", "bacteria"],
+    difficulty: "Intermediate",
+    timeLabel: "~2 min",
+    audience: ["Student", "QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   },
   {
     id: "lt10",
     name: "Centrifuge Speed Converter",
     description: "Convert between RPM and relative centrifugal force (RCF/g-force) using rotor radius, or calculate the required RPM for a target RCF.",
     icon: "refresh-cw",
-    status: "COMING_SOON"
+    category: "Analytical & Quantification",
+    tags: ["centrifuge", "RPM", "RCF", "g-force"],
+    difficulty: "Basic",
+    timeLabel: "~15 sec",
+    audience: ["Student", "QC"],
+    isMostUsed: false,
+    status: "COMING_SOON",
+    available: false
   }
 ];
 

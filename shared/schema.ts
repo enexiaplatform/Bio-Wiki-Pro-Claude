@@ -80,12 +80,23 @@ export interface Product {
   salesTalkingPoints?: string[];
 }
 
+export type ToolStatus = "FREE" | "COMING_SOON";
+export type ToolDifficulty = "Basic" | "Intermediate";
+export type ToolSection = "Solution Prep" | "Cell & Microbiology" | "Analytical & Quantification";
+
 export interface LabTool {
   id: string;
   name: string;
   description: string;
   icon: string;
-  status: ContentStatus;
+  category: ToolSection;
+  tags: string[];
+  difficulty: ToolDifficulty;
+  timeLabel: string;
+  audience: ("Student" | "QC")[];
+  isMostUsed: boolean;
+  status: ToolStatus;
+  available: boolean;
 }
 
 export interface Skill {

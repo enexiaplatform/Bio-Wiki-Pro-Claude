@@ -9,7 +9,7 @@ BioWiki Pro is a mobile-first PWA (Progressive Web App) serving as a pocket ment
 - Academy: 15 Student topics with Learning Path progression (6 steps)
 - Insights: 15 Sales/Industry topics with "Use in Sales Call" talking points
 - Compliance: 18 SOPs (2 free, 16 Pro-locked)
-- Lab Tools: 10 tools (2 ready calculators, 8 coming soon)
+- Lab Tools: 10 tools (2 free calculators, 8 coming soon) grouped by section (Solution Prep, Cell & Microbiology, Analytical & Quantification) with search, filter chips, sort, and Quick Access row
 - Career: 20 job listings + 15 skills in Skill Matrix
 - Solutions: 12 products with enriched cards (pain points, target users, sales talking points)
 
