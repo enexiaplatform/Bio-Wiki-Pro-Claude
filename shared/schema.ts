@@ -2,16 +2,10 @@ import { pgTable, text, serial, boolean, timestamp, jsonb } from "drizzle-orm/pg
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// === TABLE DEFINITIONS ===
+// === AUTH MODELS (users + sessions) ===
+export * from "./models/auth";
 
-// User table - primarily for future sync, currently state is local
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  role: text("role").default("Student"),
-  isPro: boolean("is_pro").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
+// === TABLE DEFINITIONS ===
 
 // Quote Requests from the Solutions tab
 export const quoteRequests = pgTable("quote_requests", {
@@ -26,13 +20,9 @@ export const quoteRequests = pgTable("quote_requests", {
 
 // === SCHEMAS ===
 
-export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({ id: true, createdAt: true });
 
 // === TYPES ===
-
-export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
@@ -110,6 +100,6 @@ export interface SOP {
   id: string;
   title: string;
   summary: string;
-  content: string; // HTML or Markdown
+  content: string;
   isLocked: boolean;
 }

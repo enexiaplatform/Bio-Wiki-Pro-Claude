@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Sparkles } from "lucide-react";
 import { useUser } from "@/context/UserContext";
+import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 interface ProModalProps {
   isOpen: boolean;
@@ -8,11 +10,22 @@ interface ProModalProps {
 }
 
 export function ProModal({ isOpen, onClose }: ProModalProps) {
-  const { togglePro } = useUser();
+  const { isAuthenticated, togglePro, isTogglingPro } = useUser();
+  const [, setLocation] = useLocation();
 
   const handleUpgrade = () => {
+    if (!isAuthenticated) {
+      onClose();
+      window.location.href = "/api/login";
+      return;
+    }
     togglePro();
     onClose();
+  };
+
+  const goToUpgradePage = () => {
+    onClose();
+    setLocation("/upgrade");
   };
 
   return (
@@ -32,7 +45,6 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="fixed left-4 right-4 top-1/2 -translate-y-1/2 md:left-1/2 md:-translate-x-1/2 md:w-[500px] z-[70] bg-card border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden"
           >
-            {/* Background decoration */}
             <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
             <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px]" />
 
@@ -65,16 +77,33 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
                 ))}
               </div>
 
+              {isAuthenticated ? (
+                <Button
+                  onClick={handleUpgrade}
+                  disabled={isTogglingPro}
+                  className="w-full font-bold text-lg"
+                  size="lg"
+                  data-testid="button-pro-upgrade"
+                >
+                  {isTogglingPro ? "Upgrading..." : "Unlock Pro Access"}
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  className="w-full font-bold text-lg"
+                  size="lg"
+                  data-testid="button-pro-login"
+                >
+                  <a href="/api/login">Sign In to Upgrade</a>
+                </Button>
+              )}
+
               <button
-                onClick={handleUpgrade}
-                className="w-full py-4 rounded-xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold text-lg shadow-lg shadow-primary/25 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+                onClick={goToUpgradePage}
+                className="block w-full text-center text-xs text-muted-foreground mt-4 hover:text-foreground transition-colors"
               >
-                Unlock Pro Access ($9.99/mo)
+                Learn more about Pro benefits
               </button>
-              
-              <p className="text-center text-xs text-muted-foreground mt-4">
-                Mock payment - clicking this will toggle Pro mode immediately.
-              </p>
             </div>
           </motion.div>
         </>

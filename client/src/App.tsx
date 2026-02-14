@@ -14,6 +14,7 @@ import Compliance from "@/pages/Compliance";
 import Career from "@/pages/Career";
 import Solutions from "@/pages/Solutions";
 import Settings from "@/pages/Settings";
+import UpgradePage from "@/pages/UpgradePage";
 
 function Router() {
   return (
@@ -31,6 +32,7 @@ function Router() {
           <Route path="/career" component={Career} />
           <Route path="/solutions" component={Solutions} />
           <Route path="/settings" component={Settings} />
+          <Route path="/upgrade" component={UpgradePage} />
           
           <Route path="/">
             <Redirect to="/qc-hub" />

@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
+import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { api } from "@shared/routes";
 import { z } from "zod";
 
@@ -8,8 +9,10 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  
-  // Quote Requests
+
+  await setupAuth(app);
+  registerAuthRoutes(app);
+
   app.post(api.quoteRequests.create.path, async (req, res) => {
     try {
       const input = api.quoteRequests.create.input.parse(req.body);
@@ -26,30 +29,17 @@ export async function registerRoutes(
     }
   });
 
-  // Users (for potential future sync)
-  app.get(api.users.get.path, async (req, res) => {
-    const user = await storage.getUser(Number(req.params.id));
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json(user);
-  });
-
-  app.patch(api.users.update.path, async (req, res) => {
+  app.post(api.users.togglePro.path, isAuthenticated, async (req: any, res) => {
     try {
-      const input = api.users.update.input.parse(req.body);
-      const user = await storage.updateUser(Number(req.params.id), input);
-      res.json(user);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        return res.status(400).json({
-          message: err.errors[0].message,
-          field: err.errors[0].path.join('.'),
-        });
+      const userId = req.user.claims.sub;
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
       }
-      // If user not found, technically should be 404 but standard storage.update might throw or return nothing. 
-      // For this prototype, we'll assume valid IDs or let global error handler catch 500s.
-      res.status(404).json({ message: 'User not found' });
+      const updatedUser = await storage.updateUserPro(userId, !currentUser.isPro);
+      res.json(updatedUser);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to update user" });
     }
   });
 

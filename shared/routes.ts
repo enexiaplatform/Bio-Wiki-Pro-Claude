@@ -1,9 +1,6 @@
 import { z } from 'zod';
-import { insertQuoteRequestSchema, quoteRequests, users, insertUserSchema } from './schema';
+import { insertQuoteRequestSchema, quoteRequests, users } from './schema';
 
-// ============================================
-// SHARED ERROR SCHEMAS
-// ============================================
 export const errorSchemas = {
   validation: z.object({
     message: z.string(),
@@ -17,11 +14,7 @@ export const errorSchemas = {
   }),
 };
 
-// ============================================
-// API CONTRACT
-// ============================================
 export const api = {
-  // Quote Requests (Solutions Tab)
   quoteRequests: {
     create: {
       method: 'POST' as const,
@@ -33,31 +26,26 @@ export const api = {
       },
     },
   },
-  // User (Settings Tab - if we were syncing)
   users: {
-    get: {
+    me: {
       method: 'GET' as const,
-      path: '/api/users/:id' as const,
+      path: '/api/auth/user' as const,
       responses: {
         200: z.custom<typeof users.$inferSelect>(),
-        404: errorSchemas.notFound,
+        401: errorSchemas.notFound,
       },
     },
-    update: {
-      method: 'PATCH' as const,
-      path: '/api/users/:id' as const,
-      input: insertUserSchema.partial(),
+    togglePro: {
+      method: 'POST' as const,
+      path: '/api/users/toggle-pro' as const,
       responses: {
         200: z.custom<typeof users.$inferSelect>(),
-        404: errorSchemas.notFound,
+        401: errorSchemas.notFound,
       },
     },
   },
 };
 
-// ============================================
-// HELPER
-// ============================================
 export function buildUrl(path: string, params?: Record<string, string | number>): string {
   let url = path;
   if (params) {

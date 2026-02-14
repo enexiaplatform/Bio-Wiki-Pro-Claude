@@ -1,7 +1,11 @@
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, User } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown } from "lucide-react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
+import { useUser } from "@/context/UserContext";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 const mobileTabs = [
   { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
@@ -56,6 +60,7 @@ export function BottomNav() {
 
 export function DesktopNav() {
   const [location] = useLocation();
+  const { user, isAuthenticated, isPro, logout } = useUser();
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-8">
@@ -81,27 +86,77 @@ export function DesktopNav() {
         })}
       </nav>
 
-      <div className="ml-auto flex items-center gap-4">
-        <Link href="/settings" className="p-2 text-muted-foreground hover:text-foreground transition-colors" data-testid="nav-desktop-settings">
-          <User className="w-5 h-5" />
-        </Link>
+      <div className="ml-auto flex items-center gap-3">
+        {isAuthenticated ? (
+          <>
+            {isPro && (
+              <Badge className="bg-primary/10 text-primary border-primary/20" data-testid="badge-pro-status">
+                <Crown className="w-3 h-3 mr-1" /> Pro
+              </Badge>
+            )}
+            <div className="flex items-center gap-2">
+              <Avatar className="w-8 h-8">
+                <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.firstName ?? "User"} />
+                <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                  {user?.firstName?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium hidden lg:inline" data-testid="text-user-name">
+                {user?.firstName ?? user?.email ?? "User"}
+              </span>
+            </div>
+            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </>
+        ) : (
+          <Button size="sm" asChild data-testid="button-login">
+            <a href="/api/login">
+              <LogIn className="w-4 h-4 mr-1.5" />
+              Sign In
+            </a>
+          </Button>
+        )}
       </div>
     </header>
   );
 }
 
 export function MobileHeader() {
+  const { user, isAuthenticated, isPro, logout } = useUser();
+
   return (
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 px-4 py-3 md:hidden flex items-center justify-between">
       <div className="flex items-center gap-2">
-         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
           <span className="text-white font-bold text-lg">B</span>
         </div>
         <span className="font-display font-bold text-lg tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
+        {isPro && (
+          <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]" data-testid="badge-pro-mobile">
+            <Crown className="w-2.5 h-2.5 mr-0.5" /> Pro
+          </Badge>
+        )}
       </div>
-      <Link href="/settings" className="p-2 -mr-2 text-muted-foreground active:text-foreground" data-testid="nav-mobile-settings">
-        <User className="w-5 h-5" />
-      </Link>
+      <div className="flex items-center gap-2">
+        {isAuthenticated ? (
+          <>
+            <Avatar className="w-7 h-7">
+              <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.firstName ?? "User"} />
+              <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                {user?.firstName?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"}
+              </AvatarFallback>
+            </Avatar>
+            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout-mobile" className="w-8 h-8">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </>
+        ) : (
+          <Button size="sm" asChild data-testid="button-login-mobile">
+            <a href="/api/login">Sign In</a>
+          </Button>
+        )}
+      </div>
     </header>
   );
 }
