@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Incrementally refactor the existing Tools tab UI for better discoverability.
 IMPORTANT: Do not rewrite the app. Reuse existing components and routes. Minimal-diff changes only.
 
@@ -75,3 +76,82 @@ After implementation, provide:
 - Number of tools per category
 - Number of FREE vs COMING_SOON tools
 - Confirmation no full rewrite was performed
+=======
+Incrementally refactor the existing Tools tab UI for better discoverability.
+IMPORTANT: Do not rewrite the app. Reuse existing components and routes. Minimal-diff changes only.
+
+GOAL
+- Make all Tools fully free for everyone (no Pro lock in this tab).
+- Improve tool discoverability so users can quickly find the right calculator.
+
+REQUIREMENTS
+
+1) ACCESS MODEL
+- Remove any paywall/lock logic from Tools tab.
+- All currently available tools must be open and usable by all users.
+- Keep "Coming Soon" tools visible but clearly non-clickable or with a secondary action ("Notify Me" placeholder).
+
+2) INFORMATION ARCHITECTURE
+Group tools by job-to-be-done sections:
+- Solution Prep
+- Cell & Microbiology
+- Analytical & Quantification
+
+Each tool must belong to one section.
+
+3) TOOL CARD METADATA
+For each tool card, show:
+- Tool name
+- Short description
+- Category badge
+- Difficulty badge (Basic / Intermediate)
+- Estimated time badge (e.g., ~30 sec)
+- Status badge (Free / Coming Soon)
+
+CTA:
+- If available: "Open Tool"
+- If coming soon: disabled button or "Notify Me" placeholder
+
+4) QUICK DISCOVERY CONTROLS
+At top of Tools page add:
+- Search input (name + description + tags)
+- Filter chips: All, Most Used, Beginner Friendly, QC Lab, Student, Coming Soon
+- Sort dropdown: Most Used (default), A-Z, Newest
+
+5) QUICK ACCESS ROW
+Add a “Quick Access” horizontal row above the grid with top 3 tools:
+- Molarity Calculator
+- Dilution Calculator
+- Unit Converter
+
+6) VISUAL / UX CONSISTENCY
+- Keep existing visual style and card system.
+- Keep spacing consistent and mobile-friendly.
+- Ensure chip rows are horizontally scrollable on mobile.
+- Keep touch targets >= 44px.
+- Maintain bottom-nav safe spacing (content never hidden behind nav).
+
+7) DATA MODEL (MOCK DATA ONLY)
+Extend existing tools mock data with fields (reuse if already present):
+- id
+- name
+- description
+- category
+- tags[]
+- difficulty
+- etaSeconds or timeLabel
+- audience: ["Student","QC"]
+- isMostUsed (boolean)
+- status: "FREE" | "COMING_SOON"
+- available (boolean)
+
+Do not add backend APIs. Frontend mock data only.
+
+8) OUTPUT
+After implementation, provide:
+- Files changed (and why)
+- Confirmation that Tools tab is fully free
+- Number of tools per category
+- Number of FREE vs COMING_SOON tools
+- Confirmation no full rewrite was performed
+>>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f

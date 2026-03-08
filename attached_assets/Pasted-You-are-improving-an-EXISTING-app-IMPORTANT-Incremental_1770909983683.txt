@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 You are improving an EXISTING app. 
 IMPORTANT: Incremental upgrade only. Do NOT rewrite from scratch. Do NOT change architecture, routing patterns, or replace the design system. Reuse existing components and pages as much as possible.
 
@@ -135,3 +136,142 @@ After implementing, print:
 5) Confirm default landing route = QC Hub
 
 Now implement these UI changes with minimal-diff edits on top of the current codebase.
+=======
+You are improving an EXISTING app. 
+IMPORTANT: Incremental upgrade only. Do NOT rewrite from scratch. Do NOT change architecture, routing patterns, or replace the design system. Reuse existing components and pages as much as possible.
+
+GOAL
+Optimize UI/UX for an OMNICHANNEL Life Science app with 3 audience hubs:
+1) Academy (Students / Foundations) = Top-of-funnel
+2) QC Hub (QC Professionals) = Core revenue
+3) Insights (Sales / Industry) = Positioning
+The UI must feel organized, not mixed/confusing.
+
+NON-NEGOTIABLES
+- Keep existing navigation, routes, context, ProModal, and Pro toggle logic.
+- Minimal-diff edits. Prefer small changes in existing files.
+- No new backend, no new API.
+- Do not remove existing content. Only reorganize UI presentation.
+
+==================================================
+1) INFORMATION ARCHITECTURE (UI-ONLY RESTRUCTURE)
+==================================================
+A) Remove the “Student / QC Professional / Sales Insight” mode switch from the Academy page.
+Reason: mixing audience modes inside one feed feels illogical and cluttered.
+
+B) Instead, create/ensure 3 clear entry hubs:
+- Academy = Student Foundations content only
+- QC Hub = QC Professional content only
+- Insights = Sales/Industry content only
+
+Implementation rule:
+- DO NOT duplicate components. Reuse the existing topic list + detail page components.
+- Use existing topic “mode” field to filter content per hub.
+- If QC Hub and Insights pages do not exist yet, create them by copying the Academy page layout and changing only:
+  - page title/subtitle
+  - default filter by mode
+  - labels/badges wording
+  - empty state text
+This is not a rewrite; it’s a minimal reuse.
+
+==================================================
+2) NAVIGATION (KEEP IT CLEAN)
+==================================================
+- Keep the existing bottom navigation on mobile.
+- Add/adjust tabs to support hubs WITHOUT making the bar too crowded.
+
+Mobile bottom nav (max 5 items):
+- QC Hub (home/main)
+- Academy
+- Tools
+- Compliance
+- Career
+Move Insights to:
+- Profile/More menu OR
+- a secondary top link on larger screens
+(Do not add 6+ items on the mobile bottom bar.)
+
+Desktop/top nav can include Insights, but mobile bottom nav should stay <= 5.
+
+Set the default landing tab/route to QC Hub (core revenue).
+
+==================================================
+3) PAGE TEMPLATE + VISUAL HIERARCHY (CONSISTENCY)
+==================================================
+Standardize all main pages with the same “PageHeader” structure:
+- Title (H1)
+- Subtitle (1 line)
+- Optional small “stats row” (chips): e.g. “Topics: 45”, “SOPs: 18”
+Reuse existing components; if needed create a small shared component PageHeader.tsx.
+
+Spacing system:
+- Use consistent vertical rhythm: section gap = 24–32px
+- Card padding consistent across pages (p-5 or p-6)
+- Ensure content has bottom padding so it never hides behind bottom nav (pb-24 or safe-area padding)
+
+==================================================
+4) ACADEMY (STUDENT) UI CLEANUP
+==================================================
+- Academy should show ONLY Student topics.
+- Keep search + category chips.
+- Remove any “All modes” control.
+- Badges on cards:
+  category badge + difficulty + readTime + status (ready/coming soon)
+Keep it clean and readable.
+
+Add “Learning Path” block at top (UI-only):
+- A simple horizontal list of 4–6 steps (mock) linking to relevant topics.
+This uses existing topic slugs; no backend.
+
+==================================================
+5) QC HUB UI (PROFESSIONAL WORKFLOW FEEL)
+==================================================
+QC Hub should feel operational, not academic:
+- Add a “Quick Workflows” section (UI-only cards):
+  - Sterility Testing
+  - Environmental Monitoring
+  - Bioburden
+  - Endotoxin
+Each card links to relevant QC topics or SOPs.
+- Then show QC topic list filtered by mode=QC.
+
+Keep filters minimal: category chips + search only.
+
+==================================================
+6) INSIGHTS UI (SALES/INDUSTRY)
+==================================================
+Insights page filtered by mode=SALES.
+UI tone:
+- Use “Insight cards” style (still same design system):
+  - headline
+  - 2–3 sentence summary
+  - “Use in sales call” mini bullets (2 bullets)
+No mode switches.
+
+Place Insights link in desktop nav or profile menu on mobile.
+
+==================================================
+7) POLISH REQUIREMENTS
+==================================================
+- Ensure horizontal chip rows scroll smoothly on mobile (overflow-x-auto, no wrapping).
+- Ensure touch targets >= 44px for tabs and buttons.
+ů
+- Keep animations subtle (if Framer Motion already used, no heavy new animation).
+- No TypeScript errors. No console errors.
+- Keep consistent terminology:
+  - “QC Hub” (not “QC Professional”)
+  - “Academy” (Student)
+  - “Insights” (Industry & Sales)
+
+==================================================
+8) OUTPUT (REQUIRED)
+==================================================
+After implementing, print:
+1) Files modified (with 1-line reason each)
+2) New files added (only if absolutely necessary)
+3) Confirm: “Incremental update only; no rewrite”
+4) Confirm mobile bottom nav <= 5 items
+5) Confirm default landing route = QC Hub
+
+Now implement these UI changes with minimal-diff edits on top of the current codebase.
+>>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f

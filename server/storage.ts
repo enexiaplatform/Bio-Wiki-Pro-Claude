@@ -5,7 +5,11 @@ import {
   type User,
   type UpsertUser,
   type QuoteRequest,
+<<<<<<< HEAD
   type InsertQuoteRequest,
+=======
+  type InsertQuoteRequest
+>>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
 

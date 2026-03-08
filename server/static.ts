@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
+<<<<<<< HEAD
   const candidatePaths = [
     path.resolve(__dirname, "public"),
     path.resolve(process.cwd(), "dist", "public"),
@@ -12,6 +13,12 @@ export function serveStatic(app: Express) {
   if (!distPath) {
     throw new Error(
       `Could not find the build directory in: ${candidatePaths.join(", ")}`,
+=======
+  const distPath = path.resolve(__dirname, "public");
+  if (!fs.existsSync(distPath)) {
+    throw new Error(
+      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+>>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f
     );
   }
 

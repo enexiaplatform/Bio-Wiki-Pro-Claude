@@ -60,7 +60,11 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+<<<<<<< HEAD
   await registerRoutes(app);
+=======
+  await registerRoutes(httpServer, app);
+>>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
