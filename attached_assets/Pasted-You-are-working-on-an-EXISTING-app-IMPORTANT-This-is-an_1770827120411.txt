@@ -1,0 +1,144 @@
+You are working on an EXISTING app. 
+IMPORTANT: This is an incremental upgrade from the current codebase.
+DO NOT rewrite from scratch. DO NOT replace architecture. DO NOT break existing routes/components.
+
+PRIMARY GOAL
+Increase content depth (content density) and perceived platform maturity across tabs, while preserving current app structure and UI flow.
+
+NON-NEGOTIABLE CONSTRAINTS
+1) Keep existing project structure and architecture.
+2) Keep existing routes, navigation, context logic, and modal flow.
+3) Reuse current components whenever possible.
+4) Only extend/refactor minimally where needed.
+5) No full redesign, no destructive changes, no “start over”.
+
+-----------------------------------
+A) SAFE WORKING METHOD (MANDATORY)
+-----------------------------------
+Work in this order:
+Step 1: Inspect current files and list what already exists.
+Step 2: Propose minimal file changes (smallest diff).
+Step 3: Implement in-place upgrades.
+Step 4: Report changed files + why.
+
+Before coding, print:
+- “Existing components reused”
+- “New files added (if any)”
+- “Files modified”
+
+-----------------------------------
+B) ACADEMY CONTENT EXPANSION (IN-PLACE)
+-----------------------------------
+Goal: expand Academy from few articles to a rich library without long articles.
+
+Keep existing Academy page and detail flow. Add a mode filter (UI-level only):
+- Student
+- QC Professional
+- Sales Insight
+
+Add/extend Academy data to at least 45 topics total:
+- 15 Student
+- 15 QC
+- 15 Sales
+
+Use existing data structure if possible; only extend fields if needed.
+Each topic should have concise fields:
+- id, slug, title
+- mode: STUDENT | QC | SALES
+- category
+- tags[]
+- summary (2–3 sentences)
+- whyItMatters (2–3 bullets)
+- commonMistakes (2–4 bullets)
+- difficulty
+- readTimeMin
+- status: READY | COMING_SOON
+- videoUrl (optional)
+- diagramLabel
+
+UI changes in Academy must be incremental:
+- Keep current search and category UX
+- Add mode switch above list
+- Add compact badges: category, difficulty, read time, status
+- Keep existing detail route/page; enrich sections only
+
+No long content generation. Focus structure and density.
+
+-----------------------------------
+C) COMPLIANCE LIBRARY EXPANSION (KEEP LOCK LOGIC)
+-----------------------------------
+Keep current Pro/Free lock behavior exactly as implemented.
+Only expand content:
+- At least 18 SOP items
+- Short preview + structured sections
+
+Free:
+- blurred preview + lock icon + open existing Pro modal
+
+Pro:
+- full SOP content visible in existing detail/modal flow
+
+Do not change auth model or subscription architecture.
+
+-----------------------------------
+D) LAB TOOLS PAGE (DENSITY, NOT NEW ENGINE)
+-----------------------------------
+Keep existing calculators and logic untouched.
+Add tool catalog density:
+- Total 10 tools shown
+- 2 existing READY tools
+- 8 COMING_SOON cards (disabled CTA)
+
+This is a UI/content expansion only.
+
+-----------------------------------
+E) CAREER PAGE EXPANSION (IN-PLACE)
+-----------------------------------
+Keep current timeline and job board layout.
+Expand mock jobs to at least 20 items with existing card pattern.
+Add lightweight Skill Matrix section using same card style:
+- 12–15 skills
+- each with short description and audience tag (Student/QC/Sales)
+
+No backend changes.
+
+-----------------------------------
+F) SOLUTIONS PAGE EXPANSION (IN-PLACE)
+-----------------------------------
+Keep existing solution cards and quote modal flow.
+Expand to at least 12 product entries.
+For each product:
+- one-line value
+- 3–5 bullets
+- target users tags
+- pain point
+- sales talking points (short)
+
+Do not replace current components; extend existing data rendering.
+
+-----------------------------------
+G) TECHNICAL GUARDRAILS
+-----------------------------------
+- TypeScript strict, no new TS errors.
+- Preserve current imports and naming conventions where possible.
+- Prefer editing existing mockData files over creating many new files.
+- If splitting data files, do it only when current file is too large; keep imports stable.
+- Mobile-safe spacing must remain correct (content not hidden behind bottom nav).
+
+-----------------------------------
+H) OUTPUT FORMAT (REQUIRED)
+-----------------------------------
+After finishing, provide:
+1) Changed files list
+2) What was reused vs newly added
+3) Content counts per tab:
+   - Academy topics
+   - Compliance SOPs
+   - Tools (ready vs coming soon)
+   - Jobs
+   - Solutions
+4) Confirmation:
+   - “No full rewrite performed”
+   - “Existing architecture preserved”
+
+Now implement with minimal-diff incremental upgrades only.

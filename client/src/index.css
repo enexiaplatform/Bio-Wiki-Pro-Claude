@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+
+  /* Scientific/Premium Palette */
+  /* Deep Navy #0f172a -> HSL 222 47% 11% */
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+
+  /* Slightly lighter navy for cards #1e293b -> HSL 222 47% 18% */
+  --card: 222 47% 15%;
+  --card-foreground: 210 40% 98%;
+
+  --popover: 222 47% 15%;
+  --popover-foreground: 210 40% 98%;
+
+  /* Bio Teal #14b8a6 -> HSL 171 80% 40% */
+  --primary: 171 80% 40%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Slate 700 for secondary elements */
+  --secondary: 217 33% 25%;
+  --secondary-foreground: 210 40% 98%;
+
+  --muted: 217 33% 20%;
+  --muted-foreground: 215 20% 65%;
+
+  --accent: 171 80% 40%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 210 40% 98%;
+
+  --border: 217 33% 25%;
+  --input: 217 33% 25%;
+  --ring: 171 80% 40%;
+
+  --radius: 0.75rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/30 selection:text-primary-foreground;
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply tracking-tight font-bold text-white;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-secondary rounded-full border-2 border-background;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-secondary/80;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-card/60 backdrop-blur-md border border-white/10;
+}
+
+.glass-card {
+  @apply bg-gradient-to-br from-card to-card/50 border border-white/10 shadow-xl shadow-black/20;
+}
