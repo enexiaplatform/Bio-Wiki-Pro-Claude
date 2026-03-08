@@ -145,16 +145,12 @@ function QuoteDialog({ productName }: { productName: string }) {
                   <FormItem>
                     <FormLabel>Institution / Company</FormLabel>
                     <FormControl>
-<<<<<<< HEAD
                       <Input
                         placeholder="BioLab Inc."
                         {...field}
                         value={field.value ?? ""}
                         className="bg-background/50 border-white/10"
                       />
-=======
-                      <Input placeholder="BioLab Inc." {...field} className="bg-background/50 border-white/10" />
->>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f
                     </FormControl>
                     <FormMessage />
                   </FormItem>

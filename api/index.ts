@@ -1,6 +1,6 @@
 import express, { type NextFunction, type Request, type Response } from "express";
-import { registerRoutes } from "../server/routes";
-import { serveStatic } from "../server/static";
+import { registerRoutes } from "../server/routes.js";
+import { serveStatic } from "../server/static.js";
 
 declare module "http" {
   interface IncomingMessage {

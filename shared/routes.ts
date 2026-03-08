@@ -1,11 +1,7 @@
 import { z } from 'zod';
 import { insertQuoteRequestSchema, quoteRequests, users } from './schema';
 
-<<<<<<< HEAD
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
-
-=======
->>>>>>> 89c929b6a5e8182e473f67314c438ca8b03d597f
 export const errorSchemas = {
   validation: z.object({
     message: z.string(),
