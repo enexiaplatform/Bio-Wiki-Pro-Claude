@@ -3,7 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === AUTH MODELS (users + sessions) ===
-export * from "./models/auth";
+export * from "./models/auth.js";
 
 // === TABLE DEFINITIONS ===
 

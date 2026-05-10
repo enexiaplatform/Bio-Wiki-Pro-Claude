@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { storage } from "./storage.js";
-import { api } from "@shared/routes";
+import { api } from "../shared/routes.js";
 import { z } from "zod";
 import session from "express-session";
 import connectPg from "connect-pg-simple";

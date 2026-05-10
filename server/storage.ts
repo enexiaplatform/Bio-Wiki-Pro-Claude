@@ -7,7 +7,7 @@ import {
   type UpsertUser,
   type QuoteRequest,
   type InsertQuoteRequest,
-} from "@shared/schema";
+} from "../shared/schema.js";
 import { eq } from "drizzle-orm";
 
 export interface IStorage {

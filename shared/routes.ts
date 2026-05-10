@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertQuoteRequestSchema, quoteRequests, users } from './schema';
+import { insertQuoteRequestSchema, quoteRequests, users } from './schema.js';
 
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
 export const errorSchemas = {
