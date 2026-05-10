@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen } from "lucide-react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
@@ -12,7 +12,7 @@ const mobileTabs = [
   { name: "Academy", icon: BookOpen, path: "/academy" },
   { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
-  { name: "Career", icon: Briefcase, path: "/career" },
+  { name: "Vault", icon: NotebookPen, path: "/vault" },
 ];
 
 const desktopTabs = [
@@ -20,6 +20,7 @@ const desktopTabs = [
   { name: "Academy", icon: BookOpen, path: "/academy" },
   { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
+  { name: "Vault", icon: NotebookPen, path: "/vault" },
   { name: "Career", icon: Briefcase, path: "/career" },
   { name: "Insights", icon: TrendingUp, path: "/insights" },
 ];
@@ -111,10 +112,10 @@ export function DesktopNav() {
           </>
         ) : (
           <Button size="sm" asChild data-testid="button-login">
-            <a href="/api/login">
+            <Link href="/login">
               <LogIn className="w-4 h-4 mr-1.5" />
               Sign In
-            </a>
+            </Link>
           </Button>
         )}
       </div>
@@ -153,7 +154,7 @@ export function MobileHeader() {
           </>
         ) : (
           <Button size="sm" asChild data-testid="button-login-mobile">
-            <a href="/api/login">Sign In</a>
+            <Link href="/login">Sign In</Link>
           </Button>
         )}
       </div>

@@ -10,7 +10,7 @@ interface ProModalProps {
 }
 
 export function ProModal({ isOpen, onClose }: ProModalProps) {
-  const { isAuthenticated, togglePro, isTogglingPro } = useUser();
+  const { isAuthenticated } = useUser();
   const [, setLocation] = useLocation();
 
   const handleUpgrade = () => {
@@ -19,8 +19,8 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
       window.location.href = "/api/login";
       return;
     }
-    togglePro();
     onClose();
+    setLocation("/pricing");
   };
 
   const goToUpgradePage = () => {
@@ -80,12 +80,11 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
               {isAuthenticated ? (
                 <Button
                   onClick={handleUpgrade}
-                  disabled={isTogglingPro}
                   className="w-full font-bold text-lg"
                   size="lg"
                   data-testid="button-pro-upgrade"
                 >
-                  {isTogglingPro ? "Upgrading..." : "Unlock Pro Access"}
+                  Unlock Pro Access
                 </Button>
               ) : (
                 <Button

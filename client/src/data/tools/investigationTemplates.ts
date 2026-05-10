@@ -1,0 +1,68 @@
+import type { InvestigationTemplate } from "@/types/investigation";
+
+export const investigationTemplates: InvestigationTemplate[] = [
+  {
+    id: "em-excursion",
+    title: "EM excursion",
+    trigger: "Viable or non-viable environmental monitoring result outside expected state.",
+    sections: {
+      eventSummary: ["Define location, date, operation, count, organism, and limit status."],
+      immediateContainment: ["Notify QA/production", "Assess batch hold need", "Increase monitoring if risk justifies."],
+      sampleIntegrityCheck: ["Confirm sample label, exposure, transport, incubation, and reading."],
+      labErrorAssessment: ["Review media, incubation conditions, analyst handling, and contamination controls."],
+      processFacilityAssessment: ["Review operations, interventions, cleaning, pressure, airflow, and maintenance."],
+      organismSignificance: ["Assess source ecology, objectionable potential, recurrence, and area relevance."],
+      rootCauseHypothesis: ["List plausible sources and evidence supporting or weakening each."],
+      capa: ["Match CAPA to root cause confidence and recurrence risk."],
+      effectivenessCheck: ["Define monitoring period, acceptance criteria, and owner."],
+    },
+  },
+  {
+    id: "water-system-excursion",
+    title: "Water system microbial excursion",
+    trigger: "Microbial count, organism, or adverse trend in pharmaceutical water.",
+    sections: {
+      eventSummary: ["Identify loop, point of use, result, organism, specification, and product relevance."],
+      immediateContainment: ["Assess use restriction, product impact, resampling, and sanitization need."],
+      sampleIntegrityCheck: ["Review sampling technique, container, neutralizer, hold time, and incubation."],
+      labErrorAssessment: ["Check media, analyst handling, incubation, and concurrent lab controls."],
+      processFacilityAssessment: ["Review sanitization, flow, dead legs, maintenance, and point-use frequency."],
+      organismSignificance: ["Assess biofilm relevance, objectionable nature, persistence, and product risk."],
+      rootCauseHypothesis: ["Compare point-specific, loop-wide, sampling, and lab hypotheses."],
+      capa: ["Define system correction, procedural control, or preventive maintenance action."],
+      effectivenessCheck: ["Require repeat acceptable results and trend return over defined period."],
+    },
+  },
+  {
+    id: "sterility-test-positive",
+    title: "Sterility test positive",
+    trigger: "Positive sterility test in GMP product testing.",
+    sections: {
+      eventSummary: ["Capture product, lot, test method, vessel, organism, and detection timing."],
+      immediateContainment: ["Quarantine impacted lots and notify quality leadership immediately."],
+      sampleIntegrityCheck: ["Review sample chain, container integrity, method execution, and test environment."],
+      labErrorAssessment: ["Require specific evidence before assigning lab contamination."],
+      processFacilityAssessment: ["Review batch record, EM, interventions, sterilization, APS, and deviations."],
+      organismSignificance: ["Compare organism to lab, personnel, environment, and manufacturing history."],
+      rootCauseHypothesis: ["Evaluate lab, sampling, and manufacturing hypotheses with a high evidence bar."],
+      capa: ["Define CAPA only after product impact and root cause confidence are established."],
+      effectivenessCheck: ["Use targeted monitoring, APS learning, and CAPA verification."],
+    },
+  },
+  {
+    id: "repeated-organism-recovery",
+    title: "Repeated organism recovery",
+    trigger: "Same or related organism recovered repeatedly across locations or time.",
+    sections: {
+      eventSummary: ["Summarize recurrence pattern, locations, counts, organism, and time window."],
+      immediateContainment: ["Escalate from isolated event handling to repeat-signal review."],
+      sampleIntegrityCheck: ["Check whether sampling or lab pattern could explain recurrence."],
+      labErrorAssessment: ["Review media lots, analyst handling, and lab environmental controls."],
+      processFacilityAssessment: ["Map locations, movement, cleaning, material flow, and facility niches."],
+      organismSignificance: ["Use ecology to test likely source and persistence potential."],
+      rootCauseHypothesis: ["Rank source hypotheses by evidence strength and recurrence fit."],
+      capa: ["Target source removal or control strengthening rather than generic retraining."],
+      effectivenessCheck: ["Track recurrence absence across relevant locations and operations."],
+    },
+  },
+];

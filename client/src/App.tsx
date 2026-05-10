@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 
 import QCHub from "@/pages/QCHub";
 import Academy from "@/pages/Academy";
+import AcademyEntryPage from "@/pages/AcademyEntryPage";
 import Insights from "@/pages/Insights";
 import LabTools from "@/pages/LabTools";
 import Compliance from "@/pages/Compliance";
@@ -15,6 +16,11 @@ import Career from "@/pages/Career";
 import Solutions from "@/pages/Solutions";
 import Settings from "@/pages/Settings";
 import UpgradePage from "@/pages/UpgradePage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import PricingPage from "@/pages/PricingPage";
+import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
+import Vault from "@/pages/Vault";
 
 function Router() {
   return (
@@ -26,13 +32,19 @@ function Router() {
         <Switch>
           <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
+          <Route path="/academy/:slug" component={AcademyEntryPage} />
           <Route path="/insights" component={Insights} />
           <Route path="/tools" component={LabTools} />
           <Route path="/compliance" component={Compliance} />
+          <Route path="/vault" component={Vault} />
           <Route path="/career" component={Career} />
           <Route path="/solutions" component={Solutions} />
           <Route path="/settings" component={Settings} />
           <Route path="/upgrade" component={UpgradePage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/register" component={RegisterPage} />
+          <Route path="/pricing" component={PricingPage} />
+          <Route path="/payment/success" component={PaymentSuccessPage} />
           
           <Route path="/">
             <Redirect to="/qc-hub" />

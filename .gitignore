@@ -4,3 +4,9 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+.env
+*.log
+error.log
+log.txt
+out.txt
+status.txt

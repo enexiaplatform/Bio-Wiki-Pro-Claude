@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Crown, FlaskConical, BookOpen, ShieldCheck, Sparkles, TrendingUp, Briefcase } from "lucide-react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 const benefits = [
   { icon: ShieldCheck, title: "Full Compliance Library", desc: "Access all 18 SOPs with detailed procedures and regulatory references." },
@@ -16,7 +16,7 @@ const benefits = [
 ];
 
 export default function UpgradePage() {
-  const { isAuthenticated, isPro, togglePro, isTogglingPro } = useUser();
+  const { isAuthenticated, isPro } = useUser();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
@@ -73,12 +73,13 @@ export default function UpgradePage() {
           <Button
             size="lg"
             className="w-full max-w-sm font-bold text-base"
-            onClick={togglePro}
-            disabled={isTogglingPro}
+            asChild
             data-testid="button-upgrade-now"
           >
-            <Crown className="w-5 h-5 mr-2" />
-            {isTogglingPro ? "Upgrading..." : "Upgrade Now"}
+            <Link href="/pricing">
+              <Crown className="w-5 h-5 mr-2" />
+              Upgrade Now
+            </Link>
           </Button>
         ) : (
           <Button
@@ -87,9 +88,9 @@ export default function UpgradePage() {
             asChild
             data-testid="button-login-to-upgrade"
           >
-            <a href="/api/login">
+            <Link href="/login">
               Sign In to Upgrade
-            </a>
+            </Link>
           </Button>
         )}
       </Card>

@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 
 export default function Settings() {
-  const { user, isAuthenticated, isPro, togglePro, isTogglingPro, logout } = useUser();
+  const { user, isAuthenticated, isPro, logout } = useUser();
   const [, setLocation] = useLocation();
 
   return (
@@ -62,8 +62,7 @@ export default function Settings() {
             <Button
               variant="outline"
               size="sm"
-              onClick={isPro ? () => togglePro() : () => setLocation("/upgrade")}
-              disabled={isTogglingPro}
+              onClick={() => setLocation(isPro ? "/pricing" : "/upgrade")}
               data-testid="button-settings-plan"
             >
               {isPro ? "Manage Plan" : "Upgrade to Pro"}
