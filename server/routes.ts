@@ -7,9 +7,11 @@ import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
-  apiVersion: "2025-06-30.basil" as any,
-});
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-06-30.basil" as any,
+    })
+  : null;
 
 const PRICE_MAP: Record<string, string> = {
   pro_subscription: process.env.STRIPE_PRO_PRICE_ID ?? "",
@@ -23,13 +25,14 @@ const SUBSCRIPTION_PRODUCTS = new Set(["pro_subscription"]);
 // Add session middleware
 export function setupSession(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000;
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  const sessionStore = process.env.DATABASE_URL
+    ? new (connectPg(session))({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: false,
+        ttl: sessionTtl,
+        tableName: "sessions",
+      })
+    : undefined;
 
   app.set("trust proxy", 1);
   app.use(session({
@@ -63,6 +66,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   // ── Stripe webhook must be registered BEFORE session/json middleware
   // but express.json verify already saves req.rawBody so we can verify here.
   app.post("/api/stripe/webhook", async (req: any, res) => {
+    if (!stripe || !process.env.STRIPE_WEBHOOK_SECRET) {
+      return res.status(503).json({ message: "Stripe is not configured" });
+    }
+
     const sig = req.headers["stripe-signature"] as string;
     if (!sig) return res.status(400).json({ message: "Missing stripe-signature header" });
 
@@ -192,6 +199,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   // ── Stripe routes ────────────────────────────────────────────────────────
 
   app.post("/api/stripe/create-checkout-session", isAuthenticated, async (req: any, res) => {
+    if (!stripe) {
+      return res.status(503).json({ message: "Stripe is not configured" });
+    }
+
     try {
       const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Unauthorized" });
@@ -222,6 +233,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   app.get("/api/stripe/customer-portal", isAuthenticated, async (req: any, res) => {
+    if (!stripe) {
+      return res.status(503).json({ message: "Stripe is not configured" });
+    }
+
     try {
       const user = await storage.getUser(req.session.userId);
       if (!user?.stripeCustomerId) {
