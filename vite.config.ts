@@ -30,9 +30,6 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: false,
-    rollupOptions: {
-      external: ["drizzle-orm", "drizzle-orm/pg-core", "drizzle-zod"],
-    },
   },
   server: {
     fs: {
