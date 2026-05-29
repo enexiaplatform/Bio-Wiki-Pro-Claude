@@ -30,13 +30,16 @@ function initPostHog() {
 }
 
 export function capture(event: string, properties?: Record<string, unknown>) {
-  if (typeof window !== "undefined" && window.posthog) {
+  // PostHog stub methods only exist after init() runs. When VITE_POSTHOG_KEY
+  // is unset, init() is skipped and these stay undefined — so guard the call
+  // itself, not just the object, to avoid crashing the whole app.
+  if (typeof window !== "undefined" && typeof window.posthog?.capture === "function") {
     window.posthog.capture(event, properties);
   }
 }
 
 export function identify(userId: string, traits?: Record<string, unknown>) {
-  if (typeof window !== "undefined" && window.posthog) {
+  if (typeof window !== "undefined" && typeof window.posthog?.identify === "function") {
     window.posthog.identify(userId, traits);
   }
 }
