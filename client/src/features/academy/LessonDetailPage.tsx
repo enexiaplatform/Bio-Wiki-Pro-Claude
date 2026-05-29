@@ -6,11 +6,16 @@ import { useVault } from "@/hooks/useVault";
 import { AuditQuestionCard } from "./AuditQuestionCard";
 import { CaseStudyBlock } from "./CaseStudyBlock";
 import { DirectorLensCard } from "./DirectorLensCard";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function LessonDetailPage() {
   const [, params] = useRoute("/academy/:lessonId");
   const lesson = params?.lessonId ? getLessonById(params.lessonId) : undefined;
   const { saveLesson, saveAuditQuestion, saveCaseStudy } = useVault();
+  useSEO({
+    title: lesson ? `${lesson.title} — Academy BioWikiPro` : "Academy — BioWikiPro",
+    description: lesson ? lesson.summary : "Bài học GMP microbiology chuyên sâu cho QC/QA Pharma Vietnam.",
+  });
 
   if (!lesson) {
     return (
@@ -110,6 +115,20 @@ export default function LessonDetailPage() {
                 {tool}
               </Link>
             ))}
+          </div>
+        </section>
+
+        {/* GMP Kit upsell CTA */}
+        <section className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-6 mt-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex-1">
+              <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Nâng cấp kiến thức của bạn</p>
+              <h3 className="text-lg font-bold mb-1">GMP Audit Survival Kit — $59</h3>
+              <p className="text-sm text-muted-foreground">40-trang guide đầy đủ, 10 CAPA templates, 50+ Audit Q&amp;A scripts, SOP Gap Analysis Excel. Dùng được ngay trong lần audit tới.</p>
+            </div>
+            <Link href="/toolkits/gmp-audit-kit" className="shrink-0 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors whitespace-nowrap">
+              Xem chi tiết →
+            </Link>
           </div>
         </section>
       </div>

@@ -2,8 +2,13 @@ import { Microscope } from "lucide-react";
 import { CCSBuilderLite } from "./CCSBuilderLite";
 import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
 import { ScenarioDecisionTree } from "./ScenarioDecisionTree";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function ToolsPage() {
+  useSEO({
+    title: "Lab Tools — Decision Trees & QC Templates",
+    description: "Công cụ hỗ trợ quyết định cho QC Pharma: CCS Builder, OOS Investigation Template, Scenario Decision Tree — theo chuẩn GMP WHO và Annex 1.",
+  });
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
       <section className="mb-8 rounded-2xl border border-white/10 bg-card p-5 md:p-7 shadow-xl shadow-black/10">

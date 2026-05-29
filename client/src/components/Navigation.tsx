@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package } from "lucide-react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
@@ -22,6 +22,7 @@ const desktopTabs = [
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { name: "Vault", icon: NotebookPen, path: "/vault" },
   { name: "Career", icon: Briefcase, path: "/career" },
+  { name: "Toolkits", icon: Package, path: "/toolkits/gmp-audit-kit" },
   { name: "Insights", icon: TrendingUp, path: "/insights" },
 ];
 
@@ -65,12 +66,12 @@ export function DesktopNav() {
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-8">
-      <div className="flex items-center gap-2 mr-12">
+      <Link href="/" className="flex items-center gap-2 mr-12 hover:opacity-80 transition-opacity">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
           <span className="text-white font-bold text-lg">B</span>
         </div>
         <span className="font-display font-bold text-xl tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
-      </div>
+      </Link>
 
       <nav className="flex items-center gap-1">
         {desktopTabs.map((tab) => {

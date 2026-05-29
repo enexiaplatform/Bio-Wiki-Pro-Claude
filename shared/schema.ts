@@ -7,6 +7,19 @@ export * from "./models/auth.js";
 
 // === TABLE DEFINITIONS ===
 
+// Lead captures (email magnet)
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  source: text("source").default("lead_magnet"), // e.g. 'lead_magnet', 'footer', 'gmp_kit_page'
+  downloadSent: boolean("download_sent").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, createdAt: true, downloadSent: true });
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = z.infer<typeof insertLeadSchema>;
+
 // Quote Requests from the Solutions tab
 export const quoteRequests = pgTable("quote_requests", {
   id: serial("id").primaryKey(),
@@ -97,6 +110,37 @@ export interface Product {
 export type ToolStatus = "FREE" | "COMING_SOON" | "PRO";
 export type ToolDifficulty = "Basic" | "Intermediate";
 export type ToolSection = "Solution Prep" | "Cell & Microbiology" | "Analytical & Quantification";
+
+export interface LabTool {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: ToolSection;
+  tags: string[];
+  difficulty: ToolDifficulty;
+  timeLabel: string;
+  audience: ("Student" | "QC")[];
+  isMostUsed: boolean;
+  status: ToolStatus;
+  available: boolean;
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  description: string;
+  audience: TermMode;
+}
+
+export interface SOP {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  isLocked: boolean;
+}
+export type LabToolSection = "Solution Prep" | "Cell & Microbiology" | "Analytical & Quantification";
 
 export interface LabTool {
   id: string;

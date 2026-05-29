@@ -1,8 +1,27 @@
 import { useState, useMemo } from "react";
-import { Link } from "wouter";
-import { CheckCircle2, ChevronRight, Briefcase, DollarSign, Building, AlertCircle, ShoppingBag, BookOpen } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { CheckCircle2, ChevronRight, Briefcase, DollarSign, Building, AlertCircle, ShoppingBag, BookOpen, Loader2 } from "lucide-react";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@/context/UserContext";
+import { useSEO } from "@/hooks/use-seo";
+
+type ProductType = "starter_kit" | "interview_prep" | "bundle";
+
+async function createCheckoutSession(productType: ProductType): Promise<string> {
+  const res = await fetch("/api/stripe/create-checkout-session", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ productType }),
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message ?? "Failed to start checkout");
+  }
+  const { url } = await res.json();
+  return url;
+}
 
 const roles = [
   "QC Microbiologist",
@@ -85,9 +104,33 @@ const careerData: Record<Role, {
 };
 
 export default function Career() {
+  useSEO({
+    title: "Career — Lộ trình thăng tiến QC/QA Pharma",
+    description: "Roadmap nghề nghiệp từ QC Microbiologist lên QA Manager: skill map, salary guide, và Career Starter Kit cho Pharma & Life Science Vietnam.",
+  });
   const [activeRole, setActiveRole] = useState<Role>("QC Microbiologist");
   const [activeStageIdx, setActiveStageIdx] = useState(0);
   const [skillStates, setSkillStates] = useState<Record<string, SkillState>>({});
+  const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const { isAuthenticated } = useUser();
+  const [, navigate] = useLocation();
+
+  async function handleCheckout(productType: ProductType) {
+    if (!isAuthenticated) {
+      navigate("/signup");
+      return;
+    }
+    setLoadingProduct(productType);
+    setCheckoutError(null);
+    try {
+      const url = await createCheckoutSession(productType);
+      window.location.href = url;
+    } catch (err: any) {
+      setCheckoutError(err.message ?? "Something went wrong. Please try again.");
+      setLoadingProduct(null);
+    }
+  }
 
   const handleRoleChange = (role: Role) => {
     setActiveRole(role);
@@ -286,7 +329,13 @@ export default function Career() {
           <ShoppingBag className="w-5 h-5 mr-2 text-emerald-400" />
           Digital Products
         </h2>
-        
+
+        {checkoutError && (
+          <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
+            {checkoutError}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Card 1 */}
           <div className="bg-card border border-white/5 rounded-2xl p-6 relative overflow-hidden group">
@@ -297,11 +346,14 @@ export default function Career() {
               <p className="text-sm text-muted-foreground mb-6">Professional CV templates tailored for Pharma, plus a verified list of the top 20 biotech employers in Vietnam.</p>
               <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
                 <span className="text-lg font-bold text-foreground">$15.00</span>
-                <Link href="/career/products/starter-kit">
-                  <button className="bg-white/10 hover:bg-teal-500 hover:text-white text-sm font-bold px-4 py-2 rounded-lg transition-all">
-                    Get Access
-                  </button>
-                </Link>
+                <button
+                  onClick={() => handleCheckout("starter_kit")}
+                  disabled={loadingProduct === "starter_kit"}
+                  className="bg-white/10 hover:bg-teal-500 hover:text-white text-sm font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-60 disabled:cursor-wait flex items-center gap-2"
+                >
+                  {loadingProduct === "starter_kit" && <Loader2 className="w-3 h-3 animate-spin" />}
+                  {loadingProduct === "starter_kit" ? "Redirecting…" : "Get Access"}
+                </button>
               </div>
             </div>
           </div>
@@ -315,11 +367,14 @@ export default function Career() {
               <p className="text-sm text-muted-foreground mb-6">Over 100 real technical and behavioral interview questions sourced directly from QC/QA hiring managers.</p>
               <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
                 <span className="text-lg font-bold text-foreground">$20.00</span>
-                <Link href="/career/products/interview-prep">
-                  <button className="bg-white/10 hover:bg-teal-500 hover:text-white text-sm font-bold px-4 py-2 rounded-lg transition-all">
-                    Get Access
-                  </button>
-                </Link>
+                <button
+                  onClick={() => handleCheckout("interview_prep")}
+                  disabled={loadingProduct === "interview_prep"}
+                  className="bg-white/10 hover:bg-teal-500 hover:text-white text-sm font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-60 disabled:cursor-wait flex items-center gap-2"
+                >
+                  {loadingProduct === "interview_prep" && <Loader2 className="w-3 h-3 animate-spin" />}
+                  {loadingProduct === "interview_prep" ? "Redirecting…" : "Get Access"}
+                </button>
               </div>
             </div>
           </div>
@@ -339,11 +394,14 @@ export default function Career() {
                   <span className="text-xs text-muted-foreground line-through mr-2">$35.00</span>
                   <span className="text-2xl font-bold text-teal-400">$30.00</span>
                 </div>
-                <Link href="/career/products/bundle">
-                  <button className="w-full bg-teal-500 hover:bg-teal-400 text-teal-950 text-sm font-bold px-6 py-3 rounded-lg transition-all shadow-lg shadow-teal-500/20">
-                    Buy Bundle
-                  </button>
-                </Link>
+                <button
+                  onClick={() => handleCheckout("bundle")}
+                  disabled={loadingProduct === "bundle"}
+                  className="w-full bg-teal-500 hover:bg-teal-400 text-teal-950 text-sm font-bold px-6 py-3 rounded-lg transition-all shadow-lg shadow-teal-500/20 disabled:opacity-60 disabled:cursor-wait flex items-center justify-center gap-2"
+                >
+                  {loadingProduct === "bundle" && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {loadingProduct === "bundle" ? "Redirecting…" : "Buy Bundle"}
+                </button>
               </div>
             </div>
           </div>

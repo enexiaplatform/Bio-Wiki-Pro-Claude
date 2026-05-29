@@ -1,0 +1,54 @@
+import { Link } from "wouter";
+import { FlaskConical } from "lucide-react";
+
+export function Footer() {
+  const year = new Date().getFullYear();
+
+  return (
+    <footer className="hidden md:block border-t border-white/5 bg-background/80 backdrop-blur-md mt-12">
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Brand */}
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <FlaskConical className="w-4 h-4 text-primary" />
+            </div>
+            <span className="font-bold text-sm">BioWikiPro</span>
+            <span className="text-muted-foreground text-xs">© {year}</span>
+          </div>
+
+          {/* Links */}
+          <nav className="flex items-center gap-6 text-xs text-muted-foreground">
+            <Link href="/toolkits/gmp-audit-kit" className="hover:text-primary transition-colors">
+              GMP Audit Kit
+            </Link>
+            <Link href="/academy" className="hover:text-primary transition-colors">
+              Academy
+            </Link>
+            <Link href="/pricing" className="hover:text-primary transition-colors">
+              Pricing
+            </Link>
+            <span className="w-px h-3 bg-white/10" />
+            <Link href="/terms" className="hover:text-primary transition-colors">
+              Điều khoản
+            </Link>
+            <Link href="/privacy" className="hover:text-primary transition-colors">
+              Bảo mật
+            </Link>
+            <Link href="/refund" className="hover:text-primary transition-colors">
+              Hoàn tiền
+            </Link>
+          </nav>
+
+          {/* Contact */}
+          <a
+            href="mailto:support@biowikipro.com"
+            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            support@biowikipro.com
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}

@@ -3,10 +3,12 @@ import {
   users,
   quoteRequests,
   purchases,
+  leads,
   type User,
   type UpsertUser,
   type QuoteRequest,
   type InsertQuoteRequest,
+  type Lead,
 } from "../shared/schema.js";
 import { eq } from "drizzle-orm";
 
@@ -19,6 +21,7 @@ export interface IStorage {
   updateUserStripe(id: string, data: Partial<Pick<User, "isPro" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus">>): Promise<User>;
   createPurchase(data: { userId: string; productType: string; stripeSessionId?: string; amount?: number; status?: string }): Promise<void>;
   createQuoteRequest(request: InsertQuoteRequest): Promise<QuoteRequest>;
+  captureLead(email: string, source?: string): Promise<{ isNew: boolean; lead: Lead }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -82,6 +85,16 @@ export class DatabaseStorage implements IStorage {
   async createQuoteRequest(request: InsertQuoteRequest): Promise<QuoteRequest> {
     const [quote] = await db.insert(quoteRequests).values(request).returning();
     return quote;
+  }
+
+  async captureLead(email: string, source = "lead_magnet"): Promise<{ isNew: boolean; lead: Lead }> {
+    // Upsert — if email already exists, return existing record
+    const existing = await db.select().from(leads).where(eq(leads.email, email));
+    if (existing.length > 0) {
+      return { isNew: false, lead: existing[0] };
+    }
+    const [lead] = await db.insert(leads).values({ email, source }).returning();
+    return { isNew: true, lead };
   }
 }
 

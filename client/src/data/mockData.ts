@@ -1248,112 +1248,112 @@ export const sopsData: SOP[] = [
     title: "SOP-003: Hazardous Waste Disposal",
     summary: "Proper segregation and disposal of biological, chemical, and sharps waste in laboratory settings.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s4",
     title: "SOP-004: Emergency Spill Response",
     summary: "Action plan for biological and chemical spills greater than 100 mL outside of a biosafety cabinet.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s5",
     title: "SOP-005: Autoclave Operation and Validation",
     summary: "Loading patterns, cycle selection, and biological indicator verification for steam sterilization.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s6",
     title: "SOP-006: HPLC System Suitability and Operation",
     summary: "Procedure for performing system suitability testing and routine HPLC analysis of pharmaceutical samples.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s7",
     title: "SOP-007: Media Preparation for Microbiology Testing",
     summary: "Preparation, sterilization, and quality control of growth media used in microbiological assays.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s8",
     title: "SOP-008: Environmental Monitoring Program",
     summary: "Sampling procedures for viable and non-viable particle monitoring in classified manufacturing areas.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s9",
     title: "SOP-009: Out-of-Specification Investigation Procedure",
     summary: "Step-by-step process for conducting Phase I and Phase II OOS investigations in QC laboratories.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s10",
     title: "SOP-010: Deviation Reporting and Management",
     summary: "Documentation requirements and investigation workflows for planned and unplanned deviations.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s11",
     title: "SOP-011: Change Control Procedure",
     summary: "Formal process for evaluating, approving, and implementing changes to validated systems and processes.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s12",
     title: "SOP-012: Analytical Balance Calibration",
     summary: "Daily verification and periodic calibration of analytical and micro-balances used in GMP testing.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s13",
     title: "SOP-013: Sample Receipt and Chain of Custody",
     summary: "Procedures for receiving, logging, and storing incoming samples to maintain chain of custody integrity.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s14",
     title: "SOP-014: Buffer and Reagent Preparation",
     summary: "Standard procedures for preparing, labeling, and documenting buffers and reagents for laboratory use.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s15",
     title: "SOP-015: Equipment Cleaning and Decontamination",
     summary: "Cleaning procedures for shared laboratory equipment to prevent cross-contamination between analyses.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s16",
     title: "SOP-016: Batch Record Review and Approval",
     summary: "Quality review checklist and approval workflow for completed manufacturing batch records.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s17",
     title: "SOP-017: Bacterial Endotoxin Testing (LAL Method)",
     summary: "Kinetic turbidimetric LAL method for detecting and quantifying bacterial endotoxins in parenteral products.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   },
   {
     id: "s18",
     title: "SOP-018: Annual Product Quality Review",
     summary: "Compilation and trending of batch data, deviations, CAPAs, and complaints for annual product review.",
     content: "LOCKED CONTENT",
-    isLocked: true
+    isLocked: false
   }
 ];
 

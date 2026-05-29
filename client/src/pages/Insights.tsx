@@ -4,8 +4,13 @@ import { Search, Clock, TrendingUp, Lightbulb, ChevronRight } from "lucide-react
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function Insights() {
+  useSEO({
+    title: "Insights — Sales & Market Intelligence",
+    description: "Xu hướng thị trường, thuật ngữ kỹ thuật bán hàng, và insights cho Technical Sales trong ngành Pharma & Life Science Vietnam.",
+  });
   const { data: terms, isLoading } = useAcademyTerms();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");

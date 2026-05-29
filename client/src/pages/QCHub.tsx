@@ -4,6 +4,9 @@ import { Search, Clock, ChevronRight, BookOpen, FlaskConical, Microscope, Bug, T
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
+import { useSEO } from "@/hooks/use-seo";
+import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
+import { analytics } from "@/hooks/use-analytics";
 
 const workflows = [
   { name: "Sterility Testing", icon: FlaskConical, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", desc: "Membrane filtration & direct inoculation" },
@@ -13,6 +16,10 @@ const workflows = [
 ];
 
 export default function QCHub() {
+  useSEO({
+    title: "QC Hub — Kiến thức Microbiology QC",
+    description: "15 chủ đề chuyên sâu: USP <61>, Annex 1, Environmental Monitoring, Endotoxin, Sterility Testing, OOS Investigation, CAPA — dành cho QC Pharma Vietnam.",
+  });
   const { data: terms, isLoading } = useAcademyTerms();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -29,6 +36,7 @@ export default function QCHub() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
+      <LeadMagnetBanner />
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">QC Hub</h1>
         <p className="text-muted-foreground">Professional workflows and knowledge for Quality Control.</p>
@@ -43,6 +51,7 @@ export default function QCHub() {
           {workflows.map(wf => (
             <div
               key={wf.name}
+              onClick={() => analytics.workflowClicked(wf.name)}
               className={clsx("bg-card border rounded-2xl p-4 cursor-pointer hover:border-primary/30 transition-colors", wf.border)}
               data-testid={`card-workflow-${wf.name.toLowerCase().replace(/\s+/g, '-')}`}
             >
@@ -64,7 +73,10 @@ export default function QCHub() {
             placeholder="Search QC topics..."
             className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              if (e.target.value.length > 2) analytics.searchPerformed(e.target.value, "qc_hub", filteredTerms.length);
+            }}
             data-testid="input-search-qc"
           />
         </div>
@@ -157,7 +169,7 @@ export default function QCHub() {
                               <ul className="space-y-2">
                                 {term.whyItMatters.split(". ").map((point, i) => (
                                   <li key={i} className="flex gap-2 items-start">
-                                    <span className="text-blue-400 font-bold">•</span>
+                                    <span className="text-blue-400 font-bold">*</span>
                                     <span>{point}{i < term.whyItMatters.split(". ").length - 1 ? "." : ""}</span>
                                   </li>
                                 ))}
@@ -172,7 +184,7 @@ export default function QCHub() {
                           <ul className="space-y-2">
                             {term.commonMistakes.map((mistake, i) => (
                               <li key={i} className="text-sm text-muted-foreground flex gap-2 items-start bg-red-500/5 border border-red-500/10 p-3 rounded-lg">
-                                <span className="text-red-500 font-bold">•</span>
+                                <span className="text-red-500 font-bold">*</span>
                                 {mistake}
                               </li>
                             ))}

@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { CheckCircle2, Lock, Zap, Package } from "lucide-react";
 import clsx from "clsx";
 import { useUser } from "@/context/UserContext";
+import { useSEO } from "@/hooks/use-seo";
 
 type ProductType = "pro_subscription" | "starter_kit" | "interview_prep" | "bundle";
 
@@ -62,6 +63,10 @@ const CAREER_PRODUCTS: { label: string; desc: string; price: string; productType
 ];
 
 export default function PricingPage() {
+  useSEO({
+    title: "Pricing — Gói Career & GMP Toolkit",
+    description: "Career Starter Kit, Interview Prep, GMP Audit Survival Kit cho QC/QA Pharma Vietnam. Bắt đầu từ 29 USD — một lần mua, dùng mãi.",
+  });
   const { isAuthenticated, isPro } = useUser();
   const [, navigate] = useLocation();
   const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);

@@ -8,12 +8,15 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { FlaskConical } from "lucide-react";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function RegisterPage() {
+  useSEO({ title: "Tạo tài khoản — BioWikiPro", description: "Đăng ký miễn phí để học 48 bài GMP, truy cập QC Hub, và nhận tài nguyên QC/QA Pharma chuyên sâu tại Vietnam." });
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
@@ -23,8 +26,28 @@ export default function RegisterPage() {
     e.preventDefault();
     setIsLoading(true);
 
+    if (password !== confirmPassword) {
+      toast({
+        title: "Passwords do not match",
+        description: "Please make sure both passwords are the same.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 8 characters.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      await apiRequest("POST", "/api/auth/register", { 
+      await apiRequest("POST", "/api/auth/register", {
         email, 
         password, 
         firstName, 
@@ -92,12 +115,24 @@ export default function RegisterPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input 
-                id="password" 
-                type="password" 
+              <Input
+                id="password"
+                type="password"
+                placeholder="Minimum 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required 
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
               />
             </div>
           </CardContent>

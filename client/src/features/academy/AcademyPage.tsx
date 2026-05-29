@@ -3,10 +3,16 @@ import { BookOpen, Filter, Search, ShieldCheck } from "lucide-react";
 import clsx from "clsx";
 import { microbiologyLessons } from "@/data/lessons/microbiologyLessons";
 import { LessonCard } from "./LessonCard";
+import { useSEO } from "@/hooks/use-seo";
+import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 
 const all = "All";
 
 export default function AcademyPage() {
+  useSEO({
+    title: "Academy — Học QC/QA Pharma chuyên sâu",
+    description: "48 bài học miễn phí về GMP microbiology: Sterility Testing, Environmental Monitoring, Endotoxin LAL, OOS Investigation, Annex 1, CAPA — cho Senior QC/QA Pharma Vietnam.",
+  });
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
@@ -24,6 +30,7 @@ export default function AcademyPage() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
+      <LeadMagnetBanner />
       <section className="mb-8 rounded-2xl border border-white/10 bg-card p-5 md:p-7 shadow-xl shadow-black/10">
         <div className="flex items-start gap-4">
           <div className="hidden sm:flex w-12 h-12 rounded-2xl bg-primary/10 text-primary items-center justify-center">

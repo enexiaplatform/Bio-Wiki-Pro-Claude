@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { FlaskConical } from "lucide-react";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function LoginPage() {
+  useSEO({ title: "Đăng nhập — BioWikiPro", description: "Đăng nhập vào BioWikiPro để truy cập kiến thức QC/QA Pharma và các toolkit GMP chuyên nghiệp." });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +80,7 @@ export default function LoginPage() {
             </Button>
             <div className="text-sm text-center text-muted-foreground">
               Don't have an account?{" "}
-              <Link href="/register" className="text-primary hover:underline font-medium">
+              <Link href="/signup" className="text-primary hover:underline font-medium">
                 Sign up
               </Link>
             </div>

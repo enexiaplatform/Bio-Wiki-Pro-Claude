@@ -6,6 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail } from "./email.js";
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -18,6 +19,7 @@ const PRICE_MAP: Record<string, string> = {
   starter_kit: process.env.STRIPE_STARTER_KIT_PRICE_ID ?? "",
   interview_prep: process.env.STRIPE_INTERVIEW_PREP_PRICE_ID ?? "",
   bundle: process.env.STRIPE_BUNDLE_PRICE_ID ?? "",
+  gmp_audit_kit: process.env.STRIPE_GMP_AUDIT_KIT_PRICE_ID ?? "",
 };
 
 const SUBSCRIPTION_PRODUCTS = new Set(["pro_subscription"]);
@@ -109,6 +111,18 @@ export async function registerRoutes(app: Express): Promise<void> {
             status: "completed",
           });
         }
+
+        // Send purchase confirmation email
+        const customerEmail = session.customer_email ?? session.customer_details?.email;
+        if (customerEmail) {
+          const user = await storage.getUser(userId).catch(() => null);
+          sendPurchaseConfirmation(
+            customerEmail,
+            productType,
+            session.amount_total ?? undefined,
+            user?.firstName ?? undefined
+          ).catch((err) => console.error("[Webhook] Purchase email error:", err));
+        }
       } else if (event.type === "customer.subscription.deleted") {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
@@ -147,6 +161,12 @@ export async function registerRoutes(app: Express): Promise<void> {
       const user = await storage.createUser({ email, passwordHash, firstName, lastName });
 
       req.session.userId = user.id;
+
+      // Fire-and-forget welcome email
+      sendWelcomeEmail(email, firstName).catch((err) =>
+        console.error("[Register] Welcome email error:", err)
+      );
+
       return res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: user.isPro });
     } catch (err) {
       console.error(err);
@@ -271,6 +291,37 @@ export async function registerRoutes(app: Express): Promise<void> {
         });
       }
       throw err;
+    }
+  });
+
+  // ── Lead capture ────────────────────────────────────────────────────────
+
+  app.post("/api/leads/capture", async (req, res) => {
+    try {
+      const { email, source } = req.body;
+      if (!email || typeof email !== "string") {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Email không hợp lệ" });
+      }
+
+      const { isNew } = await storage.captureLead(email.toLowerCase().trim(), source ?? "lead_magnet");
+
+      // Send checklist email only for new leads
+      if (isNew) {
+        const downloadUrl = process.env.DOWNLOAD_GMP_CHECKLIST ?? "https://drive.google.com/placeholder/gmp-checklist";
+        sendLeadMagnetEmail(email, downloadUrl).catch((err) =>
+          console.error("[Leads] Email error:", err)
+        );
+      }
+
+      res.json({ success: true, isNew });
+    } catch (err) {
+      console.error("[Leads] Capture error:", err);
+      res.status(500).json({ message: "Server error" });
     }
   });
 

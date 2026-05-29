@@ -1,8 +1,13 @@
 import { ClipboardCheck, ShieldCheck } from "lucide-react";
 import { complianceTopics } from "@/data/compliance/auditBank";
 import { AuditQuestionBank } from "./AuditQuestionBank";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function CompliancePage() {
+  useSEO({
+    title: "Compliance — GMP Audit Readiness & Annex 1",
+    description: "Chuẩn bị audit GMP và Annex 1: topic intelligence, câu hỏi thanh tra, evidence-backed answers — dành cho QC/QA Pharma Vietnam.",
+  });
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
       <section className="mb-8 rounded-2xl border border-white/10 bg-card p-5 md:p-7 shadow-xl shadow-black/10">
