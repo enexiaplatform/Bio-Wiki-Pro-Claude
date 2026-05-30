@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Minus, Crown, Loader2, Settings } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
+import { analytics } from "@/hooks/use-analytics";
 
 type FeatureKey =
   | "academyFree"
@@ -39,6 +40,7 @@ export default function UpgradePage() {
   async function go(endpoint: string, method: "POST" | "GET") {
     setBusy(true);
     setError("");
+    if (method === "POST") analytics.subscriptionStarted("pro_subscription");
     try {
       const res = await fetch(endpoint, {
         method,

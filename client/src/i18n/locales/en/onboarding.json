@@ -1,0 +1,20 @@
+{
+  "welcomeTitle": "Welcome to BioWikiPro! 🎉",
+  "welcomeSubtitle": "Your account is ready. Start with the 3 steps below.",
+  "step1": {
+    "title": "Read your first lesson",
+    "desc": "Start with Data Integrity & ALCOA+ (free).",
+    "cta": "Open lesson"
+  },
+  "step2": {
+    "title": "Get the free GMP Audit Checklist",
+    "desc": "25 pre-audit checkpoints — delivered by email.",
+    "cta": "Browse Academy"
+  },
+  "step3": {
+    "title": "Explore Pro",
+    "desc": "Unlock in-depth Pro lessons, tools, and the compliance library — $8/month.",
+    "cta": "See Pro plan"
+  },
+  "skip": "Skip, go to Academy"
+}

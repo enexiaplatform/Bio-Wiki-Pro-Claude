@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package } from "lucide-react";
 import clsx from "clsx";
-import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -42,11 +41,7 @@ export function BottomNav() {
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}>
                 {isActive && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 bg-primary/15 rounded-xl"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
+                  <div className="absolute inset-0 bg-primary/15 rounded-xl transition-all duration-300" />
                 )}
                 <tab.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
               </div>

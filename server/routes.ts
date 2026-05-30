@@ -9,7 +9,7 @@ import Stripe from "stripe";
 import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail } from "./email.js";
 import { getPriceId, isSubscription } from "./products.js";
 import { isProActive } from "./entitlements.js";
-import { readFile } from "fs/promises";
+import { readFile, readdir } from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
 
@@ -470,6 +470,60 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.json({ locked: true, tier, title, teaser });
     }
     return res.json({ locked: false, tier, title, body: content });
+  });
+
+  // ── Blog RSS feed ─────────────────────────────────────────────────────────
+  app.get("/blog/rss.xml", async (_req, res) => {
+    const baseUrl = process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app";
+    const dir = path.resolve(process.cwd(), "content", "blog");
+    const esc = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+    type Item = { title: string; slug: string; lang: string; desc: string; updatedAt?: string };
+    const items: Item[] = [];
+    try {
+      const files = await readdir(dir);
+      for (const file of files) {
+        const m = file.match(/^(.+)\.(vi|en)\.mdx$/);
+        if (!m) continue;
+        const raw = await readFile(path.join(dir, file), "utf-8");
+        const { data } = matter(raw);
+        items.push({
+          title: (data.title as string) ?? m[1],
+          slug: (data.slug as string) ?? m[1],
+          lang: m[2],
+          desc: (data.seoDescription as string) ?? "",
+          updatedAt: data.updatedAt as string | undefined,
+        });
+      }
+    } catch {
+      /* no blog dir yet */
+    }
+
+    items.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""));
+
+    const body =
+      `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<rss version="2.0"><channel>\n` +
+      `<title>BioWikiPro Blog</title>\n` +
+      `<link>${baseUrl}/vi/blog</link>\n` +
+      `<description>GMP, QC/QA &amp; data integrity insights</description>\n` +
+      items
+        .map((it) => {
+          const url = `${baseUrl}/${it.lang}/blog/${it.slug}`;
+          const date = it.updatedAt ? new Date(it.updatedAt).toUTCString() : new Date().toUTCString();
+          return (
+            `<item><title>${esc(it.title)}</title>` +
+            `<link>${url}</link><guid>${url}</guid>` +
+            `<description>${esc(it.desc)}</description>` +
+            `<pubDate>${date}</pubDate></item>`
+          );
+        })
+        .join("\n") +
+      `\n</channel></rss>`;
+
+    res.set("Content-Type", "application/rss+xml; charset=utf-8");
+    res.send(body);
   });
 
   // Dev/admin-only Pro toggle. Pro is granted in production via Stripe webhooks

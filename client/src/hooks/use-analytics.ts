@@ -44,6 +44,15 @@ export function identify(userId: string, traits?: Record<string, unknown>) {
   }
 }
 
+/** Capture a client-side error/exception to PostHog (guarded, never throws). */
+export function captureError(error: unknown, context?: Record<string, unknown>) {
+  const message = error instanceof Error ? error.message : String(error);
+  const stack = error instanceof Error ? error.stack : undefined;
+  // Always surface in console for local/Vercel logs.
+  console.error("[captureError]", message, context ?? "");
+  capture("client_error", { message, stack, ...context });
+}
+
 // Hook: auto page_view on route change
 export function usePageTracking() {
   const [location] = useLocation();
@@ -62,11 +71,25 @@ export const analytics = {
   leadCaptured: (source: string) =>
     capture("lead_captured", { source }),
 
-  checkoutStarted: (productType: string, priceUsd: number) =>
+  checkoutStarted: (productType: string, priceUsd?: number) =>
     capture("checkout_started", { product_type: productType, price_usd: priceUsd }),
 
-  purchaseCompleted: (productType: string, amountCents: number) =>
+  subscriptionStarted: (plan = "pro_subscription") =>
+    capture("subscription_started", { plan }),
+
+  purchaseCompleted: (productType: string, amountCents?: number) =>
     capture("purchase_completed", { product_type: productType, amount_cents: amountCents }),
+
+  onboardingStarted: () => capture("onboarding_started"),
+
+  onboardingCompleted: (firstValue: string) =>
+    capture("onboarding_completed", { first_value: firstValue }),
+
+  upgradePromptShown: (placement: string) =>
+    capture("upgrade_prompt_shown", { placement }),
+
+  upgradePromptClicked: (placement: string) =>
+    capture("upgrade_prompt_clicked", { placement }),
 
   proModalOpened: (trigger: string) =>
     capture("pro_modal_opened", { trigger }),

@@ -44,6 +44,29 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("react-dom") || id.includes("/react/") || id.includes("scheduler") || id.includes("wouter"))
+            return "react-vendor";
+          if (id.includes("framer-motion") || id.includes("motion-dom") || id.includes("motion-utils"))
+            return "motion";
+          if (id.includes("recharts") || id.includes("d3-") || id.includes("victory"))
+            return "charts";
+          if (
+            id.includes("react-markdown") || id.includes("remark") || id.includes("micromark") ||
+            id.includes("mdast") || id.includes("hast") || id.includes("unist") || id.includes("unified") ||
+            id.includes("vfile") || id.includes("property-information") || id.includes("decode-named-character")
+          )
+            return "markdown";
+          if (id.includes("@radix-ui")) return "radix";
+          // Everything else: let Rollup co-locate with its importing route chunk
+          // (route-only deps don't bloat the initial critical path).
+          return undefined;
+        },
+      },
+    },
   },
   server: {
     fs: {

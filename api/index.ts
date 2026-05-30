@@ -29,6 +29,9 @@ async function createApp() {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
+    // Surface in Vercel runtime logs for monitoring.
+    console.error("[server error]", status, err?.stack || message);
+
     if (res.headersSent) {
       return next(err);
     }

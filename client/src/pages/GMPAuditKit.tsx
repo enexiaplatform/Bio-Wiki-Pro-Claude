@@ -9,6 +9,7 @@ import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
+import { analytics } from "@/hooks/use-analytics";
 
 type ProductType = "gmp_audit_kit";
 
@@ -113,6 +114,7 @@ export default function GMPAuditKit() {
     }
     setIsLoading(true);
     setError(null);
+    analytics.checkoutStarted("gmp_audit_kit", 59);
     try {
       const url = await createCheckoutSession("gmp_audit_kit");
       window.location.href = url;

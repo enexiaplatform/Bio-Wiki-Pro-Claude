@@ -26,5 +26,13 @@
     "login": "Đăng nhập để nâng cấp",
     "loading": "Đang chuyển hướng..."
   },
-  "error": "Không tạo được phiên thanh toán. Thử lại nhé."
+  "error": "Không tạo được phiên thanh toán. Thử lại nhé.",
+  "prompt": {
+    "readCount_one": "Bạn đã đọc {{count}} bài miễn phí",
+    "readCount_other": "Bạn đã đọc {{count}} bài miễn phí",
+    "bannerDesc": "Mở khoá toàn bộ nội dung Pro chỉ với $8/tháng.",
+    "inlineTitle": "Sẵn sàng đi sâu hơn?",
+    "inlineDesc": "Bài Pro gồm cây quyết định, biểu mẫu và case-study thực chiến.",
+    "cta": "Nâng cấp Pro"
+  }
 }

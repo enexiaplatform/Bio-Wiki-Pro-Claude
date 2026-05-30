@@ -54,7 +54,7 @@ export default function RegisterPage() {
         lastName 
       });
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setLocation("/academy");
+      setLocation("/welcome");
     } catch (err: any) {
       toast({
         title: "Registration Failed",

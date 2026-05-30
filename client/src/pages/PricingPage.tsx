@@ -4,6 +4,7 @@ import { CheckCircle2, Lock, Zap, Package } from "lucide-react";
 import clsx from "clsx";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
+import { analytics } from "@/hooks/use-analytics";
 
 type ProductType = "pro_subscription" | "starter_kit" | "interview_prep" | "bundle";
 
@@ -79,6 +80,7 @@ export default function PricingPage() {
     }
     setLoadingProduct(productType);
     setError(null);
+    analytics.checkoutStarted(productType);
     try {
       const url = await createCheckoutSession(productType);
       window.location.href = url;

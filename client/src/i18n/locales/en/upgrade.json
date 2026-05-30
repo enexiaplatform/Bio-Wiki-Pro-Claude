@@ -26,5 +26,13 @@
     "login": "Sign in to upgrade",
     "loading": "Redirecting..."
   },
-  "error": "Could not start checkout. Please try again."
+  "error": "Could not start checkout. Please try again.",
+  "prompt": {
+    "readCount_one": "You've read {{count}} free article",
+    "readCount_other": "You've read {{count}} free articles",
+    "bannerDesc": "Unlock all Pro content for just $8/month.",
+    "inlineTitle": "Ready to go deeper?",
+    "inlineDesc": "Pro lessons include decision trees, templates, and real-world case studies.",
+    "cta": "Upgrade to Pro"
+  }
 }

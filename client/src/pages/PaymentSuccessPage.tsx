@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { CheckCircle2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { analytics } from "@/hooks/use-analytics";
 
 const REDIRECT_SECONDS = 3;
 
@@ -16,6 +17,9 @@ export default function PaymentSuccessPage() {
   useEffect(() => {
     // Refresh auth state so isPro updates immediately
     queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    // Funnel terminal event (client proxy; webhook is the authoritative record)
+    const productType = new URLSearchParams(window.location.search).get("product") ?? "unknown";
+    analytics.purchaseCompleted(productType);
   }, [queryClient]);
 
   useEffect(() => {

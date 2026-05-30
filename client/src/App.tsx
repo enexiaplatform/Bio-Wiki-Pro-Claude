@@ -1,38 +1,51 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/context/UserContext";
 import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
 import i18n from "@/i18n";
 import { isSupportedLng, type Lng } from "@/i18n";
 import { detectInitialLang, writeLangCookie } from "@/i18n/locale-routing";
-import NotFound from "@/pages/not-found";
-
-import QCHub from "@/pages/QCHub";
-import Academy from "@/pages/Academy";
-import AcademyEntryPage from "@/pages/AcademyEntryPage";
-import Insights from "@/pages/Insights";
-import LabTools from "@/pages/LabTools";
-import Compliance from "@/pages/Compliance";
-import Career from "@/pages/Career";
-import Solutions from "@/pages/Solutions";
-import Settings from "@/pages/Settings";
-import UpgradePage from "@/pages/UpgradePage";
-import LoginPage from "@/pages/LoginPage";
-import RegisterPage from "@/pages/RegisterPage";
-import PricingPage from "@/pages/PricingPage";
-import PaymentSuccessPage from "@/pages/PaymentSuccessPage";
-import Vault from "@/pages/Vault";
-import GMPAuditKit from "@/pages/GMPAuditKit";
-import LandingPage from "@/pages/LandingPage";
-import TermsPage from "@/pages/TermsPage";
-import PrivacyPage from "@/pages/PrivacyPage";
-import RefundPage from "@/pages/RefundPage";
 import { Footer } from "@/components/Footer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePageTracking } from "@/hooks/use-analytics";
+
+// Route components are code-split: each becomes its own chunk, loaded on demand.
+const NotFound = lazy(() => import("@/pages/not-found"));
+const QCHub = lazy(() => import("@/pages/QCHub"));
+const Academy = lazy(() => import("@/pages/Academy"));
+const AcademyEntryPage = lazy(() => import("@/pages/AcademyEntryPage"));
+const Insights = lazy(() => import("@/pages/Insights"));
+const LabTools = lazy(() => import("@/pages/LabTools"));
+const Compliance = lazy(() => import("@/pages/Compliance"));
+const Career = lazy(() => import("@/pages/Career"));
+const Solutions = lazy(() => import("@/pages/Solutions"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const UpgradePage = lazy(() => import("@/pages/UpgradePage"));
+const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const RegisterPage = lazy(() => import("@/pages/RegisterPage"));
+const PricingPage = lazy(() => import("@/pages/PricingPage"));
+const PaymentSuccessPage = lazy(() => import("@/pages/PaymentSuccessPage"));
+const Vault = lazy(() => import("@/pages/Vault"));
+const GMPAuditKit = lazy(() => import("@/pages/GMPAuditKit"));
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
+const Blog = lazy(() => import("@/pages/Blog"));
+const BlogPost = lazy(() => import("@/pages/BlogPost"));
+const Welcome = lazy(() => import("@/pages/Welcome"));
+const TermsPage = lazy(() => import("@/pages/TermsPage"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
+const RefundPage = lazy(() => import("@/pages/RefundPage"));
+
+function PageFallback() {
+  return (
+    <div className="flex items-center justify-center py-32 text-muted-foreground">
+      <Loader2 className="w-6 h-6 animate-spin" />
+    </div>
+  );
+}
 
 function Layout() {
   usePageTracking();
@@ -42,17 +55,21 @@ function Layout() {
       <MobileHeader />
 
       <main className="animate-in fade-in duration-500">
+        <Suspense fallback={<PageFallback />}>
         <Switch>
           <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
           <Route path="/insights" component={Insights} />
+          <Route path="/blog" component={Blog} />
+          <Route path="/blog/:slug" component={BlogPost} />
           <Route path="/tools" component={LabTools} />
           <Route path="/compliance" component={Compliance} />
           <Route path="/vault" component={Vault} />
           <Route path="/career" component={Career} />
           <Route path="/solutions" component={Solutions} />
           <Route path="/settings" component={Settings} />
+          <Route path="/welcome" component={Welcome} />
           <Route path="/upgrade" component={UpgradePage} />
           <Route path="/toolkits/gmp-audit-kit" component={GMPAuditKit} />
           <Route path="/login" component={LoginPage} />
@@ -66,6 +83,7 @@ function Layout() {
           <Route path="/" component={LandingPage} />
           <Route component={NotFound} />
         </Switch>
+        </Suspense>
       </main>
 
       <BottomNav />

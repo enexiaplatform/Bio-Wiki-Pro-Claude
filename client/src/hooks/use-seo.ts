@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { SUPPORTED_LNGS, DEFAULT_LNG, isSupportedLng, type Lng } from "@/i18n";
 import { stripLangPrefix, withLang } from "@/i18n/locale-routing";
+import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/site";
 
 interface SEOProps {
   title: string;
@@ -11,8 +12,7 @@ interface SEOProps {
 }
 
 const SITE_NAME = "BioWikiPro";
-const DEFAULT_OG_IMAGE = "https://bio-wiki-pro-claude.vercel.app/og-image.png";
-const BASE_URL = "https://bio-wiki-pro-claude.vercel.app";
+const BASE_URL = SITE_URL;
 
 // Open Graph locale codes per language
 const OG_LOCALE: Record<Lng, string> = {
