@@ -3,7 +3,10 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // === AUTH MODELS (users + sessions) ===
-export * from "./models/auth";
+// NOTE: keep the .js extension — Vercel runs the API as native Node ESM, which
+// requires explicit extensions. drizzle-kit reads schema via its own config
+// (see drizzle.config.ts) so this does not need to be extensionless.
+export * from "./models/auth.js";
 
 // === TABLE DEFINITIONS ===
 
