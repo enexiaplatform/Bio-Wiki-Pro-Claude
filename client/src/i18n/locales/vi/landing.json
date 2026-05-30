@@ -1,10 +1,69 @@
 {
-  "hero": {
-    "title": "Nền tảng kiến thức QC/QA Pharma",
-    "subtitle": "48 bài học GMP chuyên sâu, GMP Audit Survival Kit và career roadmap cho Senior QC/QA tại Việt Nam."
+  "seo": {
+    "title": "BioWikiPro — Nền tảng kiến thức QC/QA Pharma",
+    "description": "Từ Senior QC lên QA Manager: 48 bài học GMP miễn phí, GMP Audit Survival Kit, và career toolkit cho QC/QA Pharma & Life Science."
   },
-  "cta": {
-    "academy": "Vào Academy",
-    "gmpKit": "Xem GMP Audit Kit"
+  "hero": {
+    "badge": "Nền tảng kiến thức QC/QA Pharma",
+    "titleLead": "Từ Senior QC",
+    "titleHighlight": "lên QA Manager",
+    "titleTail": "— có hệ thống, không đoán mò",
+    "subtitle": "Kiến thức GMP chuyên sâu, công cụ chuẩn bị audit, và lộ trình thăng tiến thực tế — dành cho QC/QA professionals ngành Pharma & F&B.",
+    "ctaAcademy": "Khám phá Academy miễn phí",
+    "ctaKit": "GMP Audit Kit — $59"
+  },
+  "stats": [
+    { "value": "48", "label": "Bài học chuyên sâu" },
+    { "value": "7", "label": "Module kiến thức" },
+    { "value": "GMP", "label": "WHO • Annex 1 • ISO" },
+    { "value": "Free", "label": "Truy cập Academy" }
+  ],
+  "problems": {
+    "heading": "Nghe có quen không?",
+    "subtitle": "Những vấn đề phổ biến của Senior QC/QA sau 3–5 năm kinh nghiệm",
+    "items": [
+      { "emoji": "📈", "title": "Mắc kẹt ở Senior QC quá lâu?", "desc": "Có kinh nghiệm, làm tốt — nhưng không biết cần thêm gì để thuyết phục sếp cho lên Supervisor hay Manager." },
+      { "emoji": "⏰", "title": "Audit đến gần, team chưa sẵn sàng?", "desc": "Không có checklist cụ thể, SOP thiếu sót, auditor hỏi là team lúng túng. Stress mỗi mùa audit." },
+      { "emoji": "🔍", "title": "Kiến thức GMP còn lỗ hổng?", "desc": "Biết làm trong thực tế nhưng không có framework hệ thống — khó giải thích khi audit hay phỏng vấn." }
+    ]
+  },
+  "solutions": {
+    "heading": "Giải pháp trong một nền tảng",
+    "subtitle": "Kiến thức · Công cụ audit · Lộ trình career",
+    "featuredBadge": "⭐ Sản phẩm chính",
+    "items": [
+      { "badge": "Miễn phí", "title": "Academy", "desc": "48 bài học director-level về GMP, sterility testing, OOS investigation, Annex 1, CAPA — hoàn toàn miễn phí.", "cta": "Học ngay" },
+      { "badge": "$59 one-time", "title": "GMP Audit Survival Kit", "desc": "SOP gap analysis, CAPA templates, audit interview scripts, mock audit walkthrough + 30-min consulting call.", "cta": "Xem Kit" },
+      { "badge": "Career Roadmap", "title": "Career Hub", "desc": "Lộ trình từ QC Analyst lên QA Director — salary thực tế, skills cần có, target employers.", "cta": "Xem lộ trình" }
+    ]
+  },
+  "banner": {
+    "eyebrow": "🔥 Sản phẩm nổi bật",
+    "title": "GMP Audit Survival Kit",
+    "desc": "Bộ công cụ đầy đủ nhất để chuẩn bị GMP audit: SOP gap analysis, 10 CAPA templates, 50+ interview Q&A scripts, mock audit walkthrough + 30-min 1-on-1 consulting.",
+    "priceNote": "one-time • 30-day guarantee",
+    "cta": "Xem chi tiết →"
+  },
+  "trust": {
+    "heading": "Viết bởi người đã ở cả hai phía",
+    "body": "BioWikiPro được xây dựng bởi Henry — Sales Manager trong ngành Industrial Microbiology, làm việc trực tiếp với QC labs của các nhà máy Pharma & F&B. Nội dung không phải lý thuyết sách vở — mà là thứ Henry thấy teams thực sự cần khi audit đến.",
+    "features": [
+      "Nội dung cập nhật theo GMP WHO 2023 & Annex 1 2022",
+      "Viết bởi người có kinh nghiệm thực tế cả phía QC lẫn phía vendor",
+      "Tập trung vào thị trường Pharma & F&B",
+      "Không lý thuyết suông — framework áp dụng được ngay"
+    ],
+    "cards": [
+      { "label": "Academy", "value": "48 bài học miễn phí" },
+      { "label": "Target", "value": "Senior QC/QA" },
+      { "label": "Coverage", "value": "Pharma + F&B + Lab" },
+      { "label": "Goal", "value": "Senior → Manager level" }
+    ]
+  },
+  "finalCta": {
+    "heading": "Bắt đầu ngay hôm nay — miễn phí",
+    "subtitle": "48 bài học Academy mở hoàn toàn. Không cần thẻ tín dụng.",
+    "ctaAcademy": "Vào Academy →",
+    "ctaKit": "Xem GMP Audit Kit"
   }
 }

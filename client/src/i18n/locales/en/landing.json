@@ -1,1 +1,69 @@
-{}
+{
+  "seo": {
+    "title": "BioWikiPro — QC/QA Pharma knowledge platform",
+    "description": "From Senior QC to QA Manager: 48 free GMP lessons, the GMP Audit Survival Kit, and a career toolkit for QC/QA Pharma & Life Science professionals."
+  },
+  "hero": {
+    "badge": "QC/QA Pharma knowledge platform",
+    "titleLead": "From Senior QC",
+    "titleHighlight": "to QA Manager",
+    "titleTail": "— systematic, no guesswork",
+    "subtitle": "In-depth GMP knowledge, audit-prep tools, and a real promotion roadmap — for QC/QA professionals in Pharma & Life Science.",
+    "ctaAcademy": "Explore Academy free",
+    "ctaKit": "GMP Audit Kit — $59"
+  },
+  "stats": [
+    { "value": "48", "label": "In-depth lessons" },
+    { "value": "7", "label": "Knowledge modules" },
+    { "value": "GMP", "label": "WHO • Annex 1 • ISO" },
+    { "value": "Free", "label": "Academy access" }
+  ],
+  "problems": {
+    "heading": "Sound familiar?",
+    "subtitle": "Common struggles of Senior QC/QA after 3–5 years",
+    "items": [
+      { "emoji": "📈", "title": "Stuck at Senior QC for too long?", "desc": "Experienced and doing well — but unsure what else it takes to convince your boss to promote you to Supervisor or Manager." },
+      { "emoji": "⏰", "title": "Audit coming, team not ready?", "desc": "No concrete checklist, gaps in SOPs, the team freezes when auditors ask. Stress every audit season." },
+      { "emoji": "🔍", "title": "Gaps in your GMP knowledge?", "desc": "You know the practice but lack a systematic framework — hard to explain during audits or interviews." }
+    ]
+  },
+  "solutions": {
+    "heading": "Everything in one platform",
+    "subtitle": "Knowledge · Audit tools · Career roadmap",
+    "featuredBadge": "⭐ Flagship",
+    "items": [
+      { "badge": "Free", "title": "Academy", "desc": "48 director-level lessons on GMP, sterility testing, OOS investigation, Annex 1, CAPA — completely free.", "cta": "Start learning" },
+      { "badge": "$59 one-time", "title": "GMP Audit Survival Kit", "desc": "SOP gap analysis, CAPA templates, audit interview scripts, mock audit walkthrough + 30-min consulting call.", "cta": "View Kit" },
+      { "badge": "Career Roadmap", "title": "Career Hub", "desc": "The path from QC Analyst to QA Director — real salaries, required skills, and target employers.", "cta": "View roadmap" }
+    ]
+  },
+  "banner": {
+    "eyebrow": "🔥 Featured product",
+    "title": "GMP Audit Survival Kit",
+    "desc": "The most complete toolkit to prepare for a GMP audit: SOP gap analysis, 10 CAPA templates, 50+ interview Q&A scripts, mock audit walkthrough + 30-min 1-on-1 consulting.",
+    "priceNote": "one-time • 30-day guarantee",
+    "cta": "See details →"
+  },
+  "trust": {
+    "heading": "Written by someone who's been on both sides",
+    "body": "BioWikiPro is built by Henry — a Sales Manager in Industrial Microbiology who works directly with the QC labs of Pharma & F&B plants. The content isn't textbook theory — it's what Henry sees teams actually need when an audit arrives.",
+    "features": [
+      "Content aligned with GMP WHO 2023 & Annex 1 2022",
+      "Written by someone with real experience on both the QC and vendor sides",
+      "Focused on the Pharma & F&B market",
+      "No empty theory — frameworks you can apply right away"
+    ],
+    "cards": [
+      { "label": "Academy", "value": "48 free lessons" },
+      { "label": "Target", "value": "Senior QC/QA" },
+      { "label": "Coverage", "value": "Pharma + F&B + Lab" },
+      { "label": "Goal", "value": "Senior → Manager level" }
+    ]
+  },
+  "finalCta": {
+    "heading": "Start today — free",
+    "subtitle": "All 48 Academy lessons fully open. No credit card required.",
+    "ctaAcademy": "Enter Academy →",
+    "ctaKit": "View GMP Audit Kit"
+  }
+}

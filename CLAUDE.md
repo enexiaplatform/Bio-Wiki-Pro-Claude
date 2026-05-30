@@ -23,9 +23,25 @@ npm run db:push
 
 No test suite is configured. There is no `npm test` command.
 
+## Localization (IMPORTANT — product direction)
+
+**English is the PRIMARY language** — BioWikiPro is built for a **global market**.
+Vietnamese is the secondary translation. Concretely:
+
+- i18n default + fallback language is **`en`** (`client/src/i18n/index.ts`). The
+  `en` locale files are the source of truth and must be complete; `vi` is the
+  translation. Root `/` with no cookie/navigator signal → `/en`.
+- **Goal: fully bilingual** — both UI strings AND content/data (lessons,
+  glossary). Every user-facing string should go through `t()` with `en` + `vi`
+  values; content uses the bilingual MDX engine (`.en.mdx` / `.vi.mdx`).
+- When adding any UI, wrap copy in `t()` and add both `en` and `vi` keys — never
+  hardcode a language. `<LanguageSwitcher>` + path-prefix routing already exist.
+- Migration status: i18n infra is complete; wrapping legacy hardcoded-VI pages
+  in `t()` + writing `en` is an in-progress, page-by-page effort.
+
 ## Architecture Overview
 
-BioWikiPro is a mobile-first PWA for QC/QA professionals in the Pharma/Biotech/Life-Science space (primarily Vietnam), with a freemium model. It is a monorepo with **client**, **server**, and **shared** code that share types and an API contract.
+BioWikiPro is a mobile-first PWA for QC/QA professionals in the Pharma/Biotech/Life-Science space, sold to a **global** audience (English-first; strong Vietnam presence). It is a monorepo with **client**, **server**, and **shared** code that share types and an API contract.
 
 ### Project Layout
 

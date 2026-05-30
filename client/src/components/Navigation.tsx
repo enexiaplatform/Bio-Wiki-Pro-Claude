@@ -1,33 +1,36 @@
 import { Link, useLocation } from "wouter";
 import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package } from "lucide-react";
 import clsx from "clsx";
+import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
+// `key` maps to nav.json translation keys; `name` is the fallback label.
 const mobileTabs = [
-  { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
-  { name: "Academy", icon: BookOpen, path: "/academy" },
-  { name: "Tools", icon: Calculator, path: "/tools" },
-  { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
-  { name: "Vault", icon: NotebookPen, path: "/vault" },
+  { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
+  { key: "academy", name: "Academy", icon: BookOpen, path: "/academy" },
+  { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
+  { key: "compliance", name: "Compliance", icon: ShieldCheck, path: "/compliance" },
+  { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
 ];
 
 const desktopTabs = [
-  { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
-  { name: "Academy", icon: BookOpen, path: "/academy" },
-  { name: "Tools", icon: Calculator, path: "/tools" },
-  { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
-  { name: "Vault", icon: NotebookPen, path: "/vault" },
-  { name: "Career", icon: Briefcase, path: "/career" },
-  { name: "Toolkits", icon: Package, path: "/toolkits/gmp-audit-kit" },
-  { name: "Insights", icon: TrendingUp, path: "/insights" },
+  { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
+  { key: "academy", name: "Academy", icon: BookOpen, path: "/academy" },
+  { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
+  { key: "compliance", name: "Compliance", icon: ShieldCheck, path: "/compliance" },
+  { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
+  { key: "career", name: "Career", icon: Briefcase, path: "/career" },
+  { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits/gmp-audit-kit" },
+  { key: "insights", name: "Insights", icon: TrendingUp, path: "/insights" },
 ];
 
 export function BottomNav() {
   const [location] = useLocation();
+  const { t } = useTranslation("nav");
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-4 pb-safe pt-2 z-50 md:hidden">
@@ -46,7 +49,7 @@ export function BottomNav() {
                 <tab.icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} />
               </div>
               <span className={clsx("text-[10px] font-medium", isActive ? "text-primary" : "text-muted-foreground")}>
-                {tab.name}
+                {t(tab.key)}
               </span>
             </Link>
           );
@@ -58,6 +61,7 @@ export function BottomNav() {
 
 export function DesktopNav() {
   const [location] = useLocation();
+  const { t } = useTranslation("nav");
   const { user, isAuthenticated, isPro, logout } = useUser();
 
   return (
@@ -78,7 +82,7 @@ export function DesktopNav() {
               isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
             )} data-testid={`nav-desktop-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <tab.icon className="w-4 h-4" />
-              {tab.name}
+              {t(tab.key)}
             </Link>
           );
         })}
@@ -112,7 +116,7 @@ export function DesktopNav() {
           <Button size="sm" asChild data-testid="button-login">
             <Link href="/login">
               <LogIn className="w-4 h-4 mr-1.5" />
-              Sign In
+              {t("signIn")}
             </Link>
           </Button>
         )}
@@ -122,6 +126,7 @@ export function DesktopNav() {
 }
 
 export function MobileHeader() {
+  const { t } = useTranslation("nav");
   const { user, isAuthenticated, isPro, logout } = useUser();
 
   return (
@@ -153,7 +158,7 @@ export function MobileHeader() {
           </>
         ) : (
           <Button size="sm" asChild data-testid="button-login-mobile">
-            <Link href="/login">Sign In</Link>
+            <Link href="/login">{t("signIn")}</Link>
           </Button>
         )}
       </div>

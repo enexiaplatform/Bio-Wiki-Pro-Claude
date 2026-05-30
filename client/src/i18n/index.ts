@@ -1,9 +1,10 @@
 import i18n, { type Resource, type ResourceLanguage } from "i18next";
 import { initReactI18next } from "react-i18next";
 
-export const SUPPORTED_LNGS = ["vi", "en"] as const;
+export const SUPPORTED_LNGS = ["en", "vi"] as const;
 export type Lng = (typeof SUPPORTED_LNGS)[number];
-export const DEFAULT_LNG: Lng = "vi";
+// English is the primary language (global product); vi is the translation.
+export const DEFAULT_LNG: Lng = "en";
 
 export const NAMESPACES = [
   "common",
