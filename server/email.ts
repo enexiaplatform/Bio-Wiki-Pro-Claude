@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { getProductName, getDownloadUrl } from "./products.js";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -6,23 +7,6 @@ const resend = process.env.RESEND_API_KEY
 
 const FROM_EMAIL = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
 const BASE_URL = process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app";
-
-// Product display names
-const PRODUCT_NAMES: Record<string, string> = {
-  gmp_audit_kit: "GMP Audit Survival Kit",
-  starter_kit: "Career Starter Kit",
-  interview_prep: "Interview Prep Package",
-  bundle: "Career Bundle",
-  pro_subscription: "BioWikiPro Pro",
-};
-
-// Temporary Google Drive download links (replace with real links)
-const PRODUCT_DOWNLOAD_LINKS: Record<string, string> = {
-  gmp_audit_kit: process.env.DOWNLOAD_GMP_AUDIT_KIT ?? "https://drive.google.com/placeholder/gmp-audit-kit",
-  starter_kit: process.env.DOWNLOAD_STARTER_KIT ?? "https://drive.google.com/placeholder/starter-kit",
-  interview_prep: process.env.DOWNLOAD_INTERVIEW_PREP ?? "https://drive.google.com/placeholder/interview-prep",
-  bundle: process.env.DOWNLOAD_BUNDLE ?? "https://drive.google.com/placeholder/bundle",
-};
 
 function htmlWrapper(content: string): string {
   return `<!DOCTYPE html>
@@ -108,10 +92,10 @@ export async function sendPurchaseConfirmation(
     return;
   }
 
-  const productName = PRODUCT_NAMES[productType] ?? productType;
+  const productName = getProductName(productType);
   const amountDisplay = amountCents ? `$${(amountCents / 100).toFixed(2)}` : "";
   const name = firstName ?? "bạn";
-  const downloadLink = PRODUCT_DOWNLOAD_LINKS[productType];
+  const downloadLink = getDownloadUrl(productType);
 
   const html = htmlWrapper(`
     <h1>Cảm ơn ${name}! Đơn hàng thành công ✅</h1>
@@ -169,5 +153,40 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
     });
   } catch (err) {
     console.error("[Email] Failed to send lead magnet email:", err);
+  }
+}
+
+export async function sendDunningEmail(
+  to: string,
+  graceUntil: Date,
+  firstName?: string
+): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would send dunning email to ${to} (Resend not configured)`);
+    return;
+  }
+
+  const name = firstName ?? "bạn";
+  const deadline = graceUntil.toLocaleDateString("vi-VN");
+  const html = htmlWrapper(`
+    <h1>Thanh toán Pro chưa thành công ⚠️</h1>
+    <p>Chào ${name}, chúng tôi chưa thu được phí gia hạn gói <strong>BioWikiPro Pro</strong>.</p>
+    <div class="box">
+      <p>Tài khoản của bạn vẫn giữ quyền Pro đến <strong style="color:#10b981;">${deadline}</strong>.
+      Vui lòng cập nhật phương thức thanh toán trước thời hạn để không bị gián đoạn.</p>
+    </div>
+    <a href="${BASE_URL}/upgrade" class="cta">Cập nhật thanh toán →</a>
+    <p style="font-size: 13px; color: #64748b;">Nếu bạn vừa thanh toán lại, có thể bỏ qua email này.</p>
+  `);
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: "Cập nhật thanh toán gói Pro — BioWikiPro",
+      html,
+    });
+  } catch (err) {
+    console.error("[Email] Failed to send dunning email:", err);
   }
 }

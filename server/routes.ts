@@ -6,23 +6,21 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail } from "./email.js";
+import { getPriceId, isSubscription } from "./products.js";
+import { isProActive } from "./entitlements.js";
+import { readFile } from "fs/promises";
+import path from "path";
+import matter from "gray-matter";
+
+// Dunning grace window after a failed subscription payment.
+const GRACE_PERIOD_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
       apiVersion: "2025-06-30.basil" as any,
     })
   : null;
-
-const PRICE_MAP: Record<string, string> = {
-  pro_subscription: process.env.STRIPE_PRO_PRICE_ID ?? "",
-  starter_kit: process.env.STRIPE_STARTER_KIT_PRICE_ID ?? "",
-  interview_prep: process.env.STRIPE_INTERVIEW_PREP_PRICE_ID ?? "",
-  bundle: process.env.STRIPE_BUNDLE_PRICE_ID ?? "",
-  gmp_audit_kit: process.env.STRIPE_GMP_AUDIT_KIT_PRICE_ID ?? "",
-};
-
-const SUBSCRIPTION_PRODUCTS = new Set(["pro_subscription"]);
 
 // Add session middleware
 export function setupSession(app: Express) {
@@ -87,6 +85,18 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.status(400).json({ message: `Webhook Error: ${err.message}` });
     }
 
+    // Idempotency: Stripe retries deliver the same event.id. If we've already
+    // processed it, ack immediately so we never fulfill twice.
+    const alreadyProcessed = await storage
+      .isStripeEventProcessed(event.id)
+      .catch((e) => {
+        console.error("[Webhook] Idempotency check failed:", e);
+        return false; // fail-open: better to risk a guarded retry than drop the event
+      });
+    if (alreadyProcessed) {
+      return res.status(200).json({ received: true, duplicate: true });
+    }
+
     try {
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -96,11 +106,13 @@ export async function registerRoutes(app: Express): Promise<void> {
         }
 
         if (productType === "pro_subscription") {
+          // Provisional unlock; subscription.created/updated sets the period end.
           await storage.updateUserStripe(userId, {
             isPro: true,
             subscriptionStatus: "active",
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: session.subscription as string,
+            proGraceUntil: null,
           });
         } else {
           await storage.createPurchase({
@@ -110,30 +122,87 @@ export async function registerRoutes(app: Express): Promise<void> {
             amount: session.amount_total ?? undefined,
             status: "completed",
           });
-        }
 
-        // Send purchase confirmation email
-        const customerEmail = session.customer_email ?? session.customer_details?.email;
-        if (customerEmail) {
-          const user = await storage.getUser(userId).catch(() => null);
-          sendPurchaseConfirmation(
-            customerEmail,
-            productType,
-            session.amount_total ?? undefined,
-            user?.firstName ?? undefined
-          ).catch((err) => console.error("[Webhook] Purchase email error:", err));
+          // Purchase confirmation email (one-time products only)
+          const customerEmail = session.customer_email ?? session.customer_details?.email;
+          if (customerEmail) {
+            const user = await storage.getUser(userId).catch(() => null);
+            sendPurchaseConfirmation(
+              customerEmail,
+              productType,
+              session.amount_total ?? undefined,
+              user?.firstName ?? undefined
+            ).catch((err) => console.error("[Webhook] Purchase email error:", err));
+          }
+        }
+      } else if (
+        event.type === "customer.subscription.created" ||
+        event.type === "customer.subscription.updated"
+      ) {
+        const sub = event.data.object as Stripe.Subscription;
+        const userId = sub.metadata?.userId;
+        const user = userId
+          ? await storage.getUser(userId).catch(() => undefined)
+          : await storage.getUserByStripeCustomerId(sub.customer as string);
+        if (user) {
+          const periodEnd = (sub as any).current_period_end as number | undefined;
+          const active = sub.status === "active" || sub.status === "trialing";
+          await storage.updateUserStripe(user.id, {
+            isPro: active || sub.status === "past_due", // keep Pro during dunning grace
+            subscriptionStatus: sub.status,
+            stripeCustomerId: sub.customer as string,
+            stripeSubscriptionId: sub.id,
+            proExpiresAt: periodEnd ? new Date(periodEnd * 1000) : undefined,
+            ...(active ? { proGraceUntil: null } : {}),
+          });
         }
       } else if (event.type === "customer.subscription.deleted") {
-        const subscription = event.data.object as Stripe.Subscription;
-        const customerId = subscription.customer as string;
-        const user = await storage.getUserByStripeCustomerId(customerId);
+        const sub = event.data.object as Stripe.Subscription;
+        const user = await storage.getUserByStripeCustomerId(sub.customer as string);
         if (user) {
           await storage.updateUserStripe(user.id, {
             isPro: false,
-            subscriptionStatus: "cancelled",
+            subscriptionStatus: "canceled",
+            proGraceUntil: null,
+          });
+        }
+      } else if (event.type === "invoice.payment_failed") {
+        // Dunning: start a 3-day grace window, keep Pro, email the customer.
+        const invoice = event.data.object as Stripe.Invoice;
+        const user = await storage.getUserByStripeCustomerId(invoice.customer as string);
+        if (user) {
+          const graceUntil = new Date(Date.now() + GRACE_PERIOD_MS);
+          await storage.updateUserStripe(user.id, {
+            isPro: true,
+            subscriptionStatus: "past_due",
+            proGraceUntil: graceUntil,
+          });
+          const email = invoice.customer_email ?? user.email ?? undefined;
+          if (email) {
+            sendDunningEmail(email, graceUntil, user.firstName ?? undefined).catch((err) =>
+              console.error("[Webhook] Dunning email error:", err)
+            );
+          }
+        }
+      } else if (event.type === "invoice.payment_succeeded") {
+        // Recovered (or normal renewal): clear grace, restore Pro.
+        const invoice = event.data.object as Stripe.Invoice;
+        const user = await storage.getUserByStripeCustomerId(invoice.customer as string);
+        if (user) {
+          const periodEnd = (invoice as any).lines?.data?.[0]?.period?.end as number | undefined;
+          await storage.updateUserStripe(user.id, {
+            isPro: true,
+            subscriptionStatus: "active",
+            proGraceUntil: null,
+            ...(periodEnd ? { proExpiresAt: new Date(periodEnd * 1000) } : {}),
           });
         }
       }
+
+      // Mark processed only after fulfillment succeeded. A throw above skips
+      // this and returns 500 → Stripe retries → the idempotency check still
+      // prevents double-fulfill once a later attempt succeeds.
+      await storage.markStripeEventProcessed(event.id, event.type);
     } catch (err) {
       console.error("Webhook handler error:", err);
       return res.status(500).json({ message: "Webhook handler failed" });
@@ -210,7 +279,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: user.isPro });
+      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user) });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch user" });
     }
@@ -228,21 +297,26 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (!user) return res.status(401).json({ message: "Unauthorized" });
 
       const { productType } = req.body;
-      const priceId = PRICE_MAP[productType];
+      const priceId = getPriceId(productType);
       if (!priceId) {
-        return res.status(400).json({ message: "Invalid productType" });
+        return res.status(400).json({ message: "Invalid productType or missing price configuration" });
       }
 
       const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
-      const isSubscription = SUBSCRIPTION_PRODUCTS.has(productType);
 
+      const subscription = isSubscription(productType);
       const session = await stripe.checkout.sessions.create({
-        mode: isSubscription ? "subscription" : "payment",
+        mode: subscription ? "subscription" : "payment",
         line_items: [{ price: priceId, quantity: 1 }],
         customer_email: user.email ?? undefined,
         success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${baseUrl}/pricing`,
         metadata: { userId: user.id, productType },
+        // Propagate userId onto the subscription so subscription.*/invoice.*
+        // webhook events can resolve the user even before the customer id is stored.
+        ...(subscription
+          ? { subscription_data: { metadata: { userId: user.id, productType } } }
+          : {}),
       });
 
       res.json({ url: session.url });
@@ -303,31 +377,112 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ message: "Email is required" });
       }
 
+      const normalizedEmail = email.toLowerCase().trim();
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
+      if (!emailRegex.test(normalizedEmail)) {
         return res.status(400).json({ message: "Email không hợp lệ" });
       }
 
-      const { isNew } = await storage.captureLead(email.toLowerCase().trim(), source ?? "lead_magnet");
+      const { isNew } = await storage.captureLead(normalizedEmail, source ?? "lead_magnet");
 
-      // Send checklist email only for new leads
+      // Send checklist email only for new leads. Fire-and-forget: a mail failure
+      // must NOT fail the request — the lead is already saved.
       if (isNew) {
         const downloadUrl = process.env.DOWNLOAD_GMP_CHECKLIST ?? "https://drive.google.com/placeholder/gmp-checklist";
-        sendLeadMagnetEmail(email, downloadUrl).catch((err) =>
+        sendLeadMagnetEmail(normalizedEmail, downloadUrl).catch((err) =>
           console.error("[Leads] Email error:", err)
         );
       }
 
-      res.json({ success: true, isNew });
+      res.json({
+        success: true,
+        isNew,
+        message: isNew
+          ? "Đã gửi! Kiểm tra email của bạn."
+          : "Email này đã đăng ký rồi — kiểm tra lại hộp thư (kể cả spam).",
+      });
     } catch (err) {
       console.error("[Leads] Capture error:", err);
       res.status(500).json({ message: "Server error" });
     }
   });
 
-  // Old mock toggle-pro route, kept so the frontend doesn't break.
-  // Will be replaced by Stripe webhooks setting isPro.
+  // ── Content (server-gated MDX) ───────────────────────────────────────────
+  // Returns the full MDX body ONLY when the session is entitled for the tier.
+  // Pro/paid bodies are never sent to unentitled clients (server-side gating).
+  const CONTENT_COLLECTIONS = new Set(["academy", "blog", "toolkits"]);
+  const CONTENT_LANGS = new Set(["vi", "en"]);
+  const SLUG_RE = /^[a-z0-9-]+$/;
+
+  app.get("/api/content/:collection/:slug", async (req: any, res) => {
+    const { collection, slug } = req.params;
+    const lang = String(req.query.lang ?? "vi");
+
+    if (!CONTENT_COLLECTIONS.has(collection) || !SLUG_RE.test(slug) || !CONTENT_LANGS.has(lang)) {
+      return res.status(400).json({ message: "Invalid content reference" });
+    }
+
+    // SLUG_RE + fixed dir prevent path traversal.
+    const filePath = path.resolve(process.cwd(), "content", collection, `${slug}.${lang}.mdx`);
+    let raw: string;
+    try {
+      raw = await readFile(filePath, "utf-8");
+    } catch {
+      return res.status(404).json({ message: "Content not found" });
+    }
+
+    const { data, content } = matter(raw);
+    const tier = (data.tier as string) ?? "free";
+    const title = (data.title as string) ?? slug;
+    const teaser = (data.seoDescription as string) ?? "";
+
+    // Publish gate — DB is the source of truth; default published if DB is
+    // unconfigured or the entry hasn't been seeded yet.
+    try {
+      const row = await storage.getContentEntry(slug, lang);
+      if (row && !row.published) {
+        return res.status(404).json({ message: "Content not found" });
+      }
+    } catch {
+      /* DB optional for free content */
+    }
+
+    // Entitlement from session
+    let isPro = false;
+    let purchased = false;
+    const userId: string | undefined = req.session?.userId;
+    if (userId) {
+      const user = await storage.getUser(userId).catch(() => undefined);
+      isPro = isProActive(user);
+      if (tier === "paid") {
+        purchased = await storage
+          .hasCompletedPurchase(userId, (data.productId as string) || undefined)
+          .catch(() => false);
+      }
+    }
+
+    const allowed =
+      tier === "free" ||
+      (tier === "pro" && isPro) ||
+      (tier === "paid" && (purchased || isPro));
+
+    if (!allowed) {
+      return res.json({ locked: true, tier, title, teaser });
+    }
+    return res.json({ locked: false, tier, title, body: content });
+  });
+
+  // Dev/admin-only Pro toggle. Pro is granted in production via Stripe webhooks
+  // (see above). This route is NOT part of the user flow: in production it
+  // requires an admin secret header; in dev it is open for testing.
   app.post(api.users.togglePro.path, isAuthenticated, async (req: any, res) => {
+    const isProd = process.env.NODE_ENV === "production";
+    const adminSecret = process.env.ADMIN_TOOLS_SECRET;
+    const provided = req.headers["x-admin-secret"];
+    const allowed = !isProd || (!!adminSecret && provided === adminSecret);
+    if (!allowed) {
+      return res.status(403).json({ message: "Forbidden — Pro is managed via subscription" });
+    }
     try {
       const userId = req.session.userId;
       const currentUser = await storage.getUser(userId);

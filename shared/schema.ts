@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, timestamp, jsonb, integer, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -19,6 +19,35 @@ export const leads = pgTable("leads", {
 export const insertLeadSchema = createInsertSchema(leads).omit({ id: true, createdAt: true, downloadSent: true });
 export type Lead = typeof leads.$inferSelect;
 export type InsertLead = z.infer<typeof insertLeadSchema>;
+
+// Stripe webhook idempotency — one row per processed event so retries
+// (Stripe re-sends the same event.id) never double-fulfill.
+export const processedStripeEvents = pgTable("processed_stripe_events", {
+  eventId: text("event_id").primaryKey(),
+  type: text("type").notNull(),
+  processedAt: timestamp("processed_at").defaultNow(),
+});
+export type ProcessedStripeEvent = typeof processedStripeEvents.$inferSelect;
+
+// Content metadata — operational state for MDX entries (publish/sort/analytics).
+// The MDX file stays the source of truth for content; this is the source of
+// truth for publish state. Keyed by (slug, lang). Seeded from frontmatter.
+export const contentEntries = pgTable(
+  "content_entries",
+  {
+    id: serial("id").primaryKey(),
+    slug: text("slug").notNull(),
+    lang: text("lang").notNull(),
+    tier: text("tier").notNull().default("free"), // 'free' | 'pro' | 'paid'
+    published: boolean("published").notNull().default(true),
+    sort: integer("sort").notNull().default(0),
+    viewCount: integer("view_count").notNull().default(0),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("content_entries_slug_lang_idx").on(t.slug, t.lang)],
+);
+export type ContentEntryRow = typeof contentEntries.$inferSelect;
+export type InsertContentEntry = typeof contentEntries.$inferInsert;
 
 // Quote Requests from the Solutions tab
 export const quoteRequests = pgTable("quote_requests", {
@@ -110,37 +139,6 @@ export interface Product {
 export type ToolStatus = "FREE" | "COMING_SOON" | "PRO";
 export type ToolDifficulty = "Basic" | "Intermediate";
 export type ToolSection = "Solution Prep" | "Cell & Microbiology" | "Analytical & Quantification";
-
-export interface LabTool {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  category: ToolSection;
-  tags: string[];
-  difficulty: ToolDifficulty;
-  timeLabel: string;
-  audience: ("Student" | "QC")[];
-  isMostUsed: boolean;
-  status: ToolStatus;
-  available: boolean;
-}
-
-export interface Skill {
-  id: string;
-  name: string;
-  description: string;
-  audience: TermMode;
-}
-
-export interface SOP {
-  id: string;
-  title: string;
-  summary: string;
-  content: string;
-  isLocked: boolean;
-}
-export type LabToolSection = "Solution Prep" | "Cell & Microbiology" | "Analytical & Quantification";
 
 export interface LabTool {
   id: string;

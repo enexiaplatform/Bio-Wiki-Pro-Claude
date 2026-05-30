@@ -1,99 +1,136 @@
-import { useEffect } from "react";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link } from "wouter";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, FlaskConical, BookOpen, ShieldCheck, Sparkles, TrendingUp, Briefcase } from "lucide-react";
-import { useLocation, Link } from "wouter";
+import { Check, Minus, Crown, Loader2, Settings } from "lucide-react";
+import { useSEO } from "@/hooks/use-seo";
 
-const benefits = [
-  { icon: ShieldCheck, title: "Full Compliance Library", desc: "Access all 18 SOPs with detailed procedures and regulatory references." },
-  { icon: FlaskConical, title: "Advanced QC Workflows", desc: "Deep-dive into sterility testing, environmental monitoring, and bioburden protocols." },
-  { icon: BookOpen, title: "Complete Academy", desc: "Unlock all learning paths with advanced and expert-level content." },
-  { icon: TrendingUp, title: "Industry Insights", desc: "Sales intelligence, market trends, and competitive analysis reports." },
-  { icon: Briefcase, title: "Career Toolkit", desc: "Priority job alerts, resume templates, and interview prep guides." },
-  { icon: Sparkles, title: "Early Access", desc: "Be the first to try new lab tools and calculators as they launch." },
+type FeatureKey =
+  | "academyFree"
+  | "academyPro"
+  | "sops"
+  | "tools"
+  | "insights"
+  | "support"
+  | "earlyAccess";
+
+// [featureKey, includedInFree, includedInPro]
+const MATRIX: [FeatureKey, boolean, boolean][] = [
+  ["academyFree", true, true],
+  ["academyPro", false, true],
+  ["sops", false, true],
+  ["tools", false, true],
+  ["insights", false, true],
+  ["support", false, true],
+  ["earlyAccess", false, true],
 ];
 
 export default function UpgradePage() {
+  const { t } = useTranslation("upgrade");
   const { isAuthenticated, isPro } = useUser();
-  const [, setLocation] = useLocation();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (isPro) {
-      setLocation("/qc-hub");
+  useSEO({ title: t("title"), description: t("subtitle") });
+
+  async function go(endpoint: string, method: "POST" | "GET") {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: method === "POST" ? JSON.stringify({ productType: "pro_subscription" }) : undefined,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.message ?? t("error"));
+      window.location.href = data.url;
+    } catch (e: any) {
+      setError(e.message ?? t("error"));
+      setBusy(false);
     }
-  }, [isPro, setLocation]);
+  }
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-6">
+    <div className="pb-24 pt-4 md:pt-8 max-w-3xl mx-auto px-4">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-5">
           <Crown className="w-4 h-4" />
-          <span className="text-sm font-bold uppercase tracking-wider">Upgrade Required</span>
+          <span className="text-sm font-bold uppercase tracking-wider">{t("badge")}</span>
         </div>
-        <h1 className="text-3xl md:text-5xl font-bold mb-4">
-          Unlock the Full Power of<br />
-          <span className="text-primary">BioWiki Pro</span>
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Get unlimited access to premium content, advanced workflows, and professional tools designed for biotech and pharma professionals.
-        </p>
+        <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">{t("title")}</h1>
+        <p className="text-muted-foreground max-w-xl mx-auto">{t("subtitle")}</p>
+        <div className="mt-5 flex items-center justify-center gap-1">
+          <span className="text-4xl font-bold">{t("price")}</span>
+          <span className="text-muted-foreground">{t("perMonth")}</span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-        {benefits.map((b) => (
-          <Card key={b.title} className="p-5 border-white/5">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-3">
-              <b.icon className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold mb-1.5">{b.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{b.desc}</p>
-          </Card>
+      {/* Comparison */}
+      <Card className="overflow-hidden border-white/10 mb-8">
+        <div className="grid grid-cols-[1fr_auto_auto] items-center gap-x-6 px-5 py-3 border-b border-white/10 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <span>{t("compare.feature")}</span>
+          <span className="text-center w-14">{t("compare.free")}</span>
+          <span className="text-center w-14">{t("compare.pro")}</span>
+        </div>
+        {MATRIX.map(([key, free, pro]) => (
+          <div
+            key={key}
+            className="grid grid-cols-[1fr_auto_auto] items-center gap-x-6 px-5 py-3 border-b border-white/5 last:border-0 text-sm"
+          >
+            <span>{t(`features.${key}`)}</span>
+            <span className="flex justify-center w-14">
+              {free ? <Check className="w-4 h-4 text-primary" /> : <Minus className="w-4 h-4 text-muted-foreground/40" />}
+            </span>
+            <span className="flex justify-center w-14">
+              {pro ? <Check className="w-4 h-4 text-primary" /> : <Minus className="w-4 h-4 text-muted-foreground/40" />}
+            </span>
+          </div>
         ))}
-      </div>
+      </Card>
 
-      <Card className="p-8 text-center border-primary/20 bg-primary/5">
-        <Badge className="mb-4 bg-primary text-white">Most Popular</Badge>
-        <h2 className="text-2xl font-bold mb-2">BioWiki Pro</h2>
-        <p className="text-muted-foreground mb-6">Everything you need to accelerate your biotech career.</p>
-
-        <div className="space-y-3 max-w-sm mx-auto mb-8 text-left">
-          {["All premium content unlocked", "Full SOP library access", "Advanced lab tools", "Priority support", "New features first"].map((item) => (
-            <div key={item} className="flex items-center gap-3 text-sm">
-              <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                <Check className="w-3 h-3 text-primary" />
-              </div>
-              <span>{item}</span>
-            </div>
-          ))}
-        </div>
-
-        {isAuthenticated ? (
+      {/* CTA — depends on current user state */}
+      <div className="text-center">
+        {isPro ? (
+          <>
+            <Badge className="mb-4 bg-primary/15 text-primary border-primary/20">
+              <Crown className="w-3 h-3 mr-1" /> {t("proActive")}
+            </Badge>
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full max-w-sm font-bold"
+              disabled={busy}
+              onClick={() => go("/api/stripe/customer-portal", "GET")}
+              data-testid="button-manage-subscription"
+            >
+              {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Settings className="w-5 h-5 mr-2" />}
+              {busy ? t("cta.loading") : t("cta.manage")}
+            </Button>
+          </>
+        ) : isAuthenticated ? (
           <Button
             size="lg"
             className="w-full max-w-sm font-bold text-base"
-            asChild
-            data-testid="button-upgrade-now"
+            disabled={busy}
+            onClick={() => go("/api/stripe/create-checkout-session", "POST")}
+            data-testid="button-subscribe-pro"
           >
-            <Link href="/pricing">
-              <Crown className="w-5 h-5 mr-2" />
-              Upgrade Now
-            </Link>
+            {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
+            {busy ? t("cta.loading") : t("cta.subscribe")}
           </Button>
         ) : (
-          <Button
-            size="lg"
-            className="w-full max-w-sm font-bold text-base"
-            asChild
-            data-testid="button-login-to-upgrade"
-          >
-            <Link href="/login">
-              Sign In to Upgrade
-            </Link>
+          <Button size="lg" className="w-full max-w-sm font-bold text-base" asChild data-testid="button-login-to-upgrade">
+            <Link href="/login">{t("cta.login")}</Link>
           </Button>
         )}
-      </Card>
+
+        {error && <p className="text-sm text-red-400 mt-3">{error}</p>}
+      </div>
     </div>
   );
 }

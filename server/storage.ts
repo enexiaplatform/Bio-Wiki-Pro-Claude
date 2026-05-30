@@ -4,13 +4,17 @@ import {
   quoteRequests,
   purchases,
   leads,
+  processedStripeEvents,
+  contentEntries,
   type User,
   type UpsertUser,
   type QuoteRequest,
   type InsertQuoteRequest,
   type Lead,
+  type ContentEntryRow,
+  type InsertContentEntry,
 } from "../shared/schema.js";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -18,10 +22,15 @@ export interface IStorage {
   getUserByStripeCustomerId(customerId: string): Promise<User | undefined>;
   createUser(user: UpsertUser): Promise<User>;
   updateUserPro(id: string, isPro: boolean): Promise<User>;
-  updateUserStripe(id: string, data: Partial<Pick<User, "isPro" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus">>): Promise<User>;
+  updateUserStripe(id: string, data: Partial<Pick<User, "isPro" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus" | "proExpiresAt" | "proGraceUntil">>): Promise<User>;
   createPurchase(data: { userId: string; productType: string; stripeSessionId?: string; amount?: number; status?: string }): Promise<void>;
   createQuoteRequest(request: InsertQuoteRequest): Promise<QuoteRequest>;
   captureLead(email: string, source?: string): Promise<{ isNew: boolean; lead: Lead }>;
+  isStripeEventProcessed(eventId: string): Promise<boolean>;
+  markStripeEventProcessed(eventId: string, type: string): Promise<void>;
+  getContentEntry(slug: string, lang: string): Promise<ContentEntryRow | undefined>;
+  upsertContentEntry(entry: InsertContentEntry): Promise<void>;
+  hasCompletedPurchase(userId: string, productType?: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -56,7 +65,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateUserStripe(
     id: string,
-    data: Partial<Pick<User, "isPro" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus">>
+    data: Partial<Pick<User, "isPro" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus" | "proExpiresAt" | "proGraceUntil">>
   ): Promise<User> {
     const [user] = await db
       .update(users)
@@ -95,6 +104,53 @@ export class DatabaseStorage implements IStorage {
     }
     const [lead] = await db.insert(leads).values({ email, source }).returning();
     return { isNew: true, lead };
+  }
+
+  async isStripeEventProcessed(eventId: string): Promise<boolean> {
+    const existing = await db
+      .select({ eventId: processedStripeEvents.eventId })
+      .from(processedStripeEvents)
+      .where(eq(processedStripeEvents.eventId, eventId));
+    return existing.length > 0;
+  }
+
+  async markStripeEventProcessed(eventId: string, type: string): Promise<void> {
+    // onConflictDoNothing makes concurrent retries a safe no-op rather than a throw
+    await db
+      .insert(processedStripeEvents)
+      .values({ eventId, type })
+      .onConflictDoNothing();
+  }
+
+  async getContentEntry(slug: string, lang: string): Promise<ContentEntryRow | undefined> {
+    const [row] = await db
+      .select()
+      .from(contentEntries)
+      .where(and(eq(contentEntries.slug, slug), eq(contentEntries.lang, lang)));
+    return row;
+  }
+
+  async upsertContentEntry(entry: InsertContentEntry): Promise<void> {
+    await db
+      .insert(contentEntries)
+      .values(entry)
+      .onConflictDoUpdate({
+        target: [contentEntries.slug, contentEntries.lang],
+        set: {
+          tier: entry.tier,
+          published: entry.published,
+          sort: entry.sort,
+          updatedAt: new Date(),
+        },
+      });
+  }
+
+  async hasCompletedPurchase(userId: string, productType?: string): Promise<boolean> {
+    const conditions = productType
+      ? and(eq(purchases.userId, userId), eq(purchases.productType, productType), eq(purchases.status, "completed"))
+      : and(eq(purchases.userId, userId), eq(purchases.status, "completed"));
+    const rows = await db.select({ id: purchases.id }).from(purchases).where(conditions);
+    return rows.length > 0;
   }
 }
 

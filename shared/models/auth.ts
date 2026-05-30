@@ -31,7 +31,9 @@ export const users = pgTable("users", {
   // Stripe columns
   stripeCustomerId: text('stripe_customer_id'),
   stripeSubscriptionId: text('stripe_subscription_id'),
-  subscriptionStatus: text('subscription_status').default('free'),
+  subscriptionStatus: text('subscription_status').default('free'), // 'free' | 'active' | 'past_due' | 'canceled'
+  proExpiresAt: timestamp('pro_expires_at'),       // current period end / when Pro access ends
+  proGraceUntil: timestamp('pro_grace_until'),     // dunning grace deadline after a failed payment
 
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
