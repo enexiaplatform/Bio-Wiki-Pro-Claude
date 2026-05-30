@@ -1,0 +1,11 @@
+{
+  "links": {
+    "gmpKit": "GMP Audit Kit",
+    "academy": "Academy",
+    "pricing": "Bảng giá",
+    "terms": "Điều khoản",
+    "privacy": "Bảo mật",
+    "refund": "Hoàn tiền"
+  },
+  "copyright": "© {{year}}"
+}

@@ -1,0 +1,30 @@
+{
+  "badge": "Nâng cấp Pro",
+  "title": "Mở khoá toàn bộ BioWikiPro Pro",
+  "subtitle": "Truy cập không giới hạn nội dung Pro, công cụ nâng cao và thư viện compliance đầy đủ.",
+  "price": "$8",
+  "perMonth": "/tháng",
+  "proActive": "Bạn đang dùng gói Pro 🎉",
+  "compare": {
+    "heading": "So sánh Free vs Pro",
+    "feature": "Tính năng",
+    "free": "Free",
+    "pro": "Pro"
+  },
+  "features": {
+    "academyFree": "Academy (48 bài cơ bản)",
+    "academyPro": "Bài Pro chuyên sâu",
+    "sops": "Thư viện SOP & compliance đầy đủ",
+    "tools": "Công cụ lab nâng cao",
+    "insights": "Insights & phân tích thị trường",
+    "support": "Hỗ trợ ưu tiên",
+    "earlyAccess": "Dùng thử tính năng mới sớm nhất"
+  },
+  "cta": {
+    "subscribe": "Nâng cấp Pro — $8/tháng",
+    "manage": "Quản lý gói đăng ký",
+    "login": "Đăng nhập để nâng cấp",
+    "loading": "Đang chuyển hướng..."
+  },
+  "error": "Không tạo được phiên thanh toán. Thử lại nhé."
+}

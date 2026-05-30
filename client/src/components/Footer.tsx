@@ -1,7 +1,10 @@
 import { Link } from "wouter";
 import { FlaskConical } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Footer() {
+  const { t } = useTranslation("footer");
   const year = new Date().getFullYear();
 
   return (
@@ -14,39 +17,42 @@ export function Footer() {
               <FlaskConical className="w-4 h-4 text-primary" />
             </div>
             <span className="font-bold text-sm">BioWikiPro</span>
-            <span className="text-muted-foreground text-xs">© {year}</span>
+            <span className="text-muted-foreground text-xs">{t("copyright", { year })}</span>
           </div>
 
           {/* Links */}
           <nav className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link href="/toolkits/gmp-audit-kit" className="hover:text-primary transition-colors">
-              GMP Audit Kit
+              {t("links.gmpKit")}
             </Link>
             <Link href="/academy" className="hover:text-primary transition-colors">
-              Academy
+              {t("links.academy")}
             </Link>
             <Link href="/pricing" className="hover:text-primary transition-colors">
-              Pricing
+              {t("links.pricing")}
             </Link>
             <span className="w-px h-3 bg-white/10" />
             <Link href="/terms" className="hover:text-primary transition-colors">
-              Điều khoản
+              {t("links.terms")}
             </Link>
             <Link href="/privacy" className="hover:text-primary transition-colors">
-              Bảo mật
+              {t("links.privacy")}
             </Link>
             <Link href="/refund" className="hover:text-primary transition-colors">
-              Hoàn tiền
+              {t("links.refund")}
             </Link>
           </nav>
 
-          {/* Contact */}
-          <a
-            href="mailto:support@biowikipro.com"
-            className="text-xs text-muted-foreground hover:text-primary transition-colors"
-          >
-            support@biowikipro.com
-          </a>
+          {/* Contact + language */}
+          <div className="flex items-center gap-4">
+            <a
+              href="mailto:support@biowikipro.com"
+              className="text-xs text-muted-foreground hover:text-primary transition-colors"
+            >
+              support@biowikipro.com
+            </a>
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
     </footer>

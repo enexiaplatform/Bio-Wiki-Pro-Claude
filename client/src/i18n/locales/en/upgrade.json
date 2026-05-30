@@ -1,0 +1,30 @@
+{
+  "badge": "Go Pro",
+  "title": "Unlock everything in BioWikiPro Pro",
+  "subtitle": "Unlimited access to Pro content, advanced tools, and the full compliance library.",
+  "price": "$8",
+  "perMonth": "/month",
+  "proActive": "You're on the Pro plan 🎉",
+  "compare": {
+    "heading": "Compare Free vs Pro",
+    "feature": "Feature",
+    "free": "Free",
+    "pro": "Pro"
+  },
+  "features": {
+    "academyFree": "Academy (48 core lessons)",
+    "academyPro": "In-depth Pro lessons",
+    "sops": "Full SOP & compliance library",
+    "tools": "Advanced lab tools",
+    "insights": "Insights & market analysis",
+    "support": "Priority support",
+    "earlyAccess": "Early access to new features"
+  },
+  "cta": {
+    "subscribe": "Upgrade to Pro — $8/month",
+    "manage": "Manage subscription",
+    "login": "Sign in to upgrade",
+    "loading": "Redirecting..."
+  },
+  "error": "Could not start checkout. Please try again."
+}

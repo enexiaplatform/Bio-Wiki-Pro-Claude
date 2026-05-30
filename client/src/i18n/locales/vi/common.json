@@ -1,0 +1,13 @@
+{
+  "language": "Ngôn ngữ",
+  "languageName": {
+    "vi": "Tiếng Việt",
+    "en": "English"
+  },
+  "actions": {
+    "learnMore": "Tìm hiểu thêm",
+    "getStarted": "Bắt đầu",
+    "buyNow": "Mua ngay",
+    "loading": "Đang tải..."
+  }
+}
