@@ -1,0 +1,75 @@
+{
+  "seoTitle": "GMP Audit Survival Kit — Pass your GMP inspection, $59",
+  "seoDesc": "A 6-in-1 toolkit to help QC/QA Pharma teams pass GMP & Annex 1 audits: checklist, tough Q&A, CAPA templates, mock interview. Just $59.",
+  "hero": {
+    "badge": "GMP Audit Survival Kit",
+    "titleLead": "Survive your GMP audit —",
+    "titleHighlight": "without guessing",
+    "subtitle": "A complete toolkit for Senior QC/QA: SOP gap analysis, CAPA templates, audit interview scripts — ready to use from day 1.",
+    "buyNow": "Buy now — $59",
+    "redirecting": "Redirecting…"
+  },
+  "trustBadges": ["One-time payment", "Lifetime access", "Instant download", "30-day money-back"],
+  "pains": {
+    "heading": "Sound familiar?",
+    "items": [
+      { "emoji": "⏰", "title": "Audit in 2 weeks and no idea where to start?", "desc": "No concrete checklist, everyone interprets things differently, and the lead QC is stressed out." },
+      { "emoji": "📋", "title": "SOP gaps but unsure which are critical?", "desc": "No tool to gauge compliance level — you keep guessing what to prioritize." },
+      { "emoji": "😰", "title": "Auditor asks hard questions, team frozen?", "desc": "You have the knowledge but can't phrase it in proper GMP language — easy to get a finding." }
+    ]
+  },
+  "includes": {
+    "heading": "What's in the Kit?",
+    "subtitle": "6 resources — worth an estimated $120 if bought separately",
+    "items": [
+      { "title": "40-page PDF Guide", "desc": "GMP Audit Survival Framework — from prep to audit day, step by step." },
+      { "title": "SOP Gap Analysis Excel", "desc": "Template that auto-calculates % compliance. Fill it in and instantly see which gaps to fix." },
+      { "title": "10 CAPA Report Templates", "desc": "Ready-to-fill CAPA templates for the most common GMP audit nonconformances." },
+      { "title": "Audit Interview Q&A Scripts", "desc": "50+ questions auditors ask most — with model answers for QC/QA." },
+      { "title": "Mock Audit Walkthrough", "desc": "Video walkthrough of a real audit from the auditor's perspective." },
+      { "title": "Bonus: 30-min Consulting Call", "desc": "1-on-1 with Henry (QC/Pharma Sales Expert) — review your audit plan directly." }
+    ]
+  },
+  "testimonials": {
+    "heading": "What users say",
+    "items": [
+      { "name": "Nguyen T.H.", "role": "QA Manager, Sanofi Vietnam", "text": "The CAPA templates saved my team at least 2 days of prep. No major findings on this WHO audit." },
+      { "name": "Le M.K.", "role": "Senior QC Microbiologist, DHG Pharma", "text": "The SOP Gap Analysis Excel is very practical — fill it in and you instantly know where to focus before the audit." },
+      { "name": "Tran V.A.", "role": "QC Supervisor, Imexpharm", "text": "The interview Q&A scripts made the whole team far more confident. Whatever the auditor asks, we have a framework to answer." }
+    ]
+  },
+  "pricing": {
+    "launchNote": "Launch price",
+    "priceNote": "One-time payment • No subscription • Lifetime access",
+    "buyNow": "Buy now",
+    "guarantee": "30-day money-back guarantee — not satisfied, full refund",
+    "secure": "🔒 Stripe Secure Payment",
+    "standards": "📦 GMP WHO • Annex 1 EU • FSSC 22000 • ISO 15189"
+  },
+  "whoFor": {
+    "heading": "Who is this for?",
+    "items": [
+      "Senior QC/QA Engineers with 3–7 years in Pharma or F&B",
+      "QC Supervisors preparing for their first GMP audit as lead",
+      "QA Managers who need ready-to-use resources to train the team before an audit",
+      "Anyone at a plant with an audit deadline in the next 1–3 months"
+    ],
+    "notForLabel": "Not a fit if:",
+    "notFor": "You're a QC with under 1 year of experience, or your plant has no basic QMS in place."
+  },
+  "faq": {
+    "heading": "Frequently asked questions",
+    "items": [
+      { "q": "Which GMP standards does it fit?", "a": "The Kit is designed for GMP WHO, Annex 1 EU GMP, FSSC 22000, and ISO 15189. Suitable for Pharma and F&B plants preparing for audits from regulators or international customers." },
+      { "q": "How do I receive the files after buying?", "a": "After payment, a confirmation email with the download link is sent to your registered address. The link is permanent." },
+      { "q": "I'm a new QC — can I use it?", "a": "The Kit is designed for Senior QC/QA (3+ years). New QCs can still learn from the Interview Scripts and PDF Guide. The SOP Gap Analysis needs basic QMS knowledge to use effectively." },
+      { "q": "Does it apply to F&B?", "a": "Yes. The FSSC 22000 section of the PDF Guide and the CAPA templates apply directly to F&B plants. The SOP Gap Analysis can be adapted for ISO 22000." },
+      { "q": "What's the refund policy?", "a": "30-day money-back guarantee. If you're not satisfied for any reason within 30 days, email us — 100% refund, no questions asked." }
+    ]
+  },
+  "finalCta": {
+    "note": "Still have questions? Reach out directly.",
+    "buy": "Buy GMP Audit Kit — $59",
+    "ask": "Ask before buying"
+  }
+}

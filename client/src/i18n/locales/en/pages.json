@@ -1,0 +1,15 @@
+{
+  "paymentSuccess": {
+    "title": "Payment Successful!",
+    "subtitle": "Your Pro access is now active.",
+    "redirecting_one": "Redirecting to Academy in {{count}} second…",
+    "redirecting_other": "Redirecting to Academy in {{count}} seconds…",
+    "goNow": "Go to Academy now",
+    "session": "Session"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "subtitle": "The page you're looking for doesn't exist.",
+    "home": "Back home"
+  }
+}

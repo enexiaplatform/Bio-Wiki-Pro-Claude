@@ -1,0 +1,15 @@
+{
+  "paymentSuccess": {
+    "title": "Thanh toán thành công!",
+    "subtitle": "Quyền truy cập Pro của bạn đã được kích hoạt.",
+    "redirecting_one": "Chuyển đến Academy sau {{count}} giây…",
+    "redirecting_other": "Chuyển đến Academy sau {{count}} giây…",
+    "goNow": "Vào Academy ngay",
+    "session": "Phiên"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "subtitle": "Trang bạn tìm không tồn tại.",
+    "home": "Về trang chủ"
+  }
+}

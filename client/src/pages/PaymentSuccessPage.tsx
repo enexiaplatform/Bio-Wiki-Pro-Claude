@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { CheckCircle2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { analytics } from "@/hooks/use-analytics";
 
 const REDIRECT_SECONDS = 3;
 
 export default function PaymentSuccessPage() {
+  const { t } = useTranslation("pages");
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS);
@@ -41,25 +43,23 @@ export default function PaymentSuccessPage() {
           </div>
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">Payment Successful!</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("paymentSuccess.title")}</h1>
         <p className="text-muted-foreground text-lg mb-2">
-          Your Pro access is now active.
+          {t("paymentSuccess.subtitle")}
         </p>
         <p className="text-sm text-muted-foreground mb-10">
-          Redirecting to Academy in{" "}
-          <span className="font-bold text-teal-400">{countdown}</span>{" "}
-          second{countdown !== 1 ? "s" : ""}…
+          {t("paymentSuccess.redirecting", { count: countdown })}
         </p>
 
         <Link href="/academy">
           <button className="w-full sm:w-auto px-8 py-3 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold rounded-xl transition-all text-sm">
-            Go to Academy now
+            {t("paymentSuccess.goNow")}
           </button>
         </Link>
 
         {sessionId && (
           <p className="mt-6 text-[11px] text-muted-foreground/50 font-mono break-all">
-            Session: {sessionId}
+            {t("paymentSuccess.session")}: {sessionId}
           </p>
         )}
       </div>
