@@ -9,5 +9,14 @@
     "getStarted": "Bắt đầu",
     "buyNow": "Mua ngay",
     "loading": "Đang tải..."
+  },
+  "leadMagnet": {
+    "successTitle": "Đã gửi! Kiểm tra email của bạn.",
+    "successDesc": "File checklist đang trên đường đến hộp thư — có thể mất 1–2 phút.",
+    "title": "🎁 Tải miễn phí: GMP Audit Quick Checklist (PDF)",
+    "subtitle": "25 điểm kiểm tra trước ngày audit — theo GMP WHO & Annex 1",
+    "placeholder": "Email của bạn",
+    "submit": "Nhận ngay",
+    "submitting": "Đang gửi..."
   }
 }

@@ -34,5 +34,18 @@
     "inlineTitle": "Ready to go deeper?",
     "inlineDesc": "Pro lessons include decision trees, templates, and real-world case studies.",
     "cta": "Upgrade to Pro"
+  },
+  "modal": {
+    "title": "Upgrade to Pro",
+    "subtitle": "Unlock the full scientific potential with premium access.",
+    "features": [
+      "Unlimited access to all SOPs",
+      "Advanced calculators & tools",
+      "Detailed job insights & salary data",
+      "Priority support"
+    ],
+    "unlock": "Unlock Pro Access",
+    "signIn": "Sign In to Upgrade",
+    "learnMore": "Learn more about Pro benefits"
   }
 }

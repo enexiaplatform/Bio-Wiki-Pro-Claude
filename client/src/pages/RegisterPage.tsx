@@ -8,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { FlaskConical } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 
 export default function RegisterPage() {
-  useSEO({ title: "Tạo tài khoản — BioWikiPro", description: "Đăng ký miễn phí để học 48 bài GMP, truy cập QC Hub, và nhận tài nguyên QC/QA Pharma chuyên sâu tại Vietnam." });
+  const { t } = useTranslation("auth");
+  useSEO({ title: t("register.seoTitle"), description: t("register.seoDesc") });
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,8 +30,8 @@ export default function RegisterPage() {
 
     if (password !== confirmPassword) {
       toast({
-        title: "Passwords do not match",
-        description: "Please make sure both passwords are the same.",
+        title: t("register.mismatchTitle"),
+        description: t("register.mismatchDesc"),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -38,8 +40,8 @@ export default function RegisterPage() {
 
     if (password.length < 8) {
       toast({
-        title: "Password too short",
-        description: "Password must be at least 8 characters.",
+        title: t("register.shortTitle"),
+        description: t("register.shortDesc"),
         variant: "destructive",
       });
       setIsLoading(false);
@@ -57,8 +59,8 @@ export default function RegisterPage() {
       setLocation("/welcome");
     } catch (err: any) {
       toast({
-        title: "Registration Failed",
-        description: err.message || "Failed to create account",
+        title: t("register.failTitle"),
+        description: err.message || t("register.failDesc"),
         variant: "destructive",
       });
     } finally {
@@ -73,16 +75,16 @@ export default function RegisterPage() {
           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center mx-auto mb-4">
             <FlaskConical className="w-6 h-6 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t("register.title")}</CardTitle>
           <CardDescription>
-            Enter your details below to get started
+            {t("register.subtitle")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First name</Label>
+                <Label htmlFor="firstName">{t("register.firstName")}</Label>
                 <Input 
                   id="firstName" 
                   placeholder="Marie" 
@@ -92,7 +94,7 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last name</Label>
+                <Label htmlFor="lastName">{t("register.lastName")}</Label>
                 <Input 
                   id="lastName" 
                   placeholder="Curie" 
@@ -103,7 +105,7 @@ export default function RegisterPage() {
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("register.email")}</Label>
               <Input 
                 id="email" 
                 type="email" 
@@ -114,22 +116,22 @@ export default function RegisterPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("register.password")}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Minimum 8 characters"
+                placeholder={t("register.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label htmlFor="confirmPassword">{t("register.confirmPassword")}</Label>
               <Input
                 id="confirmPassword"
                 type="password"
-                placeholder="Repeat your password"
+                placeholder={t("register.confirmPlaceholder")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -138,12 +140,12 @@ export default function RegisterPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating account..." : "Sign up"}
+              {isLoading ? t("register.submitting") : t("register.submit")}
             </Button>
             <div className="text-sm text-center text-muted-foreground">
-              Already have an account?{" "}
+              {t("register.haveAccount")}{" "}
               <Link href="/login" className="text-primary hover:underline font-medium">
-                Sign in
+                {t("register.signIn")}
               </Link>
             </div>
           </CardFooter>

@@ -8,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { FlaskConical } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 
 export default function LoginPage() {
-  useSEO({ title: "Đăng nhập — BioWikiPro", description: "Đăng nhập vào BioWikiPro để truy cập kiến thức QC/QA Pharma và các toolkit GMP chuyên nghiệp." });
+  const { t } = useTranslation("auth");
+  useSEO({ title: t("login.seoTitle"), description: t("login.seoDesc") });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -29,8 +31,8 @@ export default function LoginPage() {
       setLocation("/academy");
     } catch (err: any) {
       toast({
-        title: "Login Failed",
-        description: err.message || "Invalid credentials",
+        title: t("login.failTitle"),
+        description: err.message || t("login.failDesc"),
         variant: "destructive",
       });
     } finally {
@@ -45,15 +47,15 @@ export default function LoginPage() {
           <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center mx-auto mb-4">
             <FlaskConical className="w-6 h-6 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold">{t("login.title")}</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account
+            {t("login.subtitle")}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("login.email")}</Label>
               <Input 
                 id="email" 
                 type="email" 
@@ -64,7 +66,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("login.password")}</Label>
               <Input 
                 id="password" 
                 type="password" 
@@ -76,12 +78,12 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? t("login.submitting") : t("login.submit")}
             </Button>
             <div className="text-sm text-center text-muted-foreground">
-              Don't have an account?{" "}
+              {t("login.noAccount")}{" "}
               <Link href="/signup" className="text-primary hover:underline font-medium">
-                Sign up
+                {t("login.signUp")}
               </Link>
             </div>
           </CardFooter>

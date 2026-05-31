@@ -34,5 +34,18 @@
     "inlineTitle": "Sẵn sàng đi sâu hơn?",
     "inlineDesc": "Bài Pro gồm cây quyết định, biểu mẫu và case-study thực chiến.",
     "cta": "Nâng cấp Pro"
+  },
+  "modal": {
+    "title": "Nâng cấp Pro",
+    "subtitle": "Mở khoá toàn bộ tiềm năng với quyền truy cập cao cấp.",
+    "features": [
+      "Truy cập không giới hạn mọi SOP",
+      "Công cụ & calculator nâng cao",
+      "Thông tin việc làm & dữ liệu lương chi tiết",
+      "Hỗ trợ ưu tiên"
+    ],
+    "unlock": "Mở khoá Pro",
+    "signIn": "Đăng nhập để nâng cấp",
+    "learnMore": "Tìm hiểu thêm về lợi ích Pro"
   }
 }

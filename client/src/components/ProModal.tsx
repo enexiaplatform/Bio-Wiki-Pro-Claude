@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -10,8 +11,10 @@ interface ProModalProps {
 }
 
 export function ProModal({ isOpen, onClose }: ProModalProps) {
+  const { t } = useTranslation("upgrade");
   const { isAuthenticated } = useUser();
   const [, setLocation] = useLocation();
+  const features = t("modal.features", { returnObjects: true }) as string[];
 
   const handleUpgrade = () => {
     if (!isAuthenticated) {
@@ -57,17 +60,12 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center mb-4 shadow-lg shadow-primary/25">
                   <Sparkles className="w-8 h-8 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold font-display mb-2">Upgrade to Pro</h2>
-                <p className="text-muted-foreground">Unlock the full scientific potential with premium access.</p>
+                <h2 className="text-2xl font-bold font-display mb-2">{t("modal.title")}</h2>
+                <p className="text-muted-foreground">{t("modal.subtitle")}</p>
               </div>
 
               <div className="space-y-4 mb-8">
-                {[
-                  "Unlimited access to all SOPs",
-                  "Advanced calculators & tools",
-                  "Detailed job insights & salary data",
-                  "Priority support",
-                ].map((feature, i) => (
+                {features.map((feature, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                       <Check className="w-3.5 h-3.5" />
@@ -84,7 +82,7 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
                   size="lg"
                   data-testid="button-pro-upgrade"
                 >
-                  Unlock Pro Access
+                  {t("modal.unlock")}
                 </Button>
               ) : (
                 <Button
@@ -93,7 +91,7 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
                   size="lg"
                   data-testid="button-pro-login"
                 >
-                  <a href="/api/login">Sign In to Upgrade</a>
+                  <a href="/api/login">{t("modal.signIn")}</a>
                 </Button>
               )}
 
@@ -101,7 +99,7 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
                 onClick={goToUpgradePage}
                 className="block w-full text-center text-xs text-muted-foreground mt-4 hover:text-foreground transition-colors"
               >
-                Learn more about Pro benefits
+                {t("modal.learnMore")}
               </button>
             </div>
           </motion.div>

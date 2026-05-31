@@ -1,1 +1,49 @@
-{}
+{
+  "seoTitle": "Pricing — Career & GMP Toolkit",
+  "seoDesc": "Career Starter Kit, Interview Prep, and the GMP Audit Survival Kit for QC/QA Pharma professionals. One-time purchases, yours forever.",
+  "title": "Simple Pricing",
+  "subtitle": "Start free. Upgrade when you need advanced content and tools.",
+  "perMonth": "/month",
+  "genericError": "Something went wrong. Please try again.",
+  "free": {
+    "badge": "FREE",
+    "features": [
+      "6 free Academy entries (3 per Pillar)",
+      "Basic Lab Tools calculators",
+      "Career Hub — read-only",
+      "QC Hub glossary"
+    ],
+    "cta": "Get Started"
+  },
+  "pro": {
+    "badge": "PRO",
+    "popular": "Most Popular",
+    "features": [
+      "All 20 Academy entries across both Pillars",
+      "Full workflow steps & regulatory references",
+      "Premium Lab Tools",
+      "Compliance SOPs (full text)",
+      "Career Skill Gap Analyzer",
+      "Priority content updates"
+    ],
+    "current": "Current Plan",
+    "cta": "Start Pro",
+    "redirecting": "Redirecting…"
+  },
+  "oneTime": {
+    "badge": "ONE-TIME",
+    "intro": "Downloadable career resources. Pay once, keep forever.",
+    "buy": "Buy Now",
+    "note": "All purchases are one-time payments. No subscription needed."
+  },
+  "products": {
+    "starter_kit": { "label": "Career Starter Kit", "desc": "CV templates tailored for Pharma + top 20 biotech employers." },
+    "interview_prep": { "label": "Interview Prep Pack", "desc": "100+ real QC/QA interview questions from hiring managers." },
+    "bundle": { "label": "Career Accelerator Bundle", "desc": "Both products together. Save 14%." }
+  },
+  "faq": [
+    { "q": "Is my payment secure?", "a": "Yes — all payments processed by Stripe. We never store card details." },
+    { "q": "When does Pro activate?", "a": "Instantly after payment. Your Academy content unlocks immediately." },
+    { "q": "Can I cancel anytime?", "a": "Yes. Cancel your Pro subscription anytime from Settings." }
+  ]
+}

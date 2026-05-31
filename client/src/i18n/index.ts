@@ -15,6 +15,7 @@ export const NAMESPACES = [
   "footer",
   "upgrade",
   "onboarding",
+  "auth",
 ] as const;
 
 export function isSupportedLng(value: string | undefined | null): value is Lng {

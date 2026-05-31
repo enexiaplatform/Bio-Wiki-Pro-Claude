@@ -1,6 +1,49 @@
 {
-  "title": "Bảng giá",
-  "subtitle": "Chọn gói phù hợp với bạn",
+  "seoTitle": "Bảng giá — Career & GMP Toolkit",
+  "seoDesc": "Career Starter Kit, Interview Prep, và GMP Audit Survival Kit cho QC/QA Pharma. Mua một lần, dùng mãi mãi.",
+  "title": "Bảng giá đơn giản",
+  "subtitle": "Bắt đầu miễn phí. Nâng cấp khi cần nội dung và công cụ nâng cao.",
   "perMonth": "/tháng",
-  "oneTime": "thanh toán một lần"
+  "genericError": "Đã có lỗi xảy ra. Vui lòng thử lại.",
+  "free": {
+    "badge": "MIỄN PHÍ",
+    "features": [
+      "6 bài Academy miễn phí (3 mỗi Pillar)",
+      "Công cụ Lab Tools cơ bản",
+      "Career Hub — chỉ đọc",
+      "Glossary QC Hub"
+    ],
+    "cta": "Bắt đầu"
+  },
+  "pro": {
+    "badge": "PRO",
+    "popular": "Phổ biến nhất",
+    "features": [
+      "Toàn bộ 20 bài Academy ở cả hai Pillar",
+      "Đầy đủ workflow steps & tham chiếu pháp lý",
+      "Lab Tools cao cấp",
+      "SOP Compliance (toàn văn)",
+      "Career Skill Gap Analyzer",
+      "Ưu tiên cập nhật nội dung"
+    ],
+    "current": "Gói hiện tại",
+    "cta": "Bắt đầu Pro",
+    "redirecting": "Đang chuyển hướng…"
+  },
+  "oneTime": {
+    "badge": "MUA MỘT LẦN",
+    "intro": "Tài nguyên career tải về. Trả một lần, giữ mãi.",
+    "buy": "Mua ngay",
+    "note": "Tất cả là thanh toán một lần. Không cần subscription."
+  },
+  "products": {
+    "starter_kit": { "label": "Career Starter Kit", "desc": "Mẫu CV cho ngành Pharma + top 20 nhà tuyển dụng biotech." },
+    "interview_prep": { "label": "Interview Prep Pack", "desc": "100+ câu hỏi phỏng vấn QC/QA thực tế từ hiring manager." },
+    "bundle": { "label": "Career Accelerator Bundle", "desc": "Cả hai sản phẩm. Tiết kiệm 14%." }
+  },
+  "faq": [
+    { "q": "Thanh toán có an toàn không?", "a": "Có — mọi thanh toán xử lý qua Stripe. Chúng tôi không lưu thông tin thẻ." },
+    { "q": "Pro kích hoạt khi nào?", "a": "Ngay sau khi thanh toán. Nội dung Academy mở khoá tức thì." },
+    { "q": "Có thể huỷ bất cứ lúc nào?", "a": "Có. Huỷ subscription Pro bất cứ lúc nào trong Settings." }
+  ]
 }
