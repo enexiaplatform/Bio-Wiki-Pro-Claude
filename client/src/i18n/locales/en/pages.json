@@ -8,8 +8,25 @@
     "session": "Session"
   },
   "notFound": {
-    "title": "Page not found",
-    "subtitle": "The page you're looking for doesn't exist.",
-    "home": "Back home"
+    "title": "404 — Page not found",
+    "subtitle": "The page you're looking for doesn't exist or has moved.",
+    "home": "Back to home"
+  },
+  "settings": {
+    "title": "Settings",
+    "signInPrompt": "Sign in to access your account settings.",
+    "signIn": "Sign In",
+    "planStatus": "Plan Status",
+    "proMember": "Pro Member",
+    "freeTier": "Free Tier",
+    "managePlan": "Manage Plan",
+    "upgrade": "Upgrade to Pro",
+    "signInToUpgrade": "Sign In to Upgrade",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "on": "On",
+    "billing": "Billing",
+    "signOut": "Sign Out",
+    "noEmail": "No email"
   }
 }

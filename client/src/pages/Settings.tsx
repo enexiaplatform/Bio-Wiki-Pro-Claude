@@ -4,14 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
+  const { t } = useTranslation("pages");
   const { user, isAuthenticated, isPro, logout } = useUser();
   const [, setLocation] = useLocation();
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-2xl mx-auto px-4">
-      <h1 className="text-3xl font-bold mb-8">Settings</h1>
+      <h1 className="text-3xl font-bold mb-8">{t("settings.title")}</h1>
 
       <div className="bg-card border border-white/10 rounded-2xl overflow-hidden mb-8">
         {isAuthenticated && user ? (
@@ -33,16 +35,16 @@ export default function Settings() {
                   </Badge>
                 )}
               </div>
-              <p className="text-sm text-muted-foreground" data-testid="text-settings-email">{user.email ?? "No email"}</p>
+              <p className="text-sm text-muted-foreground" data-testid="text-settings-email">{user.email ?? t("settings.noEmail")}</p>
             </div>
           </div>
         ) : (
           <div className="p-6 border-b border-white/5 text-center">
-            <p className="text-muted-foreground mb-4">Sign in to access your account settings.</p>
+            <p className="text-muted-foreground mb-4">{t("settings.signInPrompt")}</p>
             <Button asChild data-testid="button-settings-login">
               <a href="/api/login">
                 <LogIn className="w-4 h-4 mr-1.5" />
-                Sign In
+                {t("settings.signIn")}
               </a>
             </Button>
           </div>
@@ -54,8 +56,8 @@ export default function Settings() {
               <Shield className="w-5 h-5" />
             </div>
             <div>
-              <p className="font-bold text-sm">Plan Status</p>
-              <p className="text-xs text-muted-foreground">{isPro ? "Pro Member" : "Free Tier"}</p>
+              <p className="font-bold text-sm">{t("settings.planStatus")}</p>
+              <p className="text-xs text-muted-foreground">{isPro ? t("settings.proMember") : t("settings.freeTier")}</p>
             </div>
           </div>
           {isAuthenticated ? (
@@ -65,22 +67,22 @@ export default function Settings() {
               onClick={() => setLocation(isPro ? "/pricing" : "/upgrade")}
               data-testid="button-settings-plan"
             >
-              {isPro ? "Manage Plan" : "Upgrade to Pro"}
+              {isPro ? t("settings.managePlan") : t("settings.upgrade")}
             </Button>
           ) : (
             <Button variant="outline" size="sm" asChild data-testid="button-settings-upgrade-login">
-              <a href="/api/login">Sign In to Upgrade</a>
+              <a href="/api/login">{t("settings.signInToUpgrade")}</a>
             </Button>
           )}
         </div>
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-2">Preferences</h3>
-        
+        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-2">{t("settings.preferences")}</h3>
+
         <div className="bg-card border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
-          <SettingItem icon={Bell} label="Notifications" value="On" />
-          <SettingItem icon={CreditCard} label="Billing" />
+          <SettingItem icon={Bell} label={t("settings.notifications")} value={t("settings.on")} />
+          <SettingItem icon={CreditCard} label={t("settings.billing")} />
           {isAuthenticated && (
             <div
               onClick={logout}
@@ -90,7 +92,7 @@ export default function Settings() {
               <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500">
                 <LogOut className="w-4 h-4" />
               </div>
-              <span className="flex-1 font-medium text-red-500">Sign Out</span>
+              <span className="flex-1 font-medium text-red-500">{t("settings.signOut")}</span>
             </div>
           )}
         </div>
