@@ -472,6 +472,60 @@ export async function registerRoutes(app: Express): Promise<void> {
     return res.json({ locked: false, tier, title, body: content });
   });
 
+  // ── Dynamic sitemap (core pages + all MDX blog/academy, both languages) ────
+  app.get("/sitemap.xml", async (_req, res) => {
+    const baseUrl = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://bio-wiki-pro-claude.vercel.app").replace(/\/$/, "");
+
+    // Distinct slugs per collection from the MDX files on disk.
+    async function slugsIn(collection: string): Promise<string[]> {
+      const dir = path.resolve(process.cwd(), "content", collection);
+      try {
+        const files = await readdir(dir);
+        const set = new Set<string>();
+        for (const f of files) {
+          const m = f.match(/^(.+)\.(?:vi|en)\.mdx$/);
+          if (m) set.add(m[1]);
+        }
+        return Array.from(set);
+      } catch {
+        return [];
+      }
+    }
+
+    const corePaths = [
+      "", "/qc-hub", "/academy", "/tools", "/compliance", "/vault", "/career",
+      "/solutions", "/insights", "/pricing", "/toolkits/gmp-audit-kit", "/blog",
+      "/upgrade", "/login", "/signup", "/terms", "/privacy", "/refund",
+    ];
+    const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
+    const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
+    const allPaths = [...corePaths, ...blogPaths, ...libPaths];
+
+    // One <url> per language with hreflang alternates (x-default → en, primary).
+    const urls = allPaths
+      .flatMap((p) =>
+        ["en", "vi"].map((lng) => {
+          const loc = `${baseUrl}/${lng}${p}`;
+          const alts = [
+            `<xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/en${p}"/>`,
+            `<xhtml:link rel="alternate" hreflang="vi" href="${baseUrl}/vi${p}"/>`,
+            `<xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}/en${p}"/>`,
+          ].join("");
+          return `<url><loc>${loc}</loc>${alts}</url>`;
+        })
+      )
+      .join("\n");
+
+    const body =
+      `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
+      urls +
+      `\n</urlset>`;
+
+    res.set("Content-Type", "application/xml; charset=utf-8");
+    res.send(body);
+  });
+
   // ── Blog RSS feed ─────────────────────────────────────────────────────────
   app.get("/blog/rss.xml", async (_req, res) => {
     const baseUrl = process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app";
