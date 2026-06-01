@@ -7,12 +7,11 @@ import matter from "gray-matter";
 
 const CONTENT_DIR = path.resolve(process.cwd(), "content");
 const COLLECTIONS = ["academy", "blog", "toolkits"];
-const LANGS = ["vi", "en"];
+// English-only product.
+const LANGS = ["en"];
 const TIERS = ["free", "pro", "paid"];
 const REQUIRED_FIELDS = ["title", "slug", "lang", "tier", "category"];
-const FILE_RE = /^(.+)\.(vi|en)\.mdx$/;
-// internal links in markdown body that would NOT keep the language prefix
-const INTERNAL_LINK_RE = /\]\((\/[^)]*)\)/g;
+const FILE_RE = /^(.+)\.(en)\.mdx$/;
 
 const errors: string[] = [];
 const warnings: string[] = [];
@@ -79,14 +78,6 @@ async function validate() {
       if (seen.has(key)) errors.push(`${rel}: duplicate (collection, slug, lang) = ${key}`);
       seen.add(key);
 
-      // Internal links that won't keep the language prefix
-      let lm: RegExpExecArray | null;
-      while ((lm = INTERNAL_LINK_RE.exec(content)) !== null) {
-        const href = lm[1];
-        if (!/^\/(vi|en)(\/|$)/.test(href)) {
-          warnings.push(`${rel}: internal link "${href}" has no /vi or /en prefix (renders as plain <a>, loses language)`);
-        }
-      }
 
       found.push({ collection, slug: slugFromName, lang: langFromName, tier: data.tier });
     }

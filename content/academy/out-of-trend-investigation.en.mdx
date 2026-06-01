@@ -1,0 +1,30 @@
+---
+title: "Out-of-Trend (OOT) Investigation"
+slug: "out-of-trend-investigation"
+lang: "en"
+tier: "pro"
+category: "Quality Investigation"
+seoDescription: "OOT results are in-spec but drifting — how to detect them statistically and investigate before they become OOS failures."
+updatedAt: "2026-05-31"
+---
+
+# Out-of-Trend (OOT) Investigation
+
+An Out-of-Trend result is **within specification** but deviates from the
+expected historical pattern. OOT detection catches problems early — before they
+become an OOS failure or a recall.
+
+## Three types of trend signal
+
+1. **Within-batch trend** — a single result drifts from prior data points.
+2. **Across-batch trend** — successive batches creep in one direction.
+3. **Stability trend** — a stability time point falls off the projected line.
+
+## Detecting OOT
+
+Use statistical control limits (e.g. mean ± 2–3 SD) or regression-based limits
+from historical data — not the spec limits. A result inside spec but outside the
+control limit is an OOT signal.
+
+> This Pro lesson continues with control-chart setup, an OOT decision tree, and
+> how OOT links into Annual Product Review and CAPA.
