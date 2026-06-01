@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "wouter";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -9,6 +9,8 @@ import type { ContentCollection, ContentTier } from "@/lib/content";
 interface Props {
   collection: ContentCollection;
   slug: string;
+  /** Rendered after the body, only when the content is unlocked (e.g. a quiz). */
+  footer?: ReactNode;
 }
 
 type State =
@@ -22,7 +24,7 @@ type State =
  * only ever returned by the server when the session is entitled — so a free
  * user inspecting the network response never sees pro/paid content.
  */
-export function GatedContent({ collection, slug }: Props) {
+export function GatedContent({ collection, slug, footer }: Props) {
   const { language } = useLanguage();
   const [state, setState] = useState<State>({ status: "loading" });
 
@@ -91,8 +93,11 @@ export function GatedContent({ collection, slug }: Props) {
   }
 
   return (
-    <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{state.body}</ReactMarkdown>
-    </article>
+    <>
+      <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{state.body}</ReactMarkdown>
+      </article>
+      {footer}
+    </>
   );
 }

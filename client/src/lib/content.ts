@@ -6,6 +6,13 @@ import type { Lng } from "@/i18n";
 export type ContentTier = "free" | "pro" | "paid";
 export type ContentCollection = "academy" | "blog" | "toolkits";
 
+export interface QuizQuestion {
+  q: string;
+  options: string[];
+  /** index into `options` of the correct answer */
+  answer: number;
+}
+
 export interface ContentFrontmatter {
   title: string;
   slug: string;
@@ -14,6 +21,7 @@ export interface ContentFrontmatter {
   category: string;
   seoDescription?: string;
   updatedAt?: string;
+  quiz?: QuizQuestion[];
 }
 
 export interface ContentEntry extends ContentFrontmatter {
@@ -54,6 +62,7 @@ for (const path in modules) {
     category: fm.category ?? "Uncategorized",
     seoDescription: fm.seoDescription,
     updatedAt: fm.updatedAt,
+    quiz: Array.isArray(fm.quiz) ? fm.quiz : undefined,
     Component: mod.default,
   });
 }

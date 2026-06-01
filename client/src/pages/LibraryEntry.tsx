@@ -7,6 +7,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { GatedContent } from "@/components/GatedContent";
+import { LessonQuiz } from "@/components/LessonQuiz";
 import NotFound from "@/pages/not-found";
 
 export default function LibraryEntry() {
@@ -39,8 +40,13 @@ export default function LibraryEntry() {
         <span className="text-foreground">{entry.category}</span>
       </nav>
 
-      {/* Server-gated body (free → full, pro/paid → teaser + paywall) */}
-      <GatedContent collection="academy" slug={slug} />
+      {/* Server-gated body (free → full, pro/paid → teaser + paywall).
+          Quiz is rendered only when unlocked (passed as footer). */}
+      <GatedContent
+        collection="academy"
+        slug={slug}
+        footer={entry.quiz?.length ? <LessonQuiz quiz={entry.quiz} /> : null}
+      />
 
       {related.length > 0 && (
         <div className="mt-10 border-t border-white/10 pt-6">
