@@ -65,6 +65,15 @@ async function validate() {
 
       if (!data.updatedAt) warnings.push(`${rel}: no "updatedAt"`);
 
+      // Unescaped `<` before a digit/space is parsed by MDX as a JSX tag and
+      // breaks the build (e.g. "USP <85>"). Require &lt; instead.
+      const badAngle = content.match(/<\s*\d/);
+      if (badAngle) {
+        errors.push(
+          `${rel}: unescaped "<" before a digit ("${badAngle[0]}") — MDX reads it as JSX. Use &lt; (e.g. "USP &lt;85&gt;").`
+        );
+      }
+
       // Duplicate key
       const key = `${collection}/${slugFromName}/${langFromName}`;
       if (seen.has(key)) errors.push(`${rel}: duplicate (collection, slug, lang) = ${key}`);
