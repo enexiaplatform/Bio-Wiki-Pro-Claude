@@ -4,15 +4,14 @@ import clsx from "clsx";
 import { microbiologyLessons } from "@/data/lessons/microbiologyLessons";
 import { LessonCard } from "./LessonCard";
 import { useSEO } from "@/hooks/use-seo";
+import { useTranslation } from "react-i18next";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 
 const all = "All";
 
 export default function AcademyPage() {
-  useSEO({
-    title: "Academy — Học QC/QA Pharma chuyên sâu",
-    description: "48 bài học miễn phí về GMP microbiology: Sterility Testing, Environmental Monitoring, Endotoxin LAL, OOS Investigation, Annex 1, CAPA — cho Senior QC/QA Pharma Vietnam.",
-  });
+  const { t } = useTranslation("sections");
+  useSEO({ title: t("academy.seoTitle"), description: t("academy.seoDesc") });
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
@@ -37,10 +36,10 @@ export default function AcademyPage() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Pharma Microbiology Intelligence OS</p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">Academy</h1>
+            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">{t("academy.eyebrow")}</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("academy.title")}</h1>
             <p className="text-muted-foreground max-w-3xl leading-relaxed">
-              Learn microbiology like a QC Director. Build practical reasoning across EM, CCS, investigations, sterility assurance, rapid methods, and audit readiness.
+              {t("academy.subtitle")}
             </p>
           </div>
         </div>
@@ -52,20 +51,20 @@ export default function AcademyPage() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search lessons, risks, audit topics..."
+            placeholder={t("academy.search")}
             className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
           />
         </div>
 
         <div className="grid gap-3 md:grid-cols-[1fr_1fr]">
-          <FilterBar label="Category" values={categories} active={category} onChange={setCategory} />
-          <FilterBar label="Level" values={levels} active={level} onChange={setLevel} />
+          <FilterBar label={t("academy.filterCategory")} values={categories} active={category} onChange={setCategory} />
+          <FilterBar label={t("academy.filterLevel")} values={levels} active={level} onChange={setLevel} />
         </div>
       </section>
 
       <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
         <BookOpen className="w-4 h-4 text-primary" />
-        <span>{filteredLessons.length} director-level lessons</span>
+        <span>{filteredLessons.length} {t("academy.lessonCount")}</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">

@@ -8,16 +8,18 @@ import { insertQuoteRequestSchema, type InsertQuoteRequest } from "@shared/schem
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "react-i18next";
 
 export default function Solutions() {
+  const { t } = useTranslation("sections");
   const { data: products, isLoading } = useSolutions();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
       <div className="text-center max-w-2xl mx-auto mb-12">
-        <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">Lab Solutions</h1>
-        <p className="text-lg text-muted-foreground">Premium equipment and reagents to accelerate your research.</p>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">{t("solutions.title")}</h1>
+        <p className="text-lg text-muted-foreground">{t("solutions.subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

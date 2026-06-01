@@ -5,12 +5,11 @@ import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
 import { useSEO } from "@/hooks/use-seo";
+import { useTranslation } from "react-i18next";
 
 export default function Insights() {
-  useSEO({
-    title: "Insights — Sales & Market Intelligence",
-    description: "Xu hướng thị trường, thuật ngữ kỹ thuật bán hàng, và insights cho Technical Sales trong ngành Pharma & Life Science Vietnam.",
-  });
+  const { t: tr } = useTranslation("sections");
+  useSEO({ title: tr("insights.seoTitle"), description: tr("insights.seoDesc") });
   const { data: terms, isLoading } = useAcademyTerms();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -28,10 +27,10 @@ export default function Insights() {
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Insights</h1>
-        <p className="text-muted-foreground">Industry trends and sales intelligence for life science professionals.</p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">{tr("insights.title")}</h1>
+        <p className="text-muted-foreground">{tr("insights.subtitle")}</p>
         <div className="flex gap-3 mt-3">
-          <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-muted-foreground" data-testid="stat-insights">Insights: {salesTerms.length}</span>
+          <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-muted-foreground" data-testid="stat-insights">{tr("insights.stat")}: {salesTerms.length}</span>
         </div>
       </div>
 
@@ -40,7 +39,7 @@ export default function Insights() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search insights..."
+            placeholder={tr("insights.search")}
             className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

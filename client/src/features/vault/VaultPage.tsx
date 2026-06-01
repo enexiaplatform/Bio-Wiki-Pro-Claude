@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { NotebookPen, Save } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { useVault } from "@/hooks/useVault";
 import { SavedItems } from "./SavedItems";
 
 export default function VaultPage() {
+  const { t } = useTranslation("sections");
   const { items, removeItem, saveInvestigationNote } = useVault();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -29,33 +31,33 @@ export default function VaultPage() {
             <NotebookPen className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Vault Lite</p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">Saved Intelligence</h1>
+            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">{t("vault.eyebrow")}</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("vault.title")}</h1>
             <p className="text-muted-foreground max-w-3xl leading-relaxed">
-              LocalStorage-backed workspace for lessons, audit answers, case studies, and quick investigation notes. No account or backend required.
+              {t("vault.subtitle")}
             </p>
           </div>
         </div>
       </section>
 
       <section className="rounded-2xl border border-white/10 bg-card p-5 md:p-6 mb-6">
-        <h2 className="text-xl font-bold mb-4">Save an Investigation Note</h2>
+        <h2 className="text-xl font-bold mb-4">{t("vault.saveHeading")}</h2>
         <div className="grid md:grid-cols-[280px_1fr_auto] gap-3 items-start">
           <input
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            placeholder="Note title"
+            placeholder={t("vault.noteTitle")}
             className="rounded-xl border border-white/10 bg-background/50 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
           />
           <textarea
             value={content}
             onChange={(event) => setContent(event.target.value)}
-            placeholder="Hypothesis, evidence gap, CAPA idea, or audit concern..."
+            placeholder={t("vault.notePlaceholder")}
             className="min-h-24 rounded-xl border border-white/10 bg-background/50 px-3 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
           />
           <Button onClick={saveNote} disabled={!title.trim() || !content.trim()} className="md:mt-0">
             <Save className="w-4 h-4" />
-            Save
+            {t("vault.save")}
           </Button>
         </div>
       </section>

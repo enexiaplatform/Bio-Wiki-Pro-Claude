@@ -5,6 +5,7 @@ import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
+import { useTranslation } from "react-i18next";
 
 type ProductType = "starter_kit" | "interview_prep" | "bundle";
 
@@ -104,10 +105,8 @@ const careerData: Record<Role, {
 };
 
 export default function Career() {
-  useSEO({
-    title: "Career — Lộ trình thăng tiến QC/QA Pharma",
-    description: "Roadmap nghề nghiệp từ QC Microbiologist lên QA Manager: skill map, salary guide, và Career Starter Kit cho Pharma & Life Science Vietnam.",
-  });
+  const { t } = useTranslation("sections");
+  useSEO({ title: t("career.seoTitle"), description: t("career.seoDesc") });
   const [activeRole, setActiveRole] = useState<Role>("QC Microbiologist");
   const [activeStageIdx, setActiveStageIdx] = useState(0);
   const [skillStates, setSkillStates] = useState<Record<string, SkillState>>({});
@@ -161,9 +160,9 @@ export default function Career() {
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
       {/* HEADER SECTION */}
       <div className="mb-10 text-center md:text-left">
-        <h1 className="text-3xl md:text-5xl font-bold mb-4 font-display text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">Career Hub</h1>
+        <h1 className="text-3xl md:text-5xl font-bold mb-4 font-display text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">{t("career.title")}</h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
-          Chart your career pathway. Analyze your skill gaps. Download the resources you need to get hired.
+          {t("career.subtitle")}
         </p>
       </div>
 

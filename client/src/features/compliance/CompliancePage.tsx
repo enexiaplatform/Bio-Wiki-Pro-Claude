@@ -2,12 +2,11 @@ import { ClipboardCheck, ShieldCheck } from "lucide-react";
 import { complianceTopics } from "@/data/compliance/auditBank";
 import { AuditQuestionBank } from "./AuditQuestionBank";
 import { useSEO } from "@/hooks/use-seo";
+import { useTranslation } from "react-i18next";
 
 export default function CompliancePage() {
-  useSEO({
-    title: "Compliance — GMP Audit Readiness & Annex 1",
-    description: "Chuẩn bị audit GMP và Annex 1: topic intelligence, câu hỏi thanh tra, evidence-backed answers — dành cho QC/QA Pharma Vietnam.",
-  });
+  const { t } = useTranslation("sections");
+  useSEO({ title: t("compliance.seoTitle"), description: t("compliance.seoDesc") });
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
       <section className="mb-8 rounded-2xl border border-white/10 bg-card p-5 md:p-7 shadow-xl shadow-black/10">
@@ -16,10 +15,10 @@ export default function CompliancePage() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Compliance intelligence</p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">Compliance</h1>
+            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">{t("compliance.eyebrow")}</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("compliance.title")}</h1>
             <p className="text-muted-foreground max-w-3xl leading-relaxed">
-              Build Annex 1 and GMP inspection readiness through topic intelligence, strong answers, and evidence-backed audit thinking.
+              {t("compliance.subtitle")}
             </p>
           </div>
         </div>

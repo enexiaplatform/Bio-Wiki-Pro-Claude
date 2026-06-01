@@ -1,0 +1,65 @@
+{
+  "qcHub": {
+    "seoTitle": "QC Hub — Microbiology QC knowledge",
+    "seoDesc": "15 in-depth topics: USP <61>, Annex 1, Environmental Monitoring, Endotoxin, Sterility Testing, OOS Investigation, CAPA — for QC Pharma.",
+    "title": "QC Hub",
+    "subtitle": "Professional workflows and knowledge for Quality Control.",
+    "topics": "Topics",
+    "quickWorkflows": "Quick Workflows",
+    "search": "Search QC topics...",
+    "empty": "No QC topics found",
+    "emptyHint": "Try adjusting your search or category filter."
+  },
+  "academy": {
+    "seoTitle": "Academy — In-depth QC/QA Pharma learning",
+    "seoDesc": "48 free lessons on GMP microbiology: Sterility Testing, Environmental Monitoring, Endotoxin LAL, OOS Investigation, Annex 1, CAPA — for Senior QC/QA Pharma.",
+    "eyebrow": "Pharma Microbiology Intelligence OS",
+    "title": "Academy",
+    "subtitle": "Learn microbiology like a QC Director. Build practical reasoning across EM, CCS, investigations, sterility assurance, rapid methods, and audit readiness.",
+    "search": "Search lessons, risks, audit topics...",
+    "lessonCount": "director-level lessons",
+    "filterCategory": "Category",
+    "filterLevel": "Level"
+  },
+  "tools": {
+    "seoTitle": "Lab Tools — Decision Trees & QC Templates",
+    "seoDesc": "Decision-support tools for QC Pharma: CCS Builder, OOS Investigation Template, Scenario Decision Tree — per GMP WHO and Annex 1.",
+    "eyebrow": "Decision-support tools",
+    "title": "Tools",
+    "subtitle": "Practical QC microbiology tools for EM decisions, CCS reasoning, and investigation structure."
+  },
+  "compliance": {
+    "seoTitle": "Compliance — GMP Audit Readiness & Annex 1",
+    "seoDesc": "GMP and Annex 1 audit prep: topic intelligence, inspection questions, evidence-backed answers — for QC/QA Pharma.",
+    "eyebrow": "Compliance intelligence",
+    "title": "Compliance",
+    "subtitle": "Build Annex 1 and GMP inspection readiness through topic intelligence, strong answers, and evidence-backed audit thinking."
+  },
+  "vault": {
+    "eyebrow": "Vault Lite",
+    "title": "Saved Intelligence",
+    "subtitle": "A local workspace for lessons, audit answers, case studies, and quick investigation notes. No account or backend required.",
+    "saveHeading": "Save an Investigation Note",
+    "noteTitle": "Note title",
+    "notePlaceholder": "Hypothesis, evidence gap, CAPA idea, or audit concern...",
+    "save": "Save"
+  },
+  "career": {
+    "seoTitle": "Career — QC/QA Pharma promotion roadmap",
+    "seoDesc": "Career roadmap from QC Microbiologist to QA Manager: skill map, salary guide, and the Career Starter Kit for Pharma & Life Science.",
+    "title": "Career Hub",
+    "subtitle": "Chart your career pathway. Analyze your skill gaps. Download the resources you need to get hired."
+  },
+  "solutions": {
+    "title": "Lab Solutions",
+    "subtitle": "Premium equipment and reagents to accelerate your research."
+  },
+  "insights": {
+    "seoTitle": "Insights — Sales & Market Intelligence",
+    "seoDesc": "Market trends, technical sales terminology, and insights for Technical Sales in Pharma & Life Science.",
+    "title": "Insights",
+    "subtitle": "Industry trends and sales intelligence for life science professionals.",
+    "stat": "Insights",
+    "search": "Search insights..."
+  }
+}

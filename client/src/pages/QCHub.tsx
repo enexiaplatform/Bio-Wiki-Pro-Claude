@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
 import { useSEO } from "@/hooks/use-seo";
+import { useTranslation } from "react-i18next";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 import { analytics } from "@/hooks/use-analytics";
 
@@ -16,10 +17,8 @@ const workflows = [
 ];
 
 export default function QCHub() {
-  useSEO({
-    title: "QC Hub — Kiến thức Microbiology QC",
-    description: "15 chủ đề chuyên sâu: USP <61>, Annex 1, Environmental Monitoring, Endotoxin, Sterility Testing, OOS Investigation, CAPA — dành cho QC Pharma Vietnam.",
-  });
+  const { t } = useTranslation("sections");
+  useSEO({ title: t("qcHub.seoTitle"), description: t("qcHub.seoDesc") });
   const { data: terms, isLoading } = useAcademyTerms();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -38,15 +37,15 @@ export default function QCHub() {
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
       <LeadMagnetBanner />
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">QC Hub</h1>
-        <p className="text-muted-foreground">Professional workflows and knowledge for Quality Control.</p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">{t("qcHub.title")}</h1>
+        <p className="text-muted-foreground">{t("qcHub.subtitle")}</p>
         <div className="flex gap-3 mt-3">
-          <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-muted-foreground" data-testid="stat-topics">Topics: {qcTerms.length}</span>
+          <span className="text-[11px] bg-white/5 border border-white/10 px-2.5 py-1 rounded-md text-muted-foreground" data-testid="stat-topics">{t("qcHub.topics")}: {qcTerms.length}</span>
         </div>
       </div>
 
       <div className="mb-10">
-        <h2 className="text-lg font-bold mb-4">Quick Workflows</h2>
+        <h2 className="text-lg font-bold mb-4">{t("qcHub.quickWorkflows")}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {workflows.map(wf => (
             <div
@@ -70,7 +69,7 @@ export default function QCHub() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search QC topics..."
+            placeholder={t("qcHub.search")}
             className="w-full bg-card border border-border rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             value={search}
             onChange={(e) => {
@@ -210,8 +209,8 @@ export default function QCHub() {
       {!isLoading && filteredTerms.length === 0 && (
         <div className="text-center py-16 text-muted-foreground">
           <FlaskConical className="w-12 h-12 mx-auto mb-4 opacity-30" />
-          <p className="text-lg font-medium">No QC topics found</p>
-          <p className="text-sm mt-1">Try adjusting your search or category filter.</p>
+          <p className="text-lg font-medium">{t("qcHub.empty")}</p>
+          <p className="text-sm mt-1">{t("qcHub.emptyHint")}</p>
         </div>
       )}
     </div>
