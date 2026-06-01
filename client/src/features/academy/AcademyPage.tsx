@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, Filter, Search, ShieldCheck, ChevronRight, Crown } from "lucide-react";
+import { BookOpen, Filter, Search, ShieldCheck, ChevronRight, Crown, CheckCircle2 } from "lucide-react";
 import clsx from "clsx";
 import { Link } from "wouter";
 import { microbiologyLessons } from "@/data/lessons/microbiologyLessons";
@@ -9,16 +9,20 @@ import { useTranslation } from "react-i18next";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 import { listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
+import { useReadLessons } from "@/hooks/use-read-lessons";
 
 const all = "All";
 
 export default function AcademyPage() {
   const { t } = useTranslation("sections");
   const { language } = useLanguage();
+  const { isRead, count: readCount } = useReadLessons();
   useSEO({ title: t("academy.seoTitle"), description: t("academy.seoDesc") });
 
   // MDX lessons from the content engine.
   const libraryEntries = listContent({ collection: "academy", lang: language });
+  const readInLibrary = libraryEntries.filter((e) => isRead(e.slug)).length;
+  const progressPct = libraryEntries.length ? Math.round((readInLibrary / libraryEntries.length) * 100) : 0;
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
@@ -55,7 +59,18 @@ export default function AcademyPage() {
       {libraryEntries.length > 0 && (
         <section className="mb-8">
           <h2 className="text-lg font-bold mb-1">{t("academy.libraryHeading")}</h2>
-          <p className="text-sm text-muted-foreground mb-4">{t("academy.librarySubtitle")}</p>
+          <p className="text-sm text-muted-foreground mb-3">{t("academy.librarySubtitle")}</p>
+
+          {/* Reading progress */}
+          <div className="mb-4 flex items-center gap-3">
+            <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden max-w-xs">
+              <div className="h-full bg-primary transition-all" style={{ width: `${progressPct}%` }} />
+            </div>
+            <span className="text-xs text-muted-foreground shrink-0">
+              {t("academy.progress", { read: readInLibrary, total: libraryEntries.length })}
+            </span>
+          </div>
+
           <div className="grid gap-3 sm:grid-cols-2">
             {libraryEntries.map((e) => (
               <Link
@@ -77,9 +92,16 @@ export default function AcademyPage() {
                 </div>
                 <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{e.title}</p>
                 {e.seoDescription && <p className="text-xs text-muted-foreground line-clamp-2">{e.seoDescription}</p>}
-                <span className="inline-flex items-center gap-1 text-xs text-primary mt-2">
-                  {t("academy.readMore")} <ChevronRight className="w-3.5 h-3.5" />
-                </span>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="inline-flex items-center gap-1 text-xs text-primary">
+                    {t("academy.readMore")} <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
+                  {isRead(e.slug) && (
+                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> {t("academy.readBadge")}
+                    </span>
+                  )}
+                </div>
               </Link>
             ))}
           </div>

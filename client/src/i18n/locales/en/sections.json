@@ -20,12 +20,15 @@
     "lessonCount": "director-level lessons",
     "filterCategory": "Category",
     "filterLevel": "Level",
-    "libraryHeading": "In-depth library (bilingual)",
-    "librarySubtitle": "Long-form MDX lessons — available in English & Vietnamese.",
+    "libraryHeading": "In-depth library",
+    "librarySubtitle": "Long-form lessons on GMP, sterility, investigations, and audit readiness.",
     "readMore": "Read",
     "tierFree": "Free",
     "tierPro": "Pro",
-    "tierPaid": "Paid"
+    "tierPaid": "Paid",
+    "progress": "{{read}} of {{total}} lessons read",
+    "readBadge": "Read",
+    "related": "Related lessons"
   },
   "tools": {
     "seoTitle": "Lab Tools — Decision Trees & QC Templates",
