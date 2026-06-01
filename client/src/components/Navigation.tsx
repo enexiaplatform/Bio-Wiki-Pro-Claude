@@ -1,5 +1,7 @@
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search } from "lucide-react";
+
+const openSearch = () => window.dispatchEvent(new Event("bwp:open-search"));
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
@@ -88,6 +90,14 @@ export function DesktopNav() {
       </nav>
 
       <div className="ml-auto flex items-center gap-3">
+        <button
+          onClick={openSearch}
+          className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-white/20 transition-colors"
+          aria-label="Search"
+        >
+          <Search className="w-3.5 h-3.5" /> Search
+          <kbd className="ml-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
+        </button>
         {isAuthenticated ? (
           <>
             {isPro && (
@@ -141,6 +151,9 @@ export function MobileHeader() {
         )}
       </div>
       <div className="flex items-center gap-2">
+        <button onClick={openSearch} className="text-muted-foreground hover:text-foreground p-1.5" aria-label="Search">
+          <Search className="w-5 h-5" />
+        </button>
         {isAuthenticated ? (
           <>
             <Avatar className="w-7 h-7">

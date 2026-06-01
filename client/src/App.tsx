@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/context/UserContext";
 import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { CommandPalette } from "@/components/CommandPalette";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePageTracking } from "@/hooks/use-analytics";
 
@@ -90,6 +91,7 @@ function Layout() {
 
       <BottomNav />
       <Footer />
+      <CommandPalette />
     </div>
   );
 }
