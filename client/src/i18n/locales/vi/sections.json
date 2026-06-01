@@ -19,7 +19,13 @@
     "search": "Tìm bài học, rủi ro, chủ đề audit...",
     "lessonCount": "bài học director-level",
     "filterCategory": "Danh mục",
-    "filterLevel": "Cấp độ"
+    "filterLevel": "Cấp độ",
+    "libraryHeading": "Thư viện chuyên sâu (song ngữ)",
+    "librarySubtitle": "Bài học MDX dài — có cả tiếng Anh & tiếng Việt.",
+    "readMore": "Đọc",
+    "tierFree": "Miễn phí",
+    "tierPro": "Pro",
+    "tierPaid": "Trả phí"
   },
   "tools": {
     "seoTitle": "Lab Tools — Decision Trees & QC Templates",

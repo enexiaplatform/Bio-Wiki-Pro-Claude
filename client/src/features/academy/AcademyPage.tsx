@@ -1,17 +1,28 @@
 import { useMemo, useState } from "react";
-import { BookOpen, Filter, Search, ShieldCheck } from "lucide-react";
+import { BookOpen, Filter, Search, ShieldCheck, ChevronRight, Crown } from "lucide-react";
 import clsx from "clsx";
+import { Link } from "wouter";
 import { microbiologyLessons } from "@/data/lessons/microbiologyLessons";
 import { LessonCard } from "./LessonCard";
 import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
+import { listContent } from "@/lib/content";
+import { useLanguage } from "@/hooks/use-language";
 
 const all = "All";
 
 export default function AcademyPage() {
   const { t } = useTranslation("sections");
+  const { language } = useLanguage();
   useSEO({ title: t("academy.seoTitle"), description: t("academy.seoDesc") });
+
+  // Bilingual MDX lessons from the content engine (VI fallback for slugs without EN).
+  const libraryBySlug = new Map<string, ReturnType<typeof listContent>[number]>();
+  for (const e of [...listContent({ collection: "academy", lang: "vi" }), ...listContent({ collection: "academy", lang: language })]) {
+    libraryBySlug.set(e.slug, e);
+  }
+  const libraryEntries = Array.from(libraryBySlug.values());
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
@@ -44,6 +55,40 @@ export default function AcademyPage() {
           </div>
         </div>
       </section>
+
+      {libraryEntries.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-lg font-bold mb-1">{t("academy.libraryHeading")}</h2>
+          <p className="text-sm text-muted-foreground mb-4">{t("academy.librarySubtitle")}</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {libraryEntries.map((e) => (
+              <Link
+                key={e.slug}
+                href={`/library/${e.slug}`}
+                className="block rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors group"
+              >
+                <div className="flex items-center gap-2 text-[11px] mb-2">
+                  <span className="rounded-md bg-primary/10 text-primary px-2 py-0.5 font-semibold">{e.category}</span>
+                  <span
+                    className={clsx(
+                      "rounded-md px-2 py-0.5 font-semibold inline-flex items-center gap-1",
+                      e.tier === "free" ? "bg-emerald-400/10 text-emerald-400" : "bg-amber-400/10 text-amber-400"
+                    )}
+                  >
+                    {e.tier !== "free" && <Crown className="w-3 h-3" />}
+                    {t(e.tier === "free" ? "academy.tierFree" : e.tier === "paid" ? "academy.tierPaid" : "academy.tierPro")}
+                  </span>
+                </div>
+                <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{e.title}</p>
+                {e.seoDescription && <p className="text-xs text-muted-foreground line-clamp-2">{e.seoDescription}</p>}
+                <span className="inline-flex items-center gap-1 text-xs text-primary mt-2">
+                  {t("academy.readMore")} <ChevronRight className="w-3.5 h-3.5" />
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="space-y-4 mb-8 sticky top-[60px] md:top-20 z-30 bg-background/95 backdrop-blur-xl py-3 -mx-4 px-4 border-b border-white/5 md:static md:border-none md:bg-transparent md:p-0">
         <div className="relative">

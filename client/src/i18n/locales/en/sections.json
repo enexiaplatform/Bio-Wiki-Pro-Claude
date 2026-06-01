@@ -19,7 +19,13 @@
     "search": "Search lessons, risks, audit topics...",
     "lessonCount": "director-level lessons",
     "filterCategory": "Category",
-    "filterLevel": "Level"
+    "filterLevel": "Level",
+    "libraryHeading": "In-depth library (bilingual)",
+    "librarySubtitle": "Long-form MDX lessons — available in English & Vietnamese.",
+    "readMore": "Read",
+    "tierFree": "Free",
+    "tierPro": "Pro",
+    "tierPaid": "Paid"
   },
   "tools": {
     "seoTitle": "Lab Tools — Decision Trees & QC Templates",

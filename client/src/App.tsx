@@ -35,6 +35,7 @@ const LandingPage = lazy(() => import("@/pages/LandingPage"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
+const LibraryEntry = lazy(() => import("@/pages/LibraryEntry"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
 const RefundPage = lazy(() => import("@/pages/RefundPage"));
@@ -60,6 +61,7 @@ function Layout() {
           <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
+          <Route path="/library/:slug" component={LibraryEntry} />
           <Route path="/insights" component={Insights} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/:slug" component={BlogPost} />
