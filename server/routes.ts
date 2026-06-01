@@ -416,7 +416,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.get("/api/content/:collection/:slug", async (req: any, res) => {
     const { collection, slug } = req.params;
-    const lang = String(req.query.lang ?? "vi");
+    const lang = String(req.query.lang ?? "en");
 
     if (!CONTENT_COLLECTIONS.has(collection) || !SLUG_RE.test(slug) || !CONTENT_LANGS.has(lang)) {
       return res.status(400).json({ message: "Invalid content reference" });
@@ -501,24 +501,14 @@ export async function registerRoutes(app: Express): Promise<void> {
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
     const allPaths = [...corePaths, ...blogPaths, ...libPaths];
 
-    // One <url> per language with hreflang alternates (x-default → en, primary).
+    // English-only: clean single URL per path.
     const urls = allPaths
-      .flatMap((p) =>
-        ["en", "vi"].map((lng) => {
-          const loc = `${baseUrl}/${lng}${p}`;
-          const alts = [
-            `<xhtml:link rel="alternate" hreflang="en" href="${baseUrl}/en${p}"/>`,
-            `<xhtml:link rel="alternate" hreflang="vi" href="${baseUrl}/vi${p}"/>`,
-            `<xhtml:link rel="alternate" hreflang="x-default" href="${baseUrl}/en${p}"/>`,
-          ].join("");
-          return `<url><loc>${loc}</loc>${alts}</url>`;
-        })
-      )
+      .map((p) => `<url><loc>${baseUrl}${p || "/"}</loc></url>`)
       .join("\n");
 
     const body =
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
-      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
       urls +
       `\n</urlset>`;
 
@@ -564,7 +554,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       `<description>GMP, QC/QA &amp; data integrity insights</description>\n` +
       items
         .map((it) => {
-          const url = `${baseUrl}/${it.lang}/blog/${it.slug}`;
+          const url = `${baseUrl}/blog/${it.slug}`;
           const date = it.updatedAt ? new Date(it.updatedAt).toUTCString() : new Date().toUTCString();
           return (
             `<item><title>${esc(it.title)}</title>` +

@@ -15,10 +15,7 @@ export default function BlogPost() {
   const { language } = useLanguage();
   const { count, record } = useFreeReads();
 
-  // Current language, with VI fallback when the EN translation is missing.
-  const entry =
-    getContentBySlug("blog", slug, language) ??
-    (language !== "vi" ? getContentBySlug("blog", slug, "vi") : undefined);
+  const entry = getContentBySlug("blog", slug, language);
 
   useEffect(() => {
     if (entry) record(`blog/${slug}`);
@@ -49,7 +46,7 @@ export default function BlogPost() {
           datePublished: entry.updatedAt,
           dateModified: entry.updatedAt,
           articleSection: entry.category,
-          url: `${BASE_URL}/${language}/blog/${slug}`,
+          url: `${BASE_URL}/blog/${slug}`,
           publisher: { "@type": "Organization", name: "BioWikiPro" },
         }}
       />

@@ -1,7 +1,6 @@
 import { Link } from "wouter";
 import { FlaskConical } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export function Footer() {
   const { t } = useTranslation("footer");
@@ -43,16 +42,13 @@ export function Footer() {
             </Link>
           </nav>
 
-          {/* Contact + language */}
-          <div className="flex items-center gap-4">
-            <a
-              href="mailto:support@biowikipro.com"
-              className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              support@biowikipro.com
-            </a>
-            <LanguageSwitcher />
-          </div>
+          {/* Contact */}
+          <a
+            href="mailto:support@biowikipro.com"
+            className="text-xs text-muted-foreground hover:text-primary transition-colors"
+          >
+            support@biowikipro.com
+          </a>
         </div>
       </div>
     </footer>

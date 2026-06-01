@@ -29,13 +29,13 @@ export function LeadMagnetBanner() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message ?? "Đã có lỗi xảy ra");
+        throw new Error(data.message ?? "Something went wrong");
       }
 
       analytics.leadCaptured("lead_magnet_banner");
       setStatus("success");
     } catch (err: any) {
-      setErrorMsg(err.message ?? "Đã có lỗi. Thử lại nhé.");
+      setErrorMsg(err.message ?? "Something went wrong. Please try again.");
       setStatus("error");
     }
   }
@@ -47,7 +47,7 @@ export function LeadMagnetBanner() {
       <button
         onClick={() => setDismissed(true)}
         className="absolute top-3 right-3 text-muted-foreground hover:text-foreground transition-colors"
-        aria-label="Đóng"
+        aria-label="Close"
       >
         <X className="w-4 h-4" />
       </button>

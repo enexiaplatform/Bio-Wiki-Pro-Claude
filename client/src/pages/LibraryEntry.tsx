@@ -10,10 +10,7 @@ export default function LibraryEntry() {
   const { slug = "" } = useParams();
   const { language } = useLanguage();
 
-  // Metadata (title/category) from the build-time loader, with VI fallback.
-  const entry =
-    getContentBySlug("academy", slug, language) ??
-    (language !== "vi" ? getContentBySlug("academy", slug, "vi") : undefined);
+  const entry = getContentBySlug("academy", slug, language);
 
   useSEO({ title: entry?.title ?? "Academy", description: entry?.seoDescription });
 

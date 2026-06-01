@@ -6,7 +6,6 @@ import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 // `key` maps to nav.json translation keys; `name` is the fallback label.
 const mobileTabs = [
@@ -89,7 +88,6 @@ export function DesktopNav() {
       </nav>
 
       <div className="ml-auto flex items-center gap-3">
-        <LanguageSwitcher />
         {isAuthenticated ? (
           <>
             {isPro && (
@@ -143,7 +141,6 @@ export function MobileHeader() {
         )}
       </div>
       <div className="flex items-center gap-2">
-        <LanguageSwitcher />
         {isAuthenticated ? (
           <>
             <Avatar className="w-7 h-7">

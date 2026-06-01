@@ -33,7 +33,7 @@ export function GatedContent({ collection, slug }: Props) {
       .then(async (res) => {
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(data.message ?? "Không tải được nội dung");
+          throw new Error(data.message ?? "Could not load content");
         }
         return res.json();
       })
@@ -52,7 +52,7 @@ export function GatedContent({ collection, slug }: Props) {
   }, [collection, slug, language]);
 
   if (state.status === "loading") {
-    return <div className="py-10 text-sm text-muted-foreground">Đang tải nội dung…</div>;
+    return <div className="py-10 text-sm text-muted-foreground">Loading…</div>;
   }
 
   if (state.status === "error") {
@@ -71,19 +71,19 @@ export function GatedContent({ collection, slug }: Props) {
             <Lock className="w-5 h-5" />
           </div>
           <h2 className="text-lg font-bold mb-2">
-            {isPaid ? "Nội dung trả phí" : "Nội dung dành cho Pro"}
+            {isPaid ? "Paid content" : "Pro content"}
           </h2>
           <p className="text-sm text-muted-foreground mb-6">
             {isPaid
-              ? "Mua sản phẩm này để mở khoá toàn bộ nội dung."
-              : "Nâng cấp Pro để xem đầy đủ bài viết này và toàn bộ thư viện Pro."}
+              ? "Purchase this product to unlock the full content."
+              : "Upgrade to Pro to read this lesson in full and unlock the entire Pro library."}
           </p>
           <Link
             href={isPaid ? "/pricing" : "/upgrade"}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
           >
             {isPaid ? <Package className="w-4 h-4" /> : <Crown className="w-4 h-4" />}
-            {isPaid ? "Xem sản phẩm" : "Nâng cấp Pro"}
+            {isPaid ? "View product" : "Upgrade to Pro"}
           </Link>
         </div>
       </div>

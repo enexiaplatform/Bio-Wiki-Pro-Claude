@@ -1,18 +1,9 @@
-import { useTranslation } from "react-i18next";
-import { isSupportedLng, DEFAULT_LNG, SUPPORTED_LNGS, type Lng } from "@/i18n";
+import { DEFAULT_LNG, type Lng } from "@/i18n";
 
 /**
- * Convenience hook around i18next language state.
- * `changeLanguage` only updates i18n here; locale-routing (Sprint 2.2) wires
- * the URL prefix + cookie on top of it.
+ * English-only product. Kept as a tiny hook so existing call sites that read
+ * `language` (content loader lookups) don't need to change.
  */
-export function useLanguage() {
-  const { i18n } = useTranslation();
-  const language: Lng = isSupportedLng(i18n.language) ? i18n.language : DEFAULT_LNG;
-
-  return {
-    language,
-    supported: SUPPORTED_LNGS,
-    changeLanguage: (lng: Lng) => i18n.changeLanguage(lng),
-  };
+export function useLanguage(): { language: Lng } {
+  return { language: DEFAULT_LNG };
 }

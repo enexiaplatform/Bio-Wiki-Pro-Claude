@@ -16,7 +16,7 @@ export default function Blog() {
   const [category, setCategory] = useState("All");
   const [page, setPage] = useState(1);
 
-  useSEO({ title: "Blog", description: "GMP, QC/QA và data integrity insights cho ngành Pharma." });
+  useSEO({ title: "Blog", description: "GMP, QC/QA and data integrity insights for Pharma professionals." });
 
   // Posts in current language; fall back to VI entries whose EN is missing.
   const posts = listContent({ collection: "blog", lang: language });
@@ -37,7 +37,7 @@ export default function Blog() {
           itemListElement: filtered.map((p, i) => ({
             "@type": "ListItem",
             position: i + 1,
-            url: `${BASE_URL}/${language}/blog/${p.slug}`,
+            url: `${BASE_URL}/blog/${p.slug}`,
             name: p.title,
           })),
         }}

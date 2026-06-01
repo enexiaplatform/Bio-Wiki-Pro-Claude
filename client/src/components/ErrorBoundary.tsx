@@ -38,15 +38,15 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto text-2xl">
               ⚠️
             </div>
-            <h1 className="text-xl font-display font-bold">Đã xảy ra lỗi</h1>
+            <h1 className="text-xl font-display font-bold">Something went wrong</h1>
             <p className="text-sm text-muted-foreground">
-              Trang gặp sự cố khi tải. Vui lòng thử tải lại.
+              The page failed to load. Please try reloading.
             </p>
             <button
               onClick={this.handleReload}
               className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
             >
-              Tải lại trang
+              Reload page
             </button>
           </div>
         </div>

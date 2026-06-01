@@ -1,14 +1,11 @@
-import { useEffect, lazy, Suspense } from "react";
-import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
+import { lazy, Suspense } from "react";
+import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { UserProvider } from "@/context/UserContext";
 import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
-import i18n from "@/i18n";
-import { isSupportedLng, type Lng } from "@/i18n";
-import { detectInitialLang, writeLangCookie } from "@/i18n/locale-routing";
 import { Footer } from "@/components/Footer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePageTracking } from "@/hooks/use-analytics";
@@ -58,6 +55,9 @@ function Layout() {
       <main className="animate-in fade-in duration-500">
         <Suspense fallback={<PageFallback />}>
         <Switch>
+          {/* Backward-compat: old /en|/vi prefixed URLs → clean English-only URLs */}
+          <Route path="/en/:rest*" component={LegacyLangRedirect} />
+          <Route path="/vi/:rest*" component={LegacyLangRedirect} />
           <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
@@ -94,35 +94,10 @@ function Layout() {
   );
 }
 
-/**
- * Locale routing: every page lives under a /vi or /en prefix. A path without a
- * valid prefix redirects to the detected language (cookie → navigator → vi).
- * The URL segment is the source of truth — i18n.language + cookie + <html lang>
- * are synced to it. All <Link>/navigate inside the based <Router> auto-prefix.
- */
-function LocalizedRouter() {
-  const [location] = useLocation();
-  const segment = location.split("/")[1];
-
-  useEffect(() => {
-    if (!isSupportedLng(segment)) return;
-    const lng = segment as Lng;
-    if (i18n.language !== lng) i18n.changeLanguage(lng);
-    writeLangCookie(lng);
-    document.documentElement.lang = lng;
-  }, [segment]);
-
-  if (!isSupportedLng(segment)) {
-    const lng = detectInitialLang();
-    const rest = location === "/" ? "" : location;
-    return <Redirect to={`/${lng}${rest}`} replace />;
-  }
-
-  return (
-    <WouterRouter base={`/${segment}`}>
-      <Layout />
-    </WouterRouter>
-  );
+/** Redirect legacy /en/* and /vi/* URLs to the clean English-only path. */
+function LegacyLangRedirect() {
+  const rest = window.location.pathname.replace(/^\/(en|vi)(?=\/|$)/, "") || "/";
+  return <Redirect to={rest} replace />;
 }
 
 function App() {
@@ -130,7 +105,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
-          <LocalizedRouter />
+          <Layout />
           <Toaster />
         </UserProvider>
       </QueryClientProvider>

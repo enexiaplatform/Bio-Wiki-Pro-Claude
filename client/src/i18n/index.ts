@@ -1,9 +1,10 @@
 import i18n, { type Resource, type ResourceLanguage } from "i18next";
 import { initReactI18next } from "react-i18next";
 
-export const SUPPORTED_LNGS = ["en", "vi"] as const;
+// English-only (global product). The i18n layer is kept as a central English
+// string catalog; there is no language switching.
+export const SUPPORTED_LNGS = ["en"] as const;
 export type Lng = (typeof SUPPORTED_LNGS)[number];
-// English is the primary language (global product); vi is the translation.
 export const DEFAULT_LNG: Lng = "en";
 
 export const NAMESPACES = [

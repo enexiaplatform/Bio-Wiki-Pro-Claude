@@ -17,12 +17,8 @@ export default function AcademyPage() {
   const { language } = useLanguage();
   useSEO({ title: t("academy.seoTitle"), description: t("academy.seoDesc") });
 
-  // Bilingual MDX lessons from the content engine (VI fallback for slugs without EN).
-  const libraryBySlug = new Map<string, ReturnType<typeof listContent>[number]>();
-  for (const e of [...listContent({ collection: "academy", lang: "vi" }), ...listContent({ collection: "academy", lang: language })]) {
-    libraryBySlug.set(e.slug, e);
-  }
-  const libraryEntries = Array.from(libraryBySlug.values());
+  // MDX lessons from the content engine.
+  const libraryEntries = listContent({ collection: "academy", lang: language });
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
