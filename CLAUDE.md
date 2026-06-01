@@ -25,19 +25,20 @@ No test suite is configured. There is no `npm test` command.
 
 ## Localization (IMPORTANT — product direction)
 
-**English is the PRIMARY language** — BioWikiPro is built for a **global market**.
-Vietnamese is the secondary translation. Concretely:
+**English-only, global market.** Bilingual (VI) support was removed. Concretely:
 
-- i18n default + fallback language is **`en`** (`client/src/i18n/index.ts`). The
-  `en` locale files are the source of truth and must be complete; `vi` is the
-  translation. Root `/` with no cookie/navigator signal → `/en`.
-- **Goal: fully bilingual** — both UI strings AND content/data (lessons,
-  glossary). Every user-facing string should go through `t()` with `en` + `vi`
-  values; content uses the bilingual MDX engine (`.en.mdx` / `.vi.mdx`).
-- When adding any UI, wrap copy in `t()` and add both `en` and `vi` keys — never
-  hardcode a language. `<LanguageSwitcher>` + path-prefix routing already exist.
-- Migration status: i18n infra is complete; wrapping legacy hardcoded-VI pages
-  in `t()` + writing `en` is an in-progress, page-by-page effort.
+- URLs are **clean / unprefixed** (`/pricing`, `/blog/x`, `/library/x`). There is
+  NO `/en` or `/vi` prefix and NO language switcher. Legacy `/en/*` and `/vi/*`
+  URLs redirect to the clean path (`App.tsx` `LegacyLangRedirect`).
+- `react-i18next` is **retained as a central English string catalog only**:
+  `SUPPORTED_LNGS = ['en']`, default `en`, locale files under
+  `client/src/i18n/locales/en/`. UI copy still goes through `t()` — add new
+  strings to the `en` JSON; there are no other languages.
+- Content (MDX) is English: `content/{academy,blog,toolkits}/<slug>.en.mdx`.
+- `use-seo.ts` emits a single canonical + `og:locale=en_US` (no hreflang). The
+  dynamic `/sitemap.xml` lists clean English URLs.
+- When adding UI, prefer `t()` with an `en` key (keeps copy centralized), or
+  plain English text — never reintroduce a second language.
 
 ## Architecture Overview
 

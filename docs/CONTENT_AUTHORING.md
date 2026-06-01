@@ -1,19 +1,17 @@
-# Authoring bilingual content (Academy / Blog / Toolkits)
+# Authoring content (Academy / Blog / Toolkits)
 
-Content is MDX-in-repo, bilingual, with server-side gating. To add a lesson or
-post, drop two files — no code changes needed.
+Content is MDX-in-repo (English-only), with server-side gating. To add a lesson
+or post, drop one file — no code changes needed.
 
-## 1. Create the files
+## 1. Create the file
 
 ```
-content/<collection>/<slug>.en.mdx   ← English (primary)
-content/<collection>/<slug>.vi.mdx   ← Vietnamese
+content/<collection>/<slug>.en.mdx
 ```
 
 - `<collection>`: `academy`, `blog`, or `toolkits`
-- `<slug>`: lowercase, hyphens only (`[a-z0-9-]+`) — must match in both files
-- English is the primary language. If the `.vi.mdx` is missing, the app falls
-  back to English; if `.en.mdx` is missing it falls back to Vietnamese.
+- `<slug>`: lowercase, hyphens only (`[a-z0-9-]+`)
+- The product is English-only; files use the `.en.mdx` suffix.
 
 ## 2. Frontmatter (required)
 
@@ -53,14 +51,12 @@ npm run validate:content   # checks frontmatter, slugs, missing translations, te
 npm run seed:content       # syncs frontmatter → content_entries (publish/sort) in the DB
 ```
 
-`validate:content` will list any slug missing its EN or VI translation, any
-pro/paid entry missing a `seoDescription` teaser, and internal links that don't
-carry a `/en` or `/vi` prefix.
+`validate:content` flags pro/paid entries missing a `seoDescription` teaser and
+unescaped `<` before a digit (e.g. write `USP &lt;85&gt;`, not `USP <85>`, since
+MDX would parse it as JSX).
 
 ## Migration note (48 legacy Academy entries)
 
 The legacy structured Academy entries still live in `client/src/data` and render
-via the old `AcademyEntryPage`. Migrating them to bilingual MDX is the remaining
-content task — each becomes a `content/academy/<slug>.{en,vi}.mdx` pair using
-this format. The mechanism above is the target; professional GMP/microbiology
-translations are needed for the body content.
+via the old `AcademyEntryPage`. Migrating them to MDX is the remaining content
+task — each becomes a `content/academy/<slug>.en.mdx` file using this format.
