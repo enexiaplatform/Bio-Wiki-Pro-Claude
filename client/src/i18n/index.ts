@@ -19,6 +19,7 @@ export const NAMESPACES = [
   "pages",
   "gmpkit",
   "sections",
+  "legal",
 ] as const;
 
 export function isSupportedLng(value: string | undefined | null): value is Lng {
