@@ -9,6 +9,7 @@ import Stripe from "stripe";
 import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail } from "./email.js";
 import { getPriceId, isSubscription } from "./products.js";
 import { isProActive } from "./entitlements.js";
+import { connectionString } from "./db.js";
 import { readFile, readdir } from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
@@ -25,9 +26,9 @@ const stripe = process.env.STRIPE_SECRET_KEY
 // Add session middleware
 export function setupSession(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000;
-  const sessionStore = process.env.DATABASE_URL
+  const sessionStore = connectionString
     ? new (connectPg(session))({
-        conString: process.env.DATABASE_URL,
+        conString: connectionString,
         createTableIfMissing: false,
         ttl: sessionTtl,
         tableName: "sessions",
