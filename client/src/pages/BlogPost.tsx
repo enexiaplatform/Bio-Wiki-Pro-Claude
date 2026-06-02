@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useParams } from "wouter";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Clock } from "lucide-react";
 import { getContentBySlug, listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
@@ -59,6 +59,10 @@ export default function BlogPost() {
         <ChevronRight className="w-3 h-3" />
         <span className="text-foreground">{entry.category}</span>
       </nav>
+
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6">
+        <Clock className="w-3.5 h-3.5" /> {entry.readMinutes} min read
+      </p>
 
       <FreeReadBanner count={count} />
 

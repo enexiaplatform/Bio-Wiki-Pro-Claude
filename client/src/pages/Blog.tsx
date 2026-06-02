@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { Calendar, ChevronRight, Rss } from "lucide-react";
+import { Calendar, ChevronRight, Rss, Clock } from "lucide-react";
 import { listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
@@ -96,6 +96,9 @@ export default function Blog() {
                     <Calendar className="w-3 h-3" /> {p.updatedAt}
                   </span>
                 )}
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> {p.readMinutes} min read
+                </span>
               </div>
               <h2 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">{p.title}</h2>
               {p.seoDescription && (

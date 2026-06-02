@@ -28,6 +28,8 @@ export interface ContentEntry extends ContentFrontmatter {
   collection: ContentCollection;
   /** Compiled MDX component (the prose body). */
   Component: ComponentType<Record<string, unknown>>;
+  /** Estimated reading time in minutes (computed from body length). */
+  readMinutes: number;
 }
 
 // ── Load every MDX file at build time ────────────────────────────────────────
@@ -42,6 +44,23 @@ type MdxModule = {
 const modules = import.meta.glob<MdxModule>("../../../content/**/*.mdx", {
   eager: true,
 });
+
+// Raw source (to estimate reading time from the prose body).
+const rawModules = import.meta.glob("../../../content/**/*.mdx", {
+  query: "?raw",
+  eager: true,
+});
+
+function readingMinutes(mod: unknown): number {
+  const raw =
+    typeof mod === "string"
+      ? mod
+      : (mod as { default?: string } | undefined)?.default;
+  if (typeof raw !== "string") return 1;
+  const body = raw.replace(/^---[\s\S]*?---/, ""); // strip frontmatter
+  const words = body.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
 
 const PATH_RE = /\/content\/(academy|blog|toolkits)\/(.+)\.(vi|en)\.mdx$/;
 
@@ -64,6 +83,7 @@ for (const path in modules) {
     updatedAt: fm.updatedAt,
     quiz: Array.isArray(fm.quiz) ? fm.quiz : undefined,
     Component: mod.default,
+    readMinutes: readingMinutes(rawModules[path]),
   });
 }
 

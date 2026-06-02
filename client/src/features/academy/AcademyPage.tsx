@@ -122,6 +122,7 @@ export default function AcademyPage() {
                     {e.tier !== "free" && <Crown className="w-3 h-3" />}
                     {t(e.tier === "free" ? "academy.tierFree" : e.tier === "paid" ? "academy.tierPaid" : "academy.tierPro")}
                   </span>
+                  <span className="text-muted-foreground">{e.readMinutes} min</span>
                 </div>
                 <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{e.title}</p>
                 {e.seoDescription && <p className="text-xs text-muted-foreground line-clamp-2">{e.seoDescription}</p>}
