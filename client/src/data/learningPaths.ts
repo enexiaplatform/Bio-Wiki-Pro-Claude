@@ -62,3 +62,31 @@ export const learningPaths: LearningPath[] = [
 export function getLearningPath(slug: string): LearningPath | undefined {
   return learningPaths.find((p) => p.slug === slug);
 }
+
+export interface PathContext {
+  path: LearningPath;
+  index: number; // zero-based position of the lesson in the path
+  total: number;
+  prev?: string; // slug of the previous lesson, if any
+  next?: string; // slug of the next lesson, if any
+}
+
+/**
+ * Find the first learning path that contains a lesson and return its position
+ * plus the neighbouring lesson slugs, for prev/next reader navigation.
+ */
+export function getPathContext(lessonSlug: string): PathContext | undefined {
+  for (const path of learningPaths) {
+    const index = path.lessonSlugs.indexOf(lessonSlug);
+    if (index !== -1) {
+      return {
+        path,
+        index,
+        total: path.lessonSlugs.length,
+        prev: index > 0 ? path.lessonSlugs[index - 1] : undefined,
+        next: index < path.lessonSlugs.length - 1 ? path.lessonSlugs[index + 1] : undefined,
+      };
+    }
+  }
+  return undefined;
+}

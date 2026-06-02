@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Clock, Printer } from "lucide-react";
+import { ChevronRight, ChevronLeft, Clock, Printer, Route } from "lucide-react";
 import { getContentBySlug, listContent } from "@/lib/content";
+import { getPathContext } from "@/data/learningPaths";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
 import { useReadLessons } from "@/hooks/use-read-lessons";
@@ -31,6 +32,10 @@ export default function LibraryEntry() {
   const related = listContent({ collection: "academy", lang: language })
     .filter((e) => e.slug !== slug && e.category === entry.category)
     .slice(0, 3);
+
+  const pathCtx = getPathContext(slug);
+  const prevEntry = pathCtx?.prev ? getContentBySlug("academy", pathCtx.prev, language) : undefined;
+  const nextEntry = pathCtx?.next ? getContentBySlug("academy", pathCtx.next, language) : undefined;
 
   const url = `${SITE_URL}/library/${slug}`;
 
@@ -91,6 +96,44 @@ export default function LibraryEntry() {
         slug={slug}
         footer={entry.quiz?.length ? <LessonQuiz quiz={entry.quiz} /> : null}
       />
+
+      {pathCtx && (prevEntry || nextEntry) && (
+        <div className="mt-10 border-t border-white/10 pt-6" data-print="hide">
+          <Link
+            href={`/paths/${pathCtx.path.slug}`}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground hover:text-primary transition-colors mb-3"
+          >
+            <Route className="w-3.5 h-3.5" />
+            {pathCtx.path.title} · Lesson {pathCtx.index + 1} of {pathCtx.total}
+          </Link>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {prevEntry ? (
+              <Link
+                href={`/library/${prevEntry.slug}`}
+                className="group rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors"
+              >
+                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground mb-1">
+                  <ChevronLeft className="w-3.5 h-3.5" /> Previous
+                </span>
+                <p className="font-semibold text-sm group-hover:text-primary transition-colors line-clamp-2">{prevEntry.title}</p>
+              </Link>
+            ) : (
+              <span className="hidden sm:block" />
+            )}
+            {nextEntry && (
+              <Link
+                href={`/library/${nextEntry.slug}`}
+                className="group rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors sm:text-right"
+              >
+                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground mb-1 sm:justify-end sm:w-full">
+                  Next <ChevronRight className="w-3.5 h-3.5" />
+                </span>
+                <p className="font-semibold text-sm group-hover:text-primary transition-colors line-clamp-2">{nextEntry.title}</p>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
 
       {related.length > 0 && (
         <div className="mt-10 border-t border-white/10 pt-6" data-print="hide">
