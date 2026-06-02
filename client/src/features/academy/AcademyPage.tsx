@@ -10,6 +10,7 @@ import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 import { listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useReadLessons } from "@/hooks/use-read-lessons";
+import { ContinueLearning } from "@/components/ContinueLearning";
 
 const all = "All";
 
@@ -55,6 +56,8 @@ export default function AcademyPage() {
           </div>
         </div>
       </section>
+
+      {libraryEntries.length > 0 && <ContinueLearning />}
 
       {libraryEntries.length > 0 && (
         <section className="mb-8">

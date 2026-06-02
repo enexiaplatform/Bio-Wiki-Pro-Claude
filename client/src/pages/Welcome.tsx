@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { BookOpen, Gift, Crown, ArrowRight, PartyPopper } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { ContinueLearning } from "@/components/ContinueLearning";
 
 const FIRST_LESSON = "/blog/data-integrity-alcoa";
 
@@ -38,6 +39,8 @@ export default function Welcome() {
         <h1 className="text-2xl md:text-3xl font-display font-bold mb-2">{t("welcomeTitle")}</h1>
         <p className="text-muted-foreground">{t("welcomeSubtitle")}</p>
       </div>
+
+      <ContinueLearning />
 
       <div className="space-y-3">
         {steps.map((s, i) => (

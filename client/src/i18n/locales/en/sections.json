@@ -28,7 +28,11 @@
     "tierPaid": "Paid",
     "progress": "{{read}} of {{total}} lessons read",
     "readBadge": "Read",
-    "related": "Related lessons"
+    "related": "Related lessons",
+    "continueTitle": "Continue learning",
+    "startTitle": "Start learning",
+    "continueCta": "Continue",
+    "startCta": "Start"
   },
   "tools": {
     "seoTitle": "Lab Tools — Decision Trees & QC Templates",
