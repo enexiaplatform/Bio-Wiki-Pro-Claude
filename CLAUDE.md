@@ -150,7 +150,7 @@ New long-form content uses MDX-in-repo + Postgres metadata (see `docs/adr/0001-c
 - **Gating is server-side:** `GET /api/content/:collection/:slug?lang=` returns the full body only when the session is entitled (free / `isPro` / completed purchase); otherwise `{ locked: true, teaser }` with NO body. `<GatedContent>` renders it (react-markdown). Pro/paid bodies are never shipped in the public client bundle.
 - `content/` sits outside the Vite `client/` root → `vite.config.ts` sets `server.fs.allow` + `@content` alias, and `vercel.json` ships `content/**` in the function bundle for runtime gating.
 
-> The legacy 48 Academy entries still come from `mockData.ts` — migration to MDX is pending (will use a frontmatter-heavy variant to preserve the structured render contract).
+> The old `importedAcademyEntries` (48 structured `AcademyEntry` records in `mockData.ts`, plus the `useImportedAcademyEntries` hook and the `AcademyEntry` interface) were **removed as dead code** — they were never rendered by any route (Rollup already tree-shook them out of the bundle) and are superseded by the MDX library under `content/academy/`. The rich structured lessons at `/academy/:slug` come from `microbiologyLessons` (`data/lessons/microbiologyLessons.ts`); long-form content lives in `content/**/*.en.mdx` and renders at `/library/:slug`.
 
 ## Known Tech Debt
 

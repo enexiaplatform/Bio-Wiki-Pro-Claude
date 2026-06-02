@@ -93,30 +93,6 @@ export interface Term {
   diagramLabel?: string;
 }
 
-export interface AcademyEntry {
-  entry_id: string;
-  title: string;
-  category: string;
-  subcategory: string;
-  entry_type: string;
-  difficulty: string;
-  target_role: string[];
-  industry: string[];
-  regulatory_refs: string[];
-  read_time_min: number;
-  tags: string[];
-  related_entries: string[];
-  equipment_category?: string[];
-  is_premium: boolean;
-  public_summary: string;
-  content_full_outline: string[];
-  workflow_steps?: string[];
-  meta_description?: string;
-  accuracy_flag?: string | null;
-  last_reviewed?: string;
-  accuracy_note?: string;
-}
-
 export interface Job {
   id: string;
   title: string;
