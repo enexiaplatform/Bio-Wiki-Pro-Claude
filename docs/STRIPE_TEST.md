@@ -112,6 +112,7 @@ Sau khi thanh toán bằng thẻ 4242:
 
 ## 6. Lưu ý production (Vercel)
 - Webhook production: tạo endpoint ở Stripe Dashboard trỏ tới `https://<domain>/api/stripe/webhook`, lấy `whsec_...` thật set vào Vercel env (KHÁC với secret của `stripe listen`).
+- ⚠️ **Phải subscribe đủ 6 event** (không chỉ `checkout.session.completed`) nếu không vòng đời subscription/dunning sẽ hỏng âm thầm: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`, `invoice.payment_succeeded`. Xem `docs/GO_LIVE.md` §2b.
 - `BASE_URL` phải = domain thật (không để localhost) — quyết định success/cancel URL.
 - Đổi `VITE_*` phải re-deploy; Stripe/Resend/DB là runtime nên chỉ cần cập nhật env + redeploy function.
 - Đối chiếu đầy đủ env: xem `docs/ENV_AUDIT.md`.
