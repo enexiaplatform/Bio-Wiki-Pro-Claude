@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { Calendar, ChevronRight, Rss, Clock } from "lucide-react";
+import { Calendar, ChevronRight, Rss, Clock, Search } from "lucide-react";
 import { listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
@@ -13,15 +13,29 @@ const PAGE_SIZE = 6;
 export default function Blog() {
   const { t } = useTranslation("common");
   const { language } = useLanguage();
-  const [category, setCategory] = useState("All");
+  // Filters initialize from (and sync back to) the URL so views are shareable.
+  const [category, setCategory] = useState(() => new URLSearchParams(window.location.search).get("category") ?? "All");
+  const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "");
   const [page, setPage] = useState(1);
 
   useSEO({ title: "Blog", description: "GMP, QC/QA and data integrity insights for Pharma professionals." });
 
-  // Posts in current language; fall back to VI entries whose EN is missing.
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (query.trim()) params.set("q", query.trim());
+    if (category !== "All") params.set("category", category);
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [category, query]);
+
   const posts = listContent({ collection: "blog", lang: language });
   const categories = ["All", ...Array.from(new Set(posts.map((p) => p.category)))];
-  const filtered = category === "All" ? posts : posts.filter((p) => p.category === category);
+  const q = query.trim().toLowerCase();
+  const filtered = posts.filter((p) => {
+    const matchesCategory = category === "All" || p.category === category;
+    const matchesQuery = !q || [p.title, p.seoDescription ?? "", p.category].some((v) => v.toLowerCase().includes(q));
+    return matchesCategory && matchesQuery;
+  });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const current = Math.min(page, totalPages);
@@ -57,8 +71,22 @@ export default function Blog() {
         </a>
       </div>
 
+      {/* Search */}
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <input
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+          placeholder="Search posts…"
+          className="w-full rounded-xl border border-border bg-card py-2.5 pl-9 pr-4 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
+        />
+      </div>
+
       {/* Category filter */}
-      <div className="flex flex-wrap gap-2 mb-8">
+      <div className="flex flex-wrap gap-2 mb-4">
         {categories.map((c) => (
           <button
             key={c}
@@ -78,9 +106,14 @@ export default function Blog() {
         ))}
       </div>
 
+      <p className="text-xs text-muted-foreground mb-6">
+        {filtered.length} {filtered.length === 1 ? "post" : "posts"}
+        {filtered.length !== posts.length && ` of ${posts.length}`}
+      </p>
+
       {/* Posts */}
       {pageItems.length === 0 ? (
-        <p className="text-muted-foreground py-12 text-center">{t("actions.loading")}</p>
+        <p className="text-muted-foreground py-12 text-center">No posts match your search. Try a broader term or clear the filters.</p>
       ) : (
         <div className="space-y-4">
           {pageItems.map((p) => (
