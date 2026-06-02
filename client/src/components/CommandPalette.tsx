@@ -20,6 +20,7 @@ const PAGES: { label: string; path: string }[] = [
   { label: "Insights", path: "/insights" },
   { label: "Glossary", path: "/glossary" },
   { label: "Blog", path: "/blog" },
+  { label: "About", path: "/about" },
   { label: "GMP Audit Kit", path: "/toolkits/gmp-audit-kit" },
   { label: "Pricing", path: "/pricing" },
   { label: "Upgrade to Pro", path: "/upgrade" },

@@ -36,6 +36,7 @@ const Welcome = lazy(() => import("@/pages/Welcome"));
 const LibraryEntry = lazy(() => import("@/pages/LibraryEntry"));
 const PathPage = lazy(() => import("@/pages/PathPage"));
 const Glossary = lazy(() => import("@/pages/Glossary"));
+const About = lazy(() => import("@/pages/About"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
 const RefundPage = lazy(() => import("@/pages/RefundPage"));
@@ -68,6 +69,7 @@ function Layout() {
           <Route path="/paths/:slug" component={PathPage} />
           <Route path="/insights" component={Insights} />
           <Route path="/glossary" component={Glossary} />
+          <Route path="/about" component={About} />
           <Route path="/blog" component={Blog} />
           <Route path="/blog/:slug" component={BlogPost} />
           <Route path="/tools" component={LabTools} />

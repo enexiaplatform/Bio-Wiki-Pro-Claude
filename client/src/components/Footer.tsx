@@ -30,6 +30,9 @@ export function Footer() {
             <Link href="/glossary" className="hover:text-primary transition-colors">
               Glossary
             </Link>
+            <Link href="/about" className="hover:text-primary transition-colors">
+              About
+            </Link>
             <Link href="/pricing" className="hover:text-primary transition-colors">
               {t("links.pricing")}
             </Link>
