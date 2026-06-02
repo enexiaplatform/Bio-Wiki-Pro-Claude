@@ -11,6 +11,7 @@ import { listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { ContinueLearning } from "@/components/ContinueLearning";
+import { learningPaths } from "@/data/learningPaths";
 
 const all = "All";
 
@@ -58,6 +59,35 @@ export default function AcademyPage() {
       </section>
 
       {libraryEntries.length > 0 && <ContinueLearning />}
+
+      {/* Learning paths */}
+      <section className="mb-8">
+        <h2 className="text-lg font-bold mb-1">Learning paths</h2>
+        <p className="text-sm text-muted-foreground mb-4">Structured tracks that take you from fundamentals to audit-ready.</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {learningPaths.map((p) => {
+            const done = p.lessonSlugs.filter((s) => isRead(s)).length;
+            const total = p.lessonSlugs.length;
+            const pct = total ? Math.round((done / total) * 100) : 0;
+            return (
+              <Link
+                key={p.slug}
+                href={`/paths/${p.slug}`}
+                className="block rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors group"
+              >
+                <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{p.title}</p>
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{p.description}</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="text-[11px] text-muted-foreground shrink-0">{done}/{total}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </section>
 
       {libraryEntries.length > 0 && (
         <section className="mb-8">
