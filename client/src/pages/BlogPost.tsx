@@ -34,7 +34,7 @@ export default function BlogPost() {
     .slice(0, 3);
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-2xl mx-auto px-4">
+    <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
       <JsonLd
         id="blog-article"
         data={{

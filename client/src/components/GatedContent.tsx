@@ -27,6 +27,33 @@ type State =
 export function GatedContent({ collection, slug, footer }: Props) {
   const { language } = useLanguage();
   const [state, setState] = useState<State>({ status: "loading" });
+  const [activeId, setActiveId] = useState<string>("");
+
+  // Scroll-spy: highlight the last heading scrolled past.
+  useEffect(() => {
+    if (state.status !== "unlocked") return;
+    let raf = 0;
+    const update = () => {
+      const els = Array.from(document.querySelectorAll<HTMLElement>("article h2[id]"));
+      if (els.length < 3) return;
+      let current = els[0].id;
+      for (const el of els) {
+        if (el.getBoundingClientRect().top <= 100) current = el.id;
+        else break;
+      }
+      setActiveId(current);
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [state]);
 
   useEffect(() => {
     let active = true;
@@ -97,36 +124,69 @@ export function GatedContent({ collection, slug, footer }: Props) {
     text: m[1].trim(),
     id: slugify(m[1].trim()),
   }));
+  const showToc = headings.length >= 3;
+
+  const article = (
+    <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          h2: ({ children }) => <h2 id={slugify(childText(children))} className="scroll-mt-24">{children}</h2>,
+        }}
+      >
+        {state.body}
+      </ReactMarkdown>
+    </article>
+  );
 
   return (
     <>
-      {headings.length >= 3 && (
-        <nav className="mb-8 rounded-xl border border-white/10 bg-card/50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">On this page</p>
-          <ul className="space-y-1">
-            {headings.map((h) => (
-              <li key={h.id}>
-                <a href={`#${h.id}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  {h.text}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
-
-      <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary scroll-mt-20">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            h2: ({ children }) => <h2 id={slugify(childText(children))} className="scroll-mt-20">{children}</h2>,
-          }}
-        >
-          {state.body}
-        </ReactMarkdown>
-      </article>
+      <div className={showToc ? "lg:grid lg:grid-cols-[minmax(0,1fr)_210px] lg:gap-10 lg:items-start" : ""}>
+        <div className="min-w-0">
+          {showToc && (
+            <Toc headings={headings} activeId={activeId} className="lg:hidden mb-8 rounded-xl border border-white/10 bg-card/50 p-4" />
+          )}
+          {article}
+        </div>
+        {showToc && (
+          <aside className="hidden lg:block">
+            <Toc headings={headings} activeId={activeId} className="sticky top-24 border-l border-white/10 pl-4" />
+          </aside>
+        )}
+      </div>
       {footer}
     </>
+  );
+}
+
+function Toc({
+  headings,
+  activeId,
+  className,
+}: {
+  headings: { text: string; id: string }[];
+  activeId: string;
+  className?: string;
+}) {
+  return (
+    <nav className={className}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">On this page</p>
+      <ul className="space-y-1.5">
+        {headings.map((h) => (
+          <li key={h.id}>
+            <a
+              href={`#${h.id}`}
+              className={
+                "block text-sm transition-colors " +
+                (activeId === h.id ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground")
+              }
+            >
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
 

@@ -8,6 +8,8 @@ import { useSEO } from "@/hooks/use-seo";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { GatedContent } from "@/components/GatedContent";
 import { LessonQuiz } from "@/components/LessonQuiz";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
 import NotFound from "@/pages/not-found";
 
 export default function LibraryEntry() {
@@ -30,8 +32,37 @@ export default function LibraryEntry() {
     .filter((e) => e.slug !== slug && e.category === entry.category)
     .slice(0, 3);
 
+  const url = `${SITE_URL}/library/${slug}`;
+
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-2xl mx-auto px-4">
+    <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
+      <JsonLd
+        id="library-article"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: entry.title,
+          description: entry.seoDescription ?? "",
+          inLanguage: "en",
+          datePublished: entry.updatedAt,
+          dateModified: entry.updatedAt,
+          articleSection: entry.category,
+          url,
+          publisher: { "@type": "Organization", name: "BioWikiPro" },
+        }}
+      />
+      <JsonLd
+        id="library-breadcrumb"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "BioWikiPro", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Academy", item: `${SITE_URL}/academy` },
+            { "@type": "ListItem", position: 3, name: entry.title, item: url },
+          ],
+        }}
+      />
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
         <Link href="/" className="hover:text-primary">BioWikiPro</Link>
         <ChevronRight className="w-3 h-3" />
