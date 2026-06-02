@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { JsonLd } from "@/components/JsonLd";
 
 type ProductType = "gmp_audit_kit";
 
@@ -74,6 +75,18 @@ export default function GMPAuditKit() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
+      <JsonLd
+        id="gmpkit-faq"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faqs.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }}
+      />
       {/* ── HERO ── */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
