@@ -18,6 +18,7 @@ const PAGES: { label: string; path: string }[] = [
   { label: "Compliance", path: "/compliance" },
   { label: "Career", path: "/career" },
   { label: "Insights", path: "/insights" },
+  { label: "Glossary", path: "/glossary" },
   { label: "Blog", path: "/blog" },
   { label: "GMP Audit Kit", path: "/toolkits/gmp-audit-kit" },
   { label: "Pricing", path: "/pricing" },
