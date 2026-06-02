@@ -5,9 +5,11 @@ import { useUser } from "@/context/UserContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Minus, Crown, Loader2, Settings } from "lucide-react";
+import { Check, Minus, Crown, Loader2, Settings, Lock, ChevronRight } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { listContent } from "@/lib/content";
+import { useLanguage } from "@/hooks/use-language";
 
 type FeatureKey =
   | "academyFree"
@@ -31,9 +33,12 @@ const MATRIX: [FeatureKey, boolean, boolean][] = [
 
 export default function UpgradePage() {
   const { t } = useTranslation("upgrade");
+  const { language } = useLanguage();
   const { isAuthenticated, isPro } = useUser();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
+  const proLessons = listContent({ collection: "academy", lang: language }).filter((e) => e.tier === "pro");
 
   useSEO({ title: t("title"), description: t("subtitle") });
 
@@ -94,6 +99,33 @@ export default function UpgradePage() {
           </div>
         ))}
       </Card>
+
+      {/* What's inside Pro — concrete value: the actual Pro library */}
+      {!isPro && proLessons.length > 0 && (
+        <Card className="border-white/10 p-5 md:p-6 mb-8">
+          <div className="flex items-center gap-2 mb-1">
+            <Crown className="w-4 h-4 text-primary" />
+            <h2 className="font-bold">{t("inside.title")}</h2>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            {t("inside.subtitle", { count: proLessons.length })}
+          </p>
+          <ul className="grid gap-2 sm:grid-cols-2 mb-4">
+            {proLessons.map((e) => (
+              <li key={e.slug} className="flex items-start gap-2 text-sm">
+                <Lock className="w-3.5 h-3.5 text-primary mt-0.5 shrink-0" />
+                <span className="text-muted-foreground">{e.title}</span>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/academy?tier=pro"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
+          >
+            {t("inside.browse")} <ChevronRight className="w-4 h-4" />
+          </Link>
+        </Card>
+      )}
 
       {/* CTA — depends on current user state */}
       <div className="text-center">

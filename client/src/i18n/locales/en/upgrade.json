@@ -11,8 +11,13 @@
     "free": "Free",
     "pro": "Pro"
   },
+  "inside": {
+    "title": "What's inside Pro",
+    "subtitle": "Unlock all {{count}} in-depth Pro lessons — plus every new one we publish.",
+    "browse": "Browse the full Pro library"
+  },
   "features": {
-    "academyFree": "Academy (48 core lessons)",
+    "academyFree": "Academy core lessons (free)",
     "academyPro": "In-depth Pro lessons",
     "sops": "Full SOP & compliance library",
     "tools": "Advanced lab tools",
