@@ -29,6 +29,24 @@ export default function AcademyPage() {
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
 
+  // Library (MDX) filters — independent from the legacy lesson filters below.
+  const [libQuery, setLibQuery] = useState("");
+  const [libCategory, setLibCategory] = useState(all);
+  const [libTier, setLibTier] = useState(all);
+
+  const libCategories = [all, ...Array.from(new Set(libraryEntries.map((e) => e.category)))];
+  const libTiers = [all, ...Array.from(new Set(libraryEntries.map((e) => e.tier)))];
+  const tierLabel = (v: string) =>
+    v === all ? all : t(v === "free" ? "academy.tierFree" : v === "paid" ? "academy.tierPaid" : "academy.tierPro");
+
+  const filteredLibrary = libraryEntries.filter((e) => {
+    const q = libQuery.trim().toLowerCase();
+    const matchesQuery = !q || [e.title, e.seoDescription ?? "", e.category].some((v) => v.toLowerCase().includes(q));
+    const matchesCategory = libCategory === all || e.category === libCategory;
+    const matchesTier = libTier === all || e.tier === libTier;
+    return matchesQuery && matchesCategory && matchesTier;
+  });
+
   const categories = useMemo(() => [all, ...Array.from(new Set(microbiologyLessons.map((lesson) => lesson.category)))], []);
   const levels = useMemo(() => [all, ...Array.from(new Set(microbiologyLessons.map((lesson) => lesson.level)))], []);
 
@@ -111,8 +129,38 @@ export default function AcademyPage() {
             </span>
           </div>
 
+          {/* Library filters */}
+          <div className="space-y-3 mb-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                value={libQuery}
+                onChange={(event) => setLibQuery(event.target.value)}
+                placeholder="Search the library…"
+                className="w-full rounded-xl border border-border bg-card py-2.5 pl-9 pr-4 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
+              />
+            </div>
+            <div className="grid gap-3 md:grid-cols-[1fr_1fr]">
+              <FilterBar label="Category" values={libCategories} active={libCategory} onChange={setLibCategory} />
+              <FilterBar label="Access" values={libTiers} active={libTier} onChange={setLibTier} labelFor={tierLabel} />
+            </div>
+          </div>
+
+          <div className="mb-3 flex items-center gap-2 text-xs text-muted-foreground">
+            <BookOpen className="w-3.5 h-3.5 text-primary" />
+            <span>
+              {filteredLibrary.length} {filteredLibrary.length === 1 ? "lesson" : "lessons"}
+              {filteredLibrary.length !== libraryEntries.length && ` of ${libraryEntries.length}`}
+            </span>
+          </div>
+
+          {filteredLibrary.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-card p-8 text-center text-sm text-muted-foreground">
+              No lessons match your search. Try a broader term or clear the filters.
+            </div>
+          ) : (
           <div className="grid gap-3 sm:grid-cols-2">
-            {libraryEntries.map((e) => (
+            {filteredLibrary.map((e) => (
               <Link
                 key={e.slug}
                 href={`/library/${e.slug}`}
@@ -146,6 +194,7 @@ export default function AcademyPage() {
               </Link>
             ))}
           </div>
+          )}
         </section>
       )}
 
@@ -186,7 +235,7 @@ export default function AcademyPage() {
   );
 }
 
-function FilterBar({ label, values, active, onChange }: { label: string; values: string[]; active: string; onChange: (value: string) => void }) {
+function FilterBar({ label, values, active, onChange, labelFor }: { label: string; values: string[]; active: string; onChange: (value: string) => void; labelFor?: (value: string) => string }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -203,7 +252,7 @@ function FilterBar({ label, values, active, onChange }: { label: string; values:
               active === value ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground hover:border-primary/50",
             )}
           >
-            {value}
+            {labelFor ? labelFor(value) : value}
           </button>
         ))}
       </div>
