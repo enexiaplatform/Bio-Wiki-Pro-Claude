@@ -92,12 +92,50 @@ export function GatedContent({ collection, slug, footer }: Props) {
     );
   }
 
+  // Table of contents from H2 headings (shown for longer lessons).
+  const headings = Array.from(state.body.matchAll(/^##\s+(.+)$/gm)).map((m) => ({
+    text: m[1].trim(),
+    id: slugify(m[1].trim()),
+  }));
+
   return (
     <>
-      <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{state.body}</ReactMarkdown>
+      {headings.length >= 3 && (
+        <nav className="mb-8 rounded-xl border border-white/10 bg-card/50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">On this page</p>
+          <ul className="space-y-1">
+            {headings.map((h) => (
+              <li key={h.id}>
+                <a href={`#${h.id}`} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  {h.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+
+      <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary scroll-mt-20">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            h2: ({ children }) => <h2 id={slugify(childText(children))} className="scroll-mt-20">{children}</h2>,
+          }}
+        >
+          {state.body}
+        </ReactMarkdown>
       </article>
       {footer}
     </>
   );
+}
+
+function slugify(s: string): string {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function childText(children: ReactNode): string {
+  if (typeof children === "string") return children;
+  if (Array.isArray(children)) return children.map(childText).join("");
+  return "";
 }
