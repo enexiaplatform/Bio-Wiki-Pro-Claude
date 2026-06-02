@@ -44,13 +44,17 @@ export default function PathPage() {
         <span className="text-xs text-muted-foreground shrink-0">{readCount} / {lessons.length} done</span>
       </div>
 
-      {next && (
+      {next ? (
         <Link
           href={`/library/${next.slug}`}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors mb-8"
         >
           {readCount > 0 ? "Continue" : "Start"}: {next.title} <ArrowRight className="w-4 h-4" />
         </Link>
+      ) : (
+        <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-400 mb-8">
+          <CheckCircle2 className="w-4 h-4" /> Path completed — nice work!
+        </div>
       )}
 
       {/* Ordered lesson list */}

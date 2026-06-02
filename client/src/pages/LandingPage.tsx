@@ -6,6 +6,10 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
+import { listContent } from "@/lib/content";
+
+const byUpdatedDesc = (a: { updatedAt?: string }, b: { updatedAt?: string }) =>
+  (b.updatedAt ?? "").localeCompare(a.updatedAt ?? "");
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -34,6 +38,9 @@ interface TrustCard { label: string; value: string }
 export default function LandingPage() {
   const { t } = useTranslation("landing");
   useSEO({ title: t("seo.title"), description: t("seo.description") });
+
+  const latestLessons = [...listContent({ collection: "academy", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
+  const latestPosts = [...listContent({ collection: "blog", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
 
   const stats = t("stats", { returnObjects: true }) as Stat[];
   const problems = t("problems.items", { returnObjects: true }) as Problem[];
@@ -274,6 +281,51 @@ export default function LandingPage() {
                 );
               })}
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── LATEST CONTENT ── */}
+      <section className="py-16 px-4 border-t border-white/5">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="text-center mb-10"
+          >
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("latest.heading")}</h2>
+            <p className="text-muted-foreground text-sm">{t("latest.subtitle")}</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">{t("latest.academyLabel")}</h3>
+              <ul className="space-y-2 mb-3">
+                {latestLessons.map((l) => (
+                  <li key={l.slug}>
+                    <Link href={`/library/${l.slug}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      <BookOpen className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                      <span className="truncate">{l.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/academy" className="text-xs text-primary hover:underline">{t("latest.browseAcademy")}</Link>
+            </div>
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">{t("latest.blogLabel")}</h3>
+              <ul className="space-y-2 mb-3">
+                {latestPosts.map((p) => (
+                  <li key={p.slug}>
+                    <Link href={`/blog/${p.slug}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      <ChevronRight className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                      <span className="truncate">{p.title}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/blog" className="text-xs text-primary hover:underline">{t("latest.browseBlog")}</Link>
+            </div>
           </div>
         </div>
       </section>

@@ -75,11 +75,18 @@ export default function AcademyPage() {
                 href={`/paths/${p.slug}`}
                 className="block rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors group"
               >
-                <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{p.title}</p>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p className="font-bold text-sm group-hover:text-primary transition-colors">{p.title}</p>
+                  {done === total && total > 0 && (
+                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Completed
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{p.description}</p>
                 <div className="flex items-center gap-2">
                   <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden">
-                    <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                    <div className={clsx("h-full", done === total && total > 0 ? "bg-emerald-400" : "bg-primary")} style={{ width: `${pct}%` }} />
                   </div>
                   <span className="text-[11px] text-muted-foreground shrink-0">{done}/{total}</span>
                 </div>

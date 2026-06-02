@@ -60,6 +60,14 @@
       { "label": "Goal", "value": "Senior → Manager level" }
     ]
   },
+  "latest": {
+    "heading": "Fresh from the library",
+    "subtitle": "Free, in-depth lessons and articles — updated regularly.",
+    "academyLabel": "Latest lessons",
+    "blogLabel": "From the blog",
+    "browseAcademy": "Browse all lessons →",
+    "browseBlog": "Read the blog →"
+  },
   "finalCta": {
     "heading": "Start today — free",
     "subtitle": "All 48 Academy lessons fully open. No credit card required.",
