@@ -144,7 +144,7 @@ export function GatedContent({ collection, slug, footer }: Props) {
       <div className={showToc ? "lg:grid lg:grid-cols-[minmax(0,1fr)_210px] lg:gap-10 lg:items-start" : ""}>
         <div className="min-w-0">
           {showToc && (
-            <Toc headings={headings} activeId={activeId} className="lg:hidden mb-8 rounded-xl border border-white/10 bg-card/50 p-4" />
+            <Toc headings={headings} activeId={activeId} className="lg:hidden mb-8 rounded-xl border border-white/10 bg-card/50 p-4 print:hidden" />
           )}
           {article}
         </div>

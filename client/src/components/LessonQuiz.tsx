@@ -19,7 +19,7 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
   }
 
   return (
-    <section className="mt-10 rounded-2xl border border-white/10 bg-card p-6">
+    <section className="mt-10 rounded-2xl border border-white/10 bg-card p-6 print:hidden">
       <div className="flex items-center gap-2 mb-1">
         <GraduationCap className="w-5 h-5 text-primary" />
         <h2 className="text-lg font-bold">Quick check</h2>

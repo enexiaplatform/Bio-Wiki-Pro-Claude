@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Clock } from "lucide-react";
+import { ChevronRight, Clock, Printer } from "lucide-react";
 import { getContentBySlug, listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
@@ -71,9 +71,18 @@ export default function LibraryEntry() {
         <span className="text-foreground">{entry.category}</span>
       </nav>
 
-      <p className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6">
-        <Clock className="w-3.5 h-3.5" /> {entry.readMinutes} min read
-      </p>
+      <div className="flex items-center justify-between gap-3 mb-6" data-print="hide">
+        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Clock className="w-3.5 h-3.5" /> {entry.readMinutes} min read
+        </p>
+        <button
+          onClick={() => window.print()}
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Print or save as PDF"
+        >
+          <Printer className="w-3.5 h-3.5" /> Print
+        </button>
+      </div>
 
       {/* Server-gated body (free → full, pro/paid → teaser + paywall).
           Quiz is rendered only when unlocked (passed as footer). */}
@@ -84,7 +93,7 @@ export default function LibraryEntry() {
       />
 
       {related.length > 0 && (
-        <div className="mt-10 border-t border-white/10 pt-6">
+        <div className="mt-10 border-t border-white/10 pt-6" data-print="hide">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
             {t("academy.related")}
           </h2>

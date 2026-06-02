@@ -82,3 +82,29 @@
 .glass-card {
   @apply bg-gradient-to-br from-card to-card/50 border border-white/10 shadow-xl shadow-black/20;
 }
+
+/* ── Print: clean, readable lesson/article output ── */
+@media print {
+  header,
+  footer,
+  aside,
+  [data-print="hide"] {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .prose,
+  .prose * {
+    color: #111 !important;
+    max-width: none !important;
+  }
+  a {
+    color: #111 !important;
+    text-decoration: underline;
+  }
+}
