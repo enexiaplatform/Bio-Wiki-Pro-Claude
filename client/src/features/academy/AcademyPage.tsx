@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { BookOpen, Filter, Search, ShieldCheck, ChevronRight, Crown, CheckCircle2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BookOpen, Filter, Search, ShieldCheck, ChevronRight, Crown, CheckCircle2, GraduationCap } from "lucide-react";
 import clsx from "clsx";
 import { Link } from "wouter";
 import { microbiologyLessons } from "@/data/lessons/microbiologyLessons";
@@ -30,9 +30,19 @@ export default function AcademyPage() {
   const [level, setLevel] = useState(all);
 
   // Library (MDX) filters — independent from the legacy lesson filters below.
-  const [libQuery, setLibQuery] = useState("");
-  const [libCategory, setLibCategory] = useState(all);
-  const [libTier, setLibTier] = useState(all);
+  // Initialized from (and synced back to) the URL so category/tier views are shareable.
+  const [libQuery, setLibQuery] = useState(() => new URLSearchParams(window.location.search).get("q") ?? "");
+  const [libCategory, setLibCategory] = useState(() => new URLSearchParams(window.location.search).get("category") ?? all);
+  const [libTier, setLibTier] = useState(() => new URLSearchParams(window.location.search).get("tier") ?? all);
+
+  useEffect(() => {
+    const p = new URLSearchParams();
+    if (libQuery.trim()) p.set("q", libQuery.trim());
+    if (libCategory !== all) p.set("category", libCategory);
+    if (libTier !== all) p.set("tier", libTier);
+    const qs = p.toString();
+    window.history.replaceState(null, "", qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
+  }, [libQuery, libCategory, libTier]);
 
   const libCategories = [all, ...Array.from(new Set(libraryEntries.map((e) => e.category)))];
   const libTiers = [all, ...Array.from(new Set(libraryEntries.map((e) => e.tier)))];
@@ -178,6 +188,11 @@ export default function AcademyPage() {
                     {t(e.tier === "free" ? "academy.tierFree" : e.tier === "paid" ? "academy.tierPaid" : "academy.tierPro")}
                   </span>
                   <span className="text-muted-foreground">{e.readMinutes} min</span>
+                  {e.quiz && e.quiz.length > 0 && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-sky-400/10 text-sky-300 px-2 py-0.5 font-semibold">
+                      <GraduationCap className="w-3 h-3" /> Quiz
+                    </span>
+                  )}
                 </div>
                 <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{e.title}</p>
                 {e.seoDescription && <p className="text-xs text-muted-foreground line-clamp-2">{e.seoDescription}</p>}
