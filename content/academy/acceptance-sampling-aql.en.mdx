@@ -1,0 +1,48 @@
+---
+title: "Acceptance Sampling & AQL (ANSI/ASQ Z1.4)"
+slug: "acceptance-sampling-aql"
+lang: "en"
+tier: "free"
+category: "Quality Systems"
+seoDescription: "Acceptance sampling with AQL per ANSI/ASQ Z1.4 — sample size codes, accept/reject numbers, and why a sampling plan is a risk decision, not just a count."
+updatedAt: "2026-06-02"
+quiz:
+  - q: "What does AQL stand for?"
+    options: ["Average Quality Level", "Acceptable Quality Limit", "Audit Quality Log", "Annual Quality List"]
+    answer: 1
+  - q: "In ANSI/ASQ Z1.4, what determines the sample size code letter?"
+    options: ["Lot size and inspection level", "The analyst's preference", "The price of the product", "The day of the week"]
+    answer: 0
+  - q: "A lower AQL means:"
+    options: ["More defects tolerated", "Stricter acceptance (fewer defects allowed)", "No inspection", "Larger defects only"]
+    answer: 1
+---
+
+# Acceptance Sampling & AQL (ANSI/ASQ Z1.4)
+
+Acceptance sampling lets you make a release/reject decision about a lot by
+inspecting a sample instead of 100% of units. ANSI/ASQ Z1.4 is the standard plan;
+it is widely used for visual inspection and attribute defects.
+
+## How a Z1.4 plan is built
+
+1. **Lot size + inspection level** → a **sample size code letter**.
+2. **Code letter + AQL** → a **sample size** and **accept (Ac) / reject (Re)**
+   numbers.
+3. Inspect the sample: defects ≤ Ac → accept; defects ≥ Re → reject.
+
+## AQL is a risk decision
+
+The **Acceptable Quality Limit** is the worst tolerable process average that the
+plan will routinely accept — a lower AQL is stricter. Defects are usually
+classified (critical / major / minor), each with its own AQL, because a critical
+defect carries far more risk than a cosmetic one.
+
+## Switching rules
+
+Z1.4 has **normal → tightened → reduced** switching rules: consistent good
+quality earns reduced inspection; failures trigger tightened inspection. Skipping
+these rules is a common audit finding.
+
+> Tip: a sampling plan does not "prove" a lot is defect-free — it bounds the
+> *risk* of accepting a bad lot. Document the rationale for the AQLs you choose.
