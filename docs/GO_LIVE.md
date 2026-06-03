@@ -116,6 +116,17 @@ Set all of these for **Production**. Full annotations in `docs/ENV_AUDIT.md`.
 **Email:**
 - [ ] `EMAIL_FROM` — `BioWikiPro <no-reply@your-domain>` on a Resend-verified domain.
 
+**Google sign-in (optional — the email/password flow works without it):**
+- [ ] `GOOGLE_CLIENT_ID` (runtime) and `VITE_GOOGLE_CLIENT_ID` (build-time) — the **same** Google OAuth **Web client ID** (public, not a secret). If unset, the "Continue with Google" button simply doesn't render and the `/api/auth/google` endpoint returns 503.
+
+### Setting up the Google OAuth client
+1. Google Cloud Console → **APIs & Services → Credentials → Create credentials → OAuth client ID** → type **Web application**.
+2. **Authorized JavaScript origins:** add your origins (e.g. `https://bio-wiki-pro-claude.vercel.app` and your custom domain; add `http://localhost:5000` for local dev).
+3. (No redirect URI needed — this uses Google Identity Services ID-token flow, verified server-side.)
+4. Copy the **Client ID** into both `GOOGLE_CLIENT_ID` and `VITE_GOOGLE_CLIENT_ID` on Vercel, then **redeploy** (VITE_* is build-time).
+
+> Account linking: Google sign-in finds-or-creates the user by their Google-verified email, marks `verifiedEmail=true`, and never sets a password. A user with an existing password account signs into that same account via Google (linked by verified email).
+
 ---
 
 ## Step 4 — Domain & email deliverability

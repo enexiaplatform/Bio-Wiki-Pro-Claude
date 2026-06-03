@@ -11,6 +11,9 @@ import crypto from "crypto";
 import { getPriceId, isSubscription } from "./products.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
+import { OAuth2Client } from "google-auth-library";
+
+const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
@@ -336,6 +339,55 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Sign in / sign up with Google. The client sends a Google ID token
+  // (credential); we verify it server-side, then find-or-create the user by
+  // their Google-verified email and start a session. No password is set for
+  // Google-only accounts.
+  app.post("/api/auth/google", async (req, res) => {
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      return res.status(503).json({ message: "Google sign-in is not configured" });
+    }
+    try {
+      const credential = String(req.body?.credential ?? "");
+      if (!credential) return res.status(400).json({ message: "Missing Google credential" });
+
+      const ticket = await googleClient.verifyIdToken({ idToken: credential, audience: clientId });
+      const payload = ticket.getPayload();
+      if (!payload?.email || !payload.email_verified) {
+        return res.status(401).json({ message: "Google account email is not verified" });
+      }
+
+      const email = payload.email.toLowerCase();
+      let user = await storage.getUserByEmail(email);
+      if (!user) {
+        user = await storage.createUser({
+          email,
+          firstName: payload.given_name ?? null,
+          lastName: payload.family_name ?? null,
+          profileImageUrl: payload.picture ?? null,
+          verifiedEmail: true,
+        });
+        sendWelcomeEmail(email, payload.given_name ?? undefined).catch((err) =>
+          console.error("[Google] Welcome email error:", err)
+        );
+      }
+
+      req.session.userId = user.id;
+      return res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        isPro: isProActive(user),
+        verifiedEmail: user.verifiedEmail ?? true,
+      });
+    } catch (err) {
+      console.error("[Google] verify error:", err);
+      return res.status(401).json({ message: "Invalid Google credential" });
     }
   });
 

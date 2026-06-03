@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FlaskConical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 export default function RegisterPage() {
   const { t } = useTranslation("auth");
@@ -142,6 +143,7 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? t("register.submitting") : t("register.submit")}
             </Button>
+            <GoogleSignInButton redirectTo="/welcome" />
             <div className="text-sm text-center text-muted-foreground">
               {t("register.haveAccount")}{" "}
               <Link href="/login" className="text-primary hover:underline font-medium">

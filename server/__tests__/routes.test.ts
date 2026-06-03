@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import express from "express";
 import request from "supertest";
 
 // ── Mocks (vi.hoisted so the vi.mock factories can reference them) ────────────
-const { storageMock, constructEvent } = vi.hoisted(() => ({
+const { storageMock, constructEvent, verifyIdToken } = vi.hoisted(() => ({
   storageMock: {
     getUser: vi.fn(),
     getUserByEmail: vi.fn(),
@@ -29,8 +29,15 @@ const { storageMock, constructEvent } = vi.hoisted(() => ({
     markEmailVerified: vi.fn(() => Promise.resolve()),
   },
   constructEvent: vi.fn(),
+  verifyIdToken: vi.fn(),
 }));
 vi.mock("../storage.js", () => ({ storage: storageMock }));
+
+vi.mock("google-auth-library", () => ({
+  OAuth2Client: class {
+    verifyIdToken = verifyIdToken;
+  },
+}));
 
 vi.mock("stripe", () => {
   function Stripe() {
@@ -343,5 +350,69 @@ describe("email verification (soft)", () => {
     const app = await buildApp();
     const res = await request(app).post("/api/auth/verify-email").send({});
     expect(res.status).toBe(400);
+  });
+});
+
+describe("google sign-in", () => {
+  const OLD = process.env.GOOGLE_CLIENT_ID;
+  beforeEach(() => {
+    process.env.GOOGLE_CLIENT_ID = "test-client-id";
+  });
+  afterAll(() => {
+    if (OLD === undefined) delete process.env.GOOGLE_CLIENT_ID;
+    else process.env.GOOGLE_CLIENT_ID = OLD;
+  });
+
+  function payload(over: Record<string, unknown> = {}) {
+    return { getPayload: () => ({ email: "g@b.com", email_verified: true, given_name: "G", family_name: "B", picture: "p", ...over }) };
+  }
+
+  it("503 when not configured", async () => {
+    delete process.env.GOOGLE_CLIENT_ID;
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/google").send({ credential: "x" });
+    expect(res.status).toBe(503);
+  });
+
+  it("400 when credential missing", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/google").send({});
+    expect(res.status).toBe(400);
+  });
+
+  it("401 when email not verified", async () => {
+    const app = await buildApp();
+    verifyIdToken.mockResolvedValueOnce(payload({ email_verified: false }));
+    const res = await request(app).post("/api/auth/google").send({ credential: "tok" });
+    expect(res.status).toBe(401);
+  });
+
+  it("401 when token verification throws", async () => {
+    const app = await buildApp();
+    verifyIdToken.mockRejectedValueOnce(new Error("bad token"));
+    const res = await request(app).post("/api/auth/google").send({ credential: "tok" });
+    expect(res.status).toBe(401);
+  });
+
+  it("creates a new user on first Google sign-in", async () => {
+    const app = await buildApp();
+    verifyIdToken.mockResolvedValueOnce(payload());
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u9", email: "g@b.com", isPro: false, verifiedEmail: true });
+    const res = await request(app).post("/api/auth/google").send({ credential: "tok" });
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe("u9");
+    expect(storageMock.createUser).toHaveBeenCalledTimes(1);
+    expect(storageMock.createUser.mock.calls[0][0]).toMatchObject({ email: "g@b.com", verifiedEmail: true });
+  });
+
+  it("logs in an existing user without creating a duplicate", async () => {
+    const app = await buildApp();
+    verifyIdToken.mockResolvedValueOnce(payload());
+    storageMock.getUserByEmail.mockResolvedValueOnce({ id: "u1", email: "g@b.com", isPro: false, subscriptionStatus: "free", verifiedEmail: true });
+    const res = await request(app).post("/api/auth/google").send({ credential: "tok" });
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe("u1");
+    expect(storageMock.createUser).not.toHaveBeenCalled();
   });
 });
