@@ -238,9 +238,9 @@ export async function registerRoutes(app: Express): Promise<void> {
       );
 
       return res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: user.isPro });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      res.status(500).json({ message: "Server error" });
+      res.status(500).json({ message: "Server error", detail: String(err?.message ?? err) });
     }
   });
 
