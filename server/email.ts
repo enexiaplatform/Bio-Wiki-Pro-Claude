@@ -10,7 +10,7 @@ const BASE_URL = process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app
 
 function htmlWrapper(content: string): string {
   return `<!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +41,7 @@ function htmlWrapper(content: string): string {
       ${content}
     </div>
     <div class="footer">
-      <p>© 2026 BioWikiPro — Nền tảng kiến thức QC/QA Pharma Vietnam</p>
+      <p>© 2026 BioWikiPro — QC/QA knowledge for Pharma & Life Sciences</p>
       <p style="margin-top: 6px;"><a href="${BASE_URL}/terms">Terms</a> · <a href="${BASE_URL}/privacy">Privacy</a> · <a href="${BASE_URL}/refund">Refund</a></p>
     </div>
   </div>
@@ -55,25 +55,25 @@ export async function sendWelcomeEmail(to: string, firstName?: string): Promise<
     return;
   }
 
-  const name = firstName ?? "bạn";
+  const name = firstName ?? "there";
   const html = htmlWrapper(`
-    <h1>Chào mừng đến BioWikiPro, ${name}! 🎉</h1>
-    <p>Tài khoản của bạn đã được tạo thành công. Bắt đầu hành trình từ Senior QC → QA Manager ngay hôm nay.</p>
+    <h1>Welcome to BioWikiPro, ${name}! 🎉</h1>
+    <p>Your account is ready. Start building real QC/QA expertise — from sterility testing to audit readiness.</p>
     <div class="box">
-      <p><strong style="color:#10b981;">Gợi ý bắt đầu:</strong></p>
-      <p>📚 Khám phá <strong>48 bài học GMP</strong> miễn phí trong Academy<br>
-      🔬 Sử dụng <strong>QC Hub</strong> tra cứu kiến thức nhanh<br>
-      🛡️ Xem <strong>GMP Audit Survival Kit</strong> nếu bạn sắp có audit</p>
+      <p><strong style="color:#10b981;">Where to start:</strong></p>
+      <p>📚 Explore the free <strong>Academy lessons</strong> and learning paths<br>
+      🔬 Use the <strong>QC Hub</strong> for fast reference<br>
+      🛡️ Grab the <strong>GMP Audit Survival Kit</strong> if you have an inspection coming up</p>
     </div>
-    <a href="${BASE_URL}/academy" class="cta">Vào Academy miễn phí →</a>
-    <p style="margin-top: 24px; font-size: 13px;">Câu hỏi hoặc phản hồi? Reply email này — Henry đọc trực tiếp.</p>
+    <a href="${BASE_URL}/academy" class="cta">Open the Academy →</a>
+    <p style="margin-top: 24px; font-size: 13px;">Questions or feedback? Just reply to this email — we read every one.</p>
   `);
 
   try {
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: `Chào mừng đến BioWikiPro, ${name}!`,
+      subject: `Welcome to BioWikiPro, ${name}!`,
       html,
     });
   } catch (err) {
@@ -94,32 +94,32 @@ export async function sendPurchaseConfirmation(
 
   const productName = getProductName(productType);
   const amountDisplay = amountCents ? `$${(amountCents / 100).toFixed(2)}` : "";
-  const name = firstName ?? "bạn";
+  const name = firstName ?? "there";
   const downloadLink = getDownloadUrl(productType);
 
   const html = htmlWrapper(`
-    <h1>Cảm ơn ${name}! Đơn hàng thành công ✅</h1>
-    <p>Thanh toán cho <strong style="color:#f8fafc;">${productName}</strong>${amountDisplay ? ` (${amountDisplay})` : ""} đã được xác nhận.</p>
+    <h1>Thank you, ${name}! Your order is confirmed ✅</h1>
+    <p>Your payment for <strong style="color:#f8fafc;">${productName}</strong>${amountDisplay ? ` (${amountDisplay})` : ""} has been received.</p>
     ${downloadLink ? `
     <div class="box">
-      <p><strong style="color:#10b981;">Tải xuống ngay:</strong></p>
-      <p>File của bạn đã sẵn sàng — click vào link bên dưới để tải về.</p>
+      <p><strong style="color:#10b981;">Download now:</strong></p>
+      <p>Your file is ready — click the button below to download it.</p>
     </div>
-    <a href="${downloadLink}" class="cta">Tải xuống ${productName} →</a>
-    <p style="font-size: 13px; color: #64748b;">Link này dành riêng cho bạn. Không chia sẻ với người khác.</p>
+    <a href="${downloadLink}" class="cta">Download ${productName} →</a>
+    <p style="font-size: 13px; color: #64748b;">This link is for you — please don't share it.</p>
     ` : `
     <div class="box">
-      <p>Chúng tôi sẽ gửi tài liệu trong vòng <strong style="color:#10b981;">24 giờ</strong>. Kiểm tra hộp thư đến.</p>
+      <p>We'll send your materials within <strong style="color:#10b981;">24 hours</strong>. Please check your inbox.</p>
     </div>
     `}
-    <p style="margin-top: 24px; font-size: 13px;">Có vấn đề gì với đơn hàng? Reply email này hoặc liên hệ <a href="mailto:support@biowikipro.com" style="color:#10b981;">support@biowikipro.com</a></p>
+    <p style="margin-top: 24px; font-size: 13px;">Any issue with your order? Reply to this email or contact <a href="mailto:support@biowikipro.com" style="color:#10b981;">support@biowikipro.com</a></p>
   `);
 
   try {
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: `Xác nhận đơn hàng: ${productName} — BioWikiPro`,
+      subject: `Order confirmed: ${productName} — BioWikiPro`,
       html,
     });
   } catch (err) {
@@ -134,21 +134,21 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
   }
 
   const html = htmlWrapper(`
-    <h1>GMP Audit Quick Checklist của bạn 📋</h1>
-    <p>Cảm ơn bạn đã đăng ký! Đây là file checklist 25 điểm kiểm tra trước ngày audit.</p>
-    <a href="${downloadUrl}" class="cta">Tải GMP Audit Checklist (PDF) →</a>
+    <h1>Your GMP Audit Quick Checklist 📋</h1>
+    <p>Thanks for signing up! Here's your pre-audit checklist to help you walk in prepared.</p>
+    <a href="${downloadUrl}" class="cta">Download the GMP Audit Checklist (PDF) →</a>
     <div class="box">
-      <p><strong style="color:#10b981;">Cần chuẩn bị kỹ hơn?</strong></p>
-      <p>Checklist này chỉ là phần đầu. <strong>GMP Audit Survival Kit ($59)</strong> bao gồm 40-trang guide, 10 CAPA templates, và 50+ audit Q&A scripts đầy đủ.</p>
+      <p><strong style="color:#10b981;">Need to go deeper?</strong></p>
+      <p>This checklist is just the start. The <strong>GMP Audit Survival Kit ($59)</strong> includes a 40-page guide, 10 CAPA templates, and 50+ audit Q&A scripts.</p>
     </div>
-    <a href="${BASE_URL}/toolkits/gmp-audit-kit" style="display:inline-block; color:#10b981; font-size:14px; text-decoration:none; margin-top: 4px;">Xem GMP Audit Survival Kit →</a>
+    <a href="${BASE_URL}/toolkits/gmp-audit-kit" style="display:inline-block; color:#10b981; font-size:14px; text-decoration:none; margin-top: 4px;">See the GMP Audit Survival Kit →</a>
   `);
 
   try {
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "GMP Audit Quick Checklist — BioWikiPro",
+      subject: "Your GMP Audit Quick Checklist — BioWikiPro",
       html,
     });
   } catch (err) {
@@ -199,24 +199,24 @@ export async function sendDunningEmail(
     return;
   }
 
-  const name = firstName ?? "bạn";
-  const deadline = graceUntil.toLocaleDateString("vi-VN");
+  const name = firstName ?? "there";
+  const deadline = graceUntil.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   const html = htmlWrapper(`
-    <h1>Thanh toán Pro chưa thành công ⚠️</h1>
-    <p>Chào ${name}, chúng tôi chưa thu được phí gia hạn gói <strong>BioWikiPro Pro</strong>.</p>
+    <h1>Your Pro payment didn't go through ⚠️</h1>
+    <p>Hi ${name}, we couldn't collect the renewal payment for your <strong>BioWikiPro Pro</strong> subscription.</p>
     <div class="box">
-      <p>Tài khoản của bạn vẫn giữ quyền Pro đến <strong style="color:#10b981;">${deadline}</strong>.
-      Vui lòng cập nhật phương thức thanh toán trước thời hạn để không bị gián đoạn.</p>
+      <p>Your Pro access stays active until <strong style="color:#10b981;">${deadline}</strong>.
+      Please update your payment method before then to avoid any interruption.</p>
     </div>
-    <a href="${BASE_URL}/upgrade" class="cta">Cập nhật thanh toán →</a>
-    <p style="font-size: 13px; color: #64748b;">Nếu bạn vừa thanh toán lại, có thể bỏ qua email này.</p>
+    <a href="${BASE_URL}/upgrade" class="cta">Update payment method →</a>
+    <p style="font-size: 13px; color: #64748b;">If you've just paid again, you can ignore this email.</p>
   `);
 
   try {
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "Cập nhật thanh toán gói Pro — BioWikiPro",
+      subject: "Update your Pro payment — BioWikiPro",
       html,
     });
   } catch (err) {
