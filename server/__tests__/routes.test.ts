@@ -19,6 +19,11 @@ const { storageMock, constructEvent } = vi.hoisted(() => ({
     getContentEntry: vi.fn(),
     upsertContentEntry: vi.fn(),
     hasCompletedPurchase: vi.fn(),
+    getUserByResetToken: vi.fn(),
+    setResetToken: vi.fn(),
+    updatePassword: vi.fn(),
+    getReadLessons: vi.fn(),
+    markLessonRead: vi.fn(),
   },
   constructEvent: vi.fn(),
 }));
@@ -41,6 +46,7 @@ vi.mock("../email.js", () => ({
   sendPurchaseConfirmation: vi.fn(() => Promise.resolve()),
   sendLeadMagnetEmail: vi.fn(() => Promise.resolve()),
   sendDunningEmail: vi.fn(() => Promise.resolve()),
+  sendPasswordResetEmail: vi.fn(() => Promise.resolve()),
 }));
 
 import { registerRoutes } from "../routes.js";
@@ -169,5 +175,125 @@ describe("stripe webhook", () => {
     const app = await buildApp();
     const res = await request(app).post("/api/stripe/webhook").send(purchaseEvent);
     expect(res.status).toBe(400);
+  });
+});
+
+describe("password reset", () => {
+  it("forgot-password is enumeration-safe (200, no token for unknown email)", async () => {
+    const app = await buildApp();
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    const res = await request(app).post("/api/auth/forgot-password").send({ email: "ghost@x.com" });
+    expect(res.status).toBe(200);
+    expect(storageMock.setResetToken).not.toHaveBeenCalled();
+  });
+
+  it("forgot-password sets a 1-hour token for a known email", async () => {
+    const app = await buildApp();
+    storageMock.getUserByEmail.mockResolvedValueOnce({ id: "u1", email: "a@b.com", firstName: "A" });
+    storageMock.setResetToken.mockResolvedValueOnce(undefined);
+    const res = await request(app).post("/api/auth/forgot-password").send({ email: "a@b.com" });
+    expect(res.status).toBe(200);
+    expect(storageMock.setResetToken).toHaveBeenCalledTimes(1);
+    const [userId, token, expiry] = storageMock.setResetToken.mock.calls[0];
+    expect(userId).toBe("u1");
+    expect(typeof token).toBe("string");
+    expect(token.length).toBeGreaterThanOrEqual(32);
+    expect(expiry instanceof Date).toBe(true);
+  });
+
+  it("forgot-password requires an email", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/forgot-password").send({});
+    expect(res.status).toBe(400);
+  });
+
+  it("reset-password rejects a short password", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/reset-password").send({ token: "abc", password: "short" });
+    expect(res.status).toBe(400);
+    expect(storageMock.updatePassword).not.toHaveBeenCalled();
+  });
+
+  it("reset-password rejects an unknown token", async () => {
+    const app = await buildApp();
+    storageMock.getUserByResetToken.mockResolvedValueOnce(undefined);
+    const res = await request(app).post("/api/auth/reset-password").send({ token: "bad", password: "longenough" });
+    expect(res.status).toBe(400);
+    expect(storageMock.updatePassword).not.toHaveBeenCalled();
+  });
+
+  it("reset-password rejects an expired token", async () => {
+    const app = await buildApp();
+    storageMock.getUserByResetToken.mockResolvedValueOnce({ id: "u1", resetTokenExpiry: new Date(Date.now() - 1000) });
+    const res = await request(app).post("/api/auth/reset-password").send({ token: "t", password: "longenough" });
+    expect(res.status).toBe(400);
+    expect(storageMock.updatePassword).not.toHaveBeenCalled();
+  });
+
+  it("reset-password succeeds with a valid token and logs the user in", async () => {
+    const app = await buildApp();
+    storageMock.getUserByResetToken.mockResolvedValueOnce({
+      id: "u1", email: "a@b.com", isPro: false, subscriptionStatus: "free",
+      resetTokenExpiry: new Date(Date.now() + 60_000),
+    });
+    storageMock.updatePassword.mockResolvedValueOnce(undefined);
+    const res = await request(app).post("/api/auth/reset-password").send({ token: "good", password: "longenough" });
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBe("u1");
+    expect(storageMock.updatePassword).toHaveBeenCalledTimes(1);
+    expect(storageMock.updatePassword.mock.calls[0][0]).toBe("u1");
+  });
+});
+
+describe("reading progress", () => {
+  async function authedAgent(app: express.Express) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
+    return agent;
+  }
+
+  it("GET /api/progress/reads is 401 without a session", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/api/progress/reads");
+    expect(res.status).toBe(401);
+  });
+
+  it("returns the user's read slugs when authed", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getReadLessons.mockResolvedValueOnce(["sterility-testing-basics", "bioburden-usp-61"]);
+    const res = await agent.get("/api/progress/reads");
+    expect(res.status).toBe(200);
+    expect(res.body.reads).toEqual(["sterility-testing-basics", "bioburden-usp-61"]);
+    expect(storageMock.getReadLessons).toHaveBeenCalledWith("u1");
+  });
+
+  it("marks a lesson read for the authed user", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.markLessonRead.mockResolvedValueOnce(undefined);
+    const res = await agent.post("/api/progress/reads").send({ slug: "aseptic-technique" });
+    expect(res.status).toBe(200);
+    expect(res.body.ok).toBe(true);
+    expect(storageMock.markLessonRead).toHaveBeenCalledWith("u1", "aseptic-technique");
+  });
+
+  it("rejects an empty slug", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    const res = await agent.post("/api/progress/reads").send({});
+    expect(res.status).toBe(400);
+    expect(storageMock.markLessonRead).not.toHaveBeenCalled();
+  });
+
+  it("fails soft (200) if the store throws — client falls back to localStorage", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getReadLessons.mockRejectedValueOnce(new Error("relation lesson_reads does not exist"));
+    const res = await agent.get("/api/progress/reads");
+    expect(res.status).toBe(200);
+    expect(res.body.reads).toEqual([]);
   });
 });
