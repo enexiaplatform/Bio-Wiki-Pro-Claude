@@ -12,6 +12,8 @@ import { useLanguage } from "@/hooks/use-language";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { ContinueLearning } from "@/components/ContinueLearning";
 import { learningPaths } from "@/data/learningPaths";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
 
 const all = "All";
 
@@ -70,6 +72,22 @@ export default function AcademyPage() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
+      {libraryEntries.length > 0 && (
+        <JsonLd
+          id="academy-itemlist"
+          data={{
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "BioWikiPro Academy library",
+            itemListElement: libraryEntries.map((e, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `${SITE_URL}/library/${e.slug}`,
+              name: e.title,
+            })),
+          }}
+        />
+      )}
       <LeadMagnetBanner />
       <section className="mb-8 rounded-2xl border border-white/10 bg-card p-5 md:p-7 shadow-xl shadow-black/10">
         <div className="flex items-start gap-4">
