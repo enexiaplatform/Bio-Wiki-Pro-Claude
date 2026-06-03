@@ -95,6 +95,20 @@ describe("auth", () => {
     expect(res.status).toBe(400);
   });
 
+  it("register rejects an invalid email", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/register").send({ email: "not-an-email", password: "pw123456" });
+    expect(res.status).toBe(400);
+    expect(storageMock.createUser).not.toHaveBeenCalled();
+  });
+
+  it("register rejects a short password", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/register").send({ email: "a@b.com", password: "short" });
+    expect(res.status).toBe(400);
+    expect(storageMock.createUser).not.toHaveBeenCalled();
+  });
+
   it("login rejects bad credentials", async () => {
     const app = await buildApp();
     storageMock.getUserByEmail.mockResolvedValueOnce(undefined);

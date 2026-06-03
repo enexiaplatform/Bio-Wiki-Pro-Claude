@@ -12,6 +12,7 @@ import { getPriceId, isSubscription } from "./products.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
+import { rateLimit } from "express-rate-limit";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -20,6 +21,23 @@ import matter from "gray-matter";
 
 // Dunning grace window after a failed subscription payment.
 const GRACE_PERIOD_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
+// Brute-force / abuse protection on credential + account endpoints. In-memory
+// store: meaningful per-instance protection (note: not shared across serverless
+// instances). validate:false avoids any startup/runtime throw from proxy checks.
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+  message: { message: "Too many attempts. Please wait a few minutes and try again." },
+});
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function isValidEmail(email: unknown): email is string {
+  return typeof email === "string" && email.length <= 254 && EMAIL_RE.test(email);
+}
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
@@ -220,11 +238,17 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // ── Auth routes ──────────────────────────────────────────────────────────
 
-  app.post("/api/auth/register", async (req, res) => {
+  app.post("/api/auth/register", authLimiter, async (req, res) => {
     try {
       const { email, password, firstName, lastName } = req.body;
       if (!email || !password) {
         return res.status(400).json({ message: "Email and password required" });
+      }
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ message: "Please enter a valid email address" });
+      }
+      if (String(password).length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
       }
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
@@ -248,7 +272,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", authLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
@@ -274,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // Request a password reset link. Always returns 200 so the endpoint never
   // reveals whether an email is registered (enumeration protection).
-  app.post("/api/auth/forgot-password", async (req, res) => {
+  app.post("/api/auth/forgot-password", authLimiter, async (req, res) => {
     try {
       const { email } = req.body;
       if (!email) return res.status(400).json({ message: "Email required" });
@@ -300,7 +324,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // Complete a password reset using the emailed token.
-  app.post("/api/auth/reset-password", async (req, res) => {
+  app.post("/api/auth/reset-password", authLimiter, async (req, res) => {
     try {
       const { token, password } = req.body;
       if (!token || !password) {
@@ -331,7 +355,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   // (credential); we verify it server-side, then find-or-create the user by
   // their Google-verified email and start a session. No password is set for
   // Google-only accounts.
-  app.post("/api/auth/google", async (req, res) => {
+  app.post("/api/auth/google", authLimiter, async (req, res) => {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (!clientId) {
       return res.status(503).json({ message: "Google sign-in is not configured" });
