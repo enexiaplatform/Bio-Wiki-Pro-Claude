@@ -1,0 +1,54 @@
+---
+title: "Audit Trail Review: What, How Often, and Red Flags"
+slug: "audit-trail-review"
+lang: "en"
+tier: "free"
+category: "Data Integrity"
+seoDescription: "A practical guide to audit-trail review in GMP labs — what to review, how often, a risk-based approach, and the red flags that signal data-integrity problems."
+updatedAt: "2026-06-02"
+---
+
+# Audit Trail Review: What, How Often, and Red Flags
+
+Regulators expect audit trails to be **reviewed**, not just enabled. An unreviewed
+audit trail is one of the most cited data-integrity gaps. Here's how to make
+review practical and defensible.
+
+## What to review
+
+Audit trails capture who did what, when, and what changed. Focus review on the
+entries that carry integrity risk:
+
+- **Changes** to results, methods, integration parameters, or sample sequences.
+- **Deletions** and aborted/repeated runs.
+- **Changes to system settings** — clock, access rights, audit-trail config.
+
+## How often — be risk-based
+
+You can't manually read every line of every system daily. A defensible model:
+
+- **GMP-critical data** (release-determining results): review the relevant audit
+  trail **before** the data is used to make the batch-release decision.
+- **Periodic** review of system-level events (configuration, user management) on
+  a defined cadence.
+
+The key is a documented, risk-based rationale — not "we review everything"
+(unrealistic) and not "we review nothing" (a finding).
+
+## Red flags to watch for
+
+- Results changed after the first acquisition with no explanation.
+- "Trial" or unofficial injections immediately before a passing result.
+- The system clock altered around the time of a test.
+- Audit trail switched off, then on again.
+- Repeated aborted runs that never appear in the official record.
+
+## Make it routine
+
+Tie audit-trail review to the batch-record review workflow so it happens before
+release — not reconstructed when an inspector asks. Train reviewers on what the
+red flags look like in *your* systems.
+
+> Deeper dive: the Academy lessons **Good Documentation Practice** and
+> **Batch Record Review & Product Release** show where audit-trail review fits in
+> the release workflow.
