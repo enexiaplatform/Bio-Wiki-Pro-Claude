@@ -1,15 +1,33 @@
+import { useState } from "react";
 import { useUser } from "@/context/UserContext";
-import { Shield, CreditCard, Bell, ChevronRight, LogOut, LogIn, Crown } from "lucide-react";
+import { Shield, ChevronRight, LogOut, LogIn, Crown, Loader2, Settings as SettingsIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
   const { t } = useTranslation("pages");
   const { user, isAuthenticated, isPro, logout } = useUser();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const [portalBusy, setPortalBusy] = useState(false);
+
+  // Open the Stripe customer portal so a Pro member can manage/cancel billing.
+  async function openBillingPortal() {
+    setPortalBusy(true);
+    try {
+      const res = await fetch("/api/stripe/customer-portal", { credentials: "include" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.message ?? "Could not open billing portal");
+      window.location.href = data.url;
+    } catch (e: any) {
+      toast({ title: "Billing", description: e.message ?? "Could not open billing portal", variant: "destructive" });
+      setPortalBusy(false);
+    }
+  }
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-2xl mx-auto px-4">
@@ -42,14 +60,14 @@ export default function Settings() {
           <div className="p-6 border-b border-white/5 text-center">
             <p className="text-muted-foreground mb-4">{t("settings.signInPrompt")}</p>
             <Button asChild data-testid="button-settings-login">
-              <a href="/api/login">
+              <Link href="/login">
                 <LogIn className="w-4 h-4 mr-1.5" />
                 {t("settings.signIn")}
-              </a>
+              </Link>
             </Button>
           </div>
         )}
-        
+
         <div className="p-6 bg-gradient-to-r from-primary/10 to-transparent flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
             <div className="bg-primary/20 p-2 rounded-lg text-primary">
@@ -60,30 +78,49 @@ export default function Settings() {
               <p className="text-xs text-muted-foreground">{isPro ? t("settings.proMember") : t("settings.freeTier")}</p>
             </div>
           </div>
-          {isAuthenticated ? (
+          {!isAuthenticated ? (
+            <Button variant="outline" size="sm" asChild data-testid="button-settings-upgrade-login">
+              <Link href="/login">{t("settings.signInToUpgrade")}</Link>
+            </Button>
+          ) : isPro ? (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setLocation(isPro ? "/pricing" : "/upgrade")}
+              onClick={openBillingPortal}
+              disabled={portalBusy}
               data-testid="button-settings-plan"
             >
-              {isPro ? t("settings.managePlan") : t("settings.upgrade")}
+              {portalBusy ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <SettingsIcon className="w-4 h-4 mr-1.5" />}
+              {t("settings.managePlan")}
             </Button>
           ) : (
-            <Button variant="outline" size="sm" asChild data-testid="button-settings-upgrade-login">
-              <a href="/api/login">{t("settings.signInToUpgrade")}</a>
+            <Button size="sm" onClick={() => setLocation("/upgrade")} data-testid="button-settings-plan">
+              <Crown className="w-4 h-4 mr-1.5" />
+              {t("settings.upgrade")}
             </Button>
           )}
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-2">{t("settings.preferences")}</h3>
+      {isAuthenticated && (
+        <div className="space-y-4">
+          <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-2">{t("settings.preferences")}</h3>
 
-        <div className="bg-card border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
-          <SettingItem icon={Bell} label={t("settings.notifications")} value={t("settings.on")} />
-          <SettingItem icon={CreditCard} label={t("settings.billing")} />
-          {isAuthenticated && (
+          <div className="bg-card border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
+            {isPro && (
+              <button
+                onClick={openBillingPortal}
+                disabled={portalBusy}
+                className="w-full p-4 flex items-center gap-4 hover:bg-white/5 cursor-pointer transition-colors group text-left disabled:opacity-60"
+                data-testid="button-settings-billing"
+              >
+                <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors">
+                  {portalBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <SettingsIcon className="w-4 h-4" />}
+                </div>
+                <span className="flex-1 font-medium">{t("settings.billing")}</span>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </button>
+            )}
             <div
               onClick={logout}
               className="p-4 flex items-center gap-4 hover:bg-white/5 cursor-pointer transition-colors group"
@@ -94,26 +131,13 @@ export default function Settings() {
               </div>
               <span className="flex-1 font-medium text-red-500">{t("settings.signOut")}</span>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       <p className="text-center text-xs text-muted-foreground mt-12">
-        BioWiki Pro v1.0.0
+        BioWikiPro v1.0.0
       </p>
-    </div>
-  );
-}
-
-function SettingItem({ icon: Icon, label, value }: { icon: any; label: string; value?: string }) {
-  return (
-    <div className="p-4 flex items-center gap-4 hover:bg-white/5 cursor-pointer transition-colors group">
-      <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors">
-        <Icon className="w-4 h-4" />
-      </div>
-      <span className="flex-1 font-medium">{label}</span>
-      {value && <span className="text-sm text-muted-foreground mr-2">{value}</span>}
-      <ChevronRight className="w-4 h-4 text-muted-foreground" />
     </div>
   );
 }
