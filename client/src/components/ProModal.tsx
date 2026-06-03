@@ -19,11 +19,11 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
   const handleUpgrade = () => {
     if (!isAuthenticated) {
       onClose();
-      window.location.href = "/api/login";
+      setLocation("/login");
       return;
     }
     onClose();
-    setLocation("/pricing");
+    setLocation("/upgrade");
   };
 
   const goToUpgradePage = () => {
@@ -86,12 +86,12 @@ export function ProModal({ isOpen, onClose }: ProModalProps) {
                 </Button>
               ) : (
                 <Button
-                  asChild
                   className="w-full font-bold text-lg"
                   size="lg"
+                  onClick={() => { onClose(); setLocation("/login"); }}
                   data-testid="button-pro-login"
                 >
-                  <a href="/api/login">{t("modal.signIn")}</a>
+                  {t("modal.signIn")}
                 </Button>
               )}
 
