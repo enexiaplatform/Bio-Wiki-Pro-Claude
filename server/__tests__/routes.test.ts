@@ -24,9 +24,6 @@ const { storageMock, constructEvent, verifyIdToken } = vi.hoisted(() => ({
     updatePassword: vi.fn(),
     getReadLessons: vi.fn(),
     markLessonRead: vi.fn(),
-    setVerificationToken: vi.fn(() => Promise.resolve()),
-    getUserByVerificationToken: vi.fn(),
-    markEmailVerified: vi.fn(() => Promise.resolve()),
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
@@ -57,7 +54,6 @@ vi.mock("../email.js", () => ({
   sendLeadMagnetEmail: vi.fn(() => Promise.resolve()),
   sendDunningEmail: vi.fn(() => Promise.resolve()),
   sendPasswordResetEmail: vi.fn(() => Promise.resolve()),
-  sendVerificationEmail: vi.fn(() => Promise.resolve()),
 }));
 
 import { registerRoutes } from "../routes.js";
@@ -306,50 +302,6 @@ describe("reading progress", () => {
     const res = await agent.get("/api/progress/reads");
     expect(res.status).toBe(200);
     expect(res.body.reads).toEqual([]);
-  });
-});
-
-describe("email verification (soft)", () => {
-  it("register issues a verification token without blocking signup", async () => {
-    const app = await buildApp();
-    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
-    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
-    const res = await request(app).post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
-    expect(res.status).toBe(201);
-    expect(storageMock.setVerificationToken).toHaveBeenCalledTimes(1);
-    expect(storageMock.setVerificationToken.mock.calls[0][0]).toBe("u1");
-  });
-
-  it("register still succeeds if issuing the token throws (pre-migration)", async () => {
-    const app = await buildApp();
-    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
-    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
-    storageMock.setVerificationToken.mockRejectedValueOnce(new Error("column does not exist"));
-    const res = await request(app).post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
-    expect(res.status).toBe(201);
-  });
-
-  it("verify-email confirms a valid token", async () => {
-    const app = await buildApp();
-    storageMock.getUserByVerificationToken.mockResolvedValueOnce({ id: "u1", verificationTokenExpiry: new Date(Date.now() + 60_000) });
-    const res = await request(app).post("/api/auth/verify-email").send({ token: "good" });
-    expect(res.status).toBe(200);
-    expect(res.body.ok).toBe(true);
-    expect(storageMock.markEmailVerified).toHaveBeenCalledWith("u1");
-  });
-
-  it("verify-email rejects an expired/invalid token", async () => {
-    const app = await buildApp();
-    storageMock.getUserByVerificationToken.mockResolvedValueOnce(undefined);
-    const res = await request(app).post("/api/auth/verify-email").send({ token: "bad" });
-    expect(res.status).toBe(400);
-    expect(storageMock.markEmailVerified).not.toHaveBeenCalled();
-  });
-
-  it("verify-email requires a token", async () => {
-    const app = await buildApp();
-    const res = await request(app).post("/api/auth/verify-email").send({});
-    expect(res.status).toBe(400);
   });
 });
 

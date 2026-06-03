@@ -27,8 +27,6 @@ export const users = pgTable("users", {
   verifiedEmail: boolean('verified_email').default(false).notNull(),
   resetToken: text('reset_token'),
   resetTokenExpiry: timestamp('reset_token_expiry'),
-  verificationToken: text('verification_token'),
-  verificationTokenExpiry: timestamp('verification_token_expiry'),
   
   // Stripe columns
   stripeCustomerId: text('stripe_customer_id'),
