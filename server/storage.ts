@@ -6,6 +6,7 @@ import {
   leads,
   processedStripeEvents,
   contentEntries,
+  lessonReads,
   type User,
   type UpsertUser,
   type QuoteRequest,
@@ -34,6 +35,8 @@ export interface IStorage {
   getContentEntry(slug: string, lang: string): Promise<ContentEntryRow | undefined>;
   upsertContentEntry(entry: InsertContentEntry): Promise<void>;
   hasCompletedPurchase(userId: string, productType?: string): Promise<boolean>;
+  getReadLessons(userId: string): Promise<string[]>;
+  markLessonRead(userId: string, slug: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -173,6 +176,18 @@ export class DatabaseStorage implements IStorage {
       : and(eq(purchases.userId, userId), eq(purchases.status, "completed"));
     const rows = await db.select({ id: purchases.id }).from(purchases).where(conditions);
     return rows.length > 0;
+  }
+
+  async getReadLessons(userId: string): Promise<string[]> {
+    const rows = await db
+      .select({ slug: lessonReads.slug })
+      .from(lessonReads)
+      .where(eq(lessonReads.userId, userId));
+    return rows.map((r) => r.slug);
+  }
+
+  async markLessonRead(userId: string, slug: string): Promise<void> {
+    await db.insert(lessonReads).values({ userId, slug }).onConflictDoNothing();
   }
 }
 

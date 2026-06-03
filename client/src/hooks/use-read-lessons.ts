@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const KEY = "bwp_read_lessons";
 
@@ -11,23 +11,86 @@ function readStore(): string[] {
   }
 }
 
+function writeStore(slugs: string[]) {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(slugs));
+  } catch {
+    /* ignore quota / privacy-mode errors */
+  }
+}
+
 /**
- * Tracks which Academy lessons the user has opened (by slug), in localStorage.
- * Drives the reading-progress indicator and "read" checkmarks.
+ * Tracks which Academy lessons the user has opened (by slug).
+ *
+ * - Guests: localStorage only (unchanged behavior).
+ * - Logged-in users: synced with the server (`/api/progress/reads`) so progress
+ *   follows them across devices. On mount we merge local + server, push any
+ *   local-only reads up, and use the union. Everything degrades gracefully —
+ *   a 401 (guest) or a missing table (pre-migration) just falls back to local.
  */
 export function useReadLessons() {
   const [read, setRead] = useState<string[]>([]);
+  const authedRef = useRef(false);
 
   useEffect(() => {
-    setRead(readStore());
+    const local = readStore();
+    setRead(local);
+
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/progress/reads", { credentials: "include" });
+        if (!res.ok) return; // guest (401) or error → local only
+        const data = await res.json().catch(() => ({}));
+        const serverReads: string[] = Array.isArray(data.reads) ? data.reads : [];
+        authedRef.current = true;
+
+        const localNow = readStore();
+        const union = Array.from(new Set([...localNow, ...serverReads]));
+        if (active) {
+          writeStore(union);
+          setRead(union);
+        }
+
+        // Push any local-only reads up so the server catches up (e.g. lessons
+        // read as a guest before signing in).
+        const serverSet = new Set(serverReads);
+        for (const slug of localNow) {
+          if (!serverSet.has(slug)) {
+            fetch("/api/progress/reads", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ slug }),
+            }).catch(() => {});
+          }
+        }
+      } catch {
+        /* offline / not logged in → local only */
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const markRead = useCallback((slug: string) => {
     const cur = readStore();
-    if (cur.includes(slug)) return;
-    const next = [...cur, slug];
-    localStorage.setItem(KEY, JSON.stringify(next));
-    setRead(next);
+    if (!cur.includes(slug)) {
+      const next = [...cur, slug];
+      writeStore(next);
+      setRead(next);
+    }
+    // Persist to the server for logged-in users (skipped for guests).
+    if (authedRef.current) {
+      fetch("/api/progress/reads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ slug }),
+      }).catch(() => {});
+    }
   }, []);
 
   const isRead = useCallback((slug: string) => read.includes(slug), [read]);

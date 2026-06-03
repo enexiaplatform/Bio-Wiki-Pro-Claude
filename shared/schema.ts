@@ -52,6 +52,20 @@ export const contentEntries = pgTable(
 export type ContentEntryRow = typeof contentEntries.$inferSelect;
 export type InsertContentEntry = typeof contentEntries.$inferInsert;
 
+// Per-user reading progress (which Academy lessons a user has opened).
+// Cross-device sync for logged-in users; guests use localStorage only.
+export const lessonReads = pgTable(
+  "lesson_reads",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    slug: text("slug").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("lesson_reads_user_slug_idx").on(t.userId, t.slug)],
+);
+export type LessonRead = typeof lessonReads.$inferSelect;
+
 // Quote Requests from the Solutions tab
 export const quoteRequests = pgTable("quote_requests", {
   id: serial("id").primaryKey(),

@@ -330,6 +330,31 @@ export async function registerRoutes(app: Express): Promise<void> {
     });
   });
 
+  // Reading progress (cross-device for logged-in users). Both endpoints fail
+  // soft: if the lesson_reads table isn't present yet (pre-migration), they
+  // return empty/ok so the client transparently falls back to localStorage.
+  app.get("/api/progress/reads", isAuthenticated, async (req: any, res) => {
+    try {
+      const slugs = await storage.getReadLessons(req.session.userId);
+      res.json({ reads: slugs });
+    } catch (err) {
+      console.error("[Progress] read list error:", err);
+      res.json({ reads: [] });
+    }
+  });
+
+  app.post("/api/progress/reads", isAuthenticated, async (req: any, res) => {
+    try {
+      const slug = String(req.body?.slug ?? "").trim();
+      if (!slug) return res.status(400).json({ message: "slug required" });
+      await storage.markLessonRead(req.session.userId, slug);
+      res.json({ ok: true });
+    } catch (err) {
+      console.error("[Progress] mark read error:", err);
+      res.json({ ok: false });
+    }
+  });
+
   app.get("/api/auth/me", isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.session.userId);
