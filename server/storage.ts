@@ -21,6 +21,9 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByStripeCustomerId(customerId: string): Promise<User | undefined>;
   createUser(user: UpsertUser): Promise<User>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
+  setResetToken(userId: string, token: string, expiry: Date): Promise<void>;
+  updatePassword(userId: string, passwordHash: string): Promise<void>;
   updateUserPro(id: string, isPro: boolean): Promise<User>;
   updateUserStripe(id: string, data: Partial<Pick<User, "isPro" | "stripeCustomerId" | "stripeSubscriptionId" | "subscriptionStatus" | "proExpiresAt" | "proGraceUntil">>): Promise<User>;
   createPurchase(data: { userId: string; productType: string; stripeSessionId?: string; amount?: number; status?: string }): Promise<void>;
@@ -52,6 +55,25 @@ export class DatabaseStorage implements IStorage {
   async createUser(userData: UpsertUser): Promise<User> {
     const [user] = await db.insert(users).values(userData).returning();
     return user;
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.resetToken, token));
+    return user;
+  }
+
+  async setResetToken(userId: string, token: string, expiry: Date): Promise<void> {
+    await db
+      .update(users)
+      .set({ resetToken: token, resetTokenExpiry: expiry, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async updatePassword(userId: string, passwordHash: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ passwordHash, resetToken: null, resetTokenExpiry: null, updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 
   async updateUserPro(id: string, isPro: boolean): Promise<User> {

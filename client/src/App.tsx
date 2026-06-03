@@ -25,6 +25,8 @@ const Settings = lazy(() => import("@/pages/Settings"));
 const UpgradePage = lazy(() => import("@/pages/UpgradePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const RegisterPage = lazy(() => import("@/pages/RegisterPage"));
+const ForgotPasswordPage = lazy(() => import("@/pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
 const PricingPage = lazy(() => import("@/pages/PricingPage"));
 const PaymentSuccessPage = lazy(() => import("@/pages/PaymentSuccessPage"));
 const Vault = lazy(() => import("@/pages/Vault"));
@@ -84,6 +86,8 @@ function Layout() {
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/signup" component={RegisterPage} />
+          <Route path="/forgot-password" component={ForgotPasswordPage} />
+          <Route path="/reset-password" component={ResetPasswordPage} />
           <Route path="/pricing" component={PricingPage} />
           <Route path="/payment/success" component={PaymentSuccessPage} />
           <Route path="/terms" component={TermsPage} />

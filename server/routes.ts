@@ -6,7 +6,8 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail } from "./email.js";
+import crypto from "crypto";
 import { getPriceId, isSubscription } from "./products.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
@@ -262,6 +263,61 @@ export async function registerRoutes(app: Express): Promise<void> {
 
       req.session.userId = user.id;
       return res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: user.isPro });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Request a password reset link. Always returns 200 so the endpoint never
+  // reveals whether an email is registered (enumeration protection).
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ message: "Email required" });
+
+      const user = await storage.getUserByEmail(email);
+      if (user) {
+        const token = crypto.randomBytes(32).toString("hex");
+        const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+        await storage.setResetToken(user.id, token, expiry);
+
+        const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+        const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+        sendPasswordResetEmail(email, resetUrl, user.firstName ?? undefined).catch((err) =>
+          console.error("[ForgotPassword] Email error:", err)
+        );
+      }
+
+      return res.json({ message: "If an account exists for that email, a reset link has been sent." });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // Complete a password reset using the emailed token.
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and new password required" });
+      }
+      if (String(password).length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const user = await storage.getUserByResetToken(token);
+      if (!user || !user.resetTokenExpiry || new Date(user.resetTokenExpiry).getTime() < Date.now()) {
+        return res.status(400).json({ message: "This reset link is invalid or has expired." });
+      }
+
+      const passwordHash = await bcrypt.hash(password, 12);
+      await storage.updatePassword(user.id, passwordHash);
+
+      // Log the user in after a successful reset.
+      req.session.userId = user.id;
+      return res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user) });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Server error" });

@@ -66,13 +66,18 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">{t("login.password")}</Label>
-              <Input 
-                id="password" 
-                type="password" 
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">{t("login.password")}</Label>
+                <Link href="/forgot-password" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <Input
+                id="password"
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required 
+                required
               />
             </div>
           </CardContent>

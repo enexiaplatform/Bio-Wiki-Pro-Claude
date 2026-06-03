@@ -156,6 +156,39 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
   }
 }
 
+export async function sendPasswordResetEmail(
+  to: string,
+  resetUrl: string,
+  firstName?: string
+): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would send password reset to ${to} (Resend not configured): ${resetUrl}`);
+    return;
+  }
+
+  const name = firstName ?? "there";
+  const html = htmlWrapper(`
+    <h1>Reset your password</h1>
+    <p>Hi ${name}, we received a request to reset the password for your BioWikiPro account.</p>
+    <a href="${resetUrl}" class="cta">Reset password →</a>
+    <div class="box">
+      <p>This link expires in <strong style="color:#10b981;">1 hour</strong> and can be used once.</p>
+    </div>
+    <p style="font-size: 13px; color: #64748b;">If you didn't request this, you can safely ignore this email — your password won't change.</p>
+  `);
+
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: "Reset your BioWikiPro password",
+      html,
+    });
+  } catch (err) {
+    console.error("[Email] Failed to send password reset email:", err);
+  }
+}
+
 export async function sendDunningEmail(
   to: string,
   graceUntil: Date,
