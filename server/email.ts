@@ -156,6 +156,34 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
   }
 }
 
+export async function sendVerificationEmail(
+  to: string,
+  verifyUrl: string,
+  firstName?: string
+): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would send verification to ${to} (Resend not configured): ${verifyUrl}`);
+    return;
+  }
+
+  const name = firstName ?? "there";
+  const html = htmlWrapper(`
+    <h1>Confirm your email</h1>
+    <p>Hi ${name}, thanks for joining BioWikiPro. Confirm your email to secure your account.</p>
+    <a href="${verifyUrl}" class="cta">Verify email →</a>
+    <div class="box">
+      <p>This link expires in <strong style="color:#10b981;">24 hours</strong>. You can keep using BioWikiPro in the meantime.</p>
+    </div>
+    <p style="font-size: 13px; color: #64748b;">If you didn't create this account, you can ignore this email.</p>
+  `);
+
+  try {
+    await resend.emails.send({ from: FROM_EMAIL, to, subject: "Confirm your BioWikiPro email", html });
+  } catch (err) {
+    console.error("[Email] Failed to send verification email:", err);
+  }
+}
+
 export async function sendPasswordResetEmail(
   to: string,
   resetUrl: string,

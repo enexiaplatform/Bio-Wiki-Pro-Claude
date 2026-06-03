@@ -6,7 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription } from "./products.js";
 import { isProActive } from "./entitlements.js";
@@ -238,6 +238,21 @@ export async function registerRoutes(app: Express): Promise<void> {
         console.error("[Register] Welcome email error:", err)
       );
 
+      // Soft email verification — issue a 24h token and email a confirm link.
+      // Never blocks registration: any failure (incl. pre-migration columns)
+      // is swallowed so the account is still created and usable.
+      try {
+        const vToken = crypto.randomBytes(32).toString("hex");
+        const vExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+        await storage.setVerificationToken(user.id, vToken, vExpiry);
+        const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+        sendVerificationEmail(email, `${baseUrl}/verify-email?token=${vToken}`, firstName ?? undefined).catch((err) =>
+          console.error("[Register] Verification email error:", err)
+        );
+      } catch (err) {
+        console.error("[Register] Verification token error (non-blocking):", err);
+      }
+
       return res.status(201).json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: user.isPro });
     } catch (err) {
       console.error(err);
@@ -324,6 +339,24 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Confirm an email via the link token. Soft verification: it sets the flag
+  // but access is never gated on it. Fails soft if columns aren't migrated yet.
+  app.post("/api/auth/verify-email", async (req, res) => {
+    try {
+      const token = String(req.body?.token ?? "");
+      if (!token) return res.status(400).json({ message: "Token required" });
+      const user = await storage.getUserByVerificationToken(token);
+      if (!user || !user.verificationTokenExpiry || new Date(user.verificationTokenExpiry).getTime() < Date.now()) {
+        return res.status(400).json({ message: "This verification link is invalid or has expired." });
+      }
+      await storage.markEmailVerified(user.id);
+      return res.json({ ok: true });
+    } catch (err) {
+      console.error("[VerifyEmail] error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
   app.post("/api/auth/logout", (req, res) => {
     req.session.destroy(() => {
       res.status(200).json({ message: "Logged out" });
@@ -361,7 +394,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user) });
+      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user), verifiedEmail: user.verifiedEmail ?? false });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch user" });
     }
