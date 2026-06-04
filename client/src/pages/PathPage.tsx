@@ -1,5 +1,5 @@
 import { Link, useParams } from "wouter";
-import { ChevronRight, CheckCircle2, Crown, Circle, ArrowRight } from "lucide-react";
+import { ChevronRight, CheckCircle2, Crown, Circle, ArrowRight, Award } from "lucide-react";
 import { getLearningPath } from "@/data/learningPaths";
 import { getContentBySlug } from "@/lib/content";
 import { useReadLessons } from "@/hooks/use-read-lessons";
@@ -52,8 +52,16 @@ export default function PathPage() {
           {readCount > 0 ? "Continue" : "Start"}: {next.title} <ArrowRight className="w-4 h-4" />
         </Link>
       ) : (
-        <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-400 mb-8">
-          <CheckCircle2 className="w-4 h-4" /> Path completed — nice work!
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-400">
+            <CheckCircle2 className="w-4 h-4" /> Path completed — nice work!
+          </div>
+          <Link
+            href={`/certificate/${path.slug}`}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+          >
+            <Award className="w-4 h-4" /> Get your certificate
+          </Link>
         </div>
       )}
 
