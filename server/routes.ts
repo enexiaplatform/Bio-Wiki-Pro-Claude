@@ -651,13 +651,20 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
 
     const corePaths = [
-      "", "/qc-hub", "/academy", "/tools", "/compliance", "/vault", "/career",
-      "/solutions", "/insights", "/pricing", "/toolkits/gmp-audit-kit", "/blog",
-      "/upgrade", "/login", "/signup", "/terms", "/privacy", "/refund",
+      "", "/qc-hub", "/academy", "/library", "/glossary", "/about", "/tools",
+      "/compliance", "/vault", "/career", "/solutions", "/insights", "/pricing",
+      "/toolkits/gmp-audit-kit", "/blog", "/upgrade", "/login", "/signup",
+      "/terms", "/privacy", "/refund",
     ];
+    // Learning-path tracks. Kept in sync with client/src/data/learningPaths.ts.
+    const pathPaths = [
+      "microbiology-qc-fundamentals", "sterile-aseptic-manufacturing",
+      "validation-essentials", "quality-systems",
+      "investigations-data-integrity", "laboratory-controls-stability",
+    ].map((s) => `/paths/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
-    const allPaths = [...corePaths, ...blogPaths, ...libPaths];
+    const allPaths = [...corePaths, ...pathPaths, ...blogPaths, ...libPaths];
 
     // English-only: clean single URL per path.
     const urls = allPaths
