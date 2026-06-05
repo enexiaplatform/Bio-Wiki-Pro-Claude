@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { JsonLd } from "@/components/JsonLd";
 
 type ProductType = "pro_subscription" | "starter_kit" | "interview_prep" | "bundle";
 const ONE_TIME_PRODUCTS: { productType: Exclude<ProductType, "pro_subscription">; price: string }[] = [
@@ -59,6 +60,20 @@ export default function PricingPage() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
+      {Array.isArray(faqs) && faqs.length > 0 && (
+        <JsonLd
+          id="pricing-faq"
+          data={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          }}
+        />
+      )}
       {/* Header */}
       <div className="mb-12 text-center">
         <h1 className="text-3xl md:text-5xl font-bold mb-4 font-display text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">

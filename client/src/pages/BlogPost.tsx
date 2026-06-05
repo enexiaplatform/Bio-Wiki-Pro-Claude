@@ -50,6 +50,18 @@ export default function BlogPost() {
           publisher: { "@type": "Organization", name: "BioWikiPro" },
         }}
       />
+      <JsonLd
+        id="blog-breadcrumb"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "BioWikiPro", item: BASE_URL },
+            { "@type": "ListItem", position: 2, name: "Blog", item: `${BASE_URL}/blog` },
+            { "@type": "ListItem", position: 3, name: entry.title, item: `${BASE_URL}/blog/${slug}` },
+          ],
+        }}
+      />
 
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">

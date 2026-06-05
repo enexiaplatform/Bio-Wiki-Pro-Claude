@@ -27,6 +27,9 @@ export function Footer() {
             <Link href="/academy" className="hover:text-primary transition-colors">
               {t("links.academy")}
             </Link>
+            <Link href="/library" className="hover:text-primary transition-colors">
+              Library
+            </Link>
             <Link href="/glossary" className="hover:text-primary transition-colors">
               Glossary
             </Link>
