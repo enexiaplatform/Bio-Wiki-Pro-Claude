@@ -32,6 +32,14 @@ export default function CertificatePage() {
 
   const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
+  // Deterministic, human-readable certificate id (cosmetic — same inputs → same id).
+  function shortHash(s: string): string {
+    let h = 5381;
+    for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+    return h.toString(36).toUpperCase().padStart(6, "0").slice(0, 6);
+  }
+  const certId = `BWP-${path.slug.slice(0, 3).toUpperCase()}-${shortHash(`${path.slug}|${name.trim().toLowerCase()}|${today}`)}`;
+
   if (!complete) {
     return (
       <div className="pb-24 pt-10 max-w-xl mx-auto px-4 text-center">
@@ -115,9 +123,14 @@ export default function CertificatePage() {
           </div>
         </div>
 
-        <p className="mt-8 text-[11px] text-muted-foreground/70 print:text-gray-500">
-          BioWikiPro — QC/QA knowledge for Pharma &amp; Life Sciences · biowikipro.com
-        </p>
+        <div className="mt-8 flex flex-col items-center gap-1">
+          <p className="text-[11px] font-semibold tracking-wide text-primary/80 print:text-emerald-700">
+            ✓ Verified completion · BioWikiPro
+          </p>
+          <p className="text-[11px] text-muted-foreground/70 print:text-gray-500">
+            Certificate ID: {certId} · QC/QA knowledge for Pharma &amp; Life Sciences · biowikipro.com
+          </p>
+        </div>
       </div>
 
       <p className="text-center text-xs text-muted-foreground mt-4" data-print="hide">

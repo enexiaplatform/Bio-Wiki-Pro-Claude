@@ -105,7 +105,7 @@ export function DesktopNav() {
                 <Crown className="w-3 h-3 mr-1" /> Pro
               </Badge>
             )}
-            <div className="flex items-center gap-2">
+            <Link href="/my-learning" className="flex items-center gap-2 rounded-lg px-1.5 py-1 hover:bg-white/5 transition-colors" title="My learning" data-testid="link-my-learning">
               <Avatar className="w-8 h-8">
                 <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.firstName ?? "User"} />
                 <AvatarFallback className="text-xs bg-primary/10 text-primary">
@@ -115,7 +115,7 @@ export function DesktopNav() {
               <span className="text-sm font-medium hidden lg:inline" data-testid="text-user-name">
                 {user?.firstName ?? user?.email ?? "User"}
               </span>
-            </div>
+            </Link>
             <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout">
               <LogOut className="w-4 h-4" />
             </Button>
