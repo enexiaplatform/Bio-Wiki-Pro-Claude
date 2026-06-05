@@ -14,6 +14,7 @@
     "seed:content": "tsx script/seed-content.ts",
     "validate:content": "tsx script/validate-content.ts",
     "validate:paths": "tsx script/validate-paths.ts",
+    "validate": "npm run validate:content && npm run validate:paths && npm run check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

@@ -19,9 +19,17 @@ npm start
 
 # Push Drizzle schema to the DB (drizzle-kit push — NO migration files)
 npm run db:push
+
+# Validate content + learning-path coverage (CI guards)
+npm run validate:content   # MDX frontmatter / escaping
+npm run validate:paths     # every academy lesson in exactly one learning path
+
+# Tests
+npm test                   # vitest (server unit + route tests)
+npm run test:e2e           # playwright public smoke (auto-starts dev server)
 ```
 
-No test suite is configured. There is no `npm test` command.
+**Testing:** `vitest` (42 unit/route tests in `server/__tests__/`) + `playwright` E2E (`e2e/smoke.spec.ts` — 7 public smoke tests; purchase flow opt-in via `E2E_RUN=1`). Two content guards: `validate:content` and `validate:paths`.
 
 ## Localization (IMPORTANT — product direction)
 
@@ -60,11 +68,12 @@ server/
   routes.ts         registerRoutes(app) — all API endpoints; Stripe webhook; session setup; auth guards
   storage.ts        IStorage interface + DatabaseStorage (Drizzle + PostgreSQL)
   static.ts         serveStatic(app) — serves dist/public, SPA fallback to index.html
-  db.ts             Drizzle client via DATABASE_URL
-  email.ts          Resend transactional email (welcome / purchase / lead magnet)
+  db.ts             Drizzle client; exports resolved `connectionString` (DATABASE_URL → POSTGRES_URL → POSTGRES_PRISMA_URL → POSTGRES_URL_NON_POOLING — supports the Supabase/Vercel integration var names)
+  email.ts          Resend transactional email (welcome / purchase / lead magnet / dunning / password-reset) — all English
+  entitlements.ts   isProActive(user) — lazy entitlement (period end + dunning grace); source of truth for /me + gating
 shared/
-  schema.ts         Content TS interfaces (Term, AcademyEntry, Job, Product, LabTool, SOP, Skill) + leads/quoteRequests tables + Zod insert schemas
-  models/auth.ts    Auth/billing DB tables: users, sessions, purchases
+  schema.ts         Content TS interfaces (Term, Job, Product, LabTool, SOP, Skill) + leads/quoteRequests/contentEntries/processedStripeEvents/lessonReads tables + Zod insert schemas
+  models/auth.ts    Auth/billing DB tables: users (incl. reset-token cols), sessions, purchases
   routes.ts         Typed API contract (path, method, Zod schemas) — imported by client AND server
 api/index.ts        VERCEL serverless entry — wraps the Express app as a single function
 script/build.ts     Custom build: vite build (client) → esbuild bundle (server) → dist/
@@ -75,11 +84,15 @@ script/build.ts     Custom build: vite build (client) → esbuild bundle (server
 Client-side routing via **Wouter** `<Switch>`/`<Route>`. There is no server-side routing for pages — the SPA handles everything and the server falls back to `index.html`.
 
 - `/` → **LandingPage** (marketing). Note: `/` is NOT a redirect to `/qc-hub` (that was the old behavior).
-- Core app: `/qc-hub`, `/academy`, `/academy/:slug`, `/insights`, `/tools`, `/compliance`, `/vault`, `/career`, `/solutions`, `/settings`
+- Core app: `/qc-hub`, `/academy`, `/academy/:slug` (structured `microbiologyLessons`), `/insights`, `/tools`, `/compliance`, `/vault`, `/career`, `/solutions`, `/settings`
+- Content (MDX): `/library` (curriculum hub, grouped by path), `/library/:slug` (gated reader), `/blog`, `/blog/:slug`, `/glossary`, `/about`
+- Learning: `/paths/:slug` (a learning track), `/certificate/:slug` (printable + PNG-downloadable, gated on 100% path completion), `/my-learning` (personal dashboard: progress, achievements, certificates — linked from the desktop nav avatar)
 - Monetization: `/pricing`, `/upgrade`, `/toolkits/gmp-audit-kit`, `/payment/success`
-- Auth: `/login`, `/register`, `/signup` (both map to RegisterPage)
+- Auth: `/login`, `/register`, `/signup` (both RegisterPage), `/forgot-password`, `/reset-password`. Login/Register also offer **Google sign-in** (`GoogleSignInButton`, shown only when `VITE_GOOGLE_CLIENT_ID` is set).
 - Legal: `/terms`, `/privacy`, `/refund`
 - Fallback: NotFound
+
+> Learning paths live in `client/src/data/learningPaths.ts` — **6 disjoint paths covering all academy lessons** (invariant enforced by `npm run validate:paths`). Reading progress (`use-read-lessons.ts`) is localStorage-first and syncs to the DB (`lesson_reads`) for logged-in users when that table exists (degrades gracefully pre-migration). `getPathContext()` drives reader prev/next + the "Lesson X of N" header.
 
 The whole tree is wrapped in `<ErrorBoundary>` (in `App.tsx`) so a single component throw shows a fallback instead of a blank page. `usePageTracking()` runs at the Router level for PostHog page views.
 
@@ -95,12 +108,16 @@ When asked to "wire up real data", the work is: move a `use-data.ts` hook from r
 
 ### API Endpoints (`server/routes.ts`, registered via `registerRoutes(app)`)
 
-- **Auth** (session-based, bcryptjs): `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` (guarded by `isAuthenticated`)
-- **Stripe**: `POST /api/stripe/create-checkout-session` (guarded), `GET /api/stripe/customer-portal` (guarded), `POST /api/stripe/webhook` (raw-body signature verify; handles `checkout.session.completed` → unlock Pro / record purchase + send email, and `customer.subscription.deleted` → revoke Pro)
+- **Auth** (session-based, bcryptjs): `POST /api/auth/register` (email-format + 8-char validation), `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` (guarded). **Password reset:** `POST /api/auth/forgot-password` (enumeration-safe, always 200; 1h crypto token emailed) + `POST /api/auth/reset-password`. **Google sign-in:** `POST /api/auth/google` (verifies the GIS ID token via `google-auth-library`, find-or-create by verified email; 503 if `GOOGLE_CLIENT_ID` unset). All auth POSTs are behind an in-memory `express-rate-limit` (30/15min).
+- **Progress** (guarded): `GET`/`POST /api/progress/reads` (cross-device reading progress; fails soft → `{reads:[]}` / `{ok:false}` if the `lesson_reads` table is absent, so the client falls back to localStorage).
+- **Stripe**: `POST /api/stripe/create-checkout-session` (guarded), `GET /api/stripe/customer-portal` (guarded), `POST /api/stripe/webhook` (raw-body signature verify; subscription lifecycle + dunning + idempotency via `processed_stripe_events`)
 - **Leads**: `POST /api/leads/capture` (lead magnet email capture)
+- **SEO**: `GET /sitemap.xml` (dynamic — core pages + `/library` + `/paths/*` + all blog/academy), `GET /blog/rss.xml`. `serveStatic` injects per-page OG/title meta into `index.html` for `/blog/:slug` and `/library/:slug` (crawlers don't run the client JS).
 - **Contract-defined** (`shared/routes.ts`): `POST /api/quotes` (quote request), `POST /api/users/toggle-pro` (guarded)
 
-`isAuthenticated` checks `req.session.userId`. Session middleware (`setupSession`) uses `connect-pg-simple` backed by `DATABASE_URL`; without it, sessions fall back to memory. The Stripe webhook is registered before session middleware and uses `req.rawBody` (captured by the `express.json` verify hook) for signature verification.
+`isAuthenticated` checks `req.session.userId`. Session middleware (`setupSession`) uses `connect-pg-simple` backed by the resolved `connectionString` (`db.ts`); without it, sessions fall back to memory. The Stripe webhook is registered before session middleware and uses `req.rawBody` for signature verification.
+
+> ⚠️ **Migration-first rule (learned from an outage):** Drizzle `db.select().from(users)` selects *all* schema columns, so adding a column to the `users` schema and deploying **before** `db:push` runs breaks every user query (register/login/me 500). Never ship a `users` schema change ahead of its migration — stage it on a branch, run `db:push`, then merge. Always re-probe prod auth (`/api/auth/register`) after any DB-touching deploy.
 
 ### Auth & Pro Gating
 
