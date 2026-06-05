@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { GraduationCap, Award, CheckCircle2, ChevronRight, Route as RouteIcon, BookOpen } from "lucide-react";
+import { GraduationCap, Award, CheckCircle2, ChevronRight, Route as RouteIcon, BookOpen, Trophy, Lock } from "lucide-react";
 import clsx from "clsx";
 import { learningPaths } from "@/data/learningPaths";
 import { listContent } from "@/lib/content";
@@ -25,6 +25,18 @@ export default function MyLearningPage() {
     return { ...p, done, total, complete: total > 0 && done === total, pct: total ? Math.round((done / total) * 100) : 0 };
   });
   const certificates = paths.filter((p) => p.complete);
+  const completedPaths = certificates.length;
+  const halfway = Math.ceil(library.length / 2);
+
+  const badges = [
+    { label: "First steps", desc: "Read your first lesson", earned: readInLibrary >= 1 },
+    { label: "Getting serious", desc: "Read 10 lessons", earned: readInLibrary >= 10 },
+    { label: "Halfway there", desc: `Read ${halfway} lessons`, earned: readInLibrary >= halfway },
+    { label: "Path finisher", desc: "Complete a learning path", earned: completedPaths >= 1 },
+    { label: "Track master", desc: "Complete every path", earned: completedPaths >= paths.length && paths.length > 0 },
+    { label: "Completionist", desc: "Read every lesson", earned: library.length > 0 && readInLibrary >= library.length },
+  ];
+  const earnedCount = badges.filter((b) => b.earned).length;
 
   const greetingName = user?.firstName?.trim();
 
@@ -57,6 +69,39 @@ export default function MyLearningPage() {
       </div>
 
       <ContinueLearning />
+
+      {/* Achievements */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4 text-primary" />
+            <h2 className="text-lg font-bold">Achievements</h2>
+          </div>
+          <span className="text-xs text-muted-foreground">{earnedCount} / {badges.length}</span>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {badges.map((b) => (
+            <div
+              key={b.label}
+              className={clsx(
+                "rounded-2xl border p-4 text-center transition-colors",
+                b.earned ? "border-primary/30 bg-primary/5" : "border-white/10 bg-card opacity-60",
+              )}
+            >
+              <div
+                className={clsx(
+                  "w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-2",
+                  b.earned ? "bg-primary/15 text-primary" : "bg-white/5 text-muted-foreground",
+                )}
+              >
+                {b.earned ? <Trophy className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+              </div>
+              <p className="text-sm font-semibold">{b.label}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{b.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Certificates earned */}
       {certificates.length > 0 && (
