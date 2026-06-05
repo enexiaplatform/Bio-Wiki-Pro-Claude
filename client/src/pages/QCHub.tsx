@@ -7,6 +7,7 @@ import clsx from "clsx";
 import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
+import { ContinueLearning } from "@/components/ContinueLearning";
 import { analytics } from "@/hooks/use-analytics";
 
 const workflows = [
@@ -36,6 +37,7 @@ export default function QCHub() {
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
       <LeadMagnetBanner />
+      <ContinueLearning />
       <div className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-2">{t("qcHub.title")}</h1>
         <p className="text-muted-foreground">{t("qcHub.subtitle")}</p>

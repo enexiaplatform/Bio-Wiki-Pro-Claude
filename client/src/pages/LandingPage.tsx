@@ -7,6 +7,8 @@ import {
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { listContent } from "@/lib/content";
+import { useReadLessons } from "@/hooks/use-read-lessons";
+import { ContinueLearning } from "@/components/ContinueLearning";
 
 const byUpdatedDesc = (a: { updatedAt?: string }, b: { updatedAt?: string }) =>
   (b.updatedAt ?? "").localeCompare(a.updatedAt ?? "");
@@ -38,6 +40,7 @@ interface TrustCard { label: string; value: string }
 export default function LandingPage() {
   const { t } = useTranslation("landing");
   useSEO({ title: t("seo.title"), description: t("seo.description") });
+  const { count: readCount } = useReadLessons();
 
   const latestLessons = [...listContent({ collection: "academy", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
   const latestPosts = [...listContent({ collection: "blog", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
@@ -50,6 +53,13 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Returning visitor — resume where they left off */}
+      {readCount > 0 && (
+        <div className="max-w-3xl mx-auto px-4 pt-6">
+          <ContinueLearning />
+        </div>
+      )}
+
       {/* ── HERO ── */}
       <section className="relative pt-12 pb-20 px-4 text-center overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-teal-500/5 blur-3xl rounded-full pointer-events-none" />
