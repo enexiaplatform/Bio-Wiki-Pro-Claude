@@ -1,14 +1,11 @@
 import { db } from "./db.js";
+import { users, purchases, type User, type UpsertUser } from "../shared/models/auth.js";
 import {
-  users,
   quoteRequests,
-  purchases,
   leads,
   processedStripeEvents,
   contentEntries,
   lessonReads,
-  type User,
-  type UpsertUser,
   type QuoteRequest,
   type InsertQuoteRequest,
   type Lead,

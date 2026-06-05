@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { insertQuoteRequestSchema, quoteRequests, users } from './schema.js';
+import { insertQuoteRequestSchema, quoteRequests } from './schema.js';
+import { users } from './models/auth.js';
 
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
 export const errorSchemas = {

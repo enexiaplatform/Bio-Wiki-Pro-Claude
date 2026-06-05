@@ -6,7 +6,9 @@ if (!process.env.DATABASE_URL) {
 
 export default defineConfig({
   out: "./migrations",
-  schema: "./shared/schema.ts",
+  // Both files listed directly so drizzle-kit doesn't have to follow the
+  // production-only `.js` re-export (its loader can't resolve `.js`→`.ts`).
+  schema: ["./shared/schema.ts", "./shared/models/auth.ts"],
   dialect: "postgresql",
   dbCredentials: {
     url: process.env.DATABASE_URL,

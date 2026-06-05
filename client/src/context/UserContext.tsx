@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
-import type { User } from "@shared/schema";
+import type { User } from "@shared/models/auth";
 
 interface UserContextType {
   user: User | null | undefined;

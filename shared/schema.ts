@@ -2,11 +2,11 @@ import { pgTable, text, serial, boolean, timestamp, jsonb, integer, uniqueIndex 
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// === AUTH MODELS (users + sessions) ===
-// NOTE: keep the .js extension — Vercel runs the API as native Node ESM, which
-// requires explicit extensions. drizzle-kit reads schema via its own config
-// (see drizzle.config.ts) so this does not need to be extensionless.
-export * from "./models/auth.js";
+// === AUTH MODELS ===
+// Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
+// re-exported here: drizzle-kit's loader can't resolve the required `.js`
+// extension, so drizzle.config.ts lists both files directly, and app code
+// imports auth tables/types straight from "@shared/models/auth".
 
 // === TABLE DEFINITIONS ===
 
