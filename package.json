@@ -13,6 +13,7 @@
     "db:migrate": "drizzle-kit migrate",
     "seed:content": "tsx script/seed-content.ts",
     "validate:content": "tsx script/validate-content.ts",
+    "validate:paths": "tsx script/validate-paths.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
