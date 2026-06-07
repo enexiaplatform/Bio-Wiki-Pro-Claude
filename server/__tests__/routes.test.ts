@@ -429,4 +429,38 @@ describe("email verification (soft)", () => {
     const res = await request(app).post("/api/auth/verify-email").send({});
     expect(res.status).toBe(400);
   });
+
+  async function authedAgent(app: express.Express) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
+    return agent;
+  }
+
+  it("resend-verification requires auth", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/auth/resend-verification").send({});
+    expect(res.status).toBe(401);
+  });
+
+  it("resend sends a new token for an unverified user", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.setVerificationToken.mockClear();
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", verifiedEmail: false });
+    const res = await agent.post("/api/auth/resend-verification").send({});
+    expect(res.status).toBe(200);
+    expect(storageMock.setVerificationToken).toHaveBeenCalledTimes(1);
+  });
+
+  it("resend is a no-op for an already-verified user", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.setVerificationToken.mockClear();
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", verifiedEmail: true });
+    const res = await agent.post("/api/auth/resend-verification").send({});
+    expect(res.status).toBe(200);
+    expect(storageMock.setVerificationToken).not.toHaveBeenCalled();
+  });
 });

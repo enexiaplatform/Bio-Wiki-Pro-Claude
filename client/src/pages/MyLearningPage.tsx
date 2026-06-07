@@ -7,6 +7,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { useUser } from "@/context/UserContext";
 import { ContinueLearning } from "@/components/ContinueLearning";
+import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { useSEO } from "@/hooks/use-seo";
 
 export default function MyLearningPage() {
@@ -53,6 +54,8 @@ export default function MyLearningPage() {
           </p>
         </div>
       </div>
+
+      <VerifyEmailBanner />
 
       {/* Overall library progress */}
       <div className="rounded-2xl border border-white/10 bg-card p-5 mb-6">

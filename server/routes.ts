@@ -383,6 +383,28 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  // Resend the verification email for the logged-in user (no-op if already verified).
+  app.post("/api/auth/resend-verification", authLimiter, isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!user) return res.status(401).json({ message: "Unauthorized" });
+      if (user.verifiedEmail) return res.json({ message: "Email already verified." });
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      await storage.setVerificationToken(user.id, token, expiry);
+      const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+      if (user.email) {
+        sendVerificationEmail(user.email, `${baseUrl}/verify-email?token=${token}`, user.firstName ?? undefined).catch((err) =>
+          console.error("[ResendVerify] email error:", err)
+        );
+      }
+      return res.json({ message: "Verification email sent." });
+    } catch (err) {
+      console.error("[ResendVerify] error:", err);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
   // Sign in / sign up with Google. The client sends a Google ID token
   // (credential); we verify it server-side, then find-or-create the user by
   // their Google-verified email and start a session. No password is set for
