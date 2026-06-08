@@ -108,7 +108,7 @@ When asked to "wire up real data", the work is: move a `use-data.ts` hook from r
 
 ### API Endpoints (`server/routes.ts`, registered via `registerRoutes(app)`)
 
-- **Auth** (session-based, bcryptjs): `POST /api/auth/register` (email-format + 8-char validation), `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` (guarded). **Password reset:** `POST /api/auth/forgot-password` (enumeration-safe, always 200; 1h crypto token emailed) + `POST /api/auth/reset-password`. **Google sign-in:** `POST /api/auth/google` (verifies the GIS ID token via `google-auth-library`, find-or-create by verified email; 503 if `GOOGLE_CLIENT_ID` unset). All auth POSTs are behind an in-memory `express-rate-limit` (30/15min).
+- **Auth** (session-based, bcryptjs): `POST /api/auth/register` (email-format + 8-char validation), `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` (guarded). **Password reset:** `POST /api/auth/forgot-password` (enumeration-safe, always 200; 1h crypto token emailed) + `POST /api/auth/reset-password`. **Google sign-in:** `POST /api/auth/google` (verifies the GIS ID token via `google-auth-library`, find-or-create by verified email; 503 if `GOOGLE_CLIENT_ID` unset). **Email verification (soft, non-blocking):** register issues a 24h token + emails a confirm link; `POST /api/auth/verify-email` sets `verifiedEmail`; `POST /api/auth/resend-verification` (authed) reissues it; `<VerifyEmailBanner>` prompts unverified users on the dashboard. All auth POSTs are behind an in-memory `express-rate-limit` (30/15min).
 - **Progress** (guarded): `GET`/`POST /api/progress/reads` (cross-device reading progress; fails soft → `{reads:[]}` / `{ok:false}` if the `lesson_reads` table is absent, so the client falls back to localStorage).
 - **Stripe**: `POST /api/stripe/create-checkout-session` (guarded), `GET /api/stripe/customer-portal` (guarded), `POST /api/stripe/webhook` (raw-body signature verify; subscription lifecycle + dunning + idempotency via `processed_stripe_events`)
 - **Leads**: `POST /api/leads/capture` (lead magnet email capture)
@@ -129,9 +129,13 @@ When asked to "wire up real data", the work is: move a `use-data.ts` hook from r
 
 PostgreSQL via `DATABASE_URL`. Drizzle ORM with **schema-push** (`drizzle-kit push`) — there are **no migration files**, so schema changes apply directly.
 
+> **Schema import split (don't undo):** `shared/schema.ts` does **not** re-export `./models/auth.js` — that `.js` extension is required for Vercel native ESM but drizzle-kit's loader can't resolve `.js`→`.ts`, which broke `db:push`. So `drizzle.config.ts` lists **both** files (`schema.ts` + `models/auth.ts`), and app code imports auth tables/types from `@shared/models/auth`. Keep them separate.
+>
+> **Running `db:push` against Supabase locally:** use the **Session pooler** URL (port 5432) and, because the local Node may not trust Supabase's cert, set `NODE_TLS_REJECT_UNAUTHORIZED=0` + `?sslmode=no-verify` for that one-off command.
+
 Tables:
-- `shared/models/auth.ts`: **users** (id, email, names, isPro, passwordHash, reset token fields, Stripe fields, timestamps), **sessions** (connect-pg-simple store), **purchases** (userId, productType, Stripe IDs, amount in cents, status)
-- `shared/schema.ts`: **leads** (email, source, downloadSent), **quote_requests**
+- `shared/models/auth.ts`: **users** (id, email, names, isPro, passwordHash, reset-token + verification-token fields, Stripe fields, timestamps), **sessions** (connect-pg-simple store), **purchases** (userId, productType, Stripe IDs, amount in cents, status)
+- `shared/schema.ts`: **leads**, **quote_requests**, **content_entries**, **processed_stripe_events**, **lesson_reads** (per-user reading progress)
 
 `server/storage.ts` defines `IStorage` and `DatabaseStorage` (the methods: getUser/byEmail/byStripeCustomerId, createUser, updateUserPro, updateUserStripe, createPurchase, createQuoteRequest, captureLead).
 
