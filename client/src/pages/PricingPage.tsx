@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { CheckCircle2, Lock, Zap, Package } from "lucide-react";
 import clsx from "clsx";
@@ -8,7 +8,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { JsonLd } from "@/components/JsonLd";
 
-type ProductType = "pro_subscription" | "starter_kit" | "interview_prep" | "bundle";
+type ProductType = "pro_subscription" | "pro_subscription_annual" | "starter_kit" | "interview_prep" | "bundle";
 const ONE_TIME_PRODUCTS: { productType: Exclude<ProductType, "pro_subscription">; price: string }[] = [
   { productType: "starter_kit", price: "$15" },
   { productType: "interview_prep", price: "$20" },
@@ -40,6 +40,18 @@ export default function PricingPage() {
   const [, navigate] = useLocation();
   const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [annualAvailable, setAnnualAvailable] = useState(false);
+  const [proPlan, setProPlan] = useState<"monthly" | "annual">("monthly");
+  const proProductType: ProductType = proPlan === "annual" ? "pro_subscription_annual" : "pro_subscription";
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/billing/plans", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => active && d?.annual && setAnnualAvailable(true))
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
 
   async function handleCheckout(productType: ProductType) {
     if (!isAuthenticated) {
@@ -127,9 +139,30 @@ export default function PricingPage() {
           <span className="text-[10px] uppercase font-bold tracking-wider text-teal-400 bg-teal-500/10 px-2 py-1 rounded w-fit mb-4">
             {t("pro.badge")}
           </span>
+          {annualAvailable && !isPro && (
+            <div className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-background/60 p-0.5 mb-3 w-fit">
+              {(["monthly", "annual"] as const).map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setProPlan(p)}
+                  className={clsx(
+                    "px-3 py-1 rounded-full text-xs font-semibold transition-colors",
+                    proPlan === p ? "bg-teal-500 text-teal-950" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {p === "monthly" ? "Monthly" : "Annual"}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="mb-6">
             <span className="text-4xl font-bold text-teal-400">$8</span>
-            <span className="text-muted-foreground text-sm ml-1">{t("perMonth")}</span>
+            <span className="text-muted-foreground text-sm ml-1">
+              {proPlan === "annual" && annualAvailable ? "/mo · billed yearly" : t("perMonth")}
+            </span>
+            {proPlan === "annual" && annualAvailable && (
+              <span className="ml-2 text-[11px] font-bold text-emerald-400">2 months free</span>
+            )}
           </div>
           <ul className="space-y-3 mb-8 flex-1">
             {proFeatures.map(f => (
@@ -148,14 +181,14 @@ export default function PricingPage() {
             </button>
           ) : (
             <button
-              onClick={() => handleCheckout("pro_subscription")}
-              disabled={loadingProduct === "pro_subscription"}
+              onClick={() => handleCheckout(proProductType)}
+              disabled={loadingProduct === proProductType}
               className={clsx(
                 "w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-teal-950 text-sm font-bold transition-all",
-                loadingProduct === "pro_subscription" && "opacity-60 cursor-wait"
+                loadingProduct === proProductType && "opacity-60 cursor-wait"
               )}
             >
-              {loadingProduct === "pro_subscription" ? t("pro.redirecting") : t("pro.cta")}
+              {loadingProduct === proProductType ? t("pro.redirecting") : t("pro.cta")}
             </button>
           )}
         </div>
