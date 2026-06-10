@@ -718,7 +718,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "", "/qc-hub", "/academy", "/library", "/glossary", "/about", "/tools",
       "/compliance", "/vault", "/career", "/solutions", "/insights", "/pricing",
       "/toolkits/gmp-audit-kit", "/blog", "/upgrade", "/login", "/signup",
-      "/terms", "/privacy", "/refund",
+      "/faq", "/terms", "/privacy", "/refund",
     ];
     // Learning-path tracks. Kept in sync with client/src/data/learningPaths.ts.
     const pathPaths = [

@@ -46,6 +46,7 @@ const About = lazy(() => import("@/pages/About"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
 const RefundPage = lazy(() => import("@/pages/RefundPage"));
+const FaqPage = lazy(() => import("@/pages/FaqPage"));
 
 function PageFallback() {
   return (
@@ -101,6 +102,7 @@ function Layout() {
           <Route path="/terms" component={TermsPage} />
           <Route path="/privacy" component={PrivacyPage} />
           <Route path="/refund" component={RefundPage} />
+          <Route path="/faq" component={FaqPage} />
           <Route path="/" component={LandingPage} />
           <Route component={NotFound} />
         </Switch>
