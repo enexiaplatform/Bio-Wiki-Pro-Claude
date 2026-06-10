@@ -38,6 +38,7 @@ export const learningPaths: LearningPath[] = [
       "annex-1-key-changes",
       "visual-inspection",
       "steam-sterilization-validation",
+      "dry-heat-depyrogenation",
       "sterilizing-grade-filtration",
       "media-fill-aps",
       "container-closure-integrity",
@@ -50,6 +51,7 @@ export const learningPaths: LearningPath[] = [
     description: "Qualify and validate equipment, methods, processes, cleaning, and computerized systems with the modern lifecycle approach.",
     lessonSlugs: [
       "equipment-qualification",
+      "calibration-metrology",
       "analytical-instrument-qualification",
       "hvac-qualification",
       "process-validation-stages",
