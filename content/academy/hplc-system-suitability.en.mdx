@@ -1,0 +1,55 @@
+---
+title: "HPLC System Suitability"
+slug: "hplc-system-suitability"
+lang: "en"
+tier: "free"
+category: "Laboratory Controls"
+seoDescription: "HPLC system suitability testing (SST) per USP <621> — resolution, tailing, theoretical plates, and %RSD, and why SST is a gate, not part of method validation."
+updatedAt: "2026-06-04"
+quiz:
+  - q: "What is the purpose of HPLC system suitability testing (SST)?"
+    options: ["To validate the method", "To confirm the system performs adequately on the day, before reporting results", "To calibrate the balance", "To set the spec"]
+    answer: 1
+  - q: "Which SST parameter measures how well two adjacent peaks are separated?"
+    options: ["Tailing factor", "Resolution", "Injection volume", "Column length"]
+    answer: 1
+  - q: "%RSD of replicate standard injections checks:"
+    options: ["Peak symmetry", "Injection/system precision (repeatability)", "Detector wavelength", "Mobile phase pH"]
+    answer: 1
+---
+
+# HPLC System Suitability
+
+System suitability testing (SST) confirms that an HPLC system — column, mobile
+phase, detector, and software — is performing adequately **on the day**, **before**
+you trust any sample results. It's a gate at the start of a run, not part of
+method validation.
+
+## The core SST parameters
+
+- **Resolution (Rs)** — separation between adjacent (e.g. analyte and nearest
+  impurity) peaks. Too low = peaks overlap = unreliable quantitation.
+- **Tailing factor (T)** — peak symmetry; bad tailing distorts integration.
+- **Theoretical plates (N)** — column efficiency.
+- **% RSD** of replicate standard injections — injection/system precision.
+- **Capacity / retention** checks where specified.
+
+These have acceptance criteria defined in the method (and general guidance in USP
+&lt;621&gt; Chromatography).
+
+## SST is a gate, not validation
+
+Method **validation** proves the method is fit for purpose (done once, formally).
+**SST** is the routine check that the validated method is running correctly today.
+If SST fails, you stop — you do **not** report sample results from a run whose
+system suitability failed.
+
+## Common pitfalls
+
+- Reporting results from a sequence where bracketing SST injections drifted.
+- Aging columns silently degrading resolution until SST finally fails.
+- Treating a single passing SST at the start as covering a very long sequence —
+  bracket with periodic check standards.
+
+> Tip: trend your SST parameters (resolution, %RSD) over time — a slow decline
+> predicts a column or instrument problem before it fails a batch.

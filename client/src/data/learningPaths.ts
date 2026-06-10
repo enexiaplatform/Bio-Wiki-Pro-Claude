@@ -74,6 +74,7 @@ export const learningPaths: LearningPath[] = [
       "quality-risk-management-q9",
       "acceptance-sampling-aql",
       "complaint-handling",
+      "recall-management",
       "supplier-qualification",
       "supplier-audit-program",
       "gmp-training-qualification",
@@ -103,6 +104,7 @@ export const learningPaths: LearningPath[] = [
     description: "Compendial and analytical control — reference standards, USP tests, impurities, extractables, and stability.",
     lessonSlugs: [
       "reference-standards-management",
+      "hplc-system-suitability",
       "dissolution-testing-usp-711",
       "particulate-matter-usp-788",
       "elemental-impurities-q3d",
