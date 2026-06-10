@@ -34,6 +34,7 @@ export const learningPaths: LearningPath[] = [
       "gowning-qualification",
       "aseptic-technique",
       "contamination-control-strategy",
+      "disinfectant-qualification",
       "annex-1-key-changes",
       "visual-inspection",
       "steam-sterilization-validation",
@@ -86,6 +87,7 @@ export const learningPaths: LearningPath[] = [
     lessonSlugs: [
       "good-documentation-practice",
       "data-integrity-deep-dive",
+      "electronic-records-part-11",
       "oos-investigation-deep-dive",
       "out-of-trend-investigation",
       "microbial-excursion-investigation",
