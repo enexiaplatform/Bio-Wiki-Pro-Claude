@@ -61,6 +61,8 @@ catalog is defined once in `server/products.ts`:
 - [ ] Pro is a **recurring** price; the four kits are **one-time** prices.
 - [ ] Copy each **live** Price ID (`price_...`) into the matching Vercel env var.
 
+> **Optional — annual Pro plan (higher LTV):** create a second **recurring (yearly)** price for Pro and set `STRIPE_PRO_ANNUAL_PRICE_ID`. When present, `/upgrade` shows a Monthly/Annual toggle automatically (product id `pro_subscription_annual`); when absent, only monthly shows. No code change needed.
+
 > Only ship what you sell: if a kit isn't launching yet, you can omit its price —
 > its checkout simply returns `400 Invalid productType` until configured. Pro is
 > the primary revenue product and **must** be set.

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { useUser } from "@/context/UserContext";
@@ -37,22 +37,53 @@ export default function UpgradePage() {
   const { isAuthenticated, isPro } = useUser();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [annualAvailable, setAnnualAvailable] = useState(false);
+  const [plan, setPlan] = useState<"monthly" | "annual">("monthly");
 
   const proLessons = listContent({ collection: "academy", lang: language }).filter((e) => e.tier === "pro");
 
   useSEO({ title: t("title"), description: t("subtitle") });
 
-  async function go(endpoint: string, method: "POST" | "GET") {
+  // Show the annual option only when it has a configured Stripe price.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/billing/plans", { credentials: "include" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (active && d?.annual) setAnnualAvailable(true);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  async function subscribe() {
+    const productType = plan === "annual" ? "pro_subscription_annual" : "pro_subscription";
     setBusy(true);
     setError("");
-    if (method === "POST") analytics.subscriptionStarted("pro_subscription");
+    analytics.subscriptionStarted(productType);
     try {
-      const res = await fetch(endpoint, {
-        method,
+      const res = await fetch("/api/stripe/create-checkout-session", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: method === "POST" ? JSON.stringify({ productType: "pro_subscription" }) : undefined,
+        body: JSON.stringify({ productType }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.message ?? t("error"));
+      window.location.href = data.url;
+    } catch (e: any) {
+      setError(e.message ?? t("error"));
+      setBusy(false);
+    }
+  }
+
+  async function manage() {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await fetch("/api/stripe/customer-portal", { credentials: "include" });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) throw new Error(data.message ?? t("error"));
       window.location.href = data.url;
@@ -71,9 +102,39 @@ export default function UpgradePage() {
         </div>
         <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">{t("title")}</h1>
         <p className="text-muted-foreground max-w-xl mx-auto">{t("subtitle")}</p>
+
+        {annualAvailable && !isPro && (
+          <div className="mt-5 inline-flex items-center gap-1 rounded-full border border-white/10 bg-card p-1" role="tablist">
+            {(["monthly", "annual"] as const).map((p) => (
+              <button
+                key={p}
+                role="tab"
+                aria-selected={plan === p}
+                onClick={() => setPlan(p)}
+                className={
+                  "px-4 py-1.5 rounded-full text-sm font-semibold transition-colors " +
+                  (plan === p ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")
+                }
+              >
+                {p === "monthly" ? "Monthly" : "Annual"}
+                {p === "annual" && <span className="ml-1.5 text-[10px] font-bold text-emerald-400">2 months free</span>}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="mt-5 flex items-center justify-center gap-1">
-          <span className="text-4xl font-bold">{t("price")}</span>
-          <span className="text-muted-foreground">{t("perMonth")}</span>
+          {plan === "annual" && annualAvailable ? (
+            <>
+              <span className="text-4xl font-bold">{t("price")}</span>
+              <span className="text-muted-foreground">/mo · billed yearly</span>
+            </>
+          ) : (
+            <>
+              <span className="text-4xl font-bold">{t("price")}</span>
+              <span className="text-muted-foreground">{t("perMonth")}</span>
+            </>
+          )}
         </div>
       </div>
 
@@ -139,7 +200,7 @@ export default function UpgradePage() {
               variant="outline"
               className="w-full max-w-sm font-bold"
               disabled={busy}
-              onClick={() => go("/api/stripe/customer-portal", "GET")}
+              onClick={manage}
               data-testid="button-manage-subscription"
             >
               {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Settings className="w-5 h-5 mr-2" />}
@@ -151,7 +212,7 @@ export default function UpgradePage() {
             size="lg"
             className="w-full max-w-sm font-bold text-base"
             disabled={busy}
-            onClick={() => go("/api/stripe/create-checkout-session", "POST")}
+            onClick={subscribe}
             data-testid="button-subscribe-pro"
           >
             {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}

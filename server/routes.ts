@@ -8,7 +8,7 @@ import bcrypt from "bcryptjs";
 import Stripe from "stripe";
 import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail } from "./email.js";
 import crypto from "crypto";
-import { getPriceId, isSubscription } from "./products.js";
+import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
@@ -128,8 +128,9 @@ export async function registerRoutes(app: Express): Promise<void> {
           return res.status(400).json({ message: "Missing metadata" });
         }
 
-        if (productType === "pro_subscription") {
-          // Provisional unlock; subscription.created/updated sets the period end.
+        if (isSubscription(productType)) {
+          // Pro (monthly or annual). Provisional unlock; subscription.created/
+          // updated sets the period end.
           await storage.updateUserStripe(userId, {
             isPro: true,
             subscriptionStatus: "active",
@@ -235,6 +236,15 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   setupSession(app);
+
+  // Which billing plans are sellable (have a configured Stripe price). Lets the
+  // client show/hide the annual option without leaking price IDs.
+  app.get("/api/billing/plans", (_req, res) => {
+    res.json({
+      monthly: isProductAvailable("pro_subscription"),
+      annual: isProductAvailable("pro_subscription_annual"),
+    });
+  });
 
   // ── Auth routes ──────────────────────────────────────────────────────────
 

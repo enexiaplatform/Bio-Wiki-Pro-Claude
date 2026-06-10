@@ -59,7 +59,19 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     priceEnv: "STRIPE_PRO_PRICE_ID",
     // no downloadEnv — entitlement is granted via the subscription, not a file
   },
+  pro_subscription_annual: {
+    id: "pro_subscription_annual",
+    name: "BioWikiPro Pro (Annual)",
+    mode: "subscription",
+    priceEnv: "STRIPE_PRO_ANNUAL_PRICE_ID",
+    // no downloadEnv — same Pro entitlement, billed yearly
+  },
 };
+
+/** True when this product has a configured Stripe price (i.e. it's sellable). */
+export function isProductAvailable(id: string): boolean {
+  return getPriceId(id) !== "";
+}
 
 /** Look up a product config by id. Returns undefined for unknown ids. */
 export function getProduct(id: string): ProductConfig | undefined {
