@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Laboratory Controls"
 seoDescription: "ICH Q3C residual solvents — the Class 1/2/3 system, PDE and concentration limits, and the options for demonstrating control by GC headspace."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "ICH Q3C Class 1 solvents (e.g. benzene) should be:"
+    options: ["Used freely", "Avoided", "Limited only by Option 2", "Tested only at release"]
+    answer: 1
+  - q: "Option 1 (concentration limit) assumes:"
+    options: ["The actual daily dose", "A maximum daily dose of product", "No dose at all", "A fixed batch size"]
+    answer: 1
+  - q: "The workhorse method for residual solvents is:"
+    options: ["UV spectroscopy", "GC with headspace sampling", "Karl Fischer", "Titration"]
+    answer: 1
 ---
 
 # Residual Solvents (ICH Q3C)
@@ -38,6 +48,43 @@ Gas chromatography with headspace sampling is the workhorse method. As with
 elemental impurities, a sound risk assessment of which solvents are actually used
 or formed often shows that routine testing of every solvent isn't required.
 
-> This Pro lesson continues with an Option 1 vs Option 2 worked comparison, a
-> solvent risk-assessment template, and how to handle solvents with no
-> established PDE.
+## Option 1 vs Option 2 — worked comparison
+
+Take a Class 2 solvent with **PDE = 50 mg/day** (illustrative).
+
+- **Option 1** assumes a max daily dose of **10 g** of product:
+  concentration limit = PDE / daily dose = 50 mg / 10 g = **5,000 ppm**. Simple,
+  conservative, dose-independent — good when several components contribute the
+  same solvent.
+- **Option 2** uses the *actual* daily dose. If the real max dose is only **2 g**:
+  allowable concentration = 50 mg / 2 g = **25,000 ppm**. Far more permissive —
+  worth using when Option 1 is too tight for a low-dose product.
+
+When the solvent comes from several excipients/the API, sum the contributions: the
+**total** intake must stay within the PDE regardless of which option you use.
+
+## Solvent risk-assessment template
+
+1. List every solvent **used or formed** across synthesis, excipients, and
+   processing (including recovered solvents).
+2. Classify each (1/2/3) and note its PDE.
+3. Identify which can plausibly remain in the final product (volatility, process
+   steps, drying).
+4. Decide testing: routine, skip-lot, or "controlled upstream and not tested in
+   the product" — each with documented justification.
+5. Confirm Class 1 solvents are absent/avoided; justify any that are unavoidable.
+
+A sound assessment usually shows you needn't test *every* solvent in the finished
+product — control can sit upstream (drug-substance spec, supplier control).
+
+## Solvents with no established PDE
+
+For a solvent not in Q3C, derive a PDE from its toxicology using the same
+NOAEL/adjustment-factor approach as HBELs, or apply the relevant class's default
+where structurally justified. Document the derivation — an "other" solvent without
+a justified limit is a gap inspectors will find.
+
+> Practitioner tip: residual-solvent control is mostly a *drying and upstream*
+> problem, not a testing problem. If a Class 2 solvent keeps appearing near its
+> limit, fix the drying step or the route — chasing it with tighter release
+> testing only catches failures after the fact.

@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Laboratory Controls"
 seoDescription: "Extractables and leachables studies for container-closure and single-use systems — the difference, the AET threshold, and a risk-based study design."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Leachables are best described as:"
+    options: ["Compounds forced out under exaggerated lab conditions", "Compounds that actually migrate into product under real conditions", "Always identical to extractables", "Only relevant for tablets"]
+    answer: 1
+  - q: "The Analytical Evaluation Threshold (AET) defines:"
+    options: ["The boiling point", "The level above which a compound must be identified and toxicologically assessed", "The batch size", "The shelf life"]
+    answer: 1
+  - q: "Which products carry the highest E&L risk?"
+    options: ["Oral tablets in blister", "Inhalation and parenteral with prolonged contact", "Topical creams", "External devices"]
+    answer: 1
 ---
 
 # Extractables & Leachables (E&L)
@@ -35,6 +45,47 @@ Risk scales with route of administration and contact: inhalation and parenteral
 products with prolonged contact carry the highest risk. A defensible program ties
 material selection, extractables screening, and a leachables study to that risk.
 
-> This Pro lesson continues with an E&L risk-ranking matrix, an AET worked
-> calculation, and how to align supplier extractables data with your own
-> leachables study to avoid duplication.
+## E&L risk-ranking matrix
+
+Risk scales with how the dosage form contacts the material and for how long:
+
+| Dosage form | Contact risk | E&L expectation |
+| --- | --- | --- |
+| Inhalation (MDI/DPI/nebulizer) | Highest | Full extractables + leachables |
+| Injectable / large-volume parenteral | High | Full extractables + leachables |
+| Ophthalmic, transdermal | Medium–High | Risk-based leachables |
+| Oral liquid | Medium | Screening + targeted leachables |
+| Oral solid (blister/HDPE) | Lower | Often supplier data + justification |
+
+Layer on material factors (polymer type, additives, processing aids, surface area,
+gamma-irradiation of single-use systems) and storage (time, temperature, solvent
+power of the formulation).
+
+## AET — the concept and a worked figure
+
+The AET converts a safety threshold into an analytical reporting level:
+
+```
+AET (µg/mL) ≈ (SCT in µg/day) / (daily volume or dose intake)
+```
+
+*Example:* with a Safety Concern Threshold of 1.5 µg/day and a product where a
+patient receives 10 mL/day, the AET ≈ 1.5 / 10 = **0.15 µg/mL**. Compounds below
+the AET need not be identified/assessed; those above it must be. An *uncertainty
+factor* (often ~50%) is applied to account for response-factor variability in the
+screening method, lowering the practical reporting level.
+
+## Aligning supplier data to avoid duplication
+
+Single-use and packaging suppliers increasingly provide **extractables data
+packages** (often to BPOG/USP &lt;665&gt;-style protocols). Use them to define the
+*potential* compound list and to select your **target leachables**, then run a
+product-specific **leachables** study under real conditions to confirm what
+actually migrates. Don't re-run extractables the supplier already did to a
+recognized protocol — but never substitute extractables data for the leachables
+study where risk (inhalation/parenteral) demands it.
+
+> Practitioner tip: start E&L at material selection, not at the stability stage.
+> Choosing a well-characterized, low-additive polymer up front prevents the
+> nightmare of discovering an unsafe leachable in a system you've already locked
+> into your process.

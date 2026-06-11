@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Quality Systems"
 seoDescription: "Measurement Systems Analysis and Gauge R&R — separating real process variation from measurement noise, and the %GRR / ndc rules that decide if a method is fit to use."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Repeatability captures variation from:"
+    options: ["Different operators", "The same operator/gauge measuring the same part repeatedly", "Different parts", "The specification"]
+    answer: 1
+  - q: "A %GRR above 30% means the measurement system is:"
+    options: ["Excellent", "Unacceptable — dominated by measurement noise", "Perfectly capable", "Not relevant"]
+    answer: 1
+  - q: "The number of distinct categories (ndc) should generally be at least:"
+    options: ["1", "5", "100", "0"]
+    answer: 1
 ---
 
 # Measurement Systems Analysis (Gauge R&R)
@@ -40,5 +50,43 @@ Specifications are tight. If your measurement system can't distinguish in-spec
 from out-of-spec reliably, you'll reject good lots and pass bad ones. MSA is also
 the unsung prerequisite behind meaningful SPC and process capability.
 
-> This Pro lesson continues with a worked Gauge R&R study layout, how to choose
-> parts/operators/trials, and what to do when a measurement system fails.
+## A worked Gauge R&R layout
+
+The standard crossed study: **10 parts × 3 operators × 3 trials = 90
+measurements**.
+
+- Choose **10 parts** that span the real process range (not 10 identical good
+  ones — you need spread to estimate part-to-part variation).
+- **3 operators** who normally run the method.
+- **3 trials** each, **randomized and blinded** so operators can't recall prior
+  readings.
+- Analyze with ANOVA to partition total variation into repeatability (equipment),
+  reproducibility (operator + operator×part), and part-to-part.
+
+## Interpreting the output
+
+| Metric | Good | Marginal | Reject |
+| --- | --- | --- | --- |
+| %GRR (of total or tolerance) | &lt;10% | 10–30% | &gt;30% |
+| ndc | ≥5 | — | &lt;5 |
+
+If reproducibility dominates → the problem is **operators/method ambiguity**
+(training, unclear procedure). If repeatability dominates → the problem is the
+**instrument** (worn, low resolution, needs maintenance/calibration).
+
+## When the system fails
+
+1. **Don't trust borderline pass/fail data** made on it — quarantine the
+   decisions, not just the gauge.
+2. **Diagnose** repeatability vs reproducibility to target the fix.
+3. **Improve** — better fixturing, clearer SOP/training, higher-resolution
+   instrument, or averaging multiple readings.
+4. **Re-run** the Gauge R&R to prove the fix worked before relying on the data.
+
+For continuous lab data (assay, content), the analog is method **precision**
+(repeatability + intermediate precision from ICH Q2) judged against the spec
+width — same idea: can the method resolve in-spec from out-of-spec?
+
+> Practitioner tip: run MSA *before* you set up SPC or compute Cpk. Capability and
+> control charts built on a noisy measurement system are charts of your gauge's
+> error, not your process — and they'll send you chasing phantom signals.
