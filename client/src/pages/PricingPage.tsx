@@ -41,6 +41,7 @@ export default function PricingPage() {
   const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [annualAvailable, setAnnualAvailable] = useState(false);
+  const [trialDays, setTrialDays] = useState(0);
   const [proPlan, setProPlan] = useState<"monthly" | "annual">("monthly");
   const proProductType: ProductType = proPlan === "annual" ? "pro_subscription_annual" : "pro_subscription";
 
@@ -48,7 +49,11 @@ export default function PricingPage() {
     let active = true;
     fetch("/api/billing/plans", { credentials: "include" })
       .then((r) => r.json())
-      .then((d) => active && d?.annual && setAnnualAvailable(true))
+      .then((d) => {
+        if (!active) return;
+        if (d?.annual) setAnnualAvailable(true);
+        if (typeof d?.trialDays === "number") setTrialDays(d.trialDays);
+      })
       .catch(() => {});
     return () => { active = false; };
   }, []);
@@ -188,8 +193,17 @@ export default function PricingPage() {
                 loadingProduct === proProductType && "opacity-60 cursor-wait"
               )}
             >
-              {loadingProduct === proProductType ? t("pro.redirecting") : t("pro.cta")}
+              {loadingProduct === proProductType
+                ? t("pro.redirecting")
+                : trialDays > 0
+                ? `Start ${trialDays}-day free trial`
+                : t("pro.cta")}
             </button>
+          )}
+          {trialDays > 0 && !isPro && (
+            <p className="mt-2 text-center text-[11px] text-emerald-400 font-medium">
+              {trialDays}-day free trial · cancel anytime
+            </p>
           )}
         </div>
 

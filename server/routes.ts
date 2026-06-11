@@ -244,6 +244,8 @@ export async function registerRoutes(app: Express): Promise<void> {
     res.json({
       monthly: isProductAvailable("pro_subscription"),
       annual: isProductAvailable("pro_subscription_annual"),
+      // Configured free-trial length for new Pro subscribers (0 = disabled).
+      trialDays: parseInt(process.env.PRO_TRIAL_DAYS ?? "7", 10),
     });
   });
 
@@ -528,17 +530,28 @@ export async function registerRoutes(app: Express): Promise<void> {
       const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
 
       const subscription = isSubscription(productType);
+      // Free trial for NEW Pro subscribers only (never subscribed, not currently
+      // Pro) — prevents repeat-trial abuse. PRO_TRIAL_DAYS=0 disables it.
+      const trialDays = parseInt(process.env.PRO_TRIAL_DAYS ?? "7", 10);
+      const grantTrial =
+        subscription && trialDays > 0 && !user.stripeSubscriptionId && !isProActive(user);
+
       const session = await stripe.checkout.sessions.create({
         mode: subscription ? "subscription" : "payment",
         line_items: [{ price: priceId, quantity: 1 }],
         customer_email: user.email ?? undefined,
-        success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}&product=${productType}`,
         cancel_url: `${baseUrl}/pricing`,
         metadata: { userId: user.id, productType },
         // Propagate userId onto the subscription so subscription.*/invoice.*
         // webhook events can resolve the user even before the customer id is stored.
         ...(subscription
-          ? { subscription_data: { metadata: { userId: user.id, productType } } }
+          ? {
+              subscription_data: {
+                metadata: { userId: user.id, productType },
+                ...(grantTrial ? { trial_period_days: trialDays } : {}),
+              },
+            }
           : {}),
       });
 

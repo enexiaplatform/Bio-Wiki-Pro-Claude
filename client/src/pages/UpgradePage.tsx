@@ -38,6 +38,7 @@ export default function UpgradePage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [annualAvailable, setAnnualAvailable] = useState(false);
+  const [trialDays, setTrialDays] = useState(0);
   const [plan, setPlan] = useState<"monthly" | "annual">("monthly");
 
   const proLessons = listContent({ collection: "academy", lang: language }).filter((e) => e.tier === "pro");
@@ -50,7 +51,9 @@ export default function UpgradePage() {
     fetch("/api/billing/plans", { credentials: "include" })
       .then((r) => r.json())
       .then((d) => {
-        if (active && d?.annual) setAnnualAvailable(true);
+        if (!active) return;
+        if (d?.annual) setAnnualAvailable(true);
+        if (typeof d?.trialDays === "number") setTrialDays(d.trialDays);
       })
       .catch(() => {});
     return () => {
@@ -136,6 +139,12 @@ export default function UpgradePage() {
             </>
           )}
         </div>
+
+        {trialDays > 0 && !isPro && (
+          <p className="mt-3 text-sm font-medium text-emerald-400">
+            Start with a {trialDays}-day free trial — cancel anytime before it ends and you won't be charged.
+          </p>
+        )}
       </div>
 
       {/* Comparison */}
@@ -216,7 +225,7 @@ export default function UpgradePage() {
             data-testid="button-subscribe-pro"
           >
             {busy ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Crown className="w-5 h-5 mr-2" />}
-            {busy ? t("cta.loading") : t("cta.subscribe")}
+            {busy ? t("cta.loading") : trialDays > 0 ? `Start ${trialDays}-day free trial` : t("cta.subscribe")}
           </Button>
         ) : (
           <Button size="lg" className="w-full max-w-sm font-bold text-base" asChild data-testid="button-login-to-upgrade">
