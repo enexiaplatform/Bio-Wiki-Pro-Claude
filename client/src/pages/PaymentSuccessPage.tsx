@@ -13,25 +13,28 @@ export default function PaymentSuccessPage() {
   const [, navigate] = useLocation();
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS);
 
-  // Read session_id from query string
+  // Read session_id + product from query string
   const sessionId = new URLSearchParams(window.location.search).get("session_id");
+  const productType = new URLSearchParams(window.location.search).get("product") ?? "unknown";
+  // One-time kits deliver files; subscriptions unlock Pro content.
+  const isKit = productType !== "unknown" && !productType.startsWith("pro_subscription");
+  const destination = isKit ? "/my-downloads" : "/academy";
 
   useEffect(() => {
     // Refresh auth state so isPro updates immediately
     queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
     // Funnel terminal event (client proxy; webhook is the authoritative record)
-    const productType = new URLSearchParams(window.location.search).get("product") ?? "unknown";
     analytics.purchaseCompleted(productType);
-  }, [queryClient]);
+  }, [queryClient, productType]);
 
   useEffect(() => {
     if (countdown <= 0) {
-      navigate("/academy");
+      navigate(destination);
       return;
     }
     const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
     return () => clearTimeout(timer);
-  }, [countdown, navigate]);
+  }, [countdown, navigate, destination]);
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4">
@@ -51,9 +54,9 @@ export default function PaymentSuccessPage() {
           {t("paymentSuccess.redirecting", { count: countdown })}
         </p>
 
-        <Link href="/academy">
+        <Link href={destination}>
           <button className="w-full sm:w-auto px-8 py-3 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold rounded-xl transition-all text-sm">
-            {t("paymentSuccess.goNow")}
+            {isKit ? "Go to my downloads" : t("paymentSuccess.goNow")}
           </button>
         </Link>
 

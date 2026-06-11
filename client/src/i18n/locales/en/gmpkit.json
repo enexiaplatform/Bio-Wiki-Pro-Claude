@@ -22,11 +22,11 @@
     "heading": "What's in the Kit?",
     "subtitle": "6 resources — worth an estimated $120 if bought separately",
     "items": [
-      { "title": "40-page PDF Guide", "desc": "GMP Audit Survival Framework — from prep to audit day, step by step." },
-      { "title": "SOP Gap Analysis Excel", "desc": "Template that auto-calculates % compliance. Fill it in and instantly see which gaps to fix." },
-      { "title": "10 CAPA Report Templates", "desc": "Ready-to-fill CAPA templates for the most common GMP audit nonconformances." },
+      { "title": "GMP Audit Survival Guide", "desc": "The full framework — from 30 days out to audit day to the written response, step by step." },
+      { "title": "SOP Gap Analysis (Excel/Sheets)", "desc": "Score 20 quality-system elements; the sheet computes your % readiness and surfaces your worst gaps." },
+      { "title": "10 CAPA Report Templates", "desc": "Ready-to-fill CAPA structures for the most common GMP audit nonconformances." },
       { "title": "Audit Interview Q&A Scripts", "desc": "50+ questions auditors ask most — with model answers for QC/QA." },
-      { "title": "Mock Audit Walkthrough", "desc": "Video walkthrough of a real audit from the auditor's perspective." },
+      { "title": "Mock Audit Walkthrough", "desc": "A full inspection narrated from the auditor's perspective, so nothing on the day surprises you." },
       { "title": "Bonus: 30-min Consulting Call", "desc": "1-on-1 with Henry (QC/Pharma Sales Expert) — review your audit plan directly." }
     ]
   },

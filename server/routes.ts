@@ -9,6 +9,7 @@ import Stripe from "stripe";
 import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
+import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
@@ -692,6 +693,78 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.json({ locked: true, tier, title, teaser });
     }
     return res.json({ locked: false, tier, title, body: content });
+  });
+
+  // ── Digital-goods fulfillment (one-time products) ─────────────────────────
+  // List the deliverable products the logged-in user is entitled to (by a
+  // completed purchase, or any active Pro subscription which unlocks all kits).
+  app.get("/api/downloads", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const pro = isProActive(user);
+
+    const owned = [];
+    for (const product of Object.values(DELIVERABLES)) {
+      let entitled = pro;
+      if (!entitled) {
+        for (const pt of product.entitledBy) {
+          if (await storage.hasCompletedPurchase(userId, pt).catch(() => false)) {
+            entitled = true;
+            break;
+          }
+        }
+      }
+      if (entitled) {
+        owned.push({
+          id: product.id,
+          name: product.name,
+          files: product.files.map((f) => ({
+            filename: f.filename,
+            label: f.label,
+            description: f.description,
+            url: `/api/downloads/${product.id}/${encodeURIComponent(f.filename)}`,
+          })),
+        });
+      }
+    }
+    res.json({ products: owned });
+  });
+
+  // Stream a single deliverable file, gated by entitlement.
+  app.get("/api/downloads/:productId/:filename", isAuthenticated, async (req: any, res) => {
+    const { productId, filename } = req.params;
+    const product = getDeliverable(productId);
+    const file = getDeliverableFile(productId, filename);
+    if (!product || !file) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    let entitled = isProActive(user);
+    if (!entitled) {
+      for (const pt of product.entitledBy) {
+        if (await storage.hasCompletedPurchase(userId, pt).catch(() => false)) {
+          entitled = true;
+          break;
+        }
+      }
+    }
+    if (!entitled) {
+      return res.status(403).json({ message: "Purchase required" });
+    }
+
+    // file.filename is validated against the manifest above, so no traversal.
+    const filePath = path.resolve(process.cwd(), "content", "deliverables", product.dir, file.filename);
+    try {
+      const buf = await readFile(filePath);
+      res.setHeader("Content-Type", file.contentType);
+      res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
+      res.setHeader("Cache-Control", "private, no-store");
+      return res.send(buf);
+    } catch {
+      return res.status(404).json({ message: "File not found" });
+    }
   });
 
   // ── Dynamic sitemap (core pages + all MDX blog/academy, both languages) ────

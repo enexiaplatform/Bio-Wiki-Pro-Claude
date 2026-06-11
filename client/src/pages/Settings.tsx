@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useUser } from "@/context/UserContext";
-import { Shield, ChevronRight, LogOut, LogIn, Crown, Loader2, Settings as SettingsIcon } from "lucide-react";
+import { Shield, ChevronRight, LogOut, LogIn, Crown, Loader2, Settings as SettingsIcon, Download, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -107,6 +107,28 @@ export default function Settings() {
           <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-2">{t("settings.preferences")}</h3>
 
           <div className="bg-card border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
+            <Link
+              href="/my-learning"
+              className="w-full p-4 flex items-center gap-4 hover:bg-white/5 cursor-pointer transition-colors group"
+              data-testid="link-settings-learning"
+            >
+              <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors">
+                <GraduationCap className="w-4 h-4" />
+              </div>
+              <span className="flex-1 font-medium">My Learning</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </Link>
+            <Link
+              href="/my-downloads"
+              className="w-full p-4 flex items-center gap-4 hover:bg-white/5 cursor-pointer transition-colors group"
+              data-testid="link-settings-downloads"
+            >
+              <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center text-muted-foreground group-hover:text-foreground transition-colors">
+                <Download className="w-4 h-4" />
+              </div>
+              <span className="flex-1 font-medium">My Downloads</span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </Link>
             {isPro && (
               <button
                 onClick={openBillingPortal}
