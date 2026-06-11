@@ -31,11 +31,11 @@
     ]
   },
   "testimonials": {
-    "heading": "What users say",
+    "heading": "Why this kit works",
     "items": [
-      { "name": "Nguyen T.H.", "role": "QA Manager, Sanofi Vietnam", "text": "The CAPA templates saved my team at least 2 days of prep. No major findings on this WHO audit." },
-      { "name": "Le M.K.", "role": "Senior QC Microbiologist, DHG Pharma", "text": "The SOP Gap Analysis Excel is very practical — fill it in and you instantly know where to focus before the audit." },
-      { "name": "Tran V.A.", "role": "QC Supervisor, Imexpharm", "text": "The interview Q&A scripts made the whole team far more confident. Whatever the auditor asks, we have a framework to answer." }
+      { "title": "Save days of prep", "text": "The CAPA templates and gap-analysis sheet replace the blank-page scramble — fill them in and you instantly see where to focus before an audit." },
+      { "title": "Walk in calm", "text": "The interview Q&A scripts and auditor's-perspective walkthrough mean the questions on the day are ones you've already rehearsed." },
+      { "title": "Built on real audit logic", "text": "Every template maps to the nonconformances inspectors actually raise — not generic checklists, but the patterns that drive 483s and findings." }
     ]
   },
   "pricing": {

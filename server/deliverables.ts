@@ -42,7 +42,7 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
     id: "gmp_audit_kit",
     dir: "gmp-audit-kit",
     name: "GMP Audit Survival Kit",
-    entitledBy: ["gmp_audit_kit", "bundle"],
+    entitledBy: ["gmp_audit_kit"],
     files: [
       { filename: "README.md", label: "Start Here (README)", description: "What's inside and the order to use it.", contentType: MD },
       { filename: "gmp-audit-survival-guide.md", label: "GMP Audit Survival Guide", description: "The full framework — from 30 days out to audit-day to the written response.", contentType: MD },
@@ -50,6 +50,29 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "capa-templates.md", label: "10 CAPA Report Templates", description: "Ready-to-fill CAPA structures for the most common audit nonconformances.", contentType: MD },
       { filename: "audit-interview-qa.md", label: "Audit Interview Q&A Scripts", description: "50+ real auditor questions with model QC/QA answers.", contentType: MD },
       { filename: "mock-audit-walkthrough.md", label: "Mock Audit Walkthrough", description: "A full inspection narrated from the auditor's side.", contentType: MD },
+    ],
+  },
+  starter_kit: {
+    id: "starter_kit",
+    dir: "career-starter-kit",
+    name: "Career Starter Kit",
+    entitledBy: ["starter_kit", "bundle"],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and the order to use it.", contentType: MD },
+      { filename: "qc-qa-cv-template.md", label: "QC/QA CV Template", description: "Results-focused CV structure for QC/QA hiring managers, with worked bullets.", contentType: MD },
+      { filename: "cover-letter-templates.md", label: "Cover Letter Templates", description: "Three adaptable versions: senior, entry, and career-changer.", contentType: MD },
+      { filename: "linkedin-profile-guide.md", label: "LinkedIn Profile Guide", description: "Headline, About, and skills recruiters search for in QC/QA.", contentType: MD },
+      { filename: "top-pharma-employers.csv", label: "Top Employers Research List", description: "A starter target list of global pharma/biotech employers to research.", contentType: CSV },
+    ],
+  },
+  interview_prep: {
+    id: "interview_prep",
+    dir: "interview-prep",
+    name: "Interview Prep Pack",
+    entitledBy: ["interview_prep", "bundle"],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "How to use the question bank.", contentType: MD },
+      { filename: "qc-qa-interview-questions.md", label: "100+ QC/QA Interview Questions", description: "Grouped question bank with model-answer guidance for the highest-stakes questions.", contentType: MD },
     ],
   },
 };

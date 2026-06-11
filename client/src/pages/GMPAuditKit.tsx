@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import {
   CheckCircle2, ShieldCheck, FileText, ClipboardList,
-  MessageSquare, Video, Phone, Star, ChevronDown, ChevronUp,
+  MessageSquare, Video, Phone, ChevronDown, ChevronUp,
   Loader2, ArrowRight, Package, BadgeCheck, RefreshCw,
 } from "lucide-react";
 import clsx from "clsx";
@@ -36,7 +36,7 @@ const TRUST_ICONS = [BadgeCheck, BadgeCheck, BadgeCheck, RefreshCw];
 
 interface Pain { emoji: string; title: string; desc: string }
 interface Include { title: string; desc: string }
-interface Testimonial { name: string; role: string; text: string }
+interface ValueCard { title: string; text: string }
 interface Faq { q: string; a: string }
 
 export default function GMPAuditKit() {
@@ -52,7 +52,7 @@ export default function GMPAuditKit() {
   const trustBadges = t("trustBadges", { returnObjects: true }) as string[];
   const pains = t("pains.items", { returnObjects: true }) as Pain[];
   const includes = t("includes.items", { returnObjects: true }) as Include[];
-  const testimonials = t("testimonials.items", { returnObjects: true }) as Testimonial[];
+  const valueCards = t("testimonials.items", { returnObjects: true }) as ValueCard[];
   const whoFor = t("whoFor.items", { returnObjects: true }) as string[];
   const faqs = t("faq.items", { returnObjects: true }) as Faq[];
 
@@ -175,22 +175,17 @@ export default function GMPAuditKit() {
         </div>
       </div>
 
-      {/* ── SOCIAL PROOF ── */}
+      {/* ── WHY IT WORKS (honest value cards, not fabricated quotes) ── */}
       <div className="mb-16">
         <h2 className="text-xl font-bold text-center mb-8">{t("testimonials.heading")}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {testimonials.map((tm) => (
-            <div key={tm.name} className="bg-card border border-white/5 rounded-2xl p-6 flex flex-col">
-              <div className="flex mb-3">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                ))}
+          {valueCards.map((c) => (
+            <div key={c.title} className="bg-card border border-white/5 rounded-2xl p-6 flex flex-col">
+              <div className="w-9 h-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center mb-3">
+                <CheckCircle2 className="w-5 h-5" />
               </div>
-              <p className="text-sm text-muted-foreground leading-relaxed flex-1 mb-4">"{tm.text}"</p>
-              <div>
-                <p className="text-sm font-semibold">{tm.name}</p>
-                <p className="text-xs text-muted-foreground">{tm.role}</p>
-              </div>
+              <p className="text-sm font-semibold mb-1.5">{c.title}</p>
+              <p className="text-sm text-muted-foreground leading-relaxed flex-1">{c.text}</p>
             </div>
           ))}
         </div>

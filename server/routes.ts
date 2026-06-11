@@ -611,7 +611,8 @@ export async function registerRoutes(app: Express): Promise<void> {
       // Send checklist email only for new leads. Fire-and-forget: a mail failure
       // must NOT fail the request — the lead is already saved.
       if (isNew) {
-        const downloadUrl = process.env.DOWNLOAD_GMP_CHECKLIST ?? "https://drive.google.com/placeholder/gmp-checklist";
+        const base = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://bio-wiki-pro-claude.vercel.app").replace(/\/$/, "");
+        const downloadUrl = process.env.DOWNLOAD_GMP_CHECKLIST || `${base}/api/lead-magnet/gmp-checklist`;
         sendLeadMagnetEmail(normalizedEmail, downloadUrl).catch((err) =>
           console.error("[Leads] Email error:", err)
         );
@@ -693,6 +694,19 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.json({ locked: true, tier, title, teaser });
     }
     return res.json({ locked: false, tier, title, body: content });
+  });
+
+  // ── Free lead-magnet checklist (public, no auth) ──────────────────────────
+  app.get("/api/lead-magnet/gmp-checklist", async (_req, res) => {
+    const filePath = path.resolve(process.cwd(), "content", "deliverables", "free", "gmp-audit-quick-checklist.md");
+    try {
+      const buf = await readFile(filePath);
+      res.setHeader("Content-Type", "text/markdown; charset=utf-8");
+      res.setHeader("Content-Disposition", 'attachment; filename="gmp-audit-quick-checklist.md"');
+      return res.send(buf);
+    } catch {
+      return res.status(404).json({ message: "File not found" });
+    }
   });
 
   // ── Digital-goods fulfillment (one-time products) ─────────────────────────
