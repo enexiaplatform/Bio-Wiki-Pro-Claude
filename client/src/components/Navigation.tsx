@@ -9,6 +9,32 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
+// BioWiki Pro — "Knowledge Lattice" mark (molecule + knowledge graph).
+function BioWikiMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
+      <g fill="none" stroke="#14B8A6" strokeOpacity="0.5" strokeWidth="3.4" strokeLinecap="round">
+        <line x1="50" y1="16" x2="20" y2="47" />
+        <line x1="50" y1="16" x2="80" y2="47" />
+        <line x1="50" y1="16" x2="50" y2="53" />
+        <line x1="20" y1="47" x2="50" y2="53" />
+        <line x1="80" y1="47" x2="50" y2="53" />
+        <line x1="50" y1="53" x2="33" y2="85" />
+        <line x1="50" y1="53" x2="67" y2="85" />
+        <line x1="33" y1="85" x2="67" y2="85" />
+        <line x1="20" y1="47" x2="33" y2="85" />
+        <line x1="80" y1="47" x2="67" y2="85" />
+      </g>
+      <circle cx="20" cy="47" r="6.6" fill="#14B8A6" />
+      <circle cx="80" cy="47" r="6.6" fill="#14B8A6" />
+      <circle cx="33" cy="85" r="6.6" fill="#14B8A6" />
+      <circle cx="67" cy="85" r="6.6" fill="#14B8A6" />
+      <circle cx="50" cy="53" r="6.2" fill="#5EEAD4" />
+      <circle cx="50" cy="16" r="7.8" fill="#EBBF6B" />
+    </svg>
+  );
+}
+
 // `key` maps to nav.json translation keys; `name` is the fallback label.
 const mobileTabs = [
   { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
@@ -68,8 +94,8 @@ export function DesktopNav() {
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-8">
       <Link href="/" className="flex items-center gap-2 mr-12 hover:opacity-80 transition-opacity">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
-          <span className="text-white font-bold text-lg">B</span>
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1">
+          <BioWikiMark className="w-full h-full" />
         </div>
         <span className="font-display font-bold text-xl tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
       </Link>
@@ -140,8 +166,8 @@ export function MobileHeader() {
   return (
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 px-4 py-3 md:hidden flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
-          <span className="text-white font-bold text-lg">B</span>
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1 shadow-lg shadow-primary/20">
+          <BioWikiMark className="w-full h-full" />
         </div>
         <span className="font-display font-bold text-lg tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
         {isPro && (
