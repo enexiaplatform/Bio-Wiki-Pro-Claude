@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Data Integrity"
 seoDescription: "Beyond ALCOA+: building a risk-based audit trail review program that inspectors trust — what to review, how often, and by whom."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Audit trail review should be performed by:"
+    options: ["The analyst who generated the data", "Someone independent of the work, at a risk-based frequency", "Anyone, once a year", "Only the FDA"]
+    answer: 1
+  - q: "Which is the highest data-integrity risk in a QC lab?"
+    options: ["Reading a thermometer", "Chromatography reprocessing/re-integration and shared logins", "Filing paper records", "Labeling vials"]
+    answer: 1
+  - q: "Reviewing audit trails without keeping records of the review is:"
+    options: ["Best practice", "A likely inspection finding", "Required by ALCOA", "Acceptable if verbal"]
+    answer: 1
 ---
 
 # Data Integrity — Audit Trail Review (Deep Dive)
@@ -32,5 +42,37 @@ Review by someone independent of the analyst, at a defined frequency tied to
 risk (e.g. per batch for high-risk systems). Document the review — "we review
 audit trails" without records is a finding.
 
-> This Pro lesson continues with a review SOP template, a high/medium/low risk
-> matrix for common QC systems, and example warning-letter citations.
+## A risk matrix for common QC systems
+
+| System | DI risk | Review frequency |
+| --- | --- | --- |
+| HPLC/GC (CDS) | **High** — integration, reprocessing, sequence edits | Every batch / every result |
+| Dissolution, UV with reprocessing | **High–Medium** | Per batch |
+| Balance with printout + LIMS | **Medium** | Periodic + per exception |
+| pH meter, standalone instruments | **Low–Medium** | Periodic (e.g. monthly) |
+| Infrastructure (OS clock, AD) | **Low** | By exception / IT change control |
+
+Tier the *frequency* and *depth* of review to the risk — don't pretend a pH
+meter deserves the same scrutiny as a CDS, and don't under-review the CDS.
+
+## Audit-trail review SOP — the skeleton
+
+1. **Scope & trigger** — which systems, tied to batch release vs periodic.
+2. **Reviewer** — independent of the data generator; trained and named.
+3. **What to examine** — result reprocessing, deleted/aborted runs, "test"
+   injections, method/sequence/clock changes, failed logins, disabled trails.
+4. **Decision** — accept / investigate; link any anomaly to a deviation.
+5. **Record** — checklist signed and dated; retained with the batch record.
+6. **Escalation** — what constitutes a data-integrity event and who is notified.
+
+## What inspectors actually cite
+
+Recurring FDA warning-letter themes (paraphrased): shared/generic logins so
+actions can't be attributed; audit trails switched off or never reviewed;
+"trial" injections used to dial in a passing result; analysts with admin rights
+able to delete data; review limited to the result printout while the metadata
+goes unexamined.
+
+> Practitioner tip: the fastest credibility win in an inspection is producing a
+> *signed, dated audit-trail review record* on demand. Many sites "do" review but
+> can't prove it — and to a regulator, undocumented is undone.

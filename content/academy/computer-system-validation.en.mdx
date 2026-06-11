@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Validation"
 seoDescription: "Risk-based CSV with GAMP 5 — software categories, the V-model, and how data integrity (ALCOA+) drives validation scope for GxP systems."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "A configured LIMS falls into which GAMP category?"
+    options: ["Category 1", "Category 3", "Category 4", "Category 5"]
+    answer: 2
+  - q: "In the V-model, User Requirements (URS) are verified by:"
+    options: ["Installation Qualification", "User Acceptance Testing / PQ", "Code review", "Supplier audit"]
+    answer: 1
+  - q: "For a SaaS GxP system, the regulated company remains accountable for:"
+    options: ["Nothing — the vendor owns it", "Validation for intended use, data integrity, and supplier oversight", "Only the password", "Only the invoice"]
+    answer: 1
 ---
 
 # Computer System Validation (GAMP 5)
@@ -34,5 +44,38 @@ Validation effort should focus where data integrity risk is highest — audit
 trails, access controls, electronic signatures, and ALCOA+ attributes. Leverage
 supplier documentation for low-risk categories instead of duplicating it.
 
-> This Pro lesson continues with a risk-assessment worksheet, a periodic-review
-> checklist, and guidance on validating cloud/SaaS GxP systems.
+## Risk assessment — how to scope effort
+
+For each function, score **impact** (patient safety / product quality / data
+integrity) × **probability** of failure × **detectability**. High-risk functions
+get scripted testing with evidence; low-risk functions can lean on supplier
+testing and a documented rationale. Capture this in a simple worksheet:
+
+| Function | GxP impact | Likelihood | Detectability | Risk | Test approach |
+| --- | --- | --- | --- | --- | --- |
+| Result calculation | High | Low | Low | High | Scripted OQ + data check |
+| Audit trail capture | High | Low | Medium | High | Verify on/off, content |
+| Report cosmetic layout | Low | Low | High | Low | Leverage supplier docs |
+
+## Periodic review checklist (post-go-live)
+
+- Change history since last review (patches, config changes, all under change
+  control?)
+- User access list reviewed — leavers removed, privileges still appropriate?
+- Audit trail enabled and being reviewed?
+- Backups tested / restore verified?
+- Open incidents, deviations, and CAPAs related to the system closed?
+- Still validated for current intended use (no "creep" into new uses)?
+
+## Cloud / SaaS GxP systems
+
+The vendor may run the infrastructure, but **accountability stays with you**. Use
+a **shared-responsibility matrix**, qualify the supplier (audit or assessment),
+get their SOC 2 / validation summary, and pin down: change notification (you must
+know before they push updates), data ownership and export on exit, and how their
+audit trail meets ALCOA+. Validate the *configuration and intended use* — you
+can't outsource the regulatory responsibility.
+
+> Practitioner tip: GAMP 5 Second Edition explicitly discourages "testing
+> everything." The defensible position is a documented risk rationale showing
+> *why* you tested what you tested — and leveraged the supplier for the rest.

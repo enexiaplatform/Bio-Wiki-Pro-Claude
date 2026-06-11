@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Quality Systems"
 seoDescription: "Corrective and Preventive Action done right — root cause, correction vs corrective action, and the effectiveness check that auditors look for."
-updatedAt: "2026-05-30"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Rejecting the affected batch immediately is an example of:"
+    options: ["Corrective action", "Correction (immediate fix)", "Preventive action", "Root cause analysis"]
+    answer: 1
+  - q: "The most common CAPA inspection finding is:"
+    options: ["Too much documentation", "Actions defined before root cause is established", "Closing too slowly", "Using 5 Whys"]
+    answer: 1
+  - q: "An acceptable effectiveness check is:"
+    options: ["\"Training completed\"", "\"SOP updated\"", "Objective data showing zero recurrence over a defined period", "Manager sign-off"]
+    answer: 2
 ---
 
 # CAPA Fundamentals
@@ -32,5 +42,40 @@ Define **quantitative, time-bound** criteria *before* closing the CAPA — e.g.
 "zero recurrence across the next 3 batches." Evidence must be objective data,
 not "training completed."
 
-> This Pro lesson continues with a decision tree, a ready-to-fill CAPA template,
-> and 12 worked examples across QC and manufacturing.
+## When do you even need a CAPA?
+
+Not every deviation needs a full CAPA. A quick triage:
+
+- **Minor, well-understood, one-off** → correction + documented rationale; no CAPA.
+- **Recurring, systemic, or high-risk** → full CAPA with root cause.
+- **Critical / patient-impact** → CAPA + risk assessment + possible field action.
+
+Over-raising CAPAs buries the system; under-raising them hides systemic problems.
+Tie the threshold to risk and trend, and review borderline calls at the quality
+review.
+
+## CAPA record — fields that survive an audit
+
+1. Problem statement (what, where, when, how detected, magnitude)
+2. Immediate correction + containment
+3. Risk assessment (severity, scope, other batches/products affected)
+4. Root-cause method and the **verified** root cause
+5. Corrective action(s) — each mapped to a cause, with owner + due date
+6. Preventive action(s) — extend the fix to similar processes/products
+7. **Effectiveness check** — metric, target, time window, owner
+8. Closure approval + effectiveness-verification record
+
+## Worked example
+
+*Event:* OOS for assay on Batch 23. **Correction:** quarantine batch, invalidate
+result only after a confirmed lab error. **Root cause (5 Whys):** mobile-phase
+prepared with an expired buffer because the prep log had no expiry field.
+**Corrective:** redo affected analyses; add expiry field + check to the prep log.
+**Preventive:** roll the log change across all HPLC methods in the lab.
+**Effectiveness check:** zero prep-related OOS across the next 20 batches over 3
+months — verified from the OOS trend before closure. *Note "training" is not the
+root cause here — the missing log control is.*
+
+> Practitioner tip: if your corrective action is "retrain the analyst," stop. That
+> is almost never the true root cause — it's where investigations go to die. Ask
+> what in the *system* let the error happen and be undetected.

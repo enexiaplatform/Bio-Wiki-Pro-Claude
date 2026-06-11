@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Validation"
 seoDescription: "Prove cleaning procedures remove product, cleaning agents, and microbes to safe levels — limits, sampling, and HBEL-based acceptance."
-updatedAt: "2026-06-01"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Modern cleaning-validation limits are primarily based on:"
+    options: ["The 10-ppm rule alone", "Health-Based Exposure Limits (HBEL/PDE)", "Visual inspection only", "Supplier recommendation"]
+    answer: 1
+  - q: "A recovery study is needed to:"
+    options: ["Speed up cleaning", "Correct results for incomplete analyte recovery from the surface", "Replace swabbing", "Set the production schedule"]
+    answer: 1
+  - q: "MACO stands for:"
+    options: ["Maximum Allowable Carryover", "Mean Average Cleaning Output", "Minimum Acceptable Contamination", "Material And Cleaning Order"]
+    answer: 0
 ---
 
 # Cleaning Validation
@@ -29,5 +39,48 @@ EMA guideline, rather than the older 1/1000-dose and 10-ppm criteria alone.
 Validate the hardest-to-clean product, equipment train, and locations. A
 successful worst case justifies a grouping/bracketing approach.
 
-> This Pro lesson continues with a recovery-study template, MACO calculation
-> worked examples, and a campaign/hold-time strategy.
+## MACO calculation — worked example
+
+**Maximum Allowable Carryover (MACO)** is the most product-A residue that may
+safely carry into the next product B. The HBEL-based formula:
+
+```
+MACO = (PDE_A × MBS_B) / MDD_B
+```
+
+where PDE_A = permitted daily exposure of product A (mg/day), MBS_B = minimum
+batch size of B (mg), MDD_B = maximum daily dose of B (mg/day).
+
+*Example:* PDE_A = 0.1 mg/day, MBS_B = 50,000,000 mg (50 kg), MDD_B = 1,000
+mg/day → MACO = (0.1 × 50,000,000) / 1,000 = **5,000 mg** of A across the whole
+batch of B. Divide by shared surface area to get the limit **per cm²**, then by
+the swab area to get the per-swab acceptance value the lab reports against.
+
+## Recovery study (the step people skip)
+
+Swab and rinse results are only valid after a **recovery study**: spike a coupon
+of the actual surface material (316L steel, PTFE, glass) with a known residue
+level, then sample and recover it. A recovery factor below ~70–80% must be
+justified or the method improved — and results are **corrected** by the recovery
+factor. No recovery data = uninterpretable cleaning results.
+
+## Acceptance criteria you must define up front
+
+1. **Chemical** — residue ≤ MACO-derived per-area limit (corrected for recovery).
+2. **Cleaning agent** — detergent residue below its own HBEL/toxicity limit.
+3. **Microbial** — bioburden (and endotoxin for sterile) below action levels.
+4. **Visual** — visually clean at a defined viewing distance/lux (necessary but
+   never sufficient on its own).
+
+## Campaign length and hold times
+
+- **Dirty hold time (DHT)** — max time soiled equipment may sit before cleaning.
+- **Clean hold time (CHT)** — max time clean equipment stays clean before use.
+- **Campaign** — number of consecutive batches before a full clean; validate the
+  worst-case (longest) campaign, then monitor.
+
+Both DHT and CHT must be validated with microbial data, not assumed.
+
+> Practitioner tip: build a residue/equipment matrix and validate the single
+> hardest-to-clean product on the hardest-to-clean equipment train. A successful
+> worst case lets you bracket the rest instead of validating every combination.

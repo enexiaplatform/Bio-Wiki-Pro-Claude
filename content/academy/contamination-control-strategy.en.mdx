@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Sterile Manufacturing"
 seoDescription: "The CCS is the backbone of EU GMP Annex 1 (2022) — a site-wide, risk-based plan tying together every contamination control across the facility."
-updatedAt: "2026-05-30"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "The Contamination Control Strategy became mandatory under:"
+    options: ["ICH Q7", "EU GMP Annex 1 (2022 revision)", "21 CFR Part 11", "USP <71>"]
+    answer: 1
+  - q: "A CCS is best described as:"
+    options: ["A one-time binder of SOPs", "A living, site-wide risk assessment reviewed against monitoring data", "A cleaning schedule", "A gowning procedure"]
+    answer: 1
+  - q: "Which is NOT typically an element integrated by the CCS?"
+    options: ["Personnel & gowning", "Utilities (water, gases)", "Marketing approvals", "Environmental monitoring"]
+    answer: 2
 ---
 
 # Contamination Control Strategy (CCS)
@@ -29,5 +39,41 @@ A CCS is not a binder — it's a living risk assessment. Each control is justifi
 against the contamination risks it mitigates, with effectiveness reviewed using
 real monitoring data.
 
-> This Pro lesson continues with a CCS element map, a gap-assessment template,
-> and how inspectors probe the CCS during an Annex 1 audit.
+## The CCS element map
+
+Annex 1 (§2.3) lists the elements your CCS must address. A practical way to
+structure it is source → control → monitor:
+
+| Contamination source | Primary controls | Monitoring evidence |
+| --- | --- | --- |
+| Personnel | Gowning qual, behavior, limits on numbers | Glove/gown EM, APS results |
+| Air / HVAC | Grade A–D classification, pressure cascade, HEPA | Viable/non-viable EM, DP trends |
+| Surfaces | Cleaning & disinfection, sporicidal rotation | Surface EM, disinfectant efficacy |
+| Water & gases | WFI/PW system design, point-of-use filters | TOC, conductivity, bioburden, endotoxin |
+| Process / equipment | Closed systems, RABS/isolator, SIP/CIP | APS, integrity tests, bioburden |
+| Raw materials / components | Supplier control, bioburden limits, depyro | CoA, incoming bioburden/endotoxin |
+
+## Gap-assessment approach
+
+1. List each Annex 1 element above.
+2. Map the existing control(s) and the data that proves they work.
+3. Rate residual risk (with current controls) using QRM (ICH Q9).
+4. Flag gaps — element with no control, or a control with no monitoring data.
+5. Feed gaps into CAPA / continuous-improvement with owners and dates.
+
+The output is a single, defensible document showing controls are not isolated
+but **interact** — e.g. weaker gowning is offset by an isolator, or a manual step
+is justified by intensive monitoring.
+
+## How inspectors probe the CCS
+
+Expect questions that test whether the CCS is real or decorative: "Show me how a
+recent EM excursion fed back into the CCS." "Where is the link between this APS
+failure and your control changes?" "Which controls are you relying on most, and
+what's your evidence they're effective?" A CCS that can't connect a real event to
+a control adjustment reads as a paperwork exercise.
+
+> Practitioner tip: keep the CCS owned by a cross-functional team (QA,
+> micro, engineering, production) and version it like a living document. The
+> single biggest Annex 1 finding is a CCS that exists but is never updated by
+> what the monitoring data is actually telling you.
