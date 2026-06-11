@@ -1,0 +1,58 @@
+---
+title: "Karl Fischer Water Determination"
+slug: "karl-fischer-water-determination"
+lang: "en"
+tier: "free"
+category: "Laboratory Controls"
+seoDescription: "Karl Fischer titration for water content — volumetric vs coulometric methods, when to use each, common error sources, and why moisture control matters for stability."
+updatedAt: "2026-06-04"
+quiz:
+  - q: "Karl Fischer titration measures:"
+    options: ["pH", "Water (moisture) content", "Particle size", "Endotoxin"]
+    answer: 1
+  - q: "Coulometric KF is preferred over volumetric for:"
+    options: ["Very high water content", "Trace / very low water content", "Measuring pH", "Color tests"]
+    answer: 1
+  - q: "Why does moisture content matter for many drug products?"
+    options: ["It changes the color", "It affects stability, degradation, and sometimes potency", "It has no effect", "Only for taste"]
+    answer: 1
+---
+
+# Karl Fischer Water Determination
+
+Water content is a critical attribute for many APIs and products — it drives
+**hydrolytic degradation**, affects potency calculations, and influences physical
+stability. Karl Fischer (KF) titration is the specific, accurate way to measure it
+(unlike loss-on-drying, which captures any volatile).
+
+## Volumetric vs coulometric
+
+- **Volumetric KF** — titrant containing iodine is dispensed; suited to samples
+  with **higher** water content (roughly 100 ppm to 100%).
+- **Coulometric KF** — iodine is generated electrochemically *in situ*; ideal for
+  **trace** water (down to ~ppm). Use it for dry APIs and low-moisture solids.
+
+Pick the method to match the expected water level — wrong method, poor precision.
+
+## How it works (briefly)
+
+The KF reaction consumes water stoichiometrically with iodine in the presence of
+sulfur dioxide and a base. The endpoint is detected when free iodine appears
+(bivoltametric/"dead-stop" indication).
+
+## Common error sources
+
+- **Atmospheric moisture** ingress — keep the cell sealed and dry.
+- **Incomplete sample dissolution/extraction** — water trapped in the matrix isn't
+  titrated; use oven (gas-phase) sampling for difficult solids.
+- **Side reactions** with certain analytes (aldehydes, ketones) — use special
+  reagents.
+
+## Why it matters
+
+A controlled, validated KF method gives a reliable moisture spec — protecting
+shelf life and ensuring assay results are reported on the right basis (e.g.
+anhydrous).
+
+> Tip: for very dry materials, coulometric KF with oven sampling avoids the
+> matrix-extraction problem that quietly biases volumetric results low.
