@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Quality Systems"
 seoDescription: "Managing a pharmaceutical product recall — recall classes, mock recalls, traceability and reconciliation, regulator notification, and effectiveness checks."
-updatedAt: "2026-06-04"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "A Class I recall (FDA) means:"
+    options: ["Unlikely to cause harm", "Reasonable probability of serious harm or death", "A labeling typo only", "A voluntary withdrawal"]
+    answer: 1
+  - q: "A mock recall is run to:"
+    options: ["Sell old stock", "Test traceability and speed before a real event", "Avoid notifying regulators", "Replace reconciliation"]
+    answer: 1
+  - q: "An effectiveness check after a recall confirms:"
+    options: ["The product was actually retrieved from the market", "The batch record is signed", "The supplier was paid", "The label was correct"]
+    answer: 0
 ---
 
 # Product Recall Management
@@ -40,5 +50,44 @@ Run **mock recalls** periodically to test traceability and speed (e.g. "can we
 account for 100% of batch X within N hours?"). After a real recall, an
 **effectiveness check** confirms the recalled product was actually retrieved.
 
-> This Pro lesson continues with a recall decision tree, a mock-recall protocol
-> template, and how recalls connect to complaints, deviations, and CAPA.
+## Recall decision tree
+
+1. **Signal** — complaint, OOS, stability failure, deviation, or regulator query.
+2. **Health-hazard evaluation** — assess risk to patients (severity ×
+   probability × population). This drives the class.
+3. **Decide scope** — which batches, which markets, how deep (wholesaler /
+   pharmacy / patient).
+4. **Classify** (I/II/III) and set timelines.
+5. **Notify** — regulators within required windows; consignees with clear
+   instructions.
+6. **Retrieve & reconcile** — track returns against distributed quantity.
+7. **Effectiveness check** — confirm retrieval; close with CAPA and trend.
+
+The decision to recall (vs other field action) is a documented quality decision,
+usually by a recall committee — not an individual under pressure.
+
+## Mock-recall protocol template
+
+- **Objective** — e.g. account for 100% of a chosen batch within a target time.
+- **Scope** — pick a real batch with realistic multi-tier distribution.
+- **Method** — trace from batch record → distribution records → consignees;
+  reconcile quantities.
+- **Acceptance** — % accounted for and time taken vs target (e.g. ≥99% within
+  24–48 h).
+- **Output** — gaps found (e.g. slow consignee data), CAPA, and a re-test date.
+
+Run mock recalls at a defined frequency (often annually) and after major
+distribution or system changes.
+
+## How recalls connect to the QMS
+
+A recall is rarely standalone: it usually originates in a **complaint**, an
+**OOS/stability** failure, or a **deviation**, and it always ends in **CAPA** and
+trending. The recall procedure should reference these processes so the root cause
+is fixed — not just the market cleared. Recurring recalls of the same type are a
+serious quality-system signal in management review.
+
+> Practitioner tip: the weak link is almost always downstream distribution data,
+> not your own records. Use mock recalls specifically to test how fast your
+> distributors and 3PLs can give you consignee lists — that's where the real clock
+> is lost in a Class I event.

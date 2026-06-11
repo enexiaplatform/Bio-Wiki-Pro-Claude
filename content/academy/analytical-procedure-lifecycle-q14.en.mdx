@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Validation"
 seoDescription: "ICH Q14 and the analytical procedure lifecycle — the Analytical Target Profile (ATP), enhanced (QbD) approach, and how it complements Q2(R2) validation."
-updatedAt: "2026-06-04"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "The Analytical Target Profile (ATP) is defined:"
+    options: ["After validation", "Before development — the performance the method must meet", "By the instrument vendor", "Only for compendial methods"]
+    answer: 1
+  - q: "Within a defined Method Operable Design Region (MODR), parameter adjustments are:"
+    options: ["A change to the registered method needing prior approval", "Not a change to the registered method", "Always prohibited", "Untracked"]
+    answer: 1
+  - q: "ICH Q14 and Q2(R2) relate as:"
+    options: ["Q14 = development, Q2 = validation (companion guidelines)", "They are identical", "Q14 replaces Q2", "Neither covers methods"]
+    answer: 0
 ---
 
 # Analytical Procedure Lifecycle (ICH Q14)
@@ -42,5 +52,44 @@ The enhanced approach gives **regulatory flexibility** (changes within the MODR
 without prior approval) and methods that are robust by design — fewer OOS caused
 by the method itself.
 
-> This Pro lesson continues with an ATP worked example, what an MODR looks like in
-> practice, and how the lifecycle approach changes change-control for methods.
+## ATP worked example
+
+For an assay of a tablet, an ATP might read: *"The procedure must quantify the
+active over 70–130% of the nominal concentration with accuracy such that the true
+value lies within ±2% (95% confidence) and intermediate precision ≤2% RSD,
+specific against known degradants and excipients."*
+
+Notice it specifies **performance**, not technique — HPLC, UPLC, or a future
+method all qualify if they meet the ATP. That is the point: the ATP lets you
+change *how* you measure as long as *how well* you measure is preserved.
+
+## What an MODR looks like
+
+Suppose a robustness DoE varies flow rate, column temperature, and mobile-phase
+%organic, and finds the method meets the ATP across:
+
+- Flow: 0.9–1.1 mL/min
+- Column temp: 28–32 °C
+- %organic: 38–42%
+
+That multidimensional space is the **MODR**. Operating anywhere inside it is *not*
+a method change — so an analyst adjusting flow to 1.05 mL/min to improve a
+separation is working within the approved region, not deviating.
+
+## How the lifecycle changes change control
+
+| Aspect | Traditional (minimal) | Enhanced (Q14) |
+| --- | --- | --- |
+| Method definition | Fixed parameters | ATP + MODR |
+| Adjustment within MODR | Variation / change control | Allowed, no prior approval |
+| Knowledge | Validation report | Living development + monitoring |
+| OOS from method | Common, robustness gaps surface late | Fewer — robustness built in |
+
+The trade-off: the enhanced approach front-loads effort (DoE, ATP, MODR) to buy
+operational and regulatory flexibility later. Ongoing method performance
+monitoring (trending system-suitability and OOS attributable to the method) closes
+the lifecycle loop.
+
+> Practitioner tip: write the ATP first, in performance terms, and resist baking
+> the instrument into it. An ATP that says "HPLC with a C18 column" has already
+> thrown away the flexibility Q14 is designed to give you.

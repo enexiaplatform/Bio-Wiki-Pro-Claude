@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Microbiology QC"
 seoDescription: "Validating a pharmaceutical water system — the three-phase qualification approach, sampling every point of use, and ongoing monitoring with alert/action levels."
-updatedAt: "2026-06-04"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "During Phase 1 of water-system validation, you should:"
+    options: ["Use the water for production immediately", "Sample every point of use intensively and not yet use the water", "Sample once", "Skip microbial testing"]
+    answer: 1
+  - q: "Phase 3 runs for about a year mainly to:"
+    options: ["Save reagents", "Capture seasonal variation in feed water", "Avoid sampling", "Replace Phase 1"]
+    answer: 1
+  - q: "The main microbial enemy in a water distribution loop is:"
+    options: ["Endotoxin spikes only", "Biofilm", "High conductivity", "Low TOC"]
+    answer: 1
 ---
 
 # Pharmaceutical Water System Validation
@@ -38,6 +48,41 @@ After validation: continuous TOC/conductivity (chemical) plus scheduled microbia
 and endotoxin (WFI) monitoring against **alert and action levels**, with trending
 and sanitization (thermal/chemical) on a defined cadence. Biofilm is the enemy.
 
-> This Pro lesson continues with a three-phase protocol outline, a sampling-point
-> rationale, and how excursions trigger impact assessment for water used in
-> production.
+## Three-phase protocol outline
+
+| Phase | Duration | Sampling | Water use | Purpose |
+| --- | --- | --- | --- | --- |
+| 1 | 2–4 weeks | All points, daily | Not for production | Prove capability, finalize SOPs/limits |
+| 2 | 2–4 weeks | All points, daily | Releasable per SOP | Confirm consistency under procedures |
+| 3 | ~1 year | Routine reduced frequency, rotating | Routine | Capture seasonal variation |
+
+Define up front: typical chemical attributes (conductivity and TOC per
+pharmacopeia), microbial limits (e.g. PW action ~100 CFU/mL; WFI ~10 CFU/100 mL),
+endotoxin for WFI (&lt;0.25 EU/mL), and the sanitization regime.
+
+## Sampling-point rationale
+
+- **Every use point** in Phases 1–2 — contamination is local; a single dead leg
+  or poorly drained valve fails while the loop reads clean.
+- **Source/generation/storage/return** sampled to localize where quality changes.
+- **Worst-case points** (longest run, lowest flow, least-used outlets) prioritized
+  in routine rotation.
+- **Use-point as the user takes it** — sample the way production actually draws
+  water (flush or not), so the data reflects real exposure.
+
+## Excursion impact assessment
+
+When water exceeds an action level, the question is: *what did this water touch?*
+
+1. Identify the organism / measure the deviation magnitude.
+2. List products and cleaning operations that used water from that point in the
+   affected window.
+3. Assess impact on each (was water an ingredient? final rinse? sterile process?).
+4. Decide batch disposition; investigate the system cause (biofilm, sanitization
+   failure, dead leg, breach).
+5. CAPA + re-sanitize + re-sample to confirm return to control.
+
+> Practitioner tip: water excursions are rarely "isolated." Biofilm sheds
+> intermittently, so a single high count at one point often means the loop needs
+> sanitization and trend review — not a quick resample-and-pass. Treat the system,
+> not the sample.

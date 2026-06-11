@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Laboratory Controls"
 seoDescription: "The ongoing (commitment) stability program per ICH Q1A and GMP — at least one batch per year, the protocol, and how excursions trigger market action."
-updatedAt: "2026-06-03"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "The ongoing stability program typically requires placing on stability:"
+    options: ["Every batch", "At least one batch per year per product/strength/pack (if made)", "No batches", "Only rejected batches"]
+    answer: 1
+  - q: "A stability OOS is especially serious because it can affect:"
+    options: ["Only the test sample", "Product already distributed to the market", "The next year's plan only", "Nothing"]
+    answer: 1
+  - q: "Bracketing/matrixing is used to:"
+    options: ["Increase testing", "Reduce the number of samples tested using a justified design", "Skip stability entirely", "Replace the spec"]
+    answer: 1
 ---
 
 # Ongoing Stability Program
@@ -30,6 +40,43 @@ affect product **already on the market**. The investigation must assess batches
 in distribution and may lead to field actions (notification, recall) if shelf
 life is implicated.
 
-> This Pro lesson continues with a stability bracketing/matrixing primer, a
-> sample ongoing-stability protocol, and a worked stability-excursion impact
-> assessment covering distributed batches.
+## Bracketing and matrixing (ICH Q1D)
+
+To control testing burden without losing assurance:
+
+- **Bracketing** — test only the **extremes** (e.g. lowest and highest strength,
+  smallest and largest container) and infer the intermediates. Valid when the
+  extremes truly bound the intermediates.
+- **Matrixing** — test a **subset** of samples at each time point on a planned,
+  rotating schedule (e.g. not every strength at every interval).
+
+Both require a justified design documented in the protocol — you can't matrix
+away a real stability risk.
+
+## Sample ongoing-stability protocol
+
+- **Scope** — products/strengths/packs and the one-batch-per-year rule.
+- **Conditions** — long-term (e.g. 25 °C/60% RH or 30 °C/75% RH per climatic
+  zone); accelerated/intermediate only if triggered.
+- **Attributes** — assay, degradation products, dissolution, water, microbial
+  (where relevant), appearance, container/closure.
+- **Intervals** — e.g. 0, 12, 24, 36 months + end of shelf life.
+- **Acceptance criteria** — the registered shelf-life specifications.
+- **Triggers for extra batches** — significant changes, reprocessing, major
+  deviations, complaints suggesting stability issues.
+
+## Worked stability-excursion impact assessment
+
+*Event:* a degradant exceeds spec at the 24-month point. **Steps:** confirm the
+result (no lab error); determine which **distributed** batches share the same
+process/formulation/pack and are at or beyond that age; project the degradation
+to estimate when batches breach spec; assess patient risk (is the degradant
+toxic?). **Outcome:** if marketed batches are implicated, this drives a field
+action (shelf-life reduction, customer notification, or recall) — the ongoing
+program is precisely the early-warning system that catches this before patients
+are exposed.
+
+> Practitioner tip: connect ongoing stability to the APR and to change control.
+> The most common gap is a change (supplier, process, site) made without adding a
+> stability batch — so the first sign of trouble arrives at 24 months, on product
+> already in patients' hands.

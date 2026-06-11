@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Microbiology QC"
 seoDescription: "How to investigate environmental-monitoring excursions — alert vs action response, microbial identification, trend correlation, and product-impact assessment."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "An action-level EM excursion should trigger:"
+    options: ["Nothing if it's a one-off", "A formal investigation with root cause, CAPA, and product-impact assessment", "Only a note in the logbook", "Immediate recall"]
+    answer: 1
+  - q: "Identifying the recovered organism helps because:"
+    options: ["It is required for billing", "The ID often points to the contamination source", "It speeds up incubation", "It replaces trending"]
+    answer: 1
+  - q: "Closing an action-level excursion as \"isolated, no impact\" with no ID or rationale is:"
+    options: ["Best practice", "A classic finding showing the system doesn't learn", "Required by GMP", "Acceptable for Grade D"]
+    answer: 1
 ---
 
 # Investigating Microbial Excursions (EM Data)
@@ -39,5 +49,41 @@ Closing an action-level excursion as "isolated event, no impact" without an
 organism ID, trend review, or impact rationale. Auditors read that as a system
 that doesn't learn.
 
-> This Pro lesson continues with an excursion decision tree, an organism-to-source
-> reference table, and a worked product-impact assessment template.
+## Organism-to-source reference table
+
+The isolate ID is the single best clue to where the contamination came from:
+
+| Organism type | Typical source |
+| --- | --- |
+| Gram-positive cocci (*Staphylococcus*, *Micrococcus*) | People — skin, gowning gaps, technique |
+| Gram-positive rods / spore-formers (*Bacillus*) | Dust, raw materials, inadequate sporicidal cleaning |
+| Gram-negative rods (*Pseudomonas*, *Ralstonia*, *Burkholderia*) | Water, wet surfaces, spills, drains |
+| Mould / fungi (*Aspergillus*, *Penicillium*) | Construction, HVAC, humidity, packaging/cardboard |
+| Diphtheroids / *Corynebacterium* | Human skin flora |
+
+A shift in the *flora* (e.g. new Gram-negatives in a normally Gram-positive room)
+is itself a signal, even within limits.
+
+## Excursion decision tree
+
+1. **Confirm** the result and sampling (no lab artifact).
+2. **Alert or action?** Alert → trend/heighten; action → formal investigation.
+3. **Identify** the organism to genus/species.
+4. **Correlate** — location, organism, shift, recent events (maintenance,
+   construction, personnel).
+5. **Assess product impact** — what was exposed in the window, sterility assurance.
+6. **CAPA** for action-level/systemic; verify effectiveness; trend.
+
+## Product-impact assessment template
+
+- Batches/lots exposed in the room between the last acceptable result and the
+  excursion.
+- Proximity of the excursion location to the open product / critical zone.
+- The organism's risk given the product and route.
+- Other controls in the window (Grade A protection, airflow, intervention log).
+- **Conclusion:** impact / no impact — with the evidence, signed. "No impact"
+  must be argued, not asserted.
+
+> Practitioner tip: maintain a site flora library. When you already know your
+> "normal" organisms by location, an excursion's significance — and its likely
+> source — becomes obvious far faster, and your impact arguments are far stronger.
