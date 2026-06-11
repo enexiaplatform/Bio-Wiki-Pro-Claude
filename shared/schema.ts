@@ -66,6 +66,20 @@ export const lessonReads = pgTable(
 );
 export type LessonRead = typeof lessonReads.$inferSelect;
 
+// Free→Pro email nurture: one row per (user, step) so the daily cron never
+// re-sends a step. Degrades gracefully if the table is absent (pre-migration).
+export const nurtureSends = pgTable(
+  "nurture_sends",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    step: integer("step").notNull(),
+    sentAt: timestamp("sent_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("nurture_sends_user_step_idx").on(t.userId, t.step)],
+);
+export type NurtureSend = typeof nurtureSends.$inferSelect;
+
 // Quote Requests from the Solutions tab
 export const quoteRequests = pgTable("quote_requests", {
   id: serial("id").primaryKey(),

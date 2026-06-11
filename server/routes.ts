@@ -6,7 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
@@ -707,6 +707,46 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.json({ locked: true, tier, title, teaser });
     }
     return res.json({ locked: false, tier, title, body: content });
+  });
+
+  // ── Free→Pro email nurture (daily cron) ───────────────────────────────────
+  // Secured by CRON_SECRET (Vercel cron sends it as a Bearer token). Sends at
+  // most one due-but-unsent step per user per run. Degrades to ok:false if the
+  // nurture_sends table is absent (pre-migration).
+  app.get("/api/cron/nurture", async (req: any, res) => {
+    const secret = process.env.CRON_SECRET;
+    if (!secret) return res.status(503).json({ message: "Nurture cron not configured" });
+    const auth = req.headers.authorization as string | undefined;
+    const provided = (auth?.startsWith("Bearer ") ? auth.slice(7) : undefined) ?? req.headers["x-cron-secret"];
+    if (provided !== secret) return res.status(401).json({ message: "Unauthorized" });
+
+    const SCHEDULE = [
+      { step: 1, day: 1 },
+      { step: 2, day: 3 },
+      { step: 3, day: 7 },
+    ];
+    let scanned = 0;
+    let sent = 0;
+    try {
+      const candidates = await storage.getNurtureCandidates(14);
+      for (const u of candidates) {
+        if (!u.email || !u.createdAt) continue;
+        scanned++;
+        const ageDays = (Date.now() - new Date(u.createdAt).getTime()) / (24 * 60 * 60 * 1000);
+        const dueSteps = SCHEDULE.filter((s) => ageDays >= s.day).map((s) => s.step);
+        if (dueSteps.length === 0) continue;
+        const already = await storage.getSentNurtureSteps(u.id);
+        const next = dueSteps.find((s) => !already.includes(s));
+        if (next == null) continue;
+        await sendNurtureEmail(u.email, next, u.firstName ?? undefined);
+        await storage.recordNurtureSend(u.id, next);
+        sent++;
+      }
+      return res.json({ ok: true, scanned, sent });
+    } catch (err) {
+      console.error("[Cron] nurture error:", err);
+      return res.json({ ok: false, scanned, sent, note: "nurture_sends table may be absent — run db:push" });
+    }
   });
 
   // ── Free lead-magnet checklist (public, no auth) ──────────────────────────

@@ -251,3 +251,65 @@ export async function sendDunningEmail(
     console.error("[Email] Failed to send dunning email:", err);
   }
 }
+
+// Free→Pro nurture sequence. `step` 1..3 maps to a different message; the cron
+// picks the step from how many days since signup and what's already been sent.
+const NURTURE_CONTENT: Record<number, { subject: string; body: (name: string) => string }> = {
+  1: {
+    subject: "Getting started with your free QC/QA lessons",
+    body: (name) => `
+      <h1>Welcome aboard, ${name} 👋</h1>
+      <p>You've got dozens of in-depth GMP lessons free — the fastest way to start
+      is to pick one learning path and work through it end to end.</p>
+      <div class="box"><p>Most popular starting point: <strong>Microbiology QC
+      Fundamentals</strong> — sterility, bioburden, EM, endotoxin and water, in order.</p></div>
+      <a href="${BASE_URL}/library" class="cta">Browse the library →</a>
+      <p style="font-size:13px;color:#64748b;">Reply any time if you're not sure where to start — we read every email.</p>
+    `,
+  },
+  2: {
+    subject: "The deep-dives most QC/QA teams get wrong",
+    body: (name) => `
+      <h1>Where the real findings hide, ${name}</h1>
+      <p>The free lessons cover the fundamentals. The <strong>Pro</strong> deep-dives
+      cover what actually trips teams up in an inspection:</p>
+      <div class="box"><p>Audit-trail review programs · cleaning validation with MACO
+      worked examples · OOS/OOT investigation · GAMP 5 CSV · contamination control
+      strategy · SPC & Gauge R&R — each with templates and checklists.</p></div>
+      <a href="${BASE_URL}/upgrade" class="cta">See what Pro unlocks →</a>
+      <p style="font-size:13px;color:#64748b;">Every Pro lesson ends with a quiz so you can check you've actually got it.</p>
+    `,
+  },
+  3: {
+    subject: "Your 7-day Pro trial is waiting",
+    body: (name) => `
+      <h1>Try Pro free for 7 days, ${name}</h1>
+      <p>You've been learning on the free tier — here's an easy way to see the rest.
+      Start a <strong>7-day free trial</strong> of Pro: full access to every advanced
+      lesson, template, and checklist. Cancel any time before it ends and you won't be
+      charged.</p>
+      <a href="${BASE_URL}/upgrade" class="cta">Start your free trial →</a>
+      <p style="font-size:13px;color:#64748b;">$8/mo after the trial · cancel in two clicks · no hard sell.</p>
+    `,
+  },
+};
+
+export async function sendNurtureEmail(to: string, step: number, firstName?: string): Promise<void> {
+  const content = NURTURE_CONTENT[step];
+  if (!content) return;
+  if (!resend) {
+    console.log(`[Email] Would send nurture step ${step} to ${to} (Resend not configured)`);
+    return;
+  }
+  const name = firstName ?? "there";
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: content.subject,
+      html: htmlWrapper(content.body(name)),
+    });
+  } catch (err) {
+    console.error(`[Email] Failed to send nurture step ${step}:`, err);
+  }
+}

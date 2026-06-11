@@ -6,13 +6,14 @@ import {
   processedStripeEvents,
   contentEntries,
   lessonReads,
+  nurtureSends,
   type QuoteRequest,
   type InsertQuoteRequest,
   type Lead,
   type ContentEntryRow,
   type InsertContentEntry,
 } from "../shared/schema.js";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -37,6 +38,9 @@ export interface IStorage {
   hasCompletedPurchase(userId: string, productType?: string): Promise<boolean>;
   getReadLessons(userId: string): Promise<string[]>;
   markLessonRead(userId: string, slug: string): Promise<void>;
+  getNurtureCandidates(maxAgeDays: number): Promise<{ id: string; email: string | null; firstName: string | null; createdAt: Date | null }[]>;
+  getSentNurtureSteps(userId: string): Promise<number[]>;
+  recordNurtureSend(userId: string, step: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -207,6 +211,26 @@ export class DatabaseStorage implements IStorage {
 
   async markLessonRead(userId: string, slug: string): Promise<void> {
     await db.insert(lessonReads).values({ userId, slug }).onConflictDoNothing();
+  }
+
+  async getNurtureCandidates(maxAgeDays: number) {
+    const cutoff = new Date(Date.now() - maxAgeDays * 24 * 60 * 60 * 1000);
+    return db
+      .select({ id: users.id, email: users.email, firstName: users.firstName, createdAt: users.createdAt })
+      .from(users)
+      .where(and(eq(users.isPro, false), gt(users.createdAt, cutoff)));
+  }
+
+  async getSentNurtureSteps(userId: string): Promise<number[]> {
+    const rows = await db
+      .select({ step: nurtureSends.step })
+      .from(nurtureSends)
+      .where(eq(nurtureSends.userId, userId));
+    return rows.map((r) => r.step);
+  }
+
+  async recordNurtureSend(userId: string, step: number): Promise<void> {
+    await db.insert(nurtureSends).values({ userId, step }).onConflictDoNothing();
   }
 }
 
