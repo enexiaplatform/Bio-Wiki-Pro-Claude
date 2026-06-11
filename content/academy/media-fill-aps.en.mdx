@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Aseptic Processing"
 seoDescription: "How aseptic process simulations (media fills) qualify sterile manufacturing — acceptance criteria, worst-case design, and Annex 1 expectations."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "For a media fill of fewer than 5,000 units, the Annex 1 acceptance is:"
+    options: ["Up to 2 contaminated units", "No contaminated units", "1% contamination", "Not applicable"]
+    answer: 1
+  - q: "A credible APS should reproduce:"
+    options: ["The easiest run conditions", "Worst-case interventions, max operators, longest run", "Only the start of a shift", "A shortened cycle"]
+    answer: 1
+  - q: "After a media fill, units are typically incubated to detect growth at:"
+    options: ["A single temperature for 1 day", "Two temperature ranges over ~14 days", "No incubation", "Only 4°C"]
+    answer: 1
 ---
 
 # Media Fill & Aseptic Process Simulation
@@ -29,5 +39,47 @@ A credible APS reproduces the worst-case conditions the process actually faces:
 maximum interventions, shift changes, maximum number of operators, the longest
 permitted run time, and the most challenging container/closure.
 
-> This Pro lesson continues with an intervention matrix, run-duration rationale,
-> incubation/read strategy, and a fully worked media-fill failure investigation.
+## The intervention matrix
+
+Every intervention the process *permits* must appear in the APS, classified and
+counted:
+
+- **Inherent (routine)** — done every batch (e.g. environmental monitoring,
+  weight checks, component replenishment). Include at routine frequency.
+- **Corrective (non-routine)** — performed to fix a problem (clearing a jam,
+  replacing a stopper bowl, line stoppage). Include each at least once, designed
+  to the worst-case posture and personnel.
+
+List each, when it occurs, who performs it, and its aseptic risk. Any intervention
+not simulated is, in effect, not qualified — and is the first thing an inspector
+checks after a real-line intervention.
+
+## Run duration and operator load
+
+Simulate the **maximum permitted run time** (not a short demo) so operator
+fatigue, line dynamics, and EM over a full shift are challenged. Include shift
+changes and breaks, and the **maximum number of operators** allowed in the room.
+Justify the filled-unit count statistically — enough to make "no growth" a
+meaningful result against your acceptance table.
+
+## Incubation and read
+
+Fill, stopper, and incubate units (commonly two stages, e.g. ~20–25 °C then
+~30–35 °C, ~7 days each / 14 total) to recover both molds/yeasts and bacteria.
+Invert/agitate so medium contacts all closure surfaces. Pre-/post-incubation
+counts confirm medium growth-promotion. Every unit is inspected; integrity-failed
+units are reconciled, not silently discarded.
+
+## Worked failure investigation
+
+*Event:* 1 contaminated unit in a 9,500-unit fill → investigation + repeat (per
+table). **Investigation:** identify the isolate (e.g. a *Micrococcus* skin flora);
+review video and intervention log for that time window; check the gowning
+qualification, EM, and personnel monitoring of operators present; map the unit's
+position to a specific intervention. **Finding:** a corrective intervention done
+with a near-touch over the open vial. **Action:** redesign the intervention,
+retrain to the new method, and pass two consecutive repeat APS before resuming.
+
+> Practitioner tip: film your media fills. When a unit grows, the intervention
+> video is the single most powerful piece of evidence for finding — and proving —
+> root cause. Memory and logs alone rarely settle it.

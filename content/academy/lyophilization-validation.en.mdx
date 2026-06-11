@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Aseptic Processing"
 seoDescription: "Validating a lyophilization cycle — the three phases, critical parameters (shelf temp, chamber pressure), collapse temperature, and aseptic + container risks."
-updatedAt: "2026-06-03"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "The longest phase of a lyophilization cycle is usually:"
+    options: ["Freezing", "Primary drying (sublimation)", "Secondary drying", "Stoppering"]
+    answer: 1
+  - q: "Exceeding the product's collapse temperature during primary drying causes:"
+    options: ["Faster reconstitution", "Cake collapse — poor appearance, slow reconstitution, high moisture", "Lower endotoxin", "Better sterility"]
+    answer: 1
+  - q: "Why must the media fill simulate the lyo step?"
+    options: ["To dry the medium", "Vials enter the chamber partially stoppered, so loading/chamber are part of the aseptic process", "To save time", "It does not need to"]
+    answer: 1
 ---
 
 # Lyophilization (Freeze-Drying) Validation
@@ -37,5 +47,38 @@ chamber with partially seated stoppers, so the chamber and loading are part of
 the aseptic process and the **media fill** must simulate the lyo step (including
 the vacuum/stoppering sequence).
 
-> This Pro lesson continues with a cycle-development workflow, how to find collapse
-> temperature, and the media-fill considerations specific to lyophilized products.
+## Cycle-development workflow
+
+1. **Characterize the formulation** — find the critical temperatures (eutectic
+   temperature for crystalline systems; glass-transition Tg′ / collapse
+   temperature for amorphous systems) by DSC and freeze-dry microscopy.
+2. **Design freezing** — control nucleation and ramp; consistent ice structure
+   drives consistent drying.
+3. **Set primary drying** — choose shelf temperature and chamber pressure that
+   keep product temperature safely **below collapse** while maximizing sublimation
+   rate. Use product-temperature thermocouples to track the cake.
+4. **Set secondary drying** — raise shelf temperature to desorb bound water to the
+   residual-moisture target (confirmed by Karl Fischer).
+5. **Qualify** — heat distribution/penetration across the shelves, edge-vs-center
+   effects, and the worst-case (slowest-drying) location.
+
+## Finding the collapse temperature
+
+Freeze-dry microscopy directly visualizes the structure losing rigidity during
+sublimation; DSC gives Tg′/eutectic. The collapse temperature anchors the primary
+-drying setpoint — run a few degrees below it with a safety margin. Push too cold
+and the cycle is needlessly long; too warm and you lose the cake.
+
+## Media-fill considerations for lyo products
+
+The simulation must reflect the real aseptic exposure: partially stoppered vials
+transported and **loaded into the chamber**, the **hold under partial vacuum**,
+and **stoppering inside the chamber**. Use a medium and chamber conditions that
+don't kill the challenge organisms (avoid a true deep vacuum/freezing that would
+prevent growth detection — simulate the aseptic risk, not the dehydration). The
+loading window, with vials open in Grade A, is the highest-risk moment and must
+be challenged with worst-case interventions.
+
+> Practitioner tip: product-temperature thermocouples, not shelf temperature, tell
+> you whether you're near collapse. Validating to shelf temperature alone is how a
+> cycle that "passed" still produces collapsed cakes at scale.

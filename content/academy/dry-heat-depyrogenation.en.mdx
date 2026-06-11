@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Sterile Manufacturing"
 seoDescription: "Dry-heat sterilization and depyrogenation — the 250°C/3-log endotoxin reduction standard, FH lethality, tunnels vs ovens, and endotoxin-indicator validation."
-updatedAt: "2026-06-04"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "The recognized standard for depyrogenation is:"
+    options: ["1-log endotoxin reduction", "≥3-log (1000-fold) endotoxin reduction", "Sterility only", "A color change"]
+    answer: 1
+  - q: "FH expresses:"
+    options: ["Filter integrity", "Accumulated dry-heat lethality at a reference temperature", "Humidity", "Fill volume"]
+    answer: 1
+  - q: "Endotoxin indicators in a depyrogenation validation are placed:"
+    options: ["Anywhere convenient", "At the cold spot identified by heat distribution", "Outside the oven", "Only in the door"]
+    answer: 1
 ---
 
 # Dry-Heat Sterilization & Depyrogenation
@@ -36,6 +46,38 @@ required FH and the depyrogenation endpoint.
 - For continuous **tunnels**: belt speed, zone temperatures, and airflow/HEPA
   integrity over the sterile zone.
 
-> This Pro lesson continues with an EI placement plan, the difference between
-> sterilization-only and depyrogenation cycles, and tunnel vs batch-oven
-> validation considerations.
+## Endotoxin-indicator placement plan
+
+1. Run **heat distribution** (empty, then loaded) to locate the **cold spot(s)** —
+   slowest-to-heat positions and load-shadowed areas.
+2. Place **endotoxin indicators** (vials/discs spiked with ≥1000 EU of purified
+   LPS) at those cold spots plus representative locations across the load.
+3. Place **temperature probes** alongside to correlate measured lethality (FH)
+   with the achieved endotoxin reduction.
+4. Run three consecutive cycles; each EI at the worst case must show **≥3-log
+   reduction**, and the recovered control EIs must confirm the spiked load.
+
+## Sterilization-only vs depyrogenation cycles
+
+A cycle can be designed for sterilization (lower temperature/longer time) or for
+depyrogenation (higher temperature, e.g. ~250 °C). Depyrogenation *includes*
+sterilization, but not vice versa — a 180 °C sterilization cycle does **not**
+reliably destroy endotoxin. Define the cycle's purpose up front; glass for sterile
+fill that may carry endotoxin needs the depyrogenation bar.
+
+## Tunnels vs batch ovens
+
+| Aspect | Batch oven | Continuous tunnel |
+| --- | --- | --- |
+| Mode | Static load, timed cycle | Conveyor through heating zones |
+| Critical params | Temp distribution, hold, cold spot | Belt speed, zone temps, airflow/HEPA over sterile zone |
+| Aseptic link | Loaded/unloaded as a step | Feeds the filling line directly (Grade A exit) |
+| Validation focus | Heat distribution + EI at cold spot | Slowest belt speed = worst case; EIs on the belt |
+
+For tunnels, the worst case is the **fastest throughput / slowest heat** the
+process permits, and the HEPA over the cooling/exit zone is part of the sterile
+boundary feeding the filler.
+
+> Practitioner tip: prove the cycle's *intent*. If glass is depyrogenated, your
+> EIs — not just temperature — are the evidence. A perfect temperature trace with
+> no endotoxin-reduction data does not demonstrate depyrogenation.

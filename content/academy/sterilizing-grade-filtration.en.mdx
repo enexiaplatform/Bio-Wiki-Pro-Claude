@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Aseptic Processing"
 seoDescription: "Sterile filtration for products that can't be terminally sterilized — 0.22 µm membranes, bubble point / diffusive flow integrity tests, and Annex 1 expectations."
-updatedAt: "2026-06-03"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "The bubble point of a sterilizing filter correlates to:"
+    options: ["Its color", "The largest pore size / microbial retention", "The product viscosity", "The batch size"]
+    answer: 1
+  - q: "Post-use integrity testing of a sterilizing filter is:"
+    options: ["Optional", "Mandatory under Annex 1", "Only for large filters", "Replaced by the bubble point spec"]
+    answer: 1
+  - q: "A common cause of a false integrity-test failure is:"
+    options: ["Correct wetting", "Incomplete membrane wetting or wrong test gas/temperature", "A new filter", "Low product volume"]
+    answer: 1
 ---
 
 # Sterilizing-Grade Filtration & Integrity Testing
@@ -33,5 +43,43 @@ Annex 1 expects integrity testing **after use** (mandatory) and, where practical
 **before use after sterilization (PUPSIT)** — a point of ongoing industry debate
 that your Contamination Control Strategy must address with a documented rationale.
 
-> This Pro lesson continues with a PUPSIT decision framework, wetting/test-gas
-> pitfalls that cause false failures, and how filtration redundancy is justified.
+## PUPSIT — a decision framework
+
+PUPSIT (pre-use, post-sterilization integrity testing) guards against a filter
+flaw that is masked during use ("flaw-masking" by product components or process).
+Annex 1 expects you to either do PUPSIT or document a robust risk rationale for
+not doing it. Weigh:
+
+- **For PUPSIT:** detects a damaged/incorrectly installed filter before product is
+  exposed; strongest where flaw-masking is plausible.
+- **Against PUPSIT:** the test setup itself adds aseptic connections and
+  complexity (its own contamination risk), and can wet/condition the filter.
+
+Document the assessment per product/process in the CCS — there is no universal
+right answer, only a justified one.
+
+## Wetting and test-gas pitfalls (false failures)
+
+Most "integrity failures" are method errors, not bad filters:
+
+- **Incomplete wetting** — a dry spot reads as a leak; flush sufficient volume and
+  respect soak time.
+- **Wrong wetting fluid** — test parameters are fluid-specific (water vs product).
+- **Temperature drift / gas not equilibrated** — diffusion is temperature
+  sensitive; let the system stabilize.
+- **Upstream volume and connections** — leaks at fittings mimic membrane failure.
+
+Confirm a suspected failure by re-wetting and retesting before declaring the
+filter (and the batch) compromised.
+
+## Redundant filtration
+
+Annex 1 favors a **second sterilizing filter** close to the point of fill as risk
+mitigation, especially when post-use integrity can only be tested at the end of a
+long run. If the primary fails post-use, the redundant filter supports an impact
+assessment — but redundancy is a safety net, not a license to skip integrity
+testing or PUPSIT reasoning.
+
+> Practitioner tip: capture the filter lot, wetting fluid, test parameters, and
+> upstream setup with every integrity test. When a result is borderline, that
+> record is what separates a true failure from a fixable method artifact.
