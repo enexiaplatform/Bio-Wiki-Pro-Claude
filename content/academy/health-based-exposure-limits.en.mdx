@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Validation"
 seoDescription: "HBEL and PDE for shared-facility cross-contamination control per EMA — how a toxicology-derived limit replaces the old 1/1000-dose and 10ppm cleaning rules."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "An HBEL/PDE is derived from:"
+    options: ["A fixed 10 ppm rule", "Toxicology data (NOAEL/LOAEL) and adjustment factors", "The batch size", "The selling price"]
+    answer: 1
+  - q: "The PDE feeds directly into which cleaning calculation?"
+    options: ["Bubble point", "MACO (Maximum Allowable Carryover)", "F0", "Cpk"]
+    answer: 1
+  - q: "A very low HBEL for a potent compound may require:"
+    options: ["Nothing different", "Dedicated facilities/equipment", "A larger batch", "A higher price"]
+    answer: 1
 ---
 
 # Health-Based Exposure Limits (HBEL / PDE)
@@ -35,6 +45,52 @@ must reliably meet (e.g. µg/cm² on a swab).
 - **Highly hazardous compounds** (potent, sensitizing, cytotoxic), where
   dedicated facilities may be required if the HBEL is very low.
 
-> This Pro lesson continues with a worked PDE→MACO→swab-limit calculation, the
-> role of the HBEL in the Contamination Control Strategy, and how to handle
-> compounds lacking sufficient toxicology data.
+## Deriving the PDE
+
+The EMA/ICH Q3C-style formula:
+
+```
+PDE = (NOAEL × body weight) / (F1 × F2 × F3 × F4 × F5)
+```
+
+- **NOAEL** — no-observed-adverse-effect level (mg/kg/day) from the most relevant
+  study.
+- **F1** — interspecies extrapolation (e.g. 5 for rat→human).
+- **F2** — interindividual variability (typically 10).
+- **F3** — study duration adjustment.
+- **F4** — severity of effect (e.g. genotoxicity, teratogenicity).
+- **F5** — uncertainty if a LOAEL is used instead of a NOAEL.
+
+A toxicologist (not QC) assigns these — but QC must understand the inputs to use
+the limit sensibly.
+
+## Worked PDE → MACO → swab limit
+
+Given: PDE_A = 0.10 mg/day; next product B has min batch size 50 kg
+(50,000,000 mg) and max daily dose 1,000 mg; shared product-contact area =
+100,000 cm²; swab area = 25 cm²; recovery = 90%.
+
+1. **MACO** = (0.10 × 50,000,000) / 1,000 = **5,000 mg** of A in a batch of B.
+2. **Per-area limit** = 5,000 mg / 100,000 cm² = **0.05 mg/cm² = 50 µg/cm²**.
+3. **Per-swab target** = 50 µg/cm² × 25 cm² = 1,250 µg, then **÷ 0.90 recovery**
+   → the lab must reliably quantify ~**1,389 µg** per swab (the analytical method's
+   LOQ must sit well below this).
+
+## HBEL in the Contamination Control Strategy
+
+The HBEL is the quantitative anchor for cross-contamination risk in a
+multi-product CCS: it sets cleaning limits, justifies campaign/changeover
+strategy, and flags when a compound is so hazardous that shared facilities can't
+be justified at all. EMA also expects an HBEL even for products historically
+considered "low risk."
+
+## Compounds without enough toxicology data
+
+When data are insufficient to derive a robust PDE, use a conservative default
+(e.g. a low generic limit) **and** flag it for a proper toxicological assessment —
+don't quietly fall back to the old 1/1000 rule. For genotoxic/highly potent
+compounds, default thresholds (like the TTC) and specialist input apply.
+
+> Practitioner tip: keep the toxicologist's HBEL monograph current and version-
+> controlled. A cleaning limit is only as defensible as the PDE behind it — and
+> inspectors increasingly ask to see that derivation, not just the swab result.

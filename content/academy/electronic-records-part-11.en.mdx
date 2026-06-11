@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Data Integrity"
 seoDescription: "21 CFR Part 11 and EU GMP Annex 11 for electronic records and signatures — audit trails, access control, validation, and what makes an e-signature compliant."
-updatedAt: "2026-06-04"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "A compliant audit trail must be:"
+    options: ["Editable by the analyst", "Secure, computer-generated, time-stamped, without overwriting prior entries", "Optional for QC systems", "Kept on paper"]
+    answer: 1
+  - q: "Shared/generic logins are a problem because they break:"
+    options: ["Speed", "Attributability of actions to an individual", "Backups", "The user interface"]
+    answer: 1
+  - q: "Annex 11's central theme for control depth is:"
+    options: ["Test everything equally", "Risk-based controls proportionate to GMP impact", "Vendor decides", "Paper preferred"]
+    answer: 1
 ---
 
 # Electronic Records & Signatures (21 CFR Part 11 / Annex 11)
@@ -38,5 +48,41 @@ Annex 11 covers similar ground (risk management, validation, data, audit trails,
 e-signatures) and is read together with EU GMP Chapter 4. A key theme: **risk-
 based** controls proportionate to the system's GMP impact.
 
-> This Pro lesson continues with an audit-trail-review SOP outline, an access-
-> control matrix, and a Part 11 / Annex 11 gap-assessment checklist for a GxP system.
+## Access-control matrix
+
+Map roles to least-privilege permissions and review it periodically:
+
+| Role | Acquire data | Reprocess | Modify method | Delete | Admin/config | Approve |
+| --- | --- | --- | --- | --- | --- | --- |
+| Analyst | ✔ | ✔ (logged) | ✘ | ✘ | ✘ | ✘ |
+| Reviewer / QA | view | ✘ | ✘ | ✘ | ✘ | ✔ |
+| Lab supervisor | ✔ | ✔ (logged) | ✔ (controlled) | ✘ | ✘ | ✘ |
+| System admin (IT) | ✘ | ✘ | ✘ | ✘ | ✔ | ✘ |
+
+The cardinal rule: **no one who generates data should be able to delete it or
+disable its audit trail.** Admin rights belong to people without a stake in the
+result. Separate the "do the work" and "configure the system" duties.
+
+## Part 11 / Annex 11 gap-assessment checklist
+
+- [ ] System validated for intended use; validation current after upgrades.
+- [ ] Audit trail on, secure, time-stamped, and **reviewed** (with records).
+- [ ] Unique user accounts; no shared logins; password/lockout policy enforced.
+- [ ] Role-based access follows least privilege; periodic access review done.
+- [ ] E-signatures meet the two-component + signed-meaning + linkage rules.
+- [ ] Accurate, complete copies producible for inspection (human-readable export).
+- [ ] Time source synchronized and controlled (no local clock edits).
+- [ ] Backup/restore validated; retention and retrievability assured.
+- [ ] Open/closed system controls appropriate (encryption for open systems).
+
+## Open vs closed systems
+
+A **closed** system limits access to people responsible for the content (most
+on-prem GxP systems). An **open** system (data crosses parties who don't control
+access) adds requirements like encryption and additional signature controls —
+relevant for some cloud/exchange scenarios.
+
+> Practitioner tip: Part 11 is not about having the most features — it's about
+> attributability and an audit trail you actually review. A simple system with
+> unique logins and a reviewed trail beats a feature-rich one run on a shared
+> "admin" account.

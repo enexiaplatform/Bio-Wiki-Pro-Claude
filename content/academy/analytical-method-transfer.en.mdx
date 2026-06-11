@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Validation"
 seoDescription: "Transferring analytical methods between labs — comparative testing, co-validation, and the protocol design that prevents transfer failures."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "In comparative testing, both labs:"
+    options: ["Use different samples", "Test the same samples against predefined acceptance criteria", "Skip acceptance criteria", "Only compare instruments"]
+    answer: 1
+  - q: "A transfer waiver may be justified when:"
+    options: ["The method is brand new", "The method is compendial or the receiving lab has documented equivalent experience", "The lab is busy", "Standards are unavailable"]
+    answer: 1
+  - q: "Acceptance criteria for a transfer should be set:"
+    options: ["After seeing the data", "Before testing, based on the method's purpose", "By the instrument vendor", "Only if it fails"]
+    answer: 1
 ---
 
 # Analytical Method Transfer
@@ -29,6 +39,40 @@ Define acceptance criteria for accuracy and precision *before* testing, use
 representative (ideally aged or stressed) samples, and confirm both labs share
 equivalent instruments, reference standards, and analyst training.
 
-> This Pro lesson continues with a comparative-testing acceptance-criteria
-> calculator, a transfer-readiness checklist, and a worked transfer-failure
-> investigation.
+## Setting comparative-testing acceptance criteria
+
+Two common, defensible approaches for an assay transfer:
+
+- **Difference in means** — |mean(RU) − mean(SU)| ≤ a pre-set limit (e.g. ≤2% for
+  a drug assay), justified against the method's precision and the product spec.
+- **Inter-lab precision** — combined %RSD across both labs within a limit (e.g.
+  ≤3%), often with 3 analysts × 3 batches/lots × replicate preparations.
+
+For impurities, set absolute limits at low levels (e.g. ±0.05% or ±25% relative,
+whichever is larger) because percentage limits explode near the LOQ. Always tie
+the number to *what the result is used to decide*, not to whatever looks easy to
+pass.
+
+## Transfer-readiness checklist
+
+- [ ] Method validated at the SU; report and validated range available to RU.
+- [ ] Reference standards, columns, reagents, and critical consumables sourced.
+- [ ] RU instruments equivalent and qualified (AIQ); same detector type/settings.
+- [ ] RU analysts trained on the method; a dry run completed.
+- [ ] Representative samples (ideally aged/stressed to show impurities) prepared.
+- [ ] Protocol with approach, samples, replicates, and acceptance criteria approved
+      by both QA units before any reportable testing.
+
+## Worked transfer-failure investigation
+
+*Event:* RU assay biased ~3% low vs SU, failing the difference-in-means criterion.
+**Investigation:** standards and samples ruled out; column lot matched; the RU's
+sample prep used a different sonication time, leaving the analyte incompletely
+extracted. **Root cause:** an under-specified extraction step in the method (a
+robustness gap, not an analyst error). **Action:** tighten the method's
+extraction instructions, re-run the transfer; feed the robustness gap back to the
+SU's method owner (ICH Q14 lifecycle).
+
+> Practitioner tip: most transfer failures trace to under-specified sample prep,
+> not the instrument. The fix usually belongs in the *method* — which is why a
+> transfer often surfaces robustness gaps the original validation missed.

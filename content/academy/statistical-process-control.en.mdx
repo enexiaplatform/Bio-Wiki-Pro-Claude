@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Quality Systems"
 seoDescription: "Using control charts and trending in pharma QC — common vs special cause variation, Western Electric rules, and linking SPC to continued process verification."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Control limits on a control chart are derived from:"
+    options: ["The specification", "The process data itself (typically ±3 sigma)", "The label claim", "The supplier"]
+    answer: 1
+  - q: "A single point beyond a control limit indicates:"
+    options: ["Common-cause variation", "A special (assignable) cause to investigate", "A passing result", "A spec failure by definition"]
+    answer: 1
+  - q: "A process in statistical control but unable to meet spec has a problem with its:"
+    options: ["Audit trail", "Capability (Cpk)", "Labeling", "Calibration only"]
+    answer: 1
 ---
 
 # Statistical Process Control & Trending
@@ -32,5 +42,48 @@ incapable of meeting spec, which is why capability (Cpk) is assessed separately.
 The Western Electric rules flag special causes: a point beyond a control limit,
 runs on one side of the mean, trends, and other non-random patterns.
 
-> This Pro lesson continues with worked control-chart examples, a guide to alert
-> vs action vs control limits, and how to wire SPC into CPV and the APR.
+## Which chart for which data
+
+- **I-MR (individuals & moving range)** — one value per batch (most common in
+  pharma CPV: assay, content, fill weight averages).
+- **Xbar-R / Xbar-S** — subgroups (e.g. multiple tablets per batch).
+- **p / np charts** — proportion defective (attribute data, e.g. % rejects).
+- **EWMA / CUSUM** — sensitive to small, sustained drifts; good early warning.
+
+Match the chart to the data structure; an I-MR chart on data that really has
+subgroups hides within-subgroup variation.
+
+## Alert vs action vs control limits
+
+| Limit | Source | Meaning | Response |
+| --- | --- | --- | --- |
+| Control (±3σ) | Process data | Statistical boundary of common cause | Investigate special cause |
+| Alert | Often ±2σ or internal | Early warning | Heightened attention, no rejection |
+| Action | Internal, risk-based | Pre-spec intervention threshold | Defined action / investigation |
+| Specification | Registered/compendial | Pass/fail for the product | OOS handling |
+
+Crucially, **control ≠ spec**. A point can breach a control limit (a real process
+signal) while still passing spec — that's exactly the early signal SPC exists to
+catch.
+
+## Western Electric rules (special-cause signals)
+
+1. One point beyond 3σ.
+2. Two of three consecutive points beyond 2σ (same side).
+3. Four of five beyond 1σ (same side).
+4. Eight consecutive points on one side of the mean (a shift).
+
+Plus runs and trends (e.g. seven steadily rising points). Each pattern is too
+unlikely to be random — it flags an assignable cause.
+
+## Wiring SPC into CPV and the APR
+
+Stage 3 Continued Process Verification *is* ongoing SPC: chart CQAs/CPPs batch to
+batch, react to special causes through deviation/CAPA, and reduce common-cause
+variation through improvement. The **Annual Product Review** aggregates these
+charts to confirm the process stayed in control and capable across the year, and
+to re-justify limits.
+
+> Practitioner tip: don't investigate every wiggle. Reacting to common-cause noise
+> ("tampering") actually *increases* variation. Investigate signals defined by the
+> rules — and leave a stable process alone while you work on the system.
