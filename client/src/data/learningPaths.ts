@@ -23,6 +23,7 @@ export const learningPaths: LearningPath[] = [
       "endotoxin-lal-testing",
       "microbial-identification",
       "pharmaceutical-water-systems",
+      "water-system-validation",
       "rapid-sterility-testing",
     ],
   },
@@ -68,6 +69,7 @@ export const learningPaths: LearningPath[] = [
     title: "Quality Systems & QMS",
     description: "Run the QMS engine — deviations, CAPA, change control, risk, suppliers, complaints, metrics, and product release.",
     lessonSlugs: [
+      "pharmaceutical-quality-system-q10",
       "deviation-management",
       "capa-fundamentals",
       "change-control",
