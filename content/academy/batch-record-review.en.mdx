@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Quality Systems"
 seoDescription: "How QA reviews batch records and releases product — review by exception, the Qualified Person model, and the disposition decision that gates every shipment."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "In the EU, who carries personal legal responsibility for certifying a batch?"
+    options: ["The operator", "The Qualified Person (QP)", "The supplier", "The auditor"]
+    answer: 1
+  - q: "Review by exception is acceptable when:"
+    options: ["The record is on paper", "It rests on a validated system and a sound risk basis", "The batch is small", "The QP is unavailable"]
+    answer: 1
+  - q: "Before disposition, every deviation and OOS affecting the batch must be:"
+    options: ["Ignored if minor", "Closed with an impact assessment", "Deferred to next batch", "Logged verbally"]
+    answer: 1
 ---
 
 # Batch Record Review & Product Release
@@ -35,6 +45,35 @@ Release is a documented decision: **release, reject, or hold/quarantine**. In th
 EU, a **Qualified Person (QP)** certifies each batch and carries personal legal
 responsibility for it.
 
-> This Pro lesson continues with a batch-record-review checklist, a deviation
-> impact-assessment framework, and guidance on parametric release and review by
-> exception.
+## Batch-record-review checklist
+
+- [ ] Executed record matches the approved master/MBR version.
+- [ ] All steps signed/dated by performer and verifier where required; no blanks,
+      no undocumented corrections (single-line, initialed, dated).
+- [ ] In-process checks within limits; finished-product results meet spec.
+- [ ] Yield and reconciliation (components, labels) within defined ranges.
+- [ ] Every deviation, OOS/OOT, and change control affecting the batch is closed
+      with an impact assessment concluding "no adverse impact" (or justified).
+- [ ] Environmental/utility data for the manufacturing period acceptable.
+- [ ] Stability commitments and any post-approval conditions met.
+- [ ] Certificate of Analysis accurate and traceable to raw data.
+
+## Deviation impact assessment — the framework
+
+For each open item ask: **What** happened, **what batch attribute** could it
+affect, **what data** addresses that concern, and **what is the conclusion**?
+Disposition cannot proceed until each deviation has a documented impact call. A
+deviation marked "closed" with no impact statement is a release that won't survive
+audit.
+
+## Parametric release
+
+For terminally sterilized products, **parametric release** lets validated process
+data (e.g. the full sterilization F0 record) substitute for the finished-product
+sterility test — but only with regulatory approval, a robust CCS, and tight
+control of the critical parameters. It raises, not lowers, the bar on data
+integrity for those parameters.
+
+> Practitioner tip: release decisions should be reproducible by a second reviewer
+> from the record alone. If the reasoning lives in someone's head, the record is
+> incomplete — write down *why* the batch is releasable, not just that it is.

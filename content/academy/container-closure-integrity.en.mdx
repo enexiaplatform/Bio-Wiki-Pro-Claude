@@ -5,7 +5,17 @@ lang: "en"
 tier: "pro"
 category: "Aseptic Processing"
 seoDescription: "Container Closure Integrity Testing per USP 1207 — deterministic vs probabilistic methods, MALL, and replacing the sterility test for stability."
-updatedAt: "2026-06-02"
+updatedAt: "2026-06-11"
+quiz:
+  - q: "USP 1207 encourages a shift toward which kind of CCIT method?"
+    options: ["Probabilistic (dye ingress)", "Deterministic, instrument-based", "Visual only", "Microbial immersion"]
+    answer: 1
+  - q: "The MALL is:"
+    options: ["A cleanroom grade", "The maximum leak size below which sterility/quality is not compromised", "A sampling plan", "A filter rating"]
+    answer: 1
+  - q: "An advantage of CCIT over the sterility test at stability time points is:"
+    options: ["It is cheaper to ignore", "Non-destructive, no false positives from test handling, full-sample capable", "It needs no validation", "It replaces process validation"]
+    answer: 1
 ---
 
 # Container Closure Integrity Testing (CCIT)
@@ -28,6 +38,36 @@ CCIT methods are validated against the MALL — the leak size below which neithe
 sterility nor product quality is compromised. Method sensitivity must reliably
 detect leaks at or near that limit.
 
-> This Pro lesson continues with method-selection guidance by container type, a
-> validation/positive-control strategy, and using CCIT in place of the sterility
-> test at stability time points.
+## Method selection by container type
+
+| Container | Strong CCIT options | Notes |
+| --- | --- | --- |
+| Glass vial, rubber stopper | Vacuum decay, headspace (laser) | Headspace tracks O2/moisture ingress over time |
+| Pre-filled syringe | Vacuum decay, high-voltage leak (HVLD) | Watch the plunger and tip-cap as leak paths |
+| Ampoule (glass) | HVLD, vacuum decay | Fully sealed; HVLD good for conductive liquids |
+| Flexible bag / pouch | Pressure decay, vacuum decay | Seal integrity is the usual failure mode |
+| Lyophilized vial | Headspace (vacuum/moisture) | Headspace confirms stopper seat + vacuum hold |
+
+Match the method's physics to the product (conductivity for HVLD, gas content for
+headspace) and to the leak path you most fear for that package.
+
+## Validation and positive controls
+
+Validate against the **MALL** using **positive controls** — containers with
+known, certified leaks (laser-drilled micro-holes, e.g. 2–10 µm). Demonstrate the
+method reliably detects leaks at/near the MALL and reliably passes intact
+("negative") units. Establish detection limit, repeatability, and robustness.
+Probabilistic methods need far more replicates to make a statistical case — a key
+reason USP &lt;1207&gt; favors deterministic approaches.
+
+## Replacing the sterility test on stability
+
+The sterility test is destructive, low-sensitivity, and prone to false positives
+from handling. A validated CCIT method can serve as the container-integrity
+assurance at stability time points instead — non-destructive, quantitative, and
+applicable to more units. Regulators accept this when the CCIT method is properly
+validated to the MALL and justified in the stability protocol.
+
+> Practitioner tip: decide CCIT strategy at development, not at stability. The
+> headspace baseline you capture on day zero is what makes later ingress trends
+> interpretable — you can't retrofit a baseline you never measured.
