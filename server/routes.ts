@@ -10,6 +10,7 @@ import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDu
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
+import { gapAnalysisWorkbook, markdownToPdf } from "./generate.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
@@ -821,15 +822,24 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.status(403).json({ message: "Purchase required" });
     }
 
-    // file.filename is validated against the manifest above, so no traversal.
-    const filePath = path.resolve(process.cwd(), "content", "deliverables", product.dir, file.filename);
+    // file.filename/source are validated against the manifest above (no traversal).
+    const dir = path.resolve(process.cwd(), "content", "deliverables", product.dir);
     try {
-      const buf = await readFile(filePath);
+      let buf: Buffer;
+      if (file.generate === "gap-xlsx") {
+        buf = gapAnalysisWorkbook();
+      } else if (file.generate === "pdf") {
+        const md = await readFile(path.join(dir, file.source ?? file.filename), "utf-8");
+        buf = await markdownToPdf(md, file.label);
+      } else {
+        buf = await readFile(path.join(dir, file.filename));
+      }
       res.setHeader("Content-Type", file.contentType);
       res.setHeader("Content-Disposition", `attachment; filename="${file.filename}"`);
       res.setHeader("Cache-Control", "private, no-store");
       return res.send(buf);
-    } catch {
+    } catch (err) {
+      console.error("[Downloads] generation error:", err);
       return res.status(404).json({ message: "File not found" });
     }
   });

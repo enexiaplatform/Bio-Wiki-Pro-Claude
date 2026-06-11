@@ -12,7 +12,7 @@
 // ============================================================================
 
 export interface DeliverableFile {
-  /** File name on disk under content/deliverables/<dir>/ */
+  /** Download file name presented to the user (e.g. guide.pdf). */
   filename: string;
   /** Human-facing label */
   label: string;
@@ -20,6 +20,15 @@ export interface DeliverableFile {
   description: string;
   /** MIME type for the download response */
   contentType: string;
+  /**
+   * How to produce the bytes:
+   *  - undefined: read `filename` straight from disk.
+   *  - "pdf": render the markdown at `source` to PDF on the fly.
+   *  - "gap-xlsx": generate the SOP gap-analysis workbook.
+   */
+  generate?: "pdf" | "gap-xlsx";
+  /** Source file on disk (for generated formats), under the product dir. */
+  source?: string;
 }
 
 export interface DeliverableProduct {
@@ -36,6 +45,9 @@ export interface DeliverableProduct {
 
 const MD = "text/markdown; charset=utf-8";
 const CSV = "text/csv; charset=utf-8";
+const PDF = "application/pdf";
+const XLSX_CT = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const XLSX = XLSX_CT;
 
 export const DELIVERABLES: Record<string, DeliverableProduct> = {
   gmp_audit_kit: {
@@ -45,11 +57,11 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
     entitledBy: ["gmp_audit_kit"],
     files: [
       { filename: "README.md", label: "Start Here (README)", description: "What's inside and the order to use it.", contentType: MD },
-      { filename: "gmp-audit-survival-guide.md", label: "GMP Audit Survival Guide", description: "The full framework — from 30 days out to audit-day to the written response.", contentType: MD },
-      { filename: "sop-gap-analysis.csv", label: "SOP Gap Analysis (Excel/Sheets)", description: "Score 20 quality-system elements; the sheet computes your % readiness and worst gaps.", contentType: CSV },
-      { filename: "capa-templates.md", label: "10 CAPA Report Templates", description: "Ready-to-fill CAPA structures for the most common audit nonconformances.", contentType: MD },
-      { filename: "audit-interview-qa.md", label: "Audit Interview Q&A Scripts", description: "50+ real auditor questions with model QC/QA answers.", contentType: MD },
-      { filename: "mock-audit-walkthrough.md", label: "Mock Audit Walkthrough", description: "A full inspection narrated from the auditor's side.", contentType: MD },
+      { filename: "gmp-audit-survival-guide.pdf", label: "GMP Audit Survival Guide (PDF)", description: "The full framework — from 30 days out to audit-day to the written response.", contentType: PDF, generate: "pdf", source: "gmp-audit-survival-guide.md" },
+      { filename: "sop-gap-analysis.xlsx", label: "SOP Gap Analysis (Excel)", description: "Score 20 quality-system elements; the workbook auto-computes your % readiness.", contentType: XLSX, generate: "gap-xlsx", source: "sop-gap-analysis.csv" },
+      { filename: "capa-templates.pdf", label: "10 CAPA Report Templates (PDF)", description: "Ready-to-fill CAPA structures for the most common audit nonconformances.", contentType: PDF, generate: "pdf", source: "capa-templates.md" },
+      { filename: "audit-interview-qa.pdf", label: "Audit Interview Q&A Scripts (PDF)", description: "50+ real auditor questions with model QC/QA answers.", contentType: PDF, generate: "pdf", source: "audit-interview-qa.md" },
+      { filename: "mock-audit-walkthrough.pdf", label: "Mock Audit Walkthrough (PDF)", description: "A full inspection narrated from the auditor's side.", contentType: PDF, generate: "pdf", source: "mock-audit-walkthrough.md" },
     ],
   },
   starter_kit: {
@@ -59,10 +71,10 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
     entitledBy: ["starter_kit", "bundle"],
     files: [
       { filename: "README.md", label: "Start Here (README)", description: "What's inside and the order to use it.", contentType: MD },
-      { filename: "qc-qa-cv-template.md", label: "QC/QA CV Template", description: "Results-focused CV structure for QC/QA hiring managers, with worked bullets.", contentType: MD },
-      { filename: "cover-letter-templates.md", label: "Cover Letter Templates", description: "Three adaptable versions: senior, entry, and career-changer.", contentType: MD },
-      { filename: "linkedin-profile-guide.md", label: "LinkedIn Profile Guide", description: "Headline, About, and skills recruiters search for in QC/QA.", contentType: MD },
-      { filename: "top-pharma-employers.csv", label: "Top Employers Research List", description: "A starter target list of global pharma/biotech employers to research.", contentType: CSV },
+      { filename: "qc-qa-cv-template.pdf", label: "QC/QA CV Template (PDF)", description: "Results-focused CV structure for QC/QA hiring managers, with worked bullets.", contentType: PDF, generate: "pdf", source: "qc-qa-cv-template.md" },
+      { filename: "cover-letter-templates.pdf", label: "Cover Letter Templates (PDF)", description: "Three adaptable versions: senior, entry, and career-changer.", contentType: PDF, generate: "pdf", source: "cover-letter-templates.md" },
+      { filename: "linkedin-profile-guide.pdf", label: "LinkedIn Profile Guide (PDF)", description: "Headline, About, and skills recruiters search for in QC/QA.", contentType: PDF, generate: "pdf", source: "linkedin-profile-guide.md" },
+      { filename: "top-pharma-employers.csv", label: "Top Employers Research List (Excel/CSV)", description: "A starter target list of global pharma/biotech employers to research.", contentType: CSV },
     ],
   },
   interview_prep: {
@@ -72,7 +84,7 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
     entitledBy: ["interview_prep", "bundle"],
     files: [
       { filename: "README.md", label: "Start Here (README)", description: "How to use the question bank.", contentType: MD },
-      { filename: "qc-qa-interview-questions.md", label: "100+ QC/QA Interview Questions", description: "Grouped question bank with model-answer guidance for the highest-stakes questions.", contentType: MD },
+      { filename: "qc-qa-interview-questions.pdf", label: "100+ QC/QA Interview Questions (PDF)", description: "Grouped question bank with model-answer guidance for the highest-stakes questions.", contentType: PDF, generate: "pdf", source: "qc-qa-interview-questions.md" },
     ],
   },
 };
