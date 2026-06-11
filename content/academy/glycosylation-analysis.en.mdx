@@ -1,0 +1,64 @@
+---
+title: "Glycosylation Analysis"
+slug: "glycosylation-analysis"
+lang: "en"
+tier: "pro"
+category: "Biologics QC"
+seoDescription: "Why glycans are a critical quality attribute for antibodies — effect on efficacy (ADCC), half-life and immunogenicity, released-glycan and site-specific methods, and process sensitivity."
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Glycosylation is a critical quality attribute because glycans can affect:"
+    options: ["Only the color", "Efficacy (e.g. ADCC), half-life, and immunogenicity", "Nothing functional", "Only the price"]
+    answer: 1
+  - q: "Afucosylation of an antibody typically:"
+    options: ["Decreases ADCC", "Increases ADCC (effector function)", "Has no effect", "Removes the Fc"]
+    answer: 1
+  - q: "A common workflow for glycan profiling is:"
+    options: ["Weigh the intact protein only", "Release glycans, label, and separate by HILIC-fluorescence/MS", "Measure pH", "Visual inspection"]
+    answer: 1
+---
+
+# Glycosylation Analysis
+
+Most therapeutic antibodies and many recombinant proteins are **glycosylated** —
+sugar chains attached during cell-culture. Glycans aren't cosmetic: they shape
+function, so the **glycan profile is a critical quality attribute** and one of the
+most process-sensitive things QC monitors.
+
+## Why glycans matter
+
+- **Effector function** — Fc glycans tune **ADCC**. Notably, **afucosylation
+  raises ADCC** (more potent killing) — exploited deliberately in some mAbs.
+- **Half-life / clearance** — exposed galactose and especially **high-mannose**
+  or sialylation patterns affect serum half-life via receptor clearance.
+- **Immunogenicity** — non-human glycans (e.g. α-Gal, NGNA) can be immunogenic.
+
+Because cell-culture conditions (media, pH, feeds, harvest timing) shift glycans,
+the profile is a sensitive readout of process consistency.
+
+## How glycans are measured
+
+- **Released-glycan profiling** — enzymatically release N-glycans (PNGase F),
+  label (e.g. 2-AB or RapiFluor), and separate by **HILIC** with fluorescence
+  ± MS. Gives the relative % of each glycan species (G0F, G1F, G2F, Man5, etc.).
+- **Site-specific / glycopeptide mapping** — LC-MS on glycopeptides shows which
+  site carries which glycan.
+- **Monosaccharide / sialic acid assays** — composition and sialylation content.
+- **Released MS (e.g. MALDI)** — confirms structures.
+
+## What QC controls
+
+Release and characterization typically monitor key species and groups: total
+afucosylation (ties to potency/ADCC), high-mannose (clearance), galactosylation,
+and sialylation — each with ranges justified by their functional impact.
+
+## Investigating a glycan shift
+
+A drift in, say, high-mannose almost always points **upstream**: a media lot,
+feed strategy, temperature, or harvest-day change in cell culture. Glycan trends
+are a leading indicator of process change — often before other CQAs move.
+
+> Practitioner tip: link each monitored glycan to *why* it's controlled
+> (afucosylation→ADCC potency; high-mannose→clearance; NGNA/α-Gal→immunogenicity).
+> A glycan spec without that functional rationale is hard to defend — and harder
+> to investigate when it drifts.

@@ -1,0 +1,74 @@
+---
+title: "Protein Aggregation & Size-Exclusion (SEC)"
+slug: "aggregation-and-sec"
+lang: "en"
+tier: "pro"
+category: "Biologics QC"
+seoDescription: "Why aggregation is a critical biologic CQA — immunogenicity risk, SEC as the workhorse for monomer/HMW/LMW, its limitations, and orthogonal methods for sub-visible particles."
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Protein aggregates are a critical attribute mainly because they:"
+    options: ["Improve potency", "Carry an immunogenicity (and efficacy) risk", "Lower the price", "Are required by spec"]
+    answer: 1
+  - q: "The routine release method for soluble aggregates is:"
+    options: ["Karl Fischer", "Size-exclusion chromatography (SEC)", "pH meter", "icIEF"]
+    answer: 1
+  - q: "A key limitation of SEC is that it can:"
+    options: ["Never detect monomer", "Dissociate or under-report some aggregates due to dilution/column interactions", "Only measure charge", "Measure endotoxin"]
+    answer: 1
+---
+
+# Protein Aggregation & Size-Exclusion (SEC)
+
+Aggregation — protein molecules sticking together into dimers, higher-order
+soluble species, and particles — is one of the most scrutinized biologic CQAs.
+Aggregates are a leading **immunogenicity** risk and can reduce efficacy, so
+controlling and trending them is central to biologics QC and stability.
+
+## Why aggregates matter
+
+Aggregates can be recognized by the immune system as "danger," driving
+anti-drug-antibody responses that neutralize the drug or cause reactions. They
+also form on stress (heat, shaking, freeze-thaw, interfaces), so they're a primary
+**stability-indicating** attribute.
+
+## SEC — the workhorse
+
+**Size-exclusion chromatography** separates by hydrodynamic size and quantifies:
+
+- **Monomer** (the main species)
+- **HMW** (high-molecular-weight: dimers/aggregates)
+- **LMW** (low-molecular-weight: fragments)
+
+SEC is robust, quantitative, and the standard release/stability method for soluble
+aggregate content (often reported as % monomer / % HMW).
+
+## SEC's limitations
+
+SEC isn't perfect: sample **dilution** on-column and **column interactions** can
+*dissociate* weak aggregates (under-reporting) or cause non-specific binding. The
+mobile phase can mask or alter species. This is why SEC is validated carefully and
+backed by orthogonal methods.
+
+## Orthogonal and particle methods
+
+- **SEC-MALS** — adds multi-angle light scattering for absolute molar mass
+  (confirms a peak really is a dimer, not a conformer).
+- **AUC (analytical ultracentrifugation)** — orthogonal, dilution-free
+  confirmation, used in characterization.
+- **Sub-visible particles** — light obscuration (USP &lt;788&gt;) and imaging
+  (MFI) cover the larger particle size ranges SEC can't see.
+
+A full aggregation picture spans **soluble (SEC) → sub-micron/sub-visible
+(MFI/light obscuration) → visible** particles.
+
+## Investigating an aggregation trend
+
+Rising HMW on stability or release prompts: confirm the method (column age,
+standards), check the stress history (temperature excursions, agitation in
+shipping), and assess formulation (surfactant, pH). Aggregation trends often point
+to handling or formulation, not the molecule itself.
+
+> Practitioner tip: validate SEC against an orthogonal method (SEC-MALS or AUC) so
+> you can defend that your % HMW is real and not a column artifact — and so you
+> know the method isn't *hiding* aggregates by dissociating them.

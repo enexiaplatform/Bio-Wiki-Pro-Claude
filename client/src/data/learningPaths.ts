@@ -123,6 +123,21 @@ export const learningPaths: LearningPath[] = [
       "ongoing-stability-program",
     ],
   },
+  {
+    slug: "biologics-biopharmaceutical-qc",
+    title: "Biologics & Biopharmaceutical QC",
+    description: "QC for large molecules — potency bioassays, host-cell proteins, protein characterization, aggregation, viral safety, glycans, and the cell-bank foundation.",
+    lessonSlugs: [
+      "biologics-qc-overview",
+      "cell-bank-characterization",
+      "cell-based-potency-assays",
+      "protein-characterization",
+      "host-cell-protein-testing",
+      "aggregation-and-sec",
+      "glycosylation-analysis",
+      "viral-safety-testing",
+    ],
+  },
 ];
 
 export function getLearningPath(slug: string): LearningPath | undefined {

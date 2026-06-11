@@ -1,0 +1,74 @@
+---
+title: "Protein Characterization Methods"
+slug: "protein-characterization"
+lang: "en"
+tier: "free"
+category: "Biologics QC"
+seoDescription: "Core protein characterization for biologics QC — peptide mapping, intact/reduced mass, CE-SDS for size/purity, and icIEF/CEX for charge variants, used as orthogonal identity."
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Peptide mapping primarily confirms:"
+    options: ["Aggregate level", "The amino-acid sequence / primary structure", "The fill volume", "Endotoxin"]
+    answer: 1
+  - q: "CE-SDS is used to assess:"
+    options: ["Charge variants", "Size-based purity (fragments, heavy/light chains)", "Glycan identity", "pH"]
+    answer: 1
+  - q: "icIEF and cation-exchange (CEX) separate:"
+    options: ["By size", "Charge variants (acidic/main/basic species)", "By color", "By weight only"]
+    answer: 1
+---
+
+# Protein Characterization Methods
+
+No single test defines a large protein, so biologics QC uses a panel of
+**orthogonal** methods — each looking at a different attribute. Together they form
+the identity and purity story for a monoclonal antibody or recombinant protein.
+
+## Peptide mapping (primary structure)
+
+The protein is enzymatically digested (e.g. trypsin) and the peptides separated by
+LC, usually with MS detection. The resulting **map** is a fingerprint that
+confirms the amino-acid **sequence** and can localize modifications (oxidation,
+deamidation, clipping). It's the most definitive identity method and a key
+comparability tool.
+
+## Intact and reduced mass
+
+**Intact mass** (by high-resolution MS) confirms the overall molecular weight and
+reveals major glycoforms. **Reduced mass** breaks disulfides to weigh heavy and
+light chains separately — useful for confirming chain identity and modifications.
+
+## CE-SDS (size/purity)
+
+Capillary electrophoresis–SDS is the modern replacement for SDS-PAGE: it sizes the
+molecule and quantifies **size-based purity** — main peak vs fragments
+(clips, free light chain) and, non-reduced, vs aggregates/incomplete species.
+
+## Charge-variant analysis (icIEF / CEX)
+
+Imaged capillary isoelectric focusing (**icIEF**) or **cation-exchange** HPLC
+separates **charge variants** into acidic, main, and basic species. Deamidation,
+sialylation, and C-terminal lysine all shift charge — so the charge profile is a
+sensitive, routinely monitored CQA.
+
+## How they work together
+
+| Attribute | Method |
+| --- | --- |
+| Sequence / modifications | Peptide mapping (LC-MS) |
+| Molecular weight / glycoforms | Intact & reduced mass |
+| Size purity (fragments, aggregates) | CE-SDS (reduced & non-reduced) |
+| Charge heterogeneity | icIEF / CEX |
+
+Identity is concluded from the *combination* — e.g. peptide map + charge profile +
+a binding assay — not any one result.
+
+## Why it matters
+
+These methods are the daily language of biologics QC and the backbone of every
+comparability study. Fluency in what each method sees (and misses) is exactly the
+skill that distinguishes a biologics analyst.
+
+> Tip: when a process change is proposed, the characterization panel — not the
+> release spec alone — is what proves the product is still "the same." Know which
+> method would first reveal the change you're worried about.

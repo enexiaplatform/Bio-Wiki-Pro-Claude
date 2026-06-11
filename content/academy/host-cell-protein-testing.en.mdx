@@ -1,0 +1,68 @@
+---
+title: "Host Cell Protein (HCP) Testing"
+slug: "host-cell-protein-testing"
+lang: "en"
+tier: "pro"
+category: "Biologics QC"
+seoDescription: "Host cell protein impurity testing for biologics — why HCPs matter, the ELISA workhorse and its antibody-coverage problem, orthogonal methods, and typical limits."
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Host cell proteins (HCPs) are:"
+    options: ["The drug substance itself", "Process-related protein impurities from the production cell line", "A type of excipient", "Always harmless"]
+    answer: 1
+  - q: "The main weakness of the HCP ELISA is:"
+    options: ["It is too fast", "Antibody coverage — it may not detect every individual HCP species", "It needs no reagents", "It measures the API"]
+    answer: 1
+  - q: "HCP limits are typically expressed as:"
+    options: ["Grams per vial", "ng HCP per mg of product (ppm)", "A color grade", "Percent water"]
+    answer: 1
+---
+
+# Host Cell Protein (HCP) Testing
+
+Host cell proteins are **process-related impurities** — proteins from the
+production cell line (CHO, E. coli, yeast) that co-purify with the product. Even
+at trace levels they can be immunogenic or affect product stability, so HCP
+clearance is a core part of demonstrating a purification process works.
+
+## Why HCPs matter
+
+HCPs can trigger immune responses in patients, act as adjuvants, or degrade the
+product (some are proteases/lipases). Regulators expect HCPs reduced to low ppm
+and *controlled and trended* batch to batch as evidence the process is consistent.
+
+## The ELISA workhorse — and its blind spot
+
+The routine method is an **HCP ELISA** using a polyclonal anti-HCP antibody raised
+against a mock (null-cell) preparation. It's sensitive and high-throughput, but
+its validity hinges on **antibody coverage**: the polyclonal must recognize the
+many individual HCP species present. A commercial/generic antibody may miss
+process-specific HCPs, under-reporting the true level.
+
+Coverage is assessed (e.g. 2D gel/Western or antigen-downstream methods) and a
+**process-specific** anti-HCP reagent is often developed for commercial control.
+
+## Orthogonal and modern methods
+
+- **2D-PAGE / 2D-DIGE** — visualizes individual species; used for coverage.
+- **LC-MS/MS (proteomics)** — identifies and quantifies *specific* HCPs, catching
+  individual high-risk proteins an ELISA total can hide. Increasingly expected for
+  characterization and to justify the ELISA.
+
+## Limits and control
+
+HCP is reported as **ng HCP / mg product (ppm)**, with typical targets in the
+low-double-digit to sub-ppm range depending on dose and route. The number alone
+isn't enough — you also show *clearance* across purification and **trend** release
+results.
+
+## Investigating an HCP excursion
+
+Confirm the assay (standard curve, dilutional linearity, coverage still valid),
+then look upstream: a purification step underperforming, a column nearing
+end-of-life, or a cell-culture shift raising the HCP load. Tie the finding to the
+process, not just the plate.
+
+> Practitioner tip: a "passing" total HCP ELISA can still hide a single
+> high-risk, low-abundance protease. For high-dose or chronic products, back the
+> ELISA with LC-MS/MS so you know *which* HCPs remain, not just how many ng.

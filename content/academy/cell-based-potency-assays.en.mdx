@@ -1,0 +1,67 @@
+---
+title: "Cell-Based Potency Assays (Bioassays)"
+slug: "cell-based-potency-assays"
+lang: "en"
+tier: "free"
+category: "Biologics QC"
+seoDescription: "Potency bioassays for biologics — why activity must be measured biologically, relative potency vs a reference, the 4-parameter logistic fit, and why bioassays are so variable."
+updatedAt: "2026-06-11"
+quiz:
+  - q: "Why is potency for a biologic usually measured by a bioassay rather than a chemical assay?"
+    options: ["Bioassays are cheaper", "Structure alone doesn't guarantee biological function", "Chemical assays are illegal", "It is faster"]
+    answer: 1
+  - q: "Bioassay potency is normally reported as:"
+    options: ["An absolute concentration", "Relative potency vs a reference standard", "A pass/fail color", "A melting point"]
+    answer: 1
+  - q: "Dose-response curves in bioassays are commonly fit with:"
+    options: ["A straight line only", "A 4-parameter logistic (4PL) model", "No model", "A pie chart"]
+    answer: 1
+---
+
+# Cell-Based Potency Assays (Bioassays)
+
+Potency is the QC attribute that answers the only question that ultimately
+matters: **does the drug do what it's supposed to do?** For biologics, that has to
+be measured biologically — a bioassay.
+
+## Why biological measurement
+
+A correctly sequenced, correctly sized antibody can still be inactive if it's
+misfolded or its binding region is modified. Only a functional assay — the
+molecule acting on cells or a target — confirms activity. Common formats:
+
+- **Cell-based functional assays** — proliferation, reporter-gene, cytotoxicity,
+  or signaling readouts in a responsive cell line.
+- **Binding assays** (ELISA/SPR) — measure target binding; sometimes a surrogate
+  for potency when justified.
+
+## Relative potency
+
+Bioassays are too variable for absolute numbers, so potency is reported as
+**relative potency**: the test sample's dose-response curve compared against a
+**reference standard** run in the same plate. Result ≈ 100% means "as potent as
+the reference."
+
+## The 4-parameter logistic (4PL)
+
+Dose-response data are sigmoidal, fit with a **4PL** model (top, bottom, slope,
+EC50). Relative potency comes from the horizontal shift between the test and
+reference curves — valid only when the curves are **parallel** (a parallelism
+test gates the result).
+
+## Living with variability
+
+Cell-based assays are inherently noisy (cell passage, plate position, operator).
+QC controls this with: a reference on every plate, system-suitability limits,
+replicate plates, and **trending** of the reference's own parameters. A potency
+result outside spec triggers an investigation that always asks "assay or sample?"
+
+## Why it matters
+
+Potency is often the hardest biologics method to validate and transfer, and the
+most common source of OOS. Analysts who understand parallelism, 4PL fits, and
+assay control are valuable precisely because bioassays are unforgiving.
+
+> Tip: half of "potency OOS" results are assay artifacts. Strong system
+> suitability and reference trending let you tell a real product change from a bad
+> plate — before you quarantine a good batch.
