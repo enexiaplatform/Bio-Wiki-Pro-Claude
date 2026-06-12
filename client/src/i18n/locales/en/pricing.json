@@ -8,10 +8,10 @@
   "free": {
     "badge": "FREE",
     "features": [
-      "6 free Academy entries (3 per Pillar)",
+      "Core Academy lessons & learning paths",
+      "Quizzes, glossary & blog",
       "Basic Lab Tools calculators",
-      "Career Hub — read-only",
-      "QC Hub glossary"
+      "Career Hub & skill roadmaps"
     ],
     "cta": "Get Started"
   },
@@ -19,12 +19,12 @@
     "badge": "PRO",
     "popular": "Most Popular",
     "features": [
-      "All 20 Academy entries across both Pillars",
-      "Full workflow steps & regulatory references",
+      "Every in-depth Pro lesson (decision trees, templates, worked examples)",
+      "Full library: data integrity, validation, sterility & quality systems",
       "Premium Lab Tools",
       "Compliance SOPs (full text)",
       "Career Skill Gap Analyzer",
-      "Priority content updates"
+      "7-day free trial · every new Pro lesson"
     ],
     "current": "Current Plan",
     "cta": "Start Pro",
@@ -37,7 +37,7 @@
     "note": "All purchases are one-time payments. No subscription needed."
   },
   "products": {
-    "starter_kit": { "label": "Career Starter Kit", "desc": "CV templates tailored for Pharma + top 20 biotech employers." },
+    "starter_kit": { "label": "Career Starter Kit", "desc": "CV templates tailored for Pharma + a global biotech employer research list." },
     "interview_prep": { "label": "Interview Prep Pack", "desc": "100+ real QC/QA interview questions from hiring managers." },
     "bundle": { "label": "Career Accelerator Bundle", "desc": "Both products together. Save 14%." }
   },
