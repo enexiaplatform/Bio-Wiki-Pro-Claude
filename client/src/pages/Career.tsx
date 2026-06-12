@@ -46,14 +46,14 @@ const careerData: Record<Role, {
       { label: "QA Director", years: "8+ yr", responsibilities: "Oversee site-wide quality strategy, regulatory compliance, host international audits, and represent quality on the executive leadership team.", skills: "Strategic planning, Cross-functional leadership, Global regulations", salary: "60,000,000 - 90,000,000+ VND", employers: "Top tier MNCs and large domestic Pharma" }
     ],
     skills: [
-      { id: "qc_s1", name: "Sterility testing", link: "/academy/sterility-testing-membrane-filtration" },
-      { id: "qc_s2", name: "Environmental monitoring", link: "/academy/environmental-monitoring-overview" },
-      { id: "qc_s3", name: "Endotoxin testing", link: "/academy/endotoxin-lal-testing" },
-      { id: "qc_s4", name: "Microbial Limit Tests", link: "/academy/microbial-limit-test" },
-      { id: "qc_s5", name: "Water microbiology", link: "/academy/purified-water-microbiology-testing" },
-      { id: "qc_s6", name: "GMP documentation", link: "#" },
-      { id: "qc_s7", name: "Contamination Control Strategy", link: "/academy/contamination-control-strategy" },
-      { id: "qc_s8", name: "Cleanroom classification", link: "/academy/environmental-monitoring-cleanroom-classification" }
+      { id: "qc_s1", name: "Sterility testing", link: "/library/sterility-testing-basics" },
+      { id: "qc_s2", name: "Environmental monitoring", link: "/library/environmental-monitoring-basics" },
+      { id: "qc_s3", name: "Endotoxin testing", link: "/library/endotoxin-lal-testing" },
+      { id: "qc_s4", name: "Microbial Limit Tests", link: "/library/bioburden-usp-61" },
+      { id: "qc_s5", name: "Water microbiology", link: "/library/pharmaceutical-water-systems" },
+      { id: "qc_s6", name: "GMP documentation", link: "/library/good-documentation-practice" },
+      { id: "qc_s7", name: "Contamination Control Strategy", link: "/library/contamination-control-strategy" },
+      { id: "qc_s8", name: "Cleanroom classification", link: "/library/environmental-monitoring-basics" }
     ]
   },
   "QA Specialist": {
@@ -64,12 +64,12 @@ const careerData: Record<Role, {
       { label: "Head of Quality", years: "8+ yr", responsibilities: "Total quality oversight, final batch release approval (QP role equivalent), enterprise quality strategy.", skills: "Executive Leadership, Global GMP", salary: "60,000,000 - 100,000,000+ VND", employers: "Pharma/Device Manufacturers" }
     ],
     skills: [
-      { id: "qa_s1", name: "Deviation Management", link: "#" },
-      { id: "qa_s2", name: "CAPA / Root Cause Analysis", link: "#" },
-      { id: "qa_s3", name: "Change Control", link: "#" },
-      { id: "qa_s4", name: "Internal Auditing", link: "#" },
-      { id: "qa_s5", name: "Quality Risk Management (ICH Q9)", link: "#" },
-      { id: "qa_s6", name: "Validation Master Plan", link: "#" }
+      { id: "qa_s1", name: "Deviation Management", link: "/library/deviation-management" },
+      { id: "qa_s2", name: "CAPA / Root Cause Analysis", link: "/library/capa-fundamentals" },
+      { id: "qa_s3", name: "Change Control", link: "/library/change-control" },
+      { id: "qa_s4", name: "Internal Auditing", link: "/library/internal-audit-self-inspection" },
+      { id: "qa_s5", name: "Quality Risk Management (ICH Q9)", link: "/library/quality-risk-management-q9" },
+      { id: "qa_s6", name: "Validation Master Plan", link: "/library/process-validation-stages" }
     ]
   },
   "Technical Sales": {
@@ -80,11 +80,11 @@ const careerData: Record<Role, {
       { label: "Country Sales Manager", years: "7+ yr", responsibilities: "Total national P&L responsibility, high-level business development, expansion strategy.", skills: "Executive Strategy, Financial Acumen", salary: "70,000,000 - 120,000,000+ VND", employers: "Major MNCs (Merck, Thermo Fisher)" }
     ],
     skills: [
-      { id: "ts_s1", name: "B2B Sales Techniques", link: "#" },
-      { id: "ts_s2", name: "Laboratory Equipment Knowledge", link: "#" },
-      { id: "ts_s3", name: "Negotiation Strategies", link: "#" },
-      { id: "ts_s4", name: "CRM Management", link: "#" },
-      { id: "ts_s5", name: "Public Speaking & Demos", link: "#" }
+      { id: "ts_s1", name: "B2B Sales Techniques", link: "" },
+      { id: "ts_s2", name: "Laboratory Equipment Knowledge", link: "" },
+      { id: "ts_s3", name: "Negotiation Strategies", link: "" },
+      { id: "ts_s4", name: "CRM Management", link: "" },
+      { id: "ts_s5", name: "Public Speaking & Demos", link: "" }
     ]
   },
   "Regulatory Affairs": {
@@ -95,11 +95,11 @@ const careerData: Record<Role, {
       { label: "Head of Regulatory", years: "8+ yr", responsibilities: "Define regional policy influence, oversee all regulatory compliance, integrate RA into business strategy.", skills: "Policy Influence, Regulatory Intelligence", salary: "60,000,000 - 100,000,000 VND", employers: "Top MNCs" }
     ],
     skills: [
-      { id: "ra_s1", name: "ACTD / ICH CTD Compilation", link: "#" },
-      { id: "ra_s2", name: "Vietnam DAV Regulations", link: "#" },
-      { id: "ra_s3", name: "Product Variation Management", link: "#" },
-      { id: "ra_s4", name: "Labeling Regulations", link: "#" },
-      { id: "ra_s5", name: "Advertising Approval", link: "#" }
+      { id: "ra_s1", name: "ACTD / ICH CTD Compilation", link: "" },
+      { id: "ra_s2", name: "Vietnam DAV Regulations", link: "" },
+      { id: "ra_s3", name: "Product Variation Management", link: "" },
+      { id: "ra_s4", name: "Labeling Regulations", link: "" },
+      { id: "ra_s5", name: "Advertising Approval", link: "" }
     ]
   }
 };
@@ -289,12 +289,16 @@ export default function Career() {
 
             return (
               <div key={skill.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors bg-white/5 gap-4">
-                <Link href={skill.link.includes('coming soon') ? '#' : skill.link}>
-                  <div className="flex items-center group cursor-pointer">
-                    <span className="text-sm font-medium group-hover:text-teal-400 transition-colors">{skill.name}</span>
-                    <ChevronRight className="w-4 h-4 mr-1 opacity-0 group-hover:opacity-100 text-teal-400 transition-all -translate-x-2 group-hover:translate-x-0" />
-                  </div>
-                </Link>
+                {skill.link ? (
+                  <Link href={skill.link}>
+                    <div className="flex items-center group cursor-pointer">
+                      <span className="text-sm font-medium group-hover:text-teal-400 transition-colors">{skill.name}</span>
+                      <ChevronRight className="w-4 h-4 mr-1 opacity-0 group-hover:opacity-100 text-teal-400 transition-all -translate-x-2 group-hover:translate-x-0" />
+                    </div>
+                  </Link>
+                ) : (
+                  <span className="text-sm font-medium text-muted-foreground">{skill.name}</span>
+                )}
                 
                 <div className="flex items-center gap-1.5 self-start sm:self-auto bg-background p-1 rounded-md border border-white/5">
                   {(["Have it", "Partially", "Need it"] as SkillState[]).map(state => {
