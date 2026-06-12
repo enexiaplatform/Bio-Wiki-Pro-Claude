@@ -9,7 +9,7 @@
     "buyNow": "Buy now — $59",
     "redirecting": "Redirecting…"
   },
-  "trustBadges": ["One-time payment", "Lifetime access", "Instant download", "30-day money-back"],
+  "trustBadges": ["One-time payment", "Lifetime access", "Instant download", "7-day money-back"],
   "pains": {
     "heading": "Sound familiar?",
     "items": [
@@ -42,7 +42,7 @@
     "launchNote": "Launch price",
     "priceNote": "One-time payment • No subscription • Lifetime access",
     "buyNow": "Buy now",
-    "guarantee": "30-day money-back guarantee — not satisfied, full refund",
+    "guarantee": "7-day money-back guarantee — not satisfied, full refund",
     "secure": "🔒 Stripe Secure Payment",
     "standards": "📦 GMP WHO • Annex 1 EU • FSSC 22000 • ISO 15189"
   },
@@ -64,7 +64,7 @@
       { "q": "How do I receive the files after buying?", "a": "After payment, a confirmation email with the download link is sent to your registered address. The link is permanent." },
       { "q": "I'm a new QC — can I use it?", "a": "The Kit is designed for Senior QC/QA (3+ years). New QCs can still learn from the Interview Scripts and PDF Guide. The SOP Gap Analysis needs basic QMS knowledge to use effectively." },
       { "q": "Does it apply to F&B?", "a": "Yes. The FSSC 22000 section of the PDF Guide and the CAPA templates apply directly to F&B plants. The SOP Gap Analysis can be adapted for ISO 22000." },
-      { "q": "What's the refund policy?", "a": "30-day money-back guarantee. If you're not satisfied for any reason within 30 days, email us — 100% refund, no questions asked." }
+      { "q": "What's the refund policy?", "a": "7-day money-back guarantee. If you're not satisfied for any reason within 7 days, email us — 100% refund, no questions asked." }
     ]
   },
   "finalCta": {
