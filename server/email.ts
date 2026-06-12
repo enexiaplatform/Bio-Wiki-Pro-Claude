@@ -1,5 +1,6 @@
 import { Resend } from "resend";
-import { getProductName, getDownloadUrl } from "./products.js";
+import { getProductName } from "./products.js";
+import { deliverablesForPurchase } from "./deliverables.js";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -95,22 +96,25 @@ export async function sendPurchaseConfirmation(
   const productName = getProductName(productType);
   const amountDisplay = amountCents ? `$${(amountCents / 100).toFixed(2)}` : "";
   const name = firstName ?? "there";
-  const downloadLink = getDownloadUrl(productType);
+  // Kits/bundles unlock downloadable files served in-app at /my-downloads;
+  // anything else (Pro subscription) unlocks content rather than a file.
+  const hasDownloads = deliverablesForPurchase(productType).length > 0;
 
   const html = htmlWrapper(`
     <h1>Thank you, ${name}! Your order is confirmed ✅</h1>
     <p>Your payment for <strong style="color:#f8fafc;">${productName}</strong>${amountDisplay ? ` (${amountDisplay})` : ""} has been received.</p>
-    ${downloadLink ? `
+    ${hasDownloads ? `
     <div class="box">
-      <p><strong style="color:#10b981;">Download now:</strong></p>
-      <p>Your file is ready — click the button below to download it.</p>
+      <p><strong style="color:#10b981;">Your files are ready</strong></p>
+      <p>Everything is in your account — PDFs and Excel workbooks, available to download right now.</p>
     </div>
-    <a href="${downloadLink}" class="cta">Download ${productName} →</a>
-    <p style="font-size: 13px; color: #64748b;">This link is for you — please don't share it.</p>
+    <a href="${BASE_URL}/my-downloads" class="cta">Go to My Downloads →</a>
     ` : `
     <div class="box">
-      <p>We'll send your materials within <strong style="color:#10b981;">24 hours</strong>. Please check your inbox.</p>
+      <p><strong style="color:#10b981;">Pro is now active 🎉</strong></p>
+      <p>Every in-depth lesson, template, and tool is unlocked. Jump back in any time.</p>
     </div>
+    <a href="${BASE_URL}/academy" class="cta">Open the Academy →</a>
     `}
     <p style="margin-top: 24px; font-size: 13px;">Any issue with your order? Reply to this email or contact <a href="mailto:support@biowikipro.com" style="color:#10b981;">support@biowikipro.com</a></p>
   `);
@@ -139,7 +143,7 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
     <a href="${downloadUrl}" class="cta">Download the GMP Audit Checklist (PDF) →</a>
     <div class="box">
       <p><strong style="color:#10b981;">Need to go deeper?</strong></p>
-      <p>This checklist is just the start. The <strong>GMP Audit Survival Kit ($59)</strong> includes a 40-page guide, 10 CAPA templates, and 50+ audit Q&A scripts.</p>
+      <p>This checklist is just the start. The <strong>GMP Audit Survival Kit ($59)</strong> includes a full audit survival guide, 10 CAPA templates, and 50+ audit Q&A scripts.</p>
     </div>
     <a href="${BASE_URL}/toolkits/gmp-audit-kit" style="display:inline-block; color:#10b981; font-size:14px; text-decoration:none; margin-top: 4px;">See the GMP Audit Survival Kit →</a>
   `);
