@@ -48,8 +48,8 @@ i18n.use(initReactI18next).init({
   ns: NAMESPACES as unknown as string[],
   defaultNS: "common",
   interpolation: { escapeValue: false },
-  // Empty strings in the EN placeholder files fall back to VI instead of
-  // rendering blank.
+  // Don't render an empty string for a missing/blank key — fall back to the
+  // key's English value (fallbackLng = en) instead of showing blank UI.
   returnEmptyString: false,
 });
 

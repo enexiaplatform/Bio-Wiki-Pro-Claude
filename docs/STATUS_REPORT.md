@@ -1,151 +1,97 @@
-# BioWikiPro — Báo cáo trạng thái & Kế hoạch phát triển
+# BioWikiPro — Status & Launch-Readiness
 
-> **Mục đích:** Tài liệu bàn giao để một phiên Claude (cowork) tiếp tục lập kế hoạch và phát triển.
-> **Ngày cập nhật:** 2026-05-29
-> **Commit gần nhất:** `111c67b` — fix blank page (PostHog guard + ErrorBoundary)
-> **Live:** https://bio-wiki-pro-claude.vercel.app — **đang hoạt động** (đã verify render thật trong browser)
+> **Purpose:** Hand-off doc so a future session (or the owner) knows the true state of the product and exactly what remains to flip on before / during commercial onboarding.
+> **Updated:** 2026-06-12
+> **Latest commit:** `ae9659f`
+> **Live:** https://bio-wiki-pro-claude.vercel.app
 
 ---
 
-## 1. Sản phẩm là gì
+## 1. What the product is
 
-BioWikiPro là một **PWA mobile-first** phục vụ dân **QC/QA ngành Pharma/Biotech/Life Science tại Việt Nam**, mô hình **freemium**. Nội dung định hướng "director-level" về GMP, sterility testing, OOS/CAPA investigation, Annex 1, audit prep và career roadmap.
+BioWikiPro is a **mobile-first PWA** for **QC/QA professionals in Pharma/Biotech/Life-Science**, sold to a **global, English-only** audience (freemium). Director-level content on GMP, sterility/EM, OOS/CAPA investigations, Annex 1, data integrity, validation, biologics QC, audit prep and career growth.
 
-**Đối tượng:** Senior QC/QA muốn lên Supervisor/Manager; team chuẩn bị audit GMP.
+**Positioning:** written from real-world QC *and* vendor (industrial microbiology) experience — frameworks that apply immediately, not theory.
 
-**Định vị:** Viết bởi người có kinh nghiệm thực tế cả phía QC lẫn vendor (industrial microbiology) — framework áp dụng được ngay, không lý thuyết suông. Tập trung thị trường Pharma + F&B Việt Nam.
-
-### Mô hình kiếm tiền (theo ROADMAP_PROMPTS.md)
-| Sản phẩm | Giá | Loại | Trạng thái |
+### Monetization
+| Product | Price | Type | State |
 |---|---|---|---|
-| Academy (48 bài học) | Miễn phí | — | ✅ Đã mở khoá toàn bộ |
-| GMP Audit Survival Kit | $59 | one-time | ✅ Trang sản phẩm có; checkout cần verify |
-| Career Starter Kit | $15 | one-time | ⚠️ Price ID config, chưa fulfillment |
-| Interview Prep Pack | $20 | one-time | ⚠️ Như trên |
-| Career Accelerator Bundle | $30 | one-time | ⚠️ Như trên |
-| Pro Subscription | $8/tháng | subscription | ⚠️ Endpoint có, chưa hoàn thiện UX |
+| Academy + Library (78 long-form lessons, 7 learning paths) | Free to start | — | ✅ Free tier live; ~30 lessons are Pro-gated |
+| GMP Audit Survival Kit | $59 | one-time | ✅ Page + checkout + **real file fulfillment** (PDF/Excel) |
+| Career Starter Kit | $15 | one-time | ✅ Real deliverables (CV / cover letter / LinkedIn / employer CSV) |
+| Interview Prep Pack | $20 | one-time | ✅ Real deliverable (100+ Q&A) |
+| Career Accelerator Bundle | $30 | one-time | ✅ Unlocks the two career products |
+| Pro Subscription | $8/mo | subscription | ✅ Checkout + **7-day free trial** + dunning + lazy entitlement |
+
+> The four commercialization gaps flagged in the original assessment (Pro content depth, kit fulfillment, honest social proof, trial + nurture) are **all closed**. See memory `commercialization-gaps`.
 
 ---
 
-## 2. Kiến trúc (chi tiết xem `CLAUDE.md`)
+## 2. Architecture (full detail in `CLAUDE.md`)
 
-- **Monorepo:** `client/` (React + Vite), `server/` (Express 5), `shared/` (types + API contract).
-- **Frontend:** React 18, Wouter (routing), TanStack Query, shadcn/ui (new-york) + Radix, Tailwind (dark scientific palette), framer-motion.
-- **Backend:** Express 5, Drizzle ORM + PostgreSQL, session auth (bcryptjs + connect-pg-simple), Stripe, Resend (email).
-- **Deploy:** Vercel — `api/index.ts` là serverless entry (bọc Express), client build static ở `dist/public`. Cấu hình ở `vercel.json`.
-- **Analytics:** PostHog (snippet trong `client/index.html` + hook `use-analytics.ts`).
+- **Monorepo:** `client/` (React 18 + Vite + Wouter + TanStack Query + shadcn/ui), `server/` (Express 5 + Drizzle + PostgreSQL), `shared/` (types + typed API contract).
+- **Auth:** email/password (bcryptjs) + Express sessions (connect-pg-simple); Google sign-in optional; soft email verification; password reset; rate-limited auth routes.
+- **Billing:** Stripe checkout (subscriptions + one-time), customer portal, webhook with idempotency + dunning grace; entitlement via `server/entitlements.ts`.
+- **Content engine:** MDX-in-repo (`content/{academy,blog,toolkits}/*.en.mdx`) + Postgres metadata; **server-side gating** (`GET /api/content/:collection/:slug`) so paid bodies never ship in the public bundle.
+- **Fulfillment:** gated in-app downloads (`/api/downloads`) generating **real PDF/Excel binaries on the fly** (`server/generate.ts`); `/my-downloads` page.
+- **Email:** Resend transactional (welcome / purchase / lead magnet / dunning / reset / verification) + 3-step free→Pro nurture drip via daily cron.
+- **Deploy:** Vercel — `api/index.ts` serverless entry wraps the Express app; `vercel.json` ships `dist/**` + `content/**`.
+- **Analytics:** PostHog page-views + a wired conversion funnel (`use-analytics.ts`: lead → checkout → subscription/purchase, upgrade prompts, pro modal).
 
-### Routes (client, `client/src/App.tsx`)
-`/` (Landing) · `/qc-hub` · `/academy` + `/academy/:slug` · `/insights` · `/tools` · `/compliance` · `/vault` · `/career` · `/solutions` · `/settings` · `/upgrade` · `/toolkits/gmp-audit-kit` · `/login` · `/register` + `/signup` · `/pricing` · `/payment/success` · `/terms` · `/privacy` · `/refund`
+### Content footprint
+78 academy MDX + 23 blog MDX; 7 disjoint learning paths (every academy lesson in exactly one, enforced by `npm run validate:paths`); structured `/academy/:slug` lessons from `microbiologyLessons`.
 
-### API endpoints (`server/routes.ts`)
-- `POST /api/auth/register`, `/login`, `/logout`; `GET /api/auth/me`
-- `POST /api/stripe/create-checkout-session`; `GET /api/stripe/customer-portal`; `POST /api/stripe/webhook`
-- `POST /api/leads/capture` (lead magnet)
-- `POST /api/quotes` (quote request); `POST /api/users/toggle-pro`
-
----
-
-## 3. Trạng thái dữ liệu (QUAN TRỌNG)
-
-⚠️ **Phần lớn nội dung vẫn là mock data tĩnh**, không phải từ DB.
-
-- Toàn bộ Term/Job/Product/LabTool/SOP/Skill/AcademyEntry đến từ `client/src/data/mockData.ts` (~120 records) qua hooks trong `use-data.ts` (giả lập latency bằng `setTimeout`).
-- Nội dung chuyên sâu nằm ở `client/src/data/`: `lessons/microbiologyLessons.ts`, `compliance/auditBank.ts`, `scenarios/emScenarios.ts`, `tools/ccsBuilder.ts`, `tools/investigationTemplates.ts`.
-- **Chỉ 2 luồng dùng DB thật:** lead capture (`leads` table) và auth/users + purchases. Bảng DB: `users`, `sessions`, `leads`, `quote_requests` (`shared/schema.ts` + `shared/models/auth.ts`).
-- DB push trực tiếp (`npm run db:push`), không có migration files.
+### Tests
+`npm test` → **50 vitest tests across 3 files** (server unit + routes), all passing. `npm run test:e2e` → Playwright public smoke (7 tests). Two content guards: `validate:content`, `validate:paths`.
 
 ---
 
-## 4. Hạ tầng & môi trường
+## 3. Data state
 
-- **Vercel project:** `bio-wiki-pro-claude` (team `enexiaplatforms-projects`).
-- **GitHub:** `enexiaplatform/Bio-Wiki-Pro-Claude` (public), auto-deploy từ `main`.
-- **Build verified:** `npm run check` (tsc) pass; `npm run build` pass. Client bundle ~758KB (gzip ~228KB).
-
-### Env vars (xem `.env.example`)
-Cần set trên Vercel để bật đầy đủ tính năng (hiện nhiều cái là placeholder):
-- `DATABASE_URL` — PostgreSQL (auth, leads, purchases)
-- `SESSION_SECRET`
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY` + 5 price IDs
-- `RESEND_API_KEY`, `EMAIL_FROM` + 5 `DOWNLOAD_*` links (giao sản phẩm)
-- `VITE_POSTHOG_KEY` — **chưa set trên Vercel** (app vẫn chạy bình thường nếu thiếu, nhờ fix mới)
-
-> Lưu ý: `VITE_*` được inline lúc **build**, không phải runtime. Đổi giá trị phải re-deploy.
+Most *page* content is still static mock data (`client/src/data/`) served via `use-data.ts` hooks that simulate latency — by design. **Real client→server flows:** auth, lead capture, quote requests, Stripe checkout, content gating, downloads, reading progress, nurture cron. Long-form content is MDX (gated server-side). DB via Drizzle schema-push (no migration files).
 
 ---
 
-## 5. Changelog phiên gần nhất (3 commit)
+## 4. Launch-readiness checklist (owner actions)
 
-1. **`8accdb8`** — feat lớn: LeadMagnetBanner + `/api/leads/capture`; Resend email (welcome/purchase/lead magnet); PostHog analytics; mở khoá toàn bộ Academy; GMP Kit $59 CTA trong lesson; trang Terms/Privacy/Refund + Footer; SEO hooks (`use-seo.ts`), robots.txt, sitemap.xml.
-2. **`e76e16e`** — fix: bỏ `drizzle-orm` khỏi `rollupOptions.external` trong client build (client import `@shared/schema` vốn dùng drizzle → external làm crash bundle).
-3. **`111c67b`** — fix nguyên nhân thật của blank page: `capture()`/`identify()` guard `typeof window.posthog?.x === "function"` (stub PostHog chưa có method khi `init()` bị skip do thiếu key) + thêm `ErrorBoundary` bọc app.
+The code is ready; these are the **operational switches** to go live. None require new code.
 
-**Bài học:** App không có error boundary nên 1 lỗi runtime nhỏ làm trắng toàn bộ trang. Giờ đã có lưới an toàn.
+### Must-have to take money
+- [ ] **Vercel env audit** — confirm real (not placeholder) values: `DATABASE_URL`, `SESSION_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `VITE_STRIPE_PUBLISHABLE_KEY`, and **all 5 Stripe price IDs** (`STRIPE_PRO_PRICE_ID` + the 4 one-time kits), `RESEND_API_KEY`, `EMAIL_FROM`.
+- [ ] **Stripe webhook** registered in the Stripe dashboard pointing at `/api/stripe/webhook`, signing secret matches `STRIPE_WEBHOOK_SECRET`.
+- [ ] **End-to-end test purchase** (Stripe test mode): buy GMP kit → success page → webhook fires → purchase recorded → `/my-downloads` serves the real PDF/Excel; buy Pro → 7-day trial starts → entitlement active.
 
----
+### Activate nurture drip (optional but recommended)
+- [ ] `npm run db:push` to create the `nurture_sends` table, set `CRON_SECRET` in Vercel env, redeploy. (Trial works *without* this; only the drip needs it.)
 
-## 6. Nợ kỹ thuật & vấn đề đã biết
-
-| # | Vấn đề | File | Mức độ |
-|---|---|---|---|
-| 1 | **Định nghĩa trùng lặp** trong schema: `LabTool`, `Skill`, `SOP` mỗi cái khai báo 2 lần (giống hệt); `ToolSection` và `LabToolSection` là 2 type alias trùng nội dung | `shared/schema.ts:114-173` | Trung bình — nên dọn |
-| 2 | Bundle client 758KB (1 chunk, >500KB warning) — chưa code-split | `vite.config.ts` | Thấp-TB — ảnh hưởng tốc độ tải |
-| 3 | Nội dung vẫn là mock data tĩnh, không quản lý qua CMS/DB | `client/src/data/` | Chiến lược — quyết định hướng |
-| 4 | Stripe checkout/fulfillment: endpoint có nhưng cần verify flow end-to-end + xử lý webhook fulfillment (gửi file, unlock pro) | `server/routes.ts`, `email.ts` | Cao — chặn doanh thu |
-| 5 | Không có test suite | — | TB |
-| 6 | `npm run db:push` không có migration history — rủi ro khi production có data | `drizzle.config.ts` | TB |
-| 7 | Nhiều env var trên Vercel có thể vẫn là placeholder → Stripe/email/DB có thể chưa chạy thật | Vercel settings | Cao — cần audit |
+### Pre-launch polish
+- [ ] **Custom domain** instead of `*.vercel.app` (SEO + email deliverability) — update canonical/sitemap base if it changes.
+- [ ] **PostHog** — set `VITE_POSTHOG_KEY` (build-time; needs redeploy) to start capturing the conversion funnel from day one.
+- [ ] **Re-probe prod auth** (`/api/auth/register` → 201) after any DB-touching deploy — see the migration-first rule in `CLAUDE.md`.
 
 ---
 
-## 7. Trạng thái roadmap (theo `ROADMAP_PROMPTS.md`)
+## 5. Remaining tech debt / future bets (none block launch)
 
-**PHASE 1 — Revenue-ready:** phần lớn đã làm
-- ✅ Step 1 Signup route · ✅ Step 3 trang GMP Kit · ✅ Step 4 Landing · ✅ Step 5 SEO meta · ✅ Step 6 Footer + Legal
-- ⚠️ Step 2 Stripe checkout — code có, **cần verify chạy thật + cấu hình price IDs/env trên Vercel**
-
-**PHASE 2 — Foundation:** đã làm
-- ✅ Step 7 Email transactional · ✅ Step 8 Lead magnet · ✅ Step 9 Analytics · ✅ Step 10 Academy free
-
-**PHASE 3 — Growth:** chưa làm
-- ⬜ Step 11 Blog/SEO content hub · ⬜ Step 12 In-app upgrade prompts · ⬜ Step 13 Digital product delivery · ⬜ Step 14 Performance · ⬜ Step 15 Vercel prod config (một phần đã có)
+| # | Item | Note |
+|---|---|---|
+| 1 | Social proof | Add real reviews / case studies once paying users exist (current copy is honest, no fabricated testimonials). |
+| 2 | Conversion analytics | Funnel is instrumented; once traffic flows, build a trial→paid dashboard in PostHog. |
+| 3 | Content growth | More learning paths / lessons; the MDX engine auto-registers new files. |
+| 4 | Second market | i18n is retained as an English-only catalog; could re-expand for a localized market later. |
+| 5 | Migration discipline | Drizzle is schema-push (no history) — consider migrations before prod data grows. |
 
 ---
 
-## 8. Đề xuất ưu tiên phát triển tiếp
-
-### P0 — Chốt doanh thu (không có cái này thì app không kiếm được tiền)
-1. **Audit env vars trên Vercel** — xác nhận DATABASE_URL, Stripe keys + price IDs, Resend đều là giá trị thật, không phải placeholder.
-2. **Verify Stripe checkout end-to-end** ở test mode: click mua → Checkout → success page → webhook `checkout.session.completed` → fulfillment (gửi email kèm `DOWNLOAD_*` link, ghi `createPurchase`, unlock nếu là Pro).
-3. **Kiểm tra lead magnet thật:** submit email → lưu `leads` → gửi `sendLeadMagnetEmail` với link checklist.
-
-### P1 — Ổn định & chất lượng
-4. Dọn nợ kỹ thuật #1 (xoá định nghĩa trùng trong `shared/schema.ts`).
-5. Code-split bundle (lazy-load route bằng `React.lazy` + dynamic import) để giảm 758KB.
-6. Thêm migration discipline cho Drizzle trước khi có data production thật.
-
-### P2 — Tăng trưởng
-7. Step 11 — Blog/SEO content hub (kéo organic traffic — đây là kênh chính cho B2B niche này).
-8. Step 12 — In-app upgrade prompts để convert free → paid.
-9. Cân nhắc đưa nội dung từ mock data → CMS/DB để team non-dev cập nhật được.
-
----
-
-## 9. Câu hỏi mở cho team (cần người quyết)
-- Nội dung nên ở mock data, file markdown, hay CMS/DB? (ảnh hưởng kiến trúc data layer)
-- Pro subscription $8/tháng có làm ngay phase này không, hay chỉ bán one-time kits trước?
-- Thị trường: chỉ Việt Nam (nội dung tiếng Việt) hay song ngữ để mở rộng?
-- Domain riêng (thay vì *.vercel.app) — đã có kế hoạch chưa? (ảnh hưởng SEO, email deliverability)
-
----
-
-## 10. Lệnh thường dùng
+## 6. Common commands
 ```bash
-npm run dev        # Express + Vite HMR, port 5000
-npm run check      # type-check (tsc)
-npm run build      # build client (vite) + server (esbuild) → dist/
-npm start          # chạy production build
-npm run db:push    # push schema lên DB (không có migration file)
+npm run dev              # Express + Vite HMR (port 5000)
+npm run check            # type-check (tsc) — currently clean
+npm run build            # vite client + esbuild server → dist/
+npm start                # run production build
+npm run db:push          # push Drizzle schema (no migration files)
+npm test                 # vitest (50 tests)
+npm run test:e2e         # playwright public smoke
+npm run validate:content # MDX frontmatter / escaping guard
+npm run validate:paths   # every academy lesson in exactly one path
 ```
-Không có `npm test` (chưa có test suite).
