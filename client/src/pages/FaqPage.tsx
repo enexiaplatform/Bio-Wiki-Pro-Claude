@@ -19,6 +19,18 @@ const FAQS: { q: string; a: string }[] = [
     a: "Lessons reference current standards (EU GMP Annex 1:2022, ICH Q-series, USP/EP chapters, FDA guidance) and carry an updated date. We revise content as guidance changes — for example, the shift from 10 ppm cleaning limits to health-based exposure limits.",
   },
   {
+    q: "Is there a free trial?",
+    a: "Yes — new Pro subscribers get a 7-day free trial. You won't be charged until the trial ends, and you can cancel anytime before then from the Stripe customer portal (Settings → Manage subscription) at no cost.",
+  },
+  {
+    q: "What are the downloadable kits?",
+    a: "Alongside the subscription we sell one-time toolkits — the GMP Audit Survival Kit, Career Starter Kit, and Interview Prep Pack (or the bundle). Each is a set of ready-to-use deliverables (audit checklists, SOP gap analyses, CAPA templates, interview Q&A, CV and cover-letter templates) delivered as PDF and Excel files you download from your account after purchase.",
+  },
+  {
+    q: "How do payments work — is it secure?",
+    a: "All payments are processed by Stripe; we never see or store your card details. Subscriptions are billed monthly and one-time kits are a single charge. You'll get an email receipt and, for kits, immediate access to the downloads in your account.",
+  },
+  {
     q: "Can I cancel anytime?",
     a: "Yes. Pro is a subscription you manage yourself through the Stripe customer portal (Settings → Manage subscription). Cancel anytime; your access continues until the end of the period you've paid for.",
   },
