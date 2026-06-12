@@ -13,3 +13,7 @@ status.txt
 
 .vercel
 .claude
+
+# Playwright
+test-results
+playwright-report
