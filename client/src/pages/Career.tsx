@@ -40,10 +40,10 @@ const careerData: Record<Role, {
 }> = {
   "QC Microbiologist": {
     stages: [
-      { label: "QC Analyst", years: "0-2 yr", responsibilities: "Perform routine microbial limit tests, environmental monitoring, and water testing according to SOPs. Document GMP data exactly as observed.", skills: "Aseptic technique, Media prep, Basic GMP", salary: "10,000,000 - 15,000,000 VND", employers: "Sanofi, DHG Pharma, Imexpharm" },
-      { label: "Senior QC", years: "2-5 yr", responsibilities: "Review analyst data, perform method validations, investigate OOS results, and draft straightforward deviations.", skills: "OOS Investigation, Method Validation, Advanced Microbiology", salary: "16,000,000 - 25,000,000 VND", employers: "Moderna, FPT Long Chau QC, Medochemie" },
-      { label: "QC Manager", years: "5-8 yr", responsibilities: "Manage lab operations, budget, and team scheduling. Interface with QA and operations. Defend methods during regulatory audits.", skills: "Leadership, QMS compliance, Audit defense", salary: "30,000,000 - 45,000,000 VND", employers: "B.Braun, Zuellig Pharma, Vimedimex" },
-      { label: "QA Director", years: "8+ yr", responsibilities: "Oversee site-wide quality strategy, regulatory compliance, host international audits, and represent quality on the executive leadership team.", skills: "Strategic planning, Cross-functional leadership, Global regulations", salary: "60,000,000 - 90,000,000+ VND", employers: "Top tier MNCs and large domestic Pharma" }
+      { label: "QC Analyst", years: "0-2 yr", responsibilities: "Perform routine microbial limit tests, environmental monitoring, and water testing according to SOPs. Document GMP data exactly as observed.", skills: "Aseptic technique, Media prep, Basic GMP", salary: "$45,000 - $60,000 / yr", employers: "Pfizer, Sanofi, Teva" },
+      { label: "Senior QC", years: "2-5 yr", responsibilities: "Review analyst data, perform method validations, investigate OOS results, and draft straightforward deviations.", skills: "OOS Investigation, Method Validation, Advanced Microbiology", salary: "$60,000 - $80,000 / yr", employers: "Novartis, Moderna, Lonza" },
+      { label: "QC Manager", years: "5-8 yr", responsibilities: "Manage lab operations, budget, and team scheduling. Interface with QA and operations. Defend methods during regulatory audits.", skills: "Leadership, QMS compliance, Audit defense", salary: "$90,000 - $120,000 / yr", employers: "Roche, B. Braun, Catalent" },
+      { label: "QA Director", years: "8+ yr", responsibilities: "Oversee site-wide quality strategy, regulatory compliance, host international audits, and represent quality on the executive leadership team.", skills: "Strategic planning, Cross-functional leadership, Global regulations", salary: "$140,000 - $200,000+ / yr", employers: "Top-tier global pharma & CDMOs" }
     ],
     skills: [
       { id: "qc_s1", name: "Sterility testing", link: "/library/sterility-testing-basics" },
@@ -58,10 +58,10 @@ const careerData: Record<Role, {
   },
   "QA Specialist": {
     stages: [
-      { label: "QA Associate", years: "0-2 yr", responsibilities: "Document issuance and review (BMRs, SOPs), logbook management, and basic shop-floor oversight.", skills: "GMP Documentation, Attention to Detail", salary: "10,000,000 - 15,000,000 VND", employers: "Pharma/Device Manufacturers" },
-      { label: "QA Specialist", years: "2-5 yr", responsibilities: "Manage deviations, CAPAs, change controls. Perform root cause analysis and participate in internal audits.", skills: "Root Cause Analysis, QMS Systems", salary: "16,000,000 - 28,000,000 VND", employers: "Pharma/Device Manufacturers" },
-      { label: "QA Manager", years: "5-8 yr", responsibilities: "Lead QA operations, oversee the QMS, prepare for external audits, manage site compliance.", skills: "Auditing, Leadership, QRM", salary: "35,000,000 - 50,000,000 VND", employers: "Pharma/Device Manufacturers" },
-      { label: "Head of Quality", years: "8+ yr", responsibilities: "Total quality oversight, final batch release approval (QP role equivalent), enterprise quality strategy.", skills: "Executive Leadership, Global GMP", salary: "60,000,000 - 100,000,000+ VND", employers: "Pharma/Device Manufacturers" }
+      { label: "QA Associate", years: "0-2 yr", responsibilities: "Document issuance and review (BMRs, SOPs), logbook management, and basic shop-floor oversight.", skills: "GMP Documentation, Attention to Detail", salary: "$45,000 - $60,000 / yr", employers: "Pharma/Device Manufacturers" },
+      { label: "QA Specialist", years: "2-5 yr", responsibilities: "Manage deviations, CAPAs, change controls. Perform root cause analysis and participate in internal audits.", skills: "Root Cause Analysis, QMS Systems", salary: "$60,000 - $85,000 / yr", employers: "Pharma/Device Manufacturers" },
+      { label: "QA Manager", years: "5-8 yr", responsibilities: "Lead QA operations, oversee the QMS, prepare for external audits, manage site compliance.", skills: "Auditing, Leadership, QRM", salary: "$95,000 - $130,000 / yr", employers: "Pharma/Device Manufacturers" },
+      { label: "Head of Quality", years: "8+ yr", responsibilities: "Total quality oversight, final batch release approval (QP role equivalent), enterprise quality strategy.", skills: "Executive Leadership, Global GMP", salary: "$150,000 - $220,000+ / yr", employers: "Pharma/Device Manufacturers" }
     ],
     skills: [
       { id: "qa_s1", name: "Deviation Management", link: "/library/deviation-management" },
@@ -74,10 +74,10 @@ const careerData: Record<Role, {
   },
   "Technical Sales": {
     stages: [
-      { label: "Sales Executive", years: "0-2 yr", responsibilities: "Lead generation, CRM entry, basic product demonstrations, responding to quote requests.", skills: "Communication, CRM, Resilience", salary: "12,000,000 - 20,000,000 VND + Commission", employers: "Distributors (DKSH, Sibelco, etc.)" },
-      { label: "Technical Sales Rep", years: "2-5 yr", responsibilities: "Manage key accounts, provide technical advising, negotiate contracts, and hit quarterly quotas.", skills: "Negotiation, Deep Product Knowledge", salary: "20,000,000 - 35,000,000 VND + Commission", employers: "Distributors & Manufacturers" },
-      { label: "Sales Manager", years: "4-7 yr", responsibilities: "Lead a regional sales team, develop go-to-market strategies, and manage principal supplier relationships.", skills: "Strategy, Coaching, Forecasting", salary: "40,000,000 - 60,000,000 VND + Bonus", employers: "Distributors & Manufacturers" },
-      { label: "Country Sales Manager", years: "7+ yr", responsibilities: "Total national P&L responsibility, high-level business development, expansion strategy.", skills: "Executive Strategy, Financial Acumen", salary: "70,000,000 - 120,000,000+ VND", employers: "Major MNCs (Merck, Thermo Fisher)" }
+      { label: "Sales Executive", years: "0-2 yr", responsibilities: "Lead generation, CRM entry, basic product demonstrations, responding to quote requests.", skills: "Communication, CRM, Resilience", salary: "$50,000 - $70,000 / yr + Commission", employers: "Distributors (Avantor/VWR, Thermo Fisher)" },
+      { label: "Technical Sales Rep", years: "2-5 yr", responsibilities: "Manage key accounts, provide technical advising, negotiate contracts, and hit quarterly quotas.", skills: "Negotiation, Deep Product Knowledge", salary: "$70,000 - $100,000 / yr + Commission", employers: "Distributors & Manufacturers" },
+      { label: "Sales Manager", years: "4-7 yr", responsibilities: "Lead a regional sales team, develop go-to-market strategies, and manage principal supplier relationships.", skills: "Strategy, Coaching, Forecasting", salary: "$110,000 - $150,000 / yr + Bonus", employers: "Distributors & Manufacturers" },
+      { label: "Country Sales Manager", years: "7+ yr", responsibilities: "Total national P&L responsibility, high-level business development, expansion strategy.", skills: "Executive Strategy, Financial Acumen", salary: "$160,000 - $250,000+ / yr", employers: "Major MNCs (Merck, Thermo Fisher)" }
     ],
     skills: [
       { id: "ts_s1", name: "B2B Sales Techniques", link: "" },
@@ -89,14 +89,14 @@ const careerData: Record<Role, {
   },
   "Regulatory Affairs": {
     stages: [
-      { label: "RA Associate", years: "0-2 yr", responsibilities: "Assist in preparing dossiers, translating documents, tracking submission status, and answering simple queries.", skills: "Dossier Formatting, Translation, Organization", salary: "12,000,000 - 18,000,000 VND", employers: "MNCs / Consulting Firms" },
-      { label: "RA Specialist", years: "2-5 yr", responsibilities: "Compile full registration dossiers (ACTD/CTD), manage variations, liaise directly with DAV, manage product lifecycle.", skills: "ACTD/CTD, DAV Regulations", salary: "20,000,000 - 35,000,000 VND", employers: "MNCs / Local Pharma" },
-      { label: "RA Manager", years: "5-8 yr", responsibilities: "Set regulatory strategy for new launches, manage team, handle complex regulatory authority negotiations.", skills: "Strategic Thinking, Agency Relationships", salary: "40,000,000 - 60,000,000 VND", employers: "MNCs / Local Pharma" },
-      { label: "Head of Regulatory", years: "8+ yr", responsibilities: "Define regional policy influence, oversee all regulatory compliance, integrate RA into business strategy.", skills: "Policy Influence, Regulatory Intelligence", salary: "60,000,000 - 100,000,000 VND", employers: "Top MNCs" }
+      { label: "RA Associate", years: "0-2 yr", responsibilities: "Assist in preparing dossiers, formatting documents, tracking submission status, and answering simple queries.", skills: "Dossier Formatting, eCTD Tools, Organization", salary: "$55,000 - $70,000 / yr", employers: "MNCs / Consulting Firms" },
+      { label: "RA Specialist", years: "2-5 yr", responsibilities: "Compile full registration dossiers (ICH CTD), manage variations, liaise with health authorities (FDA, EMA, national agencies), and manage product lifecycle.", skills: "ICH CTD, FDA/EMA Regulations", salary: "$75,000 - $100,000 / yr", employers: "MNCs / Regional Pharma" },
+      { label: "RA Manager", years: "5-8 yr", responsibilities: "Set regulatory strategy for new launches, manage team, handle complex regulatory authority negotiations.", skills: "Strategic Thinking, Agency Relationships", salary: "$110,000 - $150,000 / yr", employers: "MNCs / Regional Pharma" },
+      { label: "Head of Regulatory", years: "8+ yr", responsibilities: "Define regional policy influence, oversee all regulatory compliance, integrate RA into business strategy.", skills: "Policy Influence, Regulatory Intelligence", salary: "$160,000 - $230,000+ / yr", employers: "Top MNCs" }
     ],
     skills: [
-      { id: "ra_s1", name: "ACTD / ICH CTD Compilation", link: "" },
-      { id: "ra_s2", name: "Vietnam DAV Regulations", link: "" },
+      { id: "ra_s1", name: "ICH CTD / eCTD Compilation", link: "" },
+      { id: "ra_s2", name: "FDA / EMA Regulations", link: "" },
       { id: "ra_s3", name: "Product Variation Management", link: "" },
       { id: "ra_s4", name: "Labeling Regulations", link: "" },
       { id: "ra_s5", name: "Advertising Approval", link: "" }
@@ -346,7 +346,7 @@ export default function Career() {
             <div className="relative z-10 flex flex-col h-full">
               <span className="text-[10px] uppercase font-bold text-teal-400 bg-teal-400/10 px-2 py-1 rounded w-fit mb-3">Resource</span>
               <h3 className="text-xl font-bold mb-2">Career Starter Kit</h3>
-              <p className="text-sm text-muted-foreground mb-6">Professional CV templates tailored for Pharma, plus a verified list of the top 20 biotech employers in Vietnam.</p>
+              <p className="text-sm text-muted-foreground mb-6">Professional CV templates tailored for Pharma, plus a curated research list of leading global pharma &amp; biotech employers.</p>
               <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
                 <span className="text-lg font-bold text-foreground">$15.00</span>
                 <button
