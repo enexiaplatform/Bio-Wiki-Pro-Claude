@@ -3,7 +3,7 @@ import express from "express";
 import request from "supertest";
 
 // ── Mocks (vi.hoisted so the vi.mock factories can reference them) ────────────
-const { storageMock, constructEvent, verifyIdToken } = vi.hoisted(() => ({
+const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate } = vi.hoisted(() => ({
   storageMock: {
     getUser: vi.fn(),
     getUserByEmail: vi.fn(),
@@ -30,6 +30,8 @@ const { storageMock, constructEvent, verifyIdToken } = vi.hoisted(() => ({
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
+  checkoutCreate: vi.fn(),
+  portalCreate: vi.fn(),
 }));
 vi.mock("../storage.js", () => ({ storage: storageMock }));
 
@@ -43,8 +45,8 @@ vi.mock("stripe", () => {
   function Stripe() {
     return {
       webhooks: { constructEvent },
-      checkout: { sessions: { create: vi.fn() } },
-      billingPortal: { sessions: { create: vi.fn() } },
+      checkout: { sessions: { create: checkoutCreate } },
+      billingPortal: { sessions: { create: portalCreate } },
     };
   }
   return { default: Stripe };
@@ -200,6 +202,104 @@ describe("stripe webhook", () => {
     const app = await buildApp();
     const res = await request(app).post("/api/stripe/webhook").send(purchaseEvent);
     expect(res.status).toBe(400);
+  });
+});
+
+describe("create-checkout-session", () => {
+  const PRICE_ENVS = [
+    "STRIPE_PRO_PRICE_ID",
+    "STRIPE_GMP_AUDIT_KIT_PRICE_ID",
+  ] as const;
+  const saved: Record<string, string | undefined> = {};
+
+  beforeEach(() => {
+    for (const k of PRICE_ENVS) saved[k] = process.env[k];
+    process.env.STRIPE_PRO_PRICE_ID = "price_pro";
+    process.env.STRIPE_GMP_AUDIT_KIT_PRICE_ID = "price_gmp";
+  });
+  afterAll(() => {
+    for (const k of PRICE_ENVS) {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k]!;
+    }
+  });
+
+  /** Register (which sets the session) and return an authed supertest agent. */
+  async function authedAgent(app: express.Express, user: any) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce(user);
+    const reg = await agent.post("/api/auth/register").send({ email: user.email, password: "pw123456" });
+    expect(reg.status).toBe(201);
+    return agent;
+  }
+
+  it("401 without a session", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/stripe/create-checkout-session").send({ productType: "pro_subscription" });
+    expect(res.status).toBe(401);
+    expect(checkoutCreate).not.toHaveBeenCalled();
+  });
+
+  it("400 for a product with no configured price", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "a@b.com", isPro: false };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+
+    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "starter_kit" });
+    expect(res.status).toBe(400);
+    expect(checkoutCreate).not.toHaveBeenCalled();
+  });
+
+  it("creates a subscription session WITH a trial for a new Pro subscriber", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "a@b.com", isPro: false };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+    checkoutCreate.mockResolvedValueOnce({ url: "https://checkout.stripe.test/pro" });
+
+    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "pro_subscription" });
+    expect(res.status).toBe(200);
+    expect(res.body.url).toBe("https://checkout.stripe.test/pro");
+
+    const arg = checkoutCreate.mock.calls[0][0];
+    expect(arg.mode).toBe("subscription");
+    expect(arg.line_items[0].price).toBe("price_pro");
+    expect(arg.customer_email).toBe("a@b.com");
+    expect(arg.metadata).toMatchObject({ userId: "u1", productType: "pro_subscription" });
+    expect(arg.subscription_data.trial_period_days).toBe(7);
+  });
+
+  it("creates a one-time payment session (no trial) for a kit", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "a@b.com", isPro: false };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+    checkoutCreate.mockResolvedValueOnce({ url: "https://checkout.stripe.test/gmp" });
+
+    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "gmp_audit_kit" });
+    expect(res.status).toBe(200);
+
+    const arg = checkoutCreate.mock.calls[0][0];
+    expect(arg.mode).toBe("payment");
+    expect(arg.line_items[0].price).toBe("price_gmp");
+    expect(arg.subscription_data).toBeUndefined();
+  });
+
+  it("does NOT grant a trial to a user who already has a subscription", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "a@b.com", isPro: false, stripeSubscriptionId: "sub_old" };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+    checkoutCreate.mockResolvedValueOnce({ url: "https://checkout.stripe.test/pro" });
+
+    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "pro_subscription" });
+    expect(res.status).toBe(200);
+
+    const arg = checkoutCreate.mock.calls[0][0];
+    expect(arg.mode).toBe("subscription");
+    expect(arg.subscription_data.trial_period_days).toBeUndefined();
   });
 });
 

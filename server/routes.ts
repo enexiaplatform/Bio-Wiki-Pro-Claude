@@ -34,6 +34,10 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
   validate: false,
   message: { message: "Too many attempts. Please wait a few minutes and try again." },
+  // The limiter uses a process-wide in-memory store; under vitest every test
+  // shares it across freshly-built apps, so cumulative auth POSTs would trip
+  // the limit and flake unrelated tests. Disable it in the test env only.
+  skip: () => process.env.NODE_ENV === "test",
 });
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
