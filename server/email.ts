@@ -42,7 +42,7 @@ function htmlWrapper(content: string): string {
     </div>
     <div class="footer">
       <p>© 2026 BioWikiPro — QC/QA knowledge for Pharma & Life Sciences</p>
-      <p style="margin-top: 6px;"><a href="${BASE_URL}/terms">Terms</a> · <a href="${BASE_URL}/privacy">Privacy</a> · <a href="${BASE_URL}/refund">Refund</a></p>
+      <p style="margin-top: 6px;"><a href="${BASE_URL}/terms">Terms</a> · <a href="${BASE_URL}/privacy">Privacy</a></p>
     </div>
   </div>
 </body>

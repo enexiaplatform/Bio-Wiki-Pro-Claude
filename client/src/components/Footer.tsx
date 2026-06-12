@@ -49,9 +49,6 @@ export function Footer() {
             <Link href="/privacy" className="hover:text-primary transition-colors">
               {t("links.privacy")}
             </Link>
-            <Link href="/refund" className="hover:text-primary transition-colors">
-              {t("links.refund")}
-            </Link>
           </nav>
 
           {/* Contact */}

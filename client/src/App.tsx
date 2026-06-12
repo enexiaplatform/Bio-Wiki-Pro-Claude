@@ -46,7 +46,6 @@ const Glossary = lazy(() => import("@/pages/Glossary"));
 const About = lazy(() => import("@/pages/About"));
 const TermsPage = lazy(() => import("@/pages/TermsPage"));
 const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
-const RefundPage = lazy(() => import("@/pages/RefundPage"));
 const FaqPage = lazy(() => import("@/pages/FaqPage"));
 
 function PageFallback() {
@@ -103,7 +102,6 @@ function Layout() {
           <Route path="/payment/success" component={PaymentSuccessPage} />
           <Route path="/terms" component={TermsPage} />
           <Route path="/privacy" component={PrivacyPage} />
-          <Route path="/refund" component={RefundPage} />
           <Route path="/faq" component={FaqPage} />
           <Route path="/" component={LandingPage} />
           <Route component={NotFound} />

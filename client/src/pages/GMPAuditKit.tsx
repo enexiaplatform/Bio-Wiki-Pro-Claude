@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import {
   CheckCircle2, ShieldCheck, FileText, ClipboardList,
   MessageSquare, Video, Phone, ChevronDown, ChevronUp,
-  Loader2, ArrowRight, Package, BadgeCheck, RefreshCw,
+  Loader2, ArrowRight, Package, BadgeCheck, Lock,
 } from "lucide-react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -32,7 +32,7 @@ async function createCheckoutSession(productType: ProductType): Promise<string> 
 
 // Icons paired by index with includes.items / pricing trust badges.
 const INCLUDE_ICONS = [FileText, ClipboardList, ShieldCheck, MessageSquare, Video, Phone];
-const TRUST_ICONS = [BadgeCheck, BadgeCheck, BadgeCheck, RefreshCw];
+const TRUST_ICONS = [BadgeCheck, BadgeCheck, BadgeCheck, Lock];
 
 interface Pain { emoji: string; title: string; desc: string }
 interface Include { title: string; desc: string }
@@ -213,11 +213,6 @@ export default function GMPAuditKit() {
               <>{t("pricing.buyNow")} <ArrowRight className="w-5 h-5" /></>
             )}
           </button>
-
-          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-            <RefreshCw className="w-3.5 h-3.5 text-teal-400" />
-            <span>{t("pricing.guarantee")}</span>
-          </div>
 
           <div className="mt-6 pt-6 border-t border-white/5 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
             <span>{t("pricing.secure")}</span>

@@ -35,10 +35,6 @@ const FAQS: { q: string; a: string }[] = [
     a: "Yes. Pro is a subscription you manage yourself through the Stripe customer portal (Settings → Manage subscription). Cancel anytime; your access continues until the end of the period you've paid for.",
   },
   {
-    q: "Do you offer refunds?",
-    a: "See our Refund Policy for the full terms. In short, if something isn't right, contact support and we'll make it right.",
-  },
-  {
     q: "Do I get a certificate?",
     a: "Yes — completing any learning path unlocks a printable Certificate of Completion you can download as a PDF or image and share on LinkedIn.",
   },
@@ -55,7 +51,7 @@ const FAQS: { q: string; a: string }[] = [
 export default function FaqPage() {
   useSEO({
     title: "FAQ",
-    description: "Frequently asked questions about BioWikiPro — who it's for, Free vs Pro, how current the content is, cancellation, refunds, and certificates.",
+    description: "Frequently asked questions about BioWikiPro — who it's for, Free vs Pro, how current the content is, the free trial, cancellation, and certificates.",
   });
   const [open, setOpen] = useState<number | null>(0);
 
