@@ -1,5 +1,13 @@
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Microscope, Search } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Microscope, Search, Menu, BookMarked, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Settings as SettingsIcon } from "lucide-react";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer";
 
 const openSearch = () => window.dispatchEvent(new Event("bwp:open-search"));
 import clsx from "clsx";
@@ -56,12 +64,30 @@ const desktopTabs = [
   { key: "insights", name: "Insights", icon: TrendingUp, path: "/insights" },
 ];
 
+// Secondary destinations for the mobile "More" drawer — everything not on the
+// 5-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
+const moreLinks = [
+  { name: "Library", icon: BookMarked, path: "/library" },
+  { name: "Career", icon: Briefcase, path: "/career" },
+  { name: "Solutions", icon: Microscope, path: "/solutions" },
+  { name: "GMP Audit Kit", icon: Package, path: "/toolkits/gmp-audit-kit" },
+  { name: "Insights", icon: TrendingUp, path: "/insights" },
+  { name: "Glossary", icon: BookA, path: "/glossary" },
+  { name: "Pricing", icon: Tag, path: "/pricing" },
+  { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
+  { name: "My Downloads", icon: Download, path: "/my-downloads" },
+  { name: "Settings", icon: SettingsIcon, path: "/settings" },
+  { name: "About", icon: Info, path: "/about" },
+  { name: "FAQ", icon: HelpCircle, path: "/faq" },
+];
+
 export function BottomNav() {
   const [location] = useLocation();
   const { t } = useTranslation("nav");
+  const [moreOpen, setMoreOpen] = useState(false);
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-4 pb-safe pt-2 z-50 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-2 pb-safe pt-2 z-50 md:hidden">
       <div className="flex justify-between items-center max-w-md mx-auto">
         {mobileTabs.map((tab) => {
           const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
@@ -82,7 +108,50 @@ export function BottomNav() {
             </Link>
           );
         })}
+
+        {/* "More" → drawer with the rest of the IA (mobile has no footer). */}
+        <button
+          onClick={() => setMoreOpen(true)}
+          className="flex flex-col items-center gap-1 p-2 w-full text-muted-foreground hover:text-foreground"
+          data-testid="nav-mobile-more"
+          aria-label="More"
+        >
+          <div className="p-1.5 rounded-xl">
+            <Menu className="w-6 h-6" strokeWidth={2} />
+          </div>
+          <span className="text-[10px] font-medium">More</span>
+        </button>
       </div>
+
+      <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
+        <DrawerContent className="md:hidden">
+          <DrawerHeader className="pb-2">
+            <DrawerTitle>Explore BioWikiPro</DrawerTitle>
+          </DrawerHeader>
+          <div className="grid grid-cols-3 gap-3 px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+            {moreLinks.map((l) => {
+              const isActive = location.startsWith(l.path);
+              return (
+                <DrawerClose asChild key={l.path}>
+                  <Link
+                    href={l.path}
+                    className={clsx(
+                      "flex flex-col items-center justify-center gap-2 rounded-2xl border p-4 text-center transition-colors",
+                      isActive
+                        ? "border-primary/40 bg-primary/10 text-primary"
+                        : "border-white/10 bg-white/5 text-foreground hover:border-primary/30"
+                    )}
+                    data-testid={`nav-more-${l.name.toLowerCase().replace(/\s+/g, '-')}`}
+                  >
+                    <l.icon className="w-5 h-5" />
+                    <span className="text-xs font-medium leading-tight">{l.name}</span>
+                  </Link>
+                </DrawerClose>
+              );
+            })}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </nav>
   );
 }
