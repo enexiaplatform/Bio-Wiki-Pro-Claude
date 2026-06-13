@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Download, Package, FileText, Lock, Loader2, Calendar } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
+import { analytics } from "@/hooks/use-analytics";
 
 interface DeliverableFile {
   filename: string;
@@ -38,13 +39,14 @@ export default function MyDownloadsPage() {
     };
   }, [isAuthenticated]);
 
-  async function download(file: DeliverableFile) {
+  async function download(file: DeliverableFile, productId: string) {
     // Fetch with credentials, then trigger a browser save (the endpoint is gated).
     const res = await fetch(file.url, { credentials: "include" });
     if (!res.ok) {
       alert("This download isn't available — please make sure you're signed in with the account that purchased it.");
       return;
     }
+    analytics.downloadClicked(productId, file.filename);
     const blob = await res.blob();
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -95,7 +97,7 @@ export default function MyDownloadsPage() {
                       <p className="text-xs text-muted-foreground">{f.description}</p>
                     </div>
                     <button
-                      onClick={() => download(f)}
+                      onClick={() => download(f, p.id)}
                       className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 px-3 py-2 text-xs font-semibold transition-colors"
                       data-testid={`download-${f.filename}`}
                     >

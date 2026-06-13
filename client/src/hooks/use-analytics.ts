@@ -44,6 +44,13 @@ export function identify(userId: string, traits?: Record<string, unknown>) {
   }
 }
 
+/** Clear the identified user on logout so events aren't attributed across accounts. */
+export function reset() {
+  if (typeof window !== "undefined" && typeof window.posthog?.reset === "function") {
+    window.posthog.reset();
+  }
+}
+
 /** Capture a client-side error/exception to PostHog (guarded, never throws). */
 export function captureError(error: unknown, context?: Record<string, unknown>) {
   const message = error instanceof Error ? error.message : String(error);
@@ -71,6 +78,12 @@ export const analytics = {
   leadCaptured: (source: string) =>
     capture("lead_captured", { source }),
 
+  signupStarted: (method = "email") =>
+    capture("signup_started", { method }),
+
+  signupCompleted: (method = "email") =>
+    capture("signup_completed", { method }),
+
   checkoutStarted: (productType: string, priceUsd?: number) =>
     capture("checkout_started", { product_type: productType, price_usd: priceUsd }),
 
@@ -96,6 +109,9 @@ export const analytics = {
 
   lessonOpened: (lessonId: string, lessonTitle: string) =>
     capture("lesson_opened", { lesson_id: lessonId, lesson_title: lessonTitle }),
+
+  downloadClicked: (productId: string, filename: string) =>
+    capture("download_clicked", { product_id: productId, filename }),
 
   searchPerformed: (query: string, section: string, resultsCount: number) =>
     capture("search_performed", { query, section, results_count: resultsCount }),

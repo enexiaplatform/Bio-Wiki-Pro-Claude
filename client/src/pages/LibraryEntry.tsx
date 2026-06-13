@@ -7,6 +7,7 @@ import { getPathContext } from "@/data/learningPaths";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
 import { useReadLessons } from "@/hooks/use-read-lessons";
+import { analytics } from "@/hooks/use-analytics";
 import { GatedContent } from "@/components/GatedContent";
 import { LessonQuiz } from "@/components/LessonQuiz";
 import { JsonLd } from "@/components/JsonLd";
@@ -24,7 +25,10 @@ export default function LibraryEntry() {
   useSEO({ title: entry?.title ?? "Academy", description: entry?.seoDescription });
 
   useEffect(() => {
-    if (entry) markRead(slug);
+    if (entry) {
+      markRead(slug);
+      analytics.lessonOpened(slug, entry.title);
+    }
   }, [entry, slug, markRead]);
 
   if (!entry) return <NotFound />;

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { reset as resetAnalytics } from "@/hooks/use-analytics";
 import type { User } from "@shared/models/auth";
 
 async function fetchUser(): Promise<User | null> {
@@ -22,6 +23,7 @@ async function logout(): Promise<void> {
     method: "POST",
     credentials: "include",
   });
+  resetAnalytics();
   window.location.href = "/login";
 }
 

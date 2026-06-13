@@ -11,6 +11,7 @@ import { FlaskConical } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { analytics } from "@/hooks/use-analytics";
 
 export default function RegisterPage() {
   const { t } = useTranslation("auth");
@@ -28,6 +29,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    analytics.signupStarted("email");
 
     if (password !== confirmPassword) {
       toast({
@@ -56,6 +58,7 @@ export default function RegisterPage() {
         firstName, 
         lastName 
       });
+      analytics.signupCompleted("email");
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       setLocation("/welcome");
     } catch (err: any) {
