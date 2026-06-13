@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Microscope, Search } from "lucide-react";
 
 const openSearch = () => window.dispatchEvent(new Event("bwp:open-search"));
 import clsx from "clsx";
@@ -52,6 +52,7 @@ const desktopTabs = [
   { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
   { key: "career", name: "Career", icon: Briefcase, path: "/career" },
   { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits/gmp-audit-kit" },
+  { key: "solutions", name: "Solutions", icon: Microscope, path: "/solutions" },
   { key: "insights", name: "Insights", icon: TrendingUp, path: "/insights" },
 ];
 
@@ -92,20 +93,22 @@ export function DesktopNav() {
   const { user, isAuthenticated, isPro, logout } = useUser();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-8">
-      <Link href="/" className="flex items-center gap-2 mr-12 hover:opacity-80 transition-opacity">
+    <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-6">
+      <Link href="/" className="flex items-center gap-2 mr-6 shrink-0 hover:opacity-80 transition-opacity">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1">
           <BioWikiMark className="w-full h-full" />
         </div>
         <span className="font-display font-bold text-xl tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
       </Link>
 
-      <nav className="flex items-center gap-1">
+      {/* Scrollable tab strip — keeps the brand + right controls pinned and visible
+          at any width while the full tab set stays reachable (no clipped Sign In). */}
+      <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {desktopTabs.map((tab) => {
           const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
           return (
             <Link key={tab.name} href={tab.path} className={clsx(
-              "px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
+              "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",
               isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
             )} data-testid={`nav-desktop-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <tab.icon className="w-4 h-4" />
@@ -115,7 +118,7 @@ export function DesktopNav() {
         })}
       </nav>
 
-      <div className="ml-auto flex items-center gap-3">
+      <div className="ml-auto shrink-0 flex items-center gap-3 pl-4">
         <button
           onClick={openSearch}
           className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-white/20 transition-colors"

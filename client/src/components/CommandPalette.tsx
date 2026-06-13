@@ -14,9 +14,11 @@ import { listContent } from "@/lib/content";
 const PAGES: { label: string; path: string }[] = [
   { label: "QC Hub", path: "/qc-hub" },
   { label: "Academy", path: "/academy" },
+  { label: "Library", path: "/library" },
   { label: "Tools", path: "/tools" },
   { label: "Compliance", path: "/compliance" },
   { label: "Career", path: "/career" },
+  { label: "Solutions", path: "/solutions" },
   { label: "Insights", path: "/insights" },
   { label: "Glossary", path: "/glossary" },
   { label: "Blog", path: "/blog" },
@@ -24,6 +26,8 @@ const PAGES: { label: string; path: string }[] = [
   { label: "GMP Audit Kit", path: "/toolkits/gmp-audit-kit" },
   { label: "Pricing", path: "/pricing" },
   { label: "Upgrade to Pro", path: "/upgrade" },
+  { label: "My Learning", path: "/my-learning" },
+  { label: "My Downloads", path: "/my-downloads" },
   { label: "Vault", path: "/vault" },
   { label: "Settings", path: "/settings" },
 ];

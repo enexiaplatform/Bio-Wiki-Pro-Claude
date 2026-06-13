@@ -9,9 +9,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslation } from "react-i18next";
+import { useSEO } from "@/hooks/use-seo";
 
 export default function Solutions() {
   const { t } = useTranslation("sections");
+  useSEO({
+    title: "Lab Solutions & Equipment",
+    description:
+      "End-to-end lab solutions for life-science R&D, QC labs, and clinical teams — instruments, water systems, LIMS, and more. Request a quote for your workflow.",
+  });
   const { data: products, isLoading } = useSolutions();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 

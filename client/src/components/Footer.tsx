@@ -30,6 +30,15 @@ export function Footer() {
             <Link href="/library" className="hover:text-primary transition-colors">
               Library
             </Link>
+            <Link href="/tools" className="hover:text-primary transition-colors">
+              Tools
+            </Link>
+            <Link href="/solutions" className="hover:text-primary transition-colors">
+              Solutions
+            </Link>
+            <Link href="/career" className="hover:text-primary transition-colors">
+              Career
+            </Link>
             <Link href="/glossary" className="hover:text-primary transition-colors">
               Glossary
             </Link>
