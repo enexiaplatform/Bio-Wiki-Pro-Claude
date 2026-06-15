@@ -1,0 +1,3577 @@
+[
+  {
+    "collection": "academy",
+    "slug": "acceptance-sampling-aql",
+    "lang": "en",
+    "title": "Acceptance Sampling & AQL (ANSI/ASQ Z1.4)",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Acceptance sampling with AQL per ANSI/ASQ Z1.4 — sample size codes, accept/reject numbers, and why a sampling plan is a risk decision, not just a count.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What does AQL stand for?",
+        "options": [
+          "Average Quality Level",
+          "Acceptable Quality Limit",
+          "Audit Quality Log",
+          "Annual Quality List"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "In ANSI/ASQ Z1.4, what determines the sample size code letter?",
+        "options": [
+          "Lot size and inspection level",
+          "The analyst's preference",
+          "The price of the product",
+          "The day of the week"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "A lower AQL means:",
+        "options": [
+          "More defects tolerated",
+          "Stricter acceptance (fewer defects allowed)",
+          "No inspection",
+          "Larger defects only"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "aggregation-and-sec",
+    "lang": "en",
+    "title": "Protein Aggregation & Size-Exclusion (SEC)",
+    "tier": "pro",
+    "category": "Biologics QC",
+    "seoDescription": "Why aggregation is a critical biologic CQA — immunogenicity risk, SEC as the workhorse for monomer/HMW/LMW, its limitations, and orthogonal methods for sub-visible particles.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Protein aggregates are a critical attribute mainly because they:",
+        "options": [
+          "Improve potency",
+          "Carry an immunogenicity (and efficacy) risk",
+          "Lower the price",
+          "Are required by spec"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The routine release method for soluble aggregates is:",
+        "options": [
+          "Karl Fischer",
+          "Size-exclusion chromatography (SEC)",
+          "pH meter",
+          "icIEF"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A key limitation of SEC is that it can:",
+        "options": [
+          "Never detect monomer",
+          "Dissociate or under-report some aggregates due to dilution/column interactions",
+          "Only measure charge",
+          "Measure endotoxin"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "analytical-instrument-qualification",
+    "lang": "en",
+    "title": "Analytical Instrument Qualification (USP 1058)",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "USP 1058 analytical instrument qualification — the 4Qs (DQ/IQ/OQ/PQ), instrument groups A/B/C, and how AIQ underpins data integrity and method validation.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What does USP 1058 govern?",
+        "options": [
+          "Cleaning validation",
+          "Analytical Instrument Qualification",
+          "Sterility testing",
+          "Stability studies"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which instrument group requires the most rigorous qualification?",
+        "options": [
+          "Group A (standard apparatus)",
+          "Group B (standard equipment)",
+          "Group C (computerized instruments)",
+          "They are all equal"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "AIQ provides the foundation for which downstream activity?",
+        "options": [
+          "Marketing",
+          "Valid analytical data and method validation",
+          "Payroll",
+          "Facility cleaning"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "analytical-method-transfer",
+    "lang": "en",
+    "title": "Analytical Method Transfer",
+    "tier": "pro",
+    "category": "Validation",
+    "seoDescription": "Transferring analytical methods between labs — comparative testing, co-validation, and the protocol design that prevents transfer failures.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "In comparative testing, both labs:",
+        "options": [
+          "Use different samples",
+          "Test the same samples against predefined acceptance criteria",
+          "Skip acceptance criteria",
+          "Only compare instruments"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A transfer waiver may be justified when:",
+        "options": [
+          "The method is brand new",
+          "The method is compendial or the receiving lab has documented equivalent experience",
+          "The lab is busy",
+          "Standards are unavailable"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Acceptance criteria for a transfer should be set:",
+        "options": [
+          "After seeing the data",
+          "Before testing, based on the method's purpose",
+          "By the instrument vendor",
+          "Only if it fails"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "analytical-method-validation",
+    "lang": "en",
+    "title": "Analytical Method Validation (ICH Q2)",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "The ICH Q2(R2) validation characteristics — accuracy, precision, specificity, linearity, range, LOD/LOQ — and which apply to which test type.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "Which characteristic describes closeness between the measured value and the true value?",
+        "options": [
+          "Precision",
+          "Accuracy",
+          "Linearity",
+          "Specificity"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Repeatability and intermediate precision are both measures of what?",
+        "options": [
+          "Accuracy",
+          "Precision",
+          "Robustness",
+          "Range"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "For a quantitative impurity assay, which is typically required?",
+        "options": [
+          "LOD only",
+          "Accuracy, precision, specificity, linearity, range, LOQ",
+          "Specificity only",
+          "No validation needed"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "analytical-procedure-lifecycle-q14",
+    "lang": "en",
+    "title": "Analytical Procedure Lifecycle (ICH Q14)",
+    "tier": "pro",
+    "category": "Validation",
+    "seoDescription": "ICH Q14 and the analytical procedure lifecycle — the Analytical Target Profile (ATP), enhanced (QbD) approach, and how it complements Q2(R2) validation.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The Analytical Target Profile (ATP) is defined:",
+        "options": [
+          "After validation",
+          "Before development — the performance the method must meet",
+          "By the instrument vendor",
+          "Only for compendial methods"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Within a defined Method Operable Design Region (MODR), parameter adjustments are:",
+        "options": [
+          "A change to the registered method needing prior approval",
+          "Not a change to the registered method",
+          "Always prohibited",
+          "Untracked"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "ICH Q14 and Q2(R2) relate as:",
+        "options": [
+          "Q14 = development, Q2 = validation (companion guidelines)",
+          "They are identical",
+          "Q14 replaces Q2",
+          "Neither covers methods"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "annex-1-key-changes",
+    "lang": "en",
+    "title": "EU GMP Annex 1 (2022) — Key Changes",
+    "tier": "pro",
+    "category": "Aseptic Processing",
+    "seoDescription": "What changed in EU GMP Annex 1:2022 — the Contamination Control Strategy, QRM throughout, PUPSIT, barrier technology expectations, and the new EM and media-fill emphasis.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The single headline requirement introduced by Annex 1 (2022) is:",
+        "options": [
+          "A new gowning gown",
+          "A documented site-wide Contamination Control Strategy",
+          "Annual media fills",
+          "Paper batch records"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "PUPSIT refers to:",
+        "options": [
+          "A cleanroom grade",
+          "Pre-Use Post-Sterilization Integrity Testing of sterilizing filters",
+          "A gowning step",
+          "An EM method"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Under Annex 1, Quality Risk Management (ICH Q9) is:",
+        "options": [
+          "A separate optional exercise",
+          "The basis for decisions throughout the annex",
+          "Only for media fills",
+          "Not mentioned"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "annual-product-review",
+    "lang": "en",
+    "title": "Annual Product Review (APR / PQR)",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "The Annual Product Review / Product Quality Review — what 21 CFR 211.180(e) and EU GMP Chapter 1 require, and how to turn it into a real improvement tool.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What is the primary purpose of an APR/PQR?",
+        "options": [
+          "Marketing report",
+          "Verify process consistency and identify improvements",
+          "Tax filing",
+          "Sales forecast"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which US regulation requires an annual review of product quality standards?",
+        "options": [
+          "21 CFR 11",
+          "21 CFR 211.180(e)",
+          "21 CFR 820",
+          "ICH Q1A"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which of these is a typical APR input?",
+        "options": [
+          "Batch records, deviations, OOS, complaints, stability",
+          "Payroll data",
+          "Marketing spend",
+          "Office rent"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "antimicrobial-effectiveness-test",
+    "lang": "en",
+    "title": "Antimicrobial Effectiveness Testing (USP 51)",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Preservative efficacy / antimicrobial effectiveness testing per USP 51 — challenge organisms, log-reduction criteria by product category, and when it's required.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "What does Antimicrobial Effectiveness Testing (USP 51) demonstrate?",
+        "options": [
+          "Product sterility",
+          "That the preservative system controls microbial growth over shelf life",
+          "Endotoxin level",
+          "Tablet hardness"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The test works by:",
+        "options": [
+          "Filtering the product",
+          "Inoculating product with challenge organisms and measuring log reduction over time",
+          "Heating the product",
+          "Measuring pH only"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Acceptance criteria (log reductions and time points) depend on:",
+        "options": [
+          "The product category / route of administration",
+          "The day of the week",
+          "The analyst",
+          "The price"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "aseptic-technique",
+    "lang": "en",
+    "title": "Aseptic Technique — Fundamentals",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "First-air, gowning, slow deliberate movements — the core behaviours that keep aseptic processing sterile under Annex 1.",
+    "updatedAt": "2026-06-01",
+    "quiz": [
+      {
+        "q": "What is 'first air'?",
+        "options": [
+          "The first air of the shift",
+          "HEPA-filtered air before it contacts anything",
+          "Air from the return duct",
+          "Compressed air"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why are slow, deliberate movements used in Grade A?",
+        "options": [
+          "To look professional",
+          "To avoid disrupting unidirectional airflow",
+          "To save energy",
+          "Regulatory dress code"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Operators must never do what over an open product?",
+        "options": [
+          "Observe it",
+          "Reach across / break first air",
+          "Document it",
+          "Monitor it"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "batch-record-review",
+    "lang": "en",
+    "title": "Batch Record Review & Product Release",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "How QA reviews batch records and releases product — review by exception, the Qualified Person model, and the disposition decision that gates every shipment.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "In the EU, who carries personal legal responsibility for certifying a batch?",
+        "options": [
+          "The operator",
+          "The Qualified Person (QP)",
+          "The supplier",
+          "The auditor"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Review by exception is acceptable when:",
+        "options": [
+          "The record is on paper",
+          "It rests on a validated system and a sound risk basis",
+          "The batch is small",
+          "The QP is unavailable"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Before disposition, every deviation and OOS affecting the batch must be:",
+        "options": [
+          "Ignored if minor",
+          "Closed with an impact assessment",
+          "Deferred to next batch",
+          "Logged verbally"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "bioburden-usp-61",
+    "lang": "en",
+    "title": "Bioburden & Microbial Limits (USP <61>/<62>)",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Microbial enumeration and specified-organism testing for non-sterile products per USP <61>/<62> — TAMC, TYMC, and method suitability.",
+    "updatedAt": "2026-05-30",
+    "quiz": [
+      {
+        "q": "What does TAMC stand for?",
+        "options": [
+          "Total Anaerobic Microbial Count",
+          "Total Aerobic Microbial Count",
+          "Total Aseptic Media Control",
+          "Total Active Microbial Culture"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "USP <62> tests for what?",
+        "options": [
+          "Total counts only",
+          "Specified (objectionable) microorganisms",
+          "Endotoxin",
+          "Sterility"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Method suitability proves the matrix does not:",
+        "options": [
+          "Change colour",
+          "Inhibit recovery of low inocula",
+          "Increase pH",
+          "Need incubation"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "biologics-qc-overview",
+    "lang": "en",
+    "title": "Biologics QC — What Makes It Different",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Why QC for biologics differs from small molecules — heterogeneity, the process defines the product, identity by multiple orthogonal methods, and potency by bioassay.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Compared with a small-molecule drug, a biologic is best described as:",
+        "options": [
+          "A single, fully defined molecule",
+          "A heterogeneous mixture of closely related molecular species",
+          "Always smaller",
+          "Free of impurities"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The phrase \"the process defines the product\" means:",
+        "options": [
+          "Process changes can't affect quality",
+          "The manufacturing process itself shapes the product's critical attributes",
+          "Only the formula matters",
+          "QC is unnecessary"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Identity of a biologic is typically confirmed by:",
+        "options": [
+          "A single test",
+          "Multiple orthogonal methods (e.g. peptide map + charge + binding)",
+          "Appearance only",
+          "Weight only"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "calibration-metrology",
+    "lang": "en",
+    "title": "Calibration & Metrology Programs",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Running a GMP calibration program — traceability to national standards, tolerances vs process limits, intervals, and how out-of-tolerance results trigger impact assessment.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "Calibration of GMP instruments must be traceable to:",
+        "options": [
+          "The vendor's brochure",
+          "A national/international measurement standard (e.g. NIST)",
+          "The operator's judgment",
+          "The batch record"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "An instrument's calibration tolerance should be:",
+        "options": [
+          "Looser than the process requirement it controls",
+          "At least as tight as the process requirement it controls",
+          "Irrelevant",
+          "Always ±50%"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "When an instrument is found out-of-tolerance at calibration, you must:",
+        "options": [
+          "Ignore it",
+          "Assess impact on data/product produced since the last good calibration",
+          "Only recalibrate",
+          "Scrap all records"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "capa-fundamentals",
+    "lang": "en",
+    "title": "CAPA Fundamentals",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Corrective and Preventive Action done right — root cause, correction vs corrective action, and the effectiveness check that auditors look for.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Rejecting the affected batch immediately is an example of:",
+        "options": [
+          "Corrective action",
+          "Correction (immediate fix)",
+          "Preventive action",
+          "Root cause analysis"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The most common CAPA inspection finding is:",
+        "options": [
+          "Too much documentation",
+          "Actions defined before root cause is established",
+          "Closing too slowly",
+          "Using 5 Whys"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "An acceptable effectiveness check is:",
+        "options": [
+          "\"Training completed\"",
+          "\"SOP updated\"",
+          "Objective data showing zero recurrence over a defined period",
+          "Manager sign-off"
+        ],
+        "answer": 2
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "cell-bank-characterization",
+    "lang": "en",
+    "title": "Cell Bank Establishment & Characterization",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "The two-tiered MCB/WCB cell-bank system for biologics — why it ensures consistency, what characterization covers (identity, purity, stability, viral safety), and generational control.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The two-tiered cell bank system consists of:",
+        "options": [
+          "Two freezers",
+          "A Master Cell Bank (MCB) and a Working Cell Bank (WCB)",
+          "Two analysts",
+          "A backup spreadsheet"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why use a two-tiered MCB/WCB system?",
+        "options": [
+          "To use more vials",
+          "To protect a finite, consistent source and limit how often the MCB is accessed",
+          "It is decorative",
+          "To raise the price"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Cell-bank characterization does NOT typically include:",
+        "options": [
+          "Identity",
+          "Adventitious-agent / viral safety",
+          "Genetic stability",
+          "The product's final fill volume"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "cell-based-potency-assays",
+    "lang": "en",
+    "title": "Cell-Based Potency Assays (Bioassays)",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Potency bioassays for biologics — why activity must be measured biologically, relative potency vs a reference, the 4-parameter logistic fit, and why bioassays are so variable.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Why is potency for a biologic usually measured by a bioassay rather than a chemical assay?",
+        "options": [
+          "Bioassays are cheaper",
+          "Structure alone doesn't guarantee biological function",
+          "Chemical assays are illegal",
+          "It is faster"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Bioassay potency is normally reported as:",
+        "options": [
+          "An absolute concentration",
+          "Relative potency vs a reference standard",
+          "A pass/fail color",
+          "A melting point"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Dose-response curves in bioassays are commonly fit with:",
+        "options": [
+          "A straight line only",
+          "A 4-parameter logistic (4PL) model",
+          "No model",
+          "A pie chart"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "change-control",
+    "lang": "en",
+    "title": "Change Control",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Manage changes to processes, equipment, and documents — impact assessment, approval, implementation, and effectiveness verification.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "The core purpose of change control is to:",
+        "options": [
+          "Slow everything down",
+          "Assess and approve changes before implementation",
+          "Avoid documentation",
+          "Replace CAPA"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A change request must include:",
+        "options": [
+          "Only the change date",
+          "An impact/risk assessment",
+          "Nothing",
+          "A marketing plan"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Implemented changes should be checked for:",
+        "options": [
+          "Effectiveness against the intended outcome",
+          "Speed only",
+          "Cost only",
+          "Nothing"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "cleaning-validation",
+    "lang": "en",
+    "title": "Cleaning Validation",
+    "tier": "pro",
+    "category": "Validation",
+    "seoDescription": "Prove cleaning procedures remove product, cleaning agents, and microbes to safe levels — limits, sampling, and HBEL-based acceptance.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Modern cleaning-validation limits are primarily based on:",
+        "options": [
+          "The 10-ppm rule alone",
+          "Health-Based Exposure Limits (HBEL/PDE)",
+          "Visual inspection only",
+          "Supplier recommendation"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A recovery study is needed to:",
+        "options": [
+          "Speed up cleaning",
+          "Correct results for incomplete analyte recovery from the surface",
+          "Replace swabbing",
+          "Set the production schedule"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "MACO stands for:",
+        "options": [
+          "Maximum Allowable Carryover",
+          "Mean Average Cleaning Output",
+          "Minimum Acceptable Contamination",
+          "Material And Cleaning Order"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "complaint-handling",
+    "lang": "en",
+    "title": "Complaint Handling & Recall",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Receive, assess, and investigate product complaints — severity, reportability, and the link to recall decisions.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "The first action on a product complaint is to:",
+        "options": [
+          "Recall the batch",
+          "Log it and assess for patient risk / reportability",
+          "Discard it",
+          "Blame distribution"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A complaint suggesting a possible defect affecting safety may trigger:",
+        "options": [
+          "Nothing",
+          "A recall decision and possible regulatory reporting",
+          "A price change",
+          "A new product"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Complaint trends should feed into:",
+        "options": [
+          "Marketing",
+          "Quality review / CAPA",
+          "Payroll",
+          "Nothing"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "computer-system-validation",
+    "lang": "en",
+    "title": "Computer System Validation (GAMP 5)",
+    "tier": "pro",
+    "category": "Validation",
+    "seoDescription": "Risk-based CSV with GAMP 5 — software categories, the V-model, and how data integrity (ALCOA+) drives validation scope for GxP systems.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "A configured LIMS falls into which GAMP category?",
+        "options": [
+          "Category 1",
+          "Category 3",
+          "Category 4",
+          "Category 5"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "In the V-model, User Requirements (URS) are verified by:",
+        "options": [
+          "Installation Qualification",
+          "User Acceptance Testing / PQ",
+          "Code review",
+          "Supplier audit"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "For a SaaS GxP system, the regulated company remains accountable for:",
+        "options": [
+          "Nothing — the vendor owns it",
+          "Validation for intended use, data integrity, and supplier oversight",
+          "Only the password",
+          "Only the invoice"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "container-closure-integrity",
+    "lang": "en",
+    "title": "Container Closure Integrity Testing (CCIT)",
+    "tier": "pro",
+    "category": "Aseptic Processing",
+    "seoDescription": "Container Closure Integrity Testing per USP 1207 — deterministic vs probabilistic methods, MALL, and replacing the sterility test for stability.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "USP 1207 encourages a shift toward which kind of CCIT method?",
+        "options": [
+          "Probabilistic (dye ingress)",
+          "Deterministic, instrument-based",
+          "Visual only",
+          "Microbial immersion"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The MALL is:",
+        "options": [
+          "A cleanroom grade",
+          "The maximum leak size below which sterility/quality is not compromised",
+          "A sampling plan",
+          "A filter rating"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "An advantage of CCIT over the sterility test at stability time points is:",
+        "options": [
+          "It is cheaper to ignore",
+          "Non-destructive, no false positives from test handling, full-sample capable",
+          "It needs no validation",
+          "It replaces process validation"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "contamination-control-strategy",
+    "lang": "en",
+    "title": "Contamination Control Strategy (CCS)",
+    "tier": "pro",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "The CCS is the backbone of EU GMP Annex 1 (2022) — a site-wide, risk-based plan tying together every contamination control across the facility.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The Contamination Control Strategy became mandatory under:",
+        "options": [
+          "ICH Q7",
+          "EU GMP Annex 1 (2022 revision)",
+          "21 CFR Part 11",
+          "USP <71>"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A CCS is best described as:",
+        "options": [
+          "A one-time binder of SOPs",
+          "A living, site-wide risk assessment reviewed against monitoring data",
+          "A cleaning schedule",
+          "A gowning procedure"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which is NOT typically an element integrated by the CCS?",
+        "options": [
+          "Personnel & gowning",
+          "Utilities (water, gases)",
+          "Marketing approvals",
+          "Environmental monitoring"
+        ],
+        "answer": 2
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "data-integrity-deep-dive",
+    "lang": "en",
+    "title": "Data Integrity — Audit Trail Review (Deep Dive)",
+    "tier": "pro",
+    "category": "Data Integrity",
+    "seoDescription": "Beyond ALCOA+: building a risk-based audit trail review program that inspectors trust — what to review, how often, and by whom.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Audit trail review should be performed by:",
+        "options": [
+          "The analyst who generated the data",
+          "Someone independent of the work, at a risk-based frequency",
+          "Anyone, once a year",
+          "Only the FDA"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which is the highest data-integrity risk in a QC lab?",
+        "options": [
+          "Reading a thermometer",
+          "Chromatography reprocessing/re-integration and shared logins",
+          "Filing paper records",
+          "Labeling vials"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Reviewing audit trails without keeping records of the review is:",
+        "options": [
+          "Best practice",
+          "A likely inspection finding",
+          "Required by ALCOA",
+          "Acceptable if verbal"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "deviation-management",
+    "lang": "en",
+    "title": "Deviation Management",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Classify, investigate, and close deviations on time — the lifecycle, severity tiers, and how deviations link to CAPA.",
+    "updatedAt": "2026-06-01",
+    "quiz": [
+      {
+        "q": "What is the first step when a deviation is detected?",
+        "options": [
+          "Close it",
+          "Document and assess immediate impact",
+          "Ignore if minor",
+          "Blame the operator"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A critical deviation is one that:",
+        "options": [
+          "Is easy to fix",
+          "May affect product quality, safety, or efficacy",
+          "Happens on a Friday",
+          "Has no impact"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Deviations that recur often should trigger:",
+        "options": [
+          "A CAPA",
+          "Nothing",
+          "A new SOP only",
+          "Operator dismissal"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "disinfectant-qualification",
+    "lang": "en",
+    "title": "Disinfectant Efficacy & Cleanroom Disinfection",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Qualifying cleanroom disinfectants — contact time, surface efficacy, rotation and sporicide use, and the in-use studies Annex 1 expects.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "Why is a sporicidal agent rotated into a cleanroom disinfection program?",
+        "options": [
+          "To save money",
+          "Routine disinfectants may not kill bacterial/fungal spores",
+          "To change the smell",
+          "It is never needed"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What parameter must a disinfectant efficacy study confirm for each surface?",
+        "options": [
+          "Color",
+          "Log reduction at the validated contact (wet) time",
+          "Price",
+          "Viscosity"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Disinfectants used in aseptic (Grade A/B) areas should be:",
+        "options": [
+          "Tap-water diluted",
+          "Sterile (or sterile-filtered) and within expiry",
+          "Any household cleaner",
+          "Unlabeled"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "dissolution-testing-usp-711",
+    "lang": "en",
+    "title": "Dissolution Testing (USP 711)",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Dissolution testing per USP 711 — apparatus 1 and 2, the S1/S2/S3 acceptance stages, and why dissolution is a critical quality and bioavailability surrogate.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "Which USP 711 apparatus is the 'paddle' method?",
+        "options": [
+          "Apparatus 1 (basket)",
+          "Apparatus 2 (paddle)",
+          "Apparatus 3 (reciprocating cylinder)",
+          "Apparatus 4 (flow-through)"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What does the staged S1/S2/S3 scheme control?",
+        "options": [
+          "Sterility",
+          "Acceptance testing of dissolution results",
+          "Endotoxin limits",
+          "Particle size"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Dissolution is often used as a surrogate for what?",
+        "options": [
+          "Sterility",
+          "In-vivo bioavailability",
+          "Color",
+          "Weight"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "dry-heat-depyrogenation",
+    "lang": "en",
+    "title": "Dry-Heat Sterilization & Depyrogenation",
+    "tier": "pro",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Dry-heat sterilization and depyrogenation — the 250°C/3-log endotoxin reduction standard, FH lethality, tunnels vs ovens, and endotoxin-indicator validation.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The recognized standard for depyrogenation is:",
+        "options": [
+          "1-log endotoxin reduction",
+          "≥3-log (1000-fold) endotoxin reduction",
+          "Sterility only",
+          "A color change"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "FH expresses:",
+        "options": [
+          "Filter integrity",
+          "Accumulated dry-heat lethality at a reference temperature",
+          "Humidity",
+          "Fill volume"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Endotoxin indicators in a depyrogenation validation are placed:",
+        "options": [
+          "Anywhere convenient",
+          "At the cold spot identified by heat distribution",
+          "Outside the oven",
+          "Only in the door"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "electronic-records-part-11",
+    "lang": "en",
+    "title": "Electronic Records & Signatures (21 CFR Part 11 / Annex 11)",
+    "tier": "pro",
+    "category": "Data Integrity",
+    "seoDescription": "21 CFR Part 11 and EU GMP Annex 11 for electronic records and signatures — audit trails, access control, validation, and what makes an e-signature compliant.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "A compliant audit trail must be:",
+        "options": [
+          "Editable by the analyst",
+          "Secure, computer-generated, time-stamped, without overwriting prior entries",
+          "Optional for QC systems",
+          "Kept on paper"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Shared/generic logins are a problem because they break:",
+        "options": [
+          "Speed",
+          "Attributability of actions to an individual",
+          "Backups",
+          "The user interface"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Annex 11's central theme for control depth is:",
+        "options": [
+          "Test everything equally",
+          "Risk-based controls proportionate to GMP impact",
+          "Vendor decides",
+          "Paper preferred"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "elemental-impurities-q3d",
+    "lang": "en",
+    "title": "Elemental Impurities (ICH Q3D)",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "ICH Q3D elemental impurities — PDEs, the risk-based control approach, classes of elements, and why the old USP heavy-metals limit test was retired.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What does a PDE represent in ICH Q3D?",
+        "options": [
+          "Permitted Daily Exposure",
+          "Process Design Element",
+          "Particle Detection Equipment",
+          "Purity Determination Estimate"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Which approach does ICH Q3D require for controlling elemental impurities?",
+        "options": [
+          "A single colorimetric test",
+          "A risk-based assessment",
+          "No control needed",
+          "Visual inspection"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why was the old USP heavy-metals test (USP 231) retired?",
+        "options": [
+          "Too expensive",
+          "Non-specific and insensitive vs instrumental methods",
+          "Banned globally",
+          "Patient preference"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "endotoxin-lal-testing",
+    "lang": "en",
+    "title": "Bacterial Endotoxins — LAL Testing",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Bacterial endotoxin testing per USP <85> — gel-clot, kinetic turbidimetric & chromogenic methods, and endotoxin limit calculation.",
+    "updatedAt": "2026-05-30",
+    "quiz": [
+      {
+        "q": "The endotoxin limit is calculated as:",
+        "options": [
+          "K × M",
+          "K / M",
+          "M / K",
+          "K + M"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which is the historical reference LAL method?",
+        "options": [
+          "Kinetic chromogenic",
+          "Gel-clot",
+          "Kinetic turbidimetric",
+          "ELISA"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Acceptable spike recovery range for interference testing?",
+        "options": [
+          "50–200%",
+          "80–120%",
+          "0–100%",
+          "90–110%"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "environmental-monitoring-basics",
+    "lang": "en",
+    "title": "Environmental Monitoring — Foundations",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "How environmental monitoring (EM) detects contamination risk in cleanrooms — viable & non-viable, alert/action limits, trending.",
+    "updatedAt": "2026-05-30",
+    "quiz": [
+      {
+        "q": "What does an alert limit indicate?",
+        "options": [
+          "An out-of-spec failure",
+          "An early warning / trend signal",
+          "A sterility failure",
+          "A calibration error"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which is a viable monitoring method?",
+        "options": [
+          "Airborne particle count",
+          "Settle plates",
+          "Conductivity",
+          "TOC"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What should drive sampling location selection?",
+        "options": [
+          "Convenience",
+          "Risk / proximity to product",
+          "Alphabetical order",
+          "Room size"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "equipment-qualification",
+    "lang": "en",
+    "title": "Equipment Qualification (IQ/OQ/PQ)",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Equipment qualification explained — DQ, IQ, OQ, PQ, the role of the URS, and how qualification feeds into ongoing process validation.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "Which qualification stage verifies the equipment is installed correctly per specification?",
+        "options": [
+          "DQ",
+          "IQ",
+          "OQ",
+          "PQ"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Operational Qualification (OQ) demonstrates the equipment:",
+        "options": [
+          "Is delivered",
+          "Performs across its operating ranges",
+          "Is depreciated",
+          "Is cleaned"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What document defines the user's needs before purchase?",
+        "options": [
+          "URS",
+          "CAPA",
+          "OOS",
+          "SOP"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "extractables-and-leachables",
+    "lang": "en",
+    "title": "Extractables & Leachables (E&L)",
+    "tier": "pro",
+    "category": "Laboratory Controls",
+    "seoDescription": "Extractables and leachables studies for container-closure and single-use systems — the difference, the AET threshold, and a risk-based study design.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Leachables are best described as:",
+        "options": [
+          "Compounds forced out under exaggerated lab conditions",
+          "Compounds that actually migrate into product under real conditions",
+          "Always identical to extractables",
+          "Only relevant for tablets"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The Analytical Evaluation Threshold (AET) defines:",
+        "options": [
+          "The boiling point",
+          "The level above which a compound must be identified and toxicologically assessed",
+          "The batch size",
+          "The shelf life"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which products carry the highest E&L risk?",
+        "options": [
+          "Oral tablets in blister",
+          "Inhalation and parenteral with prolonged contact",
+          "Topical creams",
+          "External devices"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "glycosylation-analysis",
+    "lang": "en",
+    "title": "Glycosylation Analysis",
+    "tier": "pro",
+    "category": "Biologics QC",
+    "seoDescription": "Why glycans are a critical quality attribute for antibodies — effect on efficacy (ADCC), half-life and immunogenicity, released-glycan and site-specific methods, and process sensitivity.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Glycosylation is a critical quality attribute because glycans can affect:",
+        "options": [
+          "Only the color",
+          "Efficacy (e.g. ADCC), half-life, and immunogenicity",
+          "Nothing functional",
+          "Only the price"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Afucosylation of an antibody typically:",
+        "options": [
+          "Decreases ADCC",
+          "Increases ADCC (effector function)",
+          "Has no effect",
+          "Removes the Fc"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A common workflow for glycan profiling is:",
+        "options": [
+          "Weigh the intact protein only",
+          "Release glycans, label, and separate by HILIC-fluorescence/MS",
+          "Measure pH",
+          "Visual inspection"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "gmp-training-qualification",
+    "lang": "en",
+    "title": "GMP Training & Personnel Qualification",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Building a GMP training program that holds up in an audit — role-based curricula, read-and-understand vs assessed competency, and the records inspectors check.",
+    "updatedAt": "2026-06-03",
+    "quiz": [
+      {
+        "q": "What is the weakness of 'read and understand' as the only training method?",
+        "options": [
+          "It's illegal",
+          "It doesn't demonstrate competency",
+          "It's too expensive",
+          "It needs a computer"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Training requirements should primarily be defined by:",
+        "options": [
+          "Seniority",
+          "The person's role / job function",
+          "Alphabetical order",
+          "Office location"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "When a procedure (SOP) changes materially, you should:",
+        "options": [
+          "Do nothing",
+          "Retrain affected staff before they perform the task",
+          "Wait for the annual review",
+          "Only tell managers"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "good-documentation-practice",
+    "lang": "en",
+    "title": "Good Documentation Practice (GDocP)",
+    "tier": "free",
+    "category": "Data Integrity",
+    "seoDescription": "Good Documentation Practice — ALCOA+, correct error-correction, contemporaneous recording, and the habits that keep records audit-ready.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "How should a recording error be corrected on a paper record?",
+        "options": [
+          "Erase it cleanly",
+          "Use correction fluid",
+          "Single line through, initial, date, and reason",
+          "Rewrite the whole page"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "What does the 'C' for contemporaneous in ALCOA require?",
+        "options": [
+          "Copying later",
+          "Recording at the time the activity is performed",
+          "Recording at end of shift",
+          "Recording before the activity"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A record that can be linked to the person who created it satisfies which attribute?",
+        "options": [
+          "Legible",
+          "Attributable",
+          "Accurate",
+          "Enduring"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "gowning-qualification",
+    "lang": "en",
+    "title": "Gowning & Personnel Qualification",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Initial and periodic gowning qualification for cleanroom personnel — contact-plate locations, frequency, and disqualification triggers.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "Gowning qualification confirms an operator can:",
+        "options": [
+          "Type quickly",
+          "Gown without contaminating the suit",
+          "Lift heavy loads",
+          "Pass an exam"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Gowning is verified using:",
+        "options": [
+          "A questionnaire",
+          "Microbial contact plates on the gown",
+          "Weight checks",
+          "Temperature logs"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "An operator failing personnel monitoring should be:",
+        "options": [
+          "Ignored",
+          "Re-trained / re-qualified before aseptic work",
+          "Promoted",
+          "Reassigned permanently"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "growth-promotion-testing",
+    "lang": "en",
+    "title": "Growth Promotion Testing (GPT)",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Why every batch of microbiological media must pass growth promotion testing — challenge organisms, acceptance criteria, and common pitfalls.",
+    "updatedAt": "2026-05-31",
+    "quiz": [
+      {
+        "q": "What does growth promotion testing prove?",
+        "options": [
+          "The media is sterile",
+          "The media can support microbial growth",
+          "The product is non-toxic",
+          "The incubator is calibrated"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What inoculum level is typically used to challenge sensitivity?",
+        "options": [
+          "≤ 100 CFU",
+          "1,000 CFU",
+          "10,000 CFU",
+          "1 million CFU"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "For solid media, recovery should be within what factor of the reference lot?",
+        "options": [
+          "A factor of 2",
+          "A factor of 10",
+          "Exactly equal",
+          "A factor of 100"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "health-based-exposure-limits",
+    "lang": "en",
+    "title": "Health-Based Exposure Limits (HBEL / PDE)",
+    "tier": "pro",
+    "category": "Validation",
+    "seoDescription": "HBEL and PDE for shared-facility cross-contamination control per EMA — how a toxicology-derived limit replaces the old 1/1000-dose and 10ppm cleaning rules.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "An HBEL/PDE is derived from:",
+        "options": [
+          "A fixed 10 ppm rule",
+          "Toxicology data (NOAEL/LOAEL) and adjustment factors",
+          "The batch size",
+          "The selling price"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The PDE feeds directly into which cleaning calculation?",
+        "options": [
+          "Bubble point",
+          "MACO (Maximum Allowable Carryover)",
+          "F0",
+          "Cpk"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A very low HBEL for a potent compound may require:",
+        "options": [
+          "Nothing different",
+          "Dedicated facilities/equipment",
+          "A larger batch",
+          "A higher price"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "host-cell-protein-testing",
+    "lang": "en",
+    "title": "Host Cell Protein (HCP) Testing",
+    "tier": "pro",
+    "category": "Biologics QC",
+    "seoDescription": "Host cell protein impurity testing for biologics — why HCPs matter, the ELISA workhorse and its antibody-coverage problem, orthogonal methods, and typical limits.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Host cell proteins (HCPs) are:",
+        "options": [
+          "The drug substance itself",
+          "Process-related protein impurities from the production cell line",
+          "A type of excipient",
+          "Always harmless"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The main weakness of the HCP ELISA is:",
+        "options": [
+          "It is too fast",
+          "Antibody coverage — it may not detect every individual HCP species",
+          "It needs no reagents",
+          "It measures the API"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "HCP limits are typically expressed as:",
+        "options": [
+          "Grams per vial",
+          "ng HCP per mg of product (ppm)",
+          "A color grade",
+          "Percent water"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "hplc-system-suitability",
+    "lang": "en",
+    "title": "HPLC System Suitability",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "HPLC system suitability testing (SST) per USP <621> — resolution, tailing, theoretical plates, and %RSD, and why SST is a gate, not part of method validation.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "What is the purpose of HPLC system suitability testing (SST)?",
+        "options": [
+          "To validate the method",
+          "To confirm the system performs adequately on the day, before reporting results",
+          "To calibrate the balance",
+          "To set the spec"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which SST parameter measures how well two adjacent peaks are separated?",
+        "options": [
+          "Tailing factor",
+          "Resolution",
+          "Injection volume",
+          "Column length"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "%RSD of replicate standard injections checks:",
+        "options": [
+          "Peak symmetry",
+          "Injection/system precision (repeatability)",
+          "Detector wavelength",
+          "Mobile phase pH"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "hvac-qualification",
+    "lang": "en",
+    "title": "HVAC Qualification for Cleanrooms",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Qualifying cleanroom HVAC systems — air changes, pressure cascades, recovery time, and the tests that prove a classified area performs per Annex 1 / ISO 14644.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "A positive pressure cascade between rooms is designed to do what?",
+        "options": [
+          "Save energy",
+          "Protect cleaner areas from contamination ingress",
+          "Increase humidity",
+          "Reduce air changes"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which test measures how quickly a cleanroom returns to its classified state?",
+        "options": [
+          "Recovery time test",
+          "Endotoxin test",
+          "Sterility test",
+          "TOC test"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Air change rate in a cleanroom primarily controls:",
+        "options": [
+          "Lighting",
+          "Dilution and removal of airborne contamination",
+          "Floor cleanliness",
+          "Water quality"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "internal-audit-self-inspection",
+    "lang": "en",
+    "title": "Internal Audits & Self-Inspection",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Running a GMP self-inspection / internal audit program — risk-based scheduling, independence, objective evidence, and turning findings into real CAPA.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "Why must an internal auditor be independent of the area being audited?",
+        "options": [
+          "To save time",
+          "To ensure objectivity / avoid auditing one's own work",
+          "It is not required",
+          "To reduce paperwork"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Self-inspections are required by GMP primarily to:",
+        "options": [
+          "Punish staff",
+          "Monitor implementation/compliance and drive improvement",
+          "Replace external audits",
+          "Set production targets"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "An internal-audit finding should result in:",
+        "options": [
+          "A note that's filed away",
+          "Root-cause CAPA with follow-up verification",
+          "Immediate dismissal",
+          "Nothing"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "karl-fischer-water-determination",
+    "lang": "en",
+    "title": "Karl Fischer Water Determination",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Karl Fischer titration for water content — volumetric vs coulometric methods, when to use each, common error sources, and why moisture control matters for stability.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "Karl Fischer titration measures:",
+        "options": [
+          "pH",
+          "Water (moisture) content",
+          "Particle size",
+          "Endotoxin"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Coulometric KF is preferred over volumetric for:",
+        "options": [
+          "Very high water content",
+          "Trace / very low water content",
+          "Measuring pH",
+          "Color tests"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why does moisture content matter for many drug products?",
+        "options": [
+          "It changes the color",
+          "It affects stability, degradation, and sometimes potency",
+          "It has no effect",
+          "Only for taste"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "lyophilization-validation",
+    "lang": "en",
+    "title": "Lyophilization (Freeze-Drying) Validation",
+    "tier": "pro",
+    "category": "Aseptic Processing",
+    "seoDescription": "Validating a lyophilization cycle — the three phases, critical parameters (shelf temp, chamber pressure), collapse temperature, and aseptic + container risks.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The longest phase of a lyophilization cycle is usually:",
+        "options": [
+          "Freezing",
+          "Primary drying (sublimation)",
+          "Secondary drying",
+          "Stoppering"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Exceeding the product's collapse temperature during primary drying causes:",
+        "options": [
+          "Faster reconstitution",
+          "Cake collapse — poor appearance, slow reconstitution, high moisture",
+          "Lower endotoxin",
+          "Better sterility"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why must the media fill simulate the lyo step?",
+        "options": [
+          "To dry the medium",
+          "Vials enter the chamber partially stoppered, so loading/chamber are part of the aseptic process",
+          "To save time",
+          "It does not need to"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "measurement-systems-analysis",
+    "lang": "en",
+    "title": "Measurement Systems Analysis (Gauge R&R)",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Measurement Systems Analysis and Gauge R&R — separating real process variation from measurement noise, and the %GRR / ndc rules that decide if a method is fit to use.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Repeatability captures variation from:",
+        "options": [
+          "Different operators",
+          "The same operator/gauge measuring the same part repeatedly",
+          "Different parts",
+          "The specification"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A %GRR above 30% means the measurement system is:",
+        "options": [
+          "Excellent",
+          "Unacceptable — dominated by measurement noise",
+          "Perfectly capable",
+          "Not relevant"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The number of distinct categories (ndc) should generally be at least:",
+        "options": [
+          "1",
+          "5",
+          "100",
+          "0"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "media-fill-aps",
+    "lang": "en",
+    "title": "Media Fill & Aseptic Process Simulation",
+    "tier": "pro",
+    "category": "Aseptic Processing",
+    "seoDescription": "How aseptic process simulations (media fills) qualify sterile manufacturing — acceptance criteria, worst-case design, and Annex 1 expectations.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "For a media fill of fewer than 5,000 units, the Annex 1 acceptance is:",
+        "options": [
+          "Up to 2 contaminated units",
+          "No contaminated units",
+          "1% contamination",
+          "Not applicable"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A credible APS should reproduce:",
+        "options": [
+          "The easiest run conditions",
+          "Worst-case interventions, max operators, longest run",
+          "Only the start of a shift",
+          "A shortened cycle"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "After a media fill, units are typically incubated to detect growth at:",
+        "options": [
+          "A single temperature for 1 day",
+          "Two temperature ranges over ~14 days",
+          "No incubation",
+          "Only 4°C"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "microbial-excursion-investigation",
+    "lang": "en",
+    "title": "Investigating Microbial Excursions (EM Data)",
+    "tier": "pro",
+    "category": "Microbiology QC",
+    "seoDescription": "How to investigate environmental-monitoring excursions — alert vs action response, microbial identification, trend correlation, and product-impact assessment.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "An action-level EM excursion should trigger:",
+        "options": [
+          "Nothing if it's a one-off",
+          "A formal investigation with root cause, CAPA, and product-impact assessment",
+          "Only a note in the logbook",
+          "Immediate recall"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Identifying the recovered organism helps because:",
+        "options": [
+          "It is required for billing",
+          "The ID often points to the contamination source",
+          "It speeds up incubation",
+          "It replaces trending"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Closing an action-level excursion as \"isolated, no impact\" with no ID or rationale is:",
+        "options": [
+          "Best practice",
+          "A classic finding showing the system doesn't learn",
+          "Required by GMP",
+          "Acceptable for Grade D"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "microbial-identification",
+    "lang": "en",
+    "title": "Microbial Identification Methods",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Phenotypic vs genotypic ID — MALDI-TOF, 16S rRNA sequencing, and when identification is required for excursions and isolates.",
+    "updatedAt": "2026-06-01",
+    "quiz": [
+      {
+        "q": "MALDI-TOF identifies organisms by their:",
+        "options": [
+          "DNA sequence",
+          "Protein mass fingerprint",
+          "Colony colour",
+          "Gram stain"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which method is the genotypic gold standard for bacteria?",
+        "options": [
+          "Catalase test",
+          "16S rRNA sequencing",
+          "Oxidase test",
+          "Microscopy"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Identification to species is typically required for:",
+        "options": [
+          "Every settle plate",
+          "Grade A/B excursions and objectionable isolates",
+          "Nothing",
+          "Only end-of-year review"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "nitrosamine-impurity-control",
+    "lang": "en",
+    "title": "Nitrosamine Impurity Control",
+    "tier": "pro",
+    "category": "Laboratory Controls",
+    "seoDescription": "Controlling nitrosamine impurities — root-cause sources, the EMA/FDA three-step approach (risk assessment, confirmatory testing, mitigation), AI limits, and LC-MS/MS detection.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Acceptable Intake (AI) limits for nitrosamines are typically in the range of:",
+        "options": [
+          "Grams per day",
+          "Nanograms per day",
+          "Kilograms per day",
+          "Percent of dose"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The regulatory approach to nitrosamines is, in order:",
+        "options": [
+          "Test, recall, ignore",
+          "Risk assessment, confirmatory testing, risk mitigation",
+          "Mitigate, then assess",
+          "Label only"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Detecting nitrosamines at AI levels typically requires:",
+        "options": [
+          "Visual inspection",
+          "LC-MS/MS or GC-MS/MS with artifact-aware sample prep",
+          "Simple titration",
+          "pH measurement"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "objectionable-organisms",
+    "lang": "en",
+    "title": "Objectionable Organisms in Non-Sterile Products",
+    "tier": "pro",
+    "category": "Microbiology QC",
+    "seoDescription": "Identifying objectionable organisms beyond USP 61/62 — risk by route of administration, the role of the micro risk assessment, and recovery from warning letters.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "An organism can be objectionable even when:",
+        "options": [
+          "It exceeds total count limits",
+          "Total counts are within USP 61 limits",
+          "It is a specified organism",
+          "The product is sterile"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Whether an organism is objectionable depends most on:",
+        "options": [
+          "The day of testing",
+          "Route of administration, patient population, and product chemistry",
+          "The analyst's preference",
+          "The batch size"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What do auditors expect to justify which organisms matter for your product?",
+        "options": [
+          "A documented microbial risk assessment",
+          "The USP 62 list alone",
+          "A verbal opinion",
+          "The supplier CoA"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "ongoing-stability-program",
+    "lang": "en",
+    "title": "Ongoing Stability Program",
+    "tier": "pro",
+    "category": "Laboratory Controls",
+    "seoDescription": "The ongoing (commitment) stability program per ICH Q1A and GMP — at least one batch per year, the protocol, and how excursions trigger market action.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The ongoing stability program typically requires placing on stability:",
+        "options": [
+          "Every batch",
+          "At least one batch per year per product/strength/pack (if made)",
+          "No batches",
+          "Only rejected batches"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A stability OOS is especially serious because it can affect:",
+        "options": [
+          "Only the test sample",
+          "Product already distributed to the market",
+          "The next year's plan only",
+          "Nothing"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Bracketing/matrixing is used to:",
+        "options": [
+          "Increase testing",
+          "Reduce the number of samples tested using a justified design",
+          "Skip stability entirely",
+          "Replace the spec"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "oos-investigation-deep-dive",
+    "lang": "en",
+    "title": "OOS Investigation — Deep Dive",
+    "tier": "pro",
+    "category": "Quality Investigation",
+    "seoDescription": "The two-phase out-of-specification (OOS) investigation workflow per the FDA OOS Guidance.",
+    "updatedAt": "2026-05-29",
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "out-of-trend-investigation",
+    "lang": "en",
+    "title": "Out-of-Trend (OOT) Investigation",
+    "tier": "pro",
+    "category": "Quality Investigation",
+    "seoDescription": "OOT results are in-spec but drifting — how to detect them statistically and investigate before they become OOS failures.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "An OOT result is:",
+        "options": [
+          "Outside specification",
+          "Within spec but deviating from the historical pattern",
+          "Always a lab error",
+          "The same as OOS"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "OOT limits should be derived from:",
+        "options": [
+          "The specification limits",
+          "Statistical/historical control limits",
+          "The supplier CoA",
+          "The label claim"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A stability OOT is best described as:",
+        "options": [
+          "A failed identity test",
+          "A time point falling off the projected stability line",
+          "An OOS at release",
+          "A media-fill failure"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "particulate-matter-usp-788",
+    "lang": "en",
+    "title": "Particulate Matter in Injections (USP 788)",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Subvisible particulate testing per USP 788 — light obscuration vs microscopic methods, the two-stage approach, and small-volume injection limits.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What does USP 788 control?",
+        "options": [
+          "Sterility",
+          "Subvisible particulate matter in injections",
+          "Endotoxin",
+          "pH"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which is the primary (Method 1) test?",
+        "options": [
+          "Microscopic particle count",
+          "Light obscuration particle count",
+          "Dye ingress",
+          "Conductivity"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "If a product fails or is unsuitable for light obscuration, what is the next step?",
+        "options": [
+          "Release anyway",
+          "Use the microscopic method (Method 2)",
+          "Retest until pass",
+          "Discard the monograph"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "pharmaceutical-quality-system-q10",
+    "lang": "en",
+    "title": "The Pharmaceutical Quality System (ICH Q10)",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "ICH Q10 explained — the Pharmaceutical Quality System model, its four elements, management responsibility, and how it ties together Q8/Q9 across the lifecycle.",
+    "updatedAt": "2026-06-04",
+    "quiz": [
+      {
+        "q": "What is the main purpose of a Pharmaceutical Quality System (ICH Q10)?",
+        "options": [
+          "Marketing",
+          "Achieve product realization, control state, and continual improvement across the lifecycle",
+          "Set prices",
+          "Replace GMP"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which is one of the four ICH Q10 elements?",
+        "options": [
+          "Payroll management",
+          "CAPA system",
+          "Sales forecasting",
+          "Office cleaning"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "ICH Q10 explicitly emphasizes the role of:",
+        "options": [
+          "Senior management leadership",
+          "External consultants only",
+          "The cleaning crew",
+          "Marketing"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "pharmaceutical-water-systems",
+    "lang": "en",
+    "title": "Pharmaceutical Water Systems — Monitoring",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Monitoring Purified Water and Water for Injection — TOC, conductivity, microbial limits, and the action/alert philosophy.",
+    "updatedAt": "2026-05-31",
+    "quiz": [
+      {
+        "q": "What attribute controls pyrogens in Water for Injection?",
+        "options": [
+          "Conductivity",
+          "TOC",
+          "Endotoxin",
+          "pH"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "Typical microbial action limit for Purified Water?",
+        "options": [
+          "10 CFU/100 mL",
+          "100 CFU/mL",
+          "1 CFU/mL",
+          "1000 CFU/mL"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What early signal does an upward count drift indicate?",
+        "options": [
+          "Calibration drift",
+          "Biofilm formation",
+          "Sensor failure",
+          "Normal variation"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "process-validation-stages",
+    "lang": "en",
+    "title": "Process Validation — The Three Stages",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "The FDA lifecycle approach to process validation — Stage 1 design, Stage 2 PPQ, Stage 3 continued process verification.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "Stage 1 of process validation is:",
+        "options": [
+          "Process design",
+          "Process qualification (PPQ)",
+          "Continued verification",
+          "Cleaning validation"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What does PPQ stand for?",
+        "options": [
+          "Pre-Production Quality",
+          "Process Performance Qualification",
+          "Product Purity Quotient",
+          "Periodic Process Quality"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Stage 3 ensures the process stays in control by:",
+        "options": [
+          "A one-time test",
+          "Ongoing monitoring & trending in commercial production",
+          "Ignoring data",
+          "Re-designing the product"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "protein-characterization",
+    "lang": "en",
+    "title": "Protein Characterization Methods",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Core protein characterization for biologics QC — peptide mapping, intact/reduced mass, CE-SDS for size/purity, and icIEF/CEX for charge variants, used as orthogonal identity.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Peptide mapping primarily confirms:",
+        "options": [
+          "Aggregate level",
+          "The amino-acid sequence / primary structure",
+          "The fill volume",
+          "Endotoxin"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "CE-SDS is used to assess:",
+        "options": [
+          "Charge variants",
+          "Size-based purity (fragments, heavy/light chains)",
+          "Glycan identity",
+          "pH"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "icIEF and cation-exchange (CEX) separate:",
+        "options": [
+          "By size",
+          "Charge variants (acidic/main/basic species)",
+          "By color",
+          "By weight only"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "quality-metrics-kpis",
+    "lang": "en",
+    "title": "Quality Metrics & KPIs",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "The quality metrics that signal a healthy QMS — lot acceptance rate, right-first-time, invalidated OOS rate, on-time CAPA — and how to avoid metric gaming.",
+    "updatedAt": "2026-06-03",
+    "quiz": [
+      {
+        "q": "What does a high invalidated-OOS rate often signal to a regulator?",
+        "options": [
+          "A strong lab",
+          "Possible testing-into-compliance / weak investigations",
+          "Good training",
+          "Nothing"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Right-First-Time (RFT) measures:",
+        "options": [
+          "Batches made without errors/deviations",
+          "Total sales",
+          "Number of employees",
+          "Audit count"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "A risk of tying bonuses directly to a single quality metric is:",
+        "options": [
+          "Better quality always",
+          "Metric gaming / under-reporting",
+          "Lower cost only",
+          "No effect"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "quality-risk-management-q9",
+    "lang": "en",
+    "title": "Quality Risk Management (ICH Q9)",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "ICH Q9(R1) quality risk management — the assess/control/communicate/review lifecycle, FMEA vs HACCP, and avoiding subjectivity in risk scoring.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What are the two primary components of risk per ICH Q9?",
+        "options": [
+          "Cost and time",
+          "Severity and probability of harm",
+          "Frequency and budget",
+          "Detectability and color"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which tool assigns a Risk Priority Number from severity, occurrence, and detection?",
+        "options": [
+          "HACCP",
+          "FMEA",
+          "Fault tree",
+          "Pareto chart"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The level of effort and documentation of a QRM exercise should be:",
+        "options": [
+          "Always maximal",
+          "Commensurate with the level of risk",
+          "Decided by finance",
+          "The same for every product"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "rapid-sterility-testing",
+    "lang": "en",
+    "title": "Rapid Sterility Testing",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Faster sterility results with rapid microbiological methods — validation vs USP <71>, and why short-shelf-life products benefit most.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "The compendial sterility test (USP <71>) incubates for:",
+        "options": [
+          "24 hours",
+          "14 days",
+          "48 hours",
+          "90 days"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Rapid sterility methods are most valuable for:",
+        "options": [
+          "Long-shelf-life tablets",
+          "Short-shelf-life products (e.g. cell therapies)",
+          "Packaging",
+          "Labels"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Before routine use, a rapid method must demonstrate:",
+        "options": [
+          "Lower cost",
+          "Validation & equivalence to the compendial method",
+          "Faster shipping",
+          "A new SOP only"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "recall-management",
+    "lang": "en",
+    "title": "Product Recall Management",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Managing a pharmaceutical product recall — recall classes, mock recalls, traceability and reconciliation, regulator notification, and effectiveness checks.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "A Class I recall (FDA) means:",
+        "options": [
+          "Unlikely to cause harm",
+          "Reasonable probability of serious harm or death",
+          "A labeling typo only",
+          "A voluntary withdrawal"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A mock recall is run to:",
+        "options": [
+          "Sell old stock",
+          "Test traceability and speed before a real event",
+          "Avoid notifying regulators",
+          "Replace reconciliation"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "An effectiveness check after a recall confirms:",
+        "options": [
+          "The product was actually retrieved from the market",
+          "The batch record is signed",
+          "The supplier was paid",
+          "The label was correct"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "reference-standards-management",
+    "lang": "en",
+    "title": "Reference Standards Management",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Managing primary vs secondary reference standards — qualification, traceability to pharmacopoeial standards, storage, and the controls auditors expect.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What is a primary reference standard typically traceable to?",
+        "options": [
+          "A supplier price list",
+          "A pharmacopoeial / official standard",
+          "The batch record",
+          "The SOP index"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why qualify a secondary (working) standard against a primary?",
+        "options": [
+          "To save money only",
+          "To establish its assigned value with traceability",
+          "To change its color",
+          "It is never required"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Reference standard storage conditions should be:",
+        "options": [
+          "Whatever is convenient",
+          "As defined/qualified, with monitoring",
+          "Always frozen",
+          "Irrelevant"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "residual-solvents-q3c",
+    "lang": "en",
+    "title": "Residual Solvents (ICH Q3C)",
+    "tier": "pro",
+    "category": "Laboratory Controls",
+    "seoDescription": "ICH Q3C residual solvents — the Class 1/2/3 system, PDE and concentration limits, and the options for demonstrating control by GC headspace.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "ICH Q3C Class 1 solvents (e.g. benzene) should be:",
+        "options": [
+          "Used freely",
+          "Avoided",
+          "Limited only by Option 2",
+          "Tested only at release"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Option 1 (concentration limit) assumes:",
+        "options": [
+          "The actual daily dose",
+          "A maximum daily dose of product",
+          "No dose at all",
+          "A fixed batch size"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The workhorse method for residual solvents is:",
+        "options": [
+          "UV spectroscopy",
+          "GC with headspace sampling",
+          "Karl Fischer",
+          "Titration"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "retest-period-shelf-life",
+    "lang": "en",
+    "title": "Retest Period & Shelf-Life Assignment (ICH Q1E)",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "How retest period and shelf life are assigned from stability data per ICH Q1E — the difference between the two, and the rules for extrapolating beyond real-time data.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What is the difference between a retest period and a shelf life?",
+        "options": [
+          "They are identical",
+          "Retest period applies to drug substances; shelf life (expiry) to drug products",
+          "Shelf life is always longer",
+          "Retest period applies only to water"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "ICH Q1E allows limited extrapolation of shelf life beyond real-time data when:",
+        "options": [
+          "The lab is busy",
+          "The data show little change and good stability with statistical support",
+          "Marketing requests it",
+          "Never under any condition"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A drug substance past its retest date should be:",
+        "options": [
+          "Used immediately",
+          "Retested against specification before use",
+          "Discarded automatically",
+          "Relabelled"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "stability-studies",
+    "lang": "en",
+    "title": "Stability Studies (ICH Q1A)",
+    "tier": "free",
+    "category": "Analytical QC",
+    "seoDescription": "Long-term, intermediate, and accelerated stability conditions per ICH Q1A(R2) — how shelf life and storage statements are set.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "Typical long-term condition for a general (Zone II) product?",
+        "options": [
+          "25°C / 60% RH",
+          "40°C / 75% RH",
+          "5°C",
+          "-20°C"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Accelerated conditions are typically:",
+        "options": [
+          "25°C / 60% RH",
+          "40°C / 75% RH",
+          "30°C / 65% RH",
+          "2–8°C"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Stability data primarily supports:",
+        "options": [
+          "Batch release only",
+          "Shelf life and storage statements",
+          "Cleaning limits",
+          "Supplier audits"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "statistical-process-control",
+    "lang": "en",
+    "title": "Statistical Process Control & Trending",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Using control charts and trending in pharma QC — common vs special cause variation, Western Electric rules, and linking SPC to continued process verification.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Control limits on a control chart are derived from:",
+        "options": [
+          "The specification",
+          "The process data itself (typically ±3 sigma)",
+          "The label claim",
+          "The supplier"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A single point beyond a control limit indicates:",
+        "options": [
+          "Common-cause variation",
+          "A special (assignable) cause to investigate",
+          "A passing result",
+          "A spec failure by definition"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A process in statistical control but unable to meet spec has a problem with its:",
+        "options": [
+          "Audit trail",
+          "Capability (Cpk)",
+          "Labeling",
+          "Calibration only"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "academy",
+    "slug": "steam-sterilization-validation",
+    "lang": "en",
+    "title": "Steam Sterilization Validation (Autoclaves)",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Validating moist-heat (steam) sterilization — F0, overkill vs bioburden approaches, biological indicators, and the load patterns auditors expect to see qualified.",
+    "updatedAt": "2026-06-03",
+    "quiz": [
+      {
+        "q": "What does F0 represent?",
+        "options": [
+          "Filter flow rate",
+          "Equivalent lethality in minutes at 121°C",
+          "Fan speed",
+          "A formulation code"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which microorganism is the standard biological indicator for steam sterilization?",
+        "options": [
+          "E. coli",
+          "Geobacillus stearothermophilus",
+          "Candida albicans",
+          "Pseudomonas aeruginosa"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The overkill approach targets at least what spore-log reduction?",
+        "options": [
+          "3-log",
+          "6-log of a resistant BI (12-log SAL basis)",
+          "1-log",
+          "No reduction"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "sterility-testing-basics",
+    "lang": "en",
+    "title": "Sterility Testing — Foundations",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Overview of the compendial sterility test per USP <71> & EP 2.6.1 — membrane filtration, media, 14-day incubation.",
+    "updatedAt": "2026-05-29",
+    "quiz": [
+      {
+        "q": "What is the minimum incubation time for a compendial sterility test?",
+        "options": [
+          "7 days",
+          "14 days",
+          "21 days",
+          "28 days"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which method is preferred for filterable solutions?",
+        "options": [
+          "Direct inoculation",
+          "Membrane filtration",
+          "Pour plate",
+          "Spread plate"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which media targets anaerobic and aerobic bacteria?",
+        "options": [
+          "SCDM / TSB",
+          "FTM",
+          "MacConkey",
+          "Sabouraud"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "sterilizing-grade-filtration",
+    "lang": "en",
+    "title": "Sterilizing-Grade Filtration & Integrity Testing",
+    "tier": "pro",
+    "category": "Aseptic Processing",
+    "seoDescription": "Sterile filtration for products that can't be terminally sterilized — 0.22 µm membranes, bubble point / diffusive flow integrity tests, and Annex 1 expectations.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The bubble point of a sterilizing filter correlates to:",
+        "options": [
+          "Its color",
+          "The largest pore size / microbial retention",
+          "The product viscosity",
+          "The batch size"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Post-use integrity testing of a sterilizing filter is:",
+        "options": [
+          "Optional",
+          "Mandatory under Annex 1",
+          "Only for large filters",
+          "Replaced by the bubble point spec"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A common cause of a false integrity-test failure is:",
+        "options": [
+          "Correct wetting",
+          "Incomplete membrane wetting or wrong test gas/temperature",
+          "A new filter",
+          "Low product volume"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "supplier-audit-program",
+    "lang": "en",
+    "title": "Supplier Audit Programs",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Running a risk-based supplier audit program — on-site vs remote vs questionnaire, audit frequency by risk, and turning findings into real supplier oversight.",
+    "updatedAt": "2026-06-03",
+    "quiz": [
+      {
+        "q": "What should primarily drive how often a supplier is audited?",
+        "options": [
+          "Alphabetical order",
+          "Risk (criticality + performance)",
+          "Distance from the site",
+          "Contract value only"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which audit type gives the strongest assurance for a high-risk API supplier?",
+        "options": [
+          "Postal questionnaire",
+          "On-site audit",
+          "No audit",
+          "Marketing brochure review"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A supplier audit finding should feed into:",
+        "options": [
+          "Nothing",
+          "CAPA and the approved-supplier decision",
+          "Only the auditor's notes",
+          "Sales forecasts"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "supplier-qualification",
+    "lang": "en",
+    "title": "Supplier Qualification",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Qualify and monitor material and service suppliers — risk tiers, audits, quality agreements, and ongoing performance review.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "Which supplier typically requires an on-site audit + quality agreement?",
+        "options": [
+          "Office stationery vendor",
+          "API or primary-packaging supplier",
+          "Cafeteria",
+          "Landscaping service"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A quality agreement primarily defines:",
+        "options": [
+          "The price",
+          "Quality responsibilities between the parties",
+          "Delivery routes",
+          "Marketing terms"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "One-time approval without ongoing review is an audit trap because:",
+        "options": [
+          "It is too expensive",
+          "Qualification must include ongoing performance monitoring and risk-based requalification",
+          "Suppliers dislike it",
+          "It is not required at all"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "technology-transfer",
+    "lang": "en",
+    "title": "Technology Transfer (Process)",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Pharmaceutical process technology transfer per ICH Q10 / WHO TRS 961 — the sending/receiving unit model, the transfer protocol, and proving comparability.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The Sending Unit (SU) in a technology transfer:",
+        "options": [
+          "Runs the commercial batches",
+          "Owns and transfers the process knowledge and control strategy",
+          "Approves the marketing",
+          "Audits the regulator"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Transfer acceptance criteria and batch numbers should be agreed:",
+        "options": [
+          "After the batches are made",
+          "Before execution, in a formal protocol",
+          "By the supplier",
+          "Only if a gap appears"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Technology transfer most often fails because of:",
+        "options": [
+          "Too many documents",
+          "Untransferred tacit know-how",
+          "Excess batches",
+          "Strong protocols"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "viral-safety-testing",
+    "lang": "en",
+    "title": "Viral Safety of Biologics",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "The three-pillar viral safety approach for biologics (ICH Q5A) — source control, testing for adventitious agents, and validated viral clearance through the process.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "The biologics viral-safety strategy (ICH Q5A) rests on how many complementary pillars?",
+        "options": [
+          "One",
+          "Three (source control, testing, clearance)",
+          "Five",
+          "None"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Viral clearance studies demonstrate that:",
+        "options": [
+          "The cell line is sterile",
+          "Purification steps remove/inactivate virus by validated log-reduction",
+          "The product is a virus",
+          "Endotoxin is low"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why is testing alone not enough for viral safety?",
+        "options": [
+          "Tests are too expensive",
+          "No test can prove the absence of all possible viruses — clearance margin is also needed",
+          "Testing is illegal",
+          "Viruses don't matter"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 2
+  },
+  {
+    "collection": "academy",
+    "slug": "visual-inspection",
+    "lang": "en",
+    "title": "Visual Inspection of Injectables",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "100% visual inspection for particulates and defects in parenterals — USP <790>/<1790>, AQL, and operator qualification.",
+    "updatedAt": "2026-06-02",
+    "quiz": [
+      {
+        "q": "What does 100% visual inspection screen for?",
+        "options": [
+          "Label colour only",
+          "Visible particulates and defects",
+          "Weight only",
+          "Temperature"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "After 100% inspection, batch acceptance often uses:",
+        "options": [
+          "A second 100% inspection",
+          "An AQL sampling inspection",
+          "No further check",
+          "Microbial testing"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Inspectors must be:",
+        "options": [
+          "Qualified and periodically re-qualified (incl. vision)",
+          "Anyone available",
+          "Only engineers",
+          "Exempt from training"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 1
+  },
+  {
+    "collection": "academy",
+    "slug": "water-system-validation",
+    "lang": "en",
+    "title": "Pharmaceutical Water System Validation",
+    "tier": "pro",
+    "category": "Microbiology QC",
+    "seoDescription": "Validating a pharmaceutical water system — the three-phase qualification approach, sampling every point of use, and ongoing monitoring with alert/action levels.",
+    "updatedAt": "2026-06-11",
+    "quiz": [
+      {
+        "q": "During Phase 1 of water-system validation, you should:",
+        "options": [
+          "Use the water for production immediately",
+          "Sample every point of use intensively and not yet use the water",
+          "Sample once",
+          "Skip microbial testing"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Phase 3 runs for about a year mainly to:",
+        "options": [
+          "Save reagents",
+          "Capture seasonal variation in feed water",
+          "Avoid sampling",
+          "Replace Phase 1"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "The main microbial enemy in a water distribution loop is:",
+        "options": [
+          "Endotoxin spikes only",
+          "Biofilm",
+          "High conductivity",
+          "Low TOC"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 3
+  },
+  {
+    "collection": "blog",
+    "slug": "annex-1-ccs-what-changed",
+    "lang": "en",
+    "title": "Annex 1 (2022): what actually changed",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "The headline shifts in EU GMP Annex 1 2022 — CCS as the organising principle, QRM, and continuous monitoring expectations.",
+    "updatedAt": "2026-06-01",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "annex-1-cleanroom-classification",
+    "lang": "en",
+    "title": "Cleanroom classification under Annex 1 (2022)",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Grade A–D, at-rest/in-operation particle limits, and the CCS requirement under EU GMP Annex 1 2022.",
+    "updatedAt": "2026-05-30",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "audit-trail-review",
+    "lang": "en",
+    "title": "Audit Trail Review: What, How Often, and Red Flags",
+    "tier": "free",
+    "category": "Data Integrity",
+    "seoDescription": "A practical guide to audit-trail review in GMP labs — what to review, how often, a risk-based approach, and the red flags that signal data-integrity problems.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "capa-effectiveness-check",
+    "lang": "en",
+    "title": "CAPA: getting the effectiveness check right",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Why the effectiveness check is the most under-done part of CAPA — and how to do it properly.",
+    "updatedAt": "2026-05-30",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "cleaning-validation-hbel-shift",
+    "lang": "en",
+    "title": "Cleaning Validation: from 10 ppm to HBEL",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Why cleaning-validation limits moved from the old 10 ppm and 1/1000-dose rules to health-based exposure limits (HBEL/PDE), and what it means for shared facilities.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "computer-system-validation",
+    "lang": "en",
+    "title": "CSV vs CSA: validating computerised systems without the paper mountain",
+    "tier": "free",
+    "category": "Data Integrity",
+    "seoDescription": "Computer System Validation (GAMP 5) and the shift to Computer Software Assurance (CSA) — risk-based testing that auditors accept.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "data-integrity-483-observations",
+    "lang": "en",
+    "title": "7 Data Integrity Findings That Show Up in FDA 483s",
+    "tier": "free",
+    "category": "Data Integrity",
+    "seoDescription": "The most common data-integrity observations in FDA 483s and warning letters — shared logins, disabled audit trails, orphan data — and how to prevent each.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "data-integrity-alcoa",
+    "lang": "en",
+    "title": "Data Integrity & the ALCOA+ principles",
+    "tier": "free",
+    "category": "Data Integrity",
+    "seoDescription": "What ALCOA+ means and why data integrity is at the centre of every modern GMP inspection.",
+    "updatedAt": "2026-05-30",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "fda-inspection-readiness",
+    "lang": "en",
+    "title": "FDA Inspection Readiness: a QC team's checklist",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "How QC and QA teams stay inspection-ready every day — the front room/back room model, the four common 483 themes, and how to handle requests.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "gmp-audit-30-day-plan",
+    "lang": "en",
+    "title": "How to Prepare for a GMP Audit in 30 Days",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "A practical 30-day plan to get ready for a GMP inspection — document readiness, mock audits, the front room/back room model, and the four common 483 themes.",
+    "updatedAt": "2026-06-04",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "gmp-principles-explained",
+    "lang": "en",
+    "title": "GMP Explained: the Core Principles",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "A plain-English intro to Good Manufacturing Practice (GMP) — the core principles behind quality, documentation, and contamination control in pharma.",
+    "updatedAt": "2026-06-03",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "how-to-investigate-a-deviation",
+    "lang": "en",
+    "title": "How to Investigate a Deviation (Step by Step)",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "A practical, step-by-step guide to GMP deviation investigations — immediate actions, root cause, impact assessment, CAPA, and the mistakes auditors flag.",
+    "updatedAt": "2026-06-03",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "media-fill-essentials",
+    "lang": "en",
+    "title": "Media fills: the test that validates your people",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Aseptic process simulation (media fill) basics — acceptance criteria, worst-case design, and why a single contaminated unit matters.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "nitrosamine-impurities",
+    "lang": "en",
+    "title": "Nitrosamine Impurities: what QC teams need to know",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Why nitrosamine impurities triggered global recalls — root causes, the three-step regulatory approach, and the analytical challenge of trace detection.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "oos-investigation-phases",
+    "lang": "en",
+    "title": "OOS Investigations: Phase I, Phase II, and the Barr lesson",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "A practical walkthrough of the FDA OOS guidance — the Phase I lab investigation, Phase II full investigation, and why you can't just retest into compliance.",
+    "updatedAt": "2026-06-02",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "pharmacopoeias-usp-ep-jp",
+    "lang": "en",
+    "title": "USP, EP, JP: Pharmacopoeias Explained",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "What pharmacopoeias are and how USP, EP, and JP relate — harmonization via ICH Q4B and PDG, and how QC labs choose which compendial method applies.",
+    "updatedAt": "2026-06-04",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "process-validation-three-stages",
+    "lang": "en",
+    "title": "Process Validation: the Three-Stage Lifecycle",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "The FDA's three-stage process validation lifecycle explained — process design, process qualification (PPQ), and continued process verification (CPV).",
+    "updatedAt": "2026-06-03",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "qualification-vs-validation",
+    "lang": "en",
+    "title": "Qualification vs Validation: What's the Difference?",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Qualification vs validation explained simply — what each term means in GMP, how DQ/IQ/OQ/PQ fit, and why qualification is a part of validation, not a synonym.",
+    "updatedAt": "2026-06-05",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "rapid-microbial-methods",
+    "lang": "en",
+    "title": "Rapid Microbial Methods: are they audit-ready?",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Rapid microbial methods (RMM) promise faster release — but validation and equivalence to compendial methods are where audits focus.",
+    "updatedAt": "2026-05-31",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "what-is-bioburden-testing",
+    "lang": "en",
+    "title": "What Is Bioburden Testing?",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Bioburden testing explained — what it measures, why it matters before sterilization, USP 61 vs ISO 11737, and how recovery efficiency affects your result.",
+    "updatedAt": "2026-06-04",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "what-is-capa",
+    "lang": "en",
+    "title": "What Is CAPA? Corrective and Preventive Action Explained",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "A plain-English guide to CAPA in pharma — correction vs corrective vs preventive action, root cause, the effectiveness check, and why auditors care.",
+    "updatedAt": "2026-06-04",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "what-is-certificate-of-analysis",
+    "lang": "en",
+    "title": "What Is a Certificate of Analysis (CoA)?",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "A plain-English guide to the Certificate of Analysis (CoA) in pharma QC — what it contains, who issues it, and how it links specifications, results, and release.",
+    "updatedAt": "2026-06-04",
+    "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "what-is-out-of-specification-oos",
+    "lang": "en",
+    "title": "What Is an Out-of-Specification (OOS) Result?",
+    "tier": "free",
+    "category": "Investigations",
+    "seoDescription": "What an OOS result is, how it differs from OOT and OOE, the two-phase investigation (lab then manufacturing), and why you can't just retest until you pass.",
+    "updatedAt": "2026-06-05",
+    "readMinutes": 1
+  }
+]

@@ -27,7 +27,7 @@ export default function BlogPost() {
     description: entry?.seoDescription,
   });
 
-  if (!entry) return <NotFound />;
+  if (!entry || !entry.Component) return <NotFound />;
 
   const Body = entry.Component;
   const related = listContent({ collection: "blog", lang: language })

@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "dev": "tsx script/gen-content-manifest.ts && cross-env NODE_ENV=development tsx server/index.ts",
     "build": "tsx script/build.ts",
     "start": "cross-env NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
@@ -12,6 +12,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "seed:content": "tsx script/seed-content.ts",
+    "gen:content": "tsx script/gen-content-manifest.ts",
     "validate:content": "tsx script/validate-content.ts",
     "validate:paths": "tsx script/validate-paths.ts",
     "validate": "npm run validate:content && npm run validate:paths && npm run check",

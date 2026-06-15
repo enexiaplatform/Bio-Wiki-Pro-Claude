@@ -1,6 +1,7 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile } from "fs/promises";
+import { writeManifest } from "./gen-content-manifest.js";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -34,6 +35,11 @@ const allowlist = [
 
 async function buildAll() {
   await rm("dist", { recursive: true, force: true });
+
+  // Regenerate the content manifest so the client metadata (and reading times)
+  // are always fresh and gated bodies never leak into the bundle.
+  const n = await writeManifest();
+  console.log(`content manifest: ${n} entries`);
 
   console.log("building client...");
   await viteBuild();
