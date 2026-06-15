@@ -52,8 +52,6 @@ export default defineConfig({
             return "react-vendor";
           if (id.includes("framer-motion") || id.includes("motion-dom") || id.includes("motion-utils"))
             return "motion";
-          if (id.includes("recharts") || id.includes("d3-") || id.includes("victory"))
-            return "charts";
           // NOTE: do NOT force react-markdown/remark into a manual chunk. Doing so
           // made a shared low-level module land in that chunk, which react-vendor
           // then imported — pulling the full markdown stack (~157KB) onto EVERY
