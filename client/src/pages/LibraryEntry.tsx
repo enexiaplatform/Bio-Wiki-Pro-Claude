@@ -9,6 +9,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { analytics } from "@/hooks/use-analytics";
 import { GatedContent } from "@/components/GatedContent";
+import { ContentDisclaimer } from "@/components/ContentDisclaimer";
 import { LessonQuiz } from "@/components/LessonQuiz";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
@@ -155,6 +156,8 @@ export default function LibraryEntry() {
           </ul>
         </div>
       )}
+
+      <ContentDisclaimer />
     </div>
   );
 }

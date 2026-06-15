@@ -6,6 +6,7 @@ import { useVault } from "@/hooks/useVault";
 import { AuditQuestionCard } from "./AuditQuestionCard";
 import { CaseStudyBlock } from "./CaseStudyBlock";
 import { DirectorLensCard } from "./DirectorLensCard";
+import { ContentDisclaimer } from "@/components/ContentDisclaimer";
 import { useSEO } from "@/hooks/use-seo";
 
 export default function LessonDetailPage() {
@@ -131,6 +132,8 @@ export default function LessonDetailPage() {
             </Link>
           </div>
         </section>
+
+        <ContentDisclaimer />
       </div>
     </div>
   );

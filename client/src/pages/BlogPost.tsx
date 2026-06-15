@@ -7,6 +7,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { JsonLd } from "@/components/JsonLd";
 import { useFreeReads } from "@/hooks/use-free-reads";
 import { FreeReadBanner, UpgradeInlineCTA } from "@/components/UpgradePrompts";
+import { ContentDisclaimer } from "@/components/ContentDisclaimer";
 import NotFound from "@/pages/not-found";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 
@@ -110,6 +111,8 @@ export default function BlogPost() {
           </ul>
         </div>
       )}
+
+      <ContentDisclaimer />
     </div>
   );
 }
