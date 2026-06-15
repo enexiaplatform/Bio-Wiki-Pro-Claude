@@ -1,7 +1,7 @@
 {
   "seo": {
     "title": "BioWikiPro — QC/QA Pharma knowledge platform",
-    "description": "From Senior QC to QA Manager: 70 in-depth GMP lessons (free to start), the GMP Audit Survival Kit, and a career toolkit for QC/QA Pharma & Life Science professionals."
+    "description": "From Senior QC to QA Manager: 78 in-depth GMP lessons (free to start), the GMP Audit Survival Kit, and a career toolkit for QC/QA Pharma & Life Science professionals."
   },
   "hero": {
     "badge": "QC/QA Pharma knowledge platform",
@@ -9,12 +9,13 @@
     "titleHighlight": "to QA Manager",
     "titleTail": "— systematic, no guesswork",
     "subtitle": "In-depth GMP knowledge, audit-prep tools, and a real promotion roadmap — for QC/QA professionals in Pharma & Life Science.",
-    "ctaAcademy": "Explore Academy free",
+    "ctaStart": "Get started free",
+    "ctaAcademy": "Explore Academy",
     "ctaKit": "GMP Audit Kit — $59"
   },
   "stats": [
-    { "value": "70", "label": "In-depth lessons" },
-    { "value": "6", "label": "Learning paths" },
+    { "value": "78", "label": "In-depth lessons" },
+    { "value": "7", "label": "Learning paths" },
     { "value": "GMP", "label": "WHO • Annex 1 • ISO" },
     { "value": "Free", "label": "Academy access" }
   ],
@@ -71,6 +72,7 @@
   "finalCta": {
     "heading": "Start today — free",
     "subtitle": "Dozens of Academy lessons fully open, free. No credit card required.",
+    "ctaStart": "Create free account",
     "ctaAcademy": "Enter Academy →",
     "ctaKit": "View GMP Audit Kit"
   }

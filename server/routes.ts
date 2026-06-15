@@ -879,6 +879,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "microbiology-qc-fundamentals", "sterile-aseptic-manufacturing",
       "validation-essentials", "quality-systems",
       "investigations-data-integrity", "laboratory-controls-stability",
+      "biologics-biopharmaceutical-qc",
     ].map((s) => `/paths/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);

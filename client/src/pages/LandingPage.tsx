@@ -96,17 +96,16 @@ export default function LandingPage() {
             variants={fadeUp} initial="hidden" animate="show" custom={3}
             className="flex flex-col sm:flex-row gap-3 justify-center mb-12"
           >
+            <Link href="/register">
+              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
+                <ArrowRight className="w-4 h-4" />
+                {t("hero.ctaStart")}
+              </button>
+            </Link>
             <Link href="/academy">
               <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/20 font-semibold px-6 py-3 rounded-xl transition-all">
                 <BookOpen className="w-4 h-4" />
                 {t("hero.ctaAcademy")}
-              </button>
-            </Link>
-            <Link href="/toolkits/gmp-audit-kit">
-              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
-                <Package className="w-4 h-4" />
-                {t("hero.ctaKit")}
-                <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
           </motion.div>
@@ -350,14 +349,14 @@ export default function LandingPage() {
           <h2 className="text-2xl md:text-4xl font-bold mb-4 font-display">{t("finalCta.heading")}</h2>
           <p className="text-muted-foreground mb-8">{t("finalCta.subtitle")}</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/register">
+              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
+                <ArrowRight className="w-4 h-4" /> {t("finalCta.ctaStart")}
+              </button>
+            </Link>
             <Link href="/academy">
               <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
                 <BookOpen className="w-4 h-4" /> {t("finalCta.ctaAcademy")}
-              </button>
-            </Link>
-            <Link href="/toolkits/gmp-audit-kit">
-              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
-                <Package className="w-4 h-4" /> {t("finalCta.ctaKit")}
               </button>
             </Link>
           </div>
