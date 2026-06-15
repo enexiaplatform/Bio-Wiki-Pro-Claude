@@ -7,6 +7,7 @@ import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { JsonLd } from "@/components/JsonLd";
+import { TrustBadges } from "@/components/TrustBadges";
 
 type ProductType = "pro_subscription" | "pro_subscription_annual" | "starter_kit" | "interview_prep" | "bundle";
 const ONE_TIME_PRODUCTS: { productType: Exclude<ProductType, "pro_subscription">; price: string }[] = [
@@ -240,6 +241,9 @@ export default function PricingPage() {
           </p>
         </div>
       </div>
+
+      {/* Trust strip */}
+      <TrustBadges className="mb-16" />
 
       {/* FAQ row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">

@@ -4,6 +4,7 @@ import {
   CheckCircle2, ShieldCheck, FileText, ClipboardList,
   MessageSquare, Video, Phone, ChevronDown, ChevronUp,
   Loader2, ArrowRight, Package, BadgeCheck, Lock,
+  GraduationCap, Microscope,
 } from "lucide-react";
 import clsx from "clsx";
 import { motion } from "framer-motion";
@@ -32,7 +33,7 @@ async function createCheckoutSession(productType: ProductType): Promise<string> 
 
 // Icons paired by index with includes.items / pricing trust badges.
 const INCLUDE_ICONS = [FileText, ClipboardList, ShieldCheck, MessageSquare, Video, Phone];
-const TRUST_ICONS = [BadgeCheck, BadgeCheck, BadgeCheck, Lock];
+const TRUST_ICONS = [BadgeCheck, BadgeCheck, BadgeCheck, Lock, GraduationCap, Microscope];
 
 interface Pain { emoji: string; title: string; desc: string }
 interface Include { title: string; desc: string }

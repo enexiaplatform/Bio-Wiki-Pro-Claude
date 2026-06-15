@@ -9,7 +9,7 @@
     "buyNow": "Buy now — $59",
     "redirecting": "Redirecting…"
   },
-  "trustBadges": ["One-time payment", "Lifetime access", "Instant download", "Secure Stripe checkout"],
+  "trustBadges": ["One-time payment", "Lifetime access", "Instant download", "Secure Stripe checkout", "Educational use only", "Built for QC/QA"],
   "pains": {
     "heading": "Sound familiar?",
     "items": [
