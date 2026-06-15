@@ -92,7 +92,7 @@ Client-side routing via **Wouter** `<Switch>`/`<Route>`. There is no server-side
 - Legal: `/terms`, `/privacy`, `/refund`
 - Fallback: NotFound
 
-> Learning paths live in `client/src/data/learningPaths.ts` — **6 disjoint paths covering all academy lessons** (invariant enforced by `npm run validate:paths`). Reading progress (`use-read-lessons.ts`) is localStorage-first and syncs to the DB (`lesson_reads`) for logged-in users when that table exists (degrades gracefully pre-migration). `getPathContext()` drives reader prev/next + the "Lesson X of N" header.
+> Learning paths live in `client/src/data/learningPaths.ts` — **7 disjoint paths covering all academy lessons** (invariant enforced by `npm run validate:paths`). Reading progress (`use-read-lessons.ts`) is localStorage-first and syncs to the DB (`lesson_reads`) for logged-in users when that table exists (degrades gracefully pre-migration). `getPathContext()` drives reader prev/next + the "Lesson X of N" header.
 
 The whole tree is wrapped in `<ErrorBoundary>` (in `App.tsx`) so a single component throw shows a fallback instead of a blank page. `usePageTracking()` runs at the Router level for PostHog page views.
 

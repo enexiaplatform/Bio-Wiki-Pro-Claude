@@ -16,10 +16,10 @@ export function ContentDisclaimer({ className = "" }: { className?: string }) {
       <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary/70" aria-hidden="true" />
       <p>
         <span className="font-semibold text-foreground">Educational use only.</span>{" "}
-        BioWikiPro content is a learning reference — not regulatory, legal, or
-        medical advice. Always verify against the current regulations,
-        pharmacopeias (USP/EP/JP), and your organization&rsquo;s validated
-        quality system before acting.
+        BioWikiPro is a learning reference — not regulatory, legal, or medical
+        advice. Always verify against the current regulations, pharmacopeias
+        (USP/EP/JP), and your organization&rsquo;s validated quality system
+        before acting.
       </p>
     </aside>
   );
