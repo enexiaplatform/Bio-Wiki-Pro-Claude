@@ -4,6 +4,8 @@ import { getLearningPath } from "@/data/learningPaths";
 import { getContentBySlug } from "@/lib/content";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { useSEO } from "@/hooks/use-seo";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
 import NotFound from "@/pages/not-found";
 
 export default function PathPage() {
@@ -23,8 +25,41 @@ export default function PathPage() {
   const pct = lessons.length ? Math.round((readCount / lessons.length) * 100) : 0;
   const next = lessons.find((l) => !isRead(l.slug));
 
+  const url = `${SITE_URL}/paths/${slug}`;
+
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-2xl mx-auto px-4">
+      <JsonLd
+        id="path-course"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Course",
+          name: path.title,
+          description: path.description,
+          url,
+          inLanguage: "en",
+          provider: { "@type": "Organization", name: "BioWikiPro", url: SITE_URL },
+          numberOfLessons: lessons.length,
+          hasPart: lessons.map((l, i) => ({
+            "@type": "Course",
+            name: l.title,
+            position: i + 1,
+            url: `${SITE_URL}/library/${l.slug}`,
+          })),
+        }}
+      />
+      <JsonLd
+        id="path-breadcrumb"
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "BioWikiPro", item: SITE_URL },
+            { "@type": "ListItem", position: 2, name: "Academy", item: `${SITE_URL}/academy` },
+            { "@type": "ListItem", position: 3, name: path.title, item: url },
+          ],
+        }}
+      />
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
         <Link href="/" className="hover:text-primary">BioWikiPro</Link>
         <ChevronRight className="w-3 h-3" />
