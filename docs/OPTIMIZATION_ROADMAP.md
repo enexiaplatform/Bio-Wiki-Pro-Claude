@@ -36,8 +36,8 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~83% complete** (build + launch-readiness + Phase C conversion done;
-WP-D1 retention done; remaining is D2 SEO depth, Phase E hardening, + launch ops).
+Overall: **~89% complete** (build + launch-readiness + Phase C + D1 retention +
+D2 SEO depth done; remaining is Phase E hardening + launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -47,7 +47,7 @@ WP-D1 retention done; remaining is D2 SEO depth, Phase E hardening, + launch ops
 | C2 | Conversion | Onboarding & activation (first-run, empty states, verify-email nudge, progress prompts) | 6% | ✅ DONE (d8bf569) |
 | C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ✅ DONE (6a6337d) |
 | D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ✅ DONE (56b3546) |
-| D2 | Growth | SEO depth (dynamic OG images, internal linking, more JSON-LD, content cadence workflow) | 6% | ⛔ TODO |
+| D2 | Growth | SEO depth (internal-link checker, more JSON-LD, content cadence workflow; OG images → backlog) | 6% | ✅ DONE (c14bffb) |
 | E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ⛔ TODO |
 | E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ⛔ TODO |
 | E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ⛔ TODO |
@@ -142,11 +142,17 @@ last-active signal — no users-schema change). New `use-streak` hook (local,
 consecutive-day, lapses after a gap) shown as a chip on My Learning; recorded in
 markRead. Achievements/certificates already rich (left as-is). +1 test (61).
 
-### WP-D2 — SEO depth & content cadence ⛔ deps: B
+### WP-D2 — SEO depth & content cadence ✅ deps: B
 Dynamic per-page OG images (or templated), internal-linking pass (related
 lessons/paths/glossary cross-links), more JSON-LD where valid, and a documented
 "add a lesson/post" workflow so content ships regularly. **Acceptance:** richer
 SERP eligibility; no broken internal links (add a checker).
+**✅ DONE 2026-06-13 (c14bffb):** `validate:links` CI guard (wired into
+`npm run validate`) checks every hard-coded internal content link resolves;
+Glossary DefinedTermSet JSON-LD (LibraryIndex CollectionPage + PathPage Course +
+Article JSON-LD already shipped earlier); `docs/CONTENT.md` workflow. **Dynamic
+OG images deferred → Backlog** (needs PNG generation via satori/resvg or a build
+step — its own chunk; SVG OG renders unreliably on FB/LinkedIn).
 
 ## Phase E — Hardening & insight
 
@@ -184,6 +190,7 @@ purchase; run the prod smoke in `docs/GO_LIVE.md`. Then execute `docs/SOFT_LAUNC
 ---
 
 ## Backlog (unsized / post-traction)
+Dynamic per-page OG images (PNG via satori/resvg or a build step),
 PWA installability + push, i18n re-expansion for a 2nd market, B2B/team plans,
 in-app feedback widget, AI-assisted study/quiz generation, affiliate/referral.
 Pull into a sized WP when prioritized.
