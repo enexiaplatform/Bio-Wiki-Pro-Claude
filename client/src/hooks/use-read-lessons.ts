@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { analytics } from "@/hooks/use-analytics";
 
 const KEY = "bwp_read_lessons";
+const ACTIVATED_KEY = "bwp_activated";
 
 function readStore(): string[] {
   try {
@@ -81,6 +83,15 @@ export function useReadLessons() {
       const next = [...cur, slug];
       writeStore(next);
       setRead(next);
+      // Activation: first lesson ever opened. Fire once (guarded across reloads).
+      try {
+        if (!localStorage.getItem(ACTIVATED_KEY)) {
+          localStorage.setItem(ACTIVATED_KEY, "1");
+          analytics.activated(slug);
+        }
+      } catch {
+        /* ignore privacy-mode errors */
+      }
     }
     // Persist to the server for logged-in users (skipped for guests).
     if (authedRef.current) {

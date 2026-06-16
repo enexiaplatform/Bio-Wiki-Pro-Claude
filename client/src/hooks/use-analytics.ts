@@ -84,6 +84,10 @@ export const analytics = {
   signupCompleted: (method = "email") =>
     capture("signup_completed", { method }),
 
+  // Fired once when a user opens their first lesson — the activation milestone.
+  activated: (lessonId: string) =>
+    capture("activated", { lesson_id: lessonId }),
+
   checkoutStarted: (productType: string, priceUsd?: number) =>
     capture("checkout_started", { product_type: productType, price_usd: priceUsd }),
 

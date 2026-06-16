@@ -2,14 +2,14 @@
   "welcomeTitle": "Welcome to BioWikiPro! 🎉",
   "welcomeSubtitle": "Your account is ready. Start with the 3 steps below.",
   "step1": {
-    "title": "Read your first lesson",
-    "desc": "Start with Data Integrity & ALCOA+ (free).",
-    "cta": "Open lesson"
+    "title": "Start a learning path",
+    "desc": "Microbiology QC Fundamentals — sterility, bioburden, EM, endotoxin & water, in order (free).",
+    "cta": "Start the path"
   },
   "step2": {
-    "title": "Get the free GMP Audit Checklist",
-    "desc": "25 pre-audit checkpoints — delivered by email.",
-    "cta": "Browse Academy"
+    "title": "Browse the full library",
+    "desc": "78 in-depth GMP / QC / QA lessons across 7 structured paths.",
+    "cta": "Open the library"
   },
   "step3": {
     "title": "Explore Pro",

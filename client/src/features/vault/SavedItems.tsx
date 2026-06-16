@@ -1,4 +1,5 @@
-import { BookOpen, FileQuestion, FileSearch, NotebookPen, Trash2 } from "lucide-react";
+import { Link } from "wouter";
+import { BookOpen, FileQuestion, FileSearch, NotebookPen, Trash2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { VaultItem } from "@/hooks/useVault";
 
@@ -15,9 +16,15 @@ export function SavedItems({ items, onRemove }: { items: VaultItem[]; onRemove: 
       <div className="rounded-2xl border border-white/10 bg-card p-10 text-center">
         <NotebookPen className="w-10 h-10 text-primary mx-auto mb-4" />
         <h2 className="text-xl font-bold mb-2">Your Vault is empty</h2>
-        <p className="text-sm text-muted-foreground max-w-md mx-auto">
+        <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
           Save lessons, audit questions, case studies, and investigation notes as you work through the Microbiology Intelligence OS.
         </p>
+        <Link
+          href="/academy"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+        >
+          <BookOpen className="w-4 h-4" /> Browse the Academy <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
     );
   }

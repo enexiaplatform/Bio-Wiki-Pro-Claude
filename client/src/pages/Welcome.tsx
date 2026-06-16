@@ -6,7 +6,8 @@ import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { ContinueLearning } from "@/components/ContinueLearning";
 
-const FIRST_LESSON = "/blog/data-integrity-alcoa";
+// Recommended starting point — a structured path, not a one-off post.
+const FIRST_PATH = "/paths/microbiology-qc-fundamentals";
 
 export default function Welcome() {
   const { t } = useTranslation("onboarding");
@@ -22,11 +23,11 @@ export default function Welcome() {
       title: t("step1.title"),
       desc: t("step1.desc"),
       cta: t("step1.cta"),
-      href: FIRST_LESSON,
+      href: FIRST_PATH,
       primary: true,
-      onClick: () => analytics.onboardingCompleted("first_lesson"),
+      onClick: () => analytics.onboardingCompleted("first_path"),
     },
-    { icon: Gift, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/academy" },
+    { icon: Gift, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/library" },
     { icon: Crown, title: t("step3.title"), desc: t("step3.desc"), cta: t("step3.cta"), href: "/upgrade" },
   ];
 
