@@ -13,7 +13,7 @@ export function AuditQuestionCard({ question, onSave }: AuditQuestionCardProps) 
       <div className="flex items-start justify-between gap-3 mb-4">
         <h3 className="font-bold leading-snug">{question.question}</h3>
         {onSave && (
-          <Button size="icon" variant="ghost" onClick={onSave} className="shrink-0">
+          <Button size="icon" variant="ghost" onClick={onSave} className="shrink-0" aria-label="Save to vault">
             <BookmarkPlus className="w-4 h-4" />
           </Button>
         )}

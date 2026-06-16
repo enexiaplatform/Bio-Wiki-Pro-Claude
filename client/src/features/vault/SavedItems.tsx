@@ -33,7 +33,7 @@ export function SavedItems({ items, onRemove }: { items: VaultItem[]; onRemove: 
                 <Icon className="w-5 h-5" />
                 <span className="text-xs font-bold uppercase tracking-wider">{item.type.replace("-", " ")}</span>
               </div>
-              <Button size="icon" variant="ghost" onClick={() => onRemove(item.id)}>
+              <Button size="icon" variant="ghost" onClick={() => onRemove(item.id)} aria-label="Remove from vault">
                 <Trash2 className="w-4 h-4" />
               </Button>
             </div>

@@ -214,7 +214,7 @@ export function DesktopNav() {
                 {user?.firstName ?? user?.email ?? "User"}
               </span>
             </Link>
-            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout">
+            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout" aria-label="Sign out">
               <LogOut className="w-4 h-4" />
             </Button>
           </>
@@ -260,7 +260,7 @@ export function MobileHeader() {
                 {user?.firstName?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"}
               </AvatarFallback>
             </Avatar>
-            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout-mobile" className="w-8 h-8">
+            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout-mobile" className="w-8 h-8" aria-label="Sign out">
               <LogOut className="w-4 h-4" />
             </Button>
           </>
