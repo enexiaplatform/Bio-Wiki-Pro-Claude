@@ -15,7 +15,8 @@
     "gen:content": "tsx script/gen-content-manifest.ts",
     "validate:content": "tsx script/validate-content.ts",
     "validate:paths": "tsx script/validate-paths.ts",
-    "validate": "npm run validate:content && npm run validate:paths && npm run check",
+    "validate:links": "tsx script/validate-links.ts",
+    "validate": "npm run validate:content && npm run validate:paths && npm run validate:links && npm run check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

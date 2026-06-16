@@ -3,6 +3,8 @@ import { Search, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
 import clsx from "clsx";
 import { useAcademyTerms } from "@/hooks/use-data";
 import { useSEO } from "@/hooks/use-seo";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/site";
 
 const ALL = "All";
 
@@ -39,6 +41,24 @@ export default function Glossary() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-3xl mx-auto px-4">
+      {all.length > 0 && (
+        <JsonLd
+          id="glossary-termset"
+          data={{
+            "@context": "https://schema.org",
+            "@type": "DefinedTermSet",
+            name: "BioWikiPro QC/QA Glossary",
+            url: `${SITE_URL}/glossary`,
+            hasDefinedTerm: all.map((term) => ({
+              "@type": "DefinedTerm",
+              name: term.title,
+              description: term.summary,
+              inDefinedTermSet: `${SITE_URL}/glossary`,
+            })),
+          }}
+        />
+      )}
+
       <div className="mb-6">
         <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">Glossary</h1>
         <p className="text-muted-foreground">Definitions for QC/QA, microbiology, and life-science terms.</p>
