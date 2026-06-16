@@ -36,8 +36,8 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~89% complete** (build + launch-readiness + Phase C + D1 retention +
-D2 SEO depth done; remaining is Phase E hardening + launch ops).
+Overall: **~94% complete** (build + launch + Phase C + D + WP-E1 perf done;
+remaining is E2 a11y full, E3 security/obs, E4 testing, + launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -48,7 +48,7 @@ D2 SEO depth done; remaining is Phase E hardening + launch ops).
 | C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ✅ DONE (6a6337d) |
 | D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ✅ DONE (56b3546) |
 | D2 | Growth | SEO depth (internal-link checker, more JSON-LD, content cadence workflow; OG images → backlog) | 6% | ✅ DONE (c14bffb) |
-| E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ⛔ TODO |
+| E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ✅ DONE (9444669) |
 | E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ⛔ TODO |
 | E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ⛔ TODO |
 | E4 | Hardening | Testing depth (e2e purchase via E2E_RUN, route coverage, smoke for new flows) | 4% | ⛔ TODO |
@@ -156,11 +156,18 @@ step — its own chunk; SVG OG renders unreliably on FB/LinkedIn).
 
 ## Phase E — Hardening & insight
 
-### WP-E1 — Performance round 2 ⛔ deps: B
+### WP-E1 — Performance round 2 ✅ deps: B
 Self-host/subset fonts (currently Google Fonts), preconnect tuning, route
 preloading for likely-next pages, consider splitting `use-data`/mockData, run a
 Lighthouse pass and fix top issues. **Acceptance:** Lighthouse perf ≥90 mobile on
 landing; no regression in chunk strategy.
+**✅ DONE 2026-06-13 (9444669):** route preloading — `lib/route-prefetch.ts`
+(idle-prefetch academy/library/register on landing + hover-prefetch desktop nav;
+specifiers match App.tsx so no new chunks). Verified via network. Fonts already
+request only used weights (no italic/opsz bloat) + preconnect present — left as
+is. use-data not on the landing critical path (left). **Deferred:** self-hosting
+fonts + an actual Lighthouse run on the live site (owner; can't run headless
+Lighthouse here) — note in LAUNCH.
 
 ### WP-E2 — Accessibility full pass ⛔ deps: B
 Keyboard nav + focus management (drawer/dialog/command palette), color-contrast
