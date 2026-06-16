@@ -36,8 +36,9 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~72% complete** (build + launch-readiness done; WP-C1 lifecycle + WP-C2
-onboarding done; remaining is the rest of the optimization/growth loops + launch ops).
+Overall: **~78% complete** (build + launch-readiness done; **Phase C conversion
+complete** — C1 lifecycle + C2 onboarding + C3 conversion polish; remaining is
+Phase D growth, Phase E hardening, + launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -45,7 +46,7 @@ onboarding done; remaining is the rest of the optimization/growth loops + launch
 | B | Launch readiness | SEO, analytics funnel, IA (desktop+mobile), trust/legal, brand, perf, content QA, a11y pass 1, soft-launch kit | 18% | ✅ DONE |
 | C1 | Conversion | Email lifecycle completion (abandoned-checkout + trial-ending) | 6% | ✅ DONE (e014c73) |
 | C2 | Conversion | Onboarding & activation (first-run, empty states, verify-email nudge, progress prompts) | 6% | ✅ DONE (d8bf569) |
-| C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ⛔ TODO |
+| C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ✅ DONE (6a6337d) |
 | D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ⛔ TODO |
 | D2 | Growth | SEO depth (dynamic OG images, internal linking, more JSON-LD, content cadence workflow) | 6% | ⛔ TODO |
 | E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ⛔ TODO |
@@ -123,6 +124,12 @@ ContinueLearning resume prompt.)
 - Pricing clarity: annual emphasis, "what you get free vs Pro" at a glance.
 **Acceptance:** measurable funnel events on each lever; copy accurate.
 **Verify:** preview + analytics events fire.
+**✅ DONE 2026-06-13 (6a6337d):** GatedContent paywall now fires
+upgrade_prompt_shown/clicked (locked_pro/locked_paid) — was untracked, the
+biggest conversion moment. New ExitIntentLeadModal (guest+desktop only, once/
+session, 8s dwell) reusing the lead magnet. Existing UpgradePrompts already
+tracked; pricing already has Free/Pro/Career cards + trust badges. Social-proof:
+deferred to real testimonials from the feedback form (no fabricated quotes).
 
 ## Phase D — Retention & growth
 
