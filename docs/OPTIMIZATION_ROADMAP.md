@@ -36,9 +36,8 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~78% complete** (build + launch-readiness done; **Phase C conversion
-complete** — C1 lifecycle + C2 onboarding + C3 conversion polish; remaining is
-Phase D growth, Phase E hardening, + launch ops).
+Overall: **~83% complete** (build + launch-readiness + Phase C conversion done;
+WP-D1 retention done; remaining is D2 SEO depth, Phase E hardening, + launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -47,7 +46,7 @@ Phase D growth, Phase E hardening, + launch ops).
 | C1 | Conversion | Email lifecycle completion (abandoned-checkout + trial-ending) | 6% | ✅ DONE (e014c73) |
 | C2 | Conversion | Onboarding & activation (first-run, empty states, verify-email nudge, progress prompts) | 6% | ✅ DONE (d8bf569) |
 | C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ✅ DONE (6a6337d) |
-| D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ⛔ TODO |
+| D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ✅ DONE (56b3546) |
 | D2 | Growth | SEO depth (dynamic OG images, internal linking, more JSON-LD, content cadence workflow) | 6% | ⛔ TODO |
 | E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ⛔ TODO |
 | E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ⛔ TODO |
@@ -133,10 +132,15 @@ deferred to real testimonials from the feedback form (no fabricated quotes).
 
 ## Phase D — Retention & growth
 
-### WP-D1 — Retention loops ⛔ deps: A
+### WP-D1 — Retention loops ✅ deps: A
 Streaks / achievements / certificate polish; a re-engagement email for users
 inactive 7–14 days (reuse cron). **Acceptance:** returning-user signal improves;
 emails idempotent.
+**✅ DONE 2026-06-13 (56b3546):** re-engagement email = 4th cron job (non-Pro, last
+lesson_read 7–14d ago, once per user via lifecycle guard; lesson_reads as the
+last-active signal — no users-schema change). New `use-streak` hook (local,
+consecutive-day, lapses after a gap) shown as a chip on My Learning; recorded in
+markRead. Achievements/certificates already rich (left as-is). +1 test (61).
 
 ### WP-D2 — SEO depth & content cadence ⛔ deps: B
 Dynamic per-page OG images (or templated), internal-linking pass (related
