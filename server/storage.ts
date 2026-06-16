@@ -15,7 +15,7 @@ import {
   type ContentEntryRow,
   type InsertContentEntry,
 } from "../shared/schema.js";
-import { and, eq, gt, lt } from "drizzle-orm";
+import { and, eq, gt, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -49,6 +49,8 @@ export interface IStorage {
   recordLifecycleSend(userId: string, kind: string): Promise<void>;
   recordCheckoutAttempt(userId: string, productType: string): Promise<void>;
   getRecentCheckoutAttempts(minAgeHours: number, maxAgeHours: number): Promise<{ userId: string; productType: string }[]>;
+  // Re-engagement: users whose most recent lesson read falls in [maxDays, minDays] ago.
+  getReEngagementCandidates(minDays: number, maxDays: number): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -279,6 +281,20 @@ export class DatabaseStorage implements IStorage {
       .select({ userId: checkoutAttempts.userId, productType: checkoutAttempts.productType })
       .from(checkoutAttempts)
       .where(and(lt(checkoutAttempts.createdAt, newest), gt(checkoutAttempts.createdAt, oldest)));
+  }
+
+  async getReEngagementCandidates(minDays: number, maxDays: number): Promise<string[]> {
+    const DAY = 24 * 60 * 60 * 1000;
+    const newest = new Date(Date.now() - minDays * DAY); // last read older than minDays ago
+    const oldest = new Date(Date.now() - maxDays * DAY); // but newer than maxDays ago
+    const rows = await db
+      .select({ userId: lessonReads.userId })
+      .from(lessonReads)
+      .groupBy(lessonReads.userId)
+      .having(
+        sql`max(${lessonReads.createdAt}) > ${oldest} and max(${lessonReads.createdAt}) < ${newest}`,
+      );
+    return rows.map((r) => r.userId);
   }
 }
 

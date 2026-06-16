@@ -378,6 +378,34 @@ export async function sendAbandonedCheckoutEmail(
   }
 }
 
+// Re-engagement nudge for a learner who went quiet (last lesson 7–14 days ago).
+export async function sendReEngagementEmail(to: string, firstName?: string): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would send re-engagement to ${to} (Resend not configured)`);
+    return;
+  }
+  const name = firstName ?? "there";
+  const html = htmlWrapper(`
+    <h1>Pick your QC/QA learning back up, ${name}</h1>
+    <p>You made a strong start — and your progress is saved. A focused 15 minutes
+    is all it takes to keep momentum.</p>
+    <div class="box"><p>Jump back into your next lesson, or pick a fresh learning
+    path: sterile manufacturing, validation, data integrity, or quality systems.</p></div>
+    <a href="${BASE_URL}/my-learning" class="cta">Resume where you left off →</a>
+    <p style="font-size:13px;color:#64748b;">Not the right time? No problem — your spot will be here.</p>
+  `);
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: "Your QC/QA progress is waiting — BioWikiPro",
+      html,
+    });
+  } catch (err) {
+    console.error("[Email] Failed to send re-engagement email:", err);
+  }
+}
+
 export async function sendNurtureEmail(to: string, step: number, firstName?: string): Promise<void> {
   const content = NURTURE_CONTENT[step];
   if (!content) return;

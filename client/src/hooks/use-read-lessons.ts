@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { analytics } from "@/hooks/use-analytics";
+import { recordStreakActivity } from "@/hooks/use-streak";
 
 const KEY = "bwp_read_lessons";
 const ACTIVATED_KEY = "bwp_activated";
@@ -78,6 +79,7 @@ export function useReadLessons() {
   }, []);
 
   const markRead = useCallback((slug: string) => {
+    recordStreakActivity(); // any lesson view counts toward today's streak
     const cur = readStore();
     if (!cur.includes(slug)) {
       const next = [...cur, slug];

@@ -35,6 +35,7 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     recordLifecycleSend: vi.fn(() => Promise.resolve()),
     recordCheckoutAttempt: vi.fn(() => Promise.resolve()),
     getRecentCheckoutAttempts: vi.fn(() => Promise.resolve([])),
+    getReEngagementCandidates: vi.fn(() => Promise.resolve([])),
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
@@ -71,6 +72,7 @@ vi.mock("../email.js", () => ({
   sendNurtureEmail: vi.fn(() => Promise.resolve()),
   sendTrialEndingEmail: vi.fn(() => Promise.resolve()),
   sendAbandonedCheckoutEmail: vi.fn(() => Promise.resolve()),
+  sendReEngagementEmail: vi.fn(() => Promise.resolve()),
 }));
 
 import { registerRoutes } from "../routes.js";
@@ -634,5 +636,16 @@ describe("lifecycle cron (/api/cron/nurture)", () => {
     const res = await auth(request(app).get("/api/cron/nurture"));
     expect(res.status).toBe(200);
     expect(email.sendAbandonedCheckoutEmail).not.toHaveBeenCalled();
+  });
+
+  it("re-engages a lapsed, non-Pro learner once", async () => {
+    const app = await buildApp();
+    storageMock.getReEngagementCandidates.mockResolvedValueOnce(["u1"]);
+    storageMock.wasLifecycleSent.mockResolvedValue(false);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", firstName: "A", isPro: false });
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendReEngagementEmail).toHaveBeenCalledTimes(1);
+    expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "re_engagement");
   });
 });

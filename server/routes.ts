@@ -6,7 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail, sendReEngagementEmail } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
@@ -800,6 +800,23 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (err) {
       console.error("[Cron] abandoned-checkout error:", err);
       result.abandonedCheckout = { error: "checkout_attempts/lifecycle_sends table may be absent — run db:push" };
+    }
+
+    // 4. Re-engagement (last lesson read 7–14 days ago, not Pro, once per user)
+    try {
+      let sent = 0;
+      for (const userId of await storage.getReEngagementCandidates(7, 14)) {
+        if (await storage.wasLifecycleSent(userId, "re_engagement")) continue;
+        const user = await storage.getUser(userId).catch(() => undefined);
+        if (!user?.email || isProActive(user)) continue;
+        await sendReEngagementEmail(user.email, user.firstName ?? undefined);
+        await storage.recordLifecycleSend(userId, "re_engagement");
+        sent++;
+      }
+      result.reEngagement = { sent };
+    } catch (err) {
+      console.error("[Cron] re-engagement error:", err);
+      result.reEngagement = { error: "lesson_reads/lifecycle_sends table may be absent — run db:push" };
     }
 
     return res.json(result);

@@ -1,10 +1,11 @@
 import { Link } from "wouter";
-import { GraduationCap, Award, CheckCircle2, ChevronRight, Route as RouteIcon, BookOpen, Trophy, Lock } from "lucide-react";
+import { GraduationCap, Award, CheckCircle2, ChevronRight, Route as RouteIcon, BookOpen, Trophy, Lock, Flame } from "lucide-react";
 import clsx from "clsx";
 import { learningPaths } from "@/data/learningPaths";
 import { listContent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useReadLessons } from "@/hooks/use-read-lessons";
+import { useStreak } from "@/hooks/use-streak";
 import { useUser } from "@/context/UserContext";
 import { ContinueLearning } from "@/components/ContinueLearning";
 import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
@@ -14,6 +15,7 @@ export default function MyLearningPage() {
   useSEO({ title: "My learning", description: "Your QC/QA learning progress, paths, and certificates." });
   const { language } = useLanguage();
   const { isRead, count } = useReadLessons();
+  const { current: streak, longest: longestStreak } = useStreak();
   const { user } = useUser();
 
   const library = listContent({ collection: "academy", lang: language });
@@ -66,9 +68,19 @@ export default function MyLearningPage() {
         <div className="h-2 rounded-full bg-white/10 overflow-hidden">
           <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
         </div>
-        <p className="text-xs text-muted-foreground mt-2">
-          {pct === 100 ? "You've read the entire library — outstanding." : `${pct}% of the in-depth library read.`}
-        </p>
+        <div className="flex items-center justify-between mt-2 gap-3">
+          <p className="text-xs text-muted-foreground">
+            {pct === 100 ? "You've read the entire library — outstanding." : `${pct}% of the in-depth library read.`}
+          </p>
+          {streak >= 1 && (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 text-[11px] font-semibold text-amber-300 shrink-0"
+              title={longestStreak > streak ? `Longest streak: ${longestStreak} days` : undefined}
+            >
+              <Flame className="w-3.5 h-3.5" /> {streak}-day streak
+            </span>
+          )}
+        </div>
       </div>
 
       <ContinueLearning />
