@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Lock, Crown, Package } from "lucide-react";
 import { useLanguage } from "@/hooks/use-language";
+import { analytics } from "@/hooks/use-analytics";
 import type { ContentCollection, ContentTier } from "@/lib/content";
 
 interface Props {
@@ -80,6 +81,13 @@ export function GatedContent({ collection, slug, footer }: Props) {
     };
   }, [collection, slug, language]);
 
+  // Track the paywall encounter (a key conversion moment) once per locked load.
+  useEffect(() => {
+    if (state.status === "locked") {
+      analytics.upgradePromptShown(state.tier === "paid" ? "locked_paid" : "locked_pro");
+    }
+  }, [state]);
+
   if (state.status === "loading") {
     return <div className="py-10 text-sm text-muted-foreground">Loading…</div>;
   }
@@ -109,6 +117,7 @@ export function GatedContent({ collection, slug, footer }: Props) {
           </p>
           <Link
             href={isPaid ? "/pricing" : "/upgrade"}
+            onClick={() => analytics.upgradePromptClicked(isPaid ? "locked_paid" : "locked_pro")}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
           >
             {isPaid ? <Package className="w-4 h-4" /> : <Crown className="w-4 h-4" />}
