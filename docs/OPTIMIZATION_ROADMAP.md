@@ -36,15 +36,15 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~66% complete** (build + launch-readiness done; WP-C1 lifecycle emails
-done; remaining is the rest of the optimization/growth loops + launch ops).
+Overall: **~72% complete** (build + launch-readiness done; WP-C1 lifecycle + WP-C2
+onboarding done; remaining is the rest of the optimization/growth loops + launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
 | A | Foundation | Auth, Stripe, entitlement, server gating, fulfillment, content engine, trial+nurture | 40% | ✅ DONE |
 | B | Launch readiness | SEO, analytics funnel, IA (desktop+mobile), trust/legal, brand, perf, content QA, a11y pass 1, soft-launch kit | 18% | ✅ DONE |
 | C1 | Conversion | Email lifecycle completion (abandoned-checkout + trial-ending) | 6% | ✅ DONE (e014c73) |
-| C2 | Conversion | Onboarding & activation (first-run, empty states, verify-email nudge, progress prompts) | 6% | ⛔ TODO |
+| C2 | Conversion | Onboarding & activation (first-run, empty states, verify-email nudge, progress prompts) | 6% | ✅ DONE (d8bf569) |
 | C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ⛔ TODO |
 | D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ⛔ TODO |
 | D2 | Growth | SEO depth (dynamic OG images, internal linking, more JSON-LD, content cadence workflow) | 6% | ⛔ TODO |
@@ -107,6 +107,11 @@ per-job error reported, checkout unaffected).
 - Track `activation` (first lesson completed) in analytics.
 **Acceptance:** a fresh account always has an obvious next step on every core page.
 **Verify:** preview new-user flow; e2e for welcome→lesson.
+**✅ DONE 2026-06-13 (d8bf569):** `activated` analytics event fires once on first
+lesson (guarded in use-read-lessons); Welcome step-1 → learning path (not a blog
+post) + fixed step-2 copy; Vault empty state got a "Browse the Academy" CTA.
+(MyLearning/MyDownloads already had rich empty states + VerifyEmailBanner +
+ContinueLearning resume prompt.)
 
 ### WP-C3 — Conversion polish ⛔ deps: B
 **Goal:** lift visitor→signup→Pro without dark patterns.
