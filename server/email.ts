@@ -298,6 +298,86 @@ const NURTURE_CONTENT: Record<number, { subject: string; body: (name: string) =>
   },
 };
 
+// Trial-ending reminder (sent 3 days and 1 day before the Pro trial ends).
+export async function sendTrialEndingEmail(
+  to: string,
+  daysLeft: number,
+  endDate: Date,
+  firstName?: string,
+): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would send trial-ending (${daysLeft}d) to ${to} (Resend not configured)`);
+    return;
+  }
+  const name = firstName ?? "there";
+  const when = daysLeft <= 1 ? "tomorrow" : `in ${daysLeft} days`;
+  const ends = endDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  const html = htmlWrapper(`
+    <h1>Your Pro trial ends ${when}, ${name}</h1>
+    <p>Your <strong>BioWikiPro Pro</strong> free trial ends on <strong>${ends}</strong>.
+    Keep full access to every advanced lesson, template, and checklist — no action
+    needed, your subscription simply continues at $8/mo.</p>
+    <div class="box"><p>Not ready? You can cancel in two clicks from your billing
+    portal before ${ends} and you won't be charged.</p></div>
+    <a href="${BASE_URL}/settings" class="cta">Manage your subscription →</a>
+    <p style="font-size:13px;color:#64748b;">Questions about Pro? Just reply — we read every email.</p>
+  `);
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: daysLeft <= 1 ? "Your Pro trial ends tomorrow — BioWikiPro" : `Your Pro trial ends in ${daysLeft} days`,
+      html,
+    });
+  } catch (err) {
+    console.error("[Email] Failed to send trial-ending email:", err);
+  }
+}
+
+const PRODUCT_LABELS: Record<string, string> = {
+  pro_subscription: "BioWikiPro Pro",
+  pro_subscription_annual: "BioWikiPro Pro (annual)",
+  gmp_audit_kit: "the GMP Audit Survival Kit",
+  starter_kit: "the Career Starter Kit",
+  interview_prep: "the Interview Prep Pack",
+  bundle: "the Career Accelerator Bundle",
+};
+
+// Abandoned-checkout reminder (sent once, ~a day after starting checkout without
+// completing it). `productType` matches the Stripe metadata.
+export async function sendAbandonedCheckoutEmail(
+  to: string,
+  productType: string,
+  firstName?: string,
+): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would send abandoned-checkout (${productType}) to ${to} (Resend not configured)`);
+    return;
+  }
+  const name = firstName ?? "there";
+  const label = PRODUCT_LABELS[productType] ?? "your BioWikiPro order";
+  const isSub = productType.startsWith("pro_subscription");
+  const href = isSub ? `${BASE_URL}/upgrade` : `${BASE_URL}/pricing`;
+  const html = htmlWrapper(`
+    <h1>Still thinking it over, ${name}?</h1>
+    <p>You started checking out for <strong>${label}</strong> but didn't finish.
+    No pressure — your spot's still here whenever you're ready.</p>
+    <div class="box"><p>Secure Stripe checkout · instant access${isSub ? " · 7-day free trial, cancel anytime" : " · files ready immediately in your account"}.</p></div>
+    <a href="${href}" class="cta">Pick up where you left off →</a>
+    <p style="font-size:13px;color:#64748b;">If something got in the way or you have a question, just reply — happy to help.</p>
+  `);
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: "You left something behind — BioWikiPro",
+      html,
+    });
+  } catch (err) {
+    console.error("[Email] Failed to send abandoned-checkout email:", err);
+  }
+}
+
 export async function sendNurtureEmail(to: string, step: number, firstName?: string): Promise<void> {
   const content = NURTURE_CONTENT[step];
   if (!content) return;

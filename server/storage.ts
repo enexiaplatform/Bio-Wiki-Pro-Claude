@@ -7,13 +7,15 @@ import {
   contentEntries,
   lessonReads,
   nurtureSends,
+  lifecycleSends,
+  checkoutAttempts,
   type QuoteRequest,
   type InsertQuoteRequest,
   type Lead,
   type ContentEntryRow,
   type InsertContentEntry,
 } from "../shared/schema.js";
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -41,6 +43,12 @@ export interface IStorage {
   getNurtureCandidates(maxAgeDays: number): Promise<{ id: string; email: string | null; firstName: string | null; createdAt: Date | null }[]>;
   getSentNurtureSteps(userId: string): Promise<number[]>;
   recordNurtureSend(userId: string, step: number): Promise<void>;
+  // Lifecycle emails (trial-ending, abandoned-checkout)
+  getTrialEndingCandidates(withinDays: number): Promise<{ id: string; email: string | null; firstName: string | null; proExpiresAt: Date | null }[]>;
+  wasLifecycleSent(userId: string, kind: string): Promise<boolean>;
+  recordLifecycleSend(userId: string, kind: string): Promise<void>;
+  recordCheckoutAttempt(userId: string, productType: string): Promise<void>;
+  getRecentCheckoutAttempts(minAgeHours: number, maxAgeHours: number): Promise<{ userId: string; productType: string }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -231,6 +239,46 @@ export class DatabaseStorage implements IStorage {
 
   async recordNurtureSend(userId: string, step: number): Promise<void> {
     await db.insert(nurtureSends).values({ userId, step }).onConflictDoNothing();
+  }
+
+  async getTrialEndingCandidates(withinDays: number) {
+    const now = new Date();
+    const horizon = new Date(Date.now() + withinDays * 24 * 60 * 60 * 1000);
+    return db
+      .select({ id: users.id, email: users.email, firstName: users.firstName, proExpiresAt: users.proExpiresAt })
+      .from(users)
+      .where(
+        and(
+          eq(users.subscriptionStatus, "trialing"),
+          gt(users.proExpiresAt, now),
+          lt(users.proExpiresAt, horizon),
+        ),
+      );
+  }
+
+  async wasLifecycleSent(userId: string, kind: string): Promise<boolean> {
+    const [row] = await db
+      .select({ id: lifecycleSends.id })
+      .from(lifecycleSends)
+      .where(and(eq(lifecycleSends.userId, userId), eq(lifecycleSends.kind, kind)));
+    return !!row;
+  }
+
+  async recordLifecycleSend(userId: string, kind: string): Promise<void> {
+    await db.insert(lifecycleSends).values({ userId, kind }).onConflictDoNothing();
+  }
+
+  async recordCheckoutAttempt(userId: string, productType: string): Promise<void> {
+    await db.insert(checkoutAttempts).values({ userId, productType });
+  }
+
+  async getRecentCheckoutAttempts(minAgeHours: number, maxAgeHours: number) {
+    const newest = new Date(Date.now() - minAgeHours * 60 * 60 * 1000);
+    const oldest = new Date(Date.now() - maxAgeHours * 60 * 60 * 1000);
+    return db
+      .select({ userId: checkoutAttempts.userId, productType: checkoutAttempts.productType })
+      .from(checkoutAttempts)
+      .where(and(lt(checkoutAttempts.createdAt, newest), gt(checkoutAttempts.createdAt, oldest)));
   }
 }
 

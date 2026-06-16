@@ -80,6 +80,32 @@ export const nurtureSends = pgTable(
 );
 export type NurtureSend = typeof nurtureSends.$inferSelect;
 
+// Lifecycle email guard — one row per (user, kind) so a given lifecycle email
+// (e.g. "trial_end_3d", "trial_end_1d", "abandoned_checkout") is sent at most
+// once per user. Degrades gracefully if the table is absent (pre-migration).
+export const lifecycleSends = pgTable(
+  "lifecycle_sends",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    kind: text("kind").notNull(),
+    sentAt: timestamp("sent_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("lifecycle_sends_user_kind_idx").on(t.userId, t.kind)],
+);
+export type LifecycleSend = typeof lifecycleSends.$inferSelect;
+
+// Checkout attempts — recorded when a Stripe Checkout session is created, so the
+// daily cron can email an abandoned-checkout reminder to users who started but
+// never converted. Best-effort: failures never block the checkout flow.
+export const checkoutAttempts = pgTable("checkout_attempts", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  productType: text("product_type").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+export type CheckoutAttempt = typeof checkoutAttempts.$inferSelect;
+
 // Quote Requests from the Solutions tab
 export const quoteRequests = pgTable("quote_requests", {
   id: serial("id").primaryKey(),

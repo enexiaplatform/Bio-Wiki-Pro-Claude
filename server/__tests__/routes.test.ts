@@ -27,6 +27,14 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     setVerificationToken: vi.fn(() => Promise.resolve()),
     getUserByVerificationToken: vi.fn(),
     markEmailVerified: vi.fn(() => Promise.resolve()),
+    getNurtureCandidates: vi.fn(() => Promise.resolve([])),
+    getSentNurtureSteps: vi.fn(() => Promise.resolve([])),
+    recordNurtureSend: vi.fn(() => Promise.resolve()),
+    getTrialEndingCandidates: vi.fn(() => Promise.resolve([])),
+    wasLifecycleSent: vi.fn(() => Promise.resolve(false)),
+    recordLifecycleSend: vi.fn(() => Promise.resolve()),
+    recordCheckoutAttempt: vi.fn(() => Promise.resolve()),
+    getRecentCheckoutAttempts: vi.fn(() => Promise.resolve([])),
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
@@ -60,9 +68,13 @@ vi.mock("../email.js", () => ({
   sendDunningEmail: vi.fn(() => Promise.resolve()),
   sendPasswordResetEmail: vi.fn(() => Promise.resolve()),
   sendVerificationEmail: vi.fn(() => Promise.resolve()),
+  sendNurtureEmail: vi.fn(() => Promise.resolve()),
+  sendTrialEndingEmail: vi.fn(() => Promise.resolve()),
+  sendAbandonedCheckoutEmail: vi.fn(() => Promise.resolve()),
 }));
 
 import { registerRoutes } from "../routes.js";
+import * as email from "../email.js";
 
 async function buildApp() {
   const app = express();
@@ -562,5 +574,65 @@ describe("email verification (soft)", () => {
     const res = await agent.post("/api/auth/resend-verification").send({});
     expect(res.status).toBe(200);
     expect(storageMock.setVerificationToken).not.toHaveBeenCalled();
+  });
+});
+
+describe("lifecycle cron (/api/cron/nurture)", () => {
+  const OLD = process.env.CRON_SECRET;
+  beforeEach(() => { process.env.CRON_SECRET = "s3cret"; });
+  afterAll(() => {
+    if (OLD === undefined) delete process.env.CRON_SECRET;
+    else process.env.CRON_SECRET = OLD;
+  });
+  const auth = (a: request.Test) => a.set("Authorization", "Bearer s3cret");
+
+  it("401 with a wrong secret", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/api/cron/nurture").set("Authorization", "Bearer nope");
+    expect(res.status).toBe(401);
+  });
+
+  it("sends a 1-day trial-ending reminder and records the guard", async () => {
+    const app = await buildApp();
+    storageMock.getTrialEndingCandidates.mockResolvedValueOnce([
+      { id: "u1", email: "a@b.com", firstName: "A", proExpiresAt: new Date(Date.now() + 12 * 60 * 60 * 1000) },
+    ]);
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendTrialEndingEmail).toHaveBeenCalledTimes(1);
+    expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "trial_end_1d");
+  });
+
+  it("skips a trial reminder already sent", async () => {
+    const app = await buildApp();
+    storageMock.getTrialEndingCandidates.mockResolvedValueOnce([
+      { id: "u1", email: "a@b.com", firstName: "A", proExpiresAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) },
+    ]);
+    storageMock.wasLifecycleSent.mockResolvedValueOnce(true); // trial_end_3d already sent
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendTrialEndingEmail).not.toHaveBeenCalled();
+  });
+
+  it("emails an abandoned checkout for a non-converted user", async () => {
+    const app = await buildApp();
+    storageMock.getRecentCheckoutAttempts.mockResolvedValueOnce([{ userId: "u1", productType: "gmp_audit_kit" }]);
+    storageMock.wasLifecycleSent.mockResolvedValue(false);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", firstName: "A", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValueOnce(false);
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendAbandonedCheckoutEmail).toHaveBeenCalledTimes(1);
+    expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "abandoned_checkout");
+  });
+
+  it("does NOT email an abandoned checkout once the user converted to Pro", async () => {
+    const app = await buildApp();
+    storageMock.getRecentCheckoutAttempts.mockResolvedValueOnce([{ userId: "u1", productType: "pro_subscription" }]);
+    storageMock.wasLifecycleSent.mockResolvedValue(false);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: true });
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendAbandonedCheckoutEmail).not.toHaveBeenCalled();
   });
 });

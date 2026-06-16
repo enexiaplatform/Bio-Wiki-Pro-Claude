@@ -6,7 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
@@ -560,6 +560,12 @@ export async function registerRoutes(app: Express): Promise<void> {
           : {}),
       });
 
+      // Record the attempt for the abandoned-checkout reminder. Best-effort:
+      // never let this break the checkout flow (table may be absent pre-migration).
+      storage
+        .recordCheckoutAttempt(user.id, productType)
+        .catch((e) => console.error("[Checkout] attempt record failed:", e));
+
       res.json({ url: session.url });
     } catch (err: any) {
       console.error("Stripe checkout error:", err);
@@ -714,44 +720,89 @@ export async function registerRoutes(app: Express): Promise<void> {
     return res.json({ locked: false, tier, title, body: content });
   });
 
-  // ── Free→Pro email nurture (daily cron) ───────────────────────────────────
-  // Secured by CRON_SECRET (Vercel cron sends it as a Bearer token). Sends at
-  // most one due-but-unsent step per user per run. Degrades to ok:false if the
-  // nurture_sends table is absent (pre-migration).
+  // ── Daily lifecycle cron ──────────────────────────────────────────────────
+  // Secured by CRON_SECRET (Vercel cron sends it as a Bearer token). One daily
+  // run does three jobs, each isolated so one missing table can't break another:
+  //   1. free→Pro nurture (day 1/3/7 since signup)
+  //   2. trial-ending reminders (3 days + 1 day before the Pro trial ends)
+  //   3. abandoned-checkout reminders (started checkout, never converted)
+  // Path kept as /api/cron/nurture for vercel.json compatibility.
   app.get("/api/cron/nurture", async (req: any, res) => {
     const secret = process.env.CRON_SECRET;
-    if (!secret) return res.status(503).json({ message: "Nurture cron not configured" });
+    if (!secret) return res.status(503).json({ message: "Lifecycle cron not configured" });
     const auth = req.headers.authorization as string | undefined;
     const provided = (auth?.startsWith("Bearer ") ? auth.slice(7) : undefined) ?? req.headers["x-cron-secret"];
     if (provided !== secret) return res.status(401).json({ message: "Unauthorized" });
 
-    const SCHEDULE = [
-      { step: 1, day: 1 },
-      { step: 2, day: 3 },
-      { step: 3, day: 7 },
-    ];
-    let scanned = 0;
-    let sent = 0;
+    const DAY = 24 * 60 * 60 * 1000;
+    const result: Record<string, unknown> = { ok: true };
+
+    // 1. Nurture
+    const SCHEDULE = [{ step: 1, day: 1 }, { step: 2, day: 3 }, { step: 3, day: 7 }];
     try {
-      const candidates = await storage.getNurtureCandidates(14);
-      for (const u of candidates) {
+      let scanned = 0, sent = 0;
+      for (const u of await storage.getNurtureCandidates(14)) {
         if (!u.email || !u.createdAt) continue;
         scanned++;
-        const ageDays = (Date.now() - new Date(u.createdAt).getTime()) / (24 * 60 * 60 * 1000);
-        const dueSteps = SCHEDULE.filter((s) => ageDays >= s.day).map((s) => s.step);
-        if (dueSteps.length === 0) continue;
+        const ageDays = (Date.now() - new Date(u.createdAt).getTime()) / DAY;
+        const due = SCHEDULE.filter((s) => ageDays >= s.day).map((s) => s.step);
+        if (!due.length) continue;
         const already = await storage.getSentNurtureSteps(u.id);
-        const next = dueSteps.find((s) => !already.includes(s));
+        const next = due.find((s) => !already.includes(s));
         if (next == null) continue;
         await sendNurtureEmail(u.email, next, u.firstName ?? undefined);
         await storage.recordNurtureSend(u.id, next);
         sent++;
       }
-      return res.json({ ok: true, scanned, sent });
+      result.nurture = { scanned, sent };
     } catch (err) {
       console.error("[Cron] nurture error:", err);
-      return res.json({ ok: false, scanned, sent, note: "nurture_sends table may be absent — run db:push" });
+      result.nurture = { error: "nurture_sends table may be absent — run db:push" };
     }
+
+    // 2. Trial-ending (3-day then 1-day, most urgent unsent reminder per user)
+    try {
+      let sent = 0;
+      for (const u of await storage.getTrialEndingCandidates(3)) {
+        if (!u.email || !u.proExpiresAt) continue;
+        const daysLeft = Math.ceil((new Date(u.proExpiresAt).getTime() - Date.now()) / DAY);
+        const kind = daysLeft <= 1 ? "trial_end_1d" : "trial_end_3d";
+        if (await storage.wasLifecycleSent(u.id, kind)) continue;
+        await sendTrialEndingEmail(u.email, Math.max(1, daysLeft), new Date(u.proExpiresAt), u.firstName ?? undefined);
+        await storage.recordLifecycleSend(u.id, kind);
+        sent++;
+      }
+      result.trialEnding = { sent };
+    } catch (err) {
+      console.error("[Cron] trial-ending error:", err);
+      result.trialEnding = { error: "lifecycle_sends table may be absent — run db:push" };
+    }
+
+    // 3. Abandoned checkout (started 1–72h ago, not converted, once per user)
+    try {
+      let sent = 0;
+      const seen = new Set<string>();
+      for (const a of await storage.getRecentCheckoutAttempts(1, 72)) {
+        if (seen.has(a.userId)) continue;
+        seen.add(a.userId);
+        if (await storage.wasLifecycleSent(a.userId, "abandoned_checkout")) continue;
+        const user = await storage.getUser(a.userId).catch(() => undefined);
+        if (!user?.email) continue;
+        const converted = a.productType.startsWith("pro_subscription")
+          ? isProActive(user)
+          : await storage.hasCompletedPurchase(user.id, a.productType).catch(() => false);
+        if (converted) continue;
+        await sendAbandonedCheckoutEmail(user.email, a.productType, user.firstName ?? undefined);
+        await storage.recordLifecycleSend(user.id, "abandoned_checkout");
+        sent++;
+      }
+      result.abandonedCheckout = { sent };
+    } catch (err) {
+      console.error("[Cron] abandoned-checkout error:", err);
+      result.abandonedCheckout = { error: "checkout_attempts/lifecycle_sends table may be absent — run db:push" };
+    }
+
+    return res.json(result);
   });
 
   // ── Free lead-magnet checklist (public, no auth) ──────────────────────────
