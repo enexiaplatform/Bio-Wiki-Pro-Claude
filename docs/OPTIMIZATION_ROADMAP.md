@@ -36,14 +36,14 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~60% complete** (the build + launch-readiness phases are largely done;
-remaining is launch ops + the optimization/growth loops).
+Overall: **~66% complete** (build + launch-readiness done; WP-C1 lifecycle emails
+done; remaining is the rest of the optimization/growth loops + launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
 | A | Foundation | Auth, Stripe, entitlement, server gating, fulfillment, content engine, trial+nurture | 40% | ✅ DONE |
 | B | Launch readiness | SEO, analytics funnel, IA (desktop+mobile), trust/legal, brand, perf, content QA, a11y pass 1, soft-launch kit | 18% | ✅ DONE |
-| C1 | Conversion | Email lifecycle completion (abandoned-checkout + trial-ending) | 6% | ⛔ TODO |
+| C1 | Conversion | Email lifecycle completion (abandoned-checkout + trial-ending) | 6% | ✅ DONE (e014c73) |
 | C2 | Conversion | Onboarding & activation (first-run, empty states, verify-email nudge, progress prompts) | 6% | ⛔ TODO |
 | C3 | Conversion | Conversion polish (upgrade-prompt tuning, social-proof capture, exit-intent lead, pricing clarity) | 6% | ⛔ TODO |
 | D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ⛔ TODO |
@@ -93,6 +93,11 @@ kit (`docs/SOFT_LAUNCH.md`).
 **Acceptance:** each email sends once, idempotently; gated by `CRON_SECRET`; no
 double-send. **Verify:** unit test the selection logic; cron returns ok with no
 DB; tsc+build green.
+**✅ DONE 2026-06-13 (e014c73):** folded into the single daily `/api/cron/nurture`
+(3 isolated jobs). New `lifecycle_sends` + `checkout_attempts` tables (graceful if
+absent). `recordCheckoutAttempt` best-effort in create-checkout-session. +5 tests
+(60 total). **Owner: run `db:push`** to create the two tables (works without it —
+per-job error reported, checkout unaffected).
 
 ### WP-C2 — Onboarding & activation ⛔ deps: A, B
 **Goal:** get a new free user to first value fast.
