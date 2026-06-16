@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
@@ -8,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { listContent } from "@/lib/content";
 import { useReadLessons } from "@/hooks/use-read-lessons";
+import { prefetchLikelyNext } from "@/lib/route-prefetch";
 import { ContinueLearning } from "@/components/ContinueLearning";
 
 const byUpdatedDesc = (a: { updatedAt?: string }, b: { updatedAt?: string }) =>
@@ -41,6 +43,9 @@ export default function LandingPage() {
   const { t } = useTranslation("landing");
   useSEO({ title: t("seo.title"), description: t("seo.description") });
   const { count: readCount } = useReadLessons();
+
+  // Warm the chunks a visitor is most likely to click next, once idle.
+  useEffect(() => { prefetchLikelyNext(); }, []);
 
   const latestLessons = [...listContent({ collection: "academy", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
   const latestPosts = [...listContent({ collection: "blog", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);

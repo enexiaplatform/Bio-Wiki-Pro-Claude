@@ -13,6 +13,7 @@ const openSearch = () => window.dispatchEvent(new Event("bwp:open-search"));
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
+import { prefetchRoute } from "@/lib/route-prefetch";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -176,7 +177,7 @@ export function DesktopNav() {
         {desktopTabs.map((tab) => {
           const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
           return (
-            <Link key={tab.name} href={tab.path} className={clsx(
+            <Link key={tab.name} href={tab.path} onMouseEnter={() => prefetchRoute(tab.path)} className={clsx(
               "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",
               isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
             )} data-testid={`nav-desktop-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
