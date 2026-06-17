@@ -36,8 +36,9 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~98% complete** (build + launch + Phase C + D + E1 perf + E2 a11y done;
-remaining is E3 security/obs, E4 testing, + the owner-only launch ops).
+Overall: **code roadmap ~92% complete** — A, B, C, D, E1, E2, E3 all done. Only
+**WP-E4 (testing depth)** remains as a code package; then the owner-only 🔑 LAUNCH
+(go-live ops). After E4 the code roadmap is complete.
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -50,7 +51,7 @@ remaining is E3 security/obs, E4 testing, + the owner-only launch ops).
 | D2 | Growth | SEO depth (internal-link checker, more JSON-LD, content cadence workflow; OG images → backlog) | 6% | ✅ DONE (c14bffb) |
 | E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ✅ DONE (9444669) |
 | E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ✅ DONE (5d0885e) |
-| E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ⛔ TODO |
+| E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ✅ DONE (e520669) |
 | E4 | Hardening | Testing depth (e2e purchase via E2E_RUN, route coverage, smoke for new flows) | 4% | ⛔ TODO |
 | LAUNCH | Ops 🔑 | Go-live dry run: env audit, Stripe live, `db:push`, PostHog key, one real purchase, prod smoke | 5% | ⛔ TODO (owner) |
 
@@ -181,11 +182,19 @@ Radix/vaul/cmdk (verified earlier sessions). Icon-only buttons labelled in WP-B
 a11y pass. **Deferred:** an actual axe-core run + a formal color-contrast audit
 of the dark palette (owner/tooling — couldn't run axe headless here).
 
-### WP-E3 — Security & observability ⛔ deps: A
+### WP-E3 — Security & observability ✅ deps: A
 Security headers/CSP, review rate-limits + input validation, dependency audit
 (`npm audit`), client error monitoring (PostHog `captureError` already exists —
 wire a dashboard/alert), webhook-failure visibility. **Acceptance:** headers
 present; known vulns triaged; errors visible.
+**✅ DONE 2026-06-13 (e520669):** 5 security headers on every response (4 enforced
++ CSP Report-Only so it can't break PostHog/Google — owner flips to enforced
+after observing). `npm audit` 19→4; non-breaking fixes applied; the 4 remaining
+(drizzle-orm SQLi via dynamic identifiers, gray-matter/js-yaml DoS, xlsx no-fix)
+triaged as LOW real risk for our usage (no untrusted SQL identifiers, trusted
+frontmatter, write-only xlsx) — breaking upgrades deferred, NOT forced. Errors:
+client → PostHog captureError; server → Vercel logs. Dashboards = owner. Auth
+rate-limit + Zod/email validation already in place.
 
 ### WP-E4 — Testing depth ⛔ deps: A
 Exercise the purchase flow e2e (`E2E_RUN=1` with Stripe test), add route/unit
