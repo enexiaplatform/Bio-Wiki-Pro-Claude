@@ -92,6 +92,32 @@ declare module "express-session" {
 }
 
 export async function registerRoutes(app: Express): Promise<void> {
+  // ── Security headers (all responses) ───────────────────────────────────────
+  // Enforced headers are zero-risk hardening. CSP ships Report-Only first so it
+  // never breaks third parties (PostHog, Google Fonts/Sign-In) — observe reports
+  // in prod, then flip to enforced `Content-Security-Policy`.
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' https://app.posthog.com https://accounts.google.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com data:",
+    "img-src 'self' data: https:",
+    "connect-src 'self' https://app.posthog.com https://*.posthog.com https://accounts.google.com",
+    "frame-src https://accounts.google.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "object-src 'none'",
+  ].join("; ");
+  app.use((_req, res, next) => {
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.setHeader("X-Frame-Options", "DENY");
+    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+    res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), browsing-topics=()");
+    res.setHeader("Content-Security-Policy-Report-Only", csp);
+    next();
+  });
+
   // ── Stripe webhook must be registered BEFORE session/json middleware
   // but express.json verify already saves req.rawBody so we can verify here.
   app.post("/api/stripe/webhook", async (req: any, res) => {
