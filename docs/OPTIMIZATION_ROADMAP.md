@@ -36,8 +36,8 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **~94% complete** (build + launch + Phase C + D + WP-E1 perf done;
-remaining is E2 a11y full, E3 security/obs, E4 testing, + launch ops).
+Overall: **~98% complete** (build + launch + Phase C + D + E1 perf + E2 a11y done;
+remaining is E3 security/obs, E4 testing, + the owner-only launch ops).
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -49,7 +49,7 @@ remaining is E2 a11y full, E3 security/obs, E4 testing, + launch ops).
 | D1 | Retention | Retention loops (streaks/achievements/certificate polish + re-engagement email) | 5% | ✅ DONE (56b3546) |
 | D2 | Growth | SEO depth (internal-link checker, more JSON-LD, content cadence workflow; OG images → backlog) | 6% | ✅ DONE (c14bffb) |
 | E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ✅ DONE (9444669) |
-| E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ⛔ TODO |
+| E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ✅ DONE (5d0885e) |
 | E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ⛔ TODO |
 | E4 | Hardening | Testing depth (e2e purchase via E2E_RUN, route coverage, smoke for new flows) | 4% | ⛔ TODO |
 | LAUNCH | Ops 🔑 | Go-live dry run: env audit, Stripe live, `db:push`, PostHog key, one real purchase, prod smoke | 5% | ⛔ TODO (owner) |
@@ -169,10 +169,17 @@ is. use-data not on the landing critical path (left). **Deferred:** self-hosting
 fonts + an actual Lighthouse run on the live site (owner; can't run headless
 Lighthouse here) — note in LAUNCH.
 
-### WP-E2 — Accessibility full pass ⛔ deps: B
+### WP-E2 — Accessibility full pass ✅ deps: B
 Keyboard nav + focus management (drawer/dialog/command palette), color-contrast
 audit against the dark theme, ARIA on complex widgets (TOC, quiz, accordions),
 run axe. **Acceptance:** no critical axe violations on core pages.
+**✅ DONE 2026-06-13 (5d0885e):** skip-to-content link + `<main id="main">`
+landmark; LessonQuiz radiogroup/radio + aria-checked; aria-expanded on
+GMP-kit/glossary accordions (FAQ already had); aria-pressed on glossary filters;
+search aria-label. Dialog/Drawer/Command palette get focus-trap + ARIA from
+Radix/vaul/cmdk (verified earlier sessions). Icon-only buttons labelled in WP-B
+a11y pass. **Deferred:** an actual axe-core run + a formal color-contrast audit
+of the dark palette (owner/tooling — couldn't run axe headless here).
 
 ### WP-E3 — Security & observability ⛔ deps: A
 Security headers/CSP, review rate-limits + input validation, dependency audit
