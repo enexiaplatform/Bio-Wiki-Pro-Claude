@@ -249,6 +249,7 @@ export default function GMPAuditKit() {
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 className="w-full flex items-center justify-between p-5 text-left hover:bg-white/5 transition-colors"
+                aria-expanded={openFaq === i}
               >
                 <span className="font-semibold text-sm pr-4">{faq.q}</span>
                 {openFaq === i

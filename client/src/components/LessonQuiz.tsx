@@ -31,8 +31,8 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
       <ol className="space-y-6">
         {quiz.map((q, qi) => (
           <li key={qi}>
-            <p className="text-sm font-semibold mb-2">{qi + 1}. {q.q}</p>
-            <div className="space-y-2">
+            <p className="text-sm font-semibold mb-2" id={`quiz-q-${qi}`}>{qi + 1}. {q.q}</p>
+            <div className="space-y-2" role="radiogroup" aria-labelledby={`quiz-q-${qi}`}>
               {q.options.map((opt, oi) => {
                 const selected = answers[qi] === oi;
                 const isCorrect = oi === q.answer;
@@ -41,6 +41,8 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
                   <button
                     key={oi}
                     type="button"
+                    role="radio"
+                    aria-checked={selected}
                     disabled={submitted}
                     onClick={() => setAnswers((a) => ({ ...a, [qi]: oi }))}
                     className={clsx(

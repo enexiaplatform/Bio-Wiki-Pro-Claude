@@ -61,10 +61,16 @@ function Layout() {
   usePageTracking();
   return (
     <div className="min-h-screen bg-background text-foreground pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+      >
+        Skip to content
+      </a>
       <DesktopNav />
       <MobileHeader />
 
-      <main className="animate-in fade-in duration-500">
+      <main id="main" className="animate-in fade-in duration-500">
         <Suspense fallback={<PageFallback />}>
         <Switch>
           {/* Backward-compat: old /en|/vi prefixed URLs → clean English-only URLs */}

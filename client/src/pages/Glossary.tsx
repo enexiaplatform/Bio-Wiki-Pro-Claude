@@ -73,6 +73,7 @@ export default function Glossary() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search terms…"
+            aria-label="Search glossary terms"
             className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/40"
           />
         </div>
@@ -81,6 +82,7 @@ export default function Glossary() {
             <button
               key={c}
               onClick={() => setCategory(c)}
+              aria-pressed={c === category}
               className={clsx(
                 "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
                 c === category ? "bg-primary/15 text-primary" : "bg-white/5 text-muted-foreground hover:text-foreground"
@@ -109,6 +111,7 @@ export default function Glossary() {
               <div key={t.id} className="rounded-xl border border-white/10 bg-card overflow-hidden">
                 <button
                   onClick={() => setOpenId(open ? null : t.id)}
+                  aria-expanded={open}
                   className="w-full text-left p-4 hover:bg-white/5 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3">
