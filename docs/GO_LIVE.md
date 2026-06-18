@@ -58,8 +58,17 @@ catalog is defined once in `server/products.ts`:
 | `interview_prep`   | Interview Prep Package    | payment      | `STRIPE_INTERVIEW_PREP_PRICE_ID`|
 | `bundle`           | Career Accelerator Bundle | payment      | `STRIPE_BUNDLE_PRICE_ID`        |
 
-- [ ] Pro is a **recurring** price; the four kits are **one-time** prices.
+- [ ] Pro is a **recurring** price; the career kits are **one-time** prices.
 - [ ] Copy each **live** Price ID (`price_...`) into the matching Vercel env var.
+
+> **Subscription-first (2026-06-18):** the **GMP Audit Kit is folded into Pro** —
+> its page (`/toolkits/gmp-audit-kit`) drives the Pro subscription and is no longer
+> sold standalone. You do **not** need `STRIPE_GMP_AUDIT_KIT_PRICE_ID` for launch;
+> leave it unset (its standalone checkout simply 400s, and nothing in the UI calls
+> it). Pro entitlement unlocks the kit's files via `isProActive`. Keep the row only
+> if you ever intend to re-enable a one-time sale; legacy one-time buyers already
+> keep access via `entitledBy`. The remaining one-time prices that still matter are
+> the **career** kits (`starter_kit`, `interview_prep`, `bundle`).
 
 > **Optional — annual Pro plan (higher LTV):** create a second **recurring (yearly)** price for Pro and set `STRIPE_PRO_ANNUAL_PRICE_ID`. When present, `/upgrade` shows a Monthly/Annual toggle automatically (product id `pro_subscription_annual`); when absent, only monthly shows. No code change needed.
 
@@ -107,9 +116,9 @@ Set all of these for **Production**. Full annotations in `docs/ENV_AUDIT.md`.
 - [ ] `STRIPE_PRO_PRICE_ID` — live recurring price.
 - [ ] `RESEND_API_KEY` — `re_...` (without it, emails are silently skipped).
 
-**For one-time kits (only if selling them):**
-- [ ] `STRIPE_*_PRICE_ID` (the four kits) + `DOWNLOAD_*` URLs (real file links — placeholder = broken delivery email).
-- [ ] `DOWNLOAD_GMP_CHECKLIST` — lead-magnet email link (separate from purchase delivery).
+**For one-time career kits (only if selling them — GMP kit is now Pro-only):**
+- [ ] `STRIPE_*_PRICE_ID` (starter_kit, interview_prep, bundle) + `DOWNLOAD_*` URLs (real file links — placeholder = broken delivery email).
+- [ ] `DOWNLOAD_GMP_CHECKLIST` — lead-magnet email link (the free pre-audit checklist; separate from any purchase delivery).
 
 **Build-time (`VITE_*`) — changing requires a redeploy:**
 - [ ] `VITE_SITE_URL` — `https://<your-domain>` (canonical/og/JSON-LD).
@@ -167,8 +176,11 @@ Do this once on the live site (you can use a real card and immediately cancel/re
 7. [ ] Settings → **Manage subscription** opens the Stripe billing portal.
 8. [ ] Cancel in the portal → after `customer.subscription.deleted`, `isPro` flips to
        `false` and the Pro lesson re-locks.
-9. [ ] (One-time, if selling kits) buy the GMP kit → `purchases` row written + delivery
-       email with the correct `DOWNLOAD_*` link.
+9. [ ] As the Pro subscriber, open `/my-downloads` → the **GMP Audit Kit** is listed
+       and each file downloads (the kit is unlocked by Pro, not a separate purchase).
+       In a logged-out window `GET /api/downloads` returns **401**.
+10. [ ] (Only if selling career kits) buy a career kit → `purchases` row written +
+        delivery email with the correct `DOWNLOAD_*` link.
 
 Quick DB sanity:
 ```sql
