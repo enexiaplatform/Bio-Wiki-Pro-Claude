@@ -1,35 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import {
   CheckCircle2, ShieldCheck, FileText, ClipboardList,
   MessageSquare, Video, Phone, ChevronDown, ChevronUp,
-  Loader2, ArrowRight, Package, BadgeCheck, Lock,
+  ArrowRight, Package, BadgeCheck, Lock,
   GraduationCap, Microscope,
 } from "lucide-react";
-import clsx from "clsx";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { JsonLd } from "@/components/JsonLd";
-
-type ProductType = "gmp_audit_kit";
-
-async function createCheckoutSession(productType: ProductType): Promise<string> {
-  const res = await fetch("/api/stripe/create-checkout-session", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ productType }),
-  });
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.message ?? "Failed to start checkout");
-  }
-  const { url } = await res.json();
-  return url;
-}
+import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 
 // Icons paired by index with includes.items / pricing trust badges.
 const INCLUDE_ICONS = [FileText, ClipboardList, ShieldCheck, MessageSquare, Video, Phone];
@@ -40,15 +22,19 @@ interface Include { title: string; desc: string }
 interface ValueCard { title: string; text: string }
 interface Faq { q: string; a: string }
 
+const PLACEMENT = "gmp_kit_page";
+
 export default function GMPAuditKit() {
   const { t } = useTranslation("gmpkit");
   useSEO({ title: t("seoTitle"), description: t("seoDesc") });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const { isAuthenticated } = useUser();
   const [, navigate] = useLocation();
+
+  // Top-of-funnel signal: this page is a Pro upsell landing.
+  useEffect(() => {
+    analytics.upgradePromptShown(PLACEMENT);
+  }, []);
 
   const trustBadges = t("trustBadges", { returnObjects: true }) as string[];
   const pains = t("pains.items", { returnObjects: true }) as Pain[];
@@ -57,21 +43,9 @@ export default function GMPAuditKit() {
   const whoFor = t("whoFor.items", { returnObjects: true }) as string[];
   const faqs = t("faq.items", { returnObjects: true }) as Faq[];
 
-  async function handleCheckout() {
-    if (!isAuthenticated) {
-      navigate("/signup");
-      return;
-    }
-    setIsLoading(true);
-    setError(null);
-    analytics.checkoutStarted("gmp_audit_kit", 59);
-    try {
-      const url = await createCheckoutSession("gmp_audit_kit");
-      window.location.href = url;
-    } catch (err: any) {
-      setError(err.message ?? "Something went wrong. Please try again.");
-      setIsLoading(false);
-    }
+  function handleUnlock() {
+    analytics.upgradePromptClicked(PLACEMENT);
+    navigate("/pricing");
   }
 
   return (
@@ -108,22 +82,11 @@ export default function GMPAuditKit() {
           {t("hero.subtitle")}
         </p>
 
-        {error && (
-          <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-            {error}
-          </div>
-        )}
-
         <button
-          onClick={handleCheckout}
-          disabled={isLoading}
-          className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold text-lg px-8 py-4 rounded-xl transition-all shadow-lg shadow-teal-500/25 disabled:opacity-60 disabled:cursor-wait mb-4"
+          onClick={handleUnlock}
+          className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold text-lg px-8 py-4 rounded-xl transition-all shadow-lg shadow-teal-500/25 mb-4"
         >
-          {isLoading ? (
-            <><Loader2 className="w-5 h-5 animate-spin" /> {t("hero.redirecting")}</>
-          ) : (
-            <><Package className="w-5 h-5" /> {t("hero.buyNow")}</>
-          )}
+          <Package className="w-5 h-5" /> {t("hero.buyNow")}
         </button>
 
         <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground flex-wrap">
@@ -137,6 +100,9 @@ export default function GMPAuditKit() {
           })}
         </div>
       </motion.div>
+
+      {/* ── LEAD CAPTURE (guests only; nurtures toward Pro) ── */}
+      <LeadMagnetBanner />
 
       {/* ── PAIN POINTS ── */}
       <div className="mb-16">
@@ -192,27 +158,22 @@ export default function GMPAuditKit() {
         </div>
       </div>
 
-      {/* ── PRICING CTA ── */}
+      {/* ── PRICING CTA (Pro subscription unlocks this kit + everything) ── */}
       <div className="mb-16 bg-gradient-to-br from-teal-500/10 to-emerald-500/5 border border-teal-500/20 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent" />
         <div className="relative z-10">
           <p className="text-sm text-teal-400 font-semibold mb-2">{t("pricing.launchNote")}</p>
           <div className="flex items-baseline justify-center gap-3 mb-2">
-            <span className="text-lg text-muted-foreground line-through">$120</span>
-            <span className="text-5xl font-bold text-teal-400">$59</span>
+            <span className="text-5xl font-bold text-teal-400">$8</span>
+            <span className="text-muted-foreground text-sm">/mo</span>
           </div>
           <p className="text-xs text-muted-foreground mb-8">{t("pricing.priceNote")}</p>
 
           <button
-            onClick={handleCheckout}
-            disabled={isLoading}
-            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold text-lg px-10 py-4 rounded-xl transition-all shadow-xl shadow-teal-500/30 disabled:opacity-60 disabled:cursor-wait mb-6"
+            onClick={handleUnlock}
+            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold text-lg px-10 py-4 rounded-xl transition-all shadow-xl shadow-teal-500/30 mb-6"
           >
-            {isLoading ? (
-              <><Loader2 className="w-5 h-5 animate-spin" /> {t("hero.redirecting")}</>
-            ) : (
-              <>{t("pricing.buyNow")} <ArrowRight className="w-5 h-5" /></>
-            )}
+            {t("pricing.buyNow")} <ArrowRight className="w-5 h-5" />
           </button>
 
           <div className="mt-6 pt-6 border-t border-white/5 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
@@ -272,12 +233,11 @@ export default function GMPAuditKit() {
         <p className="text-muted-foreground text-sm mb-4">{t("finalCta.note")}</p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
-            onClick={handleCheckout}
-            disabled={isLoading}
-            className="inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-8 py-3 rounded-xl transition-all disabled:opacity-60 disabled:cursor-wait"
+            onClick={handleUnlock}
+            className="inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-8 py-3 rounded-xl transition-all"
           >
-            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Package className="w-4 h-4" />}
-            {isLoading ? t("hero.redirecting") : t("finalCta.buy")}
+            <Package className="w-4 h-4" />
+            {t("finalCta.buy")}
           </button>
           <a
             href="mailto:thongtran.hcmus@gmail.com"

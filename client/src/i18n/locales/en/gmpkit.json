@@ -1,15 +1,15 @@
 {
-  "seoTitle": "GMP Audit Survival Kit — Pass your GMP inspection, $59",
-  "seoDesc": "A 6-in-1 toolkit to help QC/QA Pharma teams pass GMP & Annex 1 audits: checklist, tough Q&A, CAPA templates, mock interview. Just $59.",
+  "seoTitle": "GMP Audit Survival Kit — included with BioWikiPro Pro",
+  "seoDesc": "A 6-in-1 toolkit to help QC/QA Pharma teams pass GMP & Annex 1 audits: checklist, tough Q&A, CAPA templates, mock interview. Included in Pro alongside the full academy.",
   "hero": {
     "badge": "GMP Audit Survival Kit",
     "titleLead": "Survive your GMP audit —",
     "titleHighlight": "without guessing",
-    "subtitle": "A complete toolkit for Senior QC/QA: SOP gap analysis, CAPA templates, audit interview scripts — ready to use from day 1.",
-    "buyNow": "Buy now — $59",
+    "subtitle": "A complete toolkit for Senior QC/QA: SOP gap analysis, CAPA templates, audit interview scripts — included with Pro, ready to use from day 1.",
+    "buyNow": "Unlock with Pro",
     "redirecting": "Redirecting…"
   },
-  "trustBadges": ["One-time payment", "Lifetime access", "Instant download", "Secure Stripe checkout", "Educational use only", "Built for QC/QA"],
+  "trustBadges": ["Included in Pro", "All toolkits unlocked", "Instant access", "Cancel anytime", "Educational use only", "Built for QC/QA"],
   "pains": {
     "heading": "Sound familiar?",
     "items": [
@@ -20,7 +20,7 @@
   },
   "includes": {
     "heading": "What's in the Kit?",
-    "subtitle": "6 resources — worth an estimated $120 if bought separately",
+    "subtitle": "6 resources — all included in your Pro subscription, alongside the full academy",
     "items": [
       { "title": "GMP Audit Survival Guide", "desc": "The full framework — from 30 days out to audit day to the written response, step by step." },
       { "title": "SOP Gap Analysis (Excel/Sheets)", "desc": "Score 20 quality-system elements; the sheet computes your % readiness and surfaces your worst gaps." },
@@ -39,9 +39,9 @@
     ]
   },
   "pricing": {
-    "launchNote": "Launch price",
-    "priceNote": "One-time payment • No subscription • Lifetime access",
-    "buyNow": "Buy now",
+    "launchNote": "Included with BioWikiPro Pro",
+    "priceNote": "Pro unlocks this kit + every toolkit and the full academy • Cancel anytime",
+    "buyNow": "Get Pro",
     "secure": "🔒 Stripe Secure Payment",
     "standards": "📦 GMP WHO • Annex 1 EU • FSSC 22000 • ISO 15189"
   },
@@ -60,14 +60,14 @@
     "heading": "Frequently asked questions",
     "items": [
       { "q": "Which GMP standards does it fit?", "a": "The Kit is designed for GMP WHO, Annex 1 EU GMP, FSSC 22000, and ISO 15189. Suitable for Pharma and F&B plants preparing for audits from regulators or international customers." },
-      { "q": "How do I receive the files after buying?", "a": "After payment, a confirmation email with the download link is sent to your registered address. The link is permanent." },
+      { "q": "How do I get the files?", "a": "The kit is part of BioWikiPro Pro. Once you subscribe, every file is available instantly from your dashboard downloads — no separate purchase, and you keep access for as long as your Pro subscription is active." },
       { "q": "I'm a new QC — can I use it?", "a": "The Kit is designed for Senior QC/QA (3+ years). New QCs can still learn from the Interview Scripts and PDF Guide. The SOP Gap Analysis needs basic QMS knowledge to use effectively." },
       { "q": "Does it apply to F&B?", "a": "Yes. The FSSC 22000 section of the PDF Guide and the CAPA templates apply directly to F&B plants. The SOP Gap Analysis can be adapted for ISO 22000." }
     ]
   },
   "finalCta": {
     "note": "Still have questions? Reach out directly.",
-    "buy": "Buy GMP Audit Kit — $59",
-    "ask": "Ask before buying"
+    "buy": "Unlock with Pro",
+    "ask": "Ask before subscribing"
   }
 }
