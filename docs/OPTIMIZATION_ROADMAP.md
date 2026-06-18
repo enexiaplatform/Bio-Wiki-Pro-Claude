@@ -9,10 +9,12 @@ journey** = roughly **one full session**. Sessions run packages in order (respec
 at the end of each session.
 
 > **North star / "commercial" =** a brand-new visitor can land → understand the
-> product in 5s → sign up free → learn → upgrade to Pro or buy the GMP kit → pay
-> (live Stripe) → get real files + emails → come back → and we can see the whole
-> funnel in analytics. Beyond that: a repeatable loop that improves conversion,
-> retention, and content.
+> product in 5s → sign up free → learn → upgrade to Pro (one subscription that
+> unlocks the full academy + every toolkit, incl. the GMP kit) → pay (live Stripe)
+> → get real files + emails → come back → and we can see the whole funnel in
+> analytics. Beyond that: a repeatable loop that improves conversion, retention,
+> and content. (Monetization is **subscription-first**: the GMP kit is folded into
+> Pro, not sold standalone — see the `commercialization-gaps` memory, 2026-06-18.)
 
 ---
 
@@ -36,9 +38,8 @@ flagged 🔑 — a session can prepare/verify around them but cannot complete th
 
 ## Progress ledger
 
-Overall: **code roadmap ~92% complete** — A, B, C, D, E1, E2, E3 all done. Only
-**WP-E4 (testing depth)** remains as a code package; then the owner-only 🔑 LAUNCH
-(go-live ops). After E4 the code roadmap is complete.
+Overall: **code roadmap 100% complete** — A, B, C, D, E1, E2, E3, E4 all done.
+Only the owner-only 🔑 LAUNCH (go-live ops) remains.
 
 | WP | Phase | Scope | Est % | Status |
 |----|-------|-------|------:|--------|
@@ -52,7 +53,7 @@ Overall: **code roadmap ~92% complete** — A, B, C, D, E1, E2, E3 all done. Onl
 | E1 | Hardening | Performance round 2 (fonts/images, route preload, use-data split, Lighthouse pass) | 5% | ✅ DONE (9444669) |
 | E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ✅ DONE (5d0885e) |
 | E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ✅ DONE (e520669) |
-| E4 | Hardening | Testing depth (e2e purchase via E2E_RUN, route coverage, smoke for new flows) | 4% | ⛔ TODO |
+| E4 | Hardening | Testing depth (e2e purchase via E2E_RUN, route coverage, smoke for new flows) | 4% | ✅ DONE |
 | LAUNCH | Ops 🔑 | Go-live dry run: env audit, Stripe live, `db:push`, PostHog key, one real purchase, prod smoke | 5% | ⛔ TODO (owner) |
 
 > % sums to 100. Adjust weights if scope shifts. "DONE" rows are recorded in the
@@ -196,10 +197,21 @@ frontmatter, write-only xlsx) — breaking upgrades deferred, NOT forced. Errors
 client → PostHog captureError; server → Vercel logs. Dashboards = owner. Auth
 rate-limit + Zod/email validation already in place.
 
-### WP-E4 — Testing depth ⛔ deps: A
+### WP-E4 — Testing depth ✅ deps: A
 Exercise the purchase flow e2e (`E2E_RUN=1` with Stripe test), add route/unit
 coverage for new lifecycle + onboarding code, smoke the new flows.
 **Acceptance:** purchase e2e passes in test mode; coverage on new code.
+**✅ DONE 2026-06-18:** scope adapted to the subscription-first pivot. (1) New
+**public** smoke (no Stripe needed, runs in CI) locks the pivot: the GMP kit page
+shows no `$59`, renders the lead-magnet, and its "Unlock with Pro" CTA routes to
+`/pricing`; `/pricing` + `/upgrade` surface "toolkits included in Pro". (2)
+Replaced the now-stale E2E_RUN test (asserted the old one-time kit checkout) with
+a **Pro-subscription** checkout test — the primary funnel now. (3) Route test:
+abandoned **Pro-subscription** checkout re-engages a still-free user via the
+`converted = isProActive` branch (complements the existing converted-skip case).
+62 unit/route tests + 9 public smoke green (2 E2E_RUN-gated skip without Stripe).
+**Owner (in LAUNCH):** run the full purchase e2e with `E2E_RUN=1` + Stripe test
+keys + a seeded user — can't run locally (no `DATABASE_URL`/Stripe CLI here).
 
 ---
 

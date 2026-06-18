@@ -638,6 +638,23 @@ describe("lifecycle cron (/api/cron/nurture)", () => {
     expect(email.sendAbandonedCheckoutEmail).not.toHaveBeenCalled();
   });
 
+  // Pro subscription is the primary funnel post-pivot (the GMP kit no longer
+  // has a standalone checkout). An abandoned Pro attempt by a still-free user
+  // must be re-engaged via the subscription "converted = isProActive" branch.
+  it("emails an abandoned Pro-subscription checkout for a still-free user", async () => {
+    const app = await buildApp();
+    storageMock.getRecentCheckoutAttempts.mockResolvedValueOnce([{ userId: "u1", productType: "pro_subscription" }]);
+    storageMock.wasLifecycleSent.mockResolvedValue(false);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", firstName: "A", isPro: false });
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendAbandonedCheckoutEmail).toHaveBeenCalledTimes(1);
+    expect(email.sendAbandonedCheckoutEmail).toHaveBeenCalledWith("a@b.com", "pro_subscription", "A");
+    expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "abandoned_checkout");
+    // hasCompletedPurchase must NOT be consulted for a subscription attempt.
+    expect(storageMock.hasCompletedPurchase).not.toHaveBeenCalled();
+  });
+
   it("re-engages a lapsed, non-Pro learner once", async () => {
     const app = await buildApp();
     storageMock.getReEngagementCandidates.mockResolvedValueOnce(["u1"]);

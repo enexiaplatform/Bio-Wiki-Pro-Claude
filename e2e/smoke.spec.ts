@@ -46,6 +46,29 @@ test.describe("public smoke", () => {
     await page.goto("/certificate/validation-essentials");
     await expect(page.getByText(/Certificate locked/i)).toBeVisible();
   });
+
+  // Subscription-first pivot: the GMP kit is folded into Pro — its page must
+  // drive Pro (route to /pricing) and NOT start a standalone one-time checkout.
+  test("GMP kit page promotes Pro, not a standalone purchase", async ({ page }) => {
+    await page.goto("/toolkits/gmp-audit-kit");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    // No standalone price anywhere on the page.
+    await expect(page.getByText(/\$59/)).toHaveCount(0);
+    // The lead-magnet capture (guest nurture toward Pro) is present.
+    await expect(page.getByText(/Free download/i).first()).toBeVisible();
+    // Primary CTA routes to /pricing (client navigation — no Stripe needed).
+    const cta = page.getByRole("button", { name: /Unlock with Pro/i }).first();
+    await expect(cta).toBeVisible();
+    await cta.click();
+    await page.waitForURL(/\/pricing$/, { timeout: 10_000 });
+  });
+
+  test("pricing & upgrade surface that toolkits are included in Pro", async ({ page }) => {
+    await page.goto("/pricing");
+    await expect(page.getByText(/toolkits/i).first()).toBeVisible();
+    await page.goto("/upgrade");
+    await expect(page.getByText(/All toolkits/i).first()).toBeVisible();
+  });
 });
 
 // Full purchase/subscribe flow — needs a logged-in user + Stripe test mode.
@@ -60,11 +83,10 @@ test.describe("purchase & subscribe (test mode)", () => {
     await expect(cta.first()).toBeVisible();
   });
 
-  test("GMP kit buy CTA starts checkout or routes to signup", async ({ page }) => {
-    await page.goto("/toolkits/gmp-audit-kit");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    const buy = page.getByRole("button", { name: /Buy|Get|Upgrade/i }).first();
-    await buy.click();
+  test("Pro subscribe CTA starts Stripe checkout or routes to auth", async ({ page }) => {
+    await page.goto("/pricing");
+    const cta = page.getByRole("button", { name: /Start Pro|free trial/i }).first();
+    await cta.click();
     await page.waitForURL(/checkout\.stripe\.com|\/register|\/login/, { timeout: 15_000 });
   });
 });

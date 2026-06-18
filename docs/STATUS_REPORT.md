@@ -17,7 +17,7 @@ BioWikiPro is a **mobile-first PWA** for **QC/QA professionals in Pharma/Biotech
 | Product | Price | Type | State |
 |---|---|---|---|
 | Academy + Library (78 long-form lessons, 7 learning paths) | Free to start | — | ✅ Free tier live; ~30 lessons are Pro-gated |
-| GMP Audit Survival Kit | $59 | one-time | ✅ Page + checkout + **real file fulfillment** (PDF/Excel) |
+| GMP Audit Survival Kit | Included in Pro | subscription | ✅ Folded into Pro (2026-06-18) — page now drives Pro, no standalone sale; unlocked via `isProActive` + real PDF/Excel fulfillment. Legacy one-time buyers keep access. |
 | Career Starter Kit | $15 | one-time | ✅ Real deliverables (CV / cover letter / LinkedIn / employer CSV) |
 | Interview Prep Pack | $20 | one-time | ✅ Real deliverable (100+ Q&A) |
 | Career Accelerator Bundle | $30 | one-time | ✅ Unlocks the two career products |
