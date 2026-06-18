@@ -15,6 +15,7 @@ type FeatureKey =
   | "academyFree"
   | "academyPro"
   | "sops"
+  | "toolkits"
   | "tools"
   | "insights"
   | "support"
@@ -25,6 +26,7 @@ const MATRIX: [FeatureKey, boolean, boolean][] = [
   ["academyFree", true, true],
   ["academyPro", false, true],
   ["sops", false, true],
+  ["toolkits", false, true],
   ["tools", false, true],
   ["insights", false, true],
   ["support", false, true],
