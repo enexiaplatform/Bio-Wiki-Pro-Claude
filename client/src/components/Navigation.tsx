@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Microscope, Search, Menu, BookMarked, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Settings as SettingsIcon } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Microscope, Search, Menu, BookMarked, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -45,38 +45,42 @@ function BioWikiMark({ className }: { className?: string }) {
 }
 
 // `key` maps to nav.json translation keys; `name` is the fallback label.
+// Workflow-first: "Workflows" leads on both bars.
 const mobileTabs = [
-  { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
+  { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
   { key: "academy", name: "Academy", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
-  { key: "compliance", name: "Compliance", icon: ShieldCheck, path: "/compliance" },
+  { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits" },
   { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
 ];
 
 const desktopTabs = [
-  { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
+  { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
   { key: "academy", name: "Academy", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
+  { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits" },
+  { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
   { key: "compliance", name: "Compliance", icon: ShieldCheck, path: "/compliance" },
-  { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
   { key: "career", name: "Career", icon: Briefcase, path: "/career" },
-  { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits/gmp-audit-kit" },
-  { key: "solutions", name: "Solutions", icon: Microscope, path: "/solutions" },
-  { key: "insights", name: "Insights", icon: TrendingUp, path: "/insights" },
+  { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
 ];
 
 // Secondary destinations for the mobile "More" drawer — everything not on the
 // 5-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
+// Solutions / Insights are deprioritized here (off the primary bar) per the
+// workflow-first direction; they stay reachable, not prominent.
 const moreLinks = [
+  { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
   { name: "Library", icon: BookMarked, path: "/library" },
+  { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { name: "Career", icon: Briefcase, path: "/career" },
-  { name: "Solutions", icon: Microscope, path: "/solutions" },
   { name: "GMP Audit Kit", icon: Package, path: "/toolkits/gmp-audit-kit" },
-  { name: "Insights", icon: TrendingUp, path: "/insights" },
   { name: "Glossary", icon: BookA, path: "/glossary" },
   { name: "Pricing", icon: Tag, path: "/pricing" },
   { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
   { name: "My Downloads", icon: Download, path: "/my-downloads" },
+  { name: "Solutions", icon: Microscope, path: "/solutions" },
+  { name: "Insights", icon: TrendingUp, path: "/insights" },
   { name: "Settings", icon: SettingsIcon, path: "/settings" },
   { name: "About", icon: Info, path: "/about" },
   { name: "FAQ", icon: HelpCircle, path: "/faq" },
@@ -91,7 +95,7 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-2 pb-safe pt-2 z-50 md:hidden">
       <div className="flex justify-between items-center max-w-md mx-auto">
         {mobileTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
+          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/workflows");
           return (
             <Link key={tab.name} href={tab.path} className="flex flex-col items-center gap-1 p-2 w-full" data-testid={`nav-mobile-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <div className={clsx(
@@ -175,7 +179,7 @@ export function DesktopNav() {
           at any width while the full tab set stays reachable (no clipped Sign In). */}
       <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {desktopTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/qc-hub");
+          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/workflows");
           return (
             <Link key={tab.name} href={tab.path} onMouseEnter={() => prefetchRoute(tab.path)} className={clsx(
               "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",

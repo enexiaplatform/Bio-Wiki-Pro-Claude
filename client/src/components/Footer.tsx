@@ -21,20 +21,20 @@ export function Footer() {
 
           {/* Links */}
           <nav className="flex items-center gap-6 text-xs text-muted-foreground">
-            <Link href="/toolkits/gmp-audit-kit" className="hover:text-primary transition-colors">
-              {t("links.gmpKit")}
+            <Link href="/workflows" className="hover:text-primary transition-colors">
+              Workflows
             </Link>
             <Link href="/academy" className="hover:text-primary transition-colors">
               {t("links.academy")}
+            </Link>
+            <Link href="/toolkits" className="hover:text-primary transition-colors">
+              Toolkits
             </Link>
             <Link href="/library" className="hover:text-primary transition-colors">
               Library
             </Link>
             <Link href="/tools" className="hover:text-primary transition-colors">
               Tools
-            </Link>
-            <Link href="/solutions" className="hover:text-primary transition-colors">
-              Solutions
             </Link>
             <Link href="/career" className="hover:text-primary transition-colors">
               Career

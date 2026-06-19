@@ -963,10 +963,10 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
 
     const corePaths = [
-      "", "/qc-hub", "/academy", "/library", "/glossary", "/about", "/tools",
-      "/compliance", "/vault", "/career", "/solutions", "/insights", "/pricing",
-      "/toolkits/gmp-audit-kit", "/blog", "/upgrade", "/login", "/signup",
-      "/faq", "/terms", "/privacy",
+      "", "/workflows", "/toolkits", "/qc-hub", "/academy", "/library",
+      "/glossary", "/about", "/tools", "/compliance", "/vault", "/career",
+      "/solutions", "/insights", "/pricing", "/toolkits/gmp-audit-kit",
+      "/blog", "/upgrade", "/login", "/signup", "/faq", "/terms", "/privacy",
     ];
     // Learning-path tracks. Kept in sync with client/src/data/learningPaths.ts.
     const pathPaths = [
@@ -975,9 +975,14 @@ export async function registerRoutes(app: Express): Promise<void> {
       "investigations-data-integrity", "laboratory-controls-stability",
       "biologics-biopharmaceutical-qc",
     ].map((s) => `/paths/${s}`);
+    // Workflow detail pages. Kept in sync with client/src/data/workflows.ts.
+    const workflowPaths = [
+      "culture-media-selection", "environmental-monitoring",
+      "biological-indicator-workflow",
+    ].map((s) => `/workflows/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
-    const allPaths = [...corePaths, ...pathPaths, ...blogPaths, ...libPaths];
+    const allPaths = [...corePaths, ...pathPaths, ...workflowPaths, ...blogPaths, ...libPaths];
 
     // English-only: clean single URL per path.
     const urls = allPaths

@@ -69,6 +69,36 @@ test.describe("public smoke", () => {
     await page.goto("/upgrade");
     await expect(page.getByText(/All toolkits/i).first()).toBeVisible();
   });
+
+  // Workflow Learning OS: the front door is workflow-first.
+  test("homepage is workflow-first", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: /What workflow are you working on/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Start with Microbiology QC/i })).toBeVisible();
+    // Subscription-first: no standalone kit price leaks onto the landing page.
+    await expect(page.getByText(/\$59/)).toHaveCount(0);
+  });
+
+  test("workflow atlas lists workflows", async ({ page }) => {
+    await page.goto("/workflows");
+    await expect(page.getByRole("heading", { name: /What workflow are you working on/i })).toBeVisible();
+    await expect(page.locator('a[href^="/workflows/"]').first()).toBeVisible();
+  });
+
+  test("workflow detail renders the operational template", async ({ page }) => {
+    await page.goto("/workflows/environmental-monitoring");
+    await expect(page.getByRole("heading", { name: /^Environmental Monitoring$/i })).toBeVisible();
+    await expect(page.getByText(/Step-by-step workflow/i)).toBeVisible();
+    await expect(page.getByText(/Critical control points/i)).toBeVisible();
+    await expect(page.getByText(/Common mistakes/i)).toBeVisible();
+  });
+
+  test("toolkit library lists toolkits and marks unbuilt ones coming soon", async ({ page }) => {
+    await page.goto("/toolkits");
+    await expect(page.getByRole("heading", { name: /Checklists & toolkits/i })).toBeVisible();
+    await expect(page.getByText(/GMP Audit Survival Kit/i).first()).toBeVisible();
+    await expect(page.getByText(/Soon/i).first()).toBeVisible();
+  });
 });
 
 // Full purchase/subscribe flow — needs a logged-in user + Stripe test mode.

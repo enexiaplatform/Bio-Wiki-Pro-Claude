@@ -33,6 +33,9 @@ const PricingPage = lazy(() => import("@/pages/PricingPage"));
 const PaymentSuccessPage = lazy(() => import("@/pages/PaymentSuccessPage"));
 const Vault = lazy(() => import("@/pages/Vault"));
 const GMPAuditKit = lazy(() => import("@/pages/GMPAuditKit"));
+const WorkflowsPage = lazy(() => import("@/pages/WorkflowsPage"));
+const WorkflowDetailPage = lazy(() => import("@/pages/WorkflowDetailPage"));
+const ToolkitsPage = lazy(() => import("@/pages/ToolkitsPage"));
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
@@ -76,6 +79,8 @@ function Layout() {
           {/* Backward-compat: old /en|/vi prefixed URLs → clean English-only URLs */}
           <Route path="/en/:rest*" component={LegacyLangRedirect} />
           <Route path="/vi/:rest*" component={LegacyLangRedirect} />
+          <Route path="/workflows" component={WorkflowsPage} />
+          <Route path="/workflows/:slug" component={WorkflowDetailPage} />
           <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
@@ -99,6 +104,7 @@ function Layout() {
           <Route path="/welcome" component={Welcome} />
           <Route path="/upgrade" component={UpgradePage} />
           <Route path="/toolkits/gmp-audit-kit" component={GMPAuditKit} />
+          <Route path="/toolkits" component={ToolkitsPage} />
           <Route path="/login" component={LoginPage} />
           <Route path="/register" component={RegisterPage} />
           <Route path="/signup" component={RegisterPage} />

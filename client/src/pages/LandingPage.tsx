@@ -4,13 +4,34 @@ import { motion } from "framer-motion";
 import {
   BookOpen, Package, Briefcase, ArrowRight, CheckCircle2,
   FlaskConical, ChevronRight, TrendingUp, Users, Star,
+  Microscope, ShieldCheck, ClipboardCheck, Layers, Search, TestTube2, Dna, Workflow,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { listContent } from "@/lib/content";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { prefetchLikelyNext } from "@/lib/route-prefetch";
 import { ContinueLearning } from "@/components/ContinueLearning";
+import { workflowCategories } from "@/data/workflows";
+
+// Workflow category → icon (data stays serializable).
+const WORKFLOW_ICONS: Record<string, LucideIcon> = {
+  "microbiology-qc": Microscope,
+  "sterile-aseptic": ShieldCheck,
+  "validation": ClipboardCheck,
+  "quality-systems": Layers,
+  "investigations-data-integrity": Search,
+  "laboratory-controls": TestTube2,
+  "biologics-qc": Dna,
+  "career-skills": Briefcase,
+};
+
+function workflowHref(c: typeof workflowCategories[number]): string {
+  if (c.workflowSlugs.length > 0) return `/workflows#${c.slug}`;
+  if (c.pathSlug) return `/paths/${c.pathSlug}`;
+  return c.href ?? "/workflows";
+}
 
 const byUpdatedDesc = (a: { updatedAt?: string }, b: { updatedAt?: string }) =>
   (b.updatedAt ?? "").localeCompare(a.updatedAt ?? "");
@@ -101,16 +122,16 @@ export default function LandingPage() {
             variants={fadeUp} initial="hidden" animate="show" custom={3}
             className="flex flex-col sm:flex-row gap-3 justify-center mb-12"
           >
-            <Link href="/register">
+            <Link href="/workflows">
               <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
-                <ArrowRight className="w-4 h-4" />
-                {t("hero.ctaStart")}
+                <Workflow className="w-4 h-4" />
+                {t("hero.ctaWorkflows")}
               </button>
             </Link>
-            <Link href="/academy">
+            <Link href="/register">
               <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/20 font-semibold px-6 py-3 rounded-xl transition-all">
-                <BookOpen className="w-4 h-4" />
-                {t("hero.ctaAcademy")}
+                <ArrowRight className="w-4 h-4" />
+                {t("hero.ctaStart")}
               </button>
             </Link>
           </motion.div>
@@ -126,6 +147,70 @@ export default function LandingPage() {
               </div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* ── WORKFLOW START (workflow-first front door) ── */}
+      <section className="py-12 px-4 border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="text-center mb-8"
+          >
+            <span className="inline-flex items-center gap-2 text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full mb-4">
+              <Workflow className="w-3 h-3" /> Workflow Atlas
+            </span>
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">What workflow are you working on?</h2>
+            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+              Start from the task in front of you — the steps, control points, common mistakes,
+              and the lessons and toolkits that back it up.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            {workflowCategories.map((c, i) => {
+              const Icon = WORKFLOW_ICONS[c.slug] ?? FlaskConical;
+              return (
+                <motion.div
+                  key={c.slug}
+                  initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.35, delay: (i % 4) * 0.06 }}
+                >
+                  <Link
+                    href={workflowHref(c)}
+                    className="group h-full flex flex-col bg-card border border-white/5 rounded-2xl p-4 hover:border-teal-500/30 transition-colors"
+                  >
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center">
+                        <Icon className="w-4 h-4 text-teal-400" />
+                      </div>
+                      {c.workflowSlugs.length > 0 && (
+                        <span className="text-[9px] font-bold uppercase tracking-wider text-teal-400 bg-teal-400/10 px-1.5 py-0.5 rounded">
+                          {c.workflowSlugs.length} flows
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="font-bold text-sm mb-1 leading-snug">{c.title}</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{c.description}</p>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/workflows#microbiology-qc">
+              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
+                <Microscope className="w-4 h-4" /> Start with Microbiology QC
+              </button>
+            </Link>
+            <Link href="/toolkits">
+              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
+                <Package className="w-4 h-4" /> Browse toolkits
+              </button>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -239,16 +324,23 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="shrink-0 text-center md:text-right">
-                <div className="mb-1">
-                  <span className="text-sm text-muted-foreground line-through mr-2">$120</span>
-                  <span className="text-4xl font-bold text-teal-400">$59</span>
+                <div className="mb-1 inline-flex items-center gap-1.5 text-teal-400 font-bold">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span className="text-xl">{t("banner.includedBadge")}</span>
                 </div>
                 <p className="text-xs text-muted-foreground mb-4">{t("banner.priceNote")}</p>
-                <Link href="/toolkits/gmp-audit-kit">
-                  <button className="bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20 w-full md:w-auto">
-                    {t("banner.cta")}
-                  </button>
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-2 md:justify-end">
+                  <Link href="/pricing">
+                    <button className="bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20 w-full sm:w-auto">
+                      {t("banner.cta")}
+                    </button>
+                  </Link>
+                  <Link href="/toolkits/gmp-audit-kit">
+                    <button className="border border-white/10 hover:border-white/30 font-semibold px-5 py-3 rounded-xl transition-all w-full sm:w-auto">
+                      {t("banner.ctaSecondary")}
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
           </motion.div>

@@ -10,8 +10,8 @@
     "titleTail": "— systematic, no guesswork",
     "subtitle": "In-depth GMP knowledge, audit-prep tools, and a real promotion roadmap — for QC/QA professionals in Pharma & Life Science.",
     "ctaStart": "Get started free",
-    "ctaAcademy": "Explore Academy",
-    "ctaKit": "GMP Audit Kit — $59"
+    "ctaWorkflows": "Browse workflows",
+    "ctaAcademy": "Explore Academy"
   },
   "stats": [
     { "value": "78", "label": "In-depth lessons" },
@@ -34,16 +34,18 @@
     "featuredBadge": "⭐ Flagship",
     "items": [
       { "badge": "Free to start", "title": "Academy", "desc": "70 in-depth lessons on GMP, sterility testing, OOS investigation, Annex 1, CAPA — dozens free, with advanced deep-dives on Pro.", "cta": "Start learning" },
-      { "badge": "$59 one-time", "title": "GMP Audit Survival Kit", "desc": "SOP gap analysis, CAPA templates, audit interview scripts, mock audit walkthrough + 30-min consulting call.", "cta": "View Kit" },
+      { "badge": "Included in Pro", "title": "GMP Audit Survival Kit", "desc": "SOP gap analysis, CAPA templates, audit interview scripts, and a mock audit walkthrough — unlocked with your Pro subscription.", "cta": "View the kit" },
       { "badge": "Career Roadmap", "title": "Career Hub", "desc": "The path from QC Analyst to QA Director — real salaries, required skills, and target employers.", "cta": "View roadmap" }
     ]
   },
   "banner": {
-    "eyebrow": "🔥 Featured product",
+    "eyebrow": "⭐ Included in Pro",
     "title": "GMP Audit Survival Kit",
-    "desc": "The most complete toolkit to prepare for a GMP audit: SOP gap analysis, 10 CAPA templates, 50+ interview Q&A scripts, mock audit walkthrough + 30-min 1-on-1 consulting.",
-    "priceNote": "one-time payment",
-    "cta": "See details →"
+    "desc": "The complete toolkit to prepare for a GMP audit: SOP gap analysis, 10 CAPA templates, 50+ interview Q&A scripts, and a mock audit walkthrough — included with every Pro plan.",
+    "includedBadge": "In Pro",
+    "priceNote": "Cancel anytime",
+    "cta": "Unlock with Pro",
+    "ctaSecondary": "See the kit"
   },
   "trust": {
     "heading": "Written by someone who's been on both sides",
@@ -73,7 +75,6 @@
     "heading": "Start today — free",
     "subtitle": "Dozens of Academy lessons fully open, free. No credit card required.",
     "ctaStart": "Create free account",
-    "ctaAcademy": "Enter Academy →",
-    "ctaKit": "View GMP Audit Kit"
+    "ctaAcademy": "Enter Academy →"
   }
 }
