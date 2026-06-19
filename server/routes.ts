@@ -982,7 +982,8 @@ export async function registerRoutes(app: Express): Promise<void> {
       "aseptic-process-simulation", "sterile-filtration",
       "oos-investigation", "deviation-capa", "data-integrity-review",
       "equipment-qualification-lifecycle", "process-validation",
-      "cleaning-validation-program",
+      "cleaning-validation-program", "change-control-workflow",
+      "supplier-qualification-workflow", "batch-record-review-release",
     ].map((s) => `/workflows/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
