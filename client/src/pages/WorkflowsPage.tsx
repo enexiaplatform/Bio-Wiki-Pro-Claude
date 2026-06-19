@@ -11,6 +11,7 @@ import {
   workflowCategories, getWorkflowsInCategory, type WorkflowCategory,
 } from "@/data/workflows";
 import { getLearningPath } from "@/data/learningPaths";
+import { useReadLessons } from "@/hooks/use-read-lessons";
 
 // Icons mapped by category slug (data stays serializable).
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -38,6 +39,16 @@ export default function WorkflowsPage() {
     description:
       "Practical, step-by-step QC/QA workflows — culture media, environmental monitoring, biological indicators, and more. Pick a workflow, see the steps, control points, and the lessons and toolkits that support it.",
   });
+  const { read } = useReadLessons();
+  const readSet = new Set(read);
+
+  // Reading progress for a category, via its mapped learning path.
+  function pathProgress(c: WorkflowCategory): { done: number; total: number } | null {
+    const path = c.pathSlug ? getLearningPath(c.pathSlug) : undefined;
+    if (!path || path.lessonSlugs.length === 0) return null;
+    const done = path.lessonSlugs.filter((s) => readSet.has(s)).length;
+    return { done, total: path.lessonSlugs.length };
+  }
 
   return (
     <div className="pb-24 pt-6 md:pt-10 max-w-5xl mx-auto px-4">
@@ -100,6 +111,18 @@ export default function WorkflowsPage() {
               </div>
               <h2 className="font-bold text-base mb-1.5">{c.title}</h2>
               <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">{c.description}</p>
+              {(() => {
+                const p = pathProgress(c);
+                if (!p || p.done === 0) return null;
+                return (
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="h-1 flex-1 rounded-full bg-white/5 overflow-hidden">
+                      <div className="h-full rounded-full bg-teal-400" style={{ width: `${(p.done / p.total) * 100}%` }} />
+                    </div>
+                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{p.done}/{p.total} read</span>
+                  </div>
+                );
+              })()}
               <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-400 group-hover:gap-2.5 transition-all">
                 {count > 0 ? "See workflows" : "Browse the path"}
                 <ChevronRight className="w-4 h-4" />

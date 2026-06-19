@@ -978,7 +978,8 @@ export async function registerRoutes(app: Express): Promise<void> {
     // Workflow detail pages. Kept in sync with client/src/data/workflows.ts.
     const workflowPaths = [
       "culture-media-selection", "environmental-monitoring",
-      "biological-indicator-workflow",
+      "biological-indicator-workflow", "aseptic-gowning-qualification",
+      "aseptic-process-simulation", "sterile-filtration",
     ].map((s) => `/workflows/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);

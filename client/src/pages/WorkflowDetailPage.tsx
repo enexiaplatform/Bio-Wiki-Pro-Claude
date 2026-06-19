@@ -13,6 +13,7 @@ import {
   Accordion, AccordionItem, AccordionTrigger, AccordionContent,
 } from "@/components/ui/accordion";
 import { analytics } from "@/hooks/use-analytics";
+import { useReadLessons } from "@/hooks/use-read-lessons";
 import { getWorkflow, getWorkflowCategory } from "@/data/workflows";
 import { getToolkit } from "@/data/toolkits";
 import { listContent } from "@/lib/content";
@@ -36,6 +37,7 @@ function Section({
 export default function WorkflowDetailPage() {
   const [, params] = useRoute("/workflows/:slug");
   const [, navigate] = useLocation();
+  const { read } = useReadLessons();
   const slug = params?.slug ?? "";
   const workflow = getWorkflow(slug);
 
@@ -67,6 +69,10 @@ export default function WorkflowDetailPage() {
   const relatedToolkits = workflow.relatedToolkitSlugs
     .map(getToolkit)
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
+
+  // Tie the workflow back to learning progress (localStorage + server sync).
+  const readSet = new Set(read);
+  const lessonsRead = relatedLessons.filter((l) => readSet.has(l.slug)).length;
 
   // The primary action: open an available toolkit, or drive Pro for a locked one.
   const availableToolkit = relatedToolkits.find((t) => t.status === "available");
@@ -236,23 +242,43 @@ export default function WorkflowDetailPage() {
         </Accordion>
       )}
 
-      {/* ── RELATED LESSONS ── */}
+      {/* ── RELATED LESSONS (with reading progress) ── */}
       {relatedLessons.length > 0 && (
         <Section icon={BookOpen} title="Learn the background">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="h-1.5 flex-1 rounded-full bg-white/5 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-teal-400 transition-all"
+                style={{ width: `${(lessonsRead / relatedLessons.length) * 100}%` }}
+              />
+            </div>
+            <span className="text-xs text-muted-foreground whitespace-nowrap">
+              {lessonsRead} of {relatedLessons.length} read
+            </span>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {relatedLessons.map((l) => (
-              <Link
-                key={l.slug}
-                href={`/library/${l.slug}`}
-                className="group bg-card border border-white/5 rounded-xl p-4 hover:border-teal-500/30 transition-colors flex items-center gap-3"
-              >
-                {l.tier === "free"
-                  ? <BookOpen className="w-4 h-4 text-emerald-400 shrink-0" />
-                  : <Crown className="w-4 h-4 text-amber-400 shrink-0" />}
-                <span className="text-sm font-medium flex-1 group-hover:text-teal-400 transition-colors">{l.title}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-              </Link>
-            ))}
+            {relatedLessons.map((l) => {
+              const done = readSet.has(l.slug);
+              return (
+                <Link
+                  key={l.slug}
+                  href={`/library/${l.slug}`}
+                  className="group bg-card border border-white/5 rounded-xl p-4 hover:border-teal-500/30 transition-colors flex items-center gap-3"
+                >
+                  {done
+                    ? <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                    : l.tier === "free"
+                      ? <BookOpen className="w-4 h-4 text-emerald-400 shrink-0" />
+                      : <Crown className="w-4 h-4 text-amber-400 shrink-0" />}
+                  <span className={`text-sm font-medium flex-1 transition-colors ${done ? "text-muted-foreground" : "group-hover:text-teal-400"}`}>
+                    {l.title}
+                  </span>
+                  {done
+                    ? <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 shrink-0">Read</span>
+                    : <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
+                </Link>
+              );
+            })}
           </div>
         </Section>
       )}
