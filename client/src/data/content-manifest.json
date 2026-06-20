@@ -3411,6 +3411,17 @@
   },
   {
     "collection": "blog",
+    "slug": "environmental-monitoring-gaps-inspectors-find",
+    "lang": "en",
+    "title": "Environmental monitoring: 5 gaps inspectors find",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "The five environmental monitoring gaps that draw inspection findings — convenience sampling, ignored trends, sampling contamination, no isolate ID, and slow excursion closure — and how to close them.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "fda-inspection-readiness",
     "lang": "en",
     "title": "FDA Inspection Readiness: a QC team's checklist",
