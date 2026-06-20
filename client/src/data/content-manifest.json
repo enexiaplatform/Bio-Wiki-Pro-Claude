@@ -3422,6 +3422,17 @@
   },
   {
     "collection": "blog",
+    "slug": "equipment-qualification-iq-oq-pq",
+    "lang": "en",
+    "title": "Equipment qualification: what IQ, OQ, and PQ prove",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "DQ, IQ, OQ, PQ explained — what each stage of equipment qualification actually proves, and the often-missed half: keeping equipment in a qualified state.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "fda-inspection-readiness",
     "lang": "en",
     "title": "FDA Inspection Readiness: a QC team's checklist",
