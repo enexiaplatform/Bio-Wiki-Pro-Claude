@@ -144,6 +144,17 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "water-grade-quick-reference.csv", label: "Water Grade Quick Reference (Excel/CSV)", description: "Typical use, conductivity/TOC, microbial limit, and endotoxin per grade.", contentType: CSV },
     ],
   },
+  data_integrity_self_check: {
+    id: "data_integrity_self_check",
+    dir: "data-integrity-self-check",
+    name: "Data Integrity Self-Check",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to run the self-check.", contentType: MD },
+      { filename: "data-integrity-self-check.pdf", label: "Data Integrity Self-Check (PDF)", description: "ALCOA+ self-assessment across inventory, records, audit trails, spreadsheets, and gaps.", contentType: PDF, generate: "pdf", source: "data-integrity-self-check.md" },
+      { filename: "alcoa-gap-log.csv", label: "ALCOA+ Gap Log (Excel/CSV)", description: "Record each finding by system and principle with risk, action, owner, and status.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */

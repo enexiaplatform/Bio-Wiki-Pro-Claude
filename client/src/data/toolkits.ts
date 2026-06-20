@@ -96,9 +96,10 @@ export const toolkits: Toolkit[] = [
     title: "Data Integrity Self-Check",
     audience: "QC/QA assessing ALCOA+ readiness",
     problemSolved: "Spot data-integrity gaps before an auditor does.",
-    format: "Checklist",
-    accessTier: "free",
-    status: "soon",
+    format: "Checklist (PDF + Excel)",
+    accessTier: "pro",
+    status: "available",
+    href: "/my-downloads",
   },
 ];
 
