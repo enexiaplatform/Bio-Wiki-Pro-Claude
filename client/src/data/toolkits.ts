@@ -46,9 +46,10 @@ export const toolkits: Toolkit[] = [
     title: "Environmental Monitoring Checklist",
     audience: "QC micro running cleanroom and utility EM",
     problemSolved: "Plan locations, limits, and excursion response against a risk-based EM program.",
-    format: "Checklist",
+    format: "Checklist (PDF + Excel)",
     accessTier: "pro",
-    status: "soon",
+    status: "available",
+    href: "/my-downloads",
   },
   {
     slug: "bi-workflow-checklist",

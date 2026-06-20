@@ -100,6 +100,17 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "oos-investigation-log.csv", label: "OOS Investigation Log (Excel/CSV)", description: "A step-by-step checklist log with owner, status, and date columns.", contentType: CSV },
     ],
   },
+  environmental_monitoring_checklist: {
+    id: "environmental_monitoring_checklist",
+    dir: "environmental-monitoring-checklist",
+    name: "Environmental Monitoring Checklist",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to use the checklist.", contentType: MD },
+      { filename: "environmental-monitoring-checklist.pdf", label: "EM Program Checklist (PDF)", description: "Seven sections from program design to audit readiness — risk-based, Annex 1 aligned.", contentType: PDF, generate: "pdf", source: "environmental-monitoring-checklist.md" },
+      { filename: "em-site-sample-plan.csv", label: "EM Site & Sample Plan (Excel/CSV)", description: "A template to record each location, grade, method, frequency, and alert/action limits.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */

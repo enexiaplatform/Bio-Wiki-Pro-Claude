@@ -1,0 +1,8 @@
+Location ID,Area / Room,Grade,Method,Frequency,Alert Limit,Action Limit,Last Result,Trend,Notes
+EM-001,Filling line - point of fill,A,Active air,Each session,1 CFU/m3,1 CFU/m3,,,Worst-case - continuous during fill
+EM-002,Filling line - point of fill,A,Settle plate,Each session,1 CFU/4h,1 CFU/4h,,,
+EM-003,Operator gloves,A,Contact plate,Each session,1 CFU/plate,1 CFU/plate,,,Personnel monitoring
+EM-004,Background room,B,Active air,Daily,10 CFU/m3,10 CFU/m3,,,
+EM-005,Background room - floor,B,Contact plate,Daily,5 CFU/plate,5 CFU/plate,,,
+EM-006,Material airlock,C,Active air,Weekly,100 CFU/m3,100 CFU/m3,,,
+EM-007,Corridor,D,Settle plate,Weekly,200 CFU/4h,200 CFU/4h,,,
