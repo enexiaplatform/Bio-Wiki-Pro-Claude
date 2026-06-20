@@ -3455,6 +3455,17 @@
   },
   {
     "collection": "blog",
+    "slug": "growth-promotion-testing-what-good-looks-like",
+    "lang": "en",
+    "title": "Growth promotion testing: what good looks like",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Growth promotion testing (GPT) is what qualifies a media lot. The compendial strains, why selective media must show recovery AND inhibition, and the common GPT mistakes.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "how-to-investigate-a-deviation",
     "lang": "en",
     "title": "How to Investigate a Deviation (Step by Step)",
