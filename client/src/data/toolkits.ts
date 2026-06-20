@@ -82,9 +82,10 @@ export const toolkits: Toolkit[] = [
     title: "OOS Investigation Template",
     audience: "QC analysts and QA leading laboratory investigations",
     problemSolved: "Run a phased OOS investigation that holds up to inspection.",
-    format: "Template",
+    format: "Template (PDF + Excel)",
     accessTier: "pro",
-    status: "soon",
+    status: "available",
+    href: "/my-downloads",
   },
   {
     slug: "data-integrity-self-check",

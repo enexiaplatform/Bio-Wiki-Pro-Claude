@@ -87,6 +87,19 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "qc-qa-interview-questions.pdf", label: "100+ QC/QA Interview Questions (PDF)", description: "Grouped question bank with model-answer guidance for the highest-stakes questions.", contentType: PDF, generate: "pdf", source: "qc-qa-interview-questions.md" },
     ],
   },
+  // Pro-only toolkit (no one-time product unlocks it — empty entitledBy means
+  // only an active Pro subscription does, handled in the route).
+  oos_investigation_template: {
+    id: "oos_investigation_template",
+    dir: "oos-investigation-template",
+    name: "OOS Investigation Template",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to run the investigation.", contentType: MD },
+      { filename: "oos-investigation-template.pdf", label: "OOS Investigation Template (PDF)", description: "The full phased form — Phase I lab assessment, hypothesis testing, Phase II, disposition, and CAPA.", contentType: PDF, generate: "pdf", source: "oos-investigation-template.md" },
+      { filename: "oos-investigation-log.csv", label: "OOS Investigation Log (Excel/CSV)", description: "A step-by-step checklist log with owner, status, and date columns.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */
