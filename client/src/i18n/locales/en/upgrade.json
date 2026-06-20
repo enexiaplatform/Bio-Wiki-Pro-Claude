@@ -1,7 +1,7 @@
 {
   "badge": "Go Pro",
   "title": "Unlock everything in Life Science Atlas Pro",
-  "subtitle": "Unlimited access to Pro content, advanced tools, and the full compliance library.",
+  "subtitle": "Every downloadable toolkit, workflow checklist, and advanced QC/QA guide — plus the full Pro library and tools.",
   "price": "$8",
   "perMonth": "/month",
   "proActive": "You're on the Pro plan 🎉",
@@ -20,7 +20,7 @@
     "academyFree": "Academy core lessons (free)",
     "academyPro": "In-depth Pro lessons",
     "sops": "Full SOP & compliance library",
-    "toolkits": "All toolkits & downloads (incl. GMP Audit Kit)",
+    "toolkits": "Every downloadable toolkit — checklists, templates & the GMP Audit Kit",
     "tools": "Advanced lab tools",
     "insights": "Insights & market analysis",
     "support": "Priority support",
@@ -38,7 +38,7 @@
     "readCount_other": "You've read {{count}} free articles",
     "bannerDesc": "Unlock all Pro content for just $8/month.",
     "inlineTitle": "Ready to go deeper?",
-    "inlineDesc": "Pro lessons include decision trees, templates, and real-world case studies.",
+    "inlineDesc": "Pro unlocks downloadable toolkits, workflow checklists, templates, and advanced QC/QA guides.",
     "cta": "Upgrade to Pro"
   },
   "modal": {

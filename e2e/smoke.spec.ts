@@ -67,7 +67,7 @@ test.describe("public smoke", () => {
     await page.goto("/pricing");
     await expect(page.getByText(/toolkits/i).first()).toBeVisible();
     await page.goto("/upgrade");
-    await expect(page.getByText(/All toolkits/i).first()).toBeVisible();
+    await expect(page.getByText(/toolkit/i).first()).toBeVisible();
   });
 
   // Workflow Learning OS: the front door is workflow-first.
