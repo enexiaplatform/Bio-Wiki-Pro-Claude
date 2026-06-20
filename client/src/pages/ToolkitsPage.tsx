@@ -23,6 +23,9 @@ export default function ToolkitsPage() {
     navigate("/pricing");
   }
 
+  // Concrete, honest Pro value — derived from the toolkit data so it never drifts.
+  const availableCount = toolkits.filter((t) => t.status === "available").length;
+
   return (
     <div className="pb-24 pt-6 md:pt-10 max-w-5xl mx-auto px-4">
       <JsonLd
@@ -58,9 +61,9 @@ export default function ToolkitsPage() {
           <div className="flex items-start gap-3">
             <Crown className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-sm mb-0.5">Pro unlocks every toolkit</p>
+              <p className="font-semibold text-sm mb-0.5">Pro unlocks all {availableCount} downloadable toolkits</p>
               <p className="text-xs text-muted-foreground">
-                The GMP Audit Survival Kit plus all workflow checklists and templates — $8/mo, cancel anytime.
+                The GMP Audit Survival Kit plus workflow checklists, templates, and guides — $8/mo, cancel anytime.
               </p>
             </div>
           </div>
