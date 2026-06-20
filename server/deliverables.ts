@@ -155,6 +155,17 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "alcoa-gap-log.csv", label: "ALCOA+ Gap Log (Excel/CSV)", description: "Record each finding by system and principle with risk, action, owner, and status.", contentType: CSV },
     ],
   },
+  microbiology_qc_starter_pack: {
+    id: "microbiology_qc_starter_pack",
+    dir: "microbiology-qc-starter-pack",
+    name: "Microbiology QC Starter Pack",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to use the pack.", contentType: MD },
+      { filename: "microbiology-qc-starter-pack.pdf", label: "Microbiology QC Starter Guide (PDF)", description: "The core QC micro tests, key controls, common mistakes, and where to go deeper.", contentType: PDF, generate: "pdf", source: "microbiology-qc-starter-pack.md" },
+      { filename: "micro-qc-first-90-days.csv", label: "First 90 Days Checklist (Excel/CSV)", description: "A week-by-week onboarding plan for new QC micro analysts.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */

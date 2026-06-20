@@ -37,9 +37,10 @@ export const toolkits: Toolkit[] = [
     title: "Microbiology QC Starter Pack",
     audience: "New QC micro analysts and lab supervisors",
     problemSolved: "Set up media, GPT, and routine micro testing the right way from day one.",
-    format: "Checklist + templates",
+    format: "Guide + checklist (PDF + Excel)",
     accessTier: "pro",
-    status: "soon",
+    status: "available",
+    href: "/my-downloads",
   },
   {
     slug: "environmental-monitoring-checklist",

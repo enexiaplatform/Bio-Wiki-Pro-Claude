@@ -93,11 +93,12 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/Common mistakes/i)).toBeVisible();
   });
 
-  test("toolkit library lists toolkits and marks unbuilt ones coming soon", async ({ page }) => {
+  test("toolkit library lists toolkits with downloads available", async ({ page }) => {
     await page.goto("/toolkits");
     await expect(page.getByRole("heading", { name: /Checklists & toolkits/i })).toBeVisible();
     await expect(page.getByText(/GMP Audit Survival Kit/i).first()).toBeVisible();
-    await expect(page.getByText(/Soon/i).first()).toBeVisible();
+    // Toolkits are real, gated downloads — guests see a View/Open kit CTA.
+    await expect(page.getByRole("link", { name: /View kit|Open kit/i }).first()).toBeVisible();
   });
 });
 

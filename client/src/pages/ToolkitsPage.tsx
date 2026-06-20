@@ -146,7 +146,7 @@ export default function ToolkitsPage() {
       </div>
 
       <p className="text-center text-xs text-muted-foreground mt-10">
-        Toolkits marked “Soon” are in development — no fake downloads. Pro members get new toolkits as they ship.
+        Every toolkit here is a real, downloadable Pro resource — no fake downloads. New toolkits are added as they ship.
       </p>
     </div>
   );
