@@ -158,7 +158,7 @@ export default function Settings() {
       )}
 
       <p className="text-center text-xs text-muted-foreground mt-12">
-        BioWikiPro v1.0.0
+        Life Science Atlas v1.0.0
       </p>
     </div>
   );

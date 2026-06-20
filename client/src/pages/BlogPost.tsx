@@ -48,7 +48,7 @@ export default function BlogPost() {
           dateModified: entry.updatedAt,
           articleSection: entry.category,
           url: `${BASE_URL}/blog/${slug}`,
-          publisher: { "@type": "Organization", name: "BioWikiPro" },
+          publisher: { "@type": "Organization", name: "Life Science Atlas" },
         }}
       />
       <JsonLd
@@ -57,7 +57,7 @@ export default function BlogPost() {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "BioWikiPro", item: BASE_URL },
+            { "@type": "ListItem", position: 1, name: "Life Science Atlas", item: BASE_URL },
             { "@type": "ListItem", position: 2, name: "Blog", item: `${BASE_URL}/blog` },
             { "@type": "ListItem", position: 3, name: entry.title, item: `${BASE_URL}/blog/${slug}` },
           ],
@@ -66,7 +66,7 @@ export default function BlogPost() {
 
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
-        <Link href="/" className="hover:text-primary">BioWikiPro</Link>
+        <Link href="/" className="hover:text-primary">Life Science Atlas</Link>
         <ChevronRight className="w-3 h-3" />
         <Link href="/blog" className="hover:text-primary">Blog</Link>
         <ChevronRight className="w-3 h-3" />

@@ -9,7 +9,7 @@ import { useSEO } from "@/hooks/use-seo";
 type State = "loading" | "ok" | "error";
 
 export default function VerifyEmailPage() {
-  useSEO({ title: "Verify email", description: "Confirm your BioWikiPro email address." });
+  useSEO({ title: "Verify email", description: "Confirm your Life Science Atlas email address." });
   const [state, setState] = useState<State>("loading");
 
   useEffect(() => {

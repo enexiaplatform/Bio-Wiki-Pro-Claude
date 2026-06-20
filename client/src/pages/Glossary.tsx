@@ -47,7 +47,7 @@ export default function Glossary() {
           data={{
             "@context": "https://schema.org",
             "@type": "DefinedTermSet",
-            name: "BioWikiPro QC/QA Glossary",
+            name: "Life Science Atlas QC/QA Glossary",
             url: `${SITE_URL}/glossary`,
             hasDefinedTerm: all.map((term) => ({
               "@type": "DefinedTerm",

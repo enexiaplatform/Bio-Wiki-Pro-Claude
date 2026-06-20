@@ -15,4 +15,4 @@ Science. Use in this order:
 These are templates and guidance, not a guarantee of any outcome. Make every claim
 on your CV true and verifiable.
 
-— BioWikiPro
+— Life Science Atlas

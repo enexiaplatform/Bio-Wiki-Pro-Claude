@@ -92,7 +92,7 @@ export default function CertificatePage() {
 
     ctx.fillStyle = "#f8fafc";
     ctx.font = "700 34px 'Space Grotesk', sans-serif";
-    ctx.fillText("BioWikiPro", cx, 132);
+    ctx.fillText("Life Science Atlas", cx, 132);
 
     ctx.fillStyle = "#34d399";
     if ("letterSpacing" in ctx) (ctx as any).letterSpacing = "4px";
@@ -123,18 +123,18 @@ export default function CertificatePage() {
 
     ctx.fillStyle = "#34d399";
     ctx.font = "600 15px 'Inter', sans-serif";
-    ctx.fillText("✓ Verified completion · BioWikiPro", cx, 662);
+    ctx.fillText("✓ Verified completion · Life Science Atlas", cx, 662);
 
     ctx.fillStyle = "#64748b";
     ctx.font = "400 14px 'Inter', sans-serif";
-    ctx.fillText(`Certificate ID: ${certId} · biowikipro.com`, cx, 692);
+    ctx.fillText(`Certificate ID: ${certId} · Life Science Atlas`, cx, 692);
 
     canvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `biowikipro-certificate-${path.slug}.png`;
+      a.download = `life-science-atlas-certificate-${path.slug}.png`;
       a.click();
       URL.revokeObjectURL(url);
     }, "image/png");
@@ -204,7 +204,7 @@ export default function CertificatePage() {
           <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center print:bg-emerald-100">
             <FlaskConical className="w-5 h-5" />
           </div>
-          <span className="font-display font-bold text-lg print:text-gray-900">BioWiki<span className="text-primary">Pro</span></span>
+          <span className="font-display font-bold text-lg print:text-gray-900">Life Science <span className="text-primary">Atlas</span></span>
         </div>
 
         <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 print:bg-emerald-100">
@@ -233,10 +233,10 @@ export default function CertificatePage() {
 
         <div className="mt-8 flex flex-col items-center gap-1">
           <p className="text-[11px] font-semibold tracking-wide text-primary/80 print:text-emerald-700">
-            ✓ Verified completion · BioWikiPro
+            ✓ Verified completion · Life Science Atlas
           </p>
           <p className="text-[11px] text-muted-foreground/70 print:text-gray-500">
-            Certificate ID: {certId} · QC/QA knowledge for Pharma &amp; Life Sciences · biowikipro.com
+            Certificate ID: {certId} · Practical workflows & learning for QC/QA · Life Science Atlas
           </p>
         </div>
       </div>

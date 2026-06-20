@@ -5,7 +5,7 @@ Yes / Partial / No. Anything not "Yes" is where to focus first.
 
 Want the full system — the 40-section survival guide, a scored gap-analysis sheet,
 10 CAPA templates, 50+ interview Q&A, and a mock-audit walkthrough? That's the
-**GMP Audit Survival Kit** at biowikipro.
+**GMP Audit Survival Kit** in Life Science Atlas.
 
 ---
 
@@ -52,4 +52,4 @@ Want the full system — the 40-section survival guide, a scored gap-analysis sh
 **Score:** count your "Yes" answers. Below ~90%? Prioritize the gaps in sections
 1 and 2 first — data integrity and investigations are where most 483s are written.
 
-© BioWikiPro — free to use internally. Not regulatory advice.
+© Life Science Atlas — free to use internally. Not regulatory advice.

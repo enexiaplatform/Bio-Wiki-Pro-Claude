@@ -16,7 +16,7 @@ function getToken(): string {
 }
 
 export default function ResetPasswordPage() {
-  useSEO({ title: "Reset password", description: "Set a new password for your BioWikiPro account." });
+  useSEO({ title: "Reset password", description: "Set a new password for your Life Science Atlas account." });
   const [token] = useState(getToken);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");

@@ -7,7 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 
 const FAQS: { q: string; a: string }[] = [
   {
-    q: "Who is BioWikiPro for?",
+    q: "Who is Life Science Atlas for?",
     a: "QC and QA professionals in pharma, biotech, and life sciences — from analysts and microbiologists to quality managers. The content assumes a working GMP context and focuses on the topics that come up in real labs and inspections.",
   },
   {
@@ -40,7 +40,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Is this a substitute for official training or SOPs?",
-    a: "No. BioWikiPro is an educational reference to build understanding and prepare for audits. It does not replace your site's validated procedures, official GMP training, or regulatory advice.",
+    a: "No. Life Science Atlas is an educational reference to build understanding and prepare for audits. It does not replace your site's validated procedures, official GMP training, or regulatory advice.",
   },
   {
     q: "Do you offer team or enterprise plans?",
@@ -51,7 +51,7 @@ const FAQS: { q: string; a: string }[] = [
 export default function FaqPage() {
   useSEO({
     title: "FAQ",
-    description: "Frequently asked questions about BioWikiPro — who it's for, Free vs Pro, how current the content is, the free trial, cancellation, and certificates.",
+    description: "Frequently asked questions about Life Science Atlas — who it's for, Free vs Pro, how current the content is, the free trial, cancellation, and certificates.",
   });
   const [open, setOpen] = useState<number | null>(0);
 
@@ -71,7 +71,7 @@ export default function FaqPage() {
       />
 
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
-        <Link href="/" className="hover:text-primary">BioWikiPro</Link>
+        <Link href="/" className="hover:text-primary">Life Science Atlas</Link>
         <ChevronRight className="w-3 h-3" />
         <span className="text-foreground">FAQ</span>
       </nav>

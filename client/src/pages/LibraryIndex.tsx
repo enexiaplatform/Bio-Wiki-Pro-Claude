@@ -11,7 +11,7 @@ export default function LibraryIndex() {
   const { language } = useLanguage();
   useSEO({
     title: "Library — all QC/QA lessons",
-    description: "The full BioWikiPro library: every GMP / QC / QA lesson, organized into structured learning paths — sterility, validation, data integrity, quality systems, and more.",
+    description: "The full Life Science Atlas library: every GMP / QC / QA lesson, organized into structured learning paths — sterility, validation, data integrity, quality systems, and more.",
   });
 
   const all = listContent({ collection: "academy", lang: language });
@@ -30,7 +30,7 @@ export default function LibraryIndex() {
         data={{
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "BioWikiPro Library",
+          name: "Life Science Atlas Library",
           url: `${SITE_URL}/library`,
           hasPart: all.map((e) => ({
             "@type": "LearningResource",
@@ -41,7 +41,7 @@ export default function LibraryIndex() {
       />
 
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
-        <Link href="/" className="hover:text-primary">BioWikiPro</Link>
+        <Link href="/" className="hover:text-primary">Life Science Atlas</Link>
         <ChevronRight className="w-3 h-3" />
         <span className="text-foreground">Library</span>
       </nav>

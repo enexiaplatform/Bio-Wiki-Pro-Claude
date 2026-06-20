@@ -7,7 +7,7 @@ import { test, expect } from "@playwright/test";
 test.describe("public smoke", () => {
   test("home renders", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("link", { name: /BioWikiPro/i }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Life Science Atlas/i }).first()).toBeVisible();
   });
 
   test("academy library lists lessons", async ({ page }) => {

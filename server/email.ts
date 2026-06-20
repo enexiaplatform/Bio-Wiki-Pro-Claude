@@ -15,7 +15,7 @@ function htmlWrapper(content: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BioWikiPro</title>
+  <title>Life Science Atlas</title>
   <style>
     body { margin: 0; padding: 0; background-color: #0f1117; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #e2e8f0; }
     .container { max-width: 560px; margin: 40px auto; background: #1a1f2e; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; }
@@ -36,13 +36,13 @@ function htmlWrapper(content: string): string {
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">BioWiki<span>Pro</span></div>
+      <div class="logo">Life Science <span>Atlas</span></div>
     </div>
     <div class="body">
       ${content}
     </div>
     <div class="footer">
-      <p>© 2026 BioWikiPro — QC/QA knowledge for Pharma & Life Sciences</p>
+      <p>© 2026 Life Science Atlas — QC/QA knowledge for Pharma & Life Sciences</p>
       <p style="margin-top: 6px;"><a href="${BASE_URL}/terms">Terms</a> · <a href="${BASE_URL}/privacy">Privacy</a></p>
     </div>
   </div>
@@ -58,7 +58,7 @@ export async function sendWelcomeEmail(to: string, firstName?: string): Promise<
 
   const name = firstName ?? "there";
   const html = htmlWrapper(`
-    <h1>Welcome to BioWikiPro, ${name}! 🎉</h1>
+    <h1>Welcome to Life Science Atlas, ${name}! 🎉</h1>
     <p>Your account is ready. Start building real QC/QA expertise — from sterility testing to audit readiness.</p>
     <div class="box">
       <p><strong style="color:#10b981;">Where to start:</strong></p>
@@ -74,7 +74,7 @@ export async function sendWelcomeEmail(to: string, firstName?: string): Promise<
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: `Welcome to BioWikiPro, ${name}!`,
+      subject: `Welcome to Life Science Atlas, ${name}!`,
       html,
     });
   } catch (err) {
@@ -123,7 +123,7 @@ export async function sendPurchaseConfirmation(
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: `Order confirmed: ${productName} — BioWikiPro`,
+      subject: `Order confirmed: ${productName} — Life Science Atlas`,
       html,
     });
   } catch (err) {
@@ -152,7 +152,7 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "Your GMP Audit Quick Checklist — BioWikiPro",
+      subject: "Your GMP Audit Quick Checklist — Life Science Atlas",
       html,
     });
   } catch (err) {
@@ -173,16 +173,16 @@ export async function sendVerificationEmail(
   const name = firstName ?? "there";
   const html = htmlWrapper(`
     <h1>Confirm your email</h1>
-    <p>Hi ${name}, thanks for joining BioWikiPro. Confirm your email to secure your account.</p>
+    <p>Hi ${name}, thanks for joining Life Science Atlas. Confirm your email to secure your account.</p>
     <a href="${verifyUrl}" class="cta">Verify email →</a>
     <div class="box">
-      <p>This link expires in <strong style="color:#10b981;">24 hours</strong>. You can keep using BioWikiPro in the meantime.</p>
+      <p>This link expires in <strong style="color:#10b981;">24 hours</strong>. You can keep using Life Science Atlas in the meantime.</p>
     </div>
     <p style="font-size: 13px; color: #64748b;">If you didn't create this account, you can ignore this email.</p>
   `);
 
   try {
-    await resend.emails.send({ from: FROM_EMAIL, to, subject: "Confirm your BioWikiPro email", html });
+    await resend.emails.send({ from: FROM_EMAIL, to, subject: "Confirm your Life Science Atlas email", html });
   } catch (err) {
     console.error("[Email] Failed to send verification email:", err);
   }
@@ -201,7 +201,7 @@ export async function sendPasswordResetEmail(
   const name = firstName ?? "there";
   const html = htmlWrapper(`
     <h1>Reset your password</h1>
-    <p>Hi ${name}, we received a request to reset the password for your BioWikiPro account.</p>
+    <p>Hi ${name}, we received a request to reset the password for your Life Science Atlas account.</p>
     <a href="${resetUrl}" class="cta">Reset password →</a>
     <div class="box">
       <p>This link expires in <strong style="color:#10b981;">1 hour</strong> and can be used once.</p>
@@ -213,7 +213,7 @@ export async function sendPasswordResetEmail(
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "Reset your BioWikiPro password",
+      subject: "Reset your Life Science Atlas password",
       html,
     });
   } catch (err) {
@@ -235,7 +235,7 @@ export async function sendDunningEmail(
   const deadline = graceUntil.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   const html = htmlWrapper(`
     <h1>Your Pro payment didn't go through ⚠️</h1>
-    <p>Hi ${name}, we couldn't collect the renewal payment for your <strong>BioWikiPro Pro</strong> subscription.</p>
+    <p>Hi ${name}, we couldn't collect the renewal payment for your <strong>Life Science Atlas Pro</strong> subscription.</p>
     <div class="box">
       <p>Your Pro access stays active until <strong style="color:#10b981;">${deadline}</strong>.
       Please update your payment method before then to avoid any interruption.</p>
@@ -248,7 +248,7 @@ export async function sendDunningEmail(
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "Update your Pro payment — BioWikiPro",
+      subject: "Update your Pro payment — Life Science Atlas",
       html,
     });
   } catch (err) {
@@ -314,7 +314,7 @@ export async function sendTrialEndingEmail(
   const ends = endDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   const html = htmlWrapper(`
     <h1>Your Pro trial ends ${when}, ${name}</h1>
-    <p>Your <strong>BioWikiPro Pro</strong> free trial ends on <strong>${ends}</strong>.
+    <p>Your <strong>Life Science Atlas Pro</strong> free trial ends on <strong>${ends}</strong>.
     Keep full access to every advanced lesson, template, and checklist — no action
     needed, your subscription simply continues at $8/mo.</p>
     <div class="box"><p>Not ready? You can cancel in two clicks from your billing
@@ -326,7 +326,7 @@ export async function sendTrialEndingEmail(
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: daysLeft <= 1 ? "Your Pro trial ends tomorrow — BioWikiPro" : `Your Pro trial ends in ${daysLeft} days`,
+      subject: daysLeft <= 1 ? "Your Pro trial ends tomorrow — Life Science Atlas" : `Your Pro trial ends in ${daysLeft} days`,
       html,
     });
   } catch (err) {
@@ -335,8 +335,8 @@ export async function sendTrialEndingEmail(
 }
 
 const PRODUCT_LABELS: Record<string, string> = {
-  pro_subscription: "BioWikiPro Pro",
-  pro_subscription_annual: "BioWikiPro Pro (annual)",
+  pro_subscription: "Life Science Atlas Pro",
+  pro_subscription_annual: "Life Science Atlas Pro (annual)",
   gmp_audit_kit: "the GMP Audit Survival Kit",
   starter_kit: "the Career Starter Kit",
   interview_prep: "the Interview Prep Pack",
@@ -355,7 +355,7 @@ export async function sendAbandonedCheckoutEmail(
     return;
   }
   const name = firstName ?? "there";
-  const label = PRODUCT_LABELS[productType] ?? "your BioWikiPro order";
+  const label = PRODUCT_LABELS[productType] ?? "your Life Science Atlas order";
   const isSub = productType.startsWith("pro_subscription");
   const href = isSub ? `${BASE_URL}/upgrade` : `${BASE_URL}/pricing`;
   const html = htmlWrapper(`
@@ -370,7 +370,7 @@ export async function sendAbandonedCheckoutEmail(
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "You left something behind — BioWikiPro",
+      subject: "You left something behind — Life Science Atlas",
       html,
     });
   } catch (err) {
@@ -398,7 +398,7 @@ export async function sendReEngagementEmail(to: string, firstName?: string): Pro
     await resend.emails.send({
       from: FROM_EMAIL,
       to,
-      subject: "Your QC/QA progress is waiting — BioWikiPro",
+      subject: "Your QC/QA progress is waiting — Life Science Atlas",
       html,
     });
   } catch (err) {

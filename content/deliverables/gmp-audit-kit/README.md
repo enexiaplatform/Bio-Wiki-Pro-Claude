@@ -20,4 +20,4 @@ write to support) to book your 1-on-1 review of your audit plan.
 These files are yours to use internally. They are templates and training aids, not
 a substitute for your own validated quality system or regulatory advice.
 
-— BioWikiPro
+— Life Science Atlas

@@ -9,7 +9,7 @@ import { FlaskConical, MailCheck } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 
 export default function ForgotPasswordPage() {
-  useSEO({ title: "Forgot password", description: "Reset your BioWikiPro password." });
+  useSEO({ title: "Forgot password", description: "Reset your Life Science Atlas password." });
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);

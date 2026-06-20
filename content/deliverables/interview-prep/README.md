@@ -10,4 +10,4 @@ How to use it: don't memorize answers. Pick the 20 questions most relevant to th
 role, prepare a real example for each (using the STAR structure inside), and
 rehearse out loud with a colleague playing the interviewer.
 
-— BioWikiPro
+— Life Science Atlas

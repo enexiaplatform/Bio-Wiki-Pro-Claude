@@ -24,7 +24,7 @@ function injectMeta(
   html: string,
   meta: { title: string; description: string; url: string; type: string },
 ): string {
-  const title = escapeHtml(`${meta.title} | BioWikiPro`);
+  const title = escapeHtml(`${meta.title} | Life Science Atlas`);
   const desc = escapeHtml(meta.description);
   const url = escapeHtml(meta.url);
   const type = escapeHtml(meta.type);

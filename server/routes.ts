@@ -1040,7 +1040,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     const body =
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
       `<rss version="2.0"><channel>\n` +
-      `<title>BioWikiPro Blog</title>\n` +
+      `<title>Life Science Atlas Blog</title>\n` +
       `<link>${baseUrl}/vi/blog</link>\n` +
       `<description>GMP, QC/QA &amp; data integrity insights</description>\n` +
       items

@@ -58,7 +58,7 @@ export default function LibraryEntry() {
           dateModified: entry.updatedAt,
           articleSection: entry.category,
           url,
-          publisher: { "@type": "Organization", name: "BioWikiPro" },
+          publisher: { "@type": "Organization", name: "Life Science Atlas" },
         }}
       />
       <JsonLd
@@ -67,14 +67,14 @@ export default function LibraryEntry() {
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "BioWikiPro", item: SITE_URL },
+            { "@type": "ListItem", position: 1, name: "Life Science Atlas", item: SITE_URL },
             { "@type": "ListItem", position: 2, name: "Academy", item: `${SITE_URL}/academy` },
             { "@type": "ListItem", position: 3, name: entry.title, item: url },
           ],
         }}
       />
       <nav className="flex items-center gap-1.5 text-xs text-muted-foreground mb-6 flex-wrap">
-        <Link href="/" className="hover:text-primary">BioWikiPro</Link>
+        <Link href="/" className="hover:text-primary">Life Science Atlas</Link>
         <ChevronRight className="w-3 h-3" />
         <Link href="/academy" className="hover:text-primary">Academy</Link>
         <ChevronRight className="w-3 h-3" />

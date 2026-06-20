@@ -1,5 +1,5 @@
 {
-  "seoTitle": "GMP Audit Survival Kit — included with BioWikiPro Pro",
+  "seoTitle": "GMP Audit Survival Kit — included with Life Science Atlas Pro",
   "seoDesc": "A 6-in-1 toolkit to help QC/QA Pharma teams pass GMP & Annex 1 audits: checklist, tough Q&A, CAPA templates, mock interview. Included in Pro alongside the full academy.",
   "hero": {
     "badge": "GMP Audit Survival Kit",
@@ -39,7 +39,7 @@
     ]
   },
   "pricing": {
-    "launchNote": "Included with BioWikiPro Pro",
+    "launchNote": "Included with Life Science Atlas Pro",
     "priceNote": "Pro unlocks this kit + every toolkit and the full academy • Cancel anytime",
     "buyNow": "Get Pro",
     "secure": "🔒 Stripe Secure Payment",
@@ -60,7 +60,7 @@
     "heading": "Frequently asked questions",
     "items": [
       { "q": "Which GMP standards does it fit?", "a": "The Kit is designed for GMP WHO, Annex 1 EU GMP, FSSC 22000, and ISO 15189. Suitable for Pharma and F&B plants preparing for audits from regulators or international customers." },
-      { "q": "How do I get the files?", "a": "The kit is part of BioWikiPro Pro. Once you subscribe, every file is available instantly from your dashboard downloads — no separate purchase, and you keep access for as long as your Pro subscription is active." },
+      { "q": "How do I get the files?", "a": "The kit is part of Life Science Atlas Pro. Once you subscribe, every file is available instantly from your dashboard downloads — no separate purchase, and you keep access for as long as your Pro subscription is active." },
       { "q": "I'm a new QC — can I use it?", "a": "The Kit is designed for Senior QC/QA (3+ years). New QCs can still learn from the Interview Scripts and PDF Guide. The SOP Gap Analysis needs basic QMS knowledge to use effectively." },
       { "q": "Does it apply to F&B?", "a": "Yes. The FSSC 22000 section of the PDF Guide and the CAPA templates apply directly to F&B plants. The SOP Gap Analysis can be adapted for ISO 22000." }
     ]

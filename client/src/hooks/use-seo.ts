@@ -8,7 +8,7 @@ interface SEOProps {
   canonical?: string;
 }
 
-const SITE_NAME = "BioWikiPro";
+const SITE_NAME = "Life Science Atlas";
 
 function setMeta(name: string, content: string, attr: "name" | "property" = "name") {
   let el = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
@@ -36,7 +36,7 @@ export function useSEO({ title, description, ogImage, canonical }: SEOProps) {
     const fullTitle = `${title} | ${SITE_NAME}`;
     const desc =
       description ??
-      "QC/QA Pharma knowledge platform for QC/QA professionals — GMP, audit tools, career roadmap.";
+      "Practical workflows, checklists, toolkits, and structured learning for QC/QA and life science professionals.";
     const image = ogImage ?? DEFAULT_OG_IMAGE;
     const url = canonical ?? SITE_URL + window.location.pathname;
 

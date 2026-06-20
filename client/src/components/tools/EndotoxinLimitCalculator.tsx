@@ -104,7 +104,7 @@ export default function EndotoxinLimitCalculator() {
             </div>
             <h3 className="text-lg font-bold mb-2">PRO Feature</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              The Endotoxin Limit Calculator is available exclusively for BioWiki Pro members.
+              The Endotoxin Limit Calculator is available exclusively for Life Science Atlas Pro members.
             </p>
             <Button asChild size="lg" className="font-bold text-sm w-full">
               <Link href="/upgrade">

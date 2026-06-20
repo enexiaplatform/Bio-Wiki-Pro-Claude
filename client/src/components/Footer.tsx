@@ -15,7 +15,7 @@ export function Footer() {
             <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
               <FlaskConical className="w-4 h-4 text-primary" />
             </div>
-            <span className="font-bold text-sm">BioWikiPro</span>
+            <span className="font-bold text-sm">Life Science Atlas</span>
             <span className="text-muted-foreground text-xs">{t("copyright", { year })}</span>
           </div>
 

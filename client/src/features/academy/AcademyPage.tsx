@@ -78,7 +78,7 @@ export default function AcademyPage() {
           data={{
             "@context": "https://schema.org",
             "@type": "ItemList",
-            name: "BioWikiPro Academy library",
+            name: "Life Science Atlas Academy library",
             itemListElement: libraryEntries.map((e, i) => ({
               "@type": "ListItem",
               position: i + 1,

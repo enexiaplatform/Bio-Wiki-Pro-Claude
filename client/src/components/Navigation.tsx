@@ -131,7 +131,7 @@ export function BottomNav() {
       <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
         <DrawerContent className="md:hidden">
           <DrawerHeader className="pb-2">
-            <DrawerTitle>Explore BioWikiPro</DrawerTitle>
+            <DrawerTitle>Explore Life Science Atlas</DrawerTitle>
           </DrawerHeader>
           <div className="grid grid-cols-3 gap-3 px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
             {moreLinks.map((l) => {
@@ -172,7 +172,7 @@ export function DesktopNav() {
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1">
           <BioWikiMark className="w-full h-full" />
         </div>
-        <span className="font-display font-bold text-xl tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
+        <span className="font-display font-bold text-xl tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
       </Link>
 
       {/* Scrollable tab strip — keeps the brand + right controls pinned and visible
@@ -246,7 +246,7 @@ export function MobileHeader() {
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1 shadow-lg shadow-primary/20">
           <BioWikiMark className="w-full h-full" />
         </div>
-        <span className="font-display font-bold text-lg tracking-tight">BioWiki<span className="text-primary">Pro</span></span>
+        <span className="font-display font-bold text-lg tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
         {isPro && (
           <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]" data-testid="badge-pro-mobile">
             <Crown className="w-2.5 h-2.5 mr-0.5" /> Pro

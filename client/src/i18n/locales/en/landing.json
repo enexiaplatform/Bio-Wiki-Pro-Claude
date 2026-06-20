@@ -1,7 +1,7 @@
 {
   "seo": {
-    "title": "BioWikiPro — QC/QA Pharma knowledge platform",
-    "description": "From Senior QC to QA Manager: 78 in-depth GMP lessons (free to start), the GMP Audit Survival Kit, and a career toolkit for QC/QA Pharma & Life Science professionals."
+    "title": "Life Science Atlas — practical workflows & toolkits for QC/QA",
+    "description": "Practical workflows, checklists, toolkits, and structured learning for QC/QA and life science professionals. Pick a workflow — steps, control points, common mistakes, and the lessons and toolkits that back it up."
   },
   "hero": {
     "badge": "QC/QA Pharma knowledge platform",
@@ -49,7 +49,7 @@
   },
   "trust": {
     "heading": "Written by someone who's been on both sides",
-    "body": "BioWikiPro is built by Henry — a Sales Manager in Industrial Microbiology who works directly with the QC labs of Pharma & F&B plants. The content isn't textbook theory — it's what Henry sees teams actually need when an audit arrives.",
+    "body": "Life Science Atlas is built by Henry — a Sales Manager in Industrial Microbiology who works directly with the QC labs of Pharma & F&B plants. The content isn't textbook theory — it's what Henry sees teams actually need when an audit arrives.",
     "features": [
       "Content aligned with GMP WHO 2023 & Annex 1 2022",
       "Written by someone with real experience on both the QC and vendor sides",

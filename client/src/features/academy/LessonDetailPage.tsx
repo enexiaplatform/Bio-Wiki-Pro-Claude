@@ -14,7 +14,7 @@ export default function LessonDetailPage() {
   const lesson = params?.lessonId ? getLessonById(params.lessonId) : undefined;
   const { saveLesson, saveAuditQuestion, saveCaseStudy } = useVault();
   useSEO({
-    title: lesson ? `${lesson.title} — Academy BioWikiPro` : "Academy — BioWikiPro",
+    title: lesson ? `${lesson.title} — Academy Life Science Atlas` : "Academy — Life Science Atlas",
     description: lesson ? lesson.summary : "In-depth GMP microbiology lessons for QC/QA Pharma professionals.",
   });
 

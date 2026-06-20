@@ -19,8 +19,8 @@ const audience = [
 
 export default function About() {
   useSEO({
-    title: "About BioWikiPro",
-    description: "BioWikiPro is a QC/QA Pharma knowledge platform — practitioner-grade GMP lessons, audit tools, and a career roadmap for a global audience.",
+    title: "About Life Science Atlas",
+    description: "Life Science Atlas is a QC/QA Pharma knowledge platform — practitioner-grade GMP lessons, audit tools, and a career roadmap for a global audience.",
   });
 
   return (
@@ -30,7 +30,7 @@ export default function About() {
         data={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "BioWikiPro",
+          name: "Life Science Atlas",
           url: SITE_URL,
           description: "QC/QA Pharma knowledge platform — GMP lessons, audit tools, and career roadmap.",
           knowsAbout: ["GMP", "Quality Control", "Quality Assurance", "Pharmaceutical Microbiology", "Annex 1", "Data Integrity"],
@@ -38,7 +38,7 @@ export default function About() {
       />
 
       <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">About BioWikiPro</h1>
+        <h1 className="text-3xl md:text-4xl font-display font-bold mb-3">About Life Science Atlas</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
           A QC/QA Pharma knowledge platform that turns scattered GMP know-how into a
           systematic, audit-ready skill set.
@@ -50,7 +50,7 @@ export default function About() {
         <h2 className="text-xl font-bold mb-3">Our mission</h2>
         <p className="text-muted-foreground leading-relaxed">
           Most QC/QA knowledge lives in scattered SOPs, tribal memory, and the heads of a
-          few senior people. BioWikiPro makes it learnable: in-depth lessons, decision
+          few senior people. Life Science Atlas makes it learnable: in-depth lessons, decision
           tools, and audit-prep resources — so professionals can grow from Senior QC to
           QA Manager with a clear, defensible mental model.
         </p>
@@ -86,7 +86,7 @@ export default function About() {
       <section className="mb-12 rounded-2xl border border-white/10 bg-card p-6">
         <h2 className="text-xl font-bold mb-3">Written from both sides of the bench</h2>
         <p className="text-muted-foreground text-sm leading-relaxed">
-          BioWikiPro is built by practitioners who work directly with the QC labs of
+          Life Science Atlas is built by practitioners who work directly with the QC labs of
           Pharma & F&B manufacturers — Industrial Microbiology specialists who see what
           teams actually need when an inspection is coming. The content is reviewed against
           current standards (GMP WHO 2023, EU GMP Annex 1 2022, USP/EP, ICH) and written to

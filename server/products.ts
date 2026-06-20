@@ -54,14 +54,14 @@ export const PRODUCTS: Record<string, ProductConfig> = {
   },
   pro_subscription: {
     id: "pro_subscription",
-    name: "BioWikiPro Pro",
+    name: "Life Science Atlas Pro",
     mode: "subscription",
     priceEnv: "STRIPE_PRO_PRICE_ID",
     // no downloadEnv — entitlement is granted via the subscription, not a file
   },
   pro_subscription_annual: {
     id: "pro_subscription_annual",
-    name: "BioWikiPro Pro (Annual)",
+    name: "Life Science Atlas Pro (Annual)",
     mode: "subscription",
     priceEnv: "STRIPE_PRO_ANNUAL_PRICE_ID",
     // no downloadEnv — same Pro entitlement, billed yearly
