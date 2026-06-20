@@ -76,9 +76,10 @@ export const toolkits: Toolkit[] = [
     title: "Lab Water Selection Checklist",
     audience: "QC labs choosing the right water grade for a test",
     problemSolved: "Pick purified water vs WFI vs reagent-grade water and defend the choice.",
-    format: "Checklist",
+    format: "Checklist (PDF + Excel)",
     accessTier: "pro",
-    status: "soon",
+    status: "available",
+    href: "/my-downloads",
   },
   {
     slug: "oos-investigation-template",

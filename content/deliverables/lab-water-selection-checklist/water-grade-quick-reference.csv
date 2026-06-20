@@ -1,0 +1,5 @@
+Grade,Typical Use,Conductivity / TOC,Microbial Action Limit,Endotoxin,Notes
+Water for Injection (WFI),Parenteral product-contact & final rinse,Compendial conductivity & TOC,Below 10 CFU/100 mL,Not more than 0.25 EU/mL,Distillation or validated equivalent
+Purified Water,Non-sterile manufacture & cleaning,Compendial conductivity & TOC,Below 100 CFU/mL,No compendial limit,Common feedwater to WFI
+Reagent water Type I,HPLC / trace / molecular,~18.2 MOhm-cm; very low TOC,Filtered at point of use,Not applicable,ASTM D1193 / CLSI Type I
+Reagent water Type III,Glassware rinse / non-critical lab,Lower purity,Not applicable,Not applicable,Not for product/sample contact

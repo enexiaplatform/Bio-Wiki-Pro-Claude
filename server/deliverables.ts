@@ -133,6 +133,17 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "media-gpt-log.csv", label: "Media & GPT Log (Excel/CSV)", description: "Record media lot, prep, pH, growth-promotion strains, recovery and inhibition.", contentType: CSV },
     ],
   },
+  lab_water_selection_checklist: {
+    id: "lab_water_selection_checklist",
+    dir: "lab-water-selection-checklist",
+    name: "Lab Water Selection Checklist",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to use the checklist.", contentType: MD },
+      { filename: "lab-water-selection-checklist.pdf", label: "Lab Water Selection Checklist (PDF)", description: "Choose and justify the right water grade, with specs and monitoring.", contentType: PDF, generate: "pdf", source: "lab-water-selection-checklist.md" },
+      { filename: "water-grade-quick-reference.csv", label: "Water Grade Quick Reference (Excel/CSV)", description: "Typical use, conductivity/TOC, microbial limit, and endotoxin per grade.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */
