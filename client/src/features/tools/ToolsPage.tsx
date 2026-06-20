@@ -1,6 +1,7 @@
 import { Microscope } from "lucide-react";
 import { AuditReadinessScorecard } from "./AuditReadinessScorecard";
 import { WaterTypeSelector } from "./WaterTypeSelector";
+import { MediaSelectionHelper } from "./MediaSelectionHelper";
 import { OosDecisionTree } from "./OosDecisionTree";
 import { CCSBuilderLite } from "./CCSBuilderLite";
 import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
@@ -31,6 +32,7 @@ export default function ToolsPage() {
       <div className="space-y-6">
         <AuditReadinessScorecard />
         <WaterTypeSelector />
+        <MediaSelectionHelper />
         <OosDecisionTree />
         <ScenarioDecisionTree />
         <CCSBuilderLite />
