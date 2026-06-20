@@ -66,9 +66,10 @@ export const toolkits: Toolkit[] = [
     title: "Culture Media Selection Guide",
     audience: "QC micro analysts choosing and qualifying media",
     problemSolved: "Match media to the method, qualify each lot, and document equivalence decisions.",
-    format: "PDF guide",
+    format: "PDF guide + Excel",
     accessTier: "pro",
-    status: "soon",
+    status: "available",
+    href: "/my-downloads",
   },
   {
     slug: "lab-water-selection-checklist",

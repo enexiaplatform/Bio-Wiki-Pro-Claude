@@ -122,6 +122,17 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "bi-run-log.csv", label: "BI Run Log (Excel/CSV)", description: "Record each BI lot, organism, D-value, population, location, control type, and result.", contentType: CSV },
     ],
   },
+  culture_media_selection_guide: {
+    id: "culture_media_selection_guide",
+    dir: "culture-media-selection-guide",
+    name: "Culture Media Selection Guide",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to use the guide.", contentType: MD },
+      { filename: "culture-media-selection-guide.pdf", label: "Culture Media Selection Guide (PDF)", description: "Match media to the method, qualify lots by growth promotion, and control storage/equivalence.", contentType: PDF, generate: "pdf", source: "culture-media-selection-guide.md" },
+      { filename: "media-gpt-log.csv", label: "Media & GPT Log (Excel/CSV)", description: "Record media lot, prep, pH, growth-promotion strains, recovery and inhibition.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */
