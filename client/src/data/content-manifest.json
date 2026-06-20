@@ -3584,5 +3584,16 @@
     "seoDescription": "What an OOS result is, how it differs from OOT and OOE, the two-phase investigation (lab then manufacturing), and why you can't just retest until you pass.",
     "updatedAt": "2026-06-05",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "which-water-grade-does-your-test-need",
+    "lang": "en",
+    "title": "Which water grade does your test need?",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "WFI vs Purified Water vs reagent-grade water — how to pick and defend the right water grade for a test or process step, with the key controls for each.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   }
 ]
