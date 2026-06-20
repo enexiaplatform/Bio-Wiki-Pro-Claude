@@ -111,6 +111,17 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "em-site-sample-plan.csv", label: "EM Site & Sample Plan (Excel/CSV)", description: "A template to record each location, grade, method, frequency, and alert/action limits.", contentType: CSV },
     ],
   },
+  bi_workflow_checklist: {
+    id: "bi_workflow_checklist",
+    dir: "bi-workflow-checklist",
+    name: "BI Workflow Checklist",
+    entitledBy: [],
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "What's inside and how to use the checklist.", contentType: MD },
+      { filename: "bi-workflow-checklist.pdf", label: "BI Workflow Checklist (PDF)", description: "Six sections from BI selection to investigation & release.", contentType: PDF, generate: "pdf", source: "bi-workflow-checklist.md" },
+      { filename: "bi-run-log.csv", label: "BI Run Log (Excel/CSV)", description: "Record each BI lot, organism, D-value, population, location, control type, and result.", contentType: CSV },
+    ],
+  },
 };
 
 /** All deliverable products a purchase of `productType` unlocks. */

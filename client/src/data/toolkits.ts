@@ -56,9 +56,10 @@ export const toolkits: Toolkit[] = [
     title: "BI Workflow Checklist",
     audience: "Validation and QC staff running sterilization challenges",
     problemSolved: "Select, place, recover, and interpret biological indicators without false negatives.",
-    format: "Checklist",
+    format: "Checklist (PDF + Excel)",
     accessTier: "pro",
-    status: "soon",
+    status: "available",
+    href: "/my-downloads",
   },
   {
     slug: "culture-media-selection-guide",

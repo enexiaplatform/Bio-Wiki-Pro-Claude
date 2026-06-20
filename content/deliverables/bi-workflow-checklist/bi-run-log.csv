@@ -1,0 +1,6 @@
+Run / Cycle ID,BI Lot,Organism,D-value (min),Population (CFU),Location,Type,Result,Date,Notes
+,, , , ,Worst-case point 1,Exposed,,,
+,, , , ,Worst-case point 2,Exposed,,,
+,, , , ,Worst-case point 3,Exposed,,,
+,, , , ,Bench,Positive control,,,Must show growth for a valid run
+,, , , ,Bench,Negative control,,,Sterile media - no growth expected
