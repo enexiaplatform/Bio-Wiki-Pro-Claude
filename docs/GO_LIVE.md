@@ -1,7 +1,17 @@
 # Go-Live Runbook
 
-The single, ordered checklist to take BioWikiPro from staging to a revenue-ready
+The single, ordered checklist to take Life Science Atlas from staging to a revenue-ready
 production deployment on Vercel. Sibling docs cover slices in depth:
+
+> **Current state (2026-06-20):** the app is **deployed and healthy** on
+> `bio-wiki-pro-claude.vercel.app` (home/workflows/toolkits/pricing/sitemap all 200,
+> `/api/downloads` 401-gated). `/api/billing/plans` returns `{monthly:true, annual:false,
+> trialDays:7}`, so a `STRIPE_SECRET_KEY` + `STRIPE_PRO_PRICE_ID` are already set —
+> **verify they are LIVE keys, not test**. Remaining owner-only steps to actually take
+> money: confirm live Stripe keys, add the **live webhook secret** (Step 2b), set a prod
+> `DATABASE_URL` + run `npm run db:push` (Step 1), set `EMAIL_FROM` + `RESEND_API_KEY`,
+> and (optional) `VITE_POSTHOG_KEY` + a custom domain. Everything else — 8 gated toolkit
+> downloads, 21 workflows, 5 tools, content — is already live in code.
 
 - **`docs/ENV_AUDIT.md`** — every env var, where it's read, what breaks if unset.
 - **`docs/STRIPE_TEST.md`** — exercising the one-time + checkout flow in Stripe **test mode**.
@@ -32,7 +42,11 @@ Drizzle uses **schema-push** (no migration files).
 ```bash
 # With the production DATABASE_URL in your environment:
 npm run db:push        # creates/updates: users, sessions, purchases, leads,
-                       # quote_requests, content_entries, processed_stripe_events
+                       # quote_requests, content_entries, processed_stripe_events,
+                       # lesson_reads (cross-device progress) + the lifecycle-email
+                       # tables (lifecycle_sends, checkout_attempts, nurture_sends).
+                       # All degrade gracefully if absent, but push them for
+                       # cross-device progress + trial/dunning/re-engagement emails.
 ```
 
 - [ ] `db:push` completes without error against the prod DB.
@@ -52,7 +66,7 @@ catalog is defined once in `server/products.ts`:
 
 | productType        | Name                      | Mode         | Price env var                   |
 |--------------------|---------------------------|--------------|---------------------------------|
-| `pro_subscription` | BioWikiPro Pro            | subscription | `STRIPE_PRO_PRICE_ID`           |
+| `pro_subscription` | Life Science Atlas Pro            | subscription | `STRIPE_PRO_PRICE_ID`           |
 | `gmp_audit_kit`    | GMP Audit Survival Kit    | payment      | `STRIPE_GMP_AUDIT_KIT_PRICE_ID` |
 | `starter_kit`      | Career Starter Kit        | payment      | `STRIPE_STARTER_KIT_PRICE_ID`   |
 | `interview_prep`   | Interview Prep Package    | payment      | `STRIPE_INTERVIEW_PREP_PRICE_ID`|
@@ -125,7 +139,7 @@ Set all of these for **Production**. Full annotations in `docs/ENV_AUDIT.md`.
 - [ ] `VITE_POSTHOG_KEY` — analytics (optional; app runs fine without).
 
 **Email:**
-- [ ] `EMAIL_FROM` — `BioWikiPro <no-reply@your-domain>` on a Resend-verified domain.
+- [ ] `EMAIL_FROM` — `Life Science Atlas <no-reply@your-domain>` on a Resend-verified domain.
 
 **Google sign-in (optional — the email/password flow works without it):**
 - [ ] `GOOGLE_CLIENT_ID` (runtime) and `VITE_GOOGLE_CLIENT_ID` (build-time) — the **same** Google OAuth **Web client ID** (public, not a secret). If unset, the "Continue with Google" button simply doesn't render and the `/api/auth/google` endpoint returns 503.
@@ -176,9 +190,12 @@ Do this once on the live site (you can use a real card and immediately cancel/re
 7. [ ] Settings → **Manage subscription** opens the Stripe billing portal.
 8. [ ] Cancel in the portal → after `customer.subscription.deleted`, `isPro` flips to
        `false` and the Pro lesson re-locks.
-9. [ ] As the Pro subscriber, open `/my-downloads` → the **GMP Audit Kit** is listed
-       and each file downloads (the kit is unlocked by Pro, not a separate purchase).
-       In a logged-out window `GET /api/downloads` returns **401**.
+9. [ ] As the Pro subscriber, open `/my-downloads` → **all 8 toolkits** are listed
+       (GMP Audit Kit, OOS Investigation Template, EM Checklist, BI Workflow Checklist,
+       Culture Media Selection Guide, Lab Water Selection Checklist, Data Integrity
+       Self-Check, Microbiology QC Starter Pack) and each file downloads — all unlocked
+       by Pro, not separate purchases. In a logged-out window `GET /api/downloads`
+       returns **401**.
 10. [ ] (Only if selling career kits) buy a career kit → `purchases` row written +
         delivery email with the correct `DOWNLOAD_*` link.
 
