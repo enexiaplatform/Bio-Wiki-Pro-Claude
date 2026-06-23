@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
-import { CheckCircle2, ChevronRight, Briefcase, DollarSign, Building, AlertCircle, ShoppingBag, BookOpen, Loader2 } from "lucide-react";
+import { CheckCircle2, ChevronRight, Briefcase, DollarSign, Building, AlertCircle, ShoppingBag, BookOpen, Loader2, Sparkles, ArrowRight, GraduationCap, Target, RotateCcw } from "lucide-react";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
@@ -104,12 +104,21 @@ const careerData: Record<Role, {
   }
 };
 
+// Maps a role to the learning path that best covers its skill gaps, for the
+// "follow the path" CTA on the generated roadmap. Roles without a matching path
+// (skills not yet backed by lessons) simply omit it.
+const ROLE_PATH: Partial<Record<Role, { slug: string; title: string }>> = {
+  "QC Microbiologist": { slug: "microbiology-qc-fundamentals", title: "Microbiology QC Fundamentals" },
+  "QA Specialist": { slug: "quality-systems", title: "Quality Systems & QMS" },
+};
+
 export default function Career() {
   const { t } = useTranslation("sections");
   useSEO({ title: t("career.seoTitle"), description: t("career.seoDesc") });
   const [activeRole, setActiveRole] = useState<Role>("QC Microbiologist");
   const [activeStageIdx, setActiveStageIdx] = useState(0);
   const [skillStates, setSkillStates] = useState<Record<string, SkillState>>({});
+  const [showRoadmap, setShowRoadmap] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const { isAuthenticated } = useUser();
@@ -134,6 +143,7 @@ export default function Career() {
   const handleRoleChange = (role: Role) => {
     setActiveRole(role);
     setActiveStageIdx(0);
+    setShowRoadmap(false); // roadmap is per-role; re-build for the new role
   };
 
   const handleSkillChange = (skillId: string, state: SkillState) => {
@@ -155,6 +165,18 @@ export default function Career() {
     });
     return { have, partial, need };
   }, [skillStates, activeData.skills]);
+
+  const ratedCount = activeData.skills.filter(s => skillStates[s.id]).length;
+
+  // The roadmap: gaps in priority order — "Need it" first, then "Partially".
+  // "Have it" skills are excluded. Order within each group follows the skill list.
+  const roadmapSteps = useMemo(() => [
+    ...activeData.skills.filter(s => skillStates[s.id] === "Need it"),
+    ...activeData.skills.filter(s => skillStates[s.id] === "Partially"),
+  ], [skillStates, activeData.skills]);
+
+  const firstLessonStep = roadmapSteps.find(s => s.link);
+  const rolePath = ROLE_PATH[activeRole];
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
@@ -268,7 +290,7 @@ export default function Career() {
           <AlertCircle className="w-5 h-5 mr-2 text-primary" />
           Skill Gap Analyzer
         </h2>
-        <p className="text-sm text-muted-foreground mb-6">Evaluate your competency. Click a skill to learn it in the Academy.</p>
+        <p className="text-sm text-muted-foreground mb-6">Rate each skill, then build a personalised learning roadmap that closes your gaps in priority order.</p>
 
         {/* Progress Bar */}
         <div className="bg-white/5 rounded-full h-3 w-full mb-8 flex overflow-hidden">
@@ -324,6 +346,100 @@ export default function Career() {
             );
           })}
         </div>
+
+        {/* ── BUILD ROADMAP CTA ── */}
+        <div className="mt-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            {ratedCount === 0
+              ? "Rate your skills above to generate a personalised learning roadmap."
+              : `You've rated ${ratedCount} of ${totalSkills} skills.`}
+          </p>
+          <div className="flex items-center gap-2 shrink-0">
+            {showRoadmap && (
+              <button onClick={() => setShowRoadmap(false)} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <RotateCcw className="w-3.5 h-3.5" /> Re-rate
+              </button>
+            )}
+            <button
+              onClick={() => setShowRoadmap(true)}
+              disabled={ratedCount === 0}
+              className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Sparkles className="w-4 h-4" /> Build my learning roadmap
+            </button>
+          </div>
+        </div>
+
+        {/* ── ROADMAP RESULT ── */}
+        {showRoadmap && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
+            className="mt-6 rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 to-transparent p-5 md:p-6"
+          >
+            <div className="flex items-center gap-2 mb-1.5">
+              <Target className="w-5 h-5 text-teal-400" />
+              <h3 className="text-lg font-bold">Your {activeRole} learning roadmap</h3>
+            </div>
+
+            {roadmapSteps.length === 0 ? (
+              <div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  You marked every skill as <span className="font-semibold text-green-400">Have it</span> — nice. Keep sharp with advanced lessons, or aim at the next career stage.
+                </p>
+                {rolePath && (
+                  <Link href={`/paths/${rolePath.slug}`} className="inline-flex items-center gap-2 text-sm font-semibold text-teal-400 hover:underline">
+                    Review the {rolePath.title} path <ArrowRight className="w-4 h-4" />
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-muted-foreground mb-5">
+                  {metrics.need} to learn and {metrics.partial} to strengthen — in priority order. Work top to bottom.
+                </p>
+                <ol className="space-y-2.5 mb-5">
+                  {roadmapSteps.map((s, i) => {
+                    const learn = skillStates[s.id] === "Need it";
+                    const inner = (
+                      <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-3.5 hover:border-teal-500/30 transition-colors">
+                        <span className="shrink-0 w-7 h-7 rounded-full bg-teal-500/15 text-teal-400 text-sm font-bold flex items-center justify-center">{i + 1}</span>
+                        <span className="flex-1 text-sm font-medium">{s.name}</span>
+                        <span className={clsx(
+                          "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded",
+                          learn ? "text-red-300 bg-red-500/10" : "text-amber-300 bg-amber-500/10",
+                        )}>
+                          {learn ? "Learn" : "Strengthen"}
+                        </span>
+                        {s.link && <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0" />}
+                      </div>
+                    );
+                    return (
+                      <li key={s.id}>
+                        {s.link ? <Link href={s.link} className="block">{inner}</Link> : inner}
+                      </li>
+                    );
+                  })}
+                </ol>
+
+                <div className="flex flex-col sm:flex-row flex-wrap gap-2.5">
+                  {firstLessonStep?.link && (
+                    <Link href={firstLessonStep.link} className="inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-5 py-2.5 rounded-xl text-sm transition-all">
+                      <BookOpen className="w-4 h-4" /> Start with {firstLessonStep.name}
+                    </Link>
+                  )}
+                  {rolePath && (
+                    <Link href={`/paths/${rolePath.slug}`} className="inline-flex items-center justify-center gap-2 border border-white/10 hover:border-white/30 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+                      <GraduationCap className="w-4 h-4" /> Follow the {rolePath.title} path
+                    </Link>
+                  )}
+                  <Link href="/my-learning" className="inline-flex items-center justify-center gap-2 border border-white/10 hover:border-white/30 font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors">
+                    Track progress <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
       </div>
 
       {/* 4. DIGITAL PRODUCTS */}
