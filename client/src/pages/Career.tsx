@@ -95,8 +95,8 @@ const careerData: Record<Role, {
       { label: "Head of Regulatory", years: "8+ yr", responsibilities: "Define regional policy influence, oversee all regulatory compliance, integrate RA into business strategy.", skills: "Policy Influence, Regulatory Intelligence", salary: "$160,000 - $230,000+ / yr", employers: "Top MNCs" }
     ],
     skills: [
-      { id: "ra_s1", name: "ICH CTD / eCTD Compilation", link: "" },
-      { id: "ra_s2", name: "FDA / EMA Regulations", link: "" },
+      { id: "ra_s1", name: "ICH CTD / eCTD Compilation", link: "/blog/ctd-ectd-dossier-structure" },
+      { id: "ra_s2", name: "FDA / EMA Regulations", link: "/blog/fda-vs-ema-regulatory-pathways" },
       { id: "ra_s3", name: "Product Variation Management", link: "" },
       { id: "ra_s4", name: "Labeling Regulations", link: "" },
       { id: "ra_s5", name: "Advertising Approval", link: "" }

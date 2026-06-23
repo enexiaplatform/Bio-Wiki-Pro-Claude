@@ -3400,6 +3400,17 @@
   },
   {
     "collection": "blog",
+    "slug": "ctd-ectd-dossier-structure",
+    "lang": "en",
+    "title": "The CTD and eCTD: how a regulatory dossier is structured",
+    "tier": "free",
+    "category": "Regulatory Affairs",
+    "seoDescription": "The Common Technical Document (CTD) organises a marketing application into five modules. What each module holds, and how the eCTD turns it into an electronic submission.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "data-integrity-483-observations",
     "lang": "en",
     "title": "7 Data Integrity Findings That Show Up in FDA 483s",
@@ -3452,6 +3463,17 @@
     "seoDescription": "How QC and QA teams stay inspection-ready every day — the front room/back room model, the four common 483 themes, and how to handle requests.",
     "updatedAt": "2026-06-02",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "fda-vs-ema-regulatory-pathways",
+    "lang": "en",
+    "title": "FDA vs EMA: the two regulatory pathways",
+    "tier": "free",
+    "category": "Regulatory Affairs",
+    "seoDescription": "How medicines are approved in the US (FDA) versus the EU (EMA) — the application types, the centralised vs national procedures, and what differs for a regulatory team.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   },
   {
     "collection": "blog",
@@ -3573,6 +3595,28 @@
     "seoDescription": "Rapid microbial methods (RMM) promise faster release — but validation and equivalence to compendial methods are where audits focus.",
     "updatedAt": "2026-05-31",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "supplier-qualification-quality-agreement",
+    "lang": "en",
+    "title": "Supplier qualification: the clause that saves you",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Supplier qualification is risk management for your supply chain. Why the change-notification clause in the quality agreement is the single most valuable control.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "system-suitability-the-gatekeeper",
+    "lang": "en",
+    "title": "System suitability: the gatekeeper you can't re-inject past",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "System suitability is the gatekeeper of chromatographic data. Why it runs before samples, what 're-inject until it passes' really is, and the controls that matter.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   },
   {
     "collection": "blog",
