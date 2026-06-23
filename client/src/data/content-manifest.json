@@ -3444,6 +3444,17 @@
   },
   {
     "collection": "blog",
+    "slug": "dissolution-is-more-mechanical-than-you-think",
+    "lang": "en",
+    "title": "Dissolution: it's more mechanical than you think",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Most dissolution variability and false OOS results come from the apparatus and medium, not the product. Why degassing, alignment, and staged acceptance matter in USP 711.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "environmental-monitoring-gaps-inspectors-find",
     "lang": "en",
     "title": "Environmental monitoring: 5 gaps inspectors find",
@@ -3510,12 +3521,34 @@
   },
   {
     "collection": "blog",
+    "slug": "gowning-the-operator-is-the-biggest-risk",
+    "lang": "en",
+    "title": "Gowning: the operator is the biggest contamination risk",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "In an aseptic area the gowned operator is the largest source of contamination. Why gowning qualification weighs technique and microbial counts equally, and what auditors look for.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "growth-promotion-testing-what-good-looks-like",
     "lang": "en",
     "title": "Growth promotion testing: what good looks like",
     "tier": "free",
     "category": "Microbiology",
     "seoDescription": "Growth promotion testing (GPT) is what qualifies a media lot. The compendial strains, why selective media must show recovery AND inhibition, and the common GPT mistakes.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "host-cell-proteins-the-impurity-you-cant-fully-see",
+    "lang": "en",
+    "title": "Host-cell proteins: the impurity you can't fully see",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Host-cell protein (HCP) testing only reports what its antibody can detect. Why antibody coverage is the whole game, plus the dilution and orthogonal-method traps.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3631,6 +3664,28 @@
   },
   {
     "collection": "blog",
+    "slug": "stability-the-assay-must-see-degradation",
+    "lang": "en",
+    "title": "Stability: your assay has to be able to see degradation",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "A stability program is only as good as its stability-indicating methods and its on-time pulls. Why a non-stability-indicating assay can hide a degrading product, and what to trend.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "sterile-filtration-is-a-performance-claim",
+    "lang": "en",
+    "title": "Sterilizing filtration is a performance claim, not a pore size",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "A 0.22 micron filter is a label; the real claim is bacterial retention under your conditions. Why product-specific validation and the post-use integrity test matter most.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "supplier-qualification-quality-agreement",
     "lang": "en",
     "title": "Supplier qualification: the clause that saves you",
@@ -3648,6 +3703,17 @@
     "tier": "free",
     "category": "Laboratory Controls",
     "seoDescription": "System suitability is the gatekeeper of chromatographic data. Why it runs before samples, what 're-inject until it passes' really is, and the controls that matter.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "viral-safety-three-pillars",
+    "lang": "en",
+    "title": "Viral safety: why no single test is enough",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "ICH Q5A builds viral safety on three pillars — source control, testing, and validated clearance — because no test can prove a virus is absent. Why orthogonality matters.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3697,12 +3763,34 @@
   },
   {
     "collection": "blog",
+    "slug": "what-sterility-testing-can-and-cannot-prove",
+    "lang": "en",
+    "title": "What sterility testing can — and can't — prove",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Sterility testing is a limited sample of a batch, not proof every unit is sterile. Why sterility assurance is built in, what the test does, and how false positives mislead.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "which-water-grade-does-your-test-need",
     "lang": "en",
     "title": "Which water grade does your test need?",
     "tier": "free",
     "category": "Laboratory Controls",
     "seoDescription": "WFI vs Purified Water vs reagent-grade water — how to pick and defend the right water grade for a test or process step, with the key controls for each.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "why-potency-is-the-hardest-biologic-test",
+    "lang": "en",
+    "title": "Why potency is the hardest QC test for a biologic",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Potency ties a biologic's release test to its mechanism of action — and that's what makes it hard. Why bioassays are noisy, what relative potency means, and why parallelism matters.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   }
