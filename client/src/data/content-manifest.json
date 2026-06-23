@@ -3356,6 +3356,17 @@
   },
   {
     "collection": "blog",
+    "slug": "biological-indicators-positive-control",
+    "lang": "en",
+    "title": "Biological indicators: why the positive control is everything",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Biological indicators only mean something with valid controls. Why the positive control is non-negotiable, how to choose the right BI, and the false-negative traps to avoid.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "capa-effectiveness-check",
     "lang": "en",
     "title": "CAPA: getting the effectiveness check right",
