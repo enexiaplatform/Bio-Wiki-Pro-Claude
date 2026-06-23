@@ -97,9 +97,9 @@ const careerData: Record<Role, {
     skills: [
       { id: "ra_s1", name: "ICH CTD / eCTD Compilation", link: "/blog/ctd-ectd-dossier-structure" },
       { id: "ra_s2", name: "FDA / EMA Regulations", link: "/blog/fda-vs-ema-regulatory-pathways" },
-      { id: "ra_s3", name: "Product Variation Management", link: "" },
-      { id: "ra_s4", name: "Labeling Regulations", link: "" },
-      { id: "ra_s5", name: "Advertising Approval", link: "" }
+      { id: "ra_s3", name: "Product Variation Management", link: "/blog/post-approval-variations-explained" },
+      { id: "ra_s4", name: "Labeling Regulations", link: "/blog/labeling-and-product-information" },
+      { id: "ra_s5", name: "Advertising Approval", link: "/blog/advertising-and-promotion-compliance" }
     ]
   }
 };

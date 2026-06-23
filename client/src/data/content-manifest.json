@@ -3323,6 +3323,17 @@
   },
   {
     "collection": "blog",
+    "slug": "advertising-and-promotion-compliance",
+    "lang": "en",
+    "title": "Advertising and promotion: staying on-label",
+    "tier": "free",
+    "category": "Regulatory Affairs",
+    "seoDescription": "Promoting a medicine is regulated. Why claims must stay consistent with the approved labeling, what fair balance means, and how promotional material gets reviewed.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "annex-1-ccs-what-changed",
     "lang": "en",
     "title": "Annex 1 (2022): what actually changed",
@@ -3521,6 +3532,17 @@
   },
   {
     "collection": "blog",
+    "slug": "labeling-and-product-information",
+    "lang": "en",
+    "title": "Labeling and product information: getting the words right",
+    "tier": "free",
+    "category": "Regulatory Affairs",
+    "seoDescription": "Labeling is regulated information, not marketing copy. The difference between label and labeling, the EU SmPC/PIL vs US prescribing information, and why changes are controlled.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "media-fill-essentials",
     "lang": "en",
     "title": "Media fills: the test that validates your people",
@@ -3562,6 +3584,17 @@
     "seoDescription": "What pharmacopoeias are and how USP, EP, and JP relate — harmonization via ICH Q4B and PDG, and how QC labs choose which compendial method applies.",
     "updatedAt": "2026-06-04",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "post-approval-variations-explained",
+    "lang": "en",
+    "title": "Post-approval variations: changing an approved product",
+    "tier": "free",
+    "category": "Regulatory Affairs",
+    "seoDescription": "An approved product still changes — sites, suppliers, processes, shelf life. How variations are classified by risk in the EU and US, and why ICH Q12 matters.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   },
   {
     "collection": "blog",
