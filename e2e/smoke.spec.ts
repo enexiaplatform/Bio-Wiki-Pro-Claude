@@ -100,6 +100,31 @@ test.describe("public smoke", () => {
     // Toolkits are real, gated downloads — guests see a View/Open kit CTA.
     await expect(page.getByRole("link", { name: /View kit|Open kit/i }).first()).toBeVisible();
   });
+
+  test("tools page lists the interactive helpers", async ({ page }) => {
+    await page.goto("/tools");
+    await expect(page.getByRole("heading", { name: /Audit Readiness Scorecard/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Sterility Test Method Selector/i })).toBeVisible();
+    // Static-logic switch: pick a non-filterable product → Direct inoculation.
+    await page.getByRole("button", { name: /Oily, viscous, or non-filterable/i }).click();
+    await expect(page.getByRole("heading", { name: /^Direct inoculation$/i })).toBeVisible();
+  });
+
+  test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
+    await page.goto("/career");
+    await expect(page.getByRole("heading", { name: /Skill Gap Analyzer/i })).toBeVisible();
+    await page.getByRole("button", { name: /^Need it$/ }).first().click();
+    await page.getByRole("button", { name: /Build my learning roadmap/i }).click();
+    await expect(page.getByRole("heading", { name: /learning roadmap/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Start with/i })).toBeVisible();
+  });
+
+  test("qc hub surfaces workflows, tools, and toolkits", async ({ page }) => {
+    await page.goto("/qc-hub");
+    await expect(page.locator('a[href="/tools"]').first()).toBeVisible();
+    await expect(page.locator('a[href="/toolkits"]').first()).toBeVisible();
+    await expect(page.locator('a[href^="/workflows/"]').first()).toBeVisible();
+  });
 });
 
 // Full purchase/subscribe flow — needs a logged-in user + Stripe test mode.
