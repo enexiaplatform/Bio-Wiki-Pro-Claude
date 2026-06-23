@@ -2,6 +2,7 @@ import { Microscope } from "lucide-react";
 import { AuditReadinessScorecard } from "./AuditReadinessScorecard";
 import { WaterTypeSelector } from "./WaterTypeSelector";
 import { MediaSelectionHelper } from "./MediaSelectionHelper";
+import { SterilityMethodSelector } from "./SterilityMethodSelector";
 import { OosDecisionTree } from "./OosDecisionTree";
 import { CCSBuilderLite } from "./CCSBuilderLite";
 import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
@@ -14,6 +15,7 @@ const TOOL_INDEX = [
   { id: "tool-audit-readiness", label: "Audit Readiness Scorecard" },
   { id: "tool-water-selector", label: "Lab Water Type Selector" },
   { id: "tool-media-helper", label: "Culture Media Selection Helper" },
+  { id: "tool-sterility-method", label: "Sterility Test Method Selector" },
   { id: "tool-oos-tree", label: "OOS Investigation Decision Tree" },
   { id: "tool-em-scenarios", label: "EM Scenario Decision Tree" },
   { id: "tool-ccs-builder", label: "CCS Builder Lite" },
@@ -57,6 +59,7 @@ export default function ToolsPage() {
         <div id="tool-audit-readiness" className="scroll-mt-20"><AuditReadinessScorecard /></div>
         <div id="tool-water-selector" className="scroll-mt-20"><WaterTypeSelector /></div>
         <div id="tool-media-helper" className="scroll-mt-20"><MediaSelectionHelper /></div>
+        <div id="tool-sterility-method" className="scroll-mt-20"><SterilityMethodSelector /></div>
         <div id="tool-oos-tree" className="scroll-mt-20"><OosDecisionTree /></div>
         <div id="tool-em-scenarios" className="scroll-mt-20"><ScenarioDecisionTree /></div>
         <div id="tool-ccs-builder" className="scroll-mt-20"><CCSBuilderLite /></div>
