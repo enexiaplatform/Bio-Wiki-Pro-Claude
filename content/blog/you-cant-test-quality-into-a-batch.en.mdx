@@ -1,0 +1,59 @@
+---
+title: "You can't test quality into a batch: AQL and acceptance sampling"
+slug: "you-cant-test-quality-into-a-batch"
+lang: "en"
+tier: "free"
+category: "Quality Systems"
+seoDescription: "Acceptance sampling inspects a sample to decide on a whole batch — it never proves zero defects. What AQL really means, the producer's and consumer's risk, and the common misreadings."
+updatedAt: "2026-06-20"
+---
+
+# You can't test quality into a batch: AQL and acceptance sampling
+
+A famous quality maxim: **you cannot test quality into a product** — you build it
+in. Acceptance sampling is the honest version of that idea. When you inspect a
+sample of a batch (say, visual inspection of vials, or attributes of a finished
+device) you are making a **statistical decision about the whole batch from a part of
+it.** It is powerful, and it is routinely misunderstood.
+
+## What AQL actually means
+
+**AQL** — the Acceptance Quality Limit — is the worst quality level that is still
+considered **acceptable as a process average.** It is not a target, and it is not a
+promise that an accepted batch has zero defects. A plan with an AQL of, say, a small
+percent will **accept** batches running at around that defect level most of the time.
+
+So "we sample to an AQL" does not mean "defect-free." It means "we accept batches
+whose underlying quality is at or better than this limit, with a defined
+probability."
+
+## Two risks, always in tension
+
+Every sampling plan balances two risks:
+
+- **Producer's risk** — rejecting a genuinely good batch (a false alarm)
+- **Consumer's risk** — accepting a genuinely bad batch (the dangerous one)
+
+You cannot drive both to zero with a finite sample. A bigger sample sharpens the
+decision; a smaller sample is cheaper but blunter. The standard plans (e.g.
+ANSI/ASQ Z1.4, ISO 2859) encode this trade-off into defined sample sizes and
+accept/reject numbers by lot size and inspection level.
+
+## The common misreadings
+
+- **"Accepted means zero defects."** No — it means the sample met the
+  accept number; defects can still exist in the un-inspected units.
+- **"A bigger AQL number is stricter."** It is the opposite — a smaller AQL is
+  tighter.
+- **"Sampling replaces process control."** It does not. Sampling is a final check on
+  a process that should already be in control — which is the whole point of "you
+  cannot test quality in."
+
+## Go deeper
+
+- Learn the background in [Acceptance sampling & AQL](/library/acceptance-sampling-aql).
+- See where control really comes from in [Process validation: the three stages](/blog/process-validation-three-stages).
+
+*General educational content — verify against the applicable sampling standards,
+your approved SOPs, and your validated quality system. Not a substitute for QA
+approval.*
