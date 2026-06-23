@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useAcademyTerms } from "@/hooks/use-data";
-import { Search, Clock, ChevronRight, BookOpen, FlaskConical, Microscope, Bug, Thermometer } from "lucide-react";
+import { Search, Clock, ChevronRight, BookOpen, FlaskConical, Microscope, Bug, Thermometer, Workflow, Calculator, Package, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import clsx from "clsx";
@@ -11,10 +12,17 @@ import { ContinueLearning } from "@/components/ContinueLearning";
 import { analytics } from "@/hooks/use-analytics";
 
 const workflows = [
-  { name: "Sterility Testing", icon: FlaskConical, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", desc: "Membrane filtration & direct inoculation" },
-  { name: "Environmental Monitoring", icon: Thermometer, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", desc: "Settle plates, air sampling & surface swabs" },
-  { name: "Bioburden", icon: Bug, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", desc: "Microbial limits per USP <61>" },
-  { name: "Endotoxin", icon: Microscope, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", desc: "LAL kinetic turbidimetric & gel-clot" },
+  { name: "Sterility Testing", icon: FlaskConical, color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/20", desc: "Membrane filtration & direct inoculation", href: "/library/sterility-testing-basics" },
+  { name: "Environmental Monitoring", icon: Thermometer, color: "text-blue-400", bg: "bg-blue-500/10", border: "border-blue-500/20", desc: "Settle plates, air sampling & surface swabs", href: "/workflows/environmental-monitoring" },
+  { name: "Bioburden", icon: Bug, color: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", desc: "Microbial limits per USP 61", href: "/library/bioburden-usp-61" },
+  { name: "Endotoxin", icon: Microscope, color: "text-purple-400", bg: "bg-purple-500/10", border: "border-purple-500/20", desc: "LAL kinetic turbidimetric & gel-clot", href: "/library/endotoxin-lal-testing" },
+];
+
+// Discovery shortcuts into the practical layers (free top-of-funnel → Pro).
+const discoverLinks = [
+  { name: "Workflows", desc: "Step-by-step QC/QA workflows", icon: Workflow, href: "/workflows" },
+  { name: "Tools", desc: "Free interactive helpers", icon: Calculator, href: "/tools" },
+  { name: "Toolkits", desc: "Downloadable Pro checklists", icon: Package, href: "/toolkits" },
 ];
 
 export default function QCHub() {
@@ -50,10 +58,11 @@ export default function QCHub() {
         <h2 className="text-lg font-bold mb-4">{t("qcHub.quickWorkflows")}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {workflows.map(wf => (
-            <div
+            <Link
               key={wf.name}
+              href={wf.href}
               onClick={() => analytics.workflowClicked(wf.name)}
-              className={clsx("bg-card border rounded-2xl p-4 cursor-pointer hover:border-primary/30 transition-colors", wf.border)}
+              className={clsx("block bg-card border rounded-2xl p-4 cursor-pointer hover:border-primary/30 transition-colors", wf.border)}
               data-testid={`card-workflow-${wf.name.toLowerCase().replace(/\s+/g, '-')}`}
             >
               <div className={clsx("w-10 h-10 rounded-xl flex items-center justify-center mb-3", wf.bg, wf.color)}>
@@ -61,7 +70,29 @@ export default function QCHub() {
               </div>
               <h3 className="text-sm font-bold mb-1">{wf.name}</h3>
               <p className="text-[11px] text-muted-foreground leading-snug">{wf.desc}</p>
-            </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Discovery: route into the practical layers (workflows / tools / toolkits). */}
+      <div className="mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {discoverLinks.map(d => (
+            <Link
+              key={d.name}
+              href={d.href}
+              className="group flex items-center gap-3 bg-card border border-white/5 rounded-2xl p-4 hover:border-primary/30 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <d.icon className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold">{d.name}</h3>
+                <p className="text-[11px] text-muted-foreground leading-snug">{d.desc}</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+            </Link>
           ))}
         </div>
       </div>
