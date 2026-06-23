@@ -1,0 +1,59 @@
+---
+title: "SPC: telling the difference between noise and a signal"
+slug: "spc-the-difference-between-noise-and-signal"
+lang: "en"
+tier: "free"
+category: "Investigations"
+seoDescription: "Every process varies. Statistical process control separates normal common-cause variation from a real special-cause signal — so you act on shifts and ignore noise. Control limits vs spec limits."
+updatedAt: "2026-06-20"
+---
+
+# SPC: telling the difference between noise and a signal
+
+Every process varies. The hard question is never "did the number move?" — it always
+moves. The question is whether a movement is **normal noise** or a **real signal**
+worth acting on. Statistical process control (SPC) is the toolkit for answering that,
+and getting it right keeps you from two opposite mistakes: over-reacting to noise and
+missing a genuine shift.
+
+## Common cause vs special cause
+
+SPC rests on one idea — two kinds of variation:
+
+- **Common-cause** variation is the normal, inherent scatter of a stable process.
+  Reacting to it (tampering) usually makes things *worse*.
+- **Special-cause** variation is something new — a shift, a trend, an outlier — that
+  has an assignable reason. This is what you investigate.
+
+A process showing only common-cause variation is **in statistical control**: stable
+and predictable, even if not perfect.
+
+## Control limits are not specification limits
+
+This is the most common confusion. They answer different questions:
+
+- **Specification limits** come from the product requirement — "is this result
+  acceptable?"
+- **Control limits** come from the process's own data (typically around three
+  standard deviations) — "is this process behaving as it normally does?"
+
+A result can be **within spec but out of control** — still acceptable, but signalling
+the process has shifted. That is exactly the early warning an out-of-trend program
+relies on. Treating control limits as spec limits (or vice versa) defeats the whole
+purpose.
+
+## What SPC gives QC
+
+- An objective way to flag a process that is **drifting before it fails**
+- A defensible basis for **trending** in continued process verification and
+  environmental monitoring
+- A guard against tampering — leaving a stable process alone instead of chasing every
+  wobble
+
+## Go deeper
+
+- Learn the background in [Statistical process control](/library/statistical-process-control).
+- See the practical version in [OOT vs OOS: what's the difference](/blog/oot-vs-oos-whats-the-difference).
+
+*General educational content — verify against the applicable guidance, your approved
+SOPs, and your validated quality system. Not a substitute for QA approval.*
