@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   BookOpen, Package, Briefcase, ArrowRight, CheckCircle2,
   FlaskConical, ChevronRight, TrendingUp, Users, Star,
-  Microscope, ShieldCheck, ClipboardCheck, Layers, Search, TestTube2, Dna, Workflow,
+  Microscope, ShieldCheck, ClipboardCheck, Layers, Search, TestTube2, Dna, Workflow, Calculator,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -199,10 +199,15 @@ export default function LandingPage() {
             })}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
             <Link href="/workflows#microbiology-qc">
               <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
                 <Microscope className="w-4 h-4" /> Start with Microbiology QC
+              </button>
+            </Link>
+            <Link href="/tools">
+              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
+                <Calculator className="w-4 h-4" /> Try a free tool
               </button>
             </Link>
             <Link href="/toolkits">
