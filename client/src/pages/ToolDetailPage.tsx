@@ -78,6 +78,14 @@ export default function ToolDetailPage() {
         <span className="text-[11px] uppercase font-bold tracking-widest text-primary">{tool.category}</span>
         <h1 className="text-2xl md:text-3xl font-bold mt-1.5 mb-2 leading-tight">{tool.title}</h1>
         <p className="text-muted-foreground max-w-3xl leading-relaxed">{tool.description}</p>
+        {tool.relatedWorkflow && (
+          <Link
+            href={`/workflows/${tool.relatedWorkflow.slug}`}
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-teal-400 hover:gap-2.5 transition-all"
+          >
+            See the full {tool.relatedWorkflow.title} workflow <ArrowRight className="w-4 h-4" />
+          </Link>
+        )}
       </div>
 
       {tool.element}
