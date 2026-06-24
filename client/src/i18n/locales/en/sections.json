@@ -35,11 +35,11 @@
     "startCta": "Start"
   },
   "tools": {
-    "seoTitle": "Lab Tools — Decision Trees & QC Templates",
-    "seoDesc": "Decision-support tools for QC Pharma: CCS Builder, OOS Investigation Template, Scenario Decision Tree — per GMP WHO and Annex 1.",
-    "eyebrow": "Decision-support tools",
-    "title": "Tools",
-    "subtitle": "Practical QC microbiology tools for EM decisions, CCS reasoning, and investigation structure."
+    "seoTitle": "Free QC/QA Tools & Calculators",
+    "seoDesc": "Free interactive QC/QA tools: endotoxin limit & MVD, cleaning validation MACO, process capability (Cpk), audit readiness, sterility method, OOS decision tree, and more.",
+    "eyebrow": "Free interactive tools",
+    "title": "QC/QA Tools & Calculators",
+    "subtitle": "Free, interactive calculators and decision tools for the work you actually do — endotoxin limits, cleaning validation, process capability, audit readiness, and more. Pick a tool to get started."
   },
   "compliance": {
     "seoTitle": "Compliance — GMP Audit Readiness & Annex 1",

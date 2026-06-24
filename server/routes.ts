@@ -988,9 +988,18 @@ export async function registerRoutes(app: Express): Promise<void> {
       "stability-program", "cell-based-potency-assay",
       "host-cell-protein-testing-workflow", "viral-safety-testing-workflow",
     ].map((s) => `/workflows/${s}`);
+    // Standalone tool pages. Kept in sync with client/src/features/tools/registry.tsx.
+    const toolPaths = [
+      "audit-readiness-scorecard", "lab-water-type-selector",
+      "culture-media-selection-helper", "sterility-test-method-selector",
+      "endotoxin-limit-calculator", "cleaning-validation-maco-calculator",
+      "process-capability-calculator", "oos-investigation-decision-tree",
+      "em-scenario-decision-tree", "contamination-control-strategy-builder",
+      "investigation-template-viewer",
+    ].map((s) => `/tools/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
-    const allPaths = [...corePaths, ...pathPaths, ...workflowPaths, ...blogPaths, ...libPaths];
+    const allPaths = [...corePaths, ...pathPaths, ...workflowPaths, ...toolPaths, ...blogPaths, ...libPaths];
 
     // English-only: clean single URL per path.
     const urls = allPaths
