@@ -228,7 +228,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["environmental-monitoring-basics", "microbial-excursion-investigation", "contamination-control-strategy", "disinfectant-qualification"],
     relatedToolkitSlugs: ["environmental-monitoring-checklist", "gmp-audit-kit"],
-    relatedToolSlugs: ["em-scenario-decision-tree", "contamination-control-strategy-builder"],
+    relatedToolSlugs: ["em-scenario-decision-tree", "microbial-count-calculator", "contamination-control-strategy-builder"],
     accessTier: "free",
     deepDive:
       "Environmental monitoring doesn't make product sterile — it provides evidence that your contamination control strategy is working. Under Annex 1 (2022), EM is explicitly a feedback loop into the CCS rather than a stand-alone pass/fail gate: site selection, limits, and frequency all flow from risk assessment, and trending is given equal weight to single results. The most informative EM programs treat an adverse trend below the action limit as a signal worth investigating, identify recoveries to species to build a facility flora baseline, and tie personnel monitoring directly to the aseptic interventions performed.",

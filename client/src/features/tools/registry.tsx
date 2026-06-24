@@ -11,6 +11,7 @@ import {
   Wind,
   Layers,
   ClipboardList,
+  Bug,
   type LucideIcon,
 } from "lucide-react";
 import { TOOL_CATALOG, type ToolMeta } from "@/data/tools/catalog";
@@ -25,6 +26,7 @@ import { OosDecisionTree } from "./OosDecisionTree";
 import { CCSBuilderLite } from "./CCSBuilderLite";
 import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
 import { ScenarioDecisionTree } from "./ScenarioDecisionTree";
+import { MicrobialCountCalculator } from "./MicrobialCountCalculator";
 
 export interface ToolDef extends ToolMeta {
   icon: LucideIcon;
@@ -40,6 +42,7 @@ const VISUALS: Record<string, { icon: LucideIcon; element: ReactNode }> = {
   "lab-water-type-selector": { icon: Droplets, element: <WaterTypeSelector /> },
   "culture-media-selection-helper": { icon: FlaskRound, element: <MediaSelectionHelper /> },
   "sterility-test-method-selector": { icon: ShieldCheck, element: <SterilityMethodSelector /> },
+  "microbial-count-calculator": { icon: Bug, element: <MicrobialCountCalculator /> },
   "endotoxin-limit-calculator": { icon: FlaskConical, element: <EndotoxinLimitCalculator /> },
   "cleaning-validation-maco-calculator": { icon: Sparkles, element: <CleaningValidationCalculator /> },
   "process-capability-calculator": { icon: Gauge, element: <ProcessCapabilityCalculator /> },

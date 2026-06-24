@@ -51,6 +51,14 @@ export const TOOL_CATALOG: ToolMeta[] = [
       "Free sterility test method selector — choose between membrane filtration and direct inoculation based on your product type and volume, with the key method controls.",
   },
   {
+    slug: "microbial-count-calculator",
+    title: "Microbial Count (CFU) Calculator",
+    category: "Microbiology",
+    blurb: "Convert plate or membrane colony counts to CFU/mL in the original sample.",
+    description:
+      "Free microbial count (CFU) calculator — convert colonies on a pour plate, spread plate, or membrane back to CFU/mL accounting for dilution and volume plated.",
+  },
+  {
     slug: "endotoxin-limit-calculator",
     title: "Endotoxin Limit & MVD Calculator",
     category: "Microbiology",
