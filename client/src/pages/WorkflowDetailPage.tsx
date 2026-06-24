@@ -73,6 +73,8 @@ export default function WorkflowDetailPage() {
   // Tie the workflow back to learning progress (localStorage + server sync).
   const readSet = new Set(read);
   const lessonsRead = relatedLessons.filter((l) => readSet.has(l.slug)).length;
+  // The next lesson to read drives a "continue learning" nudge.
+  const nextLesson = relatedLessons.find((l) => !readSet.has(l.slug));
 
   // The primary action: open an available toolkit, or drive Pro for a locked one.
   const availableToolkit = relatedToolkits.find((t) => t.status === "available");
@@ -256,6 +258,32 @@ export default function WorkflowDetailPage() {
               {lessonsRead} of {relatedLessons.length} read
             </span>
           </div>
+
+          {/* Continue-learning nudge: point at the next unread lesson. */}
+          {nextLesson ? (
+            <Link
+              href={`/library/${nextLesson.slug}`}
+              className="group mb-4 flex items-center gap-3 rounded-xl border border-teal-500/20 bg-teal-500/[0.06] p-4 transition-colors hover:border-teal-500/40"
+            >
+              <ArrowRight className="w-4 h-4 text-teal-400 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-wider text-teal-400">
+                  {lessonsRead === 0 ? "Start here" : `Next — you're ${lessonsRead} of ${relatedLessons.length}`}
+                </p>
+                <p className="text-sm font-semibold truncate group-hover:text-teal-400 transition-colors">
+                  {nextLesson.title}
+                </p>
+              </div>
+            </Link>
+          ) : (
+            <div className="mb-4 flex items-center gap-3 rounded-xl border border-teal-500/20 bg-teal-500/[0.06] p-4">
+              <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+              <p className="text-sm font-semibold">
+                All background lessons read — you&rsquo;re ready to run this workflow.
+              </p>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {relatedLessons.map((l) => {
               const done = readSet.has(l.slug);
