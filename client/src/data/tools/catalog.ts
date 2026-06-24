@@ -63,6 +63,15 @@ export const TOOL_CATALOG: ToolMeta[] = [
     relatedWorkflow: { slug: "environmental-monitoring", title: "Environmental Monitoring" },
   },
   {
+    slug: "sterilization-f0-calculator",
+    title: "F0 Sterilization Lethality Calculator",
+    category: "Sterility",
+    blurb: "Lethal rate and equivalent F0 time for a moist-heat sterilization hold.",
+    description:
+      "Free F0 sterilization calculator — compute the lethal rate and the equivalent time at 121.1 C (F0) for a moist-heat hold from temperature, time, and z-value.",
+    relatedWorkflow: { slug: "biological-indicator-workflow", title: "Biological Indicator Workflow" },
+  },
+  {
     slug: "endotoxin-limit-calculator",
     title: "Endotoxin Limit & MVD Calculator",
     category: "Microbiology",

@@ -278,6 +278,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["steam-sterilization-validation", "dry-heat-depyrogenation", "media-fill-aps", "sterilizing-grade-filtration"],
     relatedToolkitSlugs: ["bi-workflow-checklist", "gmp-audit-kit"],
+    relatedToolSlugs: ["sterilization-f0-calculator"],
     accessTier: "free",
     deepDive:
       "A biological indicator is a deliberately worst-case challenge: a known population of highly resistant spores with a certified D-value (the time to reduce the population by 90% under defined conditions). BIs complement — they don't replace — the physical cycle data; a release decision rests on both lethality calculations (e.g. F0 for moist heat) and the biological challenge. The positive control is non-negotiable: without proof the spores were viable and would grow in your recovery media, a 'no growth' result tells you nothing. Worst-case placement is the other half of the story — a BI that never reached the cold spot can't qualify the cycle.",

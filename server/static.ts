@@ -35,6 +35,11 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     description:
       "Free microbial count (CFU) calculator — convert colonies on a pour plate, spread plate, or membrane back to CFU/mL accounting for dilution and volume plated.",
   },
+  "sterilization-f0-calculator": {
+    title: "F0 Sterilization Lethality Calculator",
+    description:
+      "Free F0 sterilization calculator — compute the lethal rate and the equivalent time at 121.1 C (F0) for a moist-heat hold from temperature, time, and z-value.",
+  },
   "endotoxin-limit-calculator": {
     title: "Endotoxin Limit & MVD Calculator",
     description:

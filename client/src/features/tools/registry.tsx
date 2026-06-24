@@ -12,6 +12,7 @@ import {
   Layers,
   ClipboardList,
   Bug,
+  Flame,
   type LucideIcon,
 } from "lucide-react";
 import { TOOL_CATALOG, type ToolMeta } from "@/data/tools/catalog";
@@ -27,6 +28,7 @@ import { CCSBuilderLite } from "./CCSBuilderLite";
 import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
 import { ScenarioDecisionTree } from "./ScenarioDecisionTree";
 import { MicrobialCountCalculator } from "./MicrobialCountCalculator";
+import { SterilizationF0Calculator } from "./SterilizationF0Calculator";
 
 export interface ToolDef extends ToolMeta {
   icon: LucideIcon;
@@ -43,6 +45,7 @@ const VISUALS: Record<string, { icon: LucideIcon; element: ReactNode }> = {
   "culture-media-selection-helper": { icon: FlaskRound, element: <MediaSelectionHelper /> },
   "sterility-test-method-selector": { icon: ShieldCheck, element: <SterilityMethodSelector /> },
   "microbial-count-calculator": { icon: Bug, element: <MicrobialCountCalculator /> },
+  "sterilization-f0-calculator": { icon: Flame, element: <SterilizationF0Calculator /> },
   "endotoxin-limit-calculator": { icon: FlaskConical, element: <EndotoxinLimitCalculator /> },
   "cleaning-validation-maco-calculator": { icon: Sparkles, element: <CleaningValidationCalculator /> },
   "process-capability-calculator": { icon: Gauge, element: <ProcessCapabilityCalculator /> },

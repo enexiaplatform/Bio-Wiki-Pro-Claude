@@ -992,8 +992,8 @@ export async function registerRoutes(app: Express): Promise<void> {
     const toolPaths = [
       "audit-readiness-scorecard", "lab-water-type-selector",
       "culture-media-selection-helper", "sterility-test-method-selector",
-      "microbial-count-calculator", "endotoxin-limit-calculator",
-      "cleaning-validation-maco-calculator",
+      "microbial-count-calculator", "sterilization-f0-calculator",
+      "endotoxin-limit-calculator", "cleaning-validation-maco-calculator",
       "process-capability-calculator", "oos-investigation-decision-tree",
       "em-scenario-decision-tree", "contamination-control-strategy-builder",
       "investigation-template-viewer",
