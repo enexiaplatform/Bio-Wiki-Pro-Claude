@@ -5,6 +5,7 @@ import { MediaSelectionHelper } from "./MediaSelectionHelper";
 import { SterilityMethodSelector } from "./SterilityMethodSelector";
 import { EndotoxinLimitCalculator } from "./EndotoxinLimitCalculator";
 import { CleaningValidationCalculator } from "./CleaningValidationCalculator";
+import { ProcessCapabilityCalculator } from "./ProcessCapabilityCalculator";
 import { OosDecisionTree } from "./OosDecisionTree";
 import { CCSBuilderLite } from "./CCSBuilderLite";
 import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
@@ -20,6 +21,7 @@ const TOOL_INDEX = [
   { id: "tool-sterility-method", label: "Sterility Test Method Selector" },
   { id: "tool-endotoxin-limit", label: "Endotoxin Limit & MVD Calculator" },
   { id: "tool-cleaning-maco", label: "Cleaning Validation MACO Calculator" },
+  { id: "tool-process-capability", label: "Process Capability Calculator" },
   { id: "tool-oos-tree", label: "OOS Investigation Decision Tree" },
   { id: "tool-em-scenarios", label: "EM Scenario Decision Tree" },
   { id: "tool-ccs-builder", label: "CCS Builder Lite" },
@@ -66,6 +68,7 @@ export default function ToolsPage() {
         <div id="tool-sterility-method" className="scroll-mt-20"><SterilityMethodSelector /></div>
         <div id="tool-endotoxin-limit" className="scroll-mt-20"><EndotoxinLimitCalculator /></div>
         <div id="tool-cleaning-maco" className="scroll-mt-20"><CleaningValidationCalculator /></div>
+        <div id="tool-process-capability" className="scroll-mt-20"><ProcessCapabilityCalculator /></div>
         <div id="tool-oos-tree" className="scroll-mt-20"><OosDecisionTree /></div>
         <div id="tool-em-scenarios" className="scroll-mt-20"><ScenarioDecisionTree /></div>
         <div id="tool-ccs-builder" className="scroll-mt-20"><CCSBuilderLite /></div>
