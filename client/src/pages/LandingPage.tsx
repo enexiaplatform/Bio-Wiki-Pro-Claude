@@ -55,6 +55,15 @@ const trustCardMeta = [
   { icon: TrendingUp, color: "text-teal-400" },
 ];
 
+// Flagship free calculators surfaced on the home page (links only — the tool
+// components are NOT imported here, to keep the landing bundle lean).
+const FLAGSHIP_TOOLS: { slug: string; label: string; blurb: string; icon: LucideIcon }[] = [
+  { slug: "endotoxin-limit-calculator", label: "Endotoxin Limit & MVD", blurb: "Endotoxin limit (K/M) and Maximum Valid Dilution for a BET.", icon: FlaskConical },
+  { slug: "cleaning-validation-maco-calculator", label: "Cleaning Validation MACO", blurb: "Carryover limits by dose, HBEL, and 10 ppm, plus swab limits.", icon: TestTube2 },
+  { slug: "process-capability-calculator", label: "Process Capability (Cpk)", blurb: "Cp, Cpk, and estimated out-of-spec PPM from your data.", icon: TrendingUp },
+  { slug: "microbial-count-calculator", label: "Microbial Count (CFU)", blurb: "Plate or membrane counts back to CFU/mL in the sample.", icon: Dna },
+];
+
 interface Stat { value: string; label: string }
 interface Problem { emoji: string; title: string; desc: string }
 interface Solution { badge: string; title: string; desc: string; cta: string }
@@ -213,6 +222,61 @@ export default function LandingPage() {
             <Link href="/toolkits">
               <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
                 <Package className="w-4 h-4" /> Browse toolkits
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FREE CALCULATORS ── */}
+      <section className="py-12 px-4 border-t border-white/5">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.5 }}
+            className="text-center mb-8"
+          >
+            <span className="inline-flex items-center gap-2 text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full mb-4">
+              <Calculator className="w-3 h-3" /> Free calculators
+            </span>
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">The QC math, done for you</h2>
+            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+              Interactive calculators for the work you actually do — no sign-up, instant answers,
+              with the formula shown so you can check it.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            {FLAGSHIP_TOOLS.map((tool, i) => {
+              const Icon = tool.icon;
+              return (
+                <motion.div
+                  key={tool.slug}
+                  initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.35, delay: (i % 4) * 0.06 }}
+                >
+                  <Link
+                    href={`/tools/${tool.slug}`}
+                    className="group h-full flex flex-col bg-card border border-white/5 rounded-2xl p-4 hover:border-teal-500/30 transition-colors"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center mb-2.5">
+                      <Icon className="w-4 h-4 text-teal-400" />
+                    </div>
+                    <h3 className="font-bold text-sm mb-1 leading-snug">{tool.label}</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed flex-1">{tool.blurb}</p>
+                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-teal-400 group-hover:gap-2 transition-all">
+                      Open <ChevronRight className="w-3.5 h-3.5" />
+                    </span>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="text-center">
+            <Link href="/tools">
+              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
+                <Calculator className="w-4 h-4" /> See all 12 free tools
               </button>
             </Link>
           </div>
