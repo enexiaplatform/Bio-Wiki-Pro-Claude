@@ -3334,6 +3334,17 @@
   },
   {
     "collection": "blog",
+    "slug": "analytical-method-validation-what-q2-asks",
+    "lang": "en",
+    "title": "Analytical method validation: what ICH Q2 actually asks",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Method validation proves a method is fit for its purpose. The ICH Q2 characteristics — specificity, accuracy, precision, linearity, range, detection/quantitation limits, robustness — and why the purpose drives which you need.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "annex-1-ccs-what-changed",
     "lang": "en",
     "title": "Annex 1 (2022): what actually changed",
@@ -3356,6 +3367,28 @@
   },
   {
     "collection": "blog",
+    "slug": "annual-product-review-what-its-for",
+    "lang": "en",
+    "title": "The Annual Product Review: what it's actually for",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "The APR/PQR is not a box-ticking report. It's the yearly look across a product's data to confirm the process is still in control and the specifications still fit.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "aseptic-technique-the-discipline-of-the-first-air",
+    "lang": "en",
+    "title": "Aseptic technique: the discipline of first air",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Aseptic technique is a set of habits that protect the sterile path. First air, never reaching over exposed product, slow deliberate movement — the small disciplines that decide a media fill.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "audit-trail-review",
     "lang": "en",
     "title": "Audit Trail Review: What, How Often, and Red Flags",
@@ -3367,12 +3400,45 @@
   },
   {
     "collection": "blog",
+    "slug": "bacterial-endotoxin-test-what-lal-actually-measures",
+    "lang": "en",
+    "title": "The bacterial endotoxin test: what LAL actually measures",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "The endotoxin test doesn't detect bacteria — it detects a molecule. Why LAL reacts to Gram-negative lipopolysaccharide, the three method formats, and the interference problem that trips up labs.",
+    "updatedAt": "2026-06-24",
+    "readMinutes": 3
+  },
+  {
+    "collection": "blog",
+    "slug": "batch-release-the-decision-everything-converges-on",
+    "lang": "en",
+    "title": "Batch release: the decision everything converges on",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Batch release is where the whole quality system becomes one yes/no. What QA reviews, why review-by-exception works, and why the releaser must be independent of production.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "biological-indicators-positive-control",
     "lang": "en",
     "title": "Biological indicators: why the positive control is everything",
     "tier": "free",
     "category": "Sterile Manufacturing",
     "seoDescription": "Biological indicators only mean something with valid controls. Why the positive control is non-negotiable, how to choose the right BI, and the false-negative traps to avoid.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "calibration-the-traceability-under-every-number",
+    "lang": "en",
+    "title": "Calibration: the traceability hiding under every number",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Every measurement assumes the instrument is telling the truth. Why calibration ties your readings to a traceable standard, what tolerance and as-found/as-left data mean, and the out-of-tolerance trap.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3389,6 +3455,39 @@
   },
   {
     "collection": "blog",
+    "slug": "cell-banks-the-foundation-of-a-biologic",
+    "lang": "en",
+    "title": "Cell banks: the foundation everything in a biologic rests on",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "A biologic is only as consistent as the cell bank it's made from. Why the two-tiered MCB/WCB system exists, what characterization confirms, and why genetic stability matters.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "change-control-protecting-the-validated-state",
+    "lang": "en",
+    "title": "Change control: the system that protects your validated state",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Every change is a hypothesis that something could shift. Why the impact assessment is the heart of change control, and the two failures inspectors look for.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "characterizing-a-protein-its-not-one-test",
+    "lang": "en",
+    "title": "Characterizing a protein: why it's never one test",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "A protein drug is a large, complex, heterogeneous molecule. Why characterization needs orthogonal methods for structure, charge, size, and glycans — and what 'higher-order structure' means for function.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "cleaning-validation-hbel-shift",
     "lang": "en",
     "title": "Cleaning Validation: from 10 ppm to HBEL",
@@ -3400,6 +3499,17 @@
   },
   {
     "collection": "blog",
+    "slug": "complaints-the-feedback-loop-from-the-market",
+    "lang": "en",
+    "title": "Complaints: the quality feedback loop from the real world",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "A complaint is field data your in-house testing can't generate. Why triage and adverse-event screening come first, how complaints connect to investigations and trends, and the recall link.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "computer-system-validation",
     "lang": "en",
     "title": "CSV vs CSA: validating computerised systems without the paper mountain",
@@ -3408,6 +3518,28 @@
     "seoDescription": "Computer System Validation (GAMP 5) and the shift to Computer Software Assurance (CSA) — risk-based testing that auditors accept.",
     "updatedAt": "2026-06-02",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "container-closure-integrity-the-last-barrier",
+    "lang": "en",
+    "title": "Container closure integrity: the last barrier to a sterile product",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "A sterile product is only sterile if the container keeps it that way. Why CCI is part of the sterility assurance story, deterministic vs probabilistic methods, and the shift away from dye ingress.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "contamination-control-strategy-the-organizing-idea",
+    "lang": "en",
+    "title": "The Contamination Control Strategy: Annex 1's organizing idea",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "The CCS is the single biggest idea in Annex 1 (2022): a documented, holistic view of every contamination control and how they work together — not a list of SOPs, but the system that connects them.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   },
   {
     "collection": "blog",
@@ -3444,12 +3576,45 @@
   },
   {
     "collection": "blog",
+    "slug": "depyrogenation-killing-isnt-enough",
+    "lang": "en",
+    "title": "Depyrogenation: why killing the bug isn't enough",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Sterilization kills microbes, but dead Gram-negatives still leave endotoxin behind. Why depyrogenation needs much harsher conditions, the 3-log reduction standard, and the endotoxin-spike challenge.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "disinfectant-qualification-proving-the-clean",
+    "lang": "en",
+    "title": "Disinfectant qualification: proving the clean actually works",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Spraying disinfectant isn't the same as disinfecting. Why you qualify efficacy against your own isolates and surfaces, the role of contact time and rotation, and why a sporicide is needed.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "dissolution-is-more-mechanical-than-you-think",
     "lang": "en",
     "title": "Dissolution: it's more mechanical than you think",
     "tier": "free",
     "category": "Laboratory Controls",
     "seoDescription": "Most dissolution variability and false OOS results come from the apparatus and medium, not the product. Why degassing, alignment, and staged acceptance matter in USP 711.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "elemental-impurities-q3d-explained",
+    "lang": "en",
+    "title": "Elemental impurities (ICH Q3D): from heavy metals to a risk-based limit",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "ICH Q3D replaced the old heavy-metals test with a toxicology-based, risk-assessed approach. The PDEs, where elements come from, and why a risk assessment beats blanket testing.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3472,6 +3637,17 @@
     "tier": "free",
     "category": "Validation",
     "seoDescription": "DQ, IQ, OQ, PQ explained — what each stage of equipment qualification actually proves, and the often-missed half: keeping equipment in a qualified state.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "extractables-and-leachables-what-comes-out-of-the-container",
+    "lang": "en",
+    "title": "Extractables and leachables: what comes out of the container",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "The container and process equipment can leach chemicals into the product. The difference between extractables and leachables, why it's risk-based, and why parenterals and biologics worry most.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3521,6 +3697,17 @@
   },
   {
     "collection": "blog",
+    "slug": "gmp-training-the-difference-between-told-and-able",
+    "lang": "en",
+    "title": "GMP training: the difference between 'told' and 'able'",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Reading an SOP is not the same as being qualified to do the task. Why GMP training has to demonstrate competence, the read-and-understood trap, and how training connects to every deviation.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "gowning-the-operator-is-the-biggest-risk",
     "lang": "en",
     "title": "Gowning: the operator is the biggest contamination risk",
@@ -3565,12 +3752,45 @@
   },
   {
     "collection": "blog",
+    "slug": "hvac-qualification-the-air-is-a-utility",
+    "lang": "en",
+    "title": "HVAC qualification: the air is a critical utility",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "In a cleanroom the air is a process input. Why HVAC qualification covers airflow, filter integrity, pressure cascade, and recovery — and how it underpins your cleanroom classification.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "internal-audit-finding-it-before-the-inspector-does",
+    "lang": "en",
+    "title": "Internal audit: finding it before the inspector does",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Self-inspection is your chance to find problems on your own terms. Why independence and honesty make or break it, how to plan a risk-based program, and why open findings beat a clean report.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "labeling-and-product-information",
     "lang": "en",
     "title": "Labeling and product information: getting the words right",
     "tier": "free",
     "category": "Regulatory Affairs",
     "seoDescription": "Labeling is regulated information, not marketing copy. The difference between label and labeling, the EU SmPC/PIL vs US prescribing information, and why changes are controlled.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "measurement-systems-analysis-can-you-trust-the-gauge",
+    "lang": "en",
+    "title": "Measurement systems analysis: can you trust the gauge?",
+    "tier": "free",
+    "category": "Investigations",
+    "seoDescription": "Before you trend data, ask how much of the variation is the measurement itself. MSA and Gage R&R separate process variation from measurement noise — repeatability, reproducibility, and why it matters.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3587,6 +3807,28 @@
   },
   {
     "collection": "blog",
+    "slug": "microbial-identification-knowing-your-bug",
+    "lang": "en",
+    "title": "Microbial identification: why knowing your bug matters",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Counting colonies tells you how many; identification tells you what, and what it means. Why ID drives investigations, how far to identify, and the methods from phenotypic to MALDI-TOF.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "mycoplasma-the-contaminant-your-filter-wont-catch",
+    "lang": "en",
+    "title": "Mycoplasma: the contaminant your filter won't catch",
+    "tier": "free",
+    "category": "Biologics",
+    "seoDescription": "Mycoplasma has no cell wall, slips through a 0.2-micron sterilizing filter, and won't cloud your media. Why it's the signature contaminant of cell culture, and how the compendial and rapid methods find it.",
+    "updatedAt": "2026-06-24",
+    "readMinutes": 3
+  },
+  {
+    "collection": "blog",
     "slug": "nitrosamine-impurities",
     "lang": "en",
     "title": "Nitrosamine Impurities: what QC teams need to know",
@@ -3598,6 +3840,17 @@
   },
   {
     "collection": "blog",
+    "slug": "objectionable-organisms-its-not-just-the-count",
+    "lang": "en",
+    "title": "Objectionable organisms: why it's not just the count",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "For non-sterile products, passing the count limit isn't enough — a single objectionable organism can fail a batch. Why 'objectionable' is product-and-use specific, and how to decide.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "oos-investigation-phases",
     "lang": "en",
     "title": "OOS Investigations: Phase I, Phase II, and the Barr lesson",
@@ -3606,6 +3859,39 @@
     "seoDescription": "A practical walkthrough of the FDA OOS guidance — the Phase I lab investigation, Phase II full investigation, and why you can't just retest into compliance.",
     "updatedAt": "2026-06-02",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "oot-vs-oos-whats-the-difference",
+    "lang": "en",
+    "title": "OOT vs OOS: what's the difference, and why it matters",
+    "tier": "free",
+    "category": "Investigations",
+    "seoDescription": "Out-of-trend and out-of-specification are not the same. Why an in-spec but drifting result still needs investigation, and how OOT is the early-warning system OOS isn't.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "part-11-what-makes-an-electronic-record-trustworthy",
+    "lang": "en",
+    "title": "Part 11: what makes an electronic record trustworthy",
+    "tier": "free",
+    "category": "Investigations",
+    "seoDescription": "21 CFR Part 11 (and EU Annex 11) define when an electronic record can replace paper. Audit trails, electronic signatures, access control, and system validation — and why it's a means, not the end.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "pharmaceutical-water-systems-keeping-it-clean",
+    "lang": "en",
+    "title": "Pharmaceutical water systems: why the loop never stops moving",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Pharmaceutical water is generated, stored, and distributed as an ongoing process — not a batch. Why circulation, sanitization, and biofilm control matter, and what's monitored continuously.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   },
   {
     "collection": "blog",
@@ -3642,6 +3928,28 @@
   },
   {
     "collection": "blog",
+    "slug": "protein-aggregation-the-impurity-that-grows",
+    "lang": "en",
+    "title": "Protein aggregation: the impurity that grows on its own",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Aggregates are a product-related impurity unique to biologics — and a key immunogenicity risk. Why SEC is the workhorse, what it can miss, and why aggregation is a stability concern, not just a release one.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "qc-qa-interview-toughest-questions",
+    "lang": "en",
+    "title": "The toughest QC/QA interview questions — and how to answer them",
+    "tier": "free",
+    "category": "Career",
+    "seoDescription": "QC/QA interviews probe judgement, not just knowledge. The recurring tough questions on OOS, deviations, data integrity, and pressure — and the structure of a strong answer.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "qualification-vs-validation",
     "lang": "en",
     "title": "Qualification vs Validation: What's the Difference?",
@@ -3650,6 +3958,28 @@
     "seoDescription": "Qualification vs validation explained simply — what each term means in GMP, how DQ/IQ/OQ/PQ fit, and why qualification is a part of validation, not a synonym.",
     "updatedAt": "2026-06-05",
     "readMinutes": 1
+  },
+  {
+    "collection": "blog",
+    "slug": "quality-by-design-building-quality-in",
+    "lang": "en",
+    "title": "Quality by Design: building quality in, not testing it in",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "QbD (ICH Q8) flips development from test-and-react to design-and-understand. The QTPP, critical quality attributes, critical process parameters, design space, and control strategy — and why they connect.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "quality-metrics-measuring-the-system-itself",
+    "lang": "en",
+    "title": "Quality metrics: measuring the system, not just the product",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "You measure products constantly — but how do you measure the quality system? The metrics that signal a healthy or struggling QMS, leading vs lagging indicators, and the gaming trap.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
   },
   {
     "collection": "blog",
@@ -3664,12 +3994,67 @@
   },
   {
     "collection": "blog",
+    "slug": "recall-management-the-test-of-your-traceability",
+    "lang": "en",
+    "title": "Recall management: the real-world test of your traceability",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "A recall is where distribution records, batch traceability, and decision-making are tested under pressure. Recall classes, why speed matters, and why the mock recall is the part that saves you.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "reference-standards-the-silent-anchor",
+    "lang": "en",
+    "title": "Reference standards: the silent anchor of every result",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Almost every quantitative QC result is relative to a reference standard. Why qualification, bridging, and handling matter — and how a standard error propagates into every batch.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "residual-solvents-q3c-the-leftovers-of-synthesis",
+    "lang": "en",
+    "title": "Residual solvents (ICH Q3C): the leftovers of synthesis",
+    "tier": "free",
+    "category": "Laboratory Controls",
+    "seoDescription": "Solvents used to make a drug don't all leave. ICH Q3C classifies them by toxicity, sets PDE-based limits, and steers you toward less-hazardous choices — controlled mostly by GC.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "spc-the-difference-between-noise-and-signal",
+    "lang": "en",
+    "title": "SPC: telling the difference between noise and a signal",
+    "tier": "free",
+    "category": "Investigations",
+    "seoDescription": "Every process varies. Statistical process control separates normal common-cause variation from a real special-cause signal — so you act on shifts and ignore noise. Control limits vs spec limits.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "stability-the-assay-must-see-degradation",
     "lang": "en",
     "title": "Stability: your assay has to be able to see degradation",
     "tier": "free",
     "category": "Laboratory Controls",
     "seoDescription": "A stability program is only as good as its stability-indicating methods and its on-time pulls. Why a non-stability-indicating assay can hide a degrading product, and what to trend.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "steam-sterilization-f0-and-the-cold-spot",
+    "lang": "en",
+    "title": "Steam sterilization: F0, the cold spot, and proving lethality",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Moist-heat sterilization is validated on physics and biology together. What F0 means, why the cold spot drives everything, and how heat penetration and BIs combine to prove the cycle works.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3708,12 +4093,34 @@
   },
   {
     "collection": "blog",
+    "slug": "technology-transfer-moving-without-breaking",
+    "lang": "en",
+    "title": "Technology transfer: moving a process without breaking it",
+    "tier": "free",
+    "category": "Validation",
+    "seoDescription": "Moving a product or method to a new site is where process understanding gets tested. What a tech transfer actually moves, the role of the gap assessment, and why knowledge — not just paperwork — transfers.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
     "slug": "viral-safety-three-pillars",
     "lang": "en",
     "title": "Viral safety: why no single test is enough",
     "tier": "free",
     "category": "Biologics QC",
     "seoDescription": "ICH Q5A builds viral safety on three pillars — source control, testing, and validated clearance — because no test can prove a virus is absent. Why orthogonality matters.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "visual-inspection-the-human-and-the-particle",
+    "lang": "en",
+    "title": "Visual inspection: catching the particle before the patient does",
+    "tier": "free",
+    "category": "Sterile Manufacturing",
+    "seoDescription": "Every injectable is inspected for visible particles and defects. Why 100% inspection is a probabilistic test, how inspectors are qualified, and the link to subvisible particulate limits.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   },
@@ -3791,6 +4198,17 @@
     "tier": "free",
     "category": "Biologics QC",
     "seoDescription": "Potency ties a biologic's release test to its mechanism of action — and that's what makes it hard. Why bioassays are noisy, what relative potency means, and why parallelism matters.",
+    "updatedAt": "2026-06-20",
+    "readMinutes": 2
+  },
+  {
+    "collection": "blog",
+    "slug": "you-cant-test-quality-into-a-batch",
+    "lang": "en",
+    "title": "You can't test quality into a batch: AQL and acceptance sampling",
+    "tier": "free",
+    "category": "Quality Systems",
+    "seoDescription": "Acceptance sampling inspects a sample to decide on a whole batch — it never proves zero defects. What AQL really means, the producer's and consumer's risk, and the common misreadings.",
     "updatedAt": "2026-06-20",
     "readMinutes": 2
   }
