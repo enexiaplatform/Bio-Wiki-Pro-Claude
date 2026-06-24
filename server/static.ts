@@ -6,6 +6,72 @@ import matter from "gray-matter";
 const SLUG_RE = /^[a-z0-9-]+$/;
 const SITE_URL = (process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app").replace(/\/$/, "");
 
+// Per-tool social/SEO meta for the standalone /tools/:slug pages. Most crawlers
+// and social-card scrapers don't run the client JS that sets these, so we inject
+// them server-side. Keep in sync with client/src/data/tools/catalog.ts.
+const TOOL_META: Record<string, { title: string; description: string }> = {
+  "audit-readiness-scorecard": {
+    title: "GMP Audit Readiness Scorecard",
+    description:
+      "Free GMP audit readiness self-assessment — rate your quality system across six areas and get a prioritized list of the gaps to close before an inspection.",
+  },
+  "lab-water-type-selector": {
+    title: "Lab Water Type Selector",
+    description:
+      "Free pharmaceutical water grade selector — pick your use case (Water for Injection, Purified Water, reagent grade) and see the key controls and pitfalls for each.",
+  },
+  "culture-media-selection-helper": {
+    title: "Culture Media Selection Helper",
+    description:
+      "Free culture media selector for pharmaceutical microbiology — match your test (bioburden, sterility, environmental monitoring, growth promotion) to the right media.",
+  },
+  "sterility-test-method-selector": {
+    title: "Sterility Test Method Selector",
+    description:
+      "Free sterility test method selector — choose between membrane filtration and direct inoculation based on your product type and volume, with the key method controls.",
+  },
+  "microbial-count-calculator": {
+    title: "Microbial Count (CFU) Calculator",
+    description:
+      "Free microbial count (CFU) calculator — convert colonies on a pour plate, spread plate, or membrane back to CFU/mL accounting for dilution and volume plated.",
+  },
+  "endotoxin-limit-calculator": {
+    title: "Endotoxin Limit & MVD Calculator",
+    description:
+      "Free bacterial endotoxin limit and MVD calculator — apply the compendial formulas (endotoxin limit = K/M, Maximum Valid Dilution) for your LAL / bacterial endotoxin test.",
+  },
+  "cleaning-validation-maco-calculator": {
+    title: "Cleaning Validation MACO Calculator",
+    description:
+      "Free cleaning validation MACO calculator — dose-based, HBEL/PDE, and 10 ppm maximum allowable carryover limits, with surface and recovery-corrected swab limits.",
+  },
+  "process-capability-calculator": {
+    title: "Process Capability Calculator",
+    description:
+      "Free process capability calculator — Cp, Cpu, Cpl, Cpk and the estimated out-of-spec PPM from spec limits and process data, with raw-data paste support.",
+  },
+  "oos-investigation-decision-tree": {
+    title: "OOS Investigation Decision Tree",
+    description:
+      "Free OOS investigation decision tree — walk the phased FDA out-of-specification process (Phase I laboratory investigation, Phase II) and see the appropriate next step.",
+  },
+  "em-scenario-decision-tree": {
+    title: "EM Scenario Decision Tree",
+    description:
+      "Free environmental monitoring decision tree — work through common EM excursion scenarios (alert and action limits, investigations) and the appropriate response.",
+  },
+  "contamination-control-strategy-builder": {
+    title: "CCS Builder Lite",
+    description:
+      "Free contamination control strategy (CCS) builder — outline your Annex 1 contamination controls across the key elements and spot the gaps.",
+  },
+  "investigation-template-viewer": {
+    title: "Investigation Template Viewer",
+    description:
+      "Free QC investigation template viewer — preview a structured deviation/OOS investigation outline you can adapt to your quality system.",
+  },
+};
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -102,6 +168,29 @@ export function serveStatic(app: Express) {
 
   contentMeta("blog", "/blog");
   contentMeta("academy", "/library");
+
+  // Per-tool social/SEO meta for the standalone tool pages (from the in-memory
+  // TOOL_META map, no file read). Any miss falls through to the default index.
+  app.get("/tools/:slug", async (req, res, next) => {
+    const slug = String(req.params.slug ?? "");
+    if (!SLUG_RE.test(slug)) return next();
+    const meta = TOOL_META[slug];
+    if (!meta) return next();
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(
+        injectMeta(html, {
+          title: meta.title,
+          description: meta.description,
+          url: `${SITE_URL}/tools/${slug}`,
+          type: "website",
+        }),
+      );
+    } catch {
+      return next();
+    }
+  });
 
   // SPA fallback for everything else.
   app.use("/{*path}", (_req, res) => {
