@@ -16,6 +16,7 @@ import { analytics } from "@/hooks/use-analytics";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { getWorkflow, getWorkflowCategory } from "@/data/workflows";
 import { getToolkit } from "@/data/toolkits";
+import { getToolMeta } from "@/data/tools/catalog";
 import { listContent } from "@/lib/content";
 
 function Section({
@@ -68,6 +69,9 @@ export default function WorkflowDetailPage() {
     .filter((l): l is NonNullable<typeof l> => Boolean(l));
   const relatedToolkits = workflow.relatedToolkitSlugs
     .map(getToolkit)
+    .filter((t): t is NonNullable<typeof t> => Boolean(t));
+  const relatedTools = (workflow.relatedToolSlugs ?? [])
+    .map(getToolMeta)
     .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
   // Tie the workflow back to learning progress (localStorage + server sync).
@@ -312,6 +316,28 @@ export default function WorkflowDetailPage() {
       )}
 
       {/* ── RELATED TOOLKITS ── */}
+      {relatedTools.length > 0 && (
+        <Section icon={Wrench} title="Try the free tools">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {relatedTools.map((tool) => (
+              <Link key={tool.slug} href={`/tools/${tool.slug}`} className="block h-full">
+                <div className="h-full bg-card border border-white/5 rounded-xl p-4 hover:border-teal-500/30 transition-colors flex flex-col">
+                  <div className="flex items-center justify-between mb-2">
+                    <Wrench className="w-4 h-4 text-teal-400" />
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-emerald-400 bg-emerald-400/10">
+                      Free
+                    </span>
+                  </div>
+                  <p className="text-sm font-semibold mb-1">{tool.title}</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed flex-1">{tool.blurb}</p>
+                  <span className="mt-3 text-xs font-semibold text-teal-400">Open tool →</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Section>
+      )}
+
       {relatedToolkits.length > 0 && (
         <Section icon={Package} title="Checklists & toolkits">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

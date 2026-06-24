@@ -42,6 +42,8 @@ export interface Workflow {
   relatedLessonSlugs: string[];
   /** Bare toolkit slugs → see data/toolkits.ts. */
   relatedToolkitSlugs: string[];
+  /** Bare tool slugs → /tools/<slug> (see data/tools/catalog.ts). Optional. */
+  relatedToolSlugs?: string[];
   accessTier: AccessTier;
   /** Optional long educational background, rendered collapsed under "Deep dive". */
   deepDive?: string;
@@ -176,6 +178,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["growth-promotion-testing", "objectionable-organisms", "microbial-identification", "bioburden-usp-61"],
     relatedToolkitSlugs: ["culture-media-selection-guide", "microbiology-qc-starter-pack"],
+    relatedToolSlugs: ["culture-media-selection-helper"],
     accessTier: "free",
     deepDive:
       "Media is the silent variable behind almost every microbiology result. Growth promotion testing is what turns a bag of agar into a qualified, defensible test system: it proves the lot recovers low numbers of the compendial strains, and — for selective media — that it still suppresses the organisms it's meant to exclude. The compendial strain set (typically including S. aureus, P. aeruginosa, B. subtilis, C. albicans and A. brasiliensis for non-selective recovery, plus method-specific challenge organisms) is chosen to span Gram-positive, Gram-negative, spore-forming, and fungal recovery. When you substitute a medium, equivalence is a written, data-backed judgement — not a like-for-like swap — and it should be approved through your change-control system.",
@@ -225,6 +228,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["environmental-monitoring-basics", "microbial-excursion-investigation", "contamination-control-strategy", "disinfectant-qualification"],
     relatedToolkitSlugs: ["environmental-monitoring-checklist", "gmp-audit-kit"],
+    relatedToolSlugs: ["em-scenario-decision-tree", "contamination-control-strategy-builder"],
     accessTier: "free",
     deepDive:
       "Environmental monitoring doesn't make product sterile — it provides evidence that your contamination control strategy is working. Under Annex 1 (2022), EM is explicitly a feedback loop into the CCS rather than a stand-alone pass/fail gate: site selection, limits, and frequency all flow from risk assessment, and trending is given equal weight to single results. The most informative EM programs treat an adverse trend below the action limit as a signal worth investigating, identify recoveries to species to build a facility flora baseline, and tie personnel monitoring directly to the aseptic interventions performed.",
@@ -472,6 +476,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["oos-investigation-deep-dive", "out-of-trend-investigation", "good-documentation-practice", "data-integrity-deep-dive"],
     relatedToolkitSlugs: ["oos-investigation-template", "gmp-audit-kit"],
+    relatedToolSlugs: ["oos-investigation-decision-tree", "investigation-template-viewer"],
     accessTier: "free",
     deepDive:
       "OOS investigations are shaped by the FDA OOS guidance and the Barr Laboratories ruling, whose central principle is that you cannot invalidate a failing result without an identified, assignable cause. That is why the original preparation is retained, why retesting requires a pre-approved scientific hypothesis (not a fishing expedition), and why a passing retest never on its own overrides the original. The two-phase structure forces the investigation outward — when the lab is clean, the question moves to the process — and QA, not the analyst, owns the disposition so the decision is independent of the people who generated the result.",
@@ -521,6 +526,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["deviation-management", "capa-fundamentals", "change-control", "quality-risk-management-q9"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["investigation-template-viewer"],
     accessTier: "free",
     deepDive:
       "A CAPA system is only as good as its root-cause analysis and its effectiveness check — the two places teams most often cut corners. Correction (fixing the immediate problem), corrective action (eliminating the cause so it doesn't happen again here), and preventive action (stopping it happening elsewhere) are distinct, and conflating them is why deviations recur. ICH Q10 frames CAPA as a core element of the quality system, and risk (Q9) should scale the rigour — a critical deviation warrants a deeper investigation and a formal effectiveness verification than a minor one.",
@@ -669,6 +675,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["process-validation-stages", "analytical-method-validation", "statistical-process-control", "technology-transfer"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["process-capability-calculator"],
     accessTier: "free",
     deepDive:
       "The 2011 FDA guidance reframed process validation from a one-off 'three batches and done' exercise into a lifecycle: design the process and its control strategy (Stage 1), confirm it at scale (Stage 2 / PPQ), then keep verifying it stays in control for the life of the product (Stage 3 / CPV). The lifecycle view is what connects it to QbD (Q8) and the broader quality system (Q10–Q12): CPPs are validated because they drive CQAs, and continued process verification — not a dusty validation report — is the living evidence that the process is still capable.",
@@ -718,6 +725,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["cleaning-validation", "health-based-exposure-limits", "analytical-method-validation", "equipment-qualification"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["cleaning-validation-maco-calculator"],
     accessTier: "free",
     deepDive:
       "Cleaning validation moved decisively to health-based limits: instead of legacy 10-ppm or 0.1%-of-dose defaults, carryover limits (MACO) are now derived from the permitted daily exposure / health-based exposure limit, set by a toxicologist. Two things make or break the program: the recovery factor (a swab that only recovers a fraction of the residue makes a raw result meaningless) and worst-case selection (the right product/equipment bracket and the hardest-to-clean sampling location). Visually clean remains a requirement, but it never replaces the validated analytical limit.",
@@ -1014,6 +1022,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["stability-studies", "retest-period-shelf-life", "ongoing-stability-program", "reference-standards-management"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["process-capability-calculator"],
     accessTier: "free",
     deepDive:
       "A stability program's whole value rests on two things: stability-indicating methods that can actually see degradation (an assay that doesn't resolve degradants will happily report a stable potency on a degrading product), and disciplined, on-time pulls in qualified chambers. ICH Q1A/B/E define the conditions, the bracketing/matrixing designs, and how far you may extrapolate long-term data to justify a shelf life. The signal you're hunting is the trend — a result drifting toward a limit over time is more informative than any single in-spec point, which is why ongoing commitment stability continues for the life of the product.",
