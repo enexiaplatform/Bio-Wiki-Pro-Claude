@@ -126,6 +126,20 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/= \(0\.5 .{1,3} 10\) \/ 0\.25/).first()).toBeVisible();
   });
 
+  test("the F0 sterilization calculator computes lethality", async ({ page }) => {
+    await page.goto("/tools/sterilization-f0-calculator");
+    // Defaults: 121.1 °C for 15 min at z=10, ref 121.1 → L = 1, F0 = 15 min.
+    await expect(page.getByText(/= t .{1,3} L = 15 .{1,3} 1/).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/overkill-level lethality/i).first()).toBeVisible();
+  });
+
+  test("the microbial count calculator converts colonies to CFU/mL", async ({ page }) => {
+    await page.goto("/tools/microbial-count-calculator");
+    // Defaults: duplicate pour plates (142, 158 → mean 150) at 10^-2, 1 mL → 15,000 CFU/mL.
+    await expect(page.getByText(/1\.5 x 10\^4 CFU\/mL/i).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/150 colonies/i).first()).toBeVisible();
+  });
+
   test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
     await page.goto("/career");
     await expect(page.getByRole("heading", { name: /Skill Gap Analyzer/i })).toBeVisible();
