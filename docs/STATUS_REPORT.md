@@ -68,6 +68,7 @@ The code is ready; these are the **operational switches** to go live. None requi
 - [ ] **Custom domain** instead of `*.vercel.app` (SEO + email deliverability) — update canonical/sitemap base if it changes.
 - [ ] **PostHog** — set `VITE_POSTHOG_KEY` (build-time; needs redeploy) to start capturing the conversion funnel from day one.
 - [ ] **Re-probe prod auth** (`/api/auth/register` → 201) after any DB-touching deploy — see the migration-first rule in `CLAUDE.md`.
+- [ ] **One known a11y contrast issue (owner design call).** An axe-core (WCAG 2.1 AA) sweep of the home, pricing, workflow-detail, and all tool pages came back clean **except one systemic item**: the default primary `Button` is white text on the brand teal `#14b89f` (≈2.5:1, needs 4.5:1) — most visible as the header **"Sign In"** on every page. The app's prominent CTAs already use the accessible pattern (`bg-teal-500 text-teal-950`, dark-on-teal), so the simplest fix is to set `--primary-foreground` to a dark teal to match — a brand-token decision left to the owner. Everything else audited is WCAG AA clean.
 
 ---
 
