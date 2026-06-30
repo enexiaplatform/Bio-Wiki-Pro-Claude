@@ -666,3 +666,29 @@ describe("lifecycle cron (/api/cron/nurture)", () => {
     expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "re_engagement");
   });
 });
+
+describe("sitemap", () => {
+  it("emits well-formed XML with core, workflow, content, and every tool URL", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/sitemap.xml");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toMatch(/xml/);
+    expect(res.text).toMatch(/^<\?xml/);
+    expect(res.text).toContain("<urlset");
+    // The standalone calculator pages are the high-intent SEO/acquisition surface.
+    for (const slug of [
+      "endotoxin-limit-calculator",
+      "cleaning-validation-maco-calculator",
+      "process-capability-calculator",
+      "sterilization-f0-calculator",
+      "microbial-count-calculator",
+    ]) {
+      expect(res.text).toContain(`/tools/${slug}</loc>`);
+    }
+    // Core, workflow, and dynamic content slugs are listed too (host-agnostic).
+    expect(res.text).toContain("/pricing</loc>");
+    expect(res.text).toContain("/workflows/oos-investigation</loc>");
+    expect(res.text).toMatch(/\/library\/[a-z0-9-]+<\/loc>/);
+    expect(res.text).toMatch(/\/blog\/[a-z0-9-]+<\/loc>/);
+  });
+});
