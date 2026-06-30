@@ -101,13 +101,29 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /View kit|Open kit/i }).first()).toBeVisible();
   });
 
-  test("tools page lists the interactive helpers", async ({ page }) => {
+  test("tools index lists the tools, each linking to its own page", async ({ page }) => {
     await page.goto("/tools");
     await expect(page.getByRole("heading", { name: /Audit Readiness Scorecard/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Sterility Test Method Selector/i })).toBeVisible();
+    // Each card links to a standalone, indexable tool page.
+    await expect(page.locator('a[href="/tools/sterility-test-method-selector"]').first()).toBeVisible();
+    await expect(page.locator('a[href="/tools/endotoxin-limit-calculator"]').first()).toBeVisible();
+  });
+
+  test("a tool detail page runs the interactive tool", async ({ page }) => {
+    await page.goto("/tools/sterility-test-method-selector");
+    await expect(page.getByRole("heading", { name: /Sterility Test Method Selector/i }).first()).toBeVisible();
     // Static-logic switch: pick a non-filterable product → Direct inoculation.
     await page.getByRole("button", { name: /Oily, viscous, or non-filterable/i }).click();
     await expect(page.getByRole("heading", { name: /^Direct inoculation$/i })).toBeVisible();
+  });
+
+  test("the endotoxin calculator computes a limit and MVD", async ({ page }) => {
+    await page.goto("/tools/endotoxin-limit-calculator");
+    // Defaults (K=5, M=10 mg/kg, λ=0.25, c=10) → EL = 0.5 EU/mg, MVD = 20.
+    // (.first() — the formula also appears in the worked example; 15s for the cold lazy-route compile.)
+    await expect(page.getByText("EL = K / M = 5 / 10").first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/= \(0\.5 .{1,3} 10\) \/ 0\.25/).first()).toBeVisible();
   });
 
   test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
