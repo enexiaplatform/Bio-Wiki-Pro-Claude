@@ -13,15 +13,11 @@ import { listContent } from "@/lib/content";
 
 const PAGES: { label: string; path: string }[] = [
   { label: "Workflows", path: "/workflows" },
-  { label: "QC Hub", path: "/qc-hub" },
-  { label: "Academy", path: "/academy" },
-  { label: "Library", path: "/library" },
+  { label: "Learn", path: "/academy" },
   { label: "Tools", path: "/tools" },
   { label: "Toolkits", path: "/toolkits" },
   { label: "Compliance", path: "/compliance" },
   { label: "Career", path: "/career" },
-  { label: "Solutions", path: "/solutions" },
-  { label: "Insights", path: "/insights" },
   { label: "Glossary", path: "/glossary" },
   { label: "Blog", path: "/blog" },
   { label: "About", path: "/about" },

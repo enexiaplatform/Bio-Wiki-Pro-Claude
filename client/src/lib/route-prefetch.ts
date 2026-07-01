@@ -5,17 +5,13 @@
 
 const importers: Record<string, () => Promise<unknown>> = {
   "/academy": () => import("@/pages/Academy"),
-  "/library": () => import("@/pages/LibraryIndex"),
   "/register": () => import("@/pages/RegisterPage"),
   "/login": () => import("@/pages/LoginPage"),
   "/pricing": () => import("@/pages/PricingPage"),
   "/blog": () => import("@/pages/Blog"),
-  "/qc-hub": () => import("@/pages/QCHub"),
   "/tools": () => import("@/pages/LabTools"),
   "/compliance": () => import("@/pages/Compliance"),
   "/career": () => import("@/pages/Career"),
-  "/solutions": () => import("@/pages/Solutions"),
-  "/insights": () => import("@/pages/Insights"),
   "/vault": () => import("@/pages/Vault"),
   "/toolkits/gmp-audit-kit": () => import("@/pages/GMPAuditKit"),
 };
@@ -32,7 +28,7 @@ export function prefetchRoute(path: string): void {
 }
 
 /** After the page is idle, warm the highest-intent next routes. */
-export function prefetchLikelyNext(paths: string[] = ["/academy", "/library", "/register"]): void {
+export function prefetchLikelyNext(paths: string[] = ["/academy", "/tools", "/register"]): void {
   if (typeof window === "undefined") return;
   const run = () => paths.forEach(prefetchRoute);
   const ric = (window as unknown as { requestIdleCallback?: (cb: () => void) => void }).requestIdleCallback;

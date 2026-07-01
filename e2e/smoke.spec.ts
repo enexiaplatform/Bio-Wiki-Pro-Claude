@@ -16,9 +16,9 @@ test.describe("public smoke", () => {
     await expect(page.locator('a[href^="/library/"]').first()).toBeVisible();
   });
 
-  test("library hub lists all paths", async ({ page }) => {
+  test("the /library index redirects into the unified Learn hub", async ({ page }) => {
     await page.goto("/library");
-    await expect(page.getByRole("heading", { name: /The library/i })).toBeVisible();
+    await expect(page).toHaveURL(/\/academy$/);
     await expect(page.locator('a[href^="/paths/"]').first()).toBeVisible();
   });
 
@@ -149,11 +149,10 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Start with/i })).toBeVisible();
   });
 
-  test("qc hub surfaces workflows, tools, and toolkits", async ({ page }) => {
+  test("the legacy /qc-hub redirects into the unified Learn hub", async ({ page }) => {
     await page.goto("/qc-hub");
-    await expect(page.locator('a[href="/tools"]').first()).toBeVisible();
-    await expect(page.locator('a[href="/toolkits"]').first()).toBeVisible();
-    await expect(page.locator('a[href^="/workflows/"]').first()).toBeVisible();
+    await expect(page).toHaveURL(/\/academy$/);
+    await expect(page.locator('a[href^="/library/"]').first()).toBeVisible();
   });
 });
 

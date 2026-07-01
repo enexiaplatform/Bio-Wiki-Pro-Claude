@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, FlaskConical, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Microscope, Search, Menu, BookMarked, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -8,6 +8,14 @@ import {
   DrawerTitle,
   DrawerClose,
 } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const openSearch = () => window.dispatchEvent(new Event("bwp:open-search"));
 import clsx from "clsx";
@@ -45,45 +53,49 @@ function BioWikiMark({ className }: { className?: string }) {
 }
 
 // `key` maps to nav.json translation keys; `name` is the fallback label.
-// Workflow-first: "Workflows" leads on both bars.
+// Workflow-first: "Workflows" leads on both bars. "Learn" (route /academy) is
+// the single unified learning hub — it already surfaces paths + the MDX library
+// + structured lessons, so QC Hub and the Library index were folded into it.
 const mobileTabs = [
   { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
-  { key: "academy", name: "Academy", icon: BookOpen, path: "/academy" },
+  { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
   { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits" },
-  { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
 ];
 
 const desktopTabs = [
   { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
-  { key: "academy", name: "Academy", icon: BookOpen, path: "/academy" },
+  { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
   { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits" },
-  { key: "qcHub", name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
   { key: "compliance", name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { key: "career", name: "Career", icon: Briefcase, path: "/career" },
-  { key: "vault", name: "Vault", icon: NotebookPen, path: "/vault" },
 ];
 
 // Secondary destinations for the mobile "More" drawer — everything not on the
-// 5-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
-// Solutions / Insights are deprioritized here (off the primary bar) per the
-// workflow-first direction; they stay reachable, not prominent.
+// 4-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
 const moreLinks = [
-  { name: "QC Hub", icon: FlaskConical, path: "/qc-hub" },
-  { name: "Library", icon: BookMarked, path: "/library" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { name: "Career", icon: Briefcase, path: "/career" },
-  { name: "GMP Audit Kit", icon: Package, path: "/toolkits/gmp-audit-kit" },
+  { name: "Blog", icon: TrendingUp, path: "/blog" },
   { name: "Glossary", icon: BookA, path: "/glossary" },
+  { name: "GMP Audit Kit", icon: Package, path: "/toolkits/gmp-audit-kit" },
   { name: "Pricing", icon: Tag, path: "/pricing" },
   { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
   { name: "My Downloads", icon: Download, path: "/my-downloads" },
-  { name: "Solutions", icon: Microscope, path: "/solutions" },
-  { name: "Insights", icon: TrendingUp, path: "/insights" },
+  { name: "Vault", icon: NotebookPen, path: "/vault" },
   { name: "Settings", icon: SettingsIcon, path: "/settings" },
   { name: "About", icon: Info, path: "/about" },
   { name: "FAQ", icon: HelpCircle, path: "/faq" },
+];
+
+// Account menu (desktop avatar dropdown) — personal surfaces moved off the
+// primary tab bar so the top nav stays content-focused.
+const accountLinks = [
+  { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
+  { name: "My Downloads", icon: Download, path: "/my-downloads" },
+  { name: "Vault", icon: NotebookPen, path: "/vault" },
+  { name: "Settings", icon: SettingsIcon, path: "/settings" },
 ];
 
 export function BottomNav() {
@@ -208,20 +220,43 @@ export function DesktopNav() {
                 <Crown className="w-3 h-3 mr-1" /> Pro
               </Badge>
             )}
-            <Link href="/my-learning" className="flex items-center gap-2 rounded-lg px-1.5 py-1 hover:bg-white/5 transition-colors" title="My learning" data-testid="link-my-learning">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.firstName ?? "User"} />
-                <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                  {user?.firstName?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium hidden lg:inline" data-testid="text-user-name">
-                {user?.firstName ?? user?.email ?? "User"}
-              </span>
-            </Link>
-            <Button variant="ghost" size="icon" onClick={logout} data-testid="button-logout" aria-label="Sign out">
-              <LogOut className="w-4 h-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="flex items-center gap-2 rounded-lg px-1.5 py-1 hover:bg-white/5 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  title="Account"
+                  data-testid="button-account-menu"
+                  aria-label="Account menu"
+                >
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={user?.profileImageUrl ?? undefined} alt={user?.firstName ?? "User"} />
+                    <AvatarFallback className="text-xs bg-primary/10 text-primary">
+                      {user?.firstName?.[0] ?? user?.email?.[0]?.toUpperCase() ?? "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium hidden lg:inline" data-testid="text-user-name">
+                    {user?.firstName ?? user?.email ?? "User"}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52">
+                <DropdownMenuLabel className="truncate">{user?.email ?? "Account"}</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {accountLinks.map((l) => (
+                  <DropdownMenuItem key={l.path} asChild>
+                    <Link href={l.path} className="cursor-pointer" data-testid={`account-${l.name.toLowerCase().replace(/\s+/g, '-')}`}>
+                      <l.icon className="w-4 h-4 mr-2 text-muted-foreground" />
+                      {l.name}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={logout} data-testid="button-logout" className="cursor-pointer">
+                  <LogOut className="w-4 h-4 mr-2 text-muted-foreground" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         ) : (
           <Button size="sm" asChild data-testid="button-login">

@@ -1,14 +1,11 @@
 {
   "workflows": "Workflows",
-  "qcHub": "QC Hub",
-  "academy": "Academy",
+  "academy": "Learn",
   "tools": "Tools",
   "compliance": "Compliance",
   "vault": "Vault",
   "career": "Career",
   "toolkits": "Toolkits",
-  "solutions": "Solutions",
-  "insights": "Insights",
   "signIn": "Sign In",
   "signOut": "Sign Out"
 }

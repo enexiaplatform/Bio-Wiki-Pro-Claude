@@ -14,15 +14,12 @@ import { usePageTracking } from "@/hooks/use-analytics";
 
 // Route components are code-split: each becomes its own chunk, loaded on demand.
 const NotFound = lazy(() => import("@/pages/not-found"));
-const QCHub = lazy(() => import("@/pages/QCHub"));
 const Academy = lazy(() => import("@/pages/Academy"));
 const AcademyEntryPage = lazy(() => import("@/pages/AcademyEntryPage"));
-const Insights = lazy(() => import("@/pages/Insights"));
 const LabTools = lazy(() => import("@/pages/LabTools"));
 const ToolDetailPage = lazy(() => import("@/pages/ToolDetailPage"));
 const Compliance = lazy(() => import("@/pages/Compliance"));
 const Career = lazy(() => import("@/pages/Career"));
-const Solutions = lazy(() => import("@/pages/Solutions"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const UpgradePage = lazy(() => import("@/pages/UpgradePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
@@ -42,7 +39,6 @@ const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
 const LibraryEntry = lazy(() => import("@/pages/LibraryEntry"));
-const LibraryIndex = lazy(() => import("@/pages/LibraryIndex"));
 const PathPage = lazy(() => import("@/pages/PathPage"));
 const CertificatePage = lazy(() => import("@/pages/CertificatePage"));
 const MyLearningPage = lazy(() => import("@/pages/MyLearningPage"));
@@ -82,16 +78,17 @@ function Layout() {
           <Route path="/vi/:rest*" component={LegacyLangRedirect} />
           <Route path="/workflows" component={WorkflowsPage} />
           <Route path="/workflows/:slug" component={WorkflowDetailPage} />
-          <Route path="/qc-hub" component={QCHub} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
-          <Route path="/library" component={LibraryIndex} />
           <Route path="/library/:slug" component={LibraryEntry} />
+          {/* Consolidated (2026-07): QC Hub + the Library index folded into the
+              unified Academy "Learn" hub; the reader routes above stay canonical. */}
+          <Route path="/qc-hub"><Redirect to="/academy" replace /></Route>
+          <Route path="/library"><Redirect to="/academy" replace /></Route>
           <Route path="/paths/:slug" component={PathPage} />
           <Route path="/certificate/:slug" component={CertificatePage} />
           <Route path="/my-learning" component={MyLearningPage} />
           <Route path="/my-downloads" component={MyDownloadsPage} />
-          <Route path="/insights" component={Insights} />
           <Route path="/glossary" component={Glossary} />
           <Route path="/about" component={About} />
           <Route path="/blog" component={Blog} />
@@ -101,8 +98,11 @@ function Layout() {
           <Route path="/compliance" component={Compliance} />
           <Route path="/vault" component={Vault} />
           <Route path="/career" component={Career} />
-          <Route path="/solutions" component={Solutions} />
           <Route path="/settings" component={Settings} />
+          {/* Retired 2026-07 (off-strategy): Insights (Technical-Sales leftover)
+              and Solutions (equipment quote-requests) → home. */}
+          <Route path="/insights"><Redirect to="/" replace /></Route>
+          <Route path="/solutions"><Redirect to="/" replace /></Route>
           <Route path="/welcome" component={Welcome} />
           <Route path="/upgrade" component={UpgradePage} />
           <Route path="/toolkits/gmp-audit-kit" component={GMPAuditKit} />

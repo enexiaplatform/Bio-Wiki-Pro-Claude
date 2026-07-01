@@ -25,13 +25,10 @@ export function Footer() {
               Workflows
             </Link>
             <Link href="/academy" className="hover:text-primary transition-colors">
-              {t("links.academy")}
+              Learn
             </Link>
             <Link href="/toolkits" className="hover:text-primary transition-colors">
               Toolkits
-            </Link>
-            <Link href="/library" className="hover:text-primary transition-colors">
-              Library
             </Link>
             <Link href="/tools" className="hover:text-primary transition-colors">
               Tools
