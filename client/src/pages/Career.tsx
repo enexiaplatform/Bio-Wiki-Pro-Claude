@@ -27,7 +27,6 @@ async function createCheckoutSession(productType: ProductType): Promise<string> 
 const roles = [
   "QC Microbiologist",
   "QA Specialist",
-  "Technical Sales",
   "Regulatory Affairs"
 ] as const;
 
@@ -70,21 +69,6 @@ const careerData: Record<Role, {
       { id: "qa_s4", name: "Internal Auditing", link: "/library/internal-audit-self-inspection" },
       { id: "qa_s5", name: "Quality Risk Management (ICH Q9)", link: "/library/quality-risk-management-q9" },
       { id: "qa_s6", name: "Validation Master Plan", link: "/library/process-validation-stages" }
-    ]
-  },
-  "Technical Sales": {
-    stages: [
-      { label: "Sales Executive", years: "0-2 yr", responsibilities: "Lead generation, CRM entry, basic product demonstrations, responding to quote requests.", skills: "Communication, CRM, Resilience", salary: "$50,000 - $70,000 / yr + Commission", employers: "Distributors (Avantor/VWR, Thermo Fisher)" },
-      { label: "Technical Sales Rep", years: "2-5 yr", responsibilities: "Manage key accounts, provide technical advising, negotiate contracts, and hit quarterly quotas.", skills: "Negotiation, Deep Product Knowledge", salary: "$70,000 - $100,000 / yr + Commission", employers: "Distributors & Manufacturers" },
-      { label: "Sales Manager", years: "4-7 yr", responsibilities: "Lead a regional sales team, develop go-to-market strategies, and manage principal supplier relationships.", skills: "Strategy, Coaching, Forecasting", salary: "$110,000 - $150,000 / yr + Bonus", employers: "Distributors & Manufacturers" },
-      { label: "Country Sales Manager", years: "7+ yr", responsibilities: "Total national P&L responsibility, high-level business development, expansion strategy.", skills: "Executive Strategy, Financial Acumen", salary: "$160,000 - $250,000+ / yr", employers: "Major MNCs (Merck, Thermo Fisher)" }
-    ],
-    skills: [
-      { id: "ts_s1", name: "B2B Sales Techniques", link: "" },
-      { id: "ts_s2", name: "Laboratory Equipment Knowledge", link: "" },
-      { id: "ts_s3", name: "Negotiation Strategies", link: "" },
-      { id: "ts_s4", name: "CRM Management", link: "" },
-      { id: "ts_s5", name: "Public Speaking & Demos", link: "" }
     ]
   },
   "Regulatory Affairs": {
@@ -468,7 +452,7 @@ export default function Career() {
                 <button
                   onClick={() => handleCheckout("starter_kit")}
                   disabled={loadingProduct === "starter_kit"}
-                  className="bg-white/10 hover:bg-teal-500 hover:text-white text-sm font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-60 disabled:cursor-wait flex items-center gap-2"
+                  className="bg-white/10 hover:bg-teal-500 hover:text-teal-950 text-sm font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-60 disabled:cursor-wait flex items-center gap-2"
                 >
                   {loadingProduct === "starter_kit" && <Loader2 className="w-3 h-3 animate-spin" />}
                   {loadingProduct === "starter_kit" ? "Redirecting…" : "Get Access"}
@@ -489,7 +473,7 @@ export default function Career() {
                 <button
                   onClick={() => handleCheckout("interview_prep")}
                   disabled={loadingProduct === "interview_prep"}
-                  className="bg-white/10 hover:bg-teal-500 hover:text-white text-sm font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-60 disabled:cursor-wait flex items-center gap-2"
+                  className="bg-white/10 hover:bg-teal-500 hover:text-teal-950 text-sm font-bold px-4 py-2 rounded-lg transition-all disabled:opacity-60 disabled:cursor-wait flex items-center gap-2"
                 >
                   {loadingProduct === "interview_prep" && <Loader2 className="w-3 h-3 animate-spin" />}
                   {loadingProduct === "interview_prep" ? "Redirecting…" : "Get Access"}

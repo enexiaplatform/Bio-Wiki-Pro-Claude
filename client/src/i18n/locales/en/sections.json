@@ -1,15 +1,4 @@
 {
-  "qcHub": {
-    "seoTitle": "QC Hub — Microbiology QC knowledge",
-    "seoDesc": "15 in-depth topics: USP <61>, Annex 1, Environmental Monitoring, Endotoxin, Sterility Testing, OOS Investigation, CAPA — for QC Pharma.",
-    "title": "QC Hub",
-    "subtitle": "Professional workflows and knowledge for Quality Control.",
-    "topics": "Topics",
-    "quickWorkflows": "Quick Workflows",
-    "search": "Search QC topics...",
-    "empty": "No QC topics found",
-    "emptyHint": "Try adjusting your search or category filter."
-  },
   "academy": {
     "seoTitle": "Learn — GMP / QC / QA lessons & learning paths",
     "seoDesc": "Every Life Science Atlas lesson in one place: structured learning paths plus an in-depth library covering sterility, validation, data integrity, environmental monitoring, investigations, and biologics QC.",
@@ -64,17 +53,5 @@
     "seoDesc": "Career roadmap from QC Microbiologist to QA Manager: skill map, salary guide, and the Career Starter Kit for Pharma & Life Science.",
     "title": "Career Hub",
     "subtitle": "Chart your career pathway. Analyze your skill gaps. Download the resources you need to get hired."
-  },
-  "solutions": {
-    "title": "Lab Solutions",
-    "subtitle": "Premium equipment and reagents to accelerate your research."
-  },
-  "insights": {
-    "seoTitle": "Insights — Sales & Market Intelligence",
-    "seoDesc": "Market trends, technical sales terminology, and insights for Technical Sales in Pharma & Life Science.",
-    "title": "Insights",
-    "subtitle": "Industry trends and sales intelligence for life science professionals.",
-    "stat": "Insights",
-    "search": "Search insights..."
   }
 }

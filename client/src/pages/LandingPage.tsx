@@ -14,6 +14,7 @@ import { useReadLessons } from "@/hooks/use-read-lessons";
 import { prefetchLikelyNext } from "@/lib/route-prefetch";
 import { ContinueLearning } from "@/components/ContinueLearning";
 import { workflowCategories } from "@/data/workflows";
+import { TOOL_CATALOG } from "@/data/tools/catalog";
 
 // Workflow category → icon (data stays serializable).
 const WORKFLOW_ICONS: Record<string, LucideIcon> = {
@@ -276,7 +277,7 @@ export default function LandingPage() {
           <div className="text-center">
             <Link href="/tools">
               <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
-                <Calculator className="w-4 h-4" /> See all 12 free tools
+                <Calculator className="w-4 h-4" /> See all {TOOL_CATALOG.length} free tools
               </button>
             </Link>
           </div>
