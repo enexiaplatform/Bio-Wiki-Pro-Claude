@@ -27,7 +27,7 @@ export default function Welcome() {
       primary: true,
       onClick: () => analytics.onboardingCompleted("first_path"),
     },
-    { icon: Gift, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/library" },
+    { icon: Gift, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/academy" },
     { icon: Crown, title: t("step3.title"), desc: t("step3.desc"), cta: t("step3.cta"), href: "/upgrade" },
   ];
 

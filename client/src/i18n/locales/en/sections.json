@@ -11,11 +11,11 @@
     "emptyHint": "Try adjusting your search or category filter."
   },
   "academy": {
-    "seoTitle": "Academy — In-depth QC/QA Pharma learning",
-    "seoDesc": "In-depth lessons on GMP microbiology: Sterility Testing, Environmental Monitoring, Endotoxin LAL, OOS Investigation, Annex 1, CAPA — for Senior QC/QA Pharma.",
-    "eyebrow": "Pharma Microbiology Intelligence OS",
-    "title": "Academy",
-    "subtitle": "Learn microbiology like a QC Director. Build practical reasoning across EM, CCS, investigations, sterility assurance, rapid methods, and audit readiness.",
+    "seoTitle": "Learn — GMP / QC / QA lessons & learning paths",
+    "seoDesc": "Every Life Science Atlas lesson in one place: structured learning paths plus an in-depth library covering sterility, validation, data integrity, environmental monitoring, investigations, and biologics QC.",
+    "eyebrow": "Your QC/QA learning home",
+    "title": "Learn",
+    "subtitle": "One place to learn: follow a structured path from fundamentals to audit-ready, or dive into the in-depth library — sterility assurance, validation, data integrity, environmental monitoring, investigations, and biologics QC.",
     "search": "Search lessons, risks, audit topics...",
     "lessonCount": "director-level lessons",
     "filterCategory": "Category",
