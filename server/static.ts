@@ -55,6 +55,11 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     description:
       "Free process capability calculator — Cp, Cpu, Cpl, Cpk and the estimated out-of-spec PPM from spec limits and process data, with raw-data paste support.",
   },
+  "system-suitability-calculator": {
+    title: "System Suitability %RSD Calculator",
+    description:
+      "Free system suitability %RSD calculator — compute the relative standard deviation of replicate chromatographic injections and check it against a %RSD limit and minimum injection count (USP 621 / Ph. Eur. 2.2.46 style).",
+  },
   "oos-investigation-decision-tree": {
     title: "OOS Investigation Decision Tree",
     description:

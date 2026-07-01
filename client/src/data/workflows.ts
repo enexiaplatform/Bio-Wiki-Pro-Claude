@@ -925,6 +925,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["hplc-system-suitability", "analytical-method-validation", "reference-standards-management", "analytical-instrument-qualification"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["system-suitability-calculator"],
     accessTier: "free",
     deepDive:
       "System suitability is the gatekeeper of chromatographic data: it confirms, on the day and on that column, that the whole system (instrument, column, mobile phase, standard) can actually deliver the separation the method was validated for. That's why it runs before samples and why a failure invalidates the results that depend on it. The integrity trap is re-injecting until it passes — without an assignable cause, that's testing into compliance, and the audit trail will show it. Bracketing matters because columns drift: a clean SST at injection one tells you nothing about injection eighty.",

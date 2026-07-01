@@ -98,6 +98,15 @@ export const TOOL_CATALOG: ToolMeta[] = [
     relatedWorkflow: { slug: "process-validation", title: "Process Validation" },
   },
   {
+    slug: "system-suitability-calculator",
+    title: "System Suitability %RSD Calculator",
+    category: "Laboratory controls",
+    blurb: "Compute the injection-precision %RSD and check it against your SST limit.",
+    description:
+      "Free system suitability %RSD calculator — compute the relative standard deviation of replicate chromatographic injections and check it against a %RSD limit and minimum injection count (USP 621 / Ph. Eur. 2.2.46 style).",
+    relatedWorkflow: { slug: "hplc-system-suitability-workflow", title: "HPLC System Suitability" },
+  },
+  {
     slug: "oos-investigation-decision-tree",
     title: "OOS Investigation Decision Tree",
     category: "Investigations",

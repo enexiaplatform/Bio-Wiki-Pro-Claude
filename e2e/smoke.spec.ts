@@ -140,6 +140,13 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/150 colonies/i).first()).toBeVisible();
   });
 
+  test("the system suitability calculator computes %RSD and a verdict", async ({ page }) => {
+    await page.goto("/tools/system-suitability-calculator");
+    // Defaults: 5 replicate peak areas (~0.26% RSD) vs a 2.0% limit → passes.
+    await expect(page.getByText(/0\.26%/).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/System suitability met/i).first()).toBeVisible();
+  });
+
   test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
     await page.goto("/career");
     await expect(page.getByRole("heading", { name: /Skill Gap Analyzer/i })).toBeVisible();

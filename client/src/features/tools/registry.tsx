@@ -13,6 +13,7 @@ import {
   ClipboardList,
   Bug,
   Flame,
+  Sigma,
   type LucideIcon,
 } from "lucide-react";
 import { TOOL_CATALOG, type ToolMeta } from "@/data/tools/catalog";
@@ -29,6 +30,7 @@ import { InvestigationTemplatePage } from "./InvestigationTemplatePage";
 import { ScenarioDecisionTree } from "./ScenarioDecisionTree";
 import { MicrobialCountCalculator } from "./MicrobialCountCalculator";
 import { SterilizationF0Calculator } from "./SterilizationF0Calculator";
+import { SystemSuitabilityCalculator } from "./SystemSuitabilityCalculator";
 
 export interface ToolDef extends ToolMeta {
   icon: LucideIcon;
@@ -49,6 +51,7 @@ const VISUALS: Record<string, { icon: LucideIcon; element: ReactNode }> = {
   "endotoxin-limit-calculator": { icon: FlaskConical, element: <EndotoxinLimitCalculator /> },
   "cleaning-validation-maco-calculator": { icon: Sparkles, element: <CleaningValidationCalculator /> },
   "process-capability-calculator": { icon: Gauge, element: <ProcessCapabilityCalculator /> },
+  "system-suitability-calculator": { icon: Sigma, element: <SystemSuitabilityCalculator /> },
   "oos-investigation-decision-tree": { icon: GitBranch, element: <OosDecisionTree /> },
   "em-scenario-decision-tree": { icon: Wind, element: <ScenarioDecisionTree /> },
   "contamination-control-strategy-builder": { icon: Layers, element: <CCSBuilderLite /> },
