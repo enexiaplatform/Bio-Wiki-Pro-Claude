@@ -121,6 +121,14 @@ Stripe Dashboard → **Developers → Webhooks → Add endpoint**:
 
 Set all of these for **Production**. Full annotations in `docs/ENV_AUDIT.md`.
 
+> **Quick check:** run **`npm run preflight`** with the target env loaded (it reads
+> `.env` via dotenv, or the ambient environment). It reports every required var as
+> `✗ blocking` / `! warning` / `✓ ok` for the subscription-first launch — catches the
+> commonly-forgotten `STRIPE_WEBHOOK_SECRET`, a `sk_test_` key left in prod, a
+> `localhost` `BASE_URL`, or a career-kit price with no download URL. Exit code is
+> non-zero while any blocking var is unset. It's a config linter only — still do the
+> live test purchase in Step 6 to confirm the webhook + DB end to end.
+
 **Revenue-blocking (must be real, not placeholder):**
 - [ ] `DATABASE_URL` — prod Postgres. (Without it, sessions fall back to memory → users get logged out on cold start.)
 - [ ] `SESSION_SECRET` — strong random string (fallback is the weak `"default_secret"`).
