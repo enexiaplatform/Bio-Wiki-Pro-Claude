@@ -147,6 +147,13 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/System suitability met/i).first()).toBeVisible();
   });
 
+  test("the dilution calculator solves C1V1 = C2V2", async ({ page }) => {
+    await page.goto("/tools/dilution-calculator");
+    // Defaults: 100 → 10 in 10 mL → take 1 mL stock, add 9 mL diluent, 10× dilution.
+    await expect(page.getByText(/Take stock/i).first()).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/Add diluent/i).first()).toBeVisible();
+  });
+
   test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
     await page.goto("/career");
     await expect(page.getByRole("heading", { name: /Skill Gap Analyzer/i })).toBeVisible();

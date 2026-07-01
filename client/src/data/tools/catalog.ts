@@ -107,6 +107,14 @@ export const TOOL_CATALOG: ToolMeta[] = [
     relatedWorkflow: { slug: "hplc-system-suitability-workflow", title: "HPLC System Suitability" },
   },
   {
+    slug: "dilution-calculator",
+    title: "Dilution & Standard Prep Calculator",
+    category: "Laboratory controls",
+    blurb: "Solve C1V1 = C2V2 for stock and diluent, or build a serial-dilution table.",
+    description:
+      "Free dilution calculator — solve C1V1 = C2V2 for the stock and diluent volumes to hit a target concentration, or build a serial (fold) dilution table for standard preparation.",
+  },
+  {
     slug: "oos-investigation-decision-tree",
     title: "OOS Investigation Decision Tree",
     category: "Investigations",

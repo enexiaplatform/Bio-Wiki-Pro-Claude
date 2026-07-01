@@ -995,7 +995,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "microbial-count-calculator", "sterilization-f0-calculator",
       "endotoxin-limit-calculator", "cleaning-validation-maco-calculator",
       "process-capability-calculator", "system-suitability-calculator",
-      "oos-investigation-decision-tree",
+      "dilution-calculator", "oos-investigation-decision-tree",
       "em-scenario-decision-tree", "contamination-control-strategy-builder",
       "investigation-template-viewer",
     ].map((s) => `/tools/${s}`);

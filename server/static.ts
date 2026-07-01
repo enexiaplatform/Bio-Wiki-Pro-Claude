@@ -60,6 +60,11 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     description:
       "Free system suitability %RSD calculator — compute the relative standard deviation of replicate chromatographic injections and check it against a %RSD limit and minimum injection count (USP 621 / Ph. Eur. 2.2.46 style).",
   },
+  "dilution-calculator": {
+    title: "Dilution & Standard Prep Calculator",
+    description:
+      "Free dilution calculator — solve C1V1 = C2V2 for the stock and diluent volumes to hit a target concentration, or build a serial (fold) dilution table for standard preparation.",
+  },
   "oos-investigation-decision-tree": {
     title: "OOS Investigation Decision Tree",
     description:

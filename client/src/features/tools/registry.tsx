@@ -14,6 +14,7 @@ import {
   Bug,
   Flame,
   Sigma,
+  Beaker,
   type LucideIcon,
 } from "lucide-react";
 import { TOOL_CATALOG, type ToolMeta } from "@/data/tools/catalog";
@@ -31,6 +32,7 @@ import { ScenarioDecisionTree } from "./ScenarioDecisionTree";
 import { MicrobialCountCalculator } from "./MicrobialCountCalculator";
 import { SterilizationF0Calculator } from "./SterilizationF0Calculator";
 import { SystemSuitabilityCalculator } from "./SystemSuitabilityCalculator";
+import { DilutionCalculator } from "./DilutionCalculator";
 
 export interface ToolDef extends ToolMeta {
   icon: LucideIcon;
@@ -52,6 +54,7 @@ const VISUALS: Record<string, { icon: LucideIcon; element: ReactNode }> = {
   "cleaning-validation-maco-calculator": { icon: Sparkles, element: <CleaningValidationCalculator /> },
   "process-capability-calculator": { icon: Gauge, element: <ProcessCapabilityCalculator /> },
   "system-suitability-calculator": { icon: Sigma, element: <SystemSuitabilityCalculator /> },
+  "dilution-calculator": { icon: Beaker, element: <DilutionCalculator /> },
   "oos-investigation-decision-tree": { icon: GitBranch, element: <OosDecisionTree /> },
   "em-scenario-decision-tree": { icon: Wind, element: <ScenarioDecisionTree /> },
   "contamination-control-strategy-builder": { icon: Layers, element: <CCSBuilderLite /> },
