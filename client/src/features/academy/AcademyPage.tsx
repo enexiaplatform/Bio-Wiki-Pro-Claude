@@ -231,6 +231,11 @@ export default function AcademyPage() {
         </section>
       )}
 
+      <section className="mb-3">
+        <h2 className="text-lg font-bold mb-1">{t("academy.guidedHeading")}</h2>
+        <p className="text-sm text-muted-foreground">{t("academy.guidedSubtitle")}</p>
+      </section>
+
       <section className="space-y-4 mb-8 sticky top-[60px] md:top-20 z-30 bg-background/95 backdrop-blur-xl py-3 -mx-4 px-4 border-b border-white/5 md:static md:border-none md:bg-transparent md:p-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
