@@ -14,7 +14,7 @@ export default function NotFound() {
         <p className="text-sm text-muted-foreground mb-6">{t("notFound.subtitle")}</p>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           <Home className="w-4 h-4" /> {t("notFound.home")}
         </Link>

@@ -90,7 +90,7 @@ export function LeadMagnetBanner() {
               <button
                 type="submit"
                 disabled={status === "loading" || !email.trim()}
-                className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-1.5 shrink-0"
+                className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-1.5 shrink-0"
               >
                 {status === "loading" ? (
                   <><Loader2 className="w-3.5 h-3.5 animate-spin" /> {t("leadMagnet.submitting")}</>

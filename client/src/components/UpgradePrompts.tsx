@@ -33,7 +33,7 @@ export function FreeReadBanner({ count, threshold = 2 }: { count: number; thresh
       <Link
         href="/upgrade"
         onClick={() => analytics.upgradePromptClicked("free_read_banner")}
-        className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+        className="shrink-0 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         <Crown className="w-4 h-4" /> {t("prompt.cta")}
       </Link>
@@ -58,7 +58,7 @@ export function UpgradeInlineCTA({ placement = "article_end" }: { placement?: st
       <Link
         href="/upgrade"
         onClick={() => analytics.upgradePromptClicked(placement)}
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         <Crown className="w-4 h-4" /> {t("prompt.cta")}
       </Link>

@@ -86,7 +86,7 @@ export default function EndotoxinLimitCalculator() {
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold">Endotoxin Limit Calculator</h2>
-            <Badge className="bg-primary text-white text-[10px]">PRO</Badge>
+            <Badge className="bg-primary text-primary-foreground text-[10px]">PRO</Badge>
           </div>
           <p className="text-xs text-muted-foreground">
             USP &lt;85&gt; &amp; EP 2.6.14 — Calculate EL = K / M

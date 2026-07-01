@@ -139,7 +139,7 @@ function EmptyState({ title, body, ctaHref, ctaLabel }: { title: string; body: s
       </div>
       <h2 className="font-semibold mb-1">{title}</h2>
       <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">{body}</p>
-      <Link href={ctaHref} className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-white px-4 py-2 text-sm font-semibold hover:bg-primary/90 transition-colors">
+      <Link href={ctaHref} className="inline-flex items-center gap-1.5 rounded-lg bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold hover:bg-primary/90 transition-colors">
         {ctaLabel}
       </Link>
     </div>

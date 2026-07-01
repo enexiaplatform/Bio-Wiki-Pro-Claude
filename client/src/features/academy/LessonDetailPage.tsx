@@ -127,7 +127,7 @@ export default function LessonDetailPage() {
               <h3 className="text-lg font-bold mb-1">GMP Audit Survival Kit</h3>
               <p className="text-sm text-muted-foreground">Full audit survival guide, 10 CAPA templates, 50+ audit Q&amp;A scripts, SOP Gap Analysis Excel — unlocked with your Pro subscription, ready for your next audit.</p>
             </div>
-            <Link href="/toolkits/gmp-audit-kit" className="shrink-0 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white hover:bg-primary/90 transition-colors whitespace-nowrap">
+            <Link href="/toolkits/gmp-audit-kit" className="shrink-0 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors whitespace-nowrap">
               View details →
             </Link>
           </div>

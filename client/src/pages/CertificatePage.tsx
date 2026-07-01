@@ -152,7 +152,7 @@ export default function CertificatePage() {
         </p>
         <Link
           href={`/paths/${path.slug}`}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
         >
           Go to the path <ChevronRight className="w-4 h-4" />
         </Link>
@@ -176,7 +176,7 @@ export default function CertificatePage() {
           </button>
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             <Printer className="w-4 h-4" /> Print / PDF
           </button>

@@ -77,7 +77,7 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
           <button
             onClick={() => setSubmitted(true)}
             disabled={!allAnswered}
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
             Check answers
           </button>

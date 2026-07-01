@@ -154,7 +154,7 @@ export default function Blog() {
               onClick={() => setPage(n)}
               className={
                 "w-9 h-9 rounded-lg text-sm font-medium transition-colors " +
-                (n === current ? "bg-primary text-white" : "bg-white/5 text-muted-foreground hover:text-foreground")
+                (n === current ? "bg-primary text-primary-foreground" : "bg-white/5 text-muted-foreground hover:text-foreground")
               }
             >
               {n}

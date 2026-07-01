@@ -82,7 +82,7 @@ export default function PathPage() {
       {next ? (
         <Link
           href={`/library/${next.slug}`}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors mb-8"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors mb-8"
         >
           {readCount > 0 ? "Continue" : "Start"}: {next.title} <ArrowRight className="w-4 h-4" />
         </Link>
@@ -93,7 +93,7 @@ export default function PathPage() {
           </div>
           <Link
             href={`/certificate/${path.slug}`}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
           >
             <Award className="w-4 h-4" /> Get your certificate
           </Link>

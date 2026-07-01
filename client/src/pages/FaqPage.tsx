@@ -110,7 +110,7 @@ export default function FaqPage() {
           We're happy to help — or jump straight into the library.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Link href="/pricing" className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors">
+          <Link href="/pricing" className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors">
             See pricing
           </Link>
           <Link href="/academy" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-5 py-2.5 text-sm font-semibold hover:border-white/30 transition-colors">

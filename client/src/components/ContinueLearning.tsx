@@ -33,7 +33,7 @@ export function ContinueLearning() {
       </div>
       <Link
         href={`/library/${next.slug}`}
-        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+        className="shrink-0 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         {started ? t("academy.continueCta") : t("academy.startCta")}
         <ArrowRight className="w-4 h-4" />

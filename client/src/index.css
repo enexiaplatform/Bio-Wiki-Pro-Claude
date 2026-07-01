@@ -22,7 +22,9 @@
 
   /* Bio Teal #14b8a6 -> HSL 171 80% 40% */
   --primary: 171 80% 40%;
-  --primary-foreground: 0 0% 100%;
+  /* Dark teal text on the bright teal button — white failed WCAG AA (~2.5:1);
+     this dark-on-teal reads ~5.3:1, matching the app's text-teal-950 pattern. */
+  --primary-foreground: 171 80% 11%;
 
   /* Slate 700 for secondary elements */
   --secondary: 217 33% 25%;
@@ -32,7 +34,7 @@
   --muted-foreground: 215 20% 65%;
 
   --accent: 171 80% 40%;
-  --accent-foreground: 0 0% 100%;
+  --accent-foreground: 171 80% 11%;
 
   --destructive: 0 62% 30%;
   --destructive-foreground: 210 40% 98%;

@@ -65,7 +65,7 @@ export default function Welcome() {
               className={
                 "shrink-0 inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-colors " +
                 (s.primary
-                  ? "bg-primary text-white hover:bg-primary/90"
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
                   : "border border-white/10 text-foreground hover:border-white/30")
               }
             >
