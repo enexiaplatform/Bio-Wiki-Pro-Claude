@@ -2285,9 +2285,9 @@
     "title": "OOS Investigation — Deep Dive",
     "tier": "pro",
     "category": "Quality Investigation",
-    "seoDescription": "The two-phase out-of-specification (OOS) investigation workflow per the FDA OOS Guidance.",
-    "updatedAt": "2026-05-29",
-    "readMinutes": 1
+    "seoDescription": "A practical deep dive into the two-phase out-of-specification (OOS) investigation — Phase I laboratory assessment, Phase II full-scale investigation, retest and averaging rules, and the data-integrity traps to avoid, per the FDA OOS Guidance and the Barr ruling.",
+    "updatedAt": "2026-07-01",
+    "readMinutes": 4
   },
   {
     "collection": "academy",

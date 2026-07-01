@@ -4,24 +4,103 @@ slug: "oos-investigation-deep-dive"
 lang: "en"
 tier: "pro"
 category: "Quality Investigation"
-seoDescription: "The two-phase out-of-specification (OOS) investigation workflow per the FDA OOS Guidance."
-updatedAt: "2026-05-29"
+seoDescription: "A practical deep dive into the two-phase out-of-specification (OOS) investigation — Phase I laboratory assessment, Phase II full-scale investigation, retest and averaging rules, and the data-integrity traps to avoid, per the FDA OOS Guidance and the Barr ruling."
+updatedAt: "2026-07-01"
 ---
 
 # OOS Investigation — Deep Dive
 
-An out-of-specification (OOS) investigation has two phases per the **FDA OOS
-Guidance (2006)**.
+An out-of-specification (OOS) result is any test result that falls outside the
+specification or acceptance criteria in the approved application, the compendia,
+or the manufacturer's own limits. How you investigate it is one of the most
+scrutinised parts of a GMP quality system — because it sits directly on the line
+between sound science and *testing into compliance*. The framework below follows
+the **FDA Guidance for Industry: Investigating Out-of-Specification Test Results
+(2006)** and the legal precedent set in **United States v. Barr Laboratories
+(1993)**.
 
-## Phase I — Laboratory assessment
+The single most important principle: an OOS result is presumed valid until an
+investigation demonstrates otherwise. You do not get to make it disappear by
+re-testing until you like the answer.
 
-Identify a clear, assignable laboratory error (technique, equipment failure,
-calculation mistake) before widening the investigation.
+## Phase I — Laboratory investigation
+
+Phase I is a factual assessment, led by the analyst with the supervisor, done
+**before** any retesting. Its job is to determine whether an assignable
+laboratory cause explains the result.
+
+- **Confirm the data as reported.** Check the calculation, the reporting, the
+  integration, dilutions, standard and reagent preparation, and system
+  suitability. A transcription or integration error is an assignable cause; a
+  result you simply dislike is not.
+- **Interview and preserve.** Talk to the analyst promptly, keep the original
+  preparations and the column/instrument where possible, and record everything
+  contemporaneously.
+- **Judge the hypothesis on evidence.** You may only invalidate the original
+  result when there is a *scientifically sound, documented* assignable cause —
+  a failed system suitability, a demonstrably bad standard, an instrument
+  malfunction with an audit-trail signature. "Analyst error" with no supporting
+  evidence is not acceptable.
+
+If — and only if — a clear laboratory cause is found and documented, the result
+may be invalidated and the test repeated by the original or a second analyst.
+The invalidation, not the convenient number, is what closes Phase I.
+
+### Retesting, resampling, and averaging
+
+These are where investigations most often go wrong:
+
+- **Retesting** (re-analysing the *original* sample) requires a predefined,
+  scientifically justified plan — how many retests, and the decision rule —
+  written **before** the retests are run. Open-ended "test until it passes" was
+  exactly what the Barr ruling prohibited.
+- **Resampling** (taking a *new* sample) is only justified when the original
+  sample is shown to be non-representative or compromised — not as a second bite
+  at the apple.
+- **Averaging** an OOS result with passing results to obtain a passing mean is
+  generally **not** acceptable. Averaging is only appropriate where the method
+  defines it (for example, replicate determinations that are part of the
+  reportable value), and even then a large spread is itself a signal to
+  investigate, not to smooth over.
+- **Outlier tests** may support a microbiological or biological assay where the
+  method allows them, but a chemical assay outlier cannot be used to discard an
+  OOS result. An outlier test explains variability; it does not invalidate a
+  result.
 
 ## Phase II — Full-scale investigation
 
-When no lab cause is found, expand into manufacturing: materials, process,
-batch history.
+When Phase I finds no assignable laboratory cause, the OOS result stands and the
+investigation expands beyond the lab, under **21 CFR 211.192**.
 
-> This is Pro content — the full version includes the decision tree, CAPA
-> templates, and 12 real-world scenarios.
+- **Manufacturing review.** Examine the batch record, process parameters,
+  in-process data, raw materials, equipment, and any concurrent deviations.
+- **Widen the scope.** Assess other batches, other products made on the same
+  line, and any related finished or in-process lots that could share the cause.
+- **Determine root cause.** Use a structured method (5-Whys, Ishikawa) to reach
+  a cause the evidence actually supports — not the most convenient one.
+- **Decide batch disposition.** The QA unit makes the release/reject decision on
+  the full weight of evidence. A batch may not be released on the basis of a
+  passing retest that merely overrides an unexplained OOS.
+
+Phase II closes with a documented conclusion, a disposition decision, and a
+**CAPA** whose effectiveness is verified later — a corrective action that is
+never checked is not a corrective action.
+
+## Data-integrity traps to avoid
+
+- Re-injecting or re-testing without a pre-approved plan and an assignable cause.
+- Averaging a failing result into a passing mean.
+- Invalidating a result on an undocumented "analyst error."
+- Reviewing only the results table, not the chromatograms, audit trail, and
+  integration.
+- Closing an investigation with a root cause the evidence doesn't support.
+
+## Take it further
+
+- Run the process step by step in the [OOS Investigation workflow](/workflows/oos-investigation).
+- Work a scenario with the free [OOS Investigation Decision Tree](/tools/oos-investigation-decision-tree).
+- Connect it to corrective action in [CAPA fundamentals](/library/capa-fundamentals) and [deviation management](/library/deviation-management).
+
+> General educational content — verify against the current FDA OOS Guidance,
+> **21 CFR 211**, the applicable pharmacopeia, and your approved SOPs. This is
+> not a substitute for QA judgement or your validated quality system.
