@@ -211,7 +211,7 @@ export function DesktopNav() {
           aria-label="Search"
         >
           <Search className="w-3.5 h-3.5" /> Search
-          <kbd className="ml-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
+          <kbd className="ml-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-mono">Ctrl K</kbd>
         </button>
         {isAuthenticated ? (
           <>
@@ -281,7 +281,7 @@ export function MobileHeader() {
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1 shadow-lg shadow-primary/20">
           <AtlasMark className="w-full h-full" />
         </div>
-        <span className="font-display font-bold text-lg tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
+        <span className="max-w-[12rem] truncate font-display text-base font-bold tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
         {isPro && (
           <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]" data-testid="badge-pro-mobile">
             <Crown className="w-2.5 h-2.5 mr-0.5" /> Pro

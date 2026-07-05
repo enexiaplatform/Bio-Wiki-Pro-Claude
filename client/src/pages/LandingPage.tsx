@@ -42,6 +42,11 @@ const fadeUp = {
   show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.1 } }),
 };
 
+const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
+const primaryCtaClass = "inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-bold text-teal-950 shadow-lg shadow-teal-500/20 transition-all hover:-translate-y-0.5 hover:bg-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+const secondaryCtaClass = "inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-foreground transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+const elevatedCardClass = "group h-full rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-teal-400/35 hover:bg-white/[0.07]";
+
 // Non-translatable presentation metadata, merged with translated copy by index.
 const solutionMeta = [
   { icon: BookOpen, badgeColor: "text-emerald-400 bg-emerald-400/10", href: "/academy", ctaStyle: "border border-white/10 hover:border-white/30", featured: false },
@@ -54,6 +59,12 @@ const trustCardMeta = [
   { icon: Users, color: "text-blue-400" },
   { icon: Star, color: "text-amber-400" },
   { icon: TrendingUp, color: "text-teal-400" },
+];
+
+const problemCardMeta = [
+  { icon: TrendingUp, color: "text-emerald-300", bg: "bg-emerald-400/10" },
+  { icon: ShieldCheck, color: "text-amber-300", bg: "bg-amber-400/10" },
+  { icon: Search, color: "text-cyan-300", bg: "bg-cyan-400/10" },
 ];
 
 // Flagship free calculators surfaced on the home page (links only — the tool
@@ -91,30 +102,30 @@ export default function LandingPage() {
     <div className="min-h-screen">
       {/* Returning visitor — resume where they left off */}
       {readCount > 0 && (
-        <div className="max-w-3xl mx-auto px-4 pt-6">
+        <div className="mx-auto max-w-4xl px-4 pt-6">
           <ContinueLearning />
         </div>
       )}
 
       {/* ── HERO ── */}
-      <section className="relative pt-12 pb-20 px-4 text-center overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-teal-500/5 blur-3xl rounded-full pointer-events-none" />
-        <div className="absolute top-20 left-1/4 w-[200px] h-[200px] bg-primary/5 blur-3xl rounded-full pointer-events-none" />
+      <section className="relative isolate overflow-hidden border-b border-white/10 px-4 py-12 md:py-20">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_12%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.12),transparent_28%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_78%)]" />
 
-        <div className="relative max-w-4xl mx-auto">
+        <div className="relative mx-auto max-w-6xl text-center">
           <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
-            <span className="inline-flex items-center gap-2 text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full mb-6">
-              <FlaskConical className="w-3 h-3" />
+            <span className={`${pillClass} mb-6`}>
+              <FlaskConical className="h-3.5 w-3.5" />
               {t("hero.badge")}
             </span>
           </motion.div>
 
           <motion.h1
             variants={fadeUp} initial="hidden" animate="show" custom={1}
-            className="text-4xl md:text-6xl font-bold mb-6 font-display leading-tight"
+            className="mx-auto mb-6 max-w-4xl font-display text-4xl font-bold leading-[1.04] md:text-6xl"
           >
             {t("hero.titleLead")}{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">
+            <span className="bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 bg-clip-text text-transparent">
               {t("hero.titleHighlight")}
             </span>
             <br className="hidden md:block" />
@@ -123,37 +134,63 @@ export default function LandingPage() {
 
           <motion.p
             variants={fadeUp} initial="hidden" animate="show" custom={2}
-            className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="mx-auto mb-10 max-w-2xl text-base leading-8 text-muted-foreground md:text-lg"
           >
             {t("hero.subtitle")}
           </motion.p>
 
           <motion.div
             variants={fadeUp} initial="hidden" animate="show" custom={3}
-            className="flex flex-col sm:flex-row gap-3 justify-center mb-12"
+            className="mb-8 flex flex-col justify-center gap-3 sm:flex-row"
           >
             <Link href="/workflows">
-              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
-                <Workflow className="w-4 h-4" />
+              <button className={primaryCtaClass}>
+                <Workflow className="h-4 w-4" />
                 {t("hero.ctaWorkflows")}
               </button>
             </Link>
             <Link href="/register">
-              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 hover:border-white/20 font-semibold px-6 py-3 rounded-xl transition-all">
-                <ArrowRight className="w-4 h-4" />
+              <button className={secondaryCtaClass}>
                 {t("hero.ctaStart")}
+                <ArrowRight className="h-4 w-4" />
               </button>
             </Link>
           </motion.div>
 
           <motion.div
             variants={fadeUp} initial="hidden" animate="show" custom={4}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto"
+            className="mx-auto mb-8 grid max-w-4xl gap-3 rounded-lg border border-white/10 bg-slate-950/50 p-3 text-left shadow-2xl shadow-black/20 backdrop-blur md:grid-cols-3"
+          >
+            {[
+              { href: "/workflows", icon: Workflow, title: "Follow a workflow", desc: "Steps, controls, mistakes, and linked tools." },
+              { href: "/tools", icon: Calculator, title: "Use a calculator", desc: "Run QC math with formulas visible." },
+              { href: "/academy", icon: BookOpen, title: "Deepen the topic", desc: "Structured lessons and articles behind the task." },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="group flex items-start gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 transition-all hover:border-teal-400/35 hover:bg-teal-400/10"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/5 text-teal-300">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold">{item.title}</p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.desc}</p>
+                </div>
+                <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-teal-300" />
+              </Link>
+            ))}
+          </motion.div>
+
+          <motion.div
+            variants={fadeUp} initial="hidden" animate="show" custom={5}
+            className="mx-auto grid max-w-3xl grid-cols-2 gap-3 md:grid-cols-4"
           >
             {stats.map((s) => (
-              <div key={s.label} className="bg-card border border-white/5 rounded-xl p-4">
-                <div className="text-2xl font-bold text-teal-400 mb-1">{s.value}</div>
-                <div className="text-xs text-muted-foreground">{s.label}</div>
+              <div key={s.label} className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
+                <div className="text-xl font-bold text-teal-300">{s.value}</div>
+                <div className="mt-1 text-[11px] text-muted-foreground">{s.label}</div>
               </div>
             ))}
           </motion.div>
@@ -168,7 +205,7 @@ export default function LandingPage() {
             viewport={{ once: true }} transition={{ duration: 0.5 }}
             className="text-center mb-8"
           >
-            <span className="inline-flex items-center gap-2 text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full mb-4">
+            <span className={`${pillClass} mb-4`}>
               <Workflow className="w-3 h-3" /> Workflow Atlas
             </span>
             <h2 className="text-2xl md:text-3xl font-bold mb-3">What workflow are you working on?</h2>
@@ -189,7 +226,7 @@ export default function LandingPage() {
                 >
                   <Link
                     href={workflowHref(c)}
-                    className="group h-full flex flex-col bg-card border border-white/5 rounded-2xl p-4 hover:border-teal-500/30 transition-colors"
+                    className={elevatedCardClass}
                   >
                     <div className="flex items-center justify-between mb-2.5">
                       <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center">
@@ -211,17 +248,17 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
             <Link href="/workflows#microbiology-qc">
-              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
+              <button className={primaryCtaClass}>
                 <Microscope className="w-4 h-4" /> Start with Microbiology QC
               </button>
             </Link>
             <Link href="/tools">
-              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
+              <button className={secondaryCtaClass}>
                 <Calculator className="w-4 h-4" /> Try a free tool
               </button>
             </Link>
             <Link href="/toolkits">
-              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
+              <button className={secondaryCtaClass}>
                 <Package className="w-4 h-4" /> Browse toolkits
               </button>
             </Link>
@@ -237,7 +274,7 @@ export default function LandingPage() {
             viewport={{ once: true }} transition={{ duration: 0.5 }}
             className="text-center mb-8"
           >
-            <span className="inline-flex items-center gap-2 text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full mb-4">
+            <span className={`${pillClass} mb-4`}>
               <Calculator className="w-3 h-3" /> Free calculators
             </span>
             <h2 className="text-2xl md:text-3xl font-bold mb-3">The QC math, done for you</h2>
@@ -258,7 +295,7 @@ export default function LandingPage() {
                 >
                   <Link
                     href={`/tools/${tool.slug}`}
-                    className="group h-full flex flex-col bg-card border border-white/5 rounded-2xl p-4 hover:border-teal-500/30 transition-colors"
+                    className={elevatedCardClass}
                   >
                     <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center mb-2.5">
                       <Icon className="w-4 h-4 text-teal-400" />
@@ -276,7 +313,7 @@ export default function LandingPage() {
 
           <div className="text-center">
             <Link href="/tools">
-              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
+              <button className={secondaryCtaClass}>
                 <Calculator className="w-4 h-4" /> See all {TOOL_CATALOG.length} free tools
               </button>
             </Link>
@@ -297,18 +334,24 @@ export default function LandingPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {problems.map((p, i) => (
-              <motion.div
-                key={p.title}
-                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.1 }}
-                className="bg-card border border-white/5 rounded-2xl p-6"
-              >
-                <div className="text-3xl mb-4">{p.emoji}</div>
-                <h3 className="font-bold text-sm mb-2 leading-snug">{p.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{p.desc}</p>
-              </motion.div>
-            ))}
+            {problems.map((p, i) => {
+              const meta = problemCardMeta[i] ?? problemCardMeta[0];
+              const Icon = meta.icon;
+              return (
+                <motion.div
+                  key={p.title}
+                  initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.1 }}
+                  className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10"
+                >
+                  <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-lg ${meta.bg} ${meta.color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mb-2 text-sm font-bold leading-snug">{p.title}</h3>
+                  <p className="text-xs leading-relaxed text-muted-foreground">{p.desc}</p>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
