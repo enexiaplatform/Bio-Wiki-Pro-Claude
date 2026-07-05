@@ -4,7 +4,7 @@ The single, ordered checklist to take Life Science Atlas from staging to a reven
 production deployment on Vercel. Sibling docs cover slices in depth:
 
 > **Current state (2026-06-20):** the app is **deployed and healthy** on
-> `bio-wiki-pro-claude.vercel.app` (home/workflows/toolkits/pricing/sitemap all 200,
+> `lifescienceatlas.com` (home/workflows/toolkits/pricing/sitemap all 200,
 > `/api/downloads` 401-gated). `/api/billing/plans` returns `{monthly:true, annual:false,
 > trialDays:7}`, so a `STRIPE_SECRET_KEY` + `STRIPE_PRO_PRICE_ID` are already set —
 > **verify they are LIVE keys, not test**. Remaining owner-only steps to actually take
@@ -154,7 +154,7 @@ Set all of these for **Production**. Full annotations in `docs/ENV_AUDIT.md`.
 
 ### Setting up the Google OAuth client
 1. Google Cloud Console → **APIs & Services → Credentials → Create credentials → OAuth client ID** → type **Web application**.
-2. **Authorized JavaScript origins:** add your origins (e.g. `https://bio-wiki-pro-claude.vercel.app` and your custom domain; add `http://localhost:5000` for local dev).
+2. **Authorized JavaScript origins:** add your origins (e.g. `https://lifescienceatlas.com` and your custom domain; add `http://localhost:5000` for local dev).
 3. (No redirect URI needed — this uses Google Identity Services ID-token flow, verified server-side.)
 4. Copy the **Client ID** into both `GOOGLE_CLIENT_ID` and `VITE_GOOGLE_CLIENT_ID` on Vercel, then **redeploy** (VITE_* is build-time).
 

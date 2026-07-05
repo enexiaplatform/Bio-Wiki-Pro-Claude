@@ -4,56 +4,369 @@ slug: "data-integrity-483-observations"
 lang: "en"
 tier: "free"
 category: "Data Integrity"
-seoDescription: "The most common data-integrity observations in FDA 483s and warning letters — shared logins, disabled audit trails, orphan data — and how to prevent each."
-updatedAt: "2026-06-02"
+seoDescription: "A practical guide to recurring data-integrity observations in FDA 483s and warning letters: shared logins, unreviewed audit trails, testing into compliance, orphan data, backdating, access control gaps, and weak paper corrections."
+updatedAt: "2026-07-03"
 ---
 
 # 7 Data Integrity Findings That Show Up in FDA 483s
 
-Data integrity dominates modern inspections. The same findings recur across
-warning letters — and almost all are preventable with basic ALCOA+ discipline.
-Here are seven, with the fix for each.
+Data integrity findings keep appearing in FDA 483s and warning letters because
+they strike at the foundation of GMP: can the quality decision be trusted?
 
-## 1. Shared logins / generic accounts
+FDA's data integrity guidance frames data integrity as the completeness,
+consistency, and accuracy of data across the data lifecycle. In practice, that
+means the record must show who did the work, when it was done, what raw data were
+created, what changed, why it changed, who reviewed it, and whether the final
+quality decision used all relevant evidence.
 
-Results can't be attributed to a person. **Fix:** unique accounts, individual
-credentials, no shared "admin" logins on lab systems.
+The familiar ALCOA+ principles are still the fastest way to think:
 
-## 2. Audit trails disabled or not reviewed
+- **Attributable**
+- **Legible**
+- **Contemporaneous**
+- **Original**
+- **Accurate**
+- **Complete**
+- **Consistent**
+- **Enduring**
+- **Available**
 
-An audit trail nobody reviews is decoration. **Fix:** enable audit trails and
-make audit-trail review a scheduled, documented activity tied to batch release.
+An FDA Form 483 lists inspectional observations when investigators observe
+conditions that may indicate violations. Data-integrity observations often start
+small: a shared login, a missing audit-trail review, a trial injection, a
+late-signed page. But the implication is large. If the record can be altered,
+hidden, recreated, or selectively reported, then the batch-release decision may
+not be reliable.
 
-## 3. "Testing into compliance"
+Below are seven recurring data-integrity findings, why they matter, what the
+evidence looks like, and how to prevent each one.
 
-Re-running until a passing result appears, discarding the rest. **Fix:** a
-pre-approved OOS procedure; every injection/result is accounted for.
+## 1. Shared logins and generic accounts
 
-## 4. Orphan / unsaved data
+Shared accounts destroy attribution. If three analysts use the same "HPLC_USER"
+login, the system cannot show who created, modified, processed, deleted, or
+approved the data.
 
-Trial injections or deleted files that never made it into the record. **Fix:**
-no "test" or unofficial runs; all acquired data is retained and explained.
+That breaks the "A" in ALCOA: attributable. It also weakens investigations. If a
+sequence was changed after an OOS result, the site needs to know exactly who made
+the change and why. A generic account turns a technical question into a trust
+problem.
 
-## 5. Back-dating and pre-signing
+Common evidence inspectors notice:
 
-Records signed before (or long after) the activity. **Fix:** contemporaneous
-recording; signatures reflect the actual time of the work.
+- generic analyst accounts;
+- shared administrator credentials;
+- passwords posted near equipment;
+- users logged in under a supervisor account;
+- terminated employees still active;
+- no periodic access review;
+- no link between system user list and job role.
 
-## 6. Inadequate access controls
+Prevention:
 
-Analysts able to alter methods, clocks, or audit-trail settings. **Fix:**
-role-based permissions; only authorized roles change configuration.
+- require unique user IDs for every GMP system;
+- prohibit shared passwords;
+- use role-based access;
+- remove or disable dormant accounts promptly;
+- review access periodically;
+- separate analyst, reviewer, administrator, and QA roles;
+- document emergency access and review it after use.
+
+If a legacy system cannot support unique accounts, treat it as a risk. Add
+compensating controls such as second-person contemporaneous review, restricted
+physical access, logbook reconciliation, and a documented replacement or upgrade
+plan.
+
+## 2. Audit trails disabled, incomplete, or not reviewed
+
+An audit trail is not useful simply because it exists. FDA defines an audit trail
+as a secure, computer-generated, time-stamped electronic record that allows
+reconstruction of events related to creation, modification, or deletion of an
+electronic record.
+
+For GMP-critical data, the audit trail should help answer:
+
+- Who created the data?
+- Was anything modified?
+- Was anything deleted?
+- Were methods, integrations, calculations, or timestamps changed?
+- Were failed, aborted, or repeated runs investigated?
+- Was the audit trail reviewed before the quality decision?
+
+Common evidence inspectors notice:
+
+- audit trails switched off;
+- audit trail does not capture critical events;
+- analysts can disable or purge audit trails;
+- review procedure says "review audit trails" but no record proves review;
+- audit trails reviewed only after an inspection request;
+- reviewers check only the final result, not sequence changes or deleted events;
+- no risk-based definition of which audit trails require routine review.
+
+Prevention:
+
+- enable audit trails for GMP-critical systems;
+- validate that critical events are captured;
+- restrict audit-trail configuration to independent administrators;
+- define review frequency by data criticality;
+- review audit trails before batch release when they support release data;
+- document what was reviewed, who reviewed it, when, and what exceptions were
+  assessed;
+- trend recurring exceptions by method, system, analyst, and product.
+
+The key control is review by meaning, not review by screenshot. A reviewer should
+understand what an exception means for the record.
+
+## 3. Testing into compliance
+
+"Testing into compliance" means repeating analysis, reinjection, reprocessing, or
+resampling until an acceptable result appears, without scientifically justified
+investigation and without reporting the full data story.
+
+This is one of the most damaging data-integrity patterns because it suggests
+selective reporting. The issue is not that repeat testing is always forbidden.
+Repeat testing may be appropriate under an approved OOS procedure. The issue is
+using repeat testing to avoid a failing or undesirable result.
+
+Common evidence inspectors notice:
+
+- multiple injections before the reported result;
+- "trial" runs not included in the official record;
+- deleted or aborted sequences;
+- integration changes that improve the result without rationale;
+- OOS results invalidated without assignable cause;
+- sample preparations repeated without investigation;
+- analyst notes that do not match electronic raw data;
+- only passing results attached to the batch record.
+
+Prevention:
+
+- require a pre-approved OOS/OOT procedure;
+- account for every injection, preparation, sequence, and result;
+- include invalidated data in the investigation package;
+- justify repeat testing before execution where possible;
+- prohibit unofficial trial runs for GMP samples;
+- review audit trails and raw data during OOS investigation;
+- require QA approval for invalidation decisions.
+
+The quality unit should be able to reconstruct the full testing history, not only
+the result that was finally reported.
+
+## 4. Orphan data and unofficial records
+
+Orphan data are data created during GMP work but not linked to the official
+record. They may sit on an instrument hard drive, local PC, USB drive, analyst
+folder, spreadsheet, notebook page, or temporary file.
+
+The danger is that orphan data can be ignored, overwritten, or selectively used.
+If the data were created as part of GMP work, they need a controlled place in the
+record lifecycle.
+
+Common evidence inspectors notice:
+
+- raw data stored on local instrument PCs outside backup;
+- chromatograms or spectra not included in the official package;
+- uncontrolled spreadsheet calculations;
+- USB transfer with no chain of custody;
+- temporary worksheets used for final calculations;
+- "system suitability trial" files near official data;
+- printed records with no link to electronic originals;
+- missing metadata needed to interpret the result.
+
+Prevention:
+
+- define the official raw data for each system and method;
+- map where data are created, processed, reviewed, stored, archived, and
+  retrieved;
+- prohibit uncontrolled local storage for GMP data;
+- control spreadsheets used for GMP decisions;
+- back up raw data and metadata;
+- ensure printouts are true copies where paper is used;
+- reconcile electronic data with reported results.
+
+Data integrity is a lifecycle problem. The record is not complete until the data
+and metadata can be retrieved and understood later.
+
+## 5. Backdating, late entries, and pre-signing
+
+Contemporaneous recording means the record is made at the time the work is
+performed, or as close to that time as the approved process allows. Backdating and
+pre-signing make the record look cleaner than the event really was.
+
+Common evidence inspectors notice:
+
+- logbook pages signed before work occurred;
+- entries made days after the activity with no explanation;
+- identical timestamps across multiple manual entries;
+- instrument printouts showing different times from handwritten records;
+- training signed after the task was performed;
+- batch record steps initialed before completion;
+- time/date settings changed on an instrument or workstation.
+
+Prevention:
+
+- train staff on contemporaneous recording using real examples;
+- prohibit pre-signing and backdating explicitly;
+- require late-entry notation with current date, reason, and signature;
+- compare manual records against electronic timestamps during review;
+- lock system clocks where possible;
+- review time/date changes in audit trails;
+- investigate repeat late-entry patterns as a process issue.
+
+Late entries are sometimes legitimate. Hidden late entries are the problem.
+
+## 6. Inadequate access controls and segregation of duties
+
+Data integrity depends on limiting what each user can do. Analysts often need to
+create and process data. They should not normally be able to delete data, alter
+audit-trail settings, change system time, approve their own critical work, or
+modify validated calculation logic without control.
+
+Common evidence inspectors notice:
+
+- analysts have administrator rights;
+- users can delete raw data;
+- audit-trail settings editable by routine users;
+- methods or processing templates changed without approval;
+- no documented role matrix;
+- no periodic user-access review;
+- reviewer and performer are the same person for critical records;
+- vendor support accounts uncontrolled.
+
+Prevention:
+
+- define a role matrix for each GMP system;
+- separate data generation, review, and administration where practical;
+- remove unnecessary admin privileges;
+- control method/template changes through change control;
+- review access rights periodically;
+- log and review privileged actions;
+- manage vendor and service accounts with time-limited, approved access.
+
+Access control is not an IT-only control. QA owns the question of whether access
+rights protect product quality and data integrity.
 
 ## 7. Paper records with uncontrolled corrections
 
-White-out, overwrites, missing reasons for change. **Fix:** single-line cross-out,
-initial, date, reason — never obscure the original.
+Paper records still fail inspections when corrections obscure the original entry
+or make it impossible to reconstruct what happened.
 
-## The pattern
+Common evidence inspectors notice:
 
-Six of seven are cultural, not technical. Teams that record contemporaneously,
-review audit trails, and correct errors openly rarely generate serious findings —
-the systems just make those habits enforceable.
+- white-out or correction fluid;
+- overwritten numbers;
+- missing reason for correction;
+- missing initials or date;
+- blank spaces in controlled forms;
+- transcribed values without verification;
+- unofficial sticky notes used as source data;
+- pages replaced without traceability.
 
-> Deeper dive: the Academy lessons **Good Documentation Practice** and
-> **Data Integrity Deep Dive** cover ALCOA+ and audit-trail review in detail.
+Prevention:
+
+- use single-line cross-out so the original entry remains legible;
+- initial and date corrections;
+- add a reason where required by SOP or where the change is not obvious;
+- prohibit white-out and overwriting;
+- control blank spaces;
+- verify transcribed values;
+- treat uncontrolled notes as records if they capture GMP data;
+- audit paper records for repeat GDP behavior.
+
+Paper is not safer than electronic data. It simply fails differently.
+
+## What inspectors are really testing
+
+Most data-integrity observations are not about one bad record. They test whether
+the quality system can answer four questions:
+
+1. **Can the data be attributed to the person who did the work?**
+2. **Can the full data history be reconstructed?**
+3. **Can the record be trusted as complete, original, and accurate?**
+4. **Did QA review the data needed to support the quality decision?**
+
+If the answer is weak, the inspection may move from a record issue to a system
+issue.
+
+## How to self-check a system in 30 minutes
+
+Pick one GMP-critical system such as CDS, LIMS, balance software, environmental
+monitoring database, autoclave software, or an electronic batch record module.
+
+Ask:
+
+- Who has access today?
+- Are any shared or dormant accounts active?
+- Can routine users delete or overwrite raw data?
+- Are audit trails enabled for critical events?
+- Can audit trails be disabled?
+- Is audit-trail review defined by procedure?
+- Can you show a recent documented review?
+- Where are raw data and metadata stored?
+- Are backups verified?
+- Can a reviewer reconstruct an OOS, repeat run, or changed result?
+- Are paper printouts true copies or just convenient summaries?
+- Are incidents trended and escalated to CAPA when recurring?
+
+If the answer depends on one person saying "we usually do it," the control is
+not strong enough.
+
+## How to respond when you find a gap
+
+When a data-integrity gap is found internally, do not treat it as a minor
+documentation cleanup until risk is understood.
+
+Use this sequence:
+
+1. **Contain:** protect affected records, prevent further deletion or alteration,
+   and restrict risky access if needed.
+2. **Scope:** identify products, batches, methods, systems, dates, users, and
+   records potentially affected.
+3. **Assess impact:** decide whether product quality, release decisions,
+   stability, complaints, or regulatory submissions may be affected.
+4. **Investigate root cause:** determine whether the issue is training, system
+   design, procedure, access control, culture, or governance.
+5. **Define CAPA:** fix the system weakness, not only the record.
+6. **Verify effectiveness:** prove the control now works through objective
+   evidence such as access review, audit-trail review samples, no recurrence, or
+   successful backup/retrieval tests.
+
+The CAPA should match the risk. A missing correction reason in one low-risk
+logbook may need coaching and GDP review. A CDS where analysts can delete raw data
+needs escalation, technical control, retrospective review, and management
+oversight.
+
+## The QC/QA takeaway
+
+Data integrity is not a software feature and not a training slide. It is the
+quality system's ability to trust its own evidence.
+
+The recurring 483 themes are remarkably consistent: shared logins, unreviewed
+audit trails, selective testing, orphan data, non-contemporaneous records,
+excessive privileges, and weak corrections. Each one is preventable when ALCOA+
+is translated into daily controls.
+
+The practical question for every GMP record is simple:
+
+> Could an independent reviewer reconstruct what happened and trust the quality
+> decision?
+
+If not, the record is not inspection-ready.
+
+Keep learning:
+
+- [Data Integrity and the ALCOA+ Principles](/blog/data-integrity-alcoa)
+- [Audit Trail Review](/blog/audit-trail-review)
+- [Part 11: what makes an electronic record trustworthy](/blog/part-11-what-makes-an-electronic-record-trustworthy)
+- [Good Documentation Practice](/library/good-documentation-practice)
+- [Data Integrity Deep Dive](/library/data-integrity-deep-dive)
+- [Electronic Records and Signatures](/library/electronic-records-part-11)
+- [Data Integrity Review workflow](/workflows/data-integrity-review)
+- [Audit Trail Review Triage](/tools/audit-trail-review-triage)
+
+Useful references:
+
+- FDA, [Data Integrity and Compliance With Drug CGMP: Questions and Answers](https://www.fda.gov/media/119267/download), 2018.
+- FDA, [Inspection Observations](https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-references/inspection-observations).
+- WHO, [Guideline on data integrity](https://cdn.who.int/media/docs/default-source/medicines/norms-and-standards/guidelines/inspections/trs1033-annex4-guideline-on-data-integrity.pdf?download=true).
+- PIC/S, [Guidance on Data Integrity](https://picscheme.org/docview/4234).

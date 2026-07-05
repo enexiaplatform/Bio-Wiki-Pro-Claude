@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 // Lightweight learning streak (consecutive days with at least one lesson read).
 // Local-only — a gentle retention nudge, no server needed.
-const KEY = "bwp_streak";
+const KEY = "lsa_streak";
+const LEGACY_KEY = "bwp_streak";
 
 interface Streak {
   last: string; // YYYY-MM-DD of the last active day
@@ -16,7 +17,12 @@ function todayStr(d = new Date()): string {
 
 function read(): Streak {
   try {
-    const v = JSON.parse(localStorage.getItem(KEY) || "{}");
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY) ?? "{}";
+    const v = JSON.parse(raw);
+    if (!localStorage.getItem(KEY) && localStorage.getItem(LEGACY_KEY)) {
+      localStorage.setItem(KEY, raw);
+      localStorage.removeItem(LEGACY_KEY);
+    }
     if (v && typeof v.current === "number") return v as Streak;
   } catch {
     /* ignore */

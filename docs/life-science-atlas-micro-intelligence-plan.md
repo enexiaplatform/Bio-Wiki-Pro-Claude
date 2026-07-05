@@ -1,4 +1,4 @@
-# BioWiki Pro Microbiology Intelligence MVP
+# Life Science Atlas Microbiology Intelligence MVP
 
 ## Project Notes
 

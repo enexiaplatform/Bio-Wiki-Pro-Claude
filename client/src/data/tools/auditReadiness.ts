@@ -1,7 +1,7 @@
 // Static decision-logic data for the GMP Audit Readiness Scorecard tool.
 // Each criterion is scored Yes (2) / Partial (1) / No (0); the tool computes a
 // readiness % over the criteria assessed and surfaces the gaps with a fix hint.
-// Educational self-assessment only — not an audit, certification, or QA approval.
+// Educational self-assessment only - not an audit, certification, or QA approval.
 
 export interface AuditCriterion {
   id: string;
@@ -22,7 +22,7 @@ export const auditCriteria: AuditCriterion[] = [
   { id: "capa-2", category: "CAPA & Investigations", label: "OOS investigations follow a phased procedure with QA-owned disposition", fix: "Verify no failing result was invalidated without an assignable cause." },
 
   // Documentation & Data Integrity
-  { id: "di-1", category: "Documentation & Data Integrity", label: "Records meet ALCOA+ — attributable, contemporaneous, original, accurate", fix: "Run a data-integrity self-check on your key systems." },
+  { id: "di-1", category: "Documentation & Data Integrity", label: "Records meet ALCOA+: attributable, contemporaneous, original, accurate", fix: "Run a data-integrity self-check on your key systems." },
   { id: "di-2", category: "Documentation & Data Integrity", label: "Audit trails are enabled, reviewed, and protected; no shared logins", fix: "Move to unique accounts and add audit-trail review to data review." },
   { id: "di-3", category: "Documentation & Data Integrity", label: "Batch records are complete with good documentation practice and no unexplained entries", fix: "Review recent batch records for blanks and uncontrolled corrections." },
 
@@ -51,7 +51,7 @@ export interface ReadinessBand {
   summary: string;
 }
 
-// Bands are ordered high→low; pick the first whose `min` the score meets.
+// Bands are ordered high to low; pick the first whose `min` the score meets.
 export const readinessBands: ReadinessBand[] = [
   { min: 80, label: "Audit-ready", tone: "teal", summary: "Strong footing. Close the remaining gaps and keep evidence current." },
   { min: 50, label: "Developing", tone: "amber", summary: "Foundations exist but key gaps remain. Prioritize the items below before an audit." },

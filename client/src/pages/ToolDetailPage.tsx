@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Link, useRoute } from "wouter";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getToolBySlug, TOOLS } from "@/features/tools/registry";
@@ -37,6 +38,7 @@ export default function ToolDetailPage() {
   const url = `${SITE_URL}/tools/${tool.slug}`;
   // Suggest a few sibling tools to keep people moving through the suite.
   const more = TOOLS.filter((t) => t.slug !== tool.slug).slice(0, 3);
+  const ToolComponent = tool.Component;
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
@@ -88,7 +90,16 @@ export default function ToolDetailPage() {
         )}
       </div>
 
-      {tool.element}
+      <Suspense
+        fallback={
+          <section className="rounded-2xl border border-white/10 bg-card p-6">
+            <div className="h-5 w-48 rounded bg-white/10 mb-4" />
+            <div className="h-24 rounded-xl bg-white/5" />
+          </section>
+        }
+      >
+        <ToolComponent />
+      </Suspense>
 
       {/* Keep moving through the suite */}
       <section className="mt-10">

@@ -390,11 +390,11 @@
     "collection": "academy",
     "slug": "aseptic-technique",
     "lang": "en",
-    "title": "Aseptic Technique — Fundamentals",
+    "title": "Aseptic Technique - Fundamentals",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "First-air, gowning, slow deliberate movements — the core behaviours that keep aseptic processing sterile under Annex 1.",
-    "updatedAt": "2026-06-01",
+    "seoDescription": "First-air discipline, intervention control, gowning behaviour, and monitoring evidence for aseptic processing under Annex 1.",
+    "updatedAt": "2026-07-02",
     "quiz": [
       {
         "q": "What is 'first air'?",
@@ -427,7 +427,7 @@
         "answer": 1
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 4
   },
   {
     "collection": "academy",
@@ -479,8 +479,8 @@
     "title": "Bioburden & Microbial Limits (USP <61>/<62>)",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Microbial enumeration and specified-organism testing for non-sterile products per USP <61>/<62> — TAMC, TYMC, and method suitability.",
-    "updatedAt": "2026-05-30",
+    "seoDescription": "Microbial enumeration and specified-organism testing for non-sterile products per USP <61>/<62> - TAMC, TYMC, method suitability, and result interpretation.",
+    "updatedAt": "2026-07-02",
     "quiz": [
       {
         "q": "What does TAMC stand for?",
@@ -513,17 +513,17 @@
         "answer": 1
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 5
   },
   {
     "collection": "academy",
     "slug": "biologics-qc-overview",
     "lang": "en",
-    "title": "Biologics QC — What Makes It Different",
+    "title": "Biologics QC - What Makes It Different",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "Why QC for biologics differs from small molecules — heterogeneity, the process defines the product, identity by multiple orthogonal methods, and potency by bioassay.",
-    "updatedAt": "2026-06-11",
+    "seoDescription": "Why QC for biologics differs from small molecules - heterogeneity, the process defines the product, identity by multiple orthogonal methods, and potency by bioassay.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "Compared with a small-molecule drug, a biologic is best described as:",
@@ -694,8 +694,8 @@
     "title": "Cell-Based Potency Assays (Bioassays)",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "Potency bioassays for biologics — why activity must be measured biologically, relative potency vs a reference, the 4-parameter logistic fit, and why bioassays are so variable.",
-    "updatedAt": "2026-06-11",
+    "seoDescription": "Potency bioassays for biologics - why activity must be measured biologically, relative potency vs a reference, the 4-parameter logistic fit, and why bioassays are so variable.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "Why is potency for a biologic usually measured by a bioassay rather than a chemical assay?",
@@ -952,8 +952,8 @@
     "title": "Contamination Control Strategy (CCS)",
     "tier": "pro",
     "category": "Sterile Manufacturing",
-    "seoDescription": "The CCS is the backbone of EU GMP Annex 1 (2022) — a site-wide, risk-based plan tying together every contamination control across the facility.",
-    "updatedAt": "2026-06-11",
+    "seoDescription": "The CCS is the backbone of EU GMP Annex 1 (2022): a site-wide, risk-based plan tying together every contamination control across the facility.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "The Contamination Control Strategy became mandatory under:",
@@ -1640,41 +1640,41 @@
     "title": "Growth Promotion Testing (GPT)",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Why every batch of microbiological media must pass growth promotion testing — challenge organisms, acceptance criteria, and common pitfalls.",
-    "updatedAt": "2026-05-31",
+    "seoDescription": "Why every microbiology media lot needs growth promotion testing: low-inoculum challenge, solid vs liquid acceptance, selective-media inhibition, and common failure modes.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
-        "q": "What does growth promotion testing prove?",
+        "q": "What does growth promotion testing primarily prove?",
         "options": [
-          "The media is sterile",
-          "The media can support microbial growth",
-          "The product is non-toxic",
-          "The incubator is calibrated"
+          "The media lot can support microbial growth under the test conditions",
+          "The product is sterile",
+          "The incubator is calibrated",
+          "The analyst found every possible organism"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Why is a low inoculum, often not more than 100 CFU, used?",
+        "options": [
+          "To challenge media sensitivity instead of overwhelming the medium",
+          "To make the test faster only",
+          "To avoid using controls",
+          "To prove the product has no preservative"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What extra property must selective media demonstrate?",
+        "options": [
+          "Only color change",
+          "Inhibition of organisms the medium is intended to suppress",
+          "Sterility of the product",
+          "Endotoxin removal"
         ],
         "answer": 1
-      },
-      {
-        "q": "What inoculum level is typically used to challenge sensitivity?",
-        "options": [
-          "≤ 100 CFU",
-          "1,000 CFU",
-          "10,000 CFU",
-          "1 million CFU"
-        ],
-        "answer": 0
-      },
-      {
-        "q": "For solid media, recovery should be within what factor of the reference lot?",
-        "options": [
-          "A factor of 2",
-          "A factor of 10",
-          "Exactly equal",
-          "A factor of 100"
-        ],
-        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 2
   },
   {
     "collection": "academy",
@@ -1855,8 +1855,8 @@
     "title": "Internal Audits & Self-Inspection",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Running a GMP self-inspection / internal audit program — risk-based scheduling, independence, objective evidence, and turning findings into real CAPA.",
-    "updatedAt": "2026-06-04",
+    "seoDescription": "Running a GMP self-inspection / internal audit program: risk-based scheduling, independence, objective evidence, and turning findings into real CAPA.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "Why must an internal auditor be independent of the area being audited?",
@@ -2113,41 +2113,51 @@
     "title": "Microbial Identification Methods",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Phenotypic vs genotypic ID — MALDI-TOF, 16S rRNA sequencing, and when identification is required for excursions and isolates.",
-    "updatedAt": "2026-06-01",
+    "seoDescription": "Risk-based microbial identification for QC investigations: characterization, MALDI-TOF, 16S/ITS sequencing, isolate libraries, source clues, and when species-level ID matters.",
+    "updatedAt": "2026-07-03",
     "quiz": [
       {
-        "q": "MALDI-TOF identifies organisms by their:",
+        "q": "MALDI-TOF identifies organisms mainly by their:",
         "options": [
           "DNA sequence",
           "Protein mass fingerprint",
-          "Colony colour",
-          "Gram stain"
+          "Colony colour only",
+          "Incubation temperature"
         ],
         "answer": 1
       },
       {
-        "q": "Which method is the genotypic gold standard for bacteria?",
+        "q": "Which method is commonly used as a genotypic reference approach for bacterial ID?",
         "options": [
           "Catalase test",
           "16S rRNA sequencing",
           "Oxidase test",
-          "Microscopy"
+          "Colony count only"
         ],
         "answer": 1
       },
       {
-        "q": "Identification to species is typically required for:",
+        "q": "Species-level identification is typically most important for:",
         "options": [
-          "Every settle plate",
-          "Grade A/B excursions and objectionable isolates",
-          "Nothing",
-          "Only end-of-year review"
+          "Every low-risk Grade D colony",
+          "Grade A/B excursions, sterility positives, recurring trends, and objectionable-organism decisions",
+          "Only annual product review",
+          "Only supplier audits"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Why is a site isolate library valuable?",
+        "options": [
+          "It replaces investigations",
+          "It helps compare new isolates with known facility flora and source patterns",
+          "It eliminates incubation",
+          "It proves all organisms are harmless"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 5
   },
   {
     "collection": "academy",
@@ -2382,8 +2392,8 @@
     "title": "The Pharmaceutical Quality System (ICH Q10)",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "ICH Q10 explained — the Pharmaceutical Quality System model, its four elements, management responsibility, and how it ties together Q8/Q9 across the lifecycle.",
-    "updatedAt": "2026-06-04",
+    "seoDescription": "ICH Q10 explained: the Pharmaceutical Quality System model, its four elements, management responsibility, and how it ties together Q8/Q9 across the lifecycle.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "What is the main purpose of a Pharmaceutical Quality System (ICH Q10)?",
@@ -2554,8 +2564,8 @@
     "title": "Quality Metrics & KPIs",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "The quality metrics that signal a healthy QMS — lot acceptance rate, right-first-time, invalidated OOS rate, on-time CAPA — and how to avoid metric gaming.",
-    "updatedAt": "2026-06-03",
+    "seoDescription": "The quality metrics that signal a healthy QMS: lot acceptance rate, right-first-time, invalidated OOS rate, on-time CAPA, and how to avoid metric gaming.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "What does a high invalidated-OOS rate often signal to a regulator?",
@@ -2941,14 +2951,14 @@
     "title": "Steam Sterilization Validation (Autoclaves)",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "Validating moist-heat (steam) sterilization — F0, overkill vs bioburden approaches, biological indicators, and the load patterns auditors expect to see qualified.",
-    "updatedAt": "2026-06-03",
+    "seoDescription": "Validating moist-heat (steam) sterilization - F0, overkill vs bioburden approaches, biological indicators, and the load patterns auditors expect to see qualified.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "What does F0 represent?",
         "options": [
           "Filter flow rate",
-          "Equivalent lethality in minutes at 121°C",
+          "Equivalent lethality in minutes at 121 degrees C",
           "Fan speed",
           "A formulation code"
         ],
@@ -2981,14 +2991,14 @@
     "collection": "academy",
     "slug": "sterility-testing-basics",
     "lang": "en",
-    "title": "Sterility Testing — Foundations",
+    "title": "Sterility Testing - Foundations",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Overview of the compendial sterility test per USP <71> & EP 2.6.1 — membrane filtration, media, 14-day incubation.",
-    "updatedAt": "2026-05-29",
+    "seoDescription": "Compendial sterility testing under USP <71> and EP 2.6.1: membrane filtration, direct inoculation, media, method suitability, controls, and result interpretation.",
+    "updatedAt": "2026-07-03",
     "quiz": [
       {
-        "q": "What is the minimum incubation time for a compendial sterility test?",
+        "q": "What is the minimum incubation time for the compendial sterility test?",
         "options": [
           "7 days",
           "14 days",
@@ -2998,7 +3008,7 @@
         "answer": 1
       },
       {
-        "q": "Which method is preferred for filterable solutions?",
+        "q": "Which sterility test method is generally preferred for filterable products?",
         "options": [
           "Direct inoculation",
           "Membrane filtration",
@@ -3008,17 +3018,27 @@
         "answer": 1
       },
       {
-        "q": "Which media targets anaerobic and aerobic bacteria?",
+        "q": "What does method suitability demonstrate?",
         "options": [
-          "SCDM / TSB",
-          "FTM",
-          "MacConkey",
-          "Sabouraud"
+          "The product does not inhibit recovery of low-level contamination under the test conditions",
+          "The batch is commercially successful",
+          "The incubator is new",
+          "The analyst is exempt from training"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "A positive sterility test result should be:",
+        "options": [
+          "Ignored if the batch looks normal",
+          "Automatically invalidated",
+          "Investigated with strict evidence before any invalidation",
+          "Converted into a bioburden result"
+        ],
+        "answer": 2
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 5
   },
   {
     "collection": "academy",
@@ -3070,14 +3090,14 @@
     "title": "Supplier Audit Programs",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Running a risk-based supplier audit program — on-site vs remote vs questionnaire, audit frequency by risk, and turning findings into real supplier oversight.",
-    "updatedAt": "2026-06-03",
+    "seoDescription": "Run a risk-based supplier audit program: questionnaire, remote, and on-site audits; audit frequency by supplier risk and performance; finding closure; and approved-supplier decisions.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
         "q": "What should primarily drive how often a supplier is audited?",
         "options": [
           "Alphabetical order",
-          "Risk (criticality + performance)",
+          "Risk, criticality, and performance",
           "Distance from the site",
           "Contract value only"
         ],
@@ -3097,7 +3117,7 @@
         "q": "A supplier audit finding should feed into:",
         "options": [
           "Nothing",
-          "CAPA and the approved-supplier decision",
+          "Supplier CAPA and the approved-supplier decision",
           "Only the auditor's notes",
           "Sales forecasts"
         ],
@@ -3113,11 +3133,11 @@
     "title": "Supplier Qualification",
     "tier": "pro",
     "category": "Quality Systems",
-    "seoDescription": "Qualify and monitor material and service suppliers — risk tiers, audits, quality agreements, and ongoing performance review.",
-    "updatedAt": "2026-06-11",
+    "seoDescription": "Qualify and monitor material and service suppliers through risk tiers, approved scope, quality agreements, incoming verification, ongoing performance review, and requalification triggers.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
-        "q": "Which supplier typically requires an on-site audit + quality agreement?",
+        "q": "Which supplier typically requires the deepest qualification?",
         "options": [
           "Office stationery vendor",
           "API or primary-packaging supplier",
@@ -3129,10 +3149,10 @@
       {
         "q": "A quality agreement primarily defines:",
         "options": [
-          "The price",
-          "Quality responsibilities between the parties",
-          "Delivery routes",
-          "Marketing terms"
+          "The price only",
+          "Quality responsibilities, communication, and change-notification expectations",
+          "Marketing terms",
+          "The supplier logo"
         ],
         "answer": 1
       },
@@ -3142,7 +3162,7 @@
           "It is too expensive",
           "Qualification must include ongoing performance monitoring and risk-based requalification",
           "Suppliers dislike it",
-          "It is not required at all"
+          "It is never required"
         ],
         "answer": 1
       }
@@ -3199,24 +3219,24 @@
     "title": "Viral Safety of Biologics",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "The three-pillar viral safety approach for biologics (ICH Q5A) — source control, testing for adventitious agents, and validated viral clearance through the process.",
-    "updatedAt": "2026-06-11",
+    "seoDescription": "The ICH Q5A(R2) viral-safety approach for biologics: source control, stage-appropriate adventitious-agent testing, and validated viral clearance through the process.",
+    "updatedAt": "2026-07-05",
     "quiz": [
       {
-        "q": "The biologics viral-safety strategy (ICH Q5A) rests on how many complementary pillars?",
+        "q": "The biologics viral-safety strategy in ICH Q5A(R2) relies on which combination?",
         "options": [
-          "One",
-          "Three (source control, testing, clearance)",
-          "Five",
-          "None"
+          "Only final product testing",
+          "Source control, testing, and validated clearance",
+          "Only supplier certificates",
+          "Only sterility testing"
         ],
         "answer": 1
       },
       {
-        "q": "Viral clearance studies demonstrate that:",
+        "q": "Viral clearance studies are used to demonstrate that:",
         "options": [
           "The cell line is sterile",
-          "Purification steps remove/inactivate virus by validated log-reduction",
+          "Purification steps remove or inactivate virus by measured log reduction",
           "The product is a virus",
           "Endotoxin is low"
         ],
@@ -3226,14 +3246,14 @@
         "q": "Why is testing alone not enough for viral safety?",
         "options": [
           "Tests are too expensive",
-          "No test can prove the absence of all possible viruses — clearance margin is also needed",
+          "No test can prove absence of every possible virus, so clearance margin and source controls are also needed",
           "Testing is illegal",
-          "Viruses don't matter"
+          "Viruses do not matter"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 2
+    "readMinutes": 3
   },
   {
     "collection": "academy",
@@ -3242,41 +3262,51 @@
     "title": "Visual Inspection of Injectables",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "100% visual inspection for particulates and defects in parenterals — USP <790>/<1790>, AQL, and operator qualification.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "100% visual inspection for visible particulates and container defects in parenterals, covering USP 790/1790 principles, AQL, qualification, and investigations.",
+    "updatedAt": "2026-07-02",
     "quiz": [
       {
-        "q": "What does 100% visual inspection screen for?",
+        "q": "What does 100% visual inspection mean?",
         "options": [
-          "Label colour only",
-          "Visible particulates and defects",
-          "Weight only",
-          "Temperature"
+          "Every unit was inspected",
+          "Every possible defect was guaranteed to be found",
+          "Only a statistical sample was inspected",
+          "Only labels were checked"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "After 100% inspection, batch acceptance often uses:",
+        "q": "Why is visual inspection described as probabilistic?",
         "options": [
-          "A second 100% inspection",
-          "An AQL sampling inspection",
+          "Detection depends on product, particle, container, lighting, and human or machine performance",
+          "It is optional",
+          "Particles are always invisible",
+          "It replaces all release testing"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "After 100% inspection, batch acceptance commonly includes:",
+        "options": [
           "No further check",
-          "Microbial testing"
+          "AQL sampling against defect categories",
+          "Sterility testing only",
+          "Supplier inspection only"
         ],
         "answer": 1
       },
       {
-        "q": "Inspectors must be:",
+        "q": "Manual visual inspectors should be:",
         "options": [
-          "Qualified and periodically re-qualified (incl. vision)",
-          "Anyone available",
+          "Qualified and periodically re-qualified, including appropriate vision checks",
+          "Anyone available on shift",
           "Only engineers",
-          "Exempt from training"
+          "Exempt from training if experienced"
         ],
         "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 5
   },
   {
     "collection": "academy",
@@ -3328,9 +3358,9 @@
     "title": "Advertising and promotion: staying on-label",
     "tier": "free",
     "category": "Regulatory Affairs",
-    "seoDescription": "Promoting a medicine is regulated. Why claims must stay consistent with the approved labeling, what fair balance means, and how promotional material gets reviewed.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Promoting a medicine is regulated. Learn how on-label claims, fair balance, substantiation, MLR review, digital promotion, and regional oversight work.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3339,9 +3369,9 @@
     "title": "Analytical method validation: what ICH Q2 actually asks",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "Method validation proves a method is fit for its purpose. The ICH Q2 characteristics — specificity, accuracy, precision, linearity, range, detection/quantitation limits, robustness — and why the purpose drives which you need.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Method validation proves an analytical procedure is fit for its purpose. Learn how ICH Q2(R2) connects specificity, accuracy, precision, range, robustness, LOD/LOQ, reportable range, system suitability, and the Q14 lifecycle.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3350,9 +3380,9 @@
     "title": "Annex 1 (2022): what actually changed",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "The headline shifts in EU GMP Annex 1 2022 — CCS as the organising principle, QRM, and continuous monitoring expectations.",
-    "updatedAt": "2026-06-01",
-    "readMinutes": 1
+    "seoDescription": "The practical changes in EU GMP Annex 1 2022: CCS, QRM, barrier technology, sterile filtration, environmental monitoring, media fills, and living evidence.",
+    "updatedAt": "2026-07-02",
+    "readMinutes": 4
   },
   {
     "collection": "blog",
@@ -3361,9 +3391,9 @@
     "title": "Cleanroom classification under Annex 1 (2022)",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Grade A–D, at-rest/in-operation particle limits, and the CCS requirement under EU GMP Annex 1 2022.",
-    "updatedAt": "2026-05-30",
-    "readMinutes": 1
+    "seoDescription": "How EU GMP Annex 1 uses Grade A-D cleanroom classification, at-rest and in-operation states, CCS risk logic, and monitoring evidence for sterile manufacturing.",
+    "updatedAt": "2026-07-02",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3372,9 +3402,9 @@
     "title": "The Annual Product Review: what it's actually for",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "The APR/PQR is not a box-ticking report. It's the yearly look across a product's data to confirm the process is still in control and the specifications still fit.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "The APR/PQR is not a box-ticking report. Learn how it verifies process consistency, specification fitness, recurring quality signals, and the actions a real review should trigger.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 8
   },
   {
     "collection": "blog",
@@ -3383,9 +3413,9 @@
     "title": "Aseptic technique: the discipline of first air",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Aseptic technique is a set of habits that protect the sterile path. First air, never reaching over exposed product, slow deliberate movement — the small disciplines that decide a media fill.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Aseptic technique protects the sterile path: first air, intervention control, slow movement, sterile tools, personnel monitoring, APS coverage, and what supervisors should observe.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -3394,9 +3424,9 @@
     "title": "Audit Trail Review: What, How Often, and Red Flags",
     "tier": "free",
     "category": "Data Integrity",
-    "seoDescription": "A practical guide to audit-trail review in GMP labs — what to review, how often, a risk-based approach, and the red flags that signal data-integrity problems.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical GMP guide to audit-trail review: what to review, when to review it, how to use risk-based exception review, and which red flags require QA escalation.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 7
   },
   {
     "collection": "blog",
@@ -3416,9 +3446,9 @@
     "title": "Batch release: the decision everything converges on",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Batch release is where the whole quality system becomes one yes/no. What QA reviews, why review-by-exception works, and why the releaser must be independent of production.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Batch release is where the quality system becomes one documented decision. Learn what QA/QP reviews, what blocks release, how review-by-exception works, and what auditors trace.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3428,7 +3458,7 @@
     "tier": "free",
     "category": "Sterile Manufacturing",
     "seoDescription": "Biological indicators only mean something with valid controls. Why the positive control is non-negotiable, how to choose the right BI, and the false-negative traps to avoid.",
-    "updatedAt": "2026-06-20",
+    "updatedAt": "2026-07-05",
     "readMinutes": 2
   },
   {
@@ -3438,20 +3468,20 @@
     "title": "Calibration: the traceability hiding under every number",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "Every measurement assumes the instrument is telling the truth. Why calibration ties your readings to a traceable standard, what tolerance and as-found/as-left data mean, and the out-of-tolerance trap.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Every GMP measurement assumes the instrument is telling the truth. A practical guide to calibration, traceability, tolerance, as-found/as-left data, OOT impact assessment, intervals, and audit evidence.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
     "slug": "capa-effectiveness-check",
     "lang": "en",
-    "title": "CAPA: getting the effectiveness check right",
+    "title": "CAPA: Getting the Effectiveness Check Right",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Why the effectiveness check is the most under-done part of CAPA — and how to do it properly.",
-    "updatedAt": "2026-05-30",
-    "readMinutes": 1
+    "seoDescription": "A practical guide to CAPA effectiveness checks: how to define measurable criteria, choose a meaningful window, collect objective evidence, and avoid closing on activity alone.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3460,9 +3490,9 @@
     "title": "Cell banks: the foundation everything in a biologic rests on",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "A biologic is only as consistent as the cell bank it's made from. Why the two-tiered MCB/WCB system exists, what characterization confirms, and why genetic stability matters.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A biologic is only as consistent as the cell bank it comes from. How MCB/WCB systems, characterization, viral safety, genetic stability, storage, and change control protect biologics manufacturing.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3471,9 +3501,9 @@
     "title": "Change control: the system that protects your validated state",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Every change is a hypothesis that something could shift. Why the impact assessment is the heart of change control, and the two failures inspectors look for.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Change control protects the validated state by assessing product quality, validation, stability, regulatory, data-integrity, supplier, and batch-release impact before implementation.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -3482,20 +3512,20 @@
     "title": "Characterizing a protein: why it's never one test",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "A protein drug is a large, complex, heterogeneous molecule. Why characterization needs orthogonal methods for structure, charge, size, and glycans — and what 'higher-order structure' means for function.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Protein characterization needs orthogonal methods because a biologic is a heterogeneous molecule, not one simple structure. Learn how sequence, mass, charge, size, glycans, higher-order structure, purity, potency, and comparability fit together.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
     "slug": "cleaning-validation-hbel-shift",
     "lang": "en",
-    "title": "Cleaning Validation: from 10 ppm to HBEL",
+    "title": "Cleaning Validation: From 10 ppm to HBEL",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "Why cleaning-validation limits moved from the old 10 ppm and 1/1000-dose rules to health-based exposure limits (HBEL/PDE), and what it means for shared facilities.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical guide to the shift from legacy 10 ppm cleaning limits to HBEL/PDE-based cleaning validation: MACO, swab limits, recovery, worst-case selection, and audit evidence.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3504,20 +3534,20 @@
     "title": "Complaints: the quality feedback loop from the real world",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "A complaint is field data your in-house testing can't generate. Why triage and adverse-event screening come first, how complaints connect to investigations and trends, and the recall link.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Product complaints are market intelligence for the pharmaceutical quality system. Learn intake, triage, adverse-event screening, investigation, trend review, CAPA, APR/PQR, and recall links.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 13
   },
   {
     "collection": "blog",
     "slug": "computer-system-validation",
     "lang": "en",
-    "title": "CSV vs CSA: validating computerised systems without the paper mountain",
+    "title": "CSV vs CSA: Validating GxP Systems Without the Paper Mountain",
     "tier": "free",
     "category": "Data Integrity",
-    "seoDescription": "Computer System Validation (GAMP 5) and the shift to Computer Software Assurance (CSA) — risk-based testing that auditors accept.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "Computer system validation and software assurance for GxP systems: intended use, risk-based testing, Part 11 and Annex 11 controls, supplier evidence, and lifecycle review.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -3526,9 +3556,9 @@
     "title": "Container closure integrity: the last barrier to a sterile product",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "A sterile product is only sterile if the container keeps it that way. Why CCI is part of the sterility assurance story, deterministic vs probabilistic methods, and the shift away from dye ingress.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A sterile product is only sterile if the container keeps it that way. How CCI fits sterility assurance, Annex 1, MALL, deterministic methods, stability, shipping, and batch release.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3537,9 +3567,9 @@
     "title": "The Contamination Control Strategy: Annex 1's organizing idea",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "The CCS is the single biggest idea in Annex 1 (2022): a documented, holistic view of every contamination control and how they work together — not a list of SOPs, but the system that connects them.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A practical guide to the Contamination Control Strategy in EU GMP Annex 1: how CCS connects facilities, people, utilities, cleaning, sterilization, EM, APS, deviations, QRM, CAPA, and lifecycle evidence into one sterile control story.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -3548,9 +3578,9 @@
     "title": "The CTD and eCTD: how a regulatory dossier is structured",
     "tier": "free",
     "category": "Regulatory Affairs",
-    "seoDescription": "The Common Technical Document (CTD) organises a marketing application into five modules. What each module holds, and how the eCTD turns it into an electronic submission.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "The CTD organises a medicine dossier into five modules, while the eCTD manages electronic submission and lifecycle sequences. Learn Modules 1-5, CMC placement, regional differences, eCTD operations, publishing checks, and common RA mistakes.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3559,20 +3589,20 @@
     "title": "7 Data Integrity Findings That Show Up in FDA 483s",
     "tier": "free",
     "category": "Data Integrity",
-    "seoDescription": "The most common data-integrity observations in FDA 483s and warning letters — shared logins, disabled audit trails, orphan data — and how to prevent each.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical guide to recurring data-integrity observations in FDA 483s and warning letters: shared logins, unreviewed audit trails, testing into compliance, orphan data, backdating, access control gaps, and weak paper corrections.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
     "slug": "data-integrity-alcoa",
     "lang": "en",
-    "title": "Data Integrity & the ALCOA+ principles",
+    "title": "Data Integrity and the ALCOA+ Principles",
     "tier": "free",
     "category": "Data Integrity",
-    "seoDescription": "What ALCOA+ means and why data integrity is at the centre of every modern GMP inspection.",
-    "updatedAt": "2026-05-30",
-    "readMinutes": 1
+    "seoDescription": "A practical GMP guide to ALCOA+ data integrity: attributable, legible, contemporaneous, original, accurate, complete, consistent, enduring, and available records.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3581,9 +3611,9 @@
     "title": "Depyrogenation: why killing the bug isn't enough",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Sterilization kills microbes, but dead Gram-negatives still leave endotoxin behind. Why depyrogenation needs much harsher conditions, the 3-log reduction standard, and the endotoxin-spike challenge.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Sterilization kills microbes, but dead Gram-negatives can still leave endotoxin behind. How depyrogenation, dry heat, endotoxin indicators, 3-log reduction, and BET evidence fit sterile manufacturing.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3592,9 +3622,9 @@
     "title": "Disinfectant qualification: proving the clean actually works",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Spraying disinfectant isn't the same as disinfecting. Why you qualify efficacy against your own isolates and surfaces, the role of contact time and rotation, and why a sporicide is needed.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Disinfectant qualification proves cleanroom agents work against your facility isolates, surfaces, contact times, residues, and rotation strategy. Learn how Annex 1 expectations, sporicide use, EM trends, and operator technique fit together.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -3603,9 +3633,9 @@
     "title": "Dissolution: it's more mechanical than you think",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "Most dissolution variability and false OOS results come from the apparatus and medium, not the product. Why degassing, alignment, and staged acceptance matter in USP 711.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Most dissolution variability and false OOS results come from apparatus and medium, not the product. Learn the mechanical controls, USP 711 staged acceptance, and investigation checklist.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3614,9 +3644,9 @@
     "title": "Elemental impurities (ICH Q3D): from heavy metals to a risk-based limit",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "ICH Q3D replaced the old heavy-metals test with a toxicology-based, risk-assessed approach. The PDEs, where elements come from, and why a risk assessment beats blanket testing.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "ICH Q3D(R2) replaced the old heavy-metals mindset with PDE-based, route-specific risk assessment. How classes, sources, concentration limits, ICP testing, and control strategy fit together.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3636,9 +3666,9 @@
     "title": "Equipment qualification: what IQ, OQ, and PQ prove",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "DQ, IQ, OQ, PQ explained — what each stage of equipment qualification actually proves, and the often-missed half: keeping equipment in a qualified state.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "DQ, IQ, OQ, and PQ explained as a lifecycle control system: URS, risk assessment, traceability, calibration, maintenance, change control, requalification, and audit evidence.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -3647,20 +3677,20 @@
     "title": "Extractables and leachables: what comes out of the container",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "The container and process equipment can leach chemicals into the product. The difference between extractables and leachables, why it's risk-based, and why parenterals and biologics worry most.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "The container and process equipment can leach chemicals into the product. Learn the difference between extractables and leachables, risk ranking, AET, supplier data, and practical control strategy.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
     "slug": "fda-inspection-readiness",
     "lang": "en",
-    "title": "FDA Inspection Readiness: a QC team's checklist",
+    "title": "FDA Inspection Readiness: A QC Team's Checklist",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "How QC and QA teams stay inspection-ready every day — the front room/back room model, the four common 483 themes, and how to handle requests.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical FDA inspection readiness checklist for QC and QA teams: daily readiness, front room/back room, document requests, SME preparation, and 483 response.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -3669,9 +3699,9 @@
     "title": "FDA vs EMA: the two regulatory pathways",
     "tier": "free",
     "category": "Regulatory Affairs",
-    "seoDescription": "How medicines are approved in the US (FDA) versus the EU (EMA) — the application types, the centralised vs national procedures, and what differs for a regulatory team.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Compare FDA and EMA regulatory pathways for medicines: IND vs CTA, NDA/BLA/ANDA/505(b)(2), EU centralised and national routes, accelerated tools, dossier strategy, lifecycle impact, and RA team decisions.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 13
   },
   {
     "collection": "blog",
@@ -3680,20 +3710,20 @@
     "title": "How to Prepare for a GMP Audit in 30 Days",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "A practical 30-day plan to get ready for a GMP inspection — document readiness, mock audits, the front room/back room model, and the four common 483 themes.",
-    "updatedAt": "2026-06-04",
-    "readMinutes": 1
+    "seoDescription": "A practical 30-day GMP audit preparation plan for QC/QA teams: triage open risks, organize evidence, rehearse SMEs, run a mock audit, control document requests, and prepare for 483 response.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
     "slug": "gmp-principles-explained",
     "lang": "en",
-    "title": "GMP Explained: the Core Principles",
+    "title": "GMP Explained: The Core Principles",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "A plain-English intro to Good Manufacturing Practice (GMP) — the core principles behind quality, documentation, and contamination control in pharma.",
-    "updatedAt": "2026-06-03",
-    "readMinutes": 1
+    "seoDescription": "A plain-English guide to Good Manufacturing Practice: why GMP exists, what cGMP means, and the core principles behind pharma quality systems.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3702,9 +3732,9 @@
     "title": "GMP training: the difference between 'told' and 'able'",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Reading an SOP is not the same as being qualified to do the task. Why GMP training has to demonstrate competence, the read-and-understood trap, and how training connects to every deviation.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Reading an SOP is not the same as being qualified to do the task. Learn how GMP training proves competence, avoids weak CAPA retraining, and supports audit-ready qualification.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 8
   },
   {
     "collection": "blog",
@@ -3713,9 +3743,9 @@
     "title": "Gowning: the operator is the biggest contamination risk",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "In an aseptic area the gowned operator is the largest source of contamination. Why gowning qualification weighs technique and microbial counts equally, and what auditors look for.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "In aseptic manufacturing, the gowned operator is often the largest contamination risk. Learn how gowning qualification, monitoring, requalification, APS coverage, and CAPA fit together.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3724,9 +3754,9 @@
     "title": "Growth promotion testing: what good looks like",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "Growth promotion testing (GPT) is what qualifies a media lot. The compendial strains, why selective media must show recovery AND inhibition, and the common GPT mistakes.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Growth promotion testing qualifies microbiology media before use. Learn when to test each media lot, how low-inoculum recovery works, why selective media must prove recovery and inhibition, and how to investigate GPT failures.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3735,9 +3765,9 @@
     "title": "Host-cell proteins: the impurity you can't fully see",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "Host-cell protein (HCP) testing only reports what its antibody can detect. Why antibody coverage is the whole game, plus the dilution and orthogonal-method traps.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Host-cell protein testing controls process-related protein impurities in biologics. Learn why HCP ELISA coverage, dilutional linearity, clearance trends, LC-MS support, specifications, and comparability matter.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3746,9 +3776,9 @@
     "title": "How to Investigate a Deviation (Step by Step)",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "A practical, step-by-step guide to GMP deviation investigations — immediate actions, root cause, impact assessment, CAPA, and the mistakes auditors flag.",
-    "updatedAt": "2026-06-03",
-    "readMinutes": 1
+    "seoDescription": "A practical GMP deviation investigation guide: containment, impact assessment, risk classification, root cause, CAPA, effectiveness checks, closure evidence, and common audit traps.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -3757,9 +3787,9 @@
     "title": "HVAC qualification: the air is a critical utility",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "In a cleanroom the air is a process input. Why HVAC qualification covers airflow, filter integrity, pressure cascade, and recovery — and how it underpins your cleanroom classification.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "In a cleanroom the air is a process input. Why HVAC qualification covers airflow, HEPA integrity, pressure cascade, recovery, temperature, humidity, and cleanroom classification evidence.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3768,9 +3798,9 @@
     "title": "Internal audit: finding it before the inspector does",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Self-inspection is your chance to find problems on your own terms. Why independence and honesty make or break it, how to plan a risk-based program, and why open findings beat a clean report.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A practical guide to GMP internal audits and self-inspection: risk-based scheduling, auditor independence, objective evidence, finding grading, CAPA follow-up, management review, and how to avoid a fake clean report.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -3779,9 +3809,9 @@
     "title": "Labeling and product information: getting the words right",
     "tier": "free",
     "category": "Regulatory Affairs",
-    "seoDescription": "Labeling is regulated information, not marketing copy. The difference between label and labeling, the EU SmPC/PIL vs US prescribing information, and why changes are controlled.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Labeling is regulated information, not marketing copy. Learn the difference between label, labeling, US Prescribing Information, EU SmPC/PIL, and how labeling changes are controlled.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 8
   },
   {
     "collection": "blog",
@@ -3790,20 +3820,20 @@
     "title": "Measurement systems analysis: can you trust the gauge?",
     "tier": "free",
     "category": "Investigations",
-    "seoDescription": "Before you trend data, ask how much of the variation is the measurement itself. MSA and Gage R&R separate process variation from measurement noise — repeatability, reproducibility, and why it matters.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Before you trend data, ask how much variation comes from the measurement system. A practical guide to MSA, Gage R&R, repeatability, reproducibility, %GRR, ndc, attribute studies, and when data are fit for decisions.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
     "slug": "media-fill-essentials",
     "lang": "en",
-    "title": "Media fills: the test that validates your people",
+    "title": "Media Fills: The Test That Validates Your People",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Aseptic process simulation (media fill) basics — acceptance criteria, worst-case design, and why a single contaminated unit matters.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical guide to aseptic process simulation: media-fill design, worst-case interventions, incubation, acceptance criteria, and failure investigation.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -3812,9 +3842,9 @@
     "title": "Microbial identification: why knowing your bug matters",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "Counting colonies tells you how many; identification tells you what, and what it means. Why ID drives investigations, how far to identify, and the methods from phenotypic to MALDI-TOF.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Counting colonies tells you how many; microbial identification tells you what, where it may have come from, and whether it changes the investigation or batch decision.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 8
   },
   {
     "collection": "blog",
@@ -3831,12 +3861,12 @@
     "collection": "blog",
     "slug": "nitrosamine-impurities",
     "lang": "en",
-    "title": "Nitrosamine Impurities: what QC teams need to know",
+    "title": "Nitrosamine Impurities: What QC Teams Need to Know",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "Why nitrosamine impurities triggered global recalls — root causes, the three-step regulatory approach, and the analytical challenge of trace detection.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical QC guide to nitrosamine impurity control: risk assessment, NDSRIs, acceptable intake limits, confirmatory testing, and method pitfalls.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -3845,20 +3875,20 @@
     "title": "Objectionable organisms: why it's not just the count",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "For non-sterile products, passing the count limit isn't enough — a single objectionable organism can fail a batch. Why 'objectionable' is product-and-use specific, and how to decide.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "For non-sterile products, passing TAMC/TYMC limits is not enough. Learn how objectionable organisms are assessed by identity, route, product formulation, patient risk, BCC/Burkholderia concerns, SOP evidence, and batch impact.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
     "slug": "oos-investigation-phases",
     "lang": "en",
-    "title": "OOS Investigations: Phase I, Phase II, and the Barr lesson",
+    "title": "OOS Investigations: Phase I, Phase II, and the Barr Lesson",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "A practical walkthrough of the FDA OOS guidance — the Phase I lab investigation, Phase II full investigation, and why you can't just retest into compliance.",
-    "updatedAt": "2026-06-02",
-    "readMinutes": 1
+    "seoDescription": "A practical walkthrough of FDA OOS investigation phases: Phase I laboratory assessment, Phase II full investigation, retesting, resampling, averaging, and final batch disposition.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -3867,9 +3897,9 @@
     "title": "OOT vs OOS: what's the difference, and why it matters",
     "tier": "free",
     "category": "Investigations",
-    "seoDescription": "Out-of-trend and out-of-specification are not the same. Why an in-spec but drifting result still needs investigation, and how OOT is the early-warning system OOS isn't.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Out-of-trend and out-of-specification results need different decisions. Learn OOS vs OOT vs OOE, investigation triggers, stability trend signals, CPV links, CAPA, APR/PQR, and batch impact.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3877,10 +3907,10 @@
     "lang": "en",
     "title": "Part 11: what makes an electronic record trustworthy",
     "tier": "free",
-    "category": "Investigations",
-    "seoDescription": "21 CFR Part 11 (and EU Annex 11) define when an electronic record can replace paper. Audit trails, electronic signatures, access control, and system validation — and why it's a means, not the end.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "category": "Data Integrity",
+    "seoDescription": "21 CFR Part 11 and EU Annex 11 explain when electronic records and signatures can replace paper. Learn the practical controls: validation, audit trails, access control, copies, retention, e-signatures, review, and data integrity.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 13
   },
   {
     "collection": "blog",
@@ -3889,9 +3919,9 @@
     "title": "Pharmaceutical water systems: why the loop never stops moving",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "Pharmaceutical water is generated, stored, and distributed as an ongoing process — not a batch. Why circulation, sanitization, and biofilm control matter, and what's monitored continuously.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Pharmaceutical water is generated, stored, distributed, sanitized, sampled, and trended as a living utility. Learn why circulation, biofilm control, point-of-use sampling, and excursion response matter.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -3900,9 +3930,9 @@
     "title": "USP, EP, JP: Pharmacopoeias Explained",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "What pharmacopoeias are and how USP, EP, and JP relate — harmonization via ICH Q4B and PDG, and how QC labs choose which compendial method applies.",
-    "updatedAt": "2026-06-04",
-    "readMinutes": 1
+    "seoDescription": "A practical QC guide to USP, Ph. Eur., and JP: monographs, general chapters, harmonization, registered methods, reference standards, and lab pitfalls.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3911,20 +3941,20 @@
     "title": "Post-approval variations: changing an approved product",
     "tier": "free",
     "category": "Regulatory Affairs",
-    "seoDescription": "An approved product still changes — sites, suppliers, processes, shelf life. How variations are classified by risk in the EU and US, and why ICH Q12 matters.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "An approved product still changes. Learn how post-approval variations are classified, how EU and US reporting categories differ, and how change control, evidence, and ICH Q12 fit together.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
     "slug": "process-validation-three-stages",
     "lang": "en",
-    "title": "Process Validation: the Three-Stage Lifecycle",
+    "title": "Process Validation: The Three-Stage Lifecycle",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "The FDA's three-stage process validation lifecycle explained — process design, process qualification (PPQ), and continued process verification (CPV).",
-    "updatedAt": "2026-06-03",
-    "readMinutes": 1
+    "seoDescription": "A practical guide to FDA's three-stage process validation lifecycle: process design, PPQ, continued process verification, and common validation traps.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3933,9 +3963,9 @@
     "title": "Protein aggregation: the impurity that grows on its own",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "Aggregates are a product-related impurity unique to biologics — and a key immunogenicity risk. Why SEC is the workhorse, what it can miss, and why aggregation is a stability concern, not just a release one.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Protein aggregates are product-related impurities in biologics that can grow during processing, shipping, storage, and use. Learn why SEC helps, where it misses risk, and how orthogonal methods, stability, formulation, and handling controls fit together.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -3955,9 +3985,9 @@
     "title": "Qualification vs Validation: What's the Difference?",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "Qualification vs validation explained simply — what each term means in GMP, how DQ/IQ/OQ/PQ fit, and why qualification is a part of validation, not a synonym.",
-    "updatedAt": "2026-06-05",
-    "readMinutes": 1
+    "seoDescription": "Qualification vs validation explained for GMP teams: what each term means, how DQ/IQ/OQ/PQ, PPQ and continued verification fit, and how to answer audit questions clearly.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -3966,9 +3996,9 @@
     "title": "Quality by Design: building quality in, not testing it in",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "QbD (ICH Q8) flips development from test-and-react to design-and-understand. The QTPP, critical quality attributes, critical process parameters, design space, and control strategy — and why they connect.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Quality by Design connects patient needs, CQAs, CPPs, material attributes, design space, control strategy, risk management, process validation, and lifecycle improvement.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -3977,20 +4007,20 @@
     "title": "Quality metrics: measuring the system, not just the product",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "You measure products constantly — but how do you measure the quality system? The metrics that signal a healthy or struggling QMS, leading vs lagging indicators, and the gaming trap.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A practical guide to pharmaceutical quality metrics: leading vs lagging indicators, lot acceptance, RFT, invalidated OOS, CAPA effectiveness, complaints, backlog, APR/PQR, management review, and how to avoid KPI gaming.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 13
   },
   {
     "collection": "blog",
     "slug": "rapid-microbial-methods",
     "lang": "en",
-    "title": "Rapid Microbial Methods: are they audit-ready?",
+    "title": "Rapid Microbial Methods: Are They Audit-Ready?",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Rapid microbial methods (RMM) promise faster release — but validation and equivalence to compendial methods are where audits focus.",
-    "updatedAt": "2026-05-31",
-    "readMinutes": 1
+    "seoDescription": "How to make rapid microbial methods audit-ready: intended use, technology fit, USP 1223 validation, equivalence, method suitability, routine controls, and change impact.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -3999,9 +4029,9 @@
     "title": "Recall management: the real-world test of your traceability",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "A recall is where distribution records, batch traceability, and decision-making are tested under pressure. Recall classes, why speed matters, and why the mock recall is the part that saves you.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A recall is where distribution records, batch traceability, complaint signals, health-hazard assessment, and decision-making are tested under pressure. Learn recall classes, strategy, communications, effectiveness checks, mock recalls, and CAPA.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 11
   },
   {
     "collection": "blog",
@@ -4010,9 +4040,9 @@
     "title": "Reference standards: the silent anchor of every result",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "Almost every quantitative QC result is relative to a reference standard. Why qualification, bridging, and handling matter — and how a standard error propagates into every batch.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Reference standards anchor assay, impurity, dissolution, potency, and system-suitability results. Learn how qualification, traceability, bridging, storage, assigned value, expiry, and biologics reference materials protect QC data.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4021,9 +4051,9 @@
     "title": "Residual solvents (ICH Q3C): the leftovers of synthesis",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "Solvents used to make a drug don't all leave. ICH Q3C classifies them by toxicity, sets PDE-based limits, and steers you toward less-hazardous choices — controlled mostly by GC.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Residual solvents are volatile process impurities controlled by ICH Q3C(R9). How Class 1/2/3, PDE, Option 1/2 limits, GC headspace, process control, and supplier evidence fit release.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4032,9 +4062,9 @@
     "title": "SPC: telling the difference between noise and a signal",
     "tier": "free",
     "category": "Investigations",
-    "seoDescription": "Every process varies. Statistical process control separates normal common-cause variation from a real special-cause signal — so you act on shifts and ignore noise. Control limits vs spec limits.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Statistical process control separates common-cause noise from special-cause signals. A practical guide to control charts, limits, chart selection, CPV, capability, alert/action rules, and avoiding tampering.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4043,9 +4073,9 @@
     "title": "Stability: your assay has to be able to see degradation",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "A stability program is only as good as its stability-indicating methods and its on-time pulls. Why a non-stability-indicating assay can hide a degrading product, and what to trend.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A stability program is only as useful as its stability-indicating methods, protocol, chambers, pulls, trend review, and shelf-life logic. A practical guide to ICH Q1A/Q1B/Q1D/Q1E.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4054,9 +4084,9 @@
     "title": "Steam sterilization: F0, the cold spot, and proving lethality",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Moist-heat sterilization is validated on physics and biology together. What F0 means, why the cold spot drives everything, and how heat penetration and BIs combine to prove the cycle works.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Moist-heat sterilization is validated by heat, load, and biology together. Learn what F0 means, why the cold spot controls the cycle, how heat penetration and biological indicators prove lethality, and what to review before release.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4065,9 +4095,9 @@
     "title": "Sterilizing filtration is a performance claim, not a pore size",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "A 0.22 micron filter is a label; the real claim is bacterial retention under your conditions. Why product-specific validation and the post-use integrity test matter most.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "A 0.22 micron filter is a label; the real claim is bacterial retention under your conditions. Why product-specific validation and post-use integrity testing matter.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4076,9 +4106,9 @@
     "title": "Supplier qualification: the clause that saves you",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Supplier qualification is risk management for your supply chain. Why the change-notification clause in the quality agreement is the single most valuable control.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Supplier qualification is lifecycle risk management for materials and outsourced services. Learn risk tiers, quality agreements, change notification, CoA verification, ongoing monitoring, and when supplier issues trigger CAPA or requalification.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -4087,9 +4117,9 @@
     "title": "System suitability: the gatekeeper you can't re-inject past",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "System suitability is the gatekeeper of chromatographic data. Why it runs before samples, what 're-inject until it passes' really is, and the controls that matter.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "System suitability is the routine gate for chromatographic data. Learn how SST links validation, USP 621, bracketing standards, %RSD, resolution, audit trails, OOS investigations, and data-integrity controls.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4098,9 +4128,9 @@
     "title": "Technology transfer: moving a process without breaking it",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "Moving a product or method to a new site is where process understanding gets tested. What a tech transfer actually moves, the role of the gap assessment, and why knowledge — not just paperwork — transfers.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Technology transfer is a controlled handoff of process knowledge, control strategy, methods, risks, and evidence. Learn gap assessment, transfer package, protocol, receiving-site readiness, comparability, and failure modes.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -4109,9 +4139,9 @@
     "title": "Viral safety: why no single test is enough",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "ICH Q5A builds viral safety on three pillars — source control, testing, and validated clearance — because no test can prove a virus is absent. Why orthogonality matters.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "ICH Q5A(R2) builds viral safety on source control, stage-appropriate testing, and validated clearance because no single negative test can prove a virus is absent. Learn how the barrier argument works.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4120,9 +4150,9 @@
     "title": "Visual inspection: catching the particle before the patient does",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Every injectable is inspected for visible particles and defects. Why 100% inspection is a probabilistic test, how inspectors are qualified, and the link to subvisible particulate limits.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Every injectable is inspected for visible particles and defects, but 100% inspection is still probabilistic. How FDA, USP 790/1790, AQL, inspector qualification, AVI, investigations, and trend review fit together.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4131,9 +4161,9 @@
     "title": "What Is Bioburden Testing?",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Bioburden testing explained — what it measures, why it matters before sterilization, USP 61 vs ISO 11737, and how recovery efficiency affects your result.",
-    "updatedAt": "2026-06-04",
-    "readMinutes": 1
+    "seoDescription": "Bioburden testing explained for QC teams: what it measures, USP 61/62 vs ISO 11737, sampling, recovery efficiency, method suitability, and trend review.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 5
   },
   {
     "collection": "blog",
@@ -4142,9 +4172,9 @@
     "title": "What Is CAPA? Corrective and Preventive Action Explained",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "A plain-English guide to CAPA in pharma — correction vs corrective vs preventive action, root cause, the effectiveness check, and why auditors care.",
-    "updatedAt": "2026-06-04",
-    "readMinutes": 1
+    "seoDescription": "A practical GMP guide to CAPA: correction vs corrective vs preventive action, when a CAPA is needed, how root cause drives the action plan, and what makes effectiveness checks audit-ready.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
@@ -4153,9 +4183,9 @@
     "title": "What Is a Certificate of Analysis (CoA)?",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "A plain-English guide to the Certificate of Analysis (CoA) in pharma QC — what it contains, who issues it, and how it links specifications, results, and release.",
-    "updatedAt": "2026-06-04",
-    "readMinutes": 1
+    "seoDescription": "A practical QC guide to the Certificate of Analysis (CoA): what it contains, how it supports batch release and incoming-material control, and why supplier CoAs still need verification.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 7
   },
   {
     "collection": "blog",
@@ -4164,20 +4194,20 @@
     "title": "What Is an Out-of-Specification (OOS) Result?",
     "tier": "free",
     "category": "Investigations",
-    "seoDescription": "What an OOS result is, how it differs from OOT and OOE, the two-phase investigation (lab then manufacturing), and why you can't just retest until you pass.",
-    "updatedAt": "2026-06-05",
-    "readMinutes": 1
+    "seoDescription": "What an OOS result is, how it differs from OOT and OOE, how the two-phase investigation works, and how to avoid testing into compliance.",
+    "updatedAt": "2026-07-03",
+    "readMinutes": 9
   },
   {
     "collection": "blog",
     "slug": "what-sterility-testing-can-and-cannot-prove",
     "lang": "en",
-    "title": "What sterility testing can — and can't — prove",
+    "title": "What sterility testing can and cannot prove",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "Sterility testing is a limited sample of a batch, not proof every unit is sterile. Why sterility assurance is built in, what the test does, and how false positives mislead.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Sterility testing is a limited sample of a batch, not proof every unit is sterile. Learn what USP 71 and Ph. Eur. 2.6.1 can show, why sterility assurance is built into the process, and how positive results should be investigated.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -4186,9 +4216,9 @@
     "title": "Which water grade does your test need?",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "WFI vs Purified Water vs reagent-grade water — how to pick and defend the right water grade for a test or process step, with the key controls for each.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "WFI vs Purified Water vs reagent-grade water: how to choose and defend the right water grade for product contact, final rinse, QC testing, cleaning, endotoxin risk, and analytical use.",
+    "updatedAt": "2026-07-04",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4197,9 +4227,9 @@
     "title": "Why potency is the hardest QC test for a biologic",
     "tier": "free",
     "category": "Biologics QC",
-    "seoDescription": "Potency ties a biologic's release test to its mechanism of action — and that's what makes it hard. Why bioassays are noisy, what relative potency means, and why parallelism matters.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Potency is the biologic QC test that links product quality to mechanism of action. Learn why cell-based assays are noisy, how relative potency, reference standards, 4PL curves, parallelism, system suitability, validation, stability, and investigations fit together.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 14
   },
   {
     "collection": "blog",
@@ -4208,8 +4238,8 @@
     "title": "You can't test quality into a batch: AQL and acceptance sampling",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Acceptance sampling inspects a sample to decide on a whole batch — it never proves zero defects. What AQL really means, the producer's and consumer's risk, and the common misreadings.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Acceptance sampling and final QC testing cannot create quality after manufacturing. Learn AQL, producer and consumer risk, why accepted does not mean defect-free, how sampling fits batch release, process validation, QbD, CPV, and when zero-defect logic is required.",
+    "updatedAt": "2026-07-05",
+    "readMinutes": 13
   }
 ]

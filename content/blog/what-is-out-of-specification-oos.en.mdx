@@ -4,51 +4,249 @@ slug: "what-is-out-of-specification-oos"
 lang: "en"
 tier: "free"
 category: "Investigations"
-seoDescription: "What an OOS result is, how it differs from OOT and OOE, the two-phase investigation (lab then manufacturing), and why you can't just retest until you pass."
-updatedAt: "2026-06-05"
+seoDescription: "What an OOS result is, how it differs from OOT and OOE, how the two-phase investigation works, and how to avoid testing into compliance."
+updatedAt: "2026-07-03"
 ---
 
 # What Is an Out-of-Specification (OOS) Result?
 
-An **Out-of-Specification (OOS)** result is a test result that falls **outside**
-the established acceptance criteria (specification) in a registered or compendial
-method. OOS results are one of the most scrutinized areas in any FDA or EU GMP
-inspection — largely because of how easy it is to handle them badly.
+An **Out-of-Specification (OOS)** result is a test result that falls outside an
+approved acceptance criterion. The limit may come from a regulatory application,
+drug master file, pharmacopoeial monograph, validated method, stability
+protocol, raw-material specification, finished-product specification, or another
+site-approved control.
+
+In plain language: the result failed a defined requirement. Once that happens,
+the result cannot be ignored, repeated casually, averaged away, or replaced by a
+more comfortable number.
+
+FDA's OOS guidance treats the investigation as a disciplined decision process.
+First, the laboratory checks whether a documented, scientifically sound
+laboratory error explains the result. If not, the original result remains valid
+and the investigation expands to the batch, process, materials, equipment,
+sampling, and related lots.
+
+That structure matters because OOS handling is one of the clearest signals of
+quality culture. A strong company protects the original data, investigates
+quickly, and makes the batch decision from evidence. A weak company keeps
+testing until something passes.
 
 ## OOS vs OOT vs OOE
 
-- **OOS** — outside the *specification* limit (a pass/fail boundary).
-- **OOT (Out-of-Trend)** — within spec, but inconsistent with the historical
-  pattern (an early warning).
-- **OOE (Out-of-Expectation)** — atypical versus what the method/analyst expected,
-  even if within spec.
+These three terms are often mixed together, but they trigger different levels of
+urgency.
 
-All three deserve attention; only OOS is an automatic spec failure.
+**OOS (Out-of-Specification)** means the result is outside a formal acceptance
+limit. Examples include assay below the approved range, impurity above the
+specified limit, dissolution failure, microbial count above the action limit, or
+an in-process result outside a validated control range that is defined as a
+specification.
 
-## The two-phase investigation
+**OOT (Out-of-Trend)** means the result is still within specification but does
+not fit the expected historical pattern. A stability result may pass the
+specification but show an unusual drop compared with previous time points. OOT
+signals often deserve investigation before they become OOS failures.
 
-The well-known framework (rooted in the *Barr* court decision and FDA guidance) is:
+**OOE (Out-of-Expectation)** means the result is unusual versus the method,
+sample, analyst, process, or scientific expectation, even if it is not formally
+outside a trend rule. OOE is a useful internal signal, especially during method
+transfer, development, and troubleshooting.
 
-1. **Phase I — Laboratory investigation.** Before touching the result, check for an
-   assignable lab cause: calculation errors, equipment malfunction, sample/standard
-   prep mistakes. Only a *documented, assignable* lab error justifies invalidating
-   the result.
-2. **Phase II — Full-scale (manufacturing) investigation.** If no lab cause is
-   found, the result stands and you investigate the batch: process, materials,
-   other batches. This may lead to rejection.
+Only OOS is an automatic specification failure, but OOT and OOE findings can
+still point to real risk. For trend signals that have not crossed specification,
+use the [OOT Trend Triage Planner](/tools/oot-trend-triage-planner) before
+forcing the issue into the OOS process.
 
-## You can't "test into compliance"
+## Immediate response when an OOS appears
 
-Retesting without a justified, documented reason — hoping a passing result replaces
-the failing one — is **testing into compliance**, and it's a classic data-integrity
-violation. Retests must be defined *before* you run them, with scientific
-justification.
+The first hour matters. The right response is not to start retesting. It is to
+protect the evidence and define the investigation path.
 
-## Why it matters
+Start by preserving all original records: raw data, chromatograms, worksheets,
+instrument files, calculations, standards and sample preparation details,
+system-suitability data, audit trails, analyst notes, and any remaining sample
+or solution. If the result came from a contract lab, the sponsor still needs the
+same level of evidence and oversight.
 
-How a company handles a single OOS reveals the health of its whole quality
-culture. Sound investigations protect patients and keep the batch decision
-defensible.
+Then notify the appropriate supervisor and quality unit according to procedure.
+The analyst should document what was observed without rewriting the story after
+the fact. Supervisors should check whether there is an obvious error, but they
+should avoid coaching the record toward a desired conclusion.
 
-> Want the detailed mechanics? The Academy lesson on OOS investigations walks
-> through each phase with examples.
+Finally, pause informal repeat testing. Additional testing may be justified, but
+only after the question is defined, the protocol is approved, and the scientific
+reason is documented. Running another injection or preparation just to see what
+happens can damage the credibility of the whole investigation.
+
+## Phase I: laboratory investigation
+
+Phase I asks one narrow question: **is there a documented assignable laboratory
+cause that invalidates the original result?**
+
+The review normally covers calculation errors, transcription mistakes, reagent
+or standard preparation, sample preparation, instrument sequence setup,
+integration parameters, calibration status, system suitability, analyst
+technique, environmental conditions, method instructions, laboratory controls,
+and any deviations already open in the lab.
+
+For chromatography, the team should look at the full sequence, not only the
+failing injection. Check bracketing standards, blanks, carryover, peak
+integration, reintegration history, injection order, system suitability,
+chromatographic anomalies, audit trail entries, and whether the same preparation
+or standard affected other samples.
+
+For microbiology, the team should be careful not to overclaim certainty. A
+contaminated plate, incubator excursion, media issue, analyst aseptic error, or
+sample handling error may be relevant, but the conclusion needs evidence. The
+absence of a visible mistake is not proof that the batch is acceptable.
+
+For laboratory records, the most important principle is completeness. The
+investigation file should show what was reviewed, who reviewed it, what evidence
+was found, what was ruled out, and why the conclusion follows from the data.
+This is where [Good Documentation Practice](/library/good-documentation-practice)
+and [data integrity](/library/data-integrity-deep-dive) become practical, not
+theoretical.
+
+## When can the original result be invalidated?
+
+An OOS result can be invalidated only when there is a scientifically sound,
+documented reason to conclude that the original test was not valid. Examples may
+include a confirmed calculation error, wrong standard, wrong sample weight,
+instrument malfunction, documented dilution error, incorrect method execution,
+or another specific laboratory event that directly explains the result.
+
+Weak explanations are not enough. "The analyst probably made a mistake" is not
+an assignable cause. A passing retest is not an assignable cause. A historical
+pattern of passing results is not an assignable cause. A business need to ship
+the batch is not an assignable cause.
+
+The decision should also be proportional. If a confirmed laboratory error
+invalidates one preparation, the investigation still has to ask whether the same
+error could affect other samples, other batches, other methods, or previously
+released material.
+
+## Phase II: full-scale investigation
+
+If Phase I does not find a valid laboratory cause, the OOS result stands and the
+investigation expands beyond the lab.
+
+Phase II asks whether the batch, process, material, equipment, facility,
+sampling, cleaning, storage, or supply chain could explain the failure. The team
+should review batch records, deviations, process parameters, equipment logs,
+maintenance, calibration, environmental monitoring, raw material history,
+supplier changes, cleaning records, hold times, sampling plans, previous lots,
+stability data, and related complaints or returns.
+
+The scope should be broad enough to protect patients, but not so broad that it
+becomes vague. A good Phase II investigation defines the suspected failure mode,
+identifies the evidence needed to confirm or reject it, and explains impact on
+the batch and related products.
+
+For structured examples, pair this article with the
+[OOS Investigation workflow](/workflows/oos-investigation), the
+[OOS investigation deep dive](/library/oos-investigation-deep-dive), and the
+[OOS investigation phases article](/blog/oos-investigation-phases).
+
+## Retesting, resampling, and averaging
+
+Additional testing is sometimes legitimate. It is also one of the easiest places
+to create a data-integrity problem.
+
+Retesting should answer a defined scientific question. The protocol should state
+why retesting is needed, which sample or preparation will be tested, how many
+replicates are justified, who will perform the work, what acceptance criteria
+apply, and how all results will be evaluated. The plan should be approved before
+the extra testing begins.
+
+Resampling needs even stronger justification because it may change the material
+being assessed. It may be appropriate when the original sample was not
+representative, was mishandled, or was taken incorrectly. It is not appropriate
+just because the original sample failed.
+
+Averaging is acceptable only when it is scientifically justified and consistent
+with the method, specification, or approved procedure. Averaging an OOS result
+with passing values to hide the failure is not a defensible practice. The
+investigation should explain every result, not simply calculate around the
+uncomfortable one.
+
+FDA's data-integrity guidance also warns against using actual samples for
+system-suitability, trial, prep, or equilibration runs in a way that disguises
+testing into compliance. In short: if the sample is real, the data are real.
+
+## Batch disposition
+
+The final decision belongs to the quality unit. The investigation should support
+one of three broad outcomes.
+
+The batch may be rejected because the OOS result is confirmed or because the
+investigation cannot scientifically justify release. This is often the most
+patient-protective decision when no assignable laboratory error exists.
+
+The batch may remain on hold while additional justified investigation continues.
+This is appropriate when more evidence is needed and there is no pressure-based
+shortcut to release.
+
+The batch may be released only if the investigation demonstrates, with
+documented scientific rationale, that the OOS result was invalid or otherwise
+does not represent batch quality. That conclusion should be rare enough to
+deserve careful review.
+
+Whichever outcome is chosen, the investigation should feed CAPA and trending.
+Even a laboratory-caused OOS may reveal training gaps, unclear methods, weak
+second-person review, fragile instrument controls, or poor documentation habits.
+
+## Common audit traps
+
+Inspectors often focus on the logic of the decision, not just the paperwork.
+Common problems include:
+
+- retesting before the investigation is approved;
+- invalidating an OOS without a specific assignable cause;
+- using passing retests as the main release justification;
+- failing to preserve original data and audit trails;
+- letting the laboratory investigate itself without quality oversight;
+- ignoring related batches, methods, materials, or stability lots;
+- using broad "analyst error" conclusions without evidence;
+- opening CAPA that does not match the root cause;
+- leaving the investigation open while the batch is released;
+- treating repeated OOS events as isolated one-offs.
+
+If several of these appear in the same system, the issue is bigger than one
+failed test. It may point to weak deviation management, poor laboratory controls,
+or a data-integrity culture problem. See
+[Data Integrity 483 Observations](/blog/data-integrity-483-observations) for the
+inspection patterns that often sit around OOS failures.
+
+## Practical OOS checklist
+
+Use this checklist when the first OOS signal appears:
+
+1. Confirm the result is truly outside an approved limit.
+2. Preserve all raw data, records, preparations, samples, and audit trails.
+3. Notify laboratory supervision and quality according to procedure.
+4. Stop informal repeat testing.
+5. Open the investigation with a clear problem statement.
+6. Complete the Phase I laboratory assessment.
+7. Invalidate the result only if a documented assignable laboratory cause exists.
+8. If no lab cause exists, expand to Phase II manufacturing or process review.
+9. Justify any retest, resample, or averaging plan before execution.
+10. Assess impact on the batch, related batches, stability, and released product.
+11. Document the quality-unit disposition decision.
+12. Open CAPA and trending where the evidence supports it.
+
+For a guided triage path, use the
+[OOS Investigation Decision Tree](/tools/oos-investigation-decision-tree). For a
+ready-to-adapt record structure, see the
+[OOS Investigation Template](/toolkits/oos-investigation-template).
+
+## Key takeaway
+
+An OOS result is not only a laboratory event. It is a test of whether the quality
+system can face uncomfortable evidence without bending the record. The safest
+rule is simple: preserve the original data, investigate with discipline, and let
+documented science drive the batch decision.
+
+## References
+
+- FDA, [Investigating Out-of-Specification (OOS) Test Results for Pharmaceutical Production](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/investigating-out-specification-oos-test-results-pharmaceutical-production-level-2-revision)
+- FDA, [Data Integrity and Compliance With Drug CGMP: Questions and Answers](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/data-integrity-and-compliance-drug-cgmp-questions-and-answers)

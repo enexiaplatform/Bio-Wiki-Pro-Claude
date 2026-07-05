@@ -13,11 +13,11 @@ import { analytics } from "@/hooks/use-analytics";
 const PLACEMENT = "tool_sterilization_f0";
 
 /**
- * F0 Sterilization Lethality Calculator — a free, static-logic helper that
+ * F0 Sterilization Lethality Calculator: a free, static-logic helper that
  * computes the instantaneous lethal rate and the equivalent time at the
  * reference temperature for a moist-heat hold:
- *   L = 10^((T - Tref)/z) ;  F0 = t x L
- * Educational tool — a constant-temperature equivalent, not the integrated
+ *   L = 10^((T - Tref)/z) ; F0 = t x L
+ * Educational tool: a constant-temperature equivalent, not the integrated
  * delivered F0 of a validated cycle.
  */
 export function SterilizationF0Calculator() {
@@ -51,25 +51,24 @@ export function SterilizationF0Calculator() {
       </div>
       <p className="text-sm text-muted-foreground mb-5">
         Work out the lethal rate and the equivalent time at 121.1&nbsp;&deg;C (F&#8320;) for a moist-heat
-        hold. General educational guidance — a constant-temperature equivalent, not the integrated
+        hold. General educational guidance: a constant-temperature equivalent, not the integrated
         delivered F&#8320; of your validated cycle.
       </p>
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
-        {/* Inputs */}
         <div className="space-y-5">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2.5">Hold conditions</p>
             <div className="grid sm:grid-cols-2 gap-3">
-              <Field id="f0-temp" label="Holding temperature" value={i.temp} onChange={(v) => set("temp", v)} suffix="°C" />
+              <Field id="f0-temp" label="Holding temperature" value={i.temp} onChange={(v) => set("temp", v)} suffix="deg C" />
               <Field id="f0-time" label="Holding time" value={i.time} onChange={(v) => set("time", v)} suffix="min" />
             </div>
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2.5">Reference parameters</p>
             <div className="grid sm:grid-cols-2 gap-3">
-              <Field id="f0-z" label="z-value" value={i.z} onChange={(v) => set("z", v)} suffix="°C" />
-              <Field id="f0-ref" label="Reference temperature" value={i.refTemp} onChange={(v) => set("refTemp", v)} suffix="°C" />
+              <Field id="f0-z" label="z-value" value={i.z} onChange={(v) => set("z", v)} suffix="deg C" />
+              <Field id="f0-ref" label="Reference temperature" value={i.refTemp} onChange={(v) => set("refTemp", v)} suffix="deg C" />
             </div>
             <p className="mt-1.5 text-xs text-muted-foreground">
               Standard moist-heat values are z = 10&nbsp;&deg;C and a reference of 121.1&nbsp;&deg;C.
@@ -77,12 +76,11 @@ export function SterilizationF0Calculator() {
           </div>
         </div>
 
-        {/* Results */}
         <div className="lg:sticky lg:top-20 self-start space-y-4">
           <div className="rounded-2xl border border-teal-500/30 bg-teal-500/10 p-5">
             <p className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-1">F&#8320; (equivalent time)</p>
             <div className="text-3xl font-bold text-teal-100">
-              {r.valid ? fmtF0(r.f0) : "—"}
+              {r.valid ? fmtF0(r.f0) : "-"}
               {r.valid && <span className="text-base font-semibold text-teal-300/80"> min</span>}
             </div>
             <p className="text-[11px] text-teal-200/70 mt-1">
@@ -92,7 +90,7 @@ export function SterilizationF0Calculator() {
 
             <div className="mt-4 pt-4 border-t border-teal-500/20">
               <p className="text-xs font-bold uppercase tracking-wider text-teal-300 mb-0.5">Lethal rate (L)</p>
-              <div className="text-2xl font-bold text-teal-100">{r.valid ? fmtF0(r.lethalRate) : "—"}</div>
+              <div className="text-2xl font-bold text-teal-100">{r.valid ? fmtF0(r.lethalRate) : "-"}</div>
               <p className="text-[11px] text-teal-200/70 mt-0.5">
                 L = 10^((T &minus; T&#8341;&#8334;&#8331;) / z)
               </p>
@@ -109,14 +107,14 @@ export function SterilizationF0Calculator() {
           >
             <BookOpen className="w-4 h-4 text-primary shrink-0" />
             <span className="text-muted-foreground">
-              <span className="font-semibold text-foreground">Learn the method</span> — F&#8320;, overkill vs bioburden, BI challenge
+              <span className="font-semibold text-foreground">Learn the method</span> - F&#8320;, overkill vs bioburden, BI challenge
             </span>
           </Link>
 
           <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 to-transparent p-4">
             <p className="text-sm font-semibold mb-1">Validate the cycle</p>
             <p className="text-xs text-muted-foreground mb-3">
-              Pro unlocks the full toolkit library — qualification checklists, investigation and CAPA
+              Pro unlocks the full toolkit library - qualification checklists, investigation and CAPA
               templates, and SOP gap-analysis sheets for your sterilization program.
             </p>
             <button
@@ -131,7 +129,7 @@ export function SterilizationF0Calculator() {
             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">Reference</p>
             <ul className="space-y-1 text-[11px] text-muted-foreground leading-relaxed">
               <li>At 121.1 &deg;C the lethal rate L = 1, so F&#8320; equals the hold time in minutes.</li>
-              <li>Common targets: ≥ 8 min (bioburden-based), ≥ 15 min (overkill) — your cycle defines it.</li>
+              <li>Common targets: &gt;= 8 min (bioburden-based), &gt;= 15 min (overkill) - your cycle defines it.</li>
               <li>Every 10 &deg;C (one z) changes the lethal rate roughly tenfold.</li>
             </ul>
           </div>
@@ -139,7 +137,7 @@ export function SterilizationF0Calculator() {
           <p className="text-[11px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
             <Info className="w-3 h-3 mt-0.5 shrink-0 text-primary/70" />
             Educational calculation for a constant temperature. Real cycles integrate lethality over
-            the come-up, hold, and cool-down from probe data — follow your validated method and QA review.
+            the come-up, hold, and cool-down from probe data - follow your validated method and QA review.
           </p>
         </div>
       </div>

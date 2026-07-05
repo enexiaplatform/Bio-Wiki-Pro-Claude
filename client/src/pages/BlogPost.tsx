@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState, type ComponentType } from "react";
 import { Link, useParams } from "wouter";
 import { ChevronRight, Clock, Printer } from "lucide-react";
-import { getContentBySlug, listContent } from "@/lib/content";
+import { getContentBySlug, listContent, loadBlogComponent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
 import { JsonLd } from "@/components/JsonLd";
@@ -15,6 +15,8 @@ export default function BlogPost() {
   const { slug = "" } = useParams();
   const { language } = useLanguage();
   const { count, record } = useFreeReads();
+  const [Body, setBody] = useState<ComponentType<Record<string, unknown>> | null>(null);
+  const [bodyMissing, setBodyMissing] = useState(false);
 
   const entry = getContentBySlug("blog", slug, language);
 
@@ -22,14 +24,37 @@ export default function BlogPost() {
     if (entry) record(`blog/${slug}`);
   }, [entry, slug, record]);
 
+  useEffect(() => {
+    let cancelled = false;
+    setBody(null);
+    setBodyMissing(false);
+    if (!entry) return;
+
+    loadBlogComponent(slug, language)
+      .then((component) => {
+        if (cancelled) return;
+        if (component) {
+          setBody(() => component);
+        } else {
+          setBodyMissing(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setBodyMissing(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [entry, slug, language]);
+
   useSEO({
     title: entry?.title ?? "Blog",
     description: entry?.seoDescription,
   });
 
-  if (!entry || !entry.Component) return <NotFound />;
+  if (!entry || bodyMissing) return <NotFound />;
 
-  const Body = entry.Component;
   const related = listContent({ collection: "blog", lang: language })
     .filter((p) => p.slug !== slug && p.category === entry.category)
     .slice(0, 3);
@@ -89,7 +114,7 @@ export default function BlogPost() {
       <FreeReadBanner count={count} />
 
       <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
-        <Body />
+        {Body ? <Body /> : <p className="text-muted-foreground">Loading article...</p>}
       </article>
 
       <UpgradeInlineCTA placement="blog_post_end" />

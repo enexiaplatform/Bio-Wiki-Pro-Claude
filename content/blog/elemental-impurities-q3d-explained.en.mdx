@@ -4,60 +4,313 @@ slug: "elemental-impurities-q3d-explained"
 lang: "en"
 tier: "free"
 category: "Laboratory Controls"
-seoDescription: "ICH Q3D replaced the old heavy-metals test with a toxicology-based, risk-assessed approach. The PDEs, where elements come from, and why a risk assessment beats blanket testing."
-updatedAt: "2026-06-20"
+seoDescription: "ICH Q3D(R2) replaced the old heavy-metals mindset with PDE-based, route-specific risk assessment. How classes, sources, concentration limits, ICP testing, and control strategy fit together."
+updatedAt: "2026-07-04"
 ---
 
 # Elemental impurities (ICH Q3D): from heavy metals to a risk-based limit
 
-For decades, "heavy metals" in a product meant a single, non-specific colorimetric
-test that could not tell you **which** metal or **how much**. ICH Q3D replaced that
-with something far more useful and more demanding: a **toxicology-based, risk-assessed**
-control of elemental impurities.
+For decades, many specifications handled metals with a broad "heavy metals" test.
+It was simple, but it had a serious weakness: it did not tell you which element was
+present, whether the toxicology mattered for the actual route of administration,
+or whether the result reflected a real patient risk.
 
-## PDEs, not a generic pass/fail
+ICH Q3D changed the question. Instead of asking whether a product passes a generic
+metal screen, Q3D asks: **which elemental impurities could reasonably be present,
+how much could the patient receive each day, and is that exposure below a
+toxicology-based limit?**
 
-Q3D sets a **Permitted Daily Exposure (PDE)** for each element of concern — the
-amount a patient can take in per day without harm — and it varies by **route of
-administration** (oral, parenteral, inhalation), because the same element is more or
-less hazardous depending on how it enters the body. Elements are grouped by toxicity
-and likelihood of occurrence (the Class 1, 2, 3 system), which focuses attention on
-the ones that matter most.
+That shift is why elemental impurities are now controlled through a documented
+risk assessment, route-specific permitted daily exposures, and a justified control
+strategy. It is less mechanical than the old test, but much more defensible.
+
+## What Q3D actually controls
+
+Elemental impurities are elements that may be present in a drug product but do not
+provide therapeutic benefit. They may come from the drug substance, excipients,
+reagents, catalysts, water, equipment, container-closure systems, or processing
+conditions.
+
+ICH Q3D(R2) applies to many drug products, including products containing purified
+proteins and polypeptides, but it has exclusions. It does not apply to products
+such as herbal products, radiopharmaceuticals, vaccines, cell therapies, whole
+blood, plasma derivatives, and elements intentionally included for therapeutic
+benefit. The scope matters because an elemental-impurity assessment should be
+written for the actual product type, not copied from a generic template.
+
+The core output is a control strategy showing that elemental impurities in the drug
+product do not exceed their permitted daily exposures.
+
+## PDE is the anchor
+
+The central number in Q3D is the **Permitted Daily Exposure (PDE)**. A PDE is the
+maximum acceptable daily intake of a given element from the drug product, expressed
+as micrograms per day.
+
+The same element can have different PDEs for different routes because patient
+exposure changes with the route of administration. Oral, parenteral, inhalation,
+and, in Q3D(R2), cutaneous and transcutaneous routes are handled separately. This
+is why an elemental-impurity assessment must know the product's maximum daily dose
+and route. A limit that is acceptable for a tablet may be inappropriate for an
+inhaled or injected medicine.
+
+Q3D also allows lower limits to be used for quality reasons even when patient
+safety would permit a higher exposure. For example, an element could catalyze drug
+substance degradation or affect another quality attribute. The PDE is the safety
+ceiling, not always the only quality consideration.
+
+## The class system focuses the work
+
+Q3D groups elements by toxicity and likelihood of occurrence. The classes help
+decide which elements must be evaluated most carefully.
+
+- **Class 1** elements are highly toxic and should generally be considered in every
+  risk assessment: cadmium, lead, arsenic, and mercury.
+- **Class 2A** elements have relatively high probability of occurrence and should
+  also be considered broadly: cobalt, vanadium, and nickel.
+- **Class 2B** elements are less likely to occur unless intentionally added or
+  otherwise implicated by the process: thallium, gold, palladium, iridium, osmium,
+  rhodium, ruthenium, selenium, silver, and platinum.
+- **Class 3** elements have relatively low toxicity by the oral route, but can be
+  important for parenteral and inhalation products: lithium, antimony, barium,
+  molybdenum, copper, tin, and chromium.
+
+The class system is not a substitute for thinking. It is a triage tool. If a
+platinum-group metal is used as a catalyst in synthesis, it belongs in the
+assessment even if it is not in the highest default class. If an excipient has
+known nickel variability, nickel deserves attention even before the finished
+product is tested.
 
 ## Where elemental impurities come from
 
-The control strategy starts by asking **where could these elements enter the
-product?** Typically:
+A good assessment begins with sources, not with the instrument.
 
-- The **drug substance** and synthesis (catalysts, reagents)
-- **Excipients**
-- **Water**
-- **Manufacturing equipment** (contact surfaces)
-- **Container-closure** systems
+Common sources include:
 
-A risk assessment maps each potential source against the PDE.
+- **Drug substance synthesis** - metal catalysts, reagents, process aids, inorganic
+  salts, and carryover from upstream intermediates.
+- **Excipients** - natural or mined materials, mineral-derived ingredients, colorants,
+  fillers, and excipients with variable supplier histories.
+- **Water and utilities** - especially where contact materials, purification systems,
+  or distribution loops could contribute metals.
+- **Manufacturing equipment** - stainless steel, alloys, glass-lined vessels, filters,
+  sieves, mills, or process contact surfaces that may shed or leach elements.
+- **Container-closure systems** - glass, elastomers, pigments, coatings, metal
+  components, and packaging interactions over shelf life.
+- **Cross-contamination or facility history** - shared equipment, recovered solvents,
+  or campaigns using metal-containing materials.
 
-## Why a risk assessment beats blanket testing
+The risk assessment should cover all plausible routes into the finished drug
+product. It should also explain why a source is excluded when it is not relevant.
+"Not expected" is not evidence unless it is backed by process knowledge, supplier
+data, prior testing, material specifications, or scientific rationale.
 
-The point of Q3D is that you do not have to test every element in every batch.
-Instead you build a **risk assessment**: if the data and the process show an element
-cannot reach a meaningful fraction of its PDE, you can control it without routine
-testing. Where the risk is real, you test or control it specifically. That is far
-more scientific — and more defensible — than the old one-size-fits-all test.
+## From PDE to a concentration limit
+
+The PDE is a daily exposure limit. Specifications and test results are usually
+concentrations. To connect the two, you need the product's maximum daily dose.
+
+For a simple single-product calculation:
+
+```text
+concentration limit = PDE / maximum daily dose
+```
+
+If the PDE is in micrograms per day and the daily dose is in grams per day, the
+result is micrograms per gram, which is equivalent to ppm.
+
+For example, if an element has a PDE of 100 micrograms/day and the product maximum
+daily dose is 2 grams/day:
+
+```text
+100 micrograms/day / 2 grams/day = 50 micrograms/gram = 50 ppm
+```
+
+This is why high-dose products can have tighter concentration limits than low-dose
+products. The patient exposure is what matters. A 10 ppm impurity level has a very
+different meaning in a product taken at 10 mg/day than in a product taken at
+10 g/day.
+
+## The control threshold
+
+Q3D uses the idea of a **control threshold**, commonly 30% of the PDE, to help
+decide whether additional controls are needed. If data show an element is
+consistently below the threshold with suitable margin, routine finished-product
+testing may not be necessary. If levels are near or above the threshold, the
+control strategy needs more attention.
+
+That attention might include:
+
+- tightening raw material specifications;
+- qualifying or changing a supplier;
+- controlling a catalyst purge step;
+- adding periodic verification testing;
+- adding a finished-product specification;
+- monitoring container-closure contribution over shelf life;
+- improving method sensitivity or sample preparation.
+
+The threshold is a decision aid, not a permission slip to ignore variability. The
+assessment should consider data quality, number of batches, supplier variability,
+process changes, and whether the sample set represents the commercial process.
+
+## Testing is evidence, not the whole strategy
+
+Elemental-impurity testing is usually performed with techniques such as **ICP-MS**
+or **ICP-OES**. ICP-MS is often preferred when very low detection limits are needed,
+while ICP-OES can be suitable for higher-level elements and simpler matrices.
+
+Testing may be used to:
+
+- confirm a low-risk assessment;
+- quantify a known or likely impurity;
+- support supplier qualification;
+- investigate an unexpected source;
+- set or justify a specification;
+- verify that a process change did not increase exposure.
+
+But routine testing of every element in every batch is not the purpose of Q3D. The
+purpose is a risk-based control strategy. In some cases, strong process knowledge
+and supplier data may justify control without routine finished-product testing. In
+other cases, especially where a catalyst or high-risk excipient is involved,
+testing is the only credible way to quantify the risk.
+
+## Supplier data can help, but only if it is usable
+
+Elemental-impurity assessments often depend on information from drug substance,
+excipient, and packaging suppliers. Supplier statements are useful only when they
+are specific enough to support the risk assessment.
+
+Stronger supplier evidence includes:
+
+- actual elemental data with methods and limits of quantitation;
+- representative batch history;
+- route-specific relevance to the finished product;
+- specification limits or routine controls;
+- change-notification commitments;
+- clear indication of intentionally added catalysts or metal-containing materials.
+
+Weak evidence includes broad letters that say "complies with Q3D" without data,
+unspecified testing panels, outdated heavy-metals statements, or declarations that
+do not identify which elements were assessed. A supplier letter can be an input,
+but the finished-product manufacturer still owns the assessment.
+
+## Container closure and shelf life
+
+Elemental impurities are not only synthesis residues. Packaging can matter,
+especially for liquid, parenteral, inhalation, ophthalmic, and long-shelf-life
+products. Glass, elastomers, inks, pigments, and metal components may contribute
+elements under certain conditions.
+
+The assessment should consider whether container-closure contribution could change
+over time. Extractables and leachables data may support the elemental-impurity
+story, but they are not automatically interchangeable. The question is whether
+elements that could leach into the drug product are controlled below the applicable
+PDE through shelf life and under intended storage conditions.
+
+This is where elemental impurities connect naturally with the container-closure
+and extractables/leachables programs.
+
+## Change control is where Q3D stays alive
+
+An elemental-impurity assessment is not a one-time filing artifact. It has to
+survive product lifecycle changes.
+
+Review the assessment when there is:
+
+- a new or changed drug substance route;
+- a catalyst, reagent, solvent, or process-aid change;
+- a new excipient supplier or grade;
+- a packaging or container-closure change;
+- a manufacturing-site or equipment-train change;
+- a change in maximum daily dose or route of administration;
+- a new dosage form, strength, or patient population;
+- unexpected elemental data from stability, supplier testing, or investigations;
+- a pharmacopoeial, ICH, or regional regulatory update.
+
+The most common failure is treating the Q3D assessment as a static document. If the
+sources change, the assessment changes. If the daily dose changes, the exposure
+calculation changes. If the route changes, the PDEs may change.
 
 ## What good looks like
 
-- A documented risk assessment covering all the potential sources
-- PDEs applied for the **actual route** of administration
-- Specific, validated analytical methods (e.g. ICP-MS / ICP-OES) where testing is
-  warranted
-- Control justified by data, not assumption
+A defensible elemental-impurity package usually contains:
+
+- scope and applicability for the product;
+- maximum daily dose and route of administration;
+- the Q3D(R2) element list and class rationale;
+- mapped potential sources across drug substance, excipients, water, equipment, and
+  container closure;
+- supplier evidence and its limitations;
+- calculations translating PDE to concentration limits where needed;
+- data summary, including batch representativeness and method capability;
+- clear decision on whether routine testing, periodic verification, or material
+  controls are required;
+- lifecycle triggers that require reassessment;
+- QA approval and linkage to specifications, methods, and change control.
+
+The package should be understandable to a reviewer who was not involved in writing
+it. If the assessment requires private memory to explain why an element was
+excluded, the document is not finished.
+
+## Common audit weaknesses
+
+Watch for these patterns:
+
+- The assessment lists Q3D elements but does not map product-specific sources.
+- The route or maximum daily dose is missing, outdated, or inconsistent with the
+  approved label.
+- Class 2B elements are dismissed even though metal catalysts are used upstream.
+- Excipient supplier letters are accepted without data or scope.
+- Finished-product testing is used as a substitute for understanding the process.
+- ICP method capability is not matched to the calculated limits.
+- A packaging change was made without revisiting elemental impurities.
+- Change control does not identify Q3D as an impacted quality assessment.
+- The assessment is copied across products with different doses or routes.
+
+These are not just documentation issues. They can lead to limits that do not
+reflect real patient exposure.
+
+## Review checklist
+
+Use this checklist when reviewing a Q3D assessment:
+
+- Is Q3D applicable to this product type?
+- Are the route of administration and maximum daily dose correct?
+- Are PDEs taken from the current Q3D(R2) source?
+- Are Class 1 and 2A elements considered appropriately?
+- Are Class 2B elements assessed when intentionally added or process-relevant?
+- Are Class 3 elements handled correctly for oral, parenteral, inhalation, or
+  cutaneous/transcutaneous use?
+- Are all plausible sources mapped: drug substance, excipients, water, equipment,
+  container closure, and facility history?
+- Are concentration limits calculated from PDE and daily dose where needed?
+- Are test methods capable at the required levels?
+- Are supplier data specific, current, and representative?
+- Is the control strategy clear: no routine testing, periodic testing, raw material
+  control, process control, or finished-product specification?
+- Are lifecycle reassessment triggers defined?
+
+## Key takeaway
+
+ICH Q3D is not a metals test. It is a patient-exposure argument. The strongest
+elemental-impurity packages show where elements could enter, how much the patient
+could receive, why the route-specific PDE is protected, and which controls keep
+that conclusion true through the product lifecycle.
 
 ## Go deeper
 
 - Learn the background in [Elemental impurities (ICH Q3D)](/library/elemental-impurities-q3d).
-- See the related impurity control in [Nitrosamine impurities](/blog/nitrosamine-impurities).
+- Compare the same exposure logic in [Residual solvents: Q3C and the leftovers of synthesis](/blog/residual-solvents-q3c-the-leftovers-of-synthesis).
+- See the related impurity-control problem in [Nitrosamine impurities](/blog/nitrosamine-impurities).
+- Connect package contribution to [Extractables and leachables: what comes out of the container](/blog/extractables-and-leachables-what-comes-out-of-the-container).
 
-*General educational content — verify against ICH Q3D and the applicable
-pharmacopeia, your approved SOPs, and your validated methods. Not a substitute for QA
-approval or a validated method.*
+## References
+
+- ICH. [Q3D(R2): Guideline for Elemental Impurities](https://database.ich.org/sites/default/files/Q3D-R2_Guideline_Step4_2022_0308.pdf).
+- FDA. [Q3D(R2) - Guideline for Elemental Impurities](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/q3dr2-guideline-elemental-impurities).
+- EMA. [ICH Q3D Elemental impurities - Scientific guideline](https://www.ema.europa.eu/en/ich-q3d-elemental-impurities-scientific-guideline).
+- USP. [General Chapter &lt;232&gt; Elemental Impurities - Limits](https://www.usp.org/sites/default/files/usp/document/our-work/chemical-medicines/key-issues/c232-usp-39.pdf).
+
+*General educational content - verify against the current ICH Q3D(R2), applicable
+pharmacopoeia, approved dossier, SOPs, and validated methods. Not a substitute for
+QA approval, toxicology review, or regulatory advice.*

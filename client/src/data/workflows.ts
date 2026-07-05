@@ -71,7 +71,7 @@ export const workflowCategories: WorkflowCategory[] = [
     description: "Media, environmental monitoring, sterility, endotoxin, and water — the daily micro lab.",
     audience: "QC micro analysts & supervisors",
     pathSlug: "microbiology-qc-fundamentals",
-    workflowSlugs: ["culture-media-selection", "environmental-monitoring", "biological-indicator-workflow"],
+    workflowSlugs: ["culture-media-selection", "environmental-monitoring", "water-system-monitoring", "biological-indicator-workflow"],
   },
   {
     slug: "sterile-aseptic",
@@ -234,6 +234,57 @@ export const workflows: Workflow[] = [
       "Environmental monitoring doesn't make product sterile — it provides evidence that your contamination control strategy is working. Under Annex 1 (2022), EM is explicitly a feedback loop into the CCS rather than a stand-alone pass/fail gate: site selection, limits, and frequency all flow from risk assessment, and trending is given equal weight to single results. The most informative EM programs treat an adverse trend below the action limit as a signal worth investigating, identify recoveries to species to build a facility flora baseline, and tie personnel monitoring directly to the aseptic interventions performed.",
   },
   {
+    slug: "water-system-monitoring",
+    categorySlug: "microbiology-qc",
+    title: "Pharmaceutical Water System Monitoring",
+    purpose: "Run a risk-based water monitoring program that keeps PW, WFI, and points of use under control.",
+    audience: "QC microbiology, utilities engineers, validation, and QA reviewing water-system data.",
+    useWhen: [
+      "Setting up routine monitoring for Purified Water, WFI, or clean steam",
+      "A point of use hits an alert or action limit",
+      "A seasonal trend appears in microbial, conductivity, TOC, or endotoxin data",
+      "A change, sanitization failure, or maintenance event may affect water quality",
+    ],
+    inputs: [
+      "Water grade and intended GMP use for each loop and point of use",
+      "Approved sampling plan with point-of-use rationale and frequencies",
+      "Validated microbiological, conductivity, TOC, and endotoxin methods as applicable",
+      "Alert/action limits, sanitization records, and a current system schematic",
+    ],
+    steps: [
+      { title: "Classify the water use", detail: "Confirm whether the use requires Purified Water, Water for Injection, clean steam, or reagent-grade water. The grade drives methods, limits, and escalation." },
+      { title: "Map the loop and points of use", detail: "Tie sample sites to the current schematic, worst-case branches, low-use points, return loop, storage tank, and any direct product-contact use." },
+      { title: "Sample without adding contamination", detail: "Use trained samplers, controlled flush time, disinfected outlets where applicable, and traceable containers. A poor sample can create a false excursion." },
+      { title: "Test the right attributes", detail: "Review conductivity and TOC for chemical control, microbial count for bioburden control, and endotoxin when the water grade or use requires pyrogen control." },
+      { title: "Trend by site and system", detail: "Review each point of use, return loop, tank, and system aggregate. A passing single result can still show drift or biofilm growth when trended." },
+      { title: "Escalate excursions and changes", detail: "Investigate action limits, repeated alerts, sanitization failures, major maintenance, and unusual organisms. Assess product impact before returning to routine use." },
+    ],
+    criticalControlPoints: [
+      "Water grade matches the GMP use and product-contact risk",
+      "Sample sites include worst-case and low-use points, not only convenient taps",
+      "Microbial, TOC, conductivity, and endotoxin methods match the water grade",
+      "Trends and repeated alerts trigger investigation before an action limit is breached",
+    ],
+    commonMistakes: [
+      "Treating a water loop as stable because the last result passed",
+      "Sampling only easy points and missing dead legs or low-use branches",
+      "Ignoring organism identity when repeated recoveries suggest biofilm",
+      "Changing sanitization, maintenance, or point-of-use configuration without extra monitoring",
+    ],
+    troubleshooting: [
+      { problem: "Recurring microbial recoveries at one point of use", action: "Check outlet design, use frequency, flushing practice, local hose/adaptor handling, and whether the organism profile suggests biofilm or sampling contamination." },
+      { problem: "System-wide upward microbial trend", action: "Review sanitization effectiveness, loop temperature or flow, recent maintenance, resin/filter changes, and whether alert/action limits still reflect current performance." },
+      { problem: "Conductivity or TOC excursion", action: "Confirm instrument calibration and sample handling, then assess purification steps, resin exhaustion, ingress, cleaning residues, or contamination from maintenance." },
+      { problem: "Endotoxin signal in WFI", action: "Hold affected use, confirm the result, review distillation/ultrafiltration controls, assess product impact, and require QA disposition before use resumes." },
+    ],
+    relatedLessonSlugs: ["pharmaceutical-water-systems", "water-system-validation", "endotoxin-lal-testing", "bioburden-usp-61"],
+    relatedToolkitSlugs: ["lab-water-selection-checklist", "microbiology-qc-starter-pack", "gmp-audit-kit"],
+    relatedToolSlugs: ["lab-water-type-selector", "microbial-count-calculator", "endotoxin-limit-calculator"],
+    accessTier: "free",
+    deepDive:
+      "A pharmaceutical water system is a living utility, not a one-time qualification artifact. Routine monitoring proves that the validated state is still true under seasonal feed-water variation, maintenance, sanitization cycles, and real point-of-use behavior. The most useful reviews separate site-specific issues from system-wide drift: one bad outlet may be handling or local design, while a loop-wide upward trend points toward sanitization, flow, temperature, or biofilm control. For WFI and product-contact uses, endotoxin and microbial trends are not just lab numbers; they can drive immediate product-impact and distribution-risk decisions.",
+  },
+  {
     slug: "biological-indicator-workflow",
     categorySlug: "microbiology-qc",
     title: "Biological Indicator Workflow",
@@ -329,6 +380,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["gowning-qualification", "aseptic-technique", "contamination-control-strategy", "disinfectant-qualification"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["gowning-qualification-readiness-planner"],
     accessTier: "free",
     deepDive:
       "The gowned operator is the single largest contamination risk to the sterile field, so gowning qualification is really a test of the primary barrier. Annex 1 (2022) expects a documented program with initial qualification over several consecutive sessions, periodic re-qualification, and continuous monitoring during production rather than a one-off certificate. Both halves matter: a within-limit plate count after a sloppy technique tells you the plate location got lucky, not that the operator is qualified — which is why the assessor's observation is weighted equally with the microbial result.",
@@ -378,6 +430,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["media-fill-aps", "aseptic-technique", "gowning-qualification", "environmental-monitoring-basics"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["media-fill-aps-readiness-planner"],
     accessTier: "free",
     deepDive:
       "An aseptic process simulation is the closest thing to a direct test of the process itself: by replacing product with a microbiological growth medium, any contamination introduced during filling shows up as visible growth. Its evidential value depends entirely on honesty of design — the simulation must stress the process at least as hard as the worst routine batch, including the interventions teams are tempted to leave out. Modern expectations treat APS results together with the run's environmental and personnel monitoring, so a single positive is investigated as a process signal, not written off as a stray contaminant.",
@@ -427,6 +480,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["sterilizing-grade-filtration", "container-closure-integrity", "visual-inspection", "steam-sterilization-validation"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["sterile-filtration-readiness-planner"],
     accessTier: "free",
     deepDive:
       "A sterilizing-grade filter is defined by performance, not pore size: the 0.22 µm rating is a label, while the real claim is full retention of B. diminuta under your worst-case conditions, which is why product-specific retention validation is non-negotiable. The integrity test is the routine surrogate for that validation — its limits are only meaningful because they were correlated to bacterial retention during validation. The post-use test matters most: it confirms the filter that actually processed the batch was still integral, so a failure there reopens the sterility question for the whole batch.",
@@ -477,7 +531,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["oos-investigation-deep-dive", "out-of-trend-investigation", "good-documentation-practice", "data-integrity-deep-dive"],
     relatedToolkitSlugs: ["oos-investigation-template", "gmp-audit-kit"],
-    relatedToolSlugs: ["oos-investigation-decision-tree", "investigation-template-viewer"],
+    relatedToolSlugs: ["oot-trend-triage-planner", "oos-investigation-decision-tree", "investigation-template-viewer"],
     accessTier: "free",
     deepDive:
       "OOS investigations are shaped by the FDA OOS guidance and the Barr Laboratories ruling, whose central principle is that you cannot invalidate a failing result without an identified, assignable cause. That is why the original preparation is retained, why retesting requires a pre-approved scientific hypothesis (not a fishing expedition), and why a passing retest never on its own overrides the original. The two-phase structure forces the investigation outward — when the lab is clean, the question moves to the process — and QA, not the analyst, owns the disposition so the decision is independent of the people who generated the result.",
@@ -527,7 +581,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["deviation-management", "capa-fundamentals", "change-control", "quality-risk-management-q9"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
-    relatedToolSlugs: ["investigation-template-viewer"],
+    relatedToolSlugs: ["investigation-template-viewer", "capa-effectiveness-check-planner"],
     accessTier: "free",
     deepDive:
       "A CAPA system is only as good as its root-cause analysis and its effectiveness check — the two places teams most often cut corners. Correction (fixing the immediate problem), corrective action (eliminating the cause so it doesn't happen again here), and preventive action (stopping it happening elsewhere) are distinct, and conflating them is why deviations recur. ICH Q10 frames CAPA as a core element of the quality system, and risk (Q9) should scale the rigour — a critical deviation warrants a deeper investigation and a formal effectiveness verification than a minor one.",
@@ -577,6 +631,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["data-integrity-deep-dive", "good-documentation-practice", "electronic-records-part-11", "measurement-systems-analysis"],
     relatedToolkitSlugs: ["data-integrity-self-check", "gmp-audit-kit"],
+    relatedToolSlugs: ["audit-trail-review-triage"],
     accessTier: "free",
     deepDive:
       "ALCOA+ is the shared language regulators use for data integrity, and most findings trace back to a handful of recurring gaps: audit trails that exist but are never reviewed, shared logins that destroy attributability, and uncontrolled spreadsheets making GMP decisions. The decisive shift is review-by-exception — reviewing the audit trail and exceptions alongside the result, rather than rubber-stamping a clean printout. Data integrity is a quality responsibility, not an IT project: the controls are technical, but the accountability for trustworthy records sits with QA.",
@@ -627,6 +682,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["equipment-qualification", "hvac-qualification", "calibration-metrology", "analytical-instrument-qualification"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["equipment-qualification-readiness-planner"],
     accessTier: "free",
     deepDive:
       "Qualification is the equipment-level subset of validation, and the V-model (URS → DQ → IQ → OQ → PQ) keeps each verification tied back to a requirement. Risk and ICH Q9 should scale the effort: not every parameter needs the same rigour, but the critical aspects that affect product quality do. The often-missed half is maintaining the qualified state — calibration, preventive maintenance, periodic review, and change control are what keep a 'qualified' label true years after the protocols were signed.",
@@ -676,7 +732,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["process-validation-stages", "analytical-method-validation", "statistical-process-control", "technology-transfer"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
-    relatedToolSlugs: ["process-capability-calculator"],
+    relatedToolSlugs: ["oot-trend-triage-planner", "process-capability-calculator"],
     accessTier: "free",
     deepDive:
       "The 2011 FDA guidance reframed process validation from a one-off 'three batches and done' exercise into a lifecycle: design the process and its control strategy (Stage 1), confirm it at scale (Stage 2 / PPQ), then keep verifying it stays in control for the life of the product (Stage 3 / CPV). The lifecycle view is what connects it to QbD (Q8) and the broader quality system (Q10–Q12): CPPs are validated because they drive CQAs, and continued process verification — not a dusty validation report — is the living evidence that the process is still capable.",
@@ -777,6 +833,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["change-control", "quality-risk-management-q9", "deviation-management", "pharmaceutical-quality-system-q10"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["change-control-impact-triage"],
     accessTier: "free",
     deepDive:
       "Change control is the QMS process that protects the validated state: every change is a hypothesis that something could shift, so the impact assessment — across quality, the validated/qualified state, stability, and the regulatory filing — is the heart of it. ICH Q10 positions change management as a core enabler of continual improvement, and Q12 gives a framework for managing post-approval changes with established conditions. The two failure modes inspectors look for are changes made before approval, and changes closed before the validation they triggered was actually finished.",
@@ -826,6 +883,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["supplier-qualification", "supplier-audit-program", "quality-risk-management-q9", "complaint-handling"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["supplier-qualification-risk-triage"],
     accessTier: "free",
     deepDive:
       "Supplier qualification is risk management applied to your supply chain: the depth of evaluation — questionnaire, certificates, on-site audit, ongoing monitoring — should scale to how much the material can hurt the product (an API or primary container versus a non-critical excipient). The quality agreement is the operational backbone, and its change-notification clause is the single most valuable control: most supplier-driven quality surprises are unannounced process or source changes. Qualification is not a one-time gate — performance trending and risk-based re-audit keep the approved-supplier list honest.",
@@ -875,6 +933,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["batch-record-review", "deviation-management", "good-documentation-practice", "annual-product-review"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["batch-release-readiness-checklist", "audit-trail-review-triage"],
     accessTier: "free",
     deepDive:
       "Batch release is where the whole quality system converges into a single yes/no: the authorized releaser (in the EU, the Qualified Person) certifies that the batch was made and tested per the marketing authorization and GMP. Review-by-exception makes this tractable — focus on deviations, OOS, audit-trail exceptions, and out-of-limit IPCs rather than re-reading every line — but it depends on those exception systems being trustworthy. The independence of the releaser from production is deliberate: disposition must be free of the schedule pressure that produced the batch.",
@@ -975,6 +1034,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["dissolution-testing-usp-711", "analytical-method-validation", "reference-standards-management", "hplc-system-suitability"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["dissolution-acceptance-checker"],
     accessTier: "free",
     deepDive:
       "Dissolution is deceptively mechanical: most variability and false OOS results come from the apparatus and medium — undegassed medium, vessel wobble, misalignment, and coning — long before the product itself is at fault. That's why calibration / mechanical qualification and degassing are control points, and why a failure is investigated as a system problem first. The staged S1 → S2 → S3 acceptance scheme in USP 711 is a statistical safeguard, not a way to keep testing until the batch passes; each stage has defined criteria tied to the product's Q value.",
@@ -1024,7 +1084,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["stability-studies", "retest-period-shelf-life", "ongoing-stability-program", "reference-standards-management"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
-    relatedToolSlugs: ["process-capability-calculator"],
+    relatedToolSlugs: ["stability-trend-shelf-life-planner", "oot-trend-triage-planner"],
     accessTier: "free",
     deepDive:
       "A stability program's whole value rests on two things: stability-indicating methods that can actually see degradation (an assay that doesn't resolve degradants will happily report a stable potency on a degrading product), and disciplined, on-time pulls in qualified chambers. ICH Q1A/B/E define the conditions, the bracketing/matrixing designs, and how far you may extrapolate long-term data to justify a shelf life. The signal you're hunting is the trend — a result drifting toward a limit over time is more informative than any single in-spec point, which is why ongoing commitment stability continues for the life of the product.",
@@ -1075,6 +1135,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["cell-based-potency-assays", "biologics-qc-overview", "analytical-method-validation", "reference-standards-management"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["cell-based-potency-readiness-planner"],
     accessTier: "free",
     deepDive:
       "Potency is the attribute regulators scrutinise most for a biologic because it ties the release test to the mechanism of action — it's the closest measure of whether the molecule actually works. Cell-based assays are powerful but biologically noisy, so control sits in the cell system (passage, density, health) far more than in the pipetting. Reporting is relative potency against a qualified reference standard, valid only when the dose-response curves are parallel; non-parallelism means you may be measuring something other than the intended activity. Because the reference standard anchors every result, bridging a new standard before the old is exhausted protects the entire potency history from a step-change.",
@@ -1124,6 +1185,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["host-cell-protein-testing", "protein-characterization", "biologics-qc-overview", "analytical-method-validation"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["hcp-testing-readiness-planner"],
     accessTier: "free",
     deepDive:
       "Host-cell proteins are the headline process-related impurity for biologics, and the whole control strategy hinges on one uncomfortable fact: an HCP ELISA can only report what its antibody reagent recognises. That's why coverage assessment is central — a low-coverage assay can read reassuringly clean while leaving undetected HCPs in the product. The method confirms what purification achieves, so the real assurance comes from demonstrating clearance across orthogonal steps plus an ELISA whose coverage is understood, with orthogonal techniques (mass spec, 2D gels) backing up critical claims and dilutional linearity guarding against matrix interference and the hook effect.",
@@ -1173,6 +1235,7 @@ export const workflows: Workflow[] = [
     ],
     relatedLessonSlugs: ["viral-safety-testing", "cell-bank-characterization", "biologics-qc-overview", "quality-risk-management-q9"],
     relatedToolkitSlugs: ["gmp-audit-kit"],
+    relatedToolSlugs: ["viral-safety-readiness-planner"],
     accessTier: "free",
     deepDive:
       "Viral safety is built on ICH Q5A's principle that no single test can prove the absence of a virus, so assurance comes from three complementary pillars: controlling and characterizing the source (cell banks, raw materials), testing at key stages, and validating viral clearance through the process. Clearance is quantified by spiking studies, and the log-reductions only add up when the steps are mechanistically orthogonal — a low-pH hold and a nanofilter remove virus by different means, whereas two similar steps can overstate the margin. The output is a barrier argument: even a contamination that slips past one layer is caught by another, which is why a signal in unprocessed bulk is contained and investigated rather than retested away.",

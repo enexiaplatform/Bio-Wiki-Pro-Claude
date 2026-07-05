@@ -5,4 +5,4 @@ Disallow: /api/
 Disallow: /settings
 Disallow: /upgrade
 
-Sitemap: https://bio-wiki-pro-claude.vercel.app/sitemap.xml
+Sitemap: https://lifescienceatlas.com/sitemap.xml

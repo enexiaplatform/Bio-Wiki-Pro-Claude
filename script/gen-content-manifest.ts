@@ -13,7 +13,7 @@ const ROOT = process.cwd();
 const CONTENT_DIR = path.join(ROOT, "content");
 const OUT = path.join(ROOT, "client", "src", "data", "content-manifest.json");
 const COLLECTIONS = ["academy", "blog", "toolkits"] as const;
-const FILE_RE = /^(.+)\.(vi|en)\.mdx$/;
+const FILE_RE = /^(.+)\.(en)\.mdx$/;
 
 function readingMinutes(body: string): number {
   const words = body.split(/\s+/).filter(Boolean).length;
@@ -33,7 +33,7 @@ interface ManifestEntry {
   readMinutes: number;
 }
 
-async function generate(): Promise<ManifestEntry[]> {
+export async function generateManifestEntries(): Promise<ManifestEntry[]> {
   const entries: ManifestEntry[] = [];
   for (const collection of COLLECTIONS) {
     const dir = path.join(CONTENT_DIR, collection);
@@ -71,7 +71,7 @@ async function generate(): Promise<ManifestEntry[]> {
 }
 
 export async function writeManifest(): Promise<number> {
-  const entries = await generate();
+  const entries = await generateManifestEntries();
   await writeFile(OUT, JSON.stringify(entries, null, 2) + "\n", "utf-8");
   return entries.length;
 }

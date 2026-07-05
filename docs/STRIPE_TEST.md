@@ -10,7 +10,7 @@
 | `starter_kit` | Career Starter Kit | $15 | payment | `STRIPE_STARTER_KIT_PRICE_ID` | `DOWNLOAD_STARTER_KIT` |
 | `interview_prep` | Interview Prep Package | $20 | payment | `STRIPE_INTERVIEW_PREP_PRICE_ID` | `DOWNLOAD_INTERVIEW_PREP` |
 | `bundle` | Career Accelerator Bundle | $30 | payment | `STRIPE_BUNDLE_PRICE_ID` | `DOWNLOAD_BUNDLE` |
-| `pro_subscription` | BioWikiPro Pro | — | subscription | `STRIPE_PRO_PRICE_ID` | _(không có file — unlock entitlement)_ |
+| `pro_subscription` | Life Science Atlas Pro | — | subscription | `STRIPE_PRO_PRICE_ID` | _(không có file — unlock entitlement)_ |
 
 Thêm/sửa sản phẩm → chỉ sửa `server/products.ts`. `routes.ts` (price + mode) và `email.ts` (tên + download) đều đọc từ đây.
 

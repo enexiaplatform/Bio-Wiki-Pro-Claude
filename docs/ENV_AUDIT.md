@@ -1,4 +1,4 @@
-# BioWikiPro — Environment Variable Audit
+# Life Science Atlas — Environment Variable Audit
 
 > **Mục đích:** Checklist kiểm kê toàn bộ biến môi trường app cần, để đối chiếu giá trị thật trên Vercel (real vs placeholder).
 > **Ngày:** 2026-05-29 · **Phương pháp:** quét mọi `process.env.*` trong `server/` và `import.meta.env.*` trong `client/`, đối chiếu `.env.example`.
@@ -23,7 +23,7 @@
 | Biến | Dùng ở đâu | Bắt buộc cho | Build/Runtime | Ghi chú |
 |---|---|---|---|---|
 | `SESSION_SECRET` | `server/routes.ts:41` | Ký session cookie (login) | Runtime | Có fallback `"default_secret"` — **production phải set giá trị mạnh, ngẫu nhiên**. |
-| `BASE_URL` | `server/routes.ts:236,266`, `server/email.ts:8` | Stripe success/cancel/return URL, link trong email | Runtime | Fallback: `http://localhost:5000` (routes) / `https://bio-wiki-pro-claude.vercel.app` (email). **Phải set = domain production thật** nếu không Stripe redirect/email link sẽ trỏ về localhost. |
+| `BASE_URL` | `server/routes.ts:236,266`, `server/email.ts:8` | Stripe success/cancel/return URL, link trong email | Runtime | Fallback: `http://localhost:5000` (routes) / `https://lifescienceatlas.com` (email). **Phải set = domain production thật** nếu không Stripe redirect/email link sẽ trỏ về localhost. |
 | `NODE_ENV` | `server/routes.ts:47` (cookie secure), `server/index.ts:82` | Cookie `secure`, chế độ chạy | Runtime | Thường do platform set (`production` trên Vercel). Không cần khai báo thủ công. |
 | `PORT` | `server/index.ts:93` | Cổng server (chỉ local/self-host) | Runtime | Vercel serverless tự quản; chỉ liên quan local. |
 

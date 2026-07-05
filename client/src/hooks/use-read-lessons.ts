@@ -2,12 +2,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { analytics } from "@/hooks/use-analytics";
 import { recordStreakActivity } from "@/hooks/use-streak";
 
-const KEY = "bwp_read_lessons";
-const ACTIVATED_KEY = "bwp_activated";
+const KEY = "lsa_read_lessons";
+const LEGACY_KEY = "bwp_read_lessons";
+const ACTIVATED_KEY = "lsa_activated";
+const LEGACY_ACTIVATED_KEY = "bwp_activated";
 
 function readStore(): string[] {
   try {
-    const v = JSON.parse(localStorage.getItem(KEY) || "[]");
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY) ?? "[]";
+    const v = JSON.parse(raw);
+    if (!localStorage.getItem(KEY) && localStorage.getItem(LEGACY_KEY)) {
+      localStorage.setItem(KEY, raw);
+      localStorage.removeItem(LEGACY_KEY);
+    }
     return Array.isArray(v) ? v : [];
   } catch {
     return [];
@@ -87,6 +94,11 @@ export function useReadLessons() {
       setRead(next);
       // Activation: first lesson ever opened. Fire once (guarded across reloads).
       try {
+        const legacyActivated = localStorage.getItem(LEGACY_ACTIVATED_KEY);
+        if (legacyActivated && !localStorage.getItem(ACTIVATED_KEY)) {
+          localStorage.setItem(ACTIVATED_KEY, legacyActivated);
+          localStorage.removeItem(LEGACY_ACTIVATED_KEY);
+        }
         if (!localStorage.getItem(ACTIVATED_KEY)) {
           localStorage.setItem(ACTIVATED_KEY, "1");
           analytics.activated(slug);

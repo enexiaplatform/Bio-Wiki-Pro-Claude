@@ -4,39 +4,83 @@ slug: "growth-promotion-testing"
 lang: "en"
 tier: "free"
 category: "Microbiology QC"
-seoDescription: "Why every batch of microbiological media must pass growth promotion testing — challenge organisms, acceptance criteria, and common pitfalls."
-updatedAt: "2026-05-31"
+seoDescription: "Why every microbiology media lot needs growth promotion testing: low-inoculum challenge, solid vs liquid acceptance, selective-media inhibition, and common failure modes."
+updatedAt: "2026-07-05"
 quiz:
-  - q: "What does growth promotion testing prove?"
-    options: ["The media is sterile", "The media can support microbial growth", "The product is non-toxic", "The incubator is calibrated"]
+  - q: "What does growth promotion testing primarily prove?"
+    options: ["The media lot can support microbial growth under the test conditions", "The product is sterile", "The incubator is calibrated", "The analyst found every possible organism"]
+    answer: 0
+  - q: "Why is a low inoculum, often not more than 100 CFU, used?"
+    options: ["To challenge media sensitivity instead of overwhelming the medium", "To make the test faster only", "To avoid using controls", "To prove the product has no preservative"]
+    answer: 0
+  - q: "What extra property must selective media demonstrate?"
+    options: ["Only color change", "Inhibition of organisms the medium is intended to suppress", "Sterility of the product", "Endotoxin removal"]
     answer: 1
-  - q: "What inoculum level is typically used to challenge sensitivity?"
-    options: ["≤ 100 CFU", "1,000 CFU", "10,000 CFU", "1 million CFU"]
-    answer: 0
-  - q: "For solid media, recovery should be within what factor of the reference lot?"
-    options: ["A factor of 2", "A factor of 10", "Exactly equal", "A factor of 100"]
-    answer: 0
 ---
 
 # Growth Promotion Testing (GPT)
 
-Growth Promotion Testing proves that a batch of culture media can actually
-support microbial growth. Without it, a "no growth" sterility or bioburden
-result is meaningless — you can't tell sterile from dead media.
+Growth Promotion Testing proves that a culture media lot can recover
+microorganisms before the lot is used for GMP microbiology results. Without GPT,
+a "no growth" result is not fully interpretable. The sample may be clean, or the
+medium may simply be unable to support growth.
 
-## What you test
+## What GPT checks
 
-- **Challenge organisms** — compendial strains (e.g. *S. aureus*, *P. aeruginosa*,
-  *B. subtilis*, *C. albicans*, *A. brasiliensis*) plus relevant environmental isolates.
-- **Low inoculum** — typically **≤ 100 CFU** to challenge sensitivity.
+GPT checks the media lot, not the product. The lab challenges the medium with a
+small number of suitable organisms and confirms that growth occurs as expected.
 
-## Acceptance criteria
+Typical controls include:
 
-- **Solid media:** recovery within a factor of 2 of the reference lot.
-- **Liquid media:** clearly visible turbidity/growth within the specified time.
+- media lot identity, preparation, storage, and expiry;
+- organism strain identity and passage control;
+- low inoculum challenge, often not more than 100 CFU;
+- incubation time, temperature, and atmosphere;
+- reference or previously approved media lot where required;
+- predefined acceptance criteria.
+
+## Solid, liquid, and selective media
+
+For **solid nonselective media**, recovery is commonly assessed by comparing
+colony recovery with a reference or previously approved lot. A common compendial
+concept is that recovery should be within a factor of two of the comparator or
+calculated value, depending on the method.
+
+For **liquid media**, the result is usually visible growth within the specified
+time, comparable to a previously approved lot where applicable.
+
+For **selective media**, GPT has two jobs:
+
+- recover the target organism;
+- inhibit organisms the medium is meant to suppress.
+
+A selective medium that grows everything is not selective. A selective medium
+that suppresses the target is not suitable.
+
+## GPT vs method suitability
+
+GPT asks whether the medium can support growth. Method suitability asks whether
+the test can recover organisms in the presence of the product. A media lot can
+pass GPT but still fail suitability if the product is antimicrobial or otherwise
+inhibitory.
 
 ## Common pitfalls
 
-- Using too high an inoculum (masks a weak medium).
-- Not testing each lot, including in-house prepared media.
-- Ignoring expiry and storage conditions that degrade media performance.
+- Using a media lot before GPT release.
+- Challenging with too many organisms, which hides weak recovery.
+- Forgetting selective-media inhibition testing.
+- Losing strain traceability or passage control.
+- Overheating media during preparation.
+- Ignoring plate dehydration, expiry, or storage excursions.
+- Retesting a failed GPT without investigating why it failed.
+
+## What good looks like
+
+A strong media-control program quarantines each media lot until GPT passes,
+defines the organism panel and acceptance criteria per medium, traces media lots
+to the tests that used them, and investigates GPT failures for product impact
+when a lot was already used.
+
+> Practice it: use the [Culture Media Selection Helper](/tools) and the
+> [Culture Media Selection workflow](/workflows/culture-media-selection) to match
+> each microbiology test to media, organisms, and controls.

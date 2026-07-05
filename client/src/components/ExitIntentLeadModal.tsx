@@ -5,7 +5,8 @@ import { useUser } from "@/context/UserContext";
 import { analytics, capture } from "@/hooks/use-analytics";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-const SESSION_KEY = "bwp_exit_intent_shown";
+const SESSION_KEY = "lsa_exit_intent_shown";
+const LEGACY_SESSION_KEY = "bwp_exit_intent_shown";
 
 /**
  * One-time, guest-only exit-intent capture for the free GMP checklist. Fires when
@@ -25,7 +26,12 @@ export function ExitIntentLeadModal() {
     if (isAuthenticated) return;
     if (typeof window === "undefined") return;
     try {
-      if (sessionStorage.getItem(SESSION_KEY)) return;
+      const alreadyShown = sessionStorage.getItem(SESSION_KEY) ?? sessionStorage.getItem(LEGACY_SESSION_KEY);
+      if (alreadyShown) {
+        sessionStorage.setItem(SESSION_KEY, alreadyShown);
+        sessionStorage.removeItem(LEGACY_SESSION_KEY);
+        return;
+      }
     } catch {
       /* private mode — just proceed */
     }

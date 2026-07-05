@@ -1,6 +1,6 @@
 # GMP Audit Quick Checklist
 **25 điểm kiểm tra trước ngày audit**
-*BioWikiPro — biowikipro.com*
+*Life Science Atlas — lifescienceatlas.com*
 
 ---
 
@@ -75,8 +75,8 @@
 
 > 💡 **Cần chuẩn bị kỹ hơn?**
 > GMP Audit Survival Kit ($59) bao gồm: 40-trang Guide đầy đủ, 10 CAPA templates ready-to-fill, 50+ audit Q&A scripts, và SOP Gap Analysis Excel.
-> 👉 **biowikipro.com/toolkits/gmp-audit-kit**
+> 👉 **lifescienceatlas.com/toolkits/gmp-audit-kit**
 
 ---
 
-*© 2026 BioWikiPro. Tài liệu này chỉ mang tính chất tham khảo giáo dục. Không thay thế hướng dẫn GMP chính thức của tổ chức bạn.*
+*© 2026 Life Science Atlas. Tài liệu này chỉ mang tính chất tham khảo giáo dục. Không thay thế hướng dẫn GMP chính thức của tổ chức bạn.*

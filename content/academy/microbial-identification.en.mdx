@@ -4,40 +4,165 @@ slug: "microbial-identification"
 lang: "en"
 tier: "free"
 category: "Microbiology QC"
-seoDescription: "Phenotypic vs genotypic ID — MALDI-TOF, 16S rRNA sequencing, and when identification is required for excursions and isolates."
-updatedAt: "2026-06-01"
+seoDescription: "Risk-based microbial identification for QC investigations: characterization, MALDI-TOF, 16S/ITS sequencing, isolate libraries, source clues, and when species-level ID matters."
+updatedAt: "2026-07-03"
 quiz:
-  - q: "MALDI-TOF identifies organisms by their:"
-    options: ["DNA sequence", "Protein mass fingerprint", "Colony colour", "Gram stain"]
+  - q: "MALDI-TOF identifies organisms mainly by their:"
+    options: ["DNA sequence", "Protein mass fingerprint", "Colony colour only", "Incubation temperature"]
     answer: 1
-  - q: "Which method is the genotypic gold standard for bacteria?"
-    options: ["Catalase test", "16S rRNA sequencing", "Oxidase test", "Microscopy"]
+  - q: "Which method is commonly used as a genotypic reference approach for bacterial ID?"
+    options: ["Catalase test", "16S rRNA sequencing", "Oxidase test", "Colony count only"]
     answer: 1
-  - q: "Identification to species is typically required for:"
-    options: ["Every settle plate", "Grade A/B excursions and objectionable isolates", "Nothing", "Only end-of-year review"]
+  - q: "Species-level identification is typically most important for:"
+    options: ["Every low-risk Grade D colony", "Grade A/B excursions, sterility positives, recurring trends, and objectionable-organism decisions", "Only annual product review", "Only supplier audits"]
+    answer: 1
+  - q: "Why is a site isolate library valuable?"
+    options: ["It replaces investigations", "It helps compare new isolates with known facility flora and source patterns", "It eliminates incubation", "It proves all organisms are harmless"]
     answer: 1
 ---
 
 # Microbial Identification Methods
 
-When monitoring detects an organism, identification tells you *what* it is and
-*where* it likely came from — essential for investigations and CCS.
+A colony count tells you **how many** organisms were recovered. Microbial
+identification tells you **what** was recovered, and that is often what determines
+the investigation path.
 
-## Phenotypic vs genotypic
+The same count can mean very different things:
 
-- **Phenotypic:** Gram stain, biochemical tests, automated systems, **MALDI-TOF**
-  (protein mass fingerprint — fast, widely used).
-- **Genotypic:** **16S rRNA sequencing** (bacteria), ITS (fungi) — the reference
-  standard, used when phenotypic results are ambiguous.
+- *Micrococcus* on a glove plate may point toward personnel or gowning.
+- *Pseudomonas* in a water sample may point toward wet surfaces, biofilm, or system
+  control.
+- *Bacillus* in Grade C may point toward dust, materials, or weak sporicidal
+  cleaning.
+- A mold recovery near a transfer path may point toward HVAC, construction,
+  cardboard, or humidity.
 
-## When ID is required
+Identification turns a colony into contamination intelligence.
 
-- Grade A/B environmental excursions
-- Sterility test positives
-- Objectionable organisms in non-sterile products
-- Building an isolate library for the contamination control strategy
+## Characterization, identification, and strain typing
 
-## Practical note
+USP &lt;1113&gt; separates related ideas that are often blended together:
 
-A characterised in-house isolate library makes investigations far faster —
-matching an excursion to a known house flora pinpoints the likely source.
+| Level | What it does | Example use |
+| --- | --- | --- |
+| Characterization | Describes basic features such as colony morphology, Gram reaction, cellular shape, spores, catalase/oxidase, or growth pattern | Early triage, trend grouping, deciding whether deeper ID is needed |
+| Identification | Assigns the organism to a group, genus, or species | EM excursions, sterility positives, objectionable-organism assessment |
+| Strain typing | Compares isolates below species level to assess relatedness | Recurring contamination, product impact, suspected common source |
+
+Not every recovery needs the deepest level. The depth should match the risk and the
+decision being made.
+
+## Common ID approaches
+
+| Method | Strength | Limitation |
+| --- | --- | --- |
+| Gram stain and morphology | Fast first clue; separates broad groups | Not enough for species-level decisions |
+| Biochemical or phenotypic systems | Practical and familiar for routine isolates | Can be weak for unusual, stressed, or slow-growing organisms |
+| MALDI-TOF | Fast species-level ID for many bacteria and fungi using a protein mass fingerprint | Depends on database quality, sample prep, and acceptance criteria |
+| 16S rRNA sequencing | Strong genotypic approach for bacteria, useful for difficult IDs | May not separate closely related species; needs sequence quality and interpretation |
+| ITS or fungal sequencing | Useful for yeasts and molds | Library coverage and taxonomy can be challenging |
+| Strain typing methods | Helps show whether isolates are related | Usually reserved for high-impact or recurring events |
+
+A robust lab defines when each method is appropriate and how uncertain or low-score
+results are handled.
+
+## When to identify
+
+Use a risk-based rule set. Identification is usually expected or strongly justified
+for:
+
+- Grade A/B environmental or personnel excursions;
+- sterility test positives;
+- media fill positives;
+- recurring action or alert trends;
+- objectionable-organism assessment in non-sterile products;
+- water system Gram-negative or biofilm-associated recoveries;
+- new or unusual facility flora;
+- isolates linked to complaints, deviations, or product impact decisions.
+
+Lower-risk, low-count recoveries in less critical areas may only need
+characterization or genus-level ID, depending on the SOP and trend strategy.
+
+## How far to identify
+
+The decision is not "ID everything to species" or "ID only when forced." A practical
+approach is:
+
+| Situation | Typical depth |
+| --- | --- |
+| Grade A recovery | Species-level ID, investigation, product-impact assessment |
+| Grade B action-level recovery | Genus/species ID and trend correlation |
+| Recurring same location or same morphology | Species-level ID; consider strain typing if recurrence matters |
+| Non-sterile product isolate | Species-level ID when objectionability depends on organism identity |
+| Routine low-risk background flora | Characterization or genus-level ID may be sufficient if justified |
+| Ambiguous MALDI/phenotypic result | Confirm with sequencing or alternate method when decision impact is high |
+
+The SOP should define both the default rule and the escalation rule.
+
+## Source clues from organism type
+
+The organism does not prove the source, but it gives the investigation a starting
+hypothesis.
+
+| Organism pattern | Common source hypothesis |
+| --- | --- |
+| Coagulase-negative staphylococci, *Micrococcus*, diphtheroids | Human skin, gowning, glove disinfection, intervention technique |
+| Spore-formers such as *Bacillus* | Dust, raw materials, cardboard, poor sporicidal cleaning |
+| Gram-negative rods such as *Pseudomonas*, *Ralstonia*, *Burkholderia* | Water, wet surfaces, drains, biofilm, cleaning residues |
+| Molds such as *Aspergillus* or *Penicillium* | Air handling, construction, humidity, packaging materials |
+| Yeasts | Personnel, wet niches, raw materials, formulation or process residues |
+
+Use ID with location, timing, activity, EM trends, cleaning records, airflow, and
+personnel history. ID alone is a clue; correlation makes it evidence.
+
+## Building an isolate library
+
+A site isolate library is one of the best tools for contamination control. It helps
+the site answer:
+
+- What organisms are normal for each area or utility?
+- Which organisms are new or increasing?
+- Which locations share the same flora?
+- Which isolates recur after cleaning or maintenance?
+- Which organisms should be included in disinfectant qualification or method
+  suitability studies?
+- Which isolates matter for the contamination control strategy?
+
+The library should include organism ID, source, date, location, method, confidence
+level, and investigation outcome. For high-impact recurring isolates, strain typing
+may be useful to distinguish "same species, unrelated events" from "same source
+returning."
+
+## Reviewer checklist
+
+When reviewing an ID result, ask:
+
+- Was the isolate pure and viable before identification?
+- Was the method qualified or verified for the expected organism range?
+- Was the confidence score or sequence quality acceptable?
+- Does the ID fit the colony morphology and Gram stain?
+- Was an ambiguous result escalated appropriately?
+- Does the organism change the product-impact or objectionability decision?
+- Was the isolate added to the site library or trend report?
+- Does the investigation use the ID to test a source hypothesis?
+
+If the ID result is not used in the investigation, the site may be collecting data
+without turning it into control.
+
+## Practical takeaway
+
+Microbial identification is not a lab curiosity. It is how QC and QA connect a
+recovery to risk, source, trend, product impact, and CAPA. The right depth of ID is
+risk-based: enough to support the decision, not so shallow that the investigation is
+blind, and not so excessive that the lab spends effort where no decision changes.
+
+## Go deeper
+
+- [Microbial identification: why knowing your bug matters](/blog/microbial-identification-knowing-your-bug)
+- [Investigating Microbial Excursions](/library/microbial-excursion-investigation)
+- [Objectionable Organisms in Non-Sterile Products](/library/objectionable-organisms)
+- [Environmental monitoring gaps inspectors find](/blog/environmental-monitoring-gaps-inspectors-find)
+
+*General educational content. Verify against USP &lt;1113&gt;, applicable
+pharmacopeial chapters, approved SOPs, qualified identification methods, and the
+site contamination control strategy before use in GMP decisions.*

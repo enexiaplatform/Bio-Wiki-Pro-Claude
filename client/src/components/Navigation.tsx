@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const openSearch = () => window.dispatchEvent(new Event("bwp:open-search"));
+const openSearch = () => window.dispatchEvent(new Event("lsa:open-search"));
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { useUser } from "@/context/UserContext";
@@ -26,8 +26,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
-// BioWiki Pro — "Knowledge Lattice" mark (molecule + knowledge graph).
-function BioWikiMark({ className }: { className?: string }) {
+// Life Science Atlas "Knowledge Lattice" mark (molecule + knowledge graph).
+function AtlasMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
       <g fill="none" stroke="#14B8A6" strokeOpacity="0.5" strokeWidth="3.4" strokeLinecap="round">
@@ -182,7 +182,7 @@ export function DesktopNav() {
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-6">
       <Link href="/" className="flex items-center gap-2 mr-6 shrink-0 hover:opacity-80 transition-opacity">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1">
-          <BioWikiMark className="w-full h-full" />
+          <AtlasMark className="w-full h-full" />
         </div>
         <span className="font-display font-bold text-xl tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
       </Link>
@@ -279,7 +279,7 @@ export function MobileHeader() {
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 px-4 py-3 md:hidden flex items-center justify-between">
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1 shadow-lg shadow-primary/20">
-          <BioWikiMark className="w-full h-full" />
+          <AtlasMark className="w-full h-full" />
         </div>
         <span className="font-display font-bold text-lg tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
         {isPro && (

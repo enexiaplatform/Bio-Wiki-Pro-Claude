@@ -4,55 +4,367 @@ slug: "why-potency-is-the-hardest-biologic-test"
 lang: "en"
 tier: "free"
 category: "Biologics QC"
-seoDescription: "Potency ties a biologic's release test to its mechanism of action — and that's what makes it hard. Why bioassays are noisy, what relative potency means, and why parallelism matters."
-updatedAt: "2026-06-20"
+seoDescription: "Potency is the biologic QC test that links product quality to mechanism of action. Learn why cell-based assays are noisy, how relative potency, reference standards, 4PL curves, parallelism, system suitability, validation, stability, and investigations fit together."
+updatedAt: "2026-07-05"
 ---
 
 # Why potency is the hardest QC test for a biologic
 
-For a small molecule, identity and assay get you a long way. For a biologic,
-regulators scrutinise **potency** most — because it is the test that ties release
-to the **mechanism of action**. It is the closest measure of whether the molecule
-actually does what it is meant to do. And that is exactly what makes it hard.
+For a small molecule, identity and assay get you a long way. If the structure is
+confirmed and the amount of active ingredient is within specification, the release
+decision has a strong analytical foundation.
 
-## Biology is noisy
+For a biologic, that is not enough. A protein can have the right sequence, the
+right mass, and an acceptable purity profile, yet still lose the biological
+activity that matters clinically. It can be misfolded, modified in a critical
+region, aggregated, glycosylated differently, or affected by a manufacturing
+change in a way that a single physicochemical assay does not fully explain.
 
-Many potency methods are **cell-based bioassays**: you expose living cells to the
-product and measure a biological response. That response depends on the cells as
-much as the sample — their passage number, health, seeding density, and even
-plate-edge effects. So most of the variability you fight in a potency assay lives
-in the **cell system**, not the pipetting. Controlling the biology is the job.
+That is why potency is so central. Potency is the quality attribute that asks:
+**does this product perform the biological function it is supposed to perform?**
+It ties the release test to the product's mechanism of action. It is also why
+potency is often the most difficult QC method to develop, validate, transfer, and
+investigate.
 
-## Relative potency, not absolute
+The hard part is not just the laboratory work. Potency sits at the intersection
+of biology, statistics, reference standards, product understanding, stability,
+and regulatory expectations. A good potency assay is not simply a test. It is a
+controlled biological measurement system.
 
-You almost never report an absolute number. Instead you run the sample against a
-**qualified reference standard** on the same plate and report **relative potency** —
-how active the sample is compared with the reference. That is why the reference
-standard is so important: it anchors every result, and when it nears exhaustion you
-**bridge** a new standard against the old one before switching, so the potency
-history does not take a step-change.
+## What potency means for a biologic
+
+Potency is not the same as concentration. Concentration asks how much material is
+present. Potency asks how active that material is.
+
+For a monoclonal antibody, potency may relate to target binding, receptor
+blocking, complement activation, antibody-dependent cellular cytotoxicity, or a
+cell signaling response. For a cytokine, potency may be measured by proliferation
+or reporter-gene activity. For a vaccine or advanced therapy, potency may involve
+multiple biological functions and may be harder to reduce to one simple readout.
+
+The ideal potency assay reflects the relevant mechanism of action. In practice,
+the method may be a cell-based functional assay, a binding assay, an enzymatic
+assay, or a justified surrogate. The closer the assay is to the intended
+biological effect, the more meaningful it is. The closer it is to living biology,
+the more variable it usually becomes.
+
+That trade-off is the core tension of potency testing: the most relevant assay is
+often the least tidy assay.
+
+## Why a chemical assay is not enough
+
+Biologics are large, heterogeneous products made by living systems. Their quality
+is not captured by one number. QC builds confidence through orthogonal evidence:
+identity, purity, impurity profile, charge profile, glycan profile, aggregation,
+quantity, binding, and potency.
+
+Physicochemical tests are powerful. They can detect mass shifts, fragments,
+aggregates, variants, impurities, and changes in product profile. But they do not
+always prove biological function.
+
+Two lots can look similar by one analytical method and differ in activity. The
+reverse can also happen: a small analytical difference may not matter clinically
+if potency and other critical attributes remain controlled. Potency gives the QC
+system a functional anchor. It asks whether the product still behaves like the
+reference product in the biological system that matters.
+
+This is why potency is part of the specification strategy for many
+biotechnological and biological products. It is not an optional "nice to know"
+test. It is one of the ways the control strategy connects the molecule on paper
+to the product used by a patient.
+
+## Cell-based assays are controlled biology
+
+Many potency methods are cell-based bioassays. The product is applied to living
+cells, and the assay measures a response: proliferation, killing, reporter
+signal, receptor activation, cytokine release, or another functional output.
+
+That means the assay is only as reliable as the cell system. The sample is not
+the only thing producing the result. The cells are also producing the result.
+
+Common sources of variability include:
+
+- Cell passage number and passage history
+- Cell viability, health, and recovery after thawing
+- Seeding density and attachment behavior
+- Media, serum, supplements, and reagent lots
+- Incubation time, temperature, humidity, and CO2 control
+- Plate position, edge effects, and evaporation
+- Timing between dilution, dosing, washing, and readout
+- Analyst technique and instrument settings
+- Freeze-thaw history of sample and reference material
+- Matrix effects from formulation, excipients, or process residues
+
+In a chemical assay, variability often feels mechanical: weighing, pipetting,
+chromatography, integration. In a cell-based potency assay, variability is often
+biological. A method can be technically well executed and still fail because the
+cell system is drifting.
+
+This is why a potency method needs more than a written procedure. It needs a
+living control strategy for the cell bank, working cell stock, qualified passage
+range, culture conditions, thaw schedule, plate layout, controls, and system
+suitability.
+
+## Relative potency, not absolute activity
+
+Potency for biologics is commonly reported as **relative potency**. The test
+sample is compared with a qualified reference standard tested in the same assay
+run, often on the same plate or within the same run structure.
+
+The result is not "the sample contains X units of activity" in an abstract sense.
+It is closer to: "the sample shows X% activity relative to the reference under
+these validated assay conditions."
+
+This is a practical response to biological variability. If the cells are slightly
+more responsive today than last week, both the sample and reference should be
+affected. The comparison helps normalize the result. The reference standard
+anchors the measurement.
+
+That makes the reference standard one of the most important materials in the
+entire method. If the reference changes, drifts, degrades, or is bridged poorly,
+the potency history of the product can shift. A new standard must be qualified
+against the old standard with a scientifically justified bridging plan before it
+replaces the old one.
+
+The reference is not just a reagent. It is the memory of the assay.
+
+## Dose-response curves and the 4PL model
+
+Potency assays usually test multiple dilutions of both the sample and the
+reference. The response is plotted against dose, producing a dose-response curve.
+For many bioassays, the curve is sigmoidal and is modeled with a four-parameter
+logistic fit, often called 4PL.
+
+The 4PL model describes the lower asymptote, upper asymptote, slope, and midpoint
+of the curve. Relative potency is then estimated from the horizontal shift
+between the sample curve and the reference curve.
+
+The model matters because potency is not usually calculated from one point. A
+single response value can be misleading if it falls near the top or bottom of the
+curve, where the response is saturated and less sensitive to dose. A well-designed
+assay uses the informative part of the curve, with enough dilution points and
+replicates to support the calculation.
+
+Good QC analysts do not treat the software output as a black box. They look at
+the curve shape, the control responses, the placement of sample points, the
+residuals, the fit, and the suitability checks. A calculated number is only
+reportable if the assay behavior supports it.
 
 ## Parallelism is the gatekeeper
 
-Relative potency is only valid when the sample and reference **dose-response curves
-are parallel** (similar shape). If they are not, you may be measuring something
-other than the intended activity — a different mechanism, or a matrix effect.
-Non-parallelism is a signal to investigate, not a number to report.
+Relative potency assumes that the sample and reference behave similarly in the
+assay system. In practical terms, their dose-response curves must be sufficiently
+parallel or similar. If the curves are not parallel, the horizontal shift between
+them may not represent a true potency difference.
+
+Non-parallelism can point to several problems:
+
+- The sample may contain a matrix effect that changes the assay response.
+- The product may have changed in a way that affects the mechanism being measured.
+- The reference may be unsuitable or degraded.
+- The dilution series may have been prepared incorrectly.
+- The cells may be responding inconsistently.
+- The selected model or reportable range may not fit the data.
+
+This is why parallelism is a gatekeeper. If similarity is not demonstrated, the
+result should not be quietly reported as if it were a normal potency value.
+Non-parallelism is information. It may be assay noise, but it may also be an early
+signal that the sample no longer behaves like the reference.
+
+## System suitability protects reportability
+
+System suitability is the set of checks that proves the run is fit to interpret
+before the sample result is accepted. A potency assay without meaningful system
+suitability is fragile because it can produce a number even when the biological
+system was not under control.
+
+Typical suitability checks may include:
+
+- Reference standard curve performance
+- Positive and negative control response
+- Blank or background signal
+- Signal-to-background ratio
+- EC50 or other curve parameter range
+- Slope or asymptote limits
+- Replicate precision
+- Plate acceptance criteria
+- Cell viability or growth criteria
+- Parallelism or similarity criteria
+- Control sample recovery or relative potency range
+
+The important point is sequence. Suitability comes before reportability. If the
+run fails suitability, the sample result is not made valid by looking convenient.
+The right question becomes: what failed, why did it fail, and what does the SOP
+allow next?
+
+## Validation is harder than checking precision
+
+Potency validation must demonstrate that the method is suitable for its intended
+use. That includes the familiar validation characteristics: specificity,
+accuracy, precision, range, robustness, and other relevant performance elements.
+But for a bioassay, each of those ideas has biological and statistical wrinkles.
+
+Specificity means the assay responds to the relevant biological activity, not
+just to any signal that happens to move the readout. Accuracy may be expressed
+through recovery or dilutional linearity relative to a reference. Precision must
+cover repeatability and intermediate precision across analysts, days, equipment,
+cell passages, and reagent lots where appropriate. Range must show where the
+method can measure potency reliably. Robustness must challenge small changes that
+could realistically occur in routine use.
+
+For a cell-based assay, validation also needs to define the reportable range,
+curve model, replicate structure, acceptance criteria, handling of invalid runs,
+and rules for repeat testing. It should prove not only that the assay can generate
+a number, but that the number can support a release, stability, comparability, or
+development decision.
+
+The best validation packages are honest about variability. They do not pretend a
+bioassay behaves like HPLC. They define how much variability is expected, how it
+is controlled, and when it becomes a quality signal.
+
+## Potency must be stability-indicating where it matters
+
+Potency is often a key stability attribute. If the product degrades in a way that
+reduces biological activity, the potency assay should be able to detect that
+loss. This is especially important when degradation is not fully captured by one
+physicochemical method.
+
+Forced degradation and stressed samples can help show whether the assay is
+stability-indicating. A stressed lot that looks different by aggregation, charge,
+oxidation, or fragmentation may also show reduced potency. Those relationships
+help the control strategy connect structure to function.
+
+But the relationship is not always simple. A product may show a structural change
+with little immediate potency impact, or a potency loss that is difficult to
+explain from a single analytical profile. That is why biologics need a panel of
+methods. Potency is powerful, but it is not the whole story.
+
+## Reference standard lifecycle is a hidden risk
+
+Reference standards make relative potency possible, but they also create a
+lifecycle challenge.
+
+A reference standard needs qualification, storage control, stability monitoring,
+inventory control, and a replacement strategy. The replacement strategy is
+especially important because a reference standard will eventually run low,
+expire, or become unsuitable. When a new reference is introduced, it must be
+bridged against the previous standard so that historical potency results remain
+interpretable.
+
+Poor bridging can create an artificial shift in trend. A product may appear to
+gain or lose potency simply because the anchor changed. That can confuse release
+decisions, stability interpretation, comparability exercises, and regulatory
+commitments.
+
+Good teams treat reference standard management as part of method control, not as
+an inventory afterthought.
+
+## Potency, binding, and surrogate assays
+
+Not every potency method is a cell-based assay. Some products use binding assays,
+enzymatic assays, or other surrogate methods. A surrogate can be appropriate when
+it is scientifically justified and linked to the relevant mechanism of action or
+critical quality attribute.
+
+The risk is mistaking convenience for relevance. A binding assay may be cleaner,
+faster, and more precise than a cell-based functional assay, but binding is not
+always the same as function. If the clinical mechanism depends on downstream
+signaling, effector function, or cellular response, a binding result may not be a
+complete potency measure.
+
+This does not mean every product must use the most complicated possible assay. It
+means the method must be justified. The potency strategy should explain what
+biological activity matters, how the assay measures or represents it, what the
+assay does not measure, and how other tests fill the gaps.
+
+## Potency in release, stability, and comparability
+
+Potency results do not live in isolation.
+
+For batch release, potency helps confirm that a manufactured lot meets functional
+quality expectations. For stability, potency trends show whether biological
+activity is maintained through shelf life. For process changes, potency supports
+comparability by showing whether the pre-change and post-change product remain
+functionally similar. For investigations, potency can help distinguish an
+analytical artifact from a true product quality shift.
+
+This is also why potency OOS and OOT results can be difficult. A low potency
+result may be a real product issue, but it may also come from a weak cell day, a
+bad reference preparation, a failed reagent lot, a plate effect, a dilution error,
+or a model/reportability problem. The investigation has to protect both sides:
+do not release a weak product, and do not reject a good product because the assay
+system was uncontrolled.
+
+## How to investigate a potency problem
+
+A potency investigation should begin with run validity. Before asking whether the
+batch is weak, ask whether the assay was reportable.
+
+Start with:
+
+- Were all system suitability criteria met?
+- Did the reference curve behave as expected?
+- Were controls within historical limits?
+- Was the sample curve parallel or similar to the reference?
+- Were replicate precision and plate criteria acceptable?
+- Were cell passage, viability, seeding density, and culture conditions within
+  the qualified state?
+- Were reagents, media, and reference preparations within expiry and storage
+  requirements?
+- Were there dilution, timing, incubation, or instrument deviations?
+- Is there a trend in control sample recovery, EC50, slope, or background signal?
+- Do orthogonal methods show a product quality change?
+
+Only after the run is understood should the team decide whether repeat testing is
+scientifically justified. Repeating a noisy assay until one result passes is not
+an investigation. It is a data integrity risk. Repeat testing must follow the
+approved procedure, be justified by the evidence, and preserve the original result
+in the quality record.
 
 ## What good looks like
 
-- The cell line is within its **qualified passage range**
-- Potency is **relative**, against a qualified reference standard
-- **Parallelism / similarity** is met before any result is reported
-- System suitability and controls are valid for every run
-- High variability triggers an **investigation**, not a quiet re-run
+A mature potency control strategy has several visible features:
+
+- The assay is linked to the product's relevant mechanism of action.
+- The reference standard is qualified, controlled, trended, and replaceable
+  through a bridging plan.
+- The cell system has a qualified passage range and defined culture controls.
+- The dilution scheme captures the informative part of the dose-response curve.
+- The curve model and reportable range are justified.
+- Parallelism or similarity is checked before relative potency is reported.
+- System suitability is strict enough to catch bad assay runs.
+- Validation reflects routine biological variability, not idealized conditions.
+- Stability studies show whether potency can detect meaningful loss of activity.
+- OOS/OOT investigations separate assay failure from product failure with
+  evidence.
+- Analysts are trained to interpret curves, controls, and trends, not just copy a
+  software result.
+
+Potency is hard because it is supposed to be hard. It is the test that asks the
+most meaningful question about a biologic: does the product still work in the way
+we claim it works?
+
+The answer is never just one number. It is the result of a controlled biological
+system, a qualified reference, a suitable model, valid curves, sound statistics,
+and disciplined investigation.
 
 ## Go deeper
 
+- Check reportability with the [Cell-Based Potency Readiness Planner](/tools/cell-based-potency-readiness-planner).
 - Walk the method in the [Cell-Based Potency Assay workflow](/workflows/cell-based-potency-assay).
 - Learn the background in [Cell-based potency assays](/library/cell-based-potency-assays)
-  and [Biologics QC — what makes it different](/library/biologics-qc-overview).
+  and [Biologics QC - what makes it different](/library/biologics-qc-overview).
+- Connect potency to broader characterization in [Characterizing a protein: it is not one test](/blog/characterizing-a-protein-its-not-one-test).
+- Review the supporting controls in [Reference standards management](/library/reference-standards-management)
+  and [Analytical method validation](/library/analytical-method-validation).
 
-*General educational content — verify against the applicable pharmacopeia and ICH
+## References
+
+- ICH, [Q6B Specifications: Test Procedures and Acceptance Criteria for Biotechnological/Biological Products](https://database.ich.org/sites/default/files/Q6B%20Guideline.pdf).
+- ICH, [Q2(R2) Validation of Analytical Procedures](https://database.ich.org/sites/default/files/ICH_Q2%28R2%29_Guideline_2023_1130.pdf).
+- FDA, [Potency Tests for Cellular and Gene Therapy Products](https://www.fda.gov/files/vaccines%2C%20blood%20%26%20biologics/published/Final-Guidance-for-Industry--Potency-Tests-for-Cellular-and-Gene-Therapy-Products.pdf).
+- FDA, [Analytical Procedures and Methods Validation for Drugs and Biologics](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/analytical-procedures-and-methods-validation-drugs-and-biologics).
+
+*General educational content - verify against the applicable pharmacopeia and ICH
 guidance, your approved SOPs, and your validated methods. Not a substitute for QA
 approval or a validated method.*

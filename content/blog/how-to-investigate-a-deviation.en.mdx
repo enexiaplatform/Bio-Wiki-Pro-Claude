@@ -4,48 +4,204 @@ slug: "how-to-investigate-a-deviation"
 lang: "en"
 tier: "free"
 category: "Quality Systems"
-seoDescription: "A practical, step-by-step guide to GMP deviation investigations — immediate actions, root cause, impact assessment, CAPA, and the mistakes auditors flag."
-updatedAt: "2026-06-03"
+seoDescription: "A practical GMP deviation investigation guide: containment, impact assessment, risk classification, root cause, CAPA, effectiveness checks, closure evidence, and common audit traps."
+updatedAt: "2026-07-03"
 ---
 
 # How to Investigate a Deviation (Step by Step)
 
-A deviation is any departure from an approved procedure or standard. How you
-investigate it — not the fact that it happened — is what an inspector judges.
-Here's the workflow.
+A deviation is a departure from an approved procedure, specification, validated
+state, batch record, method, or expected control. It may be small, but the way it
+is handled shows whether the quality system is learning or merely filing
+paperwork.
 
-## 1. Contain and record immediately
+21 CFR 211.100 requires written production and process-control procedures, with
+deviations recorded and justified. 21 CFR 211.192 requires unexplained
+discrepancies and specification failures to be thoroughly investigated. ICH Q10
+then connects deviation handling to CAPA, knowledge management, and continual
+improvement.
 
-Document what happened, when, and what was affected, contemporaneously. Take
-immediate **correction** to control the situation (e.g. quarantine product).
+The practical goal is not to write a long report. It is to make a defensible
+quality decision.
 
-## 2. Assess impact
+## 1. Contain the situation first
 
-What batches, materials, equipment, or data are affected? Impact assessment
-scopes the investigation and drives whether product can be released.
+Before root cause, before CAPA, before classification, control the immediate
+risk.
 
-## 3. Find the root cause
+Ask:
 
-Use a structured tool (5 Whys, Ishikawa/fishbone). Push past the symptom — "operator
-error" is rarely a root cause; *why* was the error possible?
+- Is product, material, equipment, data, or a room status affected?
+- Does anything need to be quarantined, segregated, stopped, or labelled?
+- Is there an immediate patient, sterility, contamination, data-integrity, or
+  compliance risk?
+- Who must be notified now: QA, production, QC, engineering, warehouse, QP, or
+  site leadership?
+- Is there a regulatory, recall, complaint, or field-impact concern?
 
-## 4. Classify
+Containment is not the same as corrective action. It prevents the problem from
+spreading while the investigation is still learning what happened.
 
-Minor, major, or critical — based on risk to product quality and the patient. The
-classification sets the rigor and approval level.
+## 2. Capture the event contemporaneously
 
-## 5. CAPA
+The first record should be factual and time-bound:
 
-Define **corrective** actions (fix the cause) and **preventive** actions (stop
-recurrence), each with an owner, due date, and an **effectiveness check** with
-objective acceptance criteria.
+- what happened,
+- where it happened,
+- when it happened,
+- who observed it,
+- what product, batch, equipment, sample, method, or record was involved,
+- what immediate action was taken,
+- what evidence was preserved.
 
-## The mistakes auditors flag
+Avoid early conclusions such as "operator error" or "no impact" unless the
+evidence already supports them. The first report should describe the event, not
+solve it prematurely.
 
-- Root cause not established (jumping straight to actions).
-- "Human error" with no systemic fix.
-- CAPA closed without verifying effectiveness.
-- Investigation not contemporaneous / opened late.
+## 3. Classify by risk, not by convenience
 
-> Go deeper with the Academy lessons **Deviation Management** and
-> **CAPA Fundamentals**.
+Deviation categories vary by site, but the logic should be risk-based.
+
+| Classification | Typical meaning | Investigation depth |
+| --- | --- | --- |
+| Minor | No meaningful product, patient, data-integrity, validated-state, or compliance impact; isolated and understood | Short investigation with documented rationale |
+| Major | Possible impact, repeat event, procedural failure, equipment/control failure, or uncertain scope | Full investigation, QA approval, impact assessment, likely CAPA evaluation |
+| Critical | Potential patient risk, sterility assurance concern, release decision impact, data-integrity breach, regulatory commitment failure, or distributed product concern | Immediate escalation, formal investigation, senior QA/site review, possible field/regulatory assessment |
+
+Classification can change. If new evidence increases risk, upgrade the
+deviation. Do not keep a deviation "minor" because the form was opened that way.
+
+## 4. Map the impact
+
+Impact assessment is the spine of the investigation. It determines what the
+event could affect, not just what was obviously affected.
+
+Consider:
+
+- current batch or lot,
+- previous and subsequent batches,
+- other products, strengths, campaigns, or lines,
+- raw materials, components, or suppliers,
+- equipment, utilities, rooms, and cleaning status,
+- validated state and process controls,
+- QC samples, calculations, audit trails, and reportable data,
+- stability, retains, complaints, trends, and APR/PQR signals,
+- regulatory filings, registered process parameters, or validated acceptance
+  criteria.
+
+A strong impact assessment says why the boundary is defensible. "Only one batch"
+is not enough unless the evidence explains why the issue cannot extend beyond
+that batch.
+
+## 5. Build an evidence map
+
+Do not jump from event to root cause. Build the evidence set first.
+
+Useful evidence may include:
+
+- batch record pages and logbooks,
+- equipment logs, alarms, calibration, and maintenance records,
+- environmental monitoring or utility trends,
+- audit trails and raw data,
+- training and qualification records,
+- procedure version history,
+- material CoA and supplier records,
+- photos, labels, printouts, and physical evidence,
+- interviews with operators or analysts,
+- previous deviations, OOS/OOT events, complaints, and CAPAs.
+
+Interviews should be used carefully. They help explain context, but they should
+not replace objective records.
+
+## 6. Identify the root cause
+
+Root cause analysis should explain how the system allowed the deviation to occur
+and why existing controls did not prevent or detect it.
+
+Good root-cause statements are specific:
+
+- "The batch record did not require independent verification of sieve size before
+  charging."
+- "The cleaning status label was visually similar to the ready-for-use label and
+  stored in the same location."
+- "The CDS method allowed manual integration without second-person review for
+  release assays."
+
+Weak root-cause statements hide the system problem:
+
+- "operator error,"
+- "analyst mistake,"
+- "lack of attention,"
+- "procedure not followed,"
+- "training issue."
+
+Human action may be involved, but the investigation should ask what made the
+wrong action possible, likely, or undetected.
+
+## 7. Decide whether CAPA is needed
+
+Not every deviation needs a full CAPA. But every deviation needs a justified CAPA
+decision.
+
+CAPA is usually needed when:
+
+- the deviation is major or critical,
+- the event is recurring,
+- the root cause is systemic,
+- the impact crosses batches, products, sites, or systems,
+- the same control failed before,
+- the issue affects patient risk, data integrity, sterility assurance, or
+  validated state.
+
+CAPA should map to the root cause. If the root cause is a weak control, a
+training-only CAPA is usually not enough.
+
+## 8. Write the closure package
+
+A deviation can be closed only when the record supports the quality decision.
+
+The closure package should include:
+
+1. event description and timeline,
+2. containment actions,
+3. risk classification and any escalation,
+4. impact assessment and boundary rationale,
+5. evidence reviewed,
+6. root cause and contributing factors,
+7. correction, corrective action, and preventive action decisions,
+8. product or batch disposition rationale,
+9. effectiveness-check plan when CAPA is opened,
+10. QA approval and any follow-up commitments.
+
+The best closure reports are not the longest. They are the ones where an
+independent reviewer can follow the evidence to the conclusion.
+
+## Common audit traps
+
+- Opening the deviation late with no explanation.
+- Writing the root cause before the evidence is reviewed.
+- Calling everything "human error."
+- Releasing product before impact assessment is complete.
+- Failing to assess related batches or systems.
+- No documented rationale for "no CAPA required."
+- CAPA actions do not match the root cause.
+- Effectiveness check proves task completion, not recurrence control.
+- Closure justification is a summary, not an evidence-backed decision.
+
+## Use the workflow
+
+Run the [Deviation & CAPA workflow](/workflows/deviation-capa) when an event
+needs containment, impact assessment, root cause, CAPA, and closure review. Then
+use the [CAPA Effectiveness Check Planner](/tools/capa-effectiveness-check-planner)
+to pressure-test whether the action plan can prove it worked.
+
+For deeper study, read [Deviation Management](/library/deviation-management),
+[CAPA Fundamentals](/library/capa-fundamentals), and
+[CAPA: Getting the Effectiveness Check Right](/blog/capa-effectiveness-check).
+
+## References
+
+- [21 CFR 211.100 - Written Procedures; Deviations](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-F/section-211.100)
+- [21 CFR 211.192 - Production Record Review](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-J/section-211.192)
+- [ICH Q10 Pharmaceutical Quality System](https://database.ich.org/sites/default/files/Q10%20Guideline.pdf)
+- [FDA Quality Systems Approach to Pharmaceutical CGMP Regulations](https://www.fda.gov/media/71023/download)

@@ -1,5 +1,5 @@
 {
-  "name": "rest-express",
+  "name": "life-science-atlas",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
@@ -18,7 +18,8 @@
     "validate:paths": "tsx script/validate-paths.ts",
     "validate:links": "tsx script/validate-links.ts",
     "validate:tool-meta": "tsx script/validate-tool-meta.ts",
-    "validate": "npm run validate:content && npm run validate:paths && npm run validate:links && npm run validate:tool-meta && npm run check",
+    "validate:brand": "tsx script/validate-brand.ts",
+    "validate": "npm run validate:content && npm run validate:paths && npm run validate:links && npm run validate:tool-meta && npm run validate:brand && npm run check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

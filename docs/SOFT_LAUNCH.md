@@ -1,7 +1,7 @@
-# Soft-Launch Kit — BioWikiPro
+# Soft-Launch Kit — Life Science Atlas
 
 Ready-to-use assets for the 3-round soft launch (Phase 12). Copy/paste and edit
-the bracketed bits. Replace `https://bio-wiki-pro-claude.vercel.app` with the
+the bracketed bits. Replace `https://lifescienceatlas.com` with the
 custom domain once it's live.
 
 ---
@@ -25,7 +25,7 @@ feedback) · 5 quotable testimonials.
 > "Senior" because GMP knowledge lived in scattered SOPs and tribal memory — and
 > audit season meant stress, not confidence.
 >
-> So I built **BioWikiPro** — a structured QC/QA learning platform for Pharma &
+> So I built **Life Science Atlas** — a structured QC/QA learning platform for Pharma &
 > Life Science:
 >
 > • 78 in-depth lessons across 7 learning paths (GMP, sterility, validation,
@@ -37,7 +37,7 @@ feedback) · 5 quotable testimonials.
 > Dozens of lessons are **free** — no credit card. I'd genuinely value feedback
 > from people in the field.
 >
-> 👉 [https://bio-wiki-pro-claude.vercel.app]
+> 👉 [https://lifescienceatlas.com]
 >
 > First 50 readers get a free 7-day Pro pass. What would you want to see in a
 > tool like this? 👇
@@ -46,7 +46,7 @@ feedback) · 5 quotable testimonials.
 
 ## LinkedIn launch post — variant B (short / direct)
 
-> New: **BioWikiPro** — structured GMP / QC / QA learning + audit-prep tools for
+> New: **Life Science Atlas** — structured GMP / QC / QA learning + audit-prep tools for
 > Pharma & Life Science professionals.
 >
 > 78 lessons · 7 learning paths · a GMP Audit Survival Kit · a QC→QA career
@@ -55,7 +55,7 @@ feedback) · 5 quotable testimonials.
 > Built for the people who actually run the lab. Free 7-day Pro for the first 50.
 > Feedback very welcome.
 >
-> 👉 [https://bio-wiki-pro-claude.vercel.app]
+> 👉 [https://lifescienceatlas.com]
 >
 > #GMP #QualityControl #Pharma #Biotech #LifeSciences
 
@@ -73,10 +73,10 @@ feedback) · 5 quotable testimonials.
 
 ## 4. Feedback form (paste into Google Forms / Tally / Typeform)
 
-**Title:** BioWikiPro — early feedback (5 min)
+**Title:** Life Science Atlas — early feedback (5 min)
 
 1. What's your role? *(short text)*
-2. In one line, what do you think BioWikiPro is for? *(short text — tests the
+2. In one line, what do you think Life Science Atlas is for? *(short text — tests the
    5-second clarity)*
 3. How clear was it what the product does? *(1–5)*
 4. How trustworthy did the content feel? *(1–5)*

@@ -4,53 +4,277 @@ slug: "dissolution-is-more-mechanical-than-you-think"
 lang: "en"
 tier: "free"
 category: "Laboratory Controls"
-seoDescription: "Most dissolution variability and false OOS results come from the apparatus and medium, not the product. Why degassing, alignment, and staged acceptance matter in USP 711."
-updatedAt: "2026-06-20"
+seoDescription: "Most dissolution variability and false OOS results come from apparatus and medium, not the product. Learn the mechanical controls, USP 711 staged acceptance, and investigation checklist."
+updatedAt: "2026-07-04"
 ---
 
 # Dissolution: it's more mechanical than you think
 
-Dissolution testing looks like chemistry, but a surprising amount of it is
-mechanics. Most of the variability — and most false out-of-specification results —
-come from the **apparatus and the medium**, not the product. Knowing that changes
-how you set up the test and how you investigate a failure.
+Dissolution testing looks like chemistry. A tablet or capsule goes into a vessel,
+the medium is held at temperature, the apparatus rotates, samples are taken, and
+an assay gives percent dissolved. But in practice, a large part of dissolution
+quality is mechanical.
+
+Hydrodynamics, medium preparation, vessel geometry, shaft alignment, wobble,
+temperature control, sampling timing, filtration, and analyst technique can all
+move the result. That is why a dissolution failure should not immediately be
+treated as "the product failed." It may be a true product problem, but the system
+has to be checked first.
+
+Dissolution is a performance test. For many oral solid dosage forms, it supports
+release, stability, formulation development, post-approval change assessment, and
+sometimes bioequivalence reasoning. A weak setup can create false OOS results,
+hide true product drift, or make a method look less discriminatory than it really
+is.
+
+## What dissolution is trying to prove
+
+At its simplest, dissolution measures how much drug substance is released from a
+dosage form into solution over time under defined conditions. For immediate-
+release oral solids, FDA describes dissolution testing as a tool for assessing
+lot-to-lot quality, guiding formulation development, supporting continuous
+product quality after certain manufacturing changes, and, in some cases,
+supporting biowaiver decisions.
+
+That is a lot of responsibility for a test that is highly sensitive to physical
+setup. The result is only meaningful when the method is performed exactly as
+validated or as described in the applicable monograph.
+
+A dissolution result depends on:
+
+- the dosage form and formulation;
+- apparatus type and geometry;
+- medium composition, volume, pH, and deaeration;
+- temperature;
+- agitation speed;
+- sampling position and timing;
+- filtration and sample handling;
+- assay method;
+- acceptance criteria and the product's Q value.
+
+If any of these drift, the dissolution profile may drift too.
 
 ## The mechanical variables that bite
 
-Before you blame the tablet, check the things that quietly skew results:
+Before blaming the tablet, check the quiet mechanical variables.
 
-- **Undegassed medium** — dissolved gas forms bubbles on the dosage form and
-  vessel, changing dissolution; degas the medium and equilibrate it to 37 degrees C
-- **Vessel alignment and wobble** — a shaft that wobbles or a misaligned vessel
-  changes the hydrodynamics
-- **Coning** — undissolved material mounding under the paddle, slowing release
-- **Sampling** — wrong depth, wrong time, or disturbing the vessel
+**Medium preparation:** Wrong pH, wrong buffer concentration, wrong surfactant
+level, incorrect volume, poor deaeration, or inadequate equilibration can shift
+release. Dissolved gas can form bubbles on the dosage form, basket, paddle,
+vessel, or sampling cannula. Those bubbles change wetting and flow.
 
-Apparatus calibration or mechanical qualification exists precisely because these
-factors dominate.
+**Temperature:** The usual target for many oral dosage forms is 37 degrees C, and
+USP &lt;711&gt; specifies tight temperature control during the test. A small
+temperature error can change solubility, viscosity, and release rate.
 
-## Staged acceptance is a safeguard, not a loophole
+**Vessel and shaft geometry:** Vessel centering, shaft verticality, paddle or
+basket height, wobble, and vessel shape affect hydrodynamics. Two vessels can
+look similar but behave differently if they are out of mechanical qualification.
 
-USP 711 uses a staged acceptance scheme — S1, then S2, then S3 — each with defined
-criteria tied to the product's **Q value** (the amount dissolved at a given time).
-It is a statistical safeguard against an unlucky sample, **not** a way to keep
-testing until the batch passes. You move to the next stage per the method, with the
-result documented, not because the first stage disappointed you.
+**Basket or paddle condition:** Bent shafts, damaged baskets, residue, corrosion,
+loose clips, or worn components can change the flow pattern or trap material.
 
-## Investigate the system first
+**Coning:** Under paddles, undissolved material can mound at the vessel bottom.
+That cone can reduce exposure to fresh medium and slow dissolution. Coning is a
+method-development and investigation signal, not just an observation to ignore.
 
-When a profile looks erratic or a unit fails, the first question is **mechanical or
-method**, not **product**:
+**Sampling:** Wrong sampling height, late sampling, early sampling, slow sampling,
+disturbing the vessel, or inconsistent replacement medium can change the reported
+profile. At short time points, seconds matter.
 
-- Check degassing, alignment, wobble, and coning
-- Confirm the apparatus calibration / MQC is current
-- Then, if those are sound, investigate the product
+**Filtration:** An unsuitable filter can adsorb drug, allow undissolved particles
+through, or keep releasing retained material. Filter suitability is part of the
+method, not an accessory choice.
+
+These variables are why apparatus qualification and analyst discipline matter.
+Dissolution is not just "drop and read."
+
+## USP staged acceptance is not retesting until it passes
+
+For immediate-release conventional dosage forms, USP &lt;711&gt; uses staged
+acceptance: S1, then S2, then S3 where required. The exact criteria depend on the
+product's Q value and the applicable table.
+
+In the common immediate-release staged logic:
+
+| Stage | Units | Practical meaning |
+| --- | --- | --- |
+| S1 | 6 units | A tight first-stage screen. Each unit must be comfortably above Q. |
+| S2 | 12 units total | Adds 6 more units and evaluates the 12-unit average plus individual-unit floor. |
+| S3 | 24 units total | Adds 12 more units and applies the final average and low-unit controls. |
+
+The important point is mindset. Staged acceptance is a predefined compendial
+decision scheme. It is not a loophole to keep testing until the batch looks good.
+
+Good documentation shows:
+
+- the Q value used and its source;
+- the stage entered;
+- the exact unit results included at each stage;
+- the reason for moving from S1 to S2 or from S2 to S3;
+- whether the final result meets the applicable criteria;
+- whether any investigation was triggered by unusual variability or a failure.
+
+Use the [Dissolution S1/S2/S3 Acceptance Checker](/tools/dissolution-acceptance-checker)
+to sanity-check staged calculations, then document the result under your approved
+SOP and monograph.
+
+## A failing unit is a signal, not a conclusion
+
+When a single unit is low at S1, the next step may be staged testing. But the low
+unit is still a signal. The lab should notice the pattern.
+
+Ask:
+
+- Was it one isolated unit or several low units?
+- Did the low unit show coning, sticking, floating, capping, or incomplete
+  disintegration?
+- Was the vessel position associated with previous variability?
+- Was there a timing or sampling note?
+- Was the medium clear, correctly prepared, and degassed?
+- Was the apparatus qualification current?
+- Did the analyst observe anything abnormal?
+
+A result may technically proceed through S2 or S3, but a recurring pattern can
+still require investigation or method improvement. Passing a staged table does
+not erase a signal of method weakness.
+
+## Method setup checklist before testing
+
+Before starting the run, confirm the basic controls:
+
+- Correct product, strength, lot, method, and specification.
+- Correct apparatus: basket, paddle, or other specified apparatus.
+- Correct vessel volume and medium composition.
+- Medium pH and temperature verified before use.
+- Medium deaeration performed if required or justified by the method.
+- Paddle/basket height, shaft centering, and mechanical qualification current.
+- Rotation speed set and independently verified where required.
+- Dosage units equilibrated and handled per method.
+- Sinkers used only where specified and justified.
+- Sampling times, positions, filter type, and replacement volume defined.
+- Assay method, standards, and system suitability ready.
+- Analyst understands the staging rules before results appear.
+
+This checklist feels basic. That is the point. Dissolution problems often come
+from basic physical controls being treated as routine background.
+
+## Investigation checklist for a dissolution failure
+
+If a dissolution result is low, erratic, or fails after the applicable stage,
+investigate in a disciplined order.
+
+**1. Confirm the data**
+
+- Were calculations, dilution factors, units, and transcription correct?
+- Was the correct Q value and acceptance table applied?
+- Were the correct units included in S1, S2, or S3?
+- Did chromatographic or UV assay system suitability pass?
+
+**2. Review the apparatus**
+
+- Was qualification or mechanical calibration current?
+- Were vessel, paddle, basket, shaft, height, wobble, and speed within limits?
+- Was the correct apparatus used?
+- Were any components damaged, dirty, mismatched, or recently changed?
+
+**3. Review the medium**
+
+- Was the medium made with the correct composition, pH, volume, and surfactant?
+- Was deaeration performed correctly where required?
+- Was temperature maintained throughout the test?
+- Were replacement volumes handled correctly after sampling?
+
+**4. Review execution**
+
+- Were dosage units introduced consistently?
+- Were sampling times exact?
+- Was the sampling probe at the correct location?
+- Was the vessel disturbed?
+- Were filters suitable and preconditioned where required?
+- Was there coning, sticking, floating, capping, or basket clogging?
+
+**5. Review the product**
+
+- Is there a manufacturing signal: compression force, hardness, coating weight,
+  granulation, particle size, blend uniformity, moisture, or aging?
+- Are related lots or stability lots showing the same trend?
+- Did a raw-material, process, site, scale, or packaging change occur?
+- Is this a true formulation or process issue rather than a laboratory artifact?
+
+Only after the system is understood should the team conclude whether the result
+is lab error, method limitation, mechanical setup, or true product failure.
+
+## Dissolution and post-approval change
+
+Dissolution is not only a release test. It is also one of the most practical
+signals for whether a manufacturing change altered product performance.
+
+Changes that can affect dissolution include:
+
+- API particle-size distribution;
+- polymorph or salt form;
+- excipient grade, source, or level;
+- granulation endpoint or drying profile;
+- compression force and tablet hardness;
+- coating formulation, weight gain, and curing;
+- capsule shell or gelatin crosslinking risk;
+- scale, mixer, blender, granulator, dryer, or tablet press changes;
+- manufacturing site or equipment train;
+- packaging that changes moisture exposure.
+
+That is why FDA dissolution guidance links dissolution to formulation
+development, specification setting, bioequivalence considerations, and
+post-approval manufacturing changes. A dissolution profile is often the first
+place where a "small" process change becomes visible.
+
+For broader change logic, see [Post-approval variations: changing an approved
+product](/blog/post-approval-variations-explained).
+
+## Common mistakes
+
+Dissolution errors tend to repeat across labs:
+
+- Treating USP staged acceptance as optional retesting logic.
+- Entering the wrong Q value or using the wrong acceptance table.
+- Ignoring degassing because the method "usually works."
+- Sampling late at early time points.
+- Letting filters adsorb analyte without filter suitability evidence.
+- Missing coning or floating observations.
+- Using apparatus with expired qualification or questionable mechanical state.
+- Investigating only the product and ignoring the vessel, shaft, paddle, basket,
+  medium, and analyst execution.
+- Closing a failure because S2 or S3 passed, without assessing a recurring
+  pattern.
+
+The common theme is overconfidence. Dissolution is familiar, so teams can forget
+how sensitive it is.
+
+## Key takeaway
+
+Dissolution is a chemistry result produced by a mechanical system. The number on
+the report depends on the product, but also on medium, temperature, hydrodynamics,
+apparatus condition, sampling, filtration, and staged acceptance logic.
+
+When dissolution is controlled well, it becomes a powerful indicator of product
+performance. When the setup is loose, it becomes a machine for creating confusing
+data. The best QC teams respect the mechanics before they interpret the chemistry.
 
 ## Go deeper
 
+- Check staged acceptance with the [Dissolution S1/S2/S3 Acceptance Checker](/tools/dissolution-acceptance-checker).
 - Walk the method in the [Dissolution Testing workflow](/workflows/dissolution-testing-workflow).
 - Learn the background in [Dissolution testing (USP 711)](/library/dissolution-testing-usp-711).
+- Connect failures to [OOS investigation phases](/blog/oos-investigation-phases).
+- Review method expectations in [Analytical method validation: what Q2 asks](/blog/analytical-method-validation-what-q2-asks).
 
-*General educational content — verify against USP 711 and the applicable
-pharmacopeia, your approved SOPs, and your validated methods. Not a substitute for
-QA approval or a validated method.*
+## References
+
+- USP, [General Chapter &lt;711&gt; Dissolution](https://www.usp.org/sites/default/files/usp/document/harmonization/gen-method/stage_6_monograph_25_feb_2011.pdf)
+- FDA, [Dissolution Testing of Immediate Release Solid Oral Dosage Forms](https://www.fda.gov/media/70936/download)
+- FDA, [Dissolution Methods Database](https://www.fda.gov/drugs/drug-approvals-and-databases/dissolution-methods-database)
+- FDA, [Dissolution Testing and Acceptance Criteria for Immediate-Release Solid Oral Dosage Form Drug Products Containing High Solubility Drug Substances](https://www.fda.gov/files/drugs/published/Dissolution-Testing-and-Acceptance-Criteria-for-Immediate-Release-Solid-Oral-Dosage-Form-Drug-Products-Containing-High-Solubility-Drug-Substances-Guidance-for-Industry.pdf)
+
+*General educational content. Verify against USP &lt;711&gt;, the applicable
+pharmacopoeia, FDA or regional guidance, your approved SOPs, and your validated
+method. Not a substitute for QA approval or a validated method.*

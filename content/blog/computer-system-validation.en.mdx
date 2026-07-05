@@ -1,34 +1,177 @@
 ---
-title: "CSV vs CSA: validating computerised systems without the paper mountain"
+title: "CSV vs CSA: Validating GxP Systems Without the Paper Mountain"
 slug: "computer-system-validation"
 lang: "en"
 tier: "free"
 category: "Data Integrity"
-seoDescription: "Computer System Validation (GAMP 5) and the shift to Computer Software Assurance (CSA) — risk-based testing that auditors accept."
-updatedAt: "2026-06-02"
+seoDescription: "Computer system validation and software assurance for GxP systems: intended use, risk-based testing, Part 11 and Annex 11 controls, supplier evidence, and lifecycle review."
+updatedAt: "2026-07-03"
 ---
 
-# CSV vs CSA: validating computerised systems without the paper mountain
+# CSV vs CSA: Validating GxP Systems Without the Paper Mountain
 
-Computerised systems that handle GMP data (LIMS, chromatography software, MES)
-must be validated. The classic approach is **CSV** (GAMP 5); the newer **CSA**
-(Computer Software Assurance) reframes it around risk and critical thinking.
+Computerized systems are now part of almost every GMP decision: LIMS, CDS,
+electronic batch records, MES, QMS, ERP, environmental monitoring software,
+spreadsheets, and cloud platforms. If the system creates, processes, reviews,
+stores, or reports GxP data, the site must be able to show that it is fit for its
+intended use and that the records it produces can be trusted.
 
-## GAMP 5 categories
+That is the point of computer system validation (CSV). The modern shift toward
+computer software assurance (CSA) does not remove that obligation. It changes the
+emphasis: less ritual paperwork, more critical thinking, more risk-based evidence,
+and stronger focus on patient safety, product quality, and data integrity.
 
-Effort scales with the software category — from standard infrastructure (low
-risk) to custom/bespoke applications (high risk). Don't validate a spreadsheet
-like a bespoke MES.
+## CSV and CSA in plain language
 
-## The CSA shift
+| Term | Practical meaning | What auditors still expect |
+| --- | --- | --- |
+| CSV | Documented evidence that a GxP computerized system performs as intended | Requirements, risk assessment, testing, traceability, approval, lifecycle control |
+| CSA | A risk-based assurance approach emphasizing critical thinking and efficient evidence | Testing depth proportional to risk, use of supplier evidence, documented rationale |
+| Part 11 / Annex 11 | Rules and expectations for trustworthy electronic records and signatures | Validation, access control, audit trail, retention, copies, e-signature controls |
+| GAMP 5 thinking | Industry framework for risk-based validation and software categories | Use category and intended use to scale effort, not to avoid responsibility |
 
-CSA (FDA draft guidance) emphasises **critical thinking and risk** over
-exhaustive scripted testing and documentation for its own sake. More unscripted
-/ exploratory testing for low-risk features; rigorous scripted testing where
-patient impact is real.
+CSA should not be used as shorthand for "test less." The better interpretation is
+"test what matters, explain why, and keep evidence that proves the system is
+controlled."
 
-## What still matters
+## Start with intended use
 
-Whatever you call it: a documented risk assessment, requirements traceability,
-testing proportional to risk, and **data integrity controls** (audit trails,
-access, backups). The label changed; the assurance objective didn't.
+Validation scope starts with how the system is actually used. The same software can
+be low risk in one context and high risk in another.
+
+Ask:
+
+- Which GxP process does the system support?
+- What data is created, changed, calculated, approved, or retained?
+- Which decisions rely on the system output?
+- What could go wrong if the system fails or is misconfigured?
+- Can the failure affect patient safety, product quality, release, or data
+  integrity?
+- Which controls are technical, procedural, or reviewer-based?
+
+A CDS used to generate release assay results needs more scrutiny than a training
+calendar. A spreadsheet calculating endotoxin limits needs stronger control than a
+spreadsheet used to plan meeting dates.
+
+## Risk-based testing that is defensible
+
+A useful assurance plan separates functions by risk.
+
+| Function | Risk driver | Evidence approach |
+| --- | --- | --- |
+| Result calculation, specification comparison, batch disposition | Direct quality decision | Scripted test with expected result and reviewer evidence |
+| Audit trail capture and review | Data integrity | Verify enabled trail, event capture, security, review procedure |
+| Access roles and permissions | Attributability and segregation of duties | Role matrix test, negative testing, periodic access review |
+| Report formatting | Lower risk unless report is the official record | Supplier evidence or focused verification |
+| Backup and restore | Retention and availability | Restore test or documented recovery verification |
+| Interface to LIMS/MES/ERP | Data transfer and completeness | Challenge critical fields, error handling, reconciliation |
+
+The audit-ready position is not "we tested everything." It is: "We identified the
+critical functions, tested them with appropriate rigor, leveraged supplier evidence
+where justified, and documented why the residual risk is acceptable."
+
+## What the validation file should contain
+
+For most GxP systems, the validation package should be able to tell a clear story:
+
+- intended use and GxP impact assessment;
+- supplier assessment and quality agreement where applicable;
+- user requirements or critical process requirements;
+- risk assessment for product quality, patient safety, and data integrity;
+- configuration specification or documented configuration baseline;
+- test plan with scripted, unscripted, or leveraged evidence justified by risk;
+- test results, deviations, and approvals;
+- Part 11 / Annex 11 assessment;
+- data migration or interface verification where relevant;
+- SOPs for operation, backup, incident management, audit trail review, and change
+  control;
+- release-to-use approval;
+- periodic review plan.
+
+If a validation file is large but cannot explain these points quickly, it is a paper
+mountain, not assurance.
+
+## Supplier and SaaS evidence
+
+Cloud systems do not remove regulated-company accountability. The vendor may run the
+infrastructure, but the site remains responsible for intended use, configuration,
+data integrity, access control, record retention, and quality decisions.
+
+For SaaS and vendor-managed systems, collect:
+
+- supplier qualification or vendor assessment;
+- SOC reports or security certifications where relevant;
+- validation summary or development/testing evidence;
+- release notes and change notification commitments;
+- data ownership, export, and exit provisions;
+- backup, restore, availability, and incident commitments;
+- shared responsibility matrix;
+- confirmation that audit trail, e-signature, retention, and access controls meet
+  the intended use.
+
+Then validate the configuration and workflows you actually use. Vendor evidence can
+reduce duplicate testing, but it cannot replace your intended-use assessment.
+
+## Part 11 and Annex 11 are not optional extras
+
+If the system maintains electronic records or electronic signatures required by GMP,
+the validation story must include electronic-record controls:
+
+- unique user accounts;
+- role-based access and least privilege;
+- secure, computer-generated, time-stamped audit trails;
+- audit trail review proportional to data criticality;
+- accurate and complete copies for inspection;
+- record retention and retrievability;
+- backup and restore verification;
+- e-signature meaning, linkage, and signer attribution;
+- control of clocks, interfaces, and data transfers.
+
+Part 11 compliance is not a sticker. A system with shared admin accounts and no
+audit trail review is not trustworthy just because the vendor brochure says
+"Part 11 ready."
+
+## Lifecycle control after go-live
+
+Validation does not end at release. A controlled system needs periodic review and
+change management:
+
+- user access reviewed and leavers removed;
+- patches and upgrades assessed before or soon after deployment based on risk;
+- configuration changes approved and tested as needed;
+- incidents and deviations trended;
+- audit trail review records sampled for effectiveness;
+- backup/restore or archive retrieval periodically verified;
+- supplier performance reviewed;
+- current use compared against validated intended use.
+
+Many findings happen because a system was validated once, then quietly drifted into
+new use, new configuration, new interfaces, or new risk.
+
+## CSV vs CSA: the real difference
+
+The old failure mode was excessive scripted testing with little thought. The new
+failure mode is using "CSA" as permission to under-document critical controls. The
+good middle is simple:
+
+1. Define intended use.
+2. Identify critical functions and data integrity risks.
+3. Test high-risk functions rigorously.
+4. Use supplier evidence and unscripted testing where justified.
+5. Keep clear evidence of decisions, defects, and approval.
+6. Maintain control through change and periodic review.
+
+The aim is not more paperwork or less paperwork. The aim is trustworthy software
+supporting trustworthy GMP decisions.
+
+## Go deeper
+
+- [Data Integrity and the ALCOA+ Principles](/blog/data-integrity-alcoa)
+- [Part 11: what makes an electronic record trustworthy](/blog/part-11-what-makes-an-electronic-record-trustworthy)
+- [Audit Trail Review: What, How Often, and Red Flags](/blog/audit-trail-review)
+- [Electronic Records and Signatures](/library/electronic-records-part-11)
+
+*General educational content. Verify against applicable GMP regulations, 21 CFR
+Part 11, EU GMP Annex 11, FDA software assurance guidance where in scope, GAMP 5
+principles, approved SOPs, and validated supplier/system evidence before use in GMP
+decisions.*

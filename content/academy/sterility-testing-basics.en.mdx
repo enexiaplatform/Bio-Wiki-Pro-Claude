@@ -1,44 +1,156 @@
 ---
-title: "Sterility Testing — Foundations"
+title: "Sterility Testing - Foundations"
 slug: "sterility-testing-basics"
 lang: "en"
 tier: "free"
 category: "Microbiology QC"
-seoDescription: "Overview of the compendial sterility test per USP <71> & EP 2.6.1 — membrane filtration, media, 14-day incubation."
-updatedAt: "2026-05-29"
+seoDescription: "Compendial sterility testing under USP <71> and EP 2.6.1: membrane filtration, direct inoculation, media, method suitability, controls, and result interpretation."
+updatedAt: "2026-07-03"
 quiz:
-  - q: "What is the minimum incubation time for a compendial sterility test?"
+  - q: "What is the minimum incubation time for the compendial sterility test?"
     options: ["7 days", "14 days", "21 days", "28 days"]
     answer: 1
-  - q: "Which method is preferred for filterable solutions?"
+  - q: "Which sterility test method is generally preferred for filterable products?"
     options: ["Direct inoculation", "Membrane filtration", "Pour plate", "Spread plate"]
     answer: 1
-  - q: "Which media targets anaerobic and aerobic bacteria?"
-    options: ["SCDM / TSB", "FTM", "MacConkey", "Sabouraud"]
-    answer: 1
+  - q: "What does method suitability demonstrate?"
+    options: ["The product does not inhibit recovery of low-level contamination under the test conditions", "The batch is commercially successful", "The incubator is new", "The analyst is exempt from training"]
+    answer: 0
+  - q: "A positive sterility test result should be:"
+    options: ["Ignored if the batch looks normal", "Automatically invalidated", "Investigated with strict evidence before any invalidation", "Converted into a bioburden result"]
+    answer: 2
 ---
 
-# Sterility Testing — Foundations
+# Sterility Testing - Foundations
 
-The sterility test confirms a product is free of viable, growth-capable
-micro-organisms, per **USP &lt;71&gt;** and **EP 2.6.1**.
+Sterility testing is the compendial growth-based test used for products that are
+required to be sterile. USP &lt;71&gt; and Ph. Eur. 2.6.1 describe the core approach:
+expose a defined sample to growth media, incubate under defined conditions, and
+observe for evidence of microbial growth.
 
-## Two compendial methods
+The test is important, but it has limits. A passing result means no growth was
+detected in the sample under the test conditions. It does not prove that every unit
+in the batch is sterile. Sterility assurance comes from the manufacturing process:
+sterilization, aseptic control, environmental monitoring, personnel control,
+container closure integrity, and contamination control strategy. The test is a
+release confirmation, not the source of sterility.
 
-- **Membrane filtration** — preferred for filterable solutions.
-- **Direct inoculation** — when the product cannot be filtered.
+## The two compendial methods
 
-## Media & incubation
-
-| Medium | Target | Temperature |
+| Method | When it fits | Key controls |
 | --- | --- | --- |
-| FTM | Anaerobic & aerobic bacteria | 30–35°C |
-| SCDM / TSB | Fungi & aerobic bacteria | 20–25°C |
+| Membrane filtration | Filterable liquids, many injectables, ophthalmics, and products where the sample can pass through a microbial-retentive filter | Filter integrity, aseptic filtration setup, rinse strategy, recovery from filter |
+| Direct inoculation | Products that cannot be filtered, small-volume products, viscous or device-related samples where filtration is unsuitable | Product-to-media ratio, neutralization of antimicrobial activity, adequate contact with media |
 
-Minimum incubation time is **14 days**.
+Membrane filtration is generally preferred when the product can be filtered because
+it allows the product to be rinsed away from the membrane, reducing product
+interference. Direct inoculation is useful when filtration is impractical, but the
+product remains in the medium and may inhibit growth if suitability is not proven.
 
-> Note: always run method suitability (bacteriostasis/fungistasis) before
-> using results for a commercial batch.
+Use the [Sterility Test Method Selector](/tools/sterility-test-method-selector) to
+practice matching product scenarios to the likely method.
 
+## Media and incubation
 
-> **Try the free tool:** pick a method for your product in the [Sterility Test Method Selector](/tools/sterility-test-method-selector).
+The compendial test uses two media to support a broad range of microorganisms.
+
+| Medium | Main purpose | Typical incubation condition |
+| --- | --- | --- |
+| Fluid thioglycollate medium (FTM) | Anaerobic and aerobic bacteria | 30-35 C |
+| Soybean-casein digest medium (SCDM / TSB) | Fungi and aerobic bacteria | 20-25 C |
+
+The minimum incubation period is **14 days**. During incubation, containers are
+examined for visible growth such as turbidity, pellicle, sediment, or other signs
+consistent with microbial proliferation.
+
+## Method suitability
+
+Method suitability, often called bacteriostasis/fungistasis testing, proves the
+method can recover microorganisms if they are present. This is essential because a
+product can inhibit microbial growth through preservative, antibiotic, pH, osmotic
+strength, viscosity, formulation, or residual disinfectant effects.
+
+A practical suitability package answers:
+
+- Can low levels of challenge organisms grow in the presence of the product?
+- Is the rinse or neutralization strategy adequate?
+- Does the sample preparation damage or remove organisms?
+- Are both media able to support growth after contact with the product?
+- Does the method remain suitable after formulation, container, or process change?
+
+Do not treat suitability as a one-time box. If product composition, test volume,
+filtration setup, rinse fluid, closure system, or antimicrobial properties change,
+the suitability rationale may need to be reassessed.
+
+## Controls that protect the test
+
+Sterility testing is performed under aseptic conditions, so the laboratory can
+accidentally contaminate the test. Good controls include:
+
+- qualified clean area or isolator for sterility testing;
+- trained analysts and aseptic technique qualification;
+- sterile, growth-supporting media with growth promotion evidence;
+- negative controls to detect test contamination;
+- controlled sample handling and decontamination of container exteriors;
+- environmental monitoring of the test environment;
+- documented reconciliation of units tested, media, filters, and observations;
+- clear rules for reading, subculture if applicable, and result reporting.
+
+The test should be designed so that a positive result is meaningful and a negative
+result is trustworthy.
+
+## Reading and interpretation
+
+If no growth is observed after the required incubation, the sample passes the
+compendial test under the conditions used. If growth is observed, the result is a
+serious quality signal. It may indicate product contamination, testing
+contamination, or another laboratory control failure, but it cannot be dismissed
+without evidence.
+
+Investigation should consider:
+
+- organism identity and whether it matches facility, personnel, or product flora;
+- growth pattern, timing, and which medium was positive;
+- sterility test environment and analyst activities;
+- negative controls and media controls;
+- sample container condition and decontamination;
+- batch manufacturing, filling, sterilization, and EM data;
+- related batches, campaigns, and retain samples where relevant.
+
+Invalidating a sterility test result requires strong evidence of laboratory error
+or test contamination. A vague assumption that "it was probably the lab" is not
+enough.
+
+## Common pitfalls
+
+- Running the compendial method before proving suitability for the product.
+- Choosing direct inoculation when membrane filtration is feasible and better
+  controls product inhibition.
+- Treating a 14-day no-growth result as proof that the whole batch is sterile.
+- Failing to identify organisms recovered from a positive test.
+- Missing links between sterility test results, EM trends, media fills, and batch
+  release decisions.
+- Repeating the test to seek a passing result without a scientifically justified
+  invalidation.
+
+## Practical takeaway
+
+Sterility testing is a high-stakes release test. To make it defensible, the site
+needs the right compendial method, proven method suitability, controlled aseptic
+execution, reliable media and incubation, and a disciplined investigation process
+for any positive result.
+
+The best reviewers do not ask only "did it pass?" They ask whether the method was
+suitable, the test was protected from contamination, the sample was representative
+for the approved procedure, and the result fits the broader sterility assurance
+picture.
+
+## Go deeper
+
+- [What sterility testing can and cannot prove](/blog/what-sterility-testing-can-and-cannot-prove)
+- [Rapid Sterility Testing](/library/rapid-sterility-testing)
+- [Rapid Microbial Methods](/blog/rapid-microbial-methods)
+- [Sterility Test Method Selector](/tools/sterility-test-method-selector)
+
+*General educational content. Verify against USP &lt;71&gt;, Ph. Eur. 2.6.1, approved
+SOPs, product registrations, and validated methods before use in GMP decisions.*

@@ -14,11 +14,13 @@ export interface VaultItem {
   savedAt: string;
 }
 
-const VAULT_KEY = "biowiki-vault-lite";
+const VAULT_KEY = "life-science-atlas-vault-lite";
+const LEGACY_VAULT_KEY = "biowiki-vault-lite";
 
 function readVault(): VaultItem[] {
+  if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(VAULT_KEY);
+    const raw = window.localStorage.getItem(VAULT_KEY) ?? window.localStorage.getItem(LEGACY_VAULT_KEY);
     return raw ? (JSON.parse(raw) as VaultItem[]) : [];
   } catch {
     return [];
@@ -26,14 +28,11 @@ function readVault(): VaultItem[] {
 }
 
 export function useVault() {
-  const [items, setItems] = useState<VaultItem[]>([]);
-
-  useEffect(() => {
-    setItems(readVault());
-  }, []);
+  const [items, setItems] = useState<VaultItem[]>(() => readVault());
 
   useEffect(() => {
     window.localStorage.setItem(VAULT_KEY, JSON.stringify(items));
+    window.localStorage.removeItem(LEGACY_VAULT_KEY);
   }, [items]);
 
   const saveItem = useCallback((item: Omit<VaultItem, "savedAt">) => {

@@ -1,49 +1,190 @@
 ---
-title: "Cleaning Validation: from 10 ppm to HBEL"
+title: "Cleaning Validation: From 10 ppm to HBEL"
 slug: "cleaning-validation-hbel-shift"
 lang: "en"
 tier: "free"
 category: "Validation"
-seoDescription: "Why cleaning-validation limits moved from the old 10 ppm and 1/1000-dose rules to health-based exposure limits (HBEL/PDE), and what it means for shared facilities."
-updatedAt: "2026-06-02"
+seoDescription: "A practical guide to the shift from legacy 10 ppm cleaning limits to HBEL/PDE-based cleaning validation: MACO, swab limits, recovery, worst-case selection, and audit evidence."
+updatedAt: "2026-07-03"
 ---
 
-# Cleaning Validation: from 10 ppm to HBEL
+# Cleaning Validation: From 10 ppm to HBEL
 
-For decades, cleaning-validation limits leaned on two rules of thumb: the
-**10 ppm** criterion and **1/1000 of the minimum therapeutic dose**. Both were
-easy to apply — and both were scientifically arbitrary. The EMA's shared-facility
-guideline changed the expectation to **health-based exposure limits (HBEL)**.
+Cleaning validation used to lean heavily on simple default limits: 10 ppm, a
+fraction of the therapeutic dose, and visually clean. Those rules were easy to
+apply, but they did not always reflect patient risk.
 
-## What was wrong with the old rules
+Modern shared-facility cleaning validation is built around health-based exposure
+limits (HBELs), usually expressed as a permitted daily exposure (PDE) or
+acceptable daily exposure (ADE). The shift matters because the question is no
+longer "is the residue below a convenient default?" It is "is the possible
+carryover toxicologically justified for the next patient?"
 
-Neither default looked at what a compound actually does to a patient. A potent,
-sensitizing molecule and a benign one could end up with similar carryover limits
-purely because of dosing math — which under- or over-controls risk depending on
-the toxicology.
+## Why 10 ppm was not enough
 
-## How HBEL works
+The 10 ppm rule does not know whether a compound is potent, sensitizing,
+genotoxic, pharmacologically active at low dose, or relatively benign. Two
+products can receive similar default cleaning limits even when their toxicology
+profiles are completely different.
 
-An HBEL is derived from real toxicology data (a NOAEL/LOAEL with adjustment
-factors) and expressed as a **Permitted Daily Exposure (PDE)** — the amount a
-patient can be exposed to daily with no adverse effect. That PDE then drives the
-**Maximum Allowable Carryover (MACO)** and the swab/rinse residue limit your
-cleaning must meet.
+The old rules can be:
 
-## What it means in practice
+- **too loose** for highly potent or hazardous materials,
+- **too strict** for low-risk materials, creating unnecessary failures,
+- **hard to defend** when regulators ask for the patient-risk basis,
+- **blind to shared-facility context**, such as batch size, maximum daily dose,
+  route of administration, and next-product exposure.
 
-- **Multi-product facilities** must justify shared equipment against HBEL-derived
-  limits, not just 10 ppm.
-- **Highly hazardous compounds** with very low HBELs may require dedicated
-  equipment or facilities.
-- Your **Contamination Control Strategy** should reference the HBEL rationale.
+Legacy defaults may still be used as additional conservative checks, but they
+are weak if they are the only scientific justification.
 
-## The takeaway
+## What HBEL changes
 
-The 10 ppm rule isn't automatically "wrong" — but it's no longer a *justification*
-on its own. Regulators expect a toxicology-based limit, with the old defaults used
-only as an additional, more conservative check where appropriate.
+An HBEL is derived from pharmacological and toxicological data. The toxicologist
+uses evidence such as NOAEL, LOAEL, pharmacodynamic activity, clinical exposure,
+safety factors, and uncertainty modifiers to define a daily exposure level that
+is expected to be without adverse effect.
 
-> Deeper dive: see the Academy lesson **Health-Based Exposure Limits (HBEL / PDE)**
-> for the PDE→MACO→swab-limit calculation, or run it in the
-> [Cleaning Validation MACO Calculator](/tools/cleaning-validation-maco-calculator).
+In cleaning validation, that value becomes the anchor for carryover limits.
+
+The usual logic is:
+
+1. establish the PDE/HBEL for the previous product or residue,
+2. calculate maximum allowable carryover (MACO) into the next product,
+3. convert MACO into an equipment surface limit,
+4. convert the surface limit into a swab or rinse acceptance criterion,
+5. correct for method recovery where required,
+6. verify that the cleaning process can meet the limit consistently.
+
+That chain must be traceable. A cleaning limit without its toxicology basis and
+calculation path is difficult to defend.
+
+## PDE to MACO to swab limit
+
+A simplified HBEL-based MACO calculation is:
+
+```text
+MACO = (PDE x minimum batch size of next product) / maximum daily dose of next product
+```
+
+Then:
+
+```text
+Surface limit = MACO / shared equipment surface area
+```
+
+For a swabbed area:
+
+```text
+Swab limit = surface limit x swabbed area x recovery correction
+```
+
+The actual protocol should define units clearly, such as mg/day, mg/batch,
+micrograms per square centimeter, or micrograms per swab. Unit mistakes are a
+surprisingly common way to create false confidence.
+
+## Worst-case selection is not just solubility
+
+Worst-case bracketing should consider both the product being cleaned and the
+product that could receive carryover.
+
+For the product being cleaned, assess:
+
+- HBEL/PDE value,
+- potency or toxicity,
+- solubility and cleanability,
+- batch size,
+- residue detectability,
+- formulation stickiness or equipment contact behavior,
+- prior cleaning failures or hard-to-clean observations.
+
+For the next product, assess:
+
+- maximum daily dose,
+- minimum batch size,
+- route of administration,
+- patient population,
+- shared equipment path,
+- whether the product is more vulnerable to carryover.
+
+The worst case is often a combination: a hard-to-clean previous product with a
+low HBEL going into a next product with a high daily dose and small batch size.
+
+## Recovery studies matter
+
+A clean swab result means little if the method cannot recover residue from the
+surface.
+
+Recovery studies should represent:
+
+- actual product or marker residue,
+- relevant equipment surface materials,
+- realistic residue drying time,
+- swab technique and solvent,
+- analytical method range near the acceptance limit,
+- predefined recovery acceptance criteria.
+
+If recovery is poor, the method may under-report residue. The limit may need a
+recovery correction, method improvement, or a different sampling approach.
+
+## Visual clean is still useful, but not sufficient
+
+Visual inspection remains an important control because it can detect gross
+residue, color, film, foam, particles, or cleaning failures that a limited swab
+plan may miss.
+
+But "visually clean" does not prove HBEL compliance. A residue can be invisible
+and still exceed a toxicology-based limit. Visual clean should sit alongside
+analytical residue limits, not replace them.
+
+## Do not forget non-product residues
+
+Cleaning validation should not focus only on active ingredient carryover.
+
+Depending on the process, the program may also need limits or controls for:
+
+- cleaning agents and detergents,
+- degradants or reaction products,
+- bioburden and endotoxin,
+- disinfectant residues,
+- excipients that interfere with the next process or assay,
+- microbial control during dirty and clean hold times.
+
+The acceptance criteria should match the risks created by the process and the
+next product, not only the active ingredient.
+
+## What auditors usually ask for
+
+For a shared-equipment cleaning validation program, be ready to show:
+
+- HBEL/PDE monograph or toxicology assessment,
+- MACO calculations and unit checks,
+- rationale for worst-case product/equipment selection,
+- cleaning validation protocol and report,
+- swab/rinse method validation and recovery study,
+- analytical method sensitivity against the limit,
+- dirty hold time and clean hold time justification,
+- visual inspection criteria,
+- cleaning procedure parameters and operator controls,
+- deviations, failures, re-cleaning records, and CAPA,
+- periodic review showing the HBEL and cleaning matrix remain current.
+
+This is where the old 10 ppm rule often collapses: it cannot answer enough of
+those questions by itself.
+
+## Use the calculator
+
+Use the [Cleaning Validation MACO Calculator](/tools/cleaning-validation-maco-calculator)
+to compare dose-based, HBEL/PDE, and 10 ppm carryover limits, then convert the
+most stringent result into surface and swab limits.
+
+For the full program view, read [Cleaning Validation](/library/cleaning-validation),
+[Health-Based Exposure Limits](/library/health-based-exposure-limits), and the
+[Cleaning Validation workflow](/workflows/cleaning-validation-program).
+
+## References
+
+- [PIC/S Guideline on Setting Health Based Exposure Limits](https://picscheme.org/docview/2467)
+- [WHO Points to Consider When Including HBELs in Cleaning Validation](https://cdn.who.int/media/docs/default-source/medicines/norms-and-standards/guidelines/inspections/trs1033-annex2-points-to-consider-when-incl-hbels-in-cleaning-validation.pdf?download=true&sfvrsn=5ee0cd8a_1)
+- [FDA Guide to Inspections: Validation of Cleaning Processes](https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-guides/validation-cleaning-processes-793)
+- [ICH Q9(R1) Quality Risk Management](https://database.ich.org/sites/default/files/ICH_Q9%28R1%29_Guideline_Step4_2025_0115_0.pdf)

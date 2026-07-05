@@ -30,7 +30,7 @@ async function walk(dir: string, exts: string[]): Promise<string[]> {
 function slugsFromDir(files: string[], dirName: string): Set<string> {
   const set = new Set<string>();
   for (const f of files) {
-    const m = f.replace(/\\/g, "/").match(new RegExp(`/content/${dirName}/(.+)\\.(?:en|vi)\\.mdx$`));
+    const m = f.replace(/\\/g, "/").match(new RegExp(`/content/${dirName}/(.+)\\.en\\.mdx$`));
     if (m) set.add(m[1]);
   }
   return set;
@@ -50,13 +50,21 @@ async function main() {
   const lpSrc = await readFile(path.join(ROOT, "client/src/data/learningPaths.ts"), "utf-8");
   const paths = new Set(captures(lpSrc, /slug:\s*["']([a-z0-9-]+)["']/g));
 
+  const workflowSrc = await readFile(path.join(ROOT, "client/src/data/workflows.ts"), "utf-8");
+  const workflowBlock = workflowSrc.match(/export const workflows:[\s\S]*?\n\];/);
+  if (!workflowBlock) throw new Error("Could not locate workflows in client/src/data/workflows.ts");
+  const workflows = new Set(captures(workflowBlock[0], /slug:\s*["']([a-z0-9-]+)["']/g));
+
+  const toolCatalogSrc = await readFile(path.join(ROOT, "client/src/data/tools/catalog.ts"), "utf-8");
+  const tools = new Set(captures(toolCatalogSrc, /^\s+slug:\s*["']([a-z0-9-]+)["']/gm));
+
   const mlSrc = await readFile(path.join(ROOT, "client/src/data/lessons/microbiologyLessons.ts"), "utf-8");
   const lessonIds = new Set(captures(mlSrc, /id:\s*["']([a-z0-9-]+)["']/g));
 
-  const valid: Record<string, Set<string>> = { library: academy, blog, paths, academy: lessonIds };
+  const valid: Record<string, Set<string>> = { library: academy, blog, paths, workflows, tools, academy: lessonIds };
   // Trailing lookahead excludes file paths like /blog/rss.xml (slug must not be
   // followed by another slug char or a "." extension).
-  const linkRe = /\/(library|paths|blog|academy)\/([a-z0-9][a-z0-9-]{2,})(?![a-z0-9-.])/g;
+  const linkRe = /(?<![A-Za-z0-9_@.-])\/(library|paths|blog|workflows|tools|academy)\/([a-z0-9][a-z0-9-]{2,})(?![a-z0-9-.])/g;
 
   const broken: string[] = [];
   for (const f of [...contentFiles, ...srcFiles]) {
@@ -64,22 +72,22 @@ async function main() {
     for (const m of src.matchAll(linkRe)) {
       const [, kind, slug] = m;
       if (!valid[kind].has(slug)) {
-        broken.push(`${path.relative(ROOT, f)} → /${kind}/${slug}`);
+        broken.push(`${path.relative(ROOT, f)} -> /${kind}/${slug}`);
       }
     }
   }
 
-  const total = academy.size + blog.size + paths.size + lessonIds.size;
+  const total = academy.size + blog.size + paths.size + workflows.size + tools.size + lessonIds.size;
   console.log(
     `Checked internal links against ${total} targets ` +
-      `(${academy.size} library, ${blog.size} blog, ${paths.size} paths, ${lessonIds.size} academy).`,
+      `(${academy.size} library, ${blog.size} blog, ${paths.size} paths, ${workflows.size} workflows, ${tools.size} tools, ${lessonIds.size} academy).`,
   );
   if (broken.length) {
-    console.error(`\n✗ ${broken.length} broken internal link(s):`);
+    console.error(`\nFAIL: ${broken.length} broken internal link(s):`);
     for (const b of Array.from(new Set(broken))) console.error(`  - ${b}`);
     process.exit(1);
   }
-  console.log("✓ All literal internal links resolve.");
+  console.log("OK: All literal internal links resolve.");
 }
 
 main().catch((e) => {

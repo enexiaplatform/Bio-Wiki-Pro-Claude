@@ -38,7 +38,7 @@ export default function CertificatePage() {
     for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
     return h.toString(36).toUpperCase().padStart(6, "0").slice(0, 6);
   }
-  const certId = `BWP-${path.slug.slice(0, 3).toUpperCase()}-${shortHash(`${path.slug}|${name.trim().toLowerCase()}|${today}`)}`;
+  const certId = `LSA-${path.slug.slice(0, 3).toUpperCase()}-${shortHash(`${path.slug}|${name.trim().toLowerCase()}|${today}`)}`;
 
   // Render the certificate to a 1200×800 PNG entirely client-side (no deps),
   // for sharing on LinkedIn etc.

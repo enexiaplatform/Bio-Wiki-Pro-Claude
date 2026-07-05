@@ -1,30 +1,144 @@
 ---
-title: "Data Integrity & the ALCOA+ principles"
+title: "Data Integrity and the ALCOA+ Principles"
 slug: "data-integrity-alcoa"
 lang: "en"
 tier: "free"
 category: "Data Integrity"
-seoDescription: "What ALCOA+ means and why data integrity is at the centre of every modern GMP inspection."
-updatedAt: "2026-05-30"
+seoDescription: "A practical GMP guide to ALCOA+ data integrity: attributable, legible, contemporaneous, original, accurate, complete, consistent, enduring, and available records."
+updatedAt: "2026-07-03"
 ---
 
-# Data Integrity & the ALCOA+ principles
+# Data Integrity and the ALCOA+ Principles
 
-Data integrity is the precondition for every quality decision. Inspectors now
-scrutinise data as closely as they scrutinise product.
+Data integrity is the reason a quality decision can be trusted. A batch release,
+OOS decision, stability conclusion, media-fill result, or cleaning validation
+approval is only as strong as the records behind it.
 
-## What ALCOA+ covers
+Regulators do not treat data integrity as a separate IT topic. FDA, MHRA, and WHO
+guidance all frame it as a core GMP expectation: data must remain complete,
+consistent, and accurate throughout its lifecycle, from creation through review,
+retention, retrieval, and disposal.
 
-- **Attributable** — traceable to who did it and when.
-- **Legible** — readable, no obliteration.
-- **Contemporaneous** — recorded at the time of the activity.
-- **Original** — the original record or a certified true copy.
-- **Accurate** — correct and internally consistent.
+ALCOA+ is the practical shorthand for that expectation.
 
-The "+": **Complete, Consistent, Enduring, Available**.
+## ALCOA+ in one table
 
-## Why it matters
+| Principle | What it means | Weak signal |
+| --- | --- | --- |
+| Attributable | The record shows who performed the action and when | Shared login, unsigned entry, missing analyst |
+| Legible | The record can be read and understood throughout retention | Faded printout, overwritten correction, unclear scan |
+| Contemporaneous | The record is made at the time the work occurs | Backfilled notebook, delayed entry, pre-signed form |
+| Original | The first capture or a verified true copy is retained | Only summary printout kept, raw file deleted |
+| Accurate | The record correctly reflects the activity and result | Transcription error, uncontrolled spreadsheet formula |
+| Complete | All required data, metadata, repeats, and invalidated results are retained | Missing injections, excluded worksheet, no reason for repeat |
+| Consistent | Records follow the expected sequence and chronology | Time stamps out of order, sample sequence altered without explanation |
+| Enduring | Data remains protected and readable for the retention period | Thermal paper only, unsupported file format, weak backup |
+| Available | Records can be retrieved for review, investigation, or inspection | Archived data inaccessible, vendor needed to view audit trail |
 
-Most recent FDA warning letters cite data integrity failings (audit trails
-disabled, records overwritten). A healthy QMS treats audit-trail review as a
-routine, scheduled activity.
+The point is not to memorize the words. The point is to test whether the data can
+support the decision being made.
+
+## What this looks like in GMP work
+
+For a paper batch record, ALCOA+ means entries are made by the person doing the
+step, at the time of the step, with corrections that preserve the original entry.
+White-out, overwriting, pre-signing, or "clean copying" into a nicer form all create
+integrity risk because they break the history of what happened.
+
+For a chromatographic result, ALCOA+ means the official result includes the raw data,
+sequence, method, processing method, integration changes, audit trail, failed or
+aborted injections where applicable, and review evidence. A final PDF alone is not
+enough if it hides how the result was generated.
+
+For a spreadsheet, ALCOA+ means the template is controlled, formulas are protected
+or verified, input cells are traceable, version history is managed, and outputs are
+reviewed against source data. An uncontrolled spreadsheet can turn a correct test
+result into a wrong quality decision.
+
+## The lifecycle view
+
+A common mistake is treating data integrity as a review activity at the end. A
+stronger program designs integrity into each stage:
+
+1. **Create:** unique users, controlled forms, validated systems, trained people.
+2. **Process:** approved calculations, controlled methods, audit trails, version
+   control.
+3. **Review:** independent review, exception review, audit-trail review, complete
+   evidence package.
+4. **Retain:** secure storage, backup, migration controls, readable formats.
+5. **Retrieve:** records available for release, investigation, annual review, and
+   inspection.
+
+If any stage is weak, the final record may look complete while the underlying data
+is not reliable.
+
+## Controls that make ALCOA+ real
+
+Good data integrity is a mix of procedure, system design, and culture.
+
+- Use unique user accounts and role-based access.
+- Restrict admin rights from routine analysts where possible.
+- Enable audit trails for GMP-critical systems.
+- Review audit trails based on data criticality and system risk.
+- Retain raw data, metadata, calculations, and invalidated or repeated work.
+- Control spreadsheet templates and validate critical calculations.
+- Define how records are corrected without obscuring the original.
+- Train reviewers to look beyond the final result printout.
+- Investigate unexplained repeats, deletions, clock changes, and missing data.
+- Periodically verify backups and archive retrieval.
+
+These controls turn ALCOA+ from a training slide into everyday evidence.
+
+## Reviewer questions
+
+When reviewing a GMP record, ask:
+
+- Can I tell who did the work and when?
+- Was the record created at the time of the activity?
+- Is the original data or certified true copy retained?
+- Are all repeats, invalidations, and exceptions explained?
+- Do the timestamps and sequence of events make sense?
+- Is there any sign of unofficial testing, backdating, or selective reporting?
+- Can the data still be retrieved and read without special reconstruction?
+- Does the audit trail support the final result?
+
+If the answer is unclear, the issue may be a documentation gap, a system-control gap,
+or a true data-integrity event. The response should be risk-based, documented, and
+linked to the quality decision affected.
+
+## Common inspection findings
+
+Many serious findings are not exotic. They are basic ALCOA+ failures:
+
+- analysts sharing a generic account;
+- audit trails disabled or never reviewed;
+- trial injections omitted from the record;
+- electronic raw data overwritten after a summary report is printed;
+- system clocks changed without control;
+- spreadsheets with unprotected formulas;
+- corrections that hide the original entry;
+- archived data that cannot be retrieved during inspection.
+
+The pattern is always the same: the site cannot prove the record is complete,
+traceable, and reliable.
+
+## Practical takeaway
+
+ALCOA+ is not a slogan. It is a review method. For every GMP record, the reviewer
+should be able to reconstruct what happened, who did it, when it happened, what data
+was generated, what changed, what was excluded, why it was excluded, and whether the
+final decision is still scientifically and procedurally justified.
+
+Use the free [Audit Trail Review Triage](/tools/audit-trail-review-triage) when a
+CDS, LIMS, spreadsheet, or electronic-record exception needs risk ranking before
+approval or QA escalation.
+
+## Go deeper
+
+- [7 Data Integrity Findings That Show Up in FDA 483s](/blog/data-integrity-483-observations)
+- [Audit Trail Review: What, How Often, and Red Flags](/blog/audit-trail-review)
+- [Part 11: what makes an electronic record trustworthy](/blog/part-11-what-makes-an-electronic-record-trustworthy)
+
+*General educational content. Verify against applicable GMP regulations, FDA data
+integrity guidance, MHRA GxP data integrity guidance, WHO data integrity guidance,
+approved SOPs, and validated system controls before use in GMP decisions.*

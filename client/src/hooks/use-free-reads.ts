@@ -1,10 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 
-const KEY = "bwp_free_reads";
+const KEY = "lsa_free_reads";
+const LEGACY_KEY = "bwp_free_reads";
 
 function readStore(): string[] {
   try {
-    const v = JSON.parse(localStorage.getItem(KEY) || "[]");
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY) ?? "[]";
+    const v = JSON.parse(raw);
+    if (!localStorage.getItem(KEY) && localStorage.getItem(LEGACY_KEY)) {
+      localStorage.setItem(KEY, raw);
+      localStorage.removeItem(LEGACY_KEY);
+    }
     return Array.isArray(v) ? v : [];
   } catch {
     return [];

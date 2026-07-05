@@ -4,8 +4,8 @@ slug: "bioburden-usp-61"
 lang: "en"
 tier: "free"
 category: "Microbiology QC"
-seoDescription: "Microbial enumeration and specified-organism testing for non-sterile products per USP <61>/<62> — TAMC, TYMC, and method suitability."
-updatedAt: "2026-05-30"
+seoDescription: "Microbial enumeration and specified-organism testing for non-sterile products per USP <61>/<62> - TAMC, TYMC, method suitability, and result interpretation."
+updatedAt: "2026-07-02"
 quiz:
   - q: "What does TAMC stand for?"
     options: ["Total Anaerobic Microbial Count", "Total Aerobic Microbial Count", "Total Aseptic Media Control", "Total Active Microbial Culture"]
@@ -20,27 +20,146 @@ quiz:
 
 # Bioburden & Microbial Limits (USP &lt;61&gt;/&lt;62&gt;)
 
-For non-sterile products, microbial limits testing controls the microbial
-quality of the product. It has two parts under **USP &lt;61&gt;** and
-**USP &lt;62&gt;**.
+For non-sterile pharmaceutical products, "not sterile" does not mean
+"microbiology does not matter." Microbial limits testing checks whether the
+product carries an acceptable microbial population and whether specified
+organisms are absent where the product, route, and patient population require it.
 
-## The two tests
+The practical goal is release confidence: can this product be used as intended
+without an unacceptable microbiological risk?
 
-- **USP &lt;61&gt; — Microbial Enumeration:** counts total aerobic microbial
-  count (**TAMC**) and total yeast & mould count (**TYMC**).
-- **USP &lt;62&gt; — Tests for Specified Microorganisms:** detects objectionable
-  organisms (e.g. *E. coli*, *S. aureus*, *P. aeruginosa*, *Salmonella*).
+## The two compendial tests
 
-## Acceptance criteria
+USP &lt;61&gt; and USP &lt;62&gt; answer different questions.
 
-Limits depend on the route of administration and dosage form (see USP &lt;1111&gt;).
-Oral non-aqueous products, for example, have different limits from topicals.
+| Chapter | Question answered | Typical output |
+| --- | --- | --- |
+| USP &lt;61&gt; Microbial Enumeration | How many recoverable bacteria and fungi are present? | TAMC and TYMC as CFU/g or CFU/mL |
+| USP &lt;62&gt; Tests for Specified Microorganisms | Are named organisms absent or present after enrichment/selective testing? | Present/absent for organisms such as *E. coli*, *S. aureus*, *P. aeruginosa*, *Salmonella*, bile-tolerant Gram-negative bacteria, *Candida albicans*, or *Clostridia* where applicable |
+| USP &lt;1111&gt; Acceptance Criteria | What limits apply to this dosage form and route? | Count limits and specified-organism expectations |
+
+Do not treat &lt;61&gt; and &lt;62&gt; as interchangeable. A product can meet the total
+count limit and still fail because a relevant specified or objectionable
+organism is present.
+
+## What gets counted
+
+USP &lt;61&gt; reports:
+
+- **TAMC** - total aerobic microbial count, usually bacterial growth recovered
+  under aerobic conditions.
+- **TYMC** - total combined yeasts and moulds count.
+
+Results are normally expressed per gram or per millilitre after accounting for
+sample amount, dilution, plated volume, and the validated method. If duplicate
+plates are used, the result should be calculated according to the approved
+procedure rather than by a casual "looks about right" estimate.
+
+> Try the free tool: convert colony counts and dilutions with the
+> [Microbial Count (CFU) Calculator](/tools/microbial-count-calculator).
+
+## Choosing the test method
+
+The method must fit the product matrix.
+
+- **Membrane filtration** is useful when the product can be filtered and the
+  filter can be rinsed to remove antimicrobial activity.
+- **Plate count methods** are common for products that can be dispersed or
+  diluted without excessive inhibition.
+- **Most probable number (MPN)** may be used for low-count or difficult
+  matrices, but it is less precise and should be justified.
+
+The best method is not the easiest method. It is the method that recovers low
+numbers of organisms reliably in the presence of the product.
 
 ## Method suitability
 
-Before routine use, demonstrate the method recovers low inocula (typically
-10–100 CFU) of standard challenge organisms within a factor of 2 — proving the
-product matrix doesn't inhibit recovery.
+Method suitability is the proof that the product does not hide microorganisms
+from the test. Preservatives, surfactants, low pH, high osmolarity, high alcohol,
+viscosity, insoluble powders, and antimicrobial raw materials can all suppress
+recovery.
 
+A strong suitability package shows:
 
-> **Try the free tool:** convert plate counts to CFU/mL in the [Microbial Count (CFU) Calculator](/tools/microbial-count-calculator).
+- the exact sample preparation, neutralizer, diluent, rinse, and incubation
+  conditions;
+- challenge organisms appropriate to the chapter;
+- low inoculum recovery, commonly in the 10-100 CFU range;
+- recovery from the product preparation, not only from clean diluent;
+- negative controls showing no extrinsic laboratory contamination;
+- clear actions if recovery is poor, such as more dilution, neutralization,
+  additional rinsing, or a different method.
+
+If suitability fails, the routine test result is not reliable. A "no growth"
+result from an inhibitory product may only mean the method was neutralized by the
+product.
+
+## Reading results correctly
+
+When reviewing a result, ask five questions:
+
+1. Was the method suitable for this product and strength?
+2. Were controls valid, including negative controls and media growth promotion?
+3. Were colony counts in the countable range defined by the procedure?
+4. Were dilution factors, units, and rounding rules applied correctly?
+5. Does the result meet both the count limit and the specified-organism
+   requirement?
+
+Do not review TAMC/TYMC in isolation. Identity matters. A low total count may
+still be unacceptable if the recovered organism is product-relevant or patient
+relevant.
+
+## Specified vs objectionable organisms
+
+USP &lt;62&gt; names organisms to test for under defined conditions. "Objectionable"
+is broader: it is a risk decision based on the organism, the product, the route
+of administration, the population using it, and whether the organism can grow in
+or degrade the product.
+
+Examples:
+
+- A Gram-negative water organism in an oral aqueous product may indicate a water
+  system or preservative-control issue.
+- *Pseudomonas aeruginosa* is especially concerning for products used near
+  damaged skin, eyes, ears, or mucosa.
+- *Burkholderia cepacia* complex may be objectionable for aqueous products and
+  vulnerable patient populations even when not listed in a simple release
+  checklist.
+
+For a deeper decision framework, use the lesson
+[Objectionable Organisms](/library/objectionable-organisms).
+
+## Common failure patterns
+
+- Reusing an old suitability study after a formula, preservative, supplier, or
+  manufacturing change.
+- Reporting "less than" values without confirming the detection limit and units.
+- Treating a contaminated negative control as a minor issue instead of an invalid
+  run.
+- Ignoring repeated low-level recoveries because each individual result is below
+  the limit.
+- Failing to identify isolates when the organism could be objectionable.
+- Assuming USP &lt;61&gt; counts replace USP &lt;62&gt; specified-organism testing.
+
+## What good documentation looks like
+
+A complete record should let QA reconstruct the test without guessing:
+
+- product, lot, sample amount, dilution scheme, neutralizer, and method;
+- media lots and growth-promotion status;
+- incubation conditions and read dates;
+- raw plate counts, calculation, units, and final result;
+- controls and suitability reference;
+- isolate identification or rationale when required;
+- acceptance criteria from the product specification or USP &lt;1111&gt;;
+- investigation reference for any excursion or invalid control.
+
+## Why it matters
+
+Microbial limits testing protects patients, but it also protects the site from
+false confidence. A clean-looking result is only meaningful when the method can
+recover organisms, the calculation is correct, and the organism significance is
+understood.
+
+The best microbiology review mindset is simple: count, identify where needed,
+interpret by product risk, and trend the signal over time.

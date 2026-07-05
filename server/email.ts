@@ -7,7 +7,7 @@ const resend = process.env.RESEND_API_KEY
   : null;
 
 const FROM_EMAIL = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
-const BASE_URL = process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app";
+const BASE_URL = process.env.BASE_URL ?? "https://lifescienceatlas.com";
 
 function htmlWrapper(content: string): string {
   return `<!DOCTYPE html>
@@ -116,7 +116,7 @@ export async function sendPurchaseConfirmation(
     </div>
     <a href="${BASE_URL}/academy" class="cta">Open the Academy →</a>
     `}
-    <p style="margin-top: 24px; font-size: 13px;">Any issue with your order? Reply to this email or contact <a href="mailto:support@biowikipro.com" style="color:#10b981;">support@biowikipro.com</a></p>
+    <p style="margin-top: 24px; font-size: 13px;">Any issue with your order? Reply to this email or contact <a href="mailto:support@lifescienceatlas.com" style="color:#10b981;">support@lifescienceatlas.com</a></p>
   `);
 
   try {

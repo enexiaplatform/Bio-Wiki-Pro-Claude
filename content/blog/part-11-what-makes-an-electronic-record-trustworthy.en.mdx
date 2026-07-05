@@ -3,56 +3,342 @@ title: "Part 11: what makes an electronic record trustworthy"
 slug: "part-11-what-makes-an-electronic-record-trustworthy"
 lang: "en"
 tier: "free"
-category: "Investigations"
-seoDescription: "21 CFR Part 11 (and EU Annex 11) define when an electronic record can replace paper. Audit trails, electronic signatures, access control, and system validation — and why it's a means, not the end."
-updatedAt: "2026-06-20"
+category: "Data Integrity"
+seoDescription: "21 CFR Part 11 and EU Annex 11 explain when electronic records and signatures can replace paper. Learn the practical controls: validation, audit trails, access control, copies, retention, e-signatures, review, and data integrity."
+updatedAt: "2026-07-05"
 ---
 
 # Part 11: what makes an electronic record trustworthy
 
-When QC data lives in software rather than on paper, a question follows: can you
-**trust** it the way you trusted a signed logbook? **21 CFR Part 11** in the US (and
-**EU GMP Annex 11**) answer that — they define the conditions under which an electronic
-record and an electronic signature are as reliable, attributable, and durable as their
-paper equivalents.
+When a GMP record lives in software instead of a paper logbook, the central
+question is simple:
 
-## The controls that make a record trustworthy
+> Can this electronic record be trusted as much as a controlled, signed paper
+> record?
 
-Part 11 / Annex 11 are really a checklist of what it takes to trust electronic data:
+21 CFR Part 11 is the US rule that answers that question for FDA-regulated
+electronic records and electronic signatures. EU GMP Annex 11 covers similar
+ground for computerized systems used in GMP activities. They are not just IT
+requirements. They are data integrity requirements.
 
-- **Audit trails** — secure, computer-generated, time-stamped records of who did what
-  and when, that **users cannot alter or disable**. This is the heart of it.
-- **Access control** — unique user accounts, role-based permissions, and no shared
-  logins, so every action is **attributable**.
-- **Electronic signatures** — linked to the record, with the signer's name, the
-  date/time, and the meaning of the signature, and bound so they cannot be copied to
-  another record.
-- **Accurate copies and retention** — you can produce complete, readable copies and
-  retain records for their required lifetime.
-- **System validation** — the software is validated to perform reliably and to enforce
-  these controls.
+The purpose is not to make software look impressive. The purpose is to make sure
+electronic records are accurate, attributable, complete, secure, retrievable, and
+usable throughout their required retention period. In plain language: if the
+system is used to make a GMP decision, the record must tell the truth and keep
+telling the truth later.
 
-## The shift to review-by-exception
+## Part 11 applies because of the record, not the software label
 
-The practical pivot Part 11 enables — and demands — is **reviewing the audit trail**.
-An electronic record is only trustworthy if someone actually reviews the exceptions:
-the changes, the aborted runs, the re-integrations. Signing off the result without
-reviewing the audit trail is the modern equivalent of signing a logbook page you never
-read.
+One of the most common mistakes is asking, "Is this software Part 11 compliant?"
+as if compliance is a product feature that can be bought once and filed away.
 
-## Part 11 is a means, not the end
+The better question is:
 
-A common trap is treating Part 11 compliance as the goal. It is not — **data integrity**
-is the goal, and Part 11 is one set of controls that supports it for electronic systems.
-A perfectly Part 11-configured system used by people who do not review audit trails or
-who share an admin login still has a data-integrity problem. The technology enables
-trust; the people and the quality culture deliver it.
+> Are we using this system to create, modify, maintain, archive, retrieve, or
+> transmit electronic records required by FDA regulations, or to apply electronic
+> signatures to those records?
+
+Part 11 applies when electronic records are used to satisfy predicate rule
+requirements. Predicate rules are the underlying GMP, GLP, GCP, device, or other
+FDA regulations that require the record in the first place. Part 11 does not
+create the need for a batch record, laboratory record, complaint record, or
+training record. It defines conditions for relying on the electronic version of
+that required record.
+
+That means scope depends on intended use. The same platform may be low risk in
+one process and high risk in another. A document management system used for lunch
+menus is not the same as one used for approved SOPs, batch release records, or
+quality investigations. A spreadsheet used to plan a meeting is not the same as a
+spreadsheet used to calculate a release result.
+
+## Electronic records need controls around the whole lifecycle
+
+A trustworthy electronic record is not only the final PDF report. It includes the
+data and metadata needed to reconstruct what happened.
+
+For laboratory systems, that may include raw data, processed data, methods,
+sequence files, integration parameters, calibration status, system suitability,
+audit trail, result calculations, approval history, and final report. For a QMS,
+it may include workflow history, attachments, reviewer comments, CAPA changes,
+signature meaning, escalation history, and closure evidence.
+
+The lifecycle question is:
+
+- How is the record created?
+- Who can create or change it?
+- What metadata proves who did what and when?
+- What changes are captured?
+- What review is performed before approval?
+- How is the record approved or signed?
+- How is it protected from deletion or alteration?
+- How is it retained, backed up, archived, and retrieved?
+- Can the site produce a complete and readable copy during an inspection?
+
+If the system cannot answer those questions, it may generate data, but it does
+not yet generate trustworthy GMP records.
+
+## The core controls
+
+Part 11 and Annex 11 expectations can be grouped into several practical controls.
+
+| Control | What it means in practice | Common weak point |
+| --- | --- | --- |
+| Validation | The system is proven fit for its intended GxP use | Vendor certificate accepted without testing configuration and workflow |
+| Access control | Unique users, appropriate roles, no shared logins | Analysts have admin rights or shared accounts |
+| Audit trail | Secure, computer-generated, time-stamped history of critical actions | Trail exists but is disabled, incomplete, or never reviewed |
+| Record copies | Complete, accurate, human-readable and electronic copies can be produced | PDF omits raw data, metadata, or audit trail |
+| Retention | Records remain protected and retrievable for the required period | Archive requires vendor help or old software that no longer runs |
+| Electronic signature | Signature is linked to the record and shows signer, time, and meaning | Login password treated as a signature without signature meaning |
+| System security | Records are protected from unauthorized alteration or deletion | Users can delete data without independent review |
+| Change control | Configuration, patches, interfaces, and workflows are controlled | Updates applied without impact assessment |
+
+These controls work together. A system can have electronic signatures but still
+fail data integrity if users share accounts. It can have an audit trail but still
+fail if nobody reviews critical exceptions before release. It can generate a neat
+PDF but still fail if the original dynamic record cannot be reconstructed.
+
+## Validation is not optional
+
+Part 11 expects systems to be validated to ensure accuracy, reliability,
+consistent intended performance, and the ability to detect invalid or altered
+records. Annex 11 similarly expects the application to be validated and the IT
+infrastructure to be qualified.
+
+Validation does not mean testing every button with equal intensity. It means the
+site understands intended use and proves the critical functions that affect
+patient safety, product quality, and data integrity.
+
+For a chromatography data system, high-risk functions include acquisition,
+processing, integration, sequence control, audit trail, report generation, user
+roles, backup, restore, and electronic approval. For a QMS, they may include
+workflow routing, due-date control, approval, e-signature, attachments, audit
+trail, and record retention. For a spreadsheet, they may include formulas, locked
+cells, version control, input ranges, calculation verification, and review.
+
+The validation package should make the story obvious:
+
+- intended use and GxP impact;
+- user requirements or critical process requirements;
+- supplier assessment where relevant;
+- risk assessment for patient safety, product quality, and data integrity;
+- configuration baseline;
+- tests or leveraged evidence proportional to risk;
+- Part 11 / Annex 11 assessment;
+- SOPs for use, review, backup, archive, and change control;
+- approval for release to use;
+- periodic review plan.
+
+A vendor brochure saying "Part 11 ready" is not validation. The site owns the
+intended use and configuration.
+
+## Audit trails are evidence, not decoration
+
+The audit trail is often the most visible Part 11 control. It should capture
+critical actions such as creation, modification, deletion, reprocessing,
+integration changes, sequence changes, method changes, privilege changes, clock
+changes, record approval, and other events that affect the reliability of the
+record.
+
+But an audit trail is not useful simply because it exists. It must be:
+
+- enabled for GMP-critical records and actions;
+- secure from ordinary user alteration;
+- time-stamped and attributable to unique users;
+- retained with the record;
+- available for review;
+- included in the record review process where it affects the data;
+- periodically checked for system-level risks such as role changes or disabled
+  audit trail settings.
+
+The practical question is not "does the system have an audit trail?" It is:
+"which audit-trail events matter for this record, who reviews them, when are they
+reviewed, what exceptions trigger escalation, and where is the review documented?"
+
+For batch release data, audit trail review often needs to happen before final
+approval of the record. For system administration events, periodic review may be
+appropriate. The frequency and depth should follow risk, but the rationale must
+be visible.
+
+## Electronic signatures must mean something
+
+An electronic signature is not just a username and password. It is a controlled
+act that must be linked to a specific record and show who signed, when they
+signed, and what the signature meant.
+
+Common signature meanings include:
+
+- performed by;
+- reviewed by;
+- approved by;
+- verified by;
+- QA approved;
+- released by;
+- rejected by.
+
+The signature should not be removable, transferable, or copied to another record.
+The system should require identity verification at signing according to the site's
+approved procedure. Users must understand that an electronic signature has the
+same seriousness as a handwritten signature.
+
+One weak pattern is "click approve" without a clear meaning. Another is allowing a
+supervisor to sign under someone else's login. Both destroy the point of the
+signature: accountability.
+
+## Static versus dynamic records
+
+FDA data integrity guidance distinguishes static and dynamic record formats. A
+static record is fixed, like a paper printout or a flat image. A dynamic record
+allows interaction with the underlying data, such as changing chromatographic
+scale, viewing integration, checking sequence history, or reviewing metadata.
+
+This matters because a PDF may not be the complete GMP record. If the quality
+decision depends on dynamic data, then the dynamic data and associated metadata
+must remain available. A final PDF that hides manual integration changes, deleted
+injections, or sequence edits is not a complete record.
+
+Good systems make clear what the official record is. Is it the database record?
+The signed PDF? The raw data plus final report? The answer must be defined in the
+SOP and reflected in validation, review, backup, archive, and retrieval.
+
+## Hybrid systems are especially risky
+
+Many sites operate hybrid systems: part paper, part electronic. For example, an
+instrument may generate electronic raw data, an analyst may print a report, and
+QA may sign the paper packet.
+
+Hybrid systems are not automatically wrong, but they create traps:
+
+- the paper printout may omit audit trail and metadata;
+- the electronic original may not be reviewed;
+- raw data may be overwritten or deleted after printing;
+- the paper packet may look complete while the real record lives elsewhere;
+- responsibilities between QC, QA, and IT may be unclear.
+
+The site needs to define the original record and the official review process. If
+the electronic system creates the original GMP data, printing it does not make the
+electronic data irrelevant. The audit trail, metadata, and raw data still need
+control and review.
+
+## Annex 11 adds lifecycle and process emphasis
+
+EU GMP Annex 11 is not identical to Part 11, but the practical direction is
+similar: computerized systems used in GMP must be validated, controlled, secure,
+available, and governed through their lifecycle.
+
+Annex 11 places strong emphasis on risk management, supplier and service provider
+management, data integrity, accuracy checks, data storage, printouts, audit
+trails, change control, periodic evaluation, security, incident management,
+business continuity, and archiving.
+
+The Annex 11 principle is especially useful: when a computerized system replaces a
+manual operation, there should be no decrease in product quality, process control,
+or quality assurance, and no increase in overall process risk.
+
+That is a simple test for any digitalization project. If moving from paper to
+software makes records easier to alter, harder to review, or less available, the
+project has not improved compliance.
+
+## "Part 11 compliant software" is not enough
+
+Vendors can provide important capabilities: audit trails, role management,
+e-signatures, backup tools, validation documentation, supplier quality evidence,
+and technical security features. Those are useful inputs.
+
+But the regulated company still has to configure, validate, use, review, and
+maintain the system correctly.
+
+Common gaps include:
+
+- buying the compliant module but not enabling key controls;
+- enabling audit trails but never reviewing them;
+- granting broad admin rights to routine users;
+- failing to test configured workflows;
+- using shared service accounts for GMP actions;
+- storing backups without restore testing;
+- using exported PDFs as the official record while ignoring dynamic data;
+- applying patches without change control;
+- keeping retired systems without a retrievable archive strategy.
+
+Compliance is not inside the software alone. It is in the combination of system
+capability, configuration, validation, procedure, training, review, and culture.
+
+## What inspectors often ask
+
+During an inspection, Part 11 questions often become very concrete:
+
+- Show me who can create, modify, approve, or delete this record.
+- Show me the audit trail for this result.
+- Show me where the audit trail review is documented.
+- Show me how you know the audit trail cannot be disabled by the analyst.
+- Show me the user access review for this system.
+- Show me the validation package for this configuration.
+- Show me the official record definition.
+- Show me how electronic signatures are linked to records.
+- Show me a complete copy of the record, including metadata where needed.
+- Show me how archived records can be retrieved during the retention period.
+- Show me what happens when the system is patched or upgraded.
+- Show me how exceptions are escalated.
+
+The best answer is not a long policy. It is a working system with evidence that a
+reviewer can navigate calmly.
+
+## Practical Part 11 assessment checklist
+
+Use this as a first-pass review for any GxP system that creates or maintains
+electronic records.
+
+1. **Intended use:** What GMP process or decision does the system support?
+2. **Record scope:** Which electronic records and signatures are in scope?
+3. **Official record:** What is the original or official GMP record?
+4. **Validation:** Has the configured system been validated for intended use?
+5. **Access:** Are all users unique, role-based, and periodically reviewed?
+6. **Admin rights:** Are privileged rights restricted and independently reviewed?
+7. **Audit trail:** Are critical actions captured, secure, retained, and reviewable?
+8. **Audit trail review:** Is review risk-based, timely, documented, and effective?
+9. **E-signature:** Does the signature show signer, date/time, and meaning?
+10. **Copies:** Can the site produce complete, accurate, readable copies?
+11. **Retention:** Are records protected through the full retention period?
+12. **Backup and restore:** Has restore been verified, not just backup creation?
+13. **Interfaces:** Are transferred data complete, accurate, and reconciled?
+14. **Change control:** Are configuration changes, patches, and upgrades assessed?
+15. **Periodic review:** Does the system remain fit for intended use over time?
+
+## What good looks like
+
+A trustworthy electronic-record program has a few obvious traits:
+
+- users have unique accounts and appropriate roles;
+- analysts cannot silently delete, overwrite, or alter critical records;
+- audit trails are enabled for meaningful events and reviewed by risk;
+- reviewers look at exceptions before approving records;
+- electronic signatures are linked, meaningful, and accountable;
+- official records are defined, complete, retained, and retrievable;
+- validation covers the actual configuration and intended use;
+- hybrid paper/electronic workflows do not hide the electronic original;
+- vendors support compliance, but the site owns use and control;
+- periodic review catches drift in access, configuration, archive, and procedure.
+
+Part 11 is not the end goal. The goal is trustworthy data. Part 11, Annex 11,
+CSV/CSA, audit trail review, access control, and electronic signatures are tools
+that help a site prove that trust.
 
 ## Go deeper
 
 - Learn the background in [Electronic records & Part 11](/library/electronic-records-part-11).
-- See the principle in [Audit trail review](/blog/audit-trail-review).
+- See the review mechanics in [Audit trail review](/blog/audit-trail-review).
+- Connect system validation in [CSV vs CSA](/blog/computer-system-validation).
+- Review the data integrity foundation in [ALCOA+ data integrity](/blog/data-integrity-alcoa)
+  and [FDA data integrity 483 observations](/blog/data-integrity-483-observations).
+- Try the [Audit Trail Review Triage](/tools/audit-trail-review-triage) tool for
+  exception review notes.
 
-*General educational content — verify against 21 CFR Part 11, EU Annex 11, and the
-applicable guidance, your approved SOPs, and your validated systems. Not a substitute
-for QA approval.*
+## References
+
+- eCFR, [21 CFR Part 11 - Electronic Records; Electronic Signatures](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-A/part-11).
+- FDA, [Part 11, Electronic Records; Electronic Signatures - Scope and Application](https://www.fda.gov/media/75414/download).
+- FDA, [Data Integrity and Compliance With Drug CGMP](https://www.fda.gov/media/119267/download).
+- European Commission, [EU GMP Annex 11: Computerised Systems](https://health.ec.europa.eu/system/files/2016-11/annex11_01-2011_en_0.pdf).
+
+*General educational content - verify against 21 CFR Part 11, EU GMP Annex 11,
+FDA guidance, your approved SOPs, and your validated systems. Not a substitute
+for QA approval or legal/regulatory advice.*

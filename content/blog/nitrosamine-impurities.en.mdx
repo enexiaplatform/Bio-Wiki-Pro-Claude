@@ -1,43 +1,190 @@
 ---
-title: "Nitrosamine Impurities: what QC teams need to know"
+title: "Nitrosamine Impurities: What QC Teams Need to Know"
 slug: "nitrosamine-impurities"
 lang: "en"
 tier: "free"
 category: "Laboratory Controls"
-seoDescription: "Why nitrosamine impurities triggered global recalls — root causes, the three-step regulatory approach, and the analytical challenge of trace detection."
-updatedAt: "2026-06-02"
+seoDescription: "A practical QC guide to nitrosamine impurity control: risk assessment, NDSRIs, acceptable intake limits, confirmatory testing, and method pitfalls."
+updatedAt: "2026-07-03"
 ---
 
-# Nitrosamine Impurities: what QC teams need to know
+# Nitrosamine Impurities: What QC Teams Need to Know
 
-Since 2018, nitrosamine contamination has driven recalls of sartans, metformin,
-ranitidine, and more. Because many nitrosamines are probable human carcinogens,
-acceptable intake limits sit in the nanogram-per-day range — a serious
-analytical and control challenge.
+Nitrosamine impurities became a global quality issue in 2018 after NDMA and
+related impurities were detected in some sartan medicines. Since then, regulators
+have expanded the concern beyond a few named products to a broader question:
+
+> Could this product, process, material, packaging system, or storage condition
+> generate a nitrosamine impurity at a clinically meaningful level?
+
+For QC teams, the hard part is that many nitrosamines have acceptable intake
+(AI) limits in the nanogram-per-day range. That pushes the work into trace
+analysis, careful sample preparation, and a risk assessment that must be
+scientifically defensible.
+
+## What nitrosamines are
+
+Nitrosamines are compounds containing an N-nitroso group. Many are considered
+potentially carcinogenic because some members of the class have shown strong
+carcinogenic activity in animal studies.
+
+In pharmaceutical control, the important split is:
+
+- **Small-molecule nitrosamines**, such as NDMA or NDEA, which may arise from
+  common reagents, solvents, or nitrosating conditions.
+- **Nitrosamine drug substance-related impurities (NDSRIs)**, which are
+  structurally related to the API and can form when a vulnerable amine in or
+  related to the drug substance is nitrosated.
+
+NDSRIs are especially challenging because compound-specific toxicology data are
+often missing. Regulators therefore use frameworks such as carcinogenic potency
+categorization, read-across, enhanced Ames testing, interim limits, or
+compound-specific data when available.
 
 ## Where nitrosamines come from
 
-- **Secondary/tertiary amines + nitrosating agents** during synthesis.
-- **Contaminated raw materials** and recovered solvents.
-- **Cross-contamination** from shared equipment or supplier processes.
-- **Degradation** during storage, especially with certain excipients.
+The basic chemistry is usually a vulnerable amine plus a nitrosating source, but
+the real manufacturing causes can be varied:
 
-## The regulatory three-step approach
+- Secondary, tertiary, or other susceptible amines in the API, intermediates,
+  reagents, catalysts, or degradation products.
+- Nitrite or nitrosating agents in raw materials, excipients, water, recovered
+  solvents, or process aids.
+- Acidic conditions, elevated temperature, or long hold times that promote
+  nitrosation.
+- Recovered or recycled solvents with insufficient segregation or control.
+- Cross-contamination from shared equipment, supplier operations, or contaminated
+  materials.
+- Packaging, storage, or formulation conditions that allow formation over shelf
+  life.
+- Analytical sample preparation that creates nitrosamines in situ and produces a
+  false signal.
 
-1. **Risk assessment** — evaluate every product and process for nitrosamine
-   potential.
-2. **Confirmatory testing** — where risk is identified, test with validated,
-   highly sensitive methods.
-3. **Risk mitigation** — change the process, supplier, or controls; update the
-   marketing authorization as needed.
+That last point matters. A QC method can accidentally create the impurity it is
+trying to measure if extraction, pH, temperature, or reagents are poorly
+controlled.
 
-## The analytical challenge
+## The three-step regulatory pattern
 
-Detecting impurities at trace acceptable-intake levels typically demands
-LC-MS/MS or GC-MS/MS with carefully controlled sample preparation to avoid
-*in-situ* nitrosamine formation during analysis itself — a real and documented
-artifact.
+Regulators generally expect a structured program:
 
-> For QC, the takeaway is method sensitivity and a defensible risk assessment.
-> Regulators expect a documented rationale for every product, not just the ones
-> that made the news.
+1. **Risk assessment:** review products, APIs, excipients, processes, suppliers,
+   packaging, and storage conditions for nitrosamine formation or contamination
+   risk.
+2. **Confirmatory testing:** where risk is identified, test with a validated,
+   sensitive, and specific method.
+3. **Risk mitigation:** remove or reduce the risk through process changes,
+   supplier controls, formulation changes, specifications, storage controls,
+   shelf-life changes, or regulatory submissions as needed.
+
+The sequence matters. Testing everything without a good risk assessment wastes
+resources. A paper assessment with no testing where real risk exists is worse.
+
+## What a good risk assessment includes
+
+A strong nitrosamine risk assessment usually covers:
+
+- API route of synthesis, reagents, catalysts, quench steps, pH, temperature, and
+  nitrosating conditions.
+- API structure and degradation pathways, including the possibility of NDSRI
+  formation.
+- Excipients that may contain nitrite or promote nitrosation.
+- Supplier controls for high-risk raw materials and recovered solvents.
+- Cross-contamination risk in multipurpose facilities.
+- Packaging and storage conditions that could influence formation over shelf
+  life.
+- Historical batch data, stability data, complaints, recalls, deviations, and
+  change controls.
+- A clear conclusion: no risk, theoretical risk, confirmed risk, or risk under
+  investigation.
+
+The output should not be a generic checklist. It should explain why the product
+is or is not at risk, what evidence supports that conclusion, and what controls
+keep the conclusion true over time.
+
+## Confirmatory testing: sensitivity is not enough
+
+Nitrosamine methods often use LC-MS/MS, GC-MS/MS, or high-resolution mass
+spectrometry. Sensitivity is necessary, but it is not the whole method.
+
+The method should also demonstrate:
+
+- Specificity against the API, excipients, degradants, solvents, and matrix
+  interferences.
+- LOD and LOQ low enough for the applicable AI-based limit.
+- Recovery and extraction efficiency at trace levels.
+- Control of in-situ formation during sample preparation.
+- Carryover control, because low-level signals are easy to misread.
+- Robustness for pH, extraction time, temperature, and sample handling.
+- Stability of standards and prepared samples.
+
+For QC release or stability use, the method validation story must match the
+decision being made. A screening method may support triage; a confirmatory method
+used for control needs stronger validation.
+
+## AI limits and NDSRIs
+
+Acceptable intake limits are not all the same. Some nitrosamines have
+compound-specific limits. Others may rely on read-across, interim limits,
+carcinogenic potency categorization, or additional safety testing.
+
+For NDSRIs, the key QC implication is that the target limit can change as
+regulatory science evolves. A method that was adequate for one interim limit may
+not be adequate after a revised AI limit. The control strategy therefore needs a
+change-monitoring process, not a one-time memo.
+
+## What mitigation can look like
+
+Mitigation should target the source of risk. Examples include:
+
+- Removing nitrosating agents or vulnerable amine sources where possible.
+- Changing reaction conditions, order of addition, pH, temperature, or hold time.
+- Tightening raw-material, excipient, or solvent specifications.
+- Improving recovered-solvent segregation and supplier qualification.
+- Adding purge or control steps supported by process understanding.
+- Changing formulation or packaging when product-stage formation is the issue.
+- Updating shelf life or storage conditions while a permanent CAPA is completed.
+- Adding validated routine testing where risk remains.
+
+The best CAPA is not "test more batches forever." Testing verifies control; it
+does not replace control.
+
+## Common QC traps
+
+Nitrosamine programs fail in predictable ways:
+
+- Treating only the originally publicized products as in scope.
+- Ignoring excipient nitrite contribution or API-related NDSRI formation.
+- Using a method with a headline LOQ but weak specificity or recovery.
+- Creating nitrosamines during sample preparation and calling the result real.
+- Forgetting that stability can be the formation window.
+- Letting supplier changes bypass the nitrosamine risk assessment.
+- Assuming a negative result on one batch proves no product risk.
+- Failing to revisit AI limits, regulatory Q&A updates, or new NDSRI data.
+
+## A practical review question
+
+For each product, QC and QA should be able to answer:
+
+> What nitrosamine could form, why, under what conditions, at what limit, by what
+> method, and what control prevents it from increasing over shelf life?
+
+If the team cannot answer that in plain language, the risk assessment is not yet
+ready for an inspector.
+
+## Keep learning
+
+- Learn the foundation in [Nitrosamine impurity control](/library/nitrosamine-impurity-control).
+- Connect the analytical expectations to [Analytical method validation](/library/analytical-method-validation).
+- Compare the risk-based logic with [Elemental impurities (ICH Q3D)](/blog/elemental-impurities-q3d-explained).
+- Review related trace-control thinking in [Residual solvents (ICH Q3C): the leftovers of synthesis](/blog/residual-solvents-q3c-the-leftovers-of-synthesis).
+- For deviations or unexpected detections, use [OOS Investigation Phases](/blog/oos-investigation-phases).
+
+## References
+
+- FDA, [CDER Nitrosamine Impurity Acceptable Intake Limits](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/cder-nitrosamine-impurity-acceptable-intake-limits), current FDA AI-limit resource.
+- FDA, [Control of Nitrosamine Impurities in Human Drugs](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/control-nitrosamine-impurities-human-drugs), guidance resource.
+- FDA, [Recommended Acceptable Intake Limits for Nitrosamine Drug Substance-Related Impurities](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/recommended-acceptable-intake-limits-nitrosamine-drug-substance-related-impurities), NDSRI framework.
+- EMA, [Nitrosamines Q&A for Marketing Authorisation Holders and Applicants](https://www.ema.europa.eu/en/documents/opinion-any-scientific-matter/nitrosamines-emea-h-a53-1490-questions-answers-marketing-authorisation-holders-applicants-chmp-opinion-article-53-regulation-ec-no-726-2004-referral-nitrosamine-impurities-human-medicinal-products_en.pdf), current Q&A.
+- Health Canada, [Nitrosamine Impurities in Medications: Guidance](https://www.canada.ca/en/health-canada/services/drugs-health-products/compliance-enforcement/information-health-product/drugs/nitrosamine-impurities/medications-guidance.html), current guidance.
+- ICH, [M7(R2) Assessment and Control of DNA Reactive (Mutagenic) Impurities](https://database.ich.org/sites/default/files/ICH_M7%28R2%29_Guideline_Step4_2023_0216_0.pdf), 2023.

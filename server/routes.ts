@@ -661,7 +661,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       // Send checklist email only for new leads. Fire-and-forget: a mail failure
       // must NOT fail the request — the lead is already saved.
       if (isNew) {
-        const base = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://bio-wiki-pro-claude.vercel.app").replace(/\/$/, "");
+        const base = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://lifescienceatlas.com").replace(/\/$/, "");
         const downloadUrl = process.env.DOWNLOAD_GMP_CHECKLIST || `${base}/api/lead-magnet/gmp-checklist`;
         sendLeadMagnetEmail(normalizedEmail, downloadUrl).catch((err) =>
           console.error("[Leads] Email error:", err)
@@ -685,7 +685,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   // Returns the full MDX body ONLY when the session is entitled for the tier.
   // Pro/paid bodies are never sent to unentitled clients (server-side gating).
   const CONTENT_COLLECTIONS = new Set(["academy", "blog", "toolkits"]);
-  const CONTENT_LANGS = new Set(["vi", "en"]);
+  const CONTENT_LANGS = new Set(["en"]);
   const SLUG_RE = /^[a-z0-9-]+$/;
 
   app.get("/api/content/:collection/:slug", async (req: any, res) => {
@@ -942,9 +942,9 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  // ── Dynamic sitemap (core pages + all MDX blog/academy, both languages) ────
+  // ── Dynamic sitemap (core pages + all English MDX blog/academy) ────────────
   app.get("/sitemap.xml", async (_req, res) => {
-    const baseUrl = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://bio-wiki-pro-claude.vercel.app").replace(/\/$/, "");
+    const baseUrl = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://lifescienceatlas.com").replace(/\/$/, "");
 
     // Distinct slugs per collection from the MDX files on disk.
     async function slugsIn(collection: string): Promise<string[]> {
@@ -953,7 +953,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         const files = await readdir(dir);
         const set = new Set<string>();
         for (const f of files) {
-          const m = f.match(/^(.+)\.(?:vi|en)\.mdx$/);
+          const m = f.match(/^(.+)\.en\.mdx$/);
           if (m) set.add(m[1]);
         }
         return Array.from(set);
@@ -977,7 +977,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     ].map((s) => `/paths/${s}`);
     // Workflow detail pages. Kept in sync with client/src/data/workflows.ts.
     const workflowPaths = [
-      "culture-media-selection", "environmental-monitoring",
+      "culture-media-selection", "environmental-monitoring", "water-system-monitoring",
       "biological-indicator-workflow", "aseptic-gowning-qualification",
       "aseptic-process-simulation", "sterile-filtration",
       "oos-investigation", "deviation-capa", "data-integrity-review",
@@ -992,12 +992,20 @@ export async function registerRoutes(app: Express): Promise<void> {
     const toolPaths = [
       "audit-readiness-scorecard", "lab-water-type-selector",
       "culture-media-selection-helper", "sterility-test-method-selector",
-      "microbial-count-calculator", "sterilization-f0-calculator",
+      "sterile-filtration-readiness-planner", "gowning-qualification-readiness-planner",
+      "media-fill-aps-readiness-planner", "microbial-count-calculator", "sterilization-f0-calculator",
       "endotoxin-limit-calculator", "cleaning-validation-maco-calculator",
-      "process-capability-calculator", "system-suitability-calculator",
-      "dilution-calculator", "oos-investigation-decision-tree",
+      "process-capability-calculator", "equipment-qualification-readiness-planner", "system-suitability-calculator",
+      "dilution-calculator", "dissolution-acceptance-checker", "stability-trend-shelf-life-planner",
+      "cell-based-potency-readiness-planner",
+      "hcp-testing-readiness-planner",
+      "viral-safety-readiness-planner",
+      "oot-trend-triage-planner",
+      "audit-trail-review-triage",
+      "batch-release-readiness-checklist", "change-control-impact-triage", "supplier-qualification-risk-triage",
+      "oos-investigation-decision-tree",
       "em-scenario-decision-tree", "contamination-control-strategy-builder",
-      "investigation-template-viewer",
+      "investigation-template-viewer", "capa-effectiveness-check-planner",
     ].map((s) => `/tools/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
@@ -1020,24 +1028,23 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // ── Blog RSS feed ─────────────────────────────────────────────────────────
   app.get("/blog/rss.xml", async (_req, res) => {
-    const baseUrl = process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app";
+    const baseUrl = process.env.BASE_URL ?? "https://lifescienceatlas.com";
     const dir = path.resolve(process.cwd(), "content", "blog");
     const esc = (s: string) =>
       s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-    type Item = { title: string; slug: string; lang: string; desc: string; updatedAt?: string };
+    type Item = { title: string; slug: string; desc: string; updatedAt?: string };
     const items: Item[] = [];
     try {
       const files = await readdir(dir);
       for (const file of files) {
-        const m = file.match(/^(.+)\.(vi|en)\.mdx$/);
+        const m = file.match(/^(.+)\.(en)\.mdx$/);
         if (!m) continue;
         const raw = await readFile(path.join(dir, file), "utf-8");
         const { data } = matter(raw);
         items.push({
           title: (data.title as string) ?? m[1],
           slug: (data.slug as string) ?? m[1],
-          lang: m[2],
           desc: (data.seoDescription as string) ?? "",
           updatedAt: data.updatedAt as string | undefined,
         });
@@ -1052,7 +1059,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       `<?xml version="1.0" encoding="UTF-8"?>\n` +
       `<rss version="2.0"><channel>\n` +
       `<title>Life Science Atlas Blog</title>\n` +
-      `<link>${baseUrl}/vi/blog</link>\n` +
+      `<link>${baseUrl}/blog</link>\n` +
       `<description>GMP, QC/QA &amp; data integrity insights</description>\n` +
       items
         .map((it) => {

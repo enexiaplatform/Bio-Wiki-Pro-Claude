@@ -4,7 +4,7 @@ import path from "path";
 import matter from "gray-matter";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
-const SITE_URL = (process.env.BASE_URL ?? "https://bio-wiki-pro-claude.vercel.app").replace(/\/$/, "");
+const SITE_URL = (process.env.BASE_URL ?? "https://lifescienceatlas.com").replace(/\/$/, "");
 
 // Per-tool social/SEO meta for the standalone /tools/:slug pages. Most crawlers
 // and social-card scrapers don't run the client JS that sets these, so we inject
@@ -29,6 +29,21 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     title: "Sterility Test Method Selector",
     description:
       "Free sterility test method selector — choose between membrane filtration and direct inoculation based on your product type and volume, with the key method controls.",
+  },
+  "sterile-filtration-readiness-planner": {
+    title: "Sterile Filtration Readiness Planner",
+    description:
+      "Free sterile filtration readiness planner - check bacterial-retention validation, integrity-test limits, PUPSIT or CCS/QRM rationale, validated process parameters, post-use integrity, and batch-impact assessment.",
+  },
+  "gowning-qualification-readiness-planner": {
+    title: "Gowning Qualification Readiness Planner",
+    description:
+      "Free gowning qualification readiness planner - check aseptic gowning training, assessor observation, consecutive successful sessions, gown monitoring counts, APS coverage, routine monitoring, and requalification controls.",
+  },
+  "media-fill-aps-readiness-planner": {
+    title: "Media Fill APS Readiness Planner",
+    description:
+      "Free media fill APS readiness planner - check aseptic process simulation protocol, intervention matrix, operator coverage, growth promotion, worst-case run design, incubation, EM linkage, and positive-unit investigation controls.",
   },
   "microbial-count-calculator": {
     title: "Microbial Count (CFU) Calculator",
@@ -55,6 +70,11 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     description:
       "Free process capability calculator — Cp, Cpu, Cpl, Cpk and the estimated out-of-spec PPM from spec limits and process data, with raw-data paste support.",
   },
+  "equipment-qualification-readiness-planner": {
+    title: "Equipment Qualification Readiness Planner",
+    description:
+      "Free equipment qualification readiness planner - check URS, risk assessment, DQ, IQ, OQ, PQ, deviations, and qualified-state controls before QA release.",
+  },
   "system-suitability-calculator": {
     title: "System Suitability %RSD Calculator",
     description:
@@ -64,6 +84,56 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     title: "Dilution & Standard Prep Calculator",
     description:
       "Free dilution calculator — solve C1V1 = C2V2 for the stock and diluent volumes to hit a target concentration, or build a serial (fold) dilution table for standard preparation.",
+  },
+  "dissolution-acceptance-checker": {
+    title: "Dissolution S1/S2/S3 Acceptance Checker",
+    description:
+      "Free dissolution acceptance checker - paste 6, 12, or 24 unit results, enter the Q value, and evaluate immediate-release S1/S2/S3 staged acceptance criteria.",
+  },
+  "stability-trend-shelf-life-planner": {
+    title: "Stability Trend & Shelf-Life Planner",
+    description:
+      "Free stability trend and shelf-life planner - enter long-term stability points, specifications, proposed retest period or shelf life, and get a Q1A/Q1E-style triage note for trend, headroom, extrapolation, and impact review.",
+  },
+  "cell-based-potency-readiness-planner": {
+    title: "Cell-Based Potency Readiness Planner",
+    description:
+      "Free cell-based potency readiness planner - check reference standard, cell system, plate controls, curve fit, parallelism, precision, and assay-vs-sample investigation before reporting relative potency.",
+  },
+  "hcp-testing-readiness-planner": {
+    title: "HCP Testing Readiness Planner",
+    description:
+      "Free HCP testing readiness planner - check method validity, antibody coverage, dilutional linearity, assay range, plate controls, orthogonal support, clearance trend, and assay-vs-process impact before reporting host-cell protein results.",
+  },
+  "viral-safety-readiness-planner": {
+    title: "Viral Safety Readiness Planner",
+    description:
+      "Free viral safety readiness planner - check ICH Q5A(R2) source control, raw-material risk, stage-appropriate viral testing, assay controls, representative clearance, orthogonal LRV margin, prior knowledge, and adventitious-agent response before relying on a biologics viral-safety package.",
+  },
+  "oot-trend-triage-planner": {
+    title: "OOT Trend Triage Planner",
+    description:
+      "Free OOT trend triage planner - compare a current result to historical mean, standard deviation, and specification limits to decide whether it is routine noise, an OOT signal, or an OOS event.",
+  },
+  "audit-trail-review-triage": {
+    title: "Audit Trail Review Triage",
+    description:
+      "Free audit trail review triage tool - risk-rank GMP audit-trail exceptions, identify evidence to capture, and build a reviewer note for ALCOA+ data integrity review.",
+  },
+  "batch-release-readiness-checklist": {
+    title: "Batch Release Readiness Checklist",
+    description:
+      "Free batch release readiness checklist - check batch record completion, QC testing, deviations, audit trails, reconciliation, and authorized QA/QP disposition before release.",
+  },
+  "change-control-impact-triage": {
+    title: "Change Control Impact Triage",
+    description:
+      "Free change control impact triage tool - classify a proposed GMP change, identify approval blockers, and build an impact-assessment note before implementation.",
+  },
+  "supplier-qualification-risk-triage": {
+    title: "Supplier Qualification Risk Triage",
+    description:
+      "Free supplier qualification risk triage tool - score material criticality, supplier history, substitutability, regulatory status, and control gaps to choose audit depth, quality agreement, incoming verification, and monitoring.",
   },
   "oos-investigation-decision-tree": {
     title: "OOS Investigation Decision Tree",
@@ -84,6 +154,11 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     title: "Investigation Template Viewer",
     description:
       "Free QC investigation template viewer — preview a structured deviation/OOS investigation outline you can adapt to your quality system.",
+  },
+  "capa-effectiveness-check-planner": {
+    title: "CAPA Effectiveness Check Planner",
+    description:
+      "Free CAPA effectiveness check planner - score whether your CAPA is ready for closure, define a verification window, and build evidence that the root cause is controlled.",
   },
 };
 

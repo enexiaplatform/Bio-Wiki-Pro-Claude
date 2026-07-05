@@ -1,15 +1,15 @@
-# BioWikiPro — Status & Launch-Readiness
+# Life Science Atlas — Status & Launch-Readiness
 
 > **Purpose:** Hand-off doc so a future session (or the owner) knows the true state of the product and exactly what remains to flip on before / during commercial onboarding.
 > **Updated:** 2026-06-12
 > **Latest commit:** `ae9659f`
-> **Live:** https://bio-wiki-pro-claude.vercel.app
+> **Live:** https://lifescienceatlas.com
 
 ---
 
 ## 1. What the product is
 
-BioWikiPro is a **mobile-first PWA** for **QC/QA professionals in Pharma/Biotech/Life-Science**, sold to a **global, English-only** audience (freemium). Director-level content on GMP, sterility/EM, OOS/CAPA investigations, Annex 1, data integrity, validation, biologics QC, audit prep and career growth.
+Life Science Atlas is a **mobile-first PWA** for **QC/QA professionals in Pharma/Biotech/Life-Science**, sold to a **global, English-only** audience (freemium). Director-level content on GMP, sterility/EM, OOS/CAPA investigations, Annex 1, data integrity, validation, biologics QC, audit prep and career growth.
 
 **Positioning:** written from real-world QC *and* vendor (industrial microbiology) experience — frameworks that apply immediately, not theory.
 
@@ -42,7 +42,7 @@ BioWikiPro is a **mobile-first PWA** for **QC/QA professionals in Pharma/Biotech
 78 academy MDX + 23 blog MDX; 7 disjoint learning paths (every academy lesson in exactly one, enforced by `npm run validate:paths`); structured `/academy/:slug` lessons from `microbiologyLessons`.
 
 ### Tests
-`npm test` → **50 vitest tests across 3 files** (server unit + routes), all passing. `npm run test:e2e` → Playwright public smoke (7 tests). Two content guards: `validate:content`, `validate:paths`.
+`npm test` runs Vitest server/unit coverage. `npm run test:e2e` runs the Playwright public smoke suite. Content guards include `validate:content`, `validate:paths`, `validate:links`, and `validate:tool-meta`.
 
 ---
 
@@ -91,7 +91,7 @@ npm run check            # type-check (tsc) — currently clean
 npm run build            # vite client + esbuild server → dist/
 npm start                # run production build
 npm run db:push          # push Drizzle schema (no migration files)
-npm test                 # vitest (50 tests)
+npm test                 # vitest server/unit coverage
 npm run test:e2e         # playwright public smoke
 npm run validate:content # MDX frontmatter / escaping guard
 npm run validate:paths   # every academy lesson in exactly one path

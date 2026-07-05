@@ -59,10 +59,10 @@ export function Footer() {
 
           {/* Contact */}
           <a
-            href="mailto:support@biowikipro.com"
+            href="mailto:support@lifescienceatlas.com"
             className="text-xs text-muted-foreground hover:text-primary transition-colors"
           >
-            support@biowikipro.com
+            support@lifescienceatlas.com
           </a>
         </div>
       </div>

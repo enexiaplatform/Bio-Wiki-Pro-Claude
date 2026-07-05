@@ -1,8 +1,8 @@
-# BioWiki Pro
+# Life Science Atlas
 
 ## Overview
 
-BioWiki Pro is a mobile-first PWA (Progressive Web App) serving as a pocket mentor for students and professionals in Biotech, Pharma, and Life Science. It provides a knowledge hub with audience-specific content hubs: QC Hub (professional QC workflows, default landing), Academy (student foundations with Learning Path), Insights (sales/industry intelligence), Lab Tools (scientific calculators + tool catalog), Compliance (SOPs and guidelines), Career (job listings + skill matrix), and Solutions (lab equipment/reagent marketplace with quote requests). The app features a freemium model with a "Pro" upgrade that unlocks gated content.
+Life Science Atlas is a mobile-first PWA (Progressive Web App) serving as a pocket mentor for students and professionals in Biotech, Pharma, and Life Science. It provides a knowledge hub with audience-specific content hubs: QC Hub (professional QC workflows, default landing), Academy (student foundations with Learning Path), Insights (sales/industry intelligence), Lab Tools (scientific calculators + tool catalog), Compliance (SOPs and guidelines), Career (job listings + skill matrix), and Solutions (lab equipment/reagent marketplace with quote requests). The app features a freemium model with a "Pro" upgrade that unlocks gated content.
 
 ### Content Counts (as of Feb 2026)
 - QC Hub: 15 QC topics + 4 Quick Workflows (Sterility Testing, Environmental Monitoring, Bioburden, Endotoxin)

@@ -5,7 +5,7 @@
 //   L  = 10^((T - Tref) / z)            (lethal rate, dimensionless)
 //   F0 = t x L                          (equivalent minutes at Tref)
 //
-// with the standard reference Tref = 121.1 C and z = 10 C. Educational tool —
+// with the standard reference Tref = 121.1 C and z = 10 C. Educational tool:
 // a constant-temperature equivalent; the validated cycle and its delivered F0
 // (integrated from probe data) govern the real process.
 
@@ -34,16 +34,16 @@ export interface F0Band {
   tone: "teal" | "amber";
 }
 
-// Informational only — the required F0 is set by your validated cycle, not a
+// Informational only: the required F0 is set by your validated cycle, not a
 // universal threshold.
 export function bandForF0(f0: number): F0Band {
-  if (f0 >= 15) return { label: "≥ 15 min — overkill-level lethality", tone: "teal" };
-  if (f0 >= 8) return { label: "8–15 min — typical terminal sterilization range", tone: "teal" };
-  return { label: "below 8 min — verify against your validated cycle", tone: "amber" };
+  if (f0 >= 15) return { label: ">= 15 min - overkill-level lethality", tone: "teal" };
+  if (f0 >= 8) return { label: "8-15 min - typical terminal sterilization range", tone: "teal" };
+  return { label: "below 8 min - verify against your validated cycle", tone: "amber" };
 }
 
 export function fmtF0(n: number): string {
-  if (!isFinite(n) || n < 0) return "—";
+  if (!isFinite(n) || n < 0) return "-";
   if (n === 0) return "0";
   if (n >= 100) return Math.round(n).toLocaleString();
   if (n >= 1) return Number(n.toFixed(1)).toString();

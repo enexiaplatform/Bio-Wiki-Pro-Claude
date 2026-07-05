@@ -10,7 +10,7 @@ import { storage } from "../server/storage.js";
 
 const CONTENT_DIR = path.resolve(process.cwd(), "content");
 const COLLECTIONS = ["academy", "blog", "toolkits"];
-const FILE_RE = /^(.+)\.(vi|en)\.mdx$/;
+const FILE_RE = /^(.+)\.(en)\.mdx$/;
 
 async function seed() {
   if (!process.env.DATABASE_URL) {

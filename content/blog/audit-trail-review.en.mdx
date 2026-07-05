@@ -4,51 +4,202 @@ slug: "audit-trail-review"
 lang: "en"
 tier: "free"
 category: "Data Integrity"
-seoDescription: "A practical guide to audit-trail review in GMP labs — what to review, how often, a risk-based approach, and the red flags that signal data-integrity problems."
-updatedAt: "2026-06-02"
+seoDescription: "A practical GMP guide to audit-trail review: what to review, when to review it, how to use risk-based exception review, and which red flags require QA escalation."
+updatedAt: "2026-07-03"
 ---
 
 # Audit Trail Review: What, How Often, and Red Flags
 
-Regulators expect audit trails to be **reviewed**, not just enabled. An unreviewed
-audit trail is one of the most cited data-integrity gaps. Here's how to make
-review practical and defensible.
+An audit trail that is enabled but never reviewed is not much of a control. It
+records what happened, but nobody is using it to decide whether the GMP record is
+complete, accurate, original, and trustworthy.
 
-## What to review
+FDA's data integrity guidance is clear that audit trails are part of the
+associated record and should be reviewed when they capture changes to critical
+data. MHRA guidance allows a risk-based approach, including exception reporting,
+but expects the need, scope, and frequency of review to be justified. WHO's data
+integrity guidance places the same idea inside ALCOA+: data must remain complete,
+consistent, enduring, and available through the data lifecycle.
 
-Audit trails capture who did what, when, and what changed. Focus review on the
-entries that carry integrity risk:
+The practical question is not "do we review audit trails?" It is: which audit
+trails, for which records, at what point, by whom, and what exceptions trigger
+escalation?
 
-- **Changes** to results, methods, integration parameters, or sample sequences.
-- **Deletions** and aborted/repeated runs.
-- **Changes to system settings** — clock, access rights, audit-trail config.
+## What counts as an audit trail?
 
-## How often — be risk-based
+In a GxP system, the audit trail is the time-stamped record of actions that can
+affect data or system control. It may include:
 
-You can't manually read every line of every system daily. A defensible model:
+- creation, modification, deletion, or reprocessing of records,
+- result changes, integration changes, method changes, or sequence edits,
+- aborted or repeated runs,
+- user login, failed login, privilege, or role changes,
+- system configuration changes,
+- clock or time-zone changes,
+- audit-trail configuration changes,
+- file export, archive, restore, or deletion events.
 
-- **GMP-critical data** (release-determining results): review the relevant audit
-  trail **before** the data is used to make the batch-release decision.
-- **Periodic** review of system-level events (configuration, user management) on
-  a defined cadence.
+For a chromatographic data system, this may mean acquisition events, processing
+methods, integration parameters, sequence changes, manual integrations, deleted
+injections, and final report approval. For LIMS, it may mean result entry,
+calculation changes, sample status changes, approval workflow actions, and user
+role changes.
 
-The key is a documented, risk-based rationale — not "we review everything"
-(unrealistic) and not "we review nothing" (a finding).
+## Review before the data is used
 
-## Red flags to watch for
+The strongest rule of thumb is simple: audit trails relevant to GMP-critical data
+should be reviewed before the data is approved or used for a quality decision.
 
-- Results changed after the first acquisition with no explanation.
-- "Trial" or unofficial injections immediately before a passing result.
-- The system clock altered around the time of a test.
-- Audit trail switched off, then on again.
-- Repeated aborted runs that never appear in the official record.
+That includes data used for:
 
-## Make it routine
+- batch release,
+- OOS/OOT investigations,
+- stability decisions,
+- environmental monitoring disposition,
+- cleaning validation or process validation acceptance,
+- sterility, endotoxin, bioburden, assay, impurity, and other release tests,
+- deviation, CAPA, or complaint conclusions.
 
-Tie audit-trail review to the batch-record review workflow so it happens before
-release — not reconstructed when an inspector asks. Train reviewers on what the
-red flags look like in *your* systems.
+If the underlying record must be reviewed before release, the relevant audit
+trail should be part of that review package. It should not be reconstructed only
+after an inspector asks.
 
-> Deeper dive: the Academy lessons **Good Documentation Practice** and
-> **Batch Record Review & Product Release** show where audit-trail review fits in
-> the release workflow.
+## Do not try to read every line
+
+Manual line-by-line review of every system event is usually unsustainable. It
+also distracts reviewers from the exceptions that matter.
+
+A defensible program uses tiers:
+
+| Review tier | Typical scope | Timing |
+| --- | --- | --- |
+| Record-level review | Audit-trail entries linked to a specific GMP record, sample, batch, sequence, or report | Before approval or release decision |
+| Exception review | Predefined abnormal actions such as deletion, reprocessing, manual integration, privilege use, or late changes | Before approval, or at defined review checkpoints |
+| System-level review | User management, configuration, clock changes, audit-trail settings, backup/archive events | Periodic cadence based on system risk |
+| Trend review | Repeat patterns by user, method, instrument, product, site, or time period | Periodic quality review, APR/PQR, or data governance review |
+
+The key is that the filters and exception rules must be validated or verified
+for their intended use. A bad exception report can create false confidence by
+hiding the very events reviewers need to see.
+
+## Red flags reviewers should know
+
+Reviewers should not only ask "was there an audit trail?" They should ask what
+the trail says about the reliability of the record.
+
+High-risk signals include:
+
+- result changes after the first result was known,
+- repeated processing until the result passes,
+- manual integration without a scientifically justified reason,
+- deleted or missing injections, samples, files, chromatograms, or reports,
+- aborted runs not reconciled to the official sequence,
+- trial injections or unofficial sequences near the final result,
+- sample name, batch number, or sequence edits after acquisition,
+- system clock changes near testing or approval,
+- audit trail disabled, purged, or configured to omit critical events,
+- administrator actions used in routine testing,
+- shared accounts or unexplained user-role changes,
+- review performed after approval with no explanation,
+- original data not linked to the final reported result.
+
+One exception is not always a data-integrity failure. But unexplained exceptions
+in critical data are never just noise. They require documented review and, when
+appropriate, QA escalation.
+
+## What the reviewer should document
+
+A good audit-trail review record does not need to be long. It needs to be
+specific enough to reconstruct the decision.
+
+Capture:
+
+1. system name and record reference,
+2. batch, sample, study, or report identifier,
+3. audit-trail range reviewed,
+4. reviewer name and date,
+5. exceptions found,
+6. explanation or linked investigation for each exception,
+7. original/raw data link,
+8. final result or decision affected,
+9. QA escalation decision,
+10. conclusion: acceptable, acceptable with justification, or not acceptable.
+
+For high-risk records, screenshots alone are weak unless the procedure defines
+them as a true copy or they are supported by controlled exports. Prefer system
+reports, controlled audit-trail exports, or validated review workflows where
+available.
+
+## How often should you review?
+
+There is no single universal frequency that fits every system. The frequency
+should follow the risk and the use of the data.
+
+Use this hierarchy:
+
+- **Before approval/release:** audit trails linked to GMP-critical records and
+  batch release data.
+- **Per investigation:** audit trails linked to OOS, deviation, complaint, CAPA,
+  or invalidated data.
+- **Per campaign or study milestone:** validation, stability, and process
+  monitoring records where decisions occur at defined milestones.
+- **Periodic:** system-level controls such as user access, configuration, audit
+  trail settings, archive/backup, and administrator activity.
+- **Trending cadence:** recurring exception patterns reviewed by data governance,
+  quality metrics, APR/PQR, or management review.
+
+The rationale should be written down. "We review everything" is rarely credible.
+"We review only when there is a problem" is usually too late.
+
+## Review-by-exception done well
+
+Review-by-exception can be strong if the exception logic is risk-based and
+controlled.
+
+Define:
+
+- which event types are captured,
+- which events are critical enough to require review,
+- which filters or reports identify those events,
+- how the report was verified,
+- who reviews each exception type,
+- what evidence must be attached,
+- when QA must be escalated,
+- how recurring patterns are trended.
+
+For example, a CDS exception report might flag manual integration, deleted
+injections, reprocessed results, sequence edits after acquisition, and admin
+actions. The reviewer still needs to decide whether each event is scientifically
+justified, documented, and consistent with the final reported result.
+
+## Common failure modes
+
+- Audit trail review is mentioned in the SOP but no record proves it happened.
+- Reviewers check a box without opening the relevant trail.
+- The review is performed after batch release.
+- Only final reports are reviewed; raw data and metadata are ignored.
+- Exception reports are used but never verified.
+- Administrator activity is not independently reviewed.
+- Shared logins make attribution impossible.
+- Manual integration is common but not justified case by case.
+- Deleted or aborted runs are treated as "not part of the record."
+- Findings are corrected locally but never trended across systems.
+
+These are not just technical issues. They are data governance issues.
+
+## Try it on a real exception
+
+Use the [Audit Trail Review Triage](/tools/audit-trail-review-triage) to classify
+a real or training audit-trail event. It helps decide whether the issue is a
+routine review item, a documented follow-up, or a high-risk exception that should
+pause approval until QA reviews the evidence.
+
+For the broader data-integrity foundation, read
+[Data Integrity and the ALCOA+ Principles](/blog/data-integrity-alcoa) and the
+Academy lesson [Data Integrity - Audit Trail Review](/library/data-integrity-deep-dive).
+
+## References
+
+- [FDA Data Integrity and Compliance With Drug CGMP: Questions and Answers](https://www.fda.gov/media/119267/download)
+- [MHRA GxP Data Integrity Guidance and Definitions](https://www.gov.uk/government/publications/guidance-on-gxp-data-integrity)
+- [WHO Guideline on Data Integrity](https://cdn.who.int/media/docs/default-source/medicines/norms-and-standards/guidelines/inspections/trs1033-annex4-guideline-on-data-integrity.pdf?download=true)

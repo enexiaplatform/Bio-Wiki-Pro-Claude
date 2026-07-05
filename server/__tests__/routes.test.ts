@@ -76,6 +76,7 @@ vi.mock("../email.js", () => ({
 }));
 
 import { registerRoutes } from "../routes.js";
+import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
 
 async function buildApp() {
@@ -166,6 +167,17 @@ describe("lead capture", () => {
     const res = await request(app).post("/api/leads/capture").send({ email: "x@y.com" });
     expect(res.status).toBe(200);
     expect(res.body.isNew).toBe(false);
+  });
+});
+
+describe("content API", () => {
+  it("rejects legacy non-English content language requests", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/api/content/academy/sterility-testing-basics?lang=vi");
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe("Invalid content reference");
+    expect(storageMock.getContentEntry).not.toHaveBeenCalled();
   });
 });
 
@@ -434,6 +446,56 @@ describe("reading progress", () => {
     const res = await agent.get("/api/progress/reads");
     expect(res.status).toBe(200);
     expect(res.body.reads).toEqual([]);
+  });
+});
+
+describe("downloads", () => {
+  async function authedAgent(app: express.Express, user: any) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce(user);
+    const reg = await agent.post("/api/auth/register").send({ email: user.email, password: "pw123456" });
+    expect(reg.status).toBe(201);
+    return agent;
+  }
+
+  it("GET /api/downloads is 401 without a session", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/api/downloads");
+    expect(res.status).toBe(401);
+  });
+
+  it("lists every deliverable product for an active Pro user", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "pro@example.com", isPro: true, subscriptionStatus: "active" };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+
+    const res = await agent.get("/api/downloads");
+
+    expect(res.status).toBe(200);
+    expect(res.body.products.map((p: any) => p.id).sort()).toEqual(Object.keys(DELIVERABLES).sort());
+    expect(res.body.products.find((p: any) => p.id === "gmp_audit_kit").files[0]).toMatchObject({
+      filename: "README.md",
+      url: "/api/downloads/gmp_audit_kit/README.md",
+    });
+    expect(storageMock.hasCompletedPurchase).not.toHaveBeenCalled();
+  });
+
+  it("lists only purchased one-time deliverables for a non-Pro user", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "kit@example.com", isPro: false, subscriptionStatus: "free" };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+    storageMock.hasCompletedPurchase.mockImplementation(async (_userId: string, productType: string) =>
+      productType === "gmp_audit_kit",
+    );
+
+    const res = await agent.get("/api/downloads");
+
+    expect(res.status).toBe(200);
+    expect(res.body.products.map((p: any) => p.id)).toEqual(["gmp_audit_kit"]);
+    expect(res.body.products[0].files.map((f: any) => f.filename)).toContain("gmp-audit-survival-guide.pdf");
   });
 });
 

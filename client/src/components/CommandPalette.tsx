@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { BookOpen, FileText, Compass, Crown } from "lucide-react";
 import {
@@ -10,6 +9,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { listContent } from "@/lib/content";
+import { TOOL_CATALOG } from "@/data/tools/catalog";
 
 const PAGES: { label: string; path: string }[] = [
   { label: "Workflows", path: "/workflows" },
@@ -30,37 +30,25 @@ const PAGES: { label: string; path: string }[] = [
   { label: "Settings", path: "/settings" },
 ];
 
-/** Global search palette (Cmd/Ctrl+K, or the header search button). */
-export function CommandPalette() {
-  const [open, setOpen] = useState(false);
-  const [, navigate] = useLocation();
+interface CommandPaletteProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        setOpen((o) => !o);
-      }
-    };
-    const onOpen = () => setOpen(true);
-    document.addEventListener("keydown", onKey);
-    window.addEventListener("bwp:open-search", onOpen);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      window.removeEventListener("bwp:open-search", onOpen);
-    };
-  }, []);
+/** Global search palette (Cmd/Ctrl+K, or the header search button). */
+export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
+  const [, navigate] = useLocation();
 
   const academy = listContent({ collection: "academy", lang: "en" });
   const blog = listContent({ collection: "blog", lang: "en" });
 
   const go = (path: string) => {
-    setOpen(false);
+    onOpenChange(false);
     navigate(path);
   };
 
   return (
-    <CommandDialog open={open} onOpenChange={setOpen}>
+    <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput placeholder="Search pages, lessons, articles…" />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
@@ -88,6 +76,19 @@ export function CommandPalette() {
             ))}
           </CommandGroup>
         )}
+
+        <CommandGroup heading="Tools">
+          {TOOL_CATALOG.map((tool) => (
+            <CommandItem
+              key={tool.slug}
+              value={`tool ${tool.title} ${tool.category} ${tool.blurb}`}
+              onSelect={() => go(`/tools/${tool.slug}`)}
+            >
+              <Compass className="w-4 h-4 mr-2 text-teal-400" />
+              {tool.title}
+            </CommandItem>
+          ))}
+        </CommandGroup>
 
         {blog.length > 0 && (
           <CommandGroup heading="Blog">

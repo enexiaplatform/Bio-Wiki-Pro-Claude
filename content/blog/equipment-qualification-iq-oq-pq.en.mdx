@@ -4,56 +4,338 @@ slug: "equipment-qualification-iq-oq-pq"
 lang: "en"
 tier: "free"
 category: "Validation"
-seoDescription: "DQ, IQ, OQ, PQ explained — what each stage of equipment qualification actually proves, and the often-missed half: keeping equipment in a qualified state."
-updatedAt: "2026-06-20"
+seoDescription: "DQ, IQ, OQ, and PQ explained as a lifecycle control system: URS, risk assessment, traceability, calibration, maintenance, change control, requalification, and audit evidence."
+updatedAt: "2026-07-04"
 ---
 
 # Equipment qualification: what IQ, OQ, and PQ prove
 
-Qualification is the equipment-level subset of validation, and the V-model keeps
-every check tied back to a requirement. The four stages are not bureaucracy for
-its own sake — each one answers a specific question.
+Equipment qualification is often taught as four boxes: DQ, IQ, OQ, PQ. That is a
+useful starting map, but it misses the real point.
 
-## DQ — does the design meet the requirement?
+Qualification is the documented evidence that equipment is suitable for its
+intended GMP use, performs as required, and remains in a controlled state over its
+lifecycle. The value is not the binder. The value is being able to say, with
+evidence: **this equipment can do the job, in this process, within these limits,
+and we know when that claim needs to be reassessed.**
 
-Design qualification starts from a user requirements specification (URS). Before
-you buy or install, you confirm the proposed design can actually do what you need,
-and you risk-assess the aspects that affect product quality. Skip this and the
-later stages have nothing to verify against.
+## Start with intended use
 
-## IQ — is it installed correctly?
+Before any protocol is written, define what the equipment is for. A balance used
+for non-GMP weighing, a calibrated production scale, an autoclave, an HPLC, a
+granulator, a stopper washer, and a filling line do not need the same
+qualification depth.
 
-Installation qualification verifies the equipment arrived and was installed per
-specification: the right components, utilities connected correctly, documentation
-present, and critical instruments calibrated. It is a static check — nothing is
-running yet.
+Good intended-use language covers:
 
-## OQ — does it operate across its range?
+- what the equipment does;
+- where it is installed;
+- which products, materials, or samples it touches;
+- which process parameters it controls or measures;
+- which GMP records it creates;
+- which quality attributes it can affect;
+- whether cleaning, sterilization, data integrity, or software control is in scope;
+- which users and operating modes are expected.
 
-Operational qualification challenges the operating ranges and functions against
-acceptance criteria — including alarms, interlocks, and worst-case settings. This
-is where you prove the equipment behaves correctly at the edges, not just at the
-comfortable nominal setpoint.
+If intended use is vague, every later qualification decision becomes vague too.
 
-## PQ — does it perform under real conditions?
+## URS: the anchor document
 
-Performance qualification demonstrates consistent performance under actual or
-simulated production conditions, over a defined number of runs. OQ proves it
-*can* work; PQ proves it *does* work, repeatedly, in your process.
+The user requirements specification, or URS, is where the user defines what the
+equipment must do. It should not be a copy of the vendor brochure. It should state
+the site's GMP, process, safety, cleaning, maintenance, calibration, data, and
+documentation needs.
 
-## The often-missed half: staying qualified
+A strong URS includes:
 
-A qualified label is only true on the day it was signed unless you maintain it.
-Calibration, preventive maintenance, periodic review, and change control are what
-keep the equipment in a qualified state. The most common finding is not a botched
-OQ — it is a requalification or calibration that quietly lapsed.
+- process capacity and operating ranges;
+- critical process parameters and control needs;
+- product-contact materials;
+- cleaning and sanitation expectations;
+- utility requirements;
+- alarms, interlocks, and safety functions;
+- data and audit trail requirements where computerized controls exist;
+- calibration and maintenance access;
+- documentation and spare parts expectations;
+- acceptance criteria or traceable requirements.
+
+The URS gives DQ, IQ, OQ, and PQ something objective to test. A weak URS forces
+the qualification team to invent acceptance criteria late, usually when the
+equipment is already installed and expensive to change.
+
+## Risk decides depth
+
+Not every function deserves equal testing. Qualification should be risk-based.
+
+Ask:
+
+- Can this function affect product quality, patient safety, sterility, strength,
+  purity, identity, or data integrity?
+- Could failure be detected before batch release?
+- Is the function controlled elsewhere?
+- Is the vendor evidence reliable and relevant?
+- Is the system new, modified, or well understood?
+
+This is where quality risk management becomes practical. A non-critical display
+setting may need only verification. A temperature control loop that determines
+sterilization exposure needs deep challenge testing, calibrated instruments, and
+clear deviation rules.
+
+## DQ: does the design meet the need?
+
+Design qualification asks whether the proposed design can meet the URS and GMP
+needs before the site commits too far.
+
+DQ should verify:
+
+- user requirements are complete enough to buy against;
+- vendor proposal or design matches the URS;
+- critical design features are identified;
+- product-contact materials are suitable;
+- cleaning, maintenance, calibration, and access are feasible;
+- software and data requirements are addressed;
+- risk assessment drives qualification scope;
+- gaps are resolved before procurement or installation.
+
+DQ is where many future problems are cheapest to fix. If the drain location,
+surface finish, software audit trail, range, access panel, or utility demand is
+wrong, finding out during PQ is painful.
+
+## IQ: is it installed correctly?
+
+Installation qualification verifies that the equipment, utilities, documentation,
+and supporting systems are installed as specified.
+
+IQ commonly checks:
+
+- equipment identity, model, serial number, and configuration;
+- installation location and layout;
+- utilities and connection points;
+- product-contact materials;
+- manuals, drawings, certificates, and spare parts;
+- critical instruments and calibration status;
+- software or firmware versions;
+- safety features and guards;
+- cleaning access;
+- preventive maintenance requirements;
+- as-built differences from design.
+
+IQ is often described as static, but it matters deeply. If the wrong probe is
+installed, a utility is undersized, or a critical instrument is not calibrated, OQ
+may produce attractive data on an equipment state that is not actually approved.
+
+## OQ: does it operate across its range?
+
+Operational qualification challenges whether the equipment works across its
+intended operating ranges and functions.
+
+OQ should include:
+
+- normal operating ranges;
+- upper and lower setpoint challenges;
+- alarms and interlocks;
+- control-loop behavior;
+- start-up and shutdown behavior;
+- emergency stop and recovery where relevant;
+- recipe or parameter security;
+- data capture and printouts;
+- fault conditions;
+- cleaning or sterilization functions where applicable;
+- repeatability of critical functions.
+
+OQ is where edge behavior matters. A mixer that works at the nominal speed but
+fails at the low-speed hold point has not been qualified for the process range. A
+freezer that controls well empty but alarms poorly during recovery may not protect
+materials. A filling machine that rejects correctly in normal operation but fails
+reject-bin reconciliation under fault conditions has a release risk.
+
+## PQ: does it perform in the real process?
+
+Performance qualification demonstrates that the equipment performs consistently
+under actual or simulated routine conditions.
+
+PQ should reflect:
+
+- trained operators;
+- approved SOPs;
+- representative product, placebo, or load where justified;
+- routine setpoints and ranges;
+- expected batch size or load pattern;
+- worst-case or bracketing rationale;
+- in-process controls;
+- cleaning or changeover conditions where relevant;
+- repeated runs or cycles according to risk and protocol.
+
+OQ proves the equipment can operate. PQ proves it can support the intended process
+in a repeatable way.
+
+PQ should not be used to discover basic installation or operating problems. If PQ
+becomes troubleshooting, the qualification package probably moved forward too
+fast.
+
+## Traceability makes the package defensible
+
+Auditors like to pick one requirement and follow it. For example:
+
+1. URS says the oven must maintain 250 degrees C +/- defined tolerance.
+2. DQ shows the selected oven design is capable.
+3. IQ verifies the correct oven, probes, utilities, and calibration.
+4. OQ challenges the range, alarms, and temperature distribution.
+5. PQ shows the routine load achieves the required performance.
+6. Calibration and maintenance keep that claim current.
+
+That thread is the qualification story. Without traceability, the package becomes
+a pile of documents rather than evidence.
+
+## Vendor documentation can help, but it does not replace ownership
+
+Vendor FAT, SAT, certificates, and commissioning data can reduce duplication. They
+do not transfer GMP responsibility away from the site.
+
+Before using vendor evidence, assess:
+
+- whether the test matches the site's URS;
+- whether instruments were calibrated;
+- whether raw data and deviations are available;
+- whether the configuration tested matches the delivered equipment;
+- whether the vendor test environment is relevant;
+- whether QA approved use of the evidence.
+
+Vendor documents are strongest when they are mapped into the site's qualification
+matrix and reviewed for gaps.
+
+## Calibration, maintenance, and cleaning keep the state alive
+
+A qualification report is a point-in-time decision. The qualified state survives
+only if the equipment is maintained.
+
+The ongoing controls include:
+
+- calibration schedule for critical instruments;
+- preventive maintenance;
+- cleaning and sanitation procedures;
+- spare-part control;
+- logbooks or electronic equipment records;
+- alarm and breakdown review;
+- deviation and repair impact assessment;
+- periodic review;
+- change control;
+- requalification triggers.
+
+This is where 21 CFR Part 211 equipment expectations become practical: equipment
+must be suitable for its intended use, maintained and cleaned appropriately, and
+automatic or electronic equipment must be calibrated, inspected, or checked under
+a written program where used.
+
+## Requalification is not only a calendar event
+
+Periodic review is useful, but requalification should also be event-driven.
+
+Assess requalification after:
+
+- equipment relocation;
+- major repair or replacement;
+- software or firmware change;
+- control-loop change;
+- utility change;
+- new product or process range;
+- cleaning method change;
+- recurring deviations or drift;
+- out-of-tolerance calibration result;
+- change in load pattern, batch size, or operating mode;
+- long shutdown or storage period.
+
+The right question is not "do we repeat everything?" It is "which qualification
+claims may no longer be supported?" A moved balance may need IQ and calibration. A
+new autoclave load pattern may need OQ/PQ elements. A software recipe change may
+need data integrity and functional challenge testing.
+
+## Qualification and validation connect
+
+Equipment qualification is not isolated from process validation. Process
+validation assumes equipment, utilities, methods, and computerized systems are
+fit for use.
+
+For example:
+
+- PPQ cannot support a process if critical equipment is not qualified.
+- Cleaning validation depends on equipment design, cleanability, and product
+  contact surfaces.
+- Sterilization validation depends on qualified chambers, probes, utilities, and
+  load patterns.
+- Analytical method results depend on qualified instruments and calibrated
+  measuring devices.
+- Batch release depends on equipment status at the time the batch was made.
+
+When qualification is weak, every downstream validation and release decision gets
+weaker.
+
+## Common audit weaknesses
+
+Equipment qualification findings are often boring in the most dangerous way:
+
+- URS written after the equipment was bought;
+- DQ skipped or reduced to vendor brochure approval;
+- risk assessment not linked to protocol scope;
+- IQ missing calibration status for critical instruments;
+- OQ tests only nominal settings, not ranges or alarms;
+- PQ uses ideal conditions that do not match routine production;
+- deviations closed without impact on qualification conclusions;
+- vendor data accepted without gap assessment;
+- maintenance or calibration lapsed after release;
+- changes made without requalification assessment;
+- no periodic review of equipment performance;
+- equipment logbooks and batch records do not reconcile.
+
+The finding rarely says "no IQ/OQ/PQ binder exists." It says the binder does not
+prove the current equipment state.
+
+## Practical review checklist
+
+Use this checklist before QA releases equipment for GMP use:
+
+1. Intended use is clear and approved.
+2. URS requirements are testable.
+3. Risk assessment identifies quality-critical functions.
+4. DQ shows design suitability and closes gaps.
+5. IQ verifies installation, utilities, documentation, and calibration.
+6. OQ challenges ranges, alarms, interlocks, and critical functions.
+7. PQ reflects routine or justified worst-case operating conditions.
+8. Deviations are investigated and linked to qualification conclusions.
+9. Traceability matrix maps URS to evidence.
+10. Calibration, maintenance, cleaning, and requalification controls are active.
+
+## Key takeaway
+
+DQ, IQ, OQ, and PQ are not ritual labels. They are a chain of evidence.
+
+DQ asks whether the design can meet the need. IQ asks whether the equipment was
+installed correctly. OQ asks whether it operates across the required range. PQ asks
+whether it performs in the intended process. The qualified state then depends on
+calibration, maintenance, change control, periodic review, and requalification
+when risk changes.
+
+The best qualification package is not the thickest. It is the one where every
+critical requirement can be traced to a meaningful test and kept true after the
+equipment enters routine use.
 
 ## Run it as a workflow
 
+- Check the release package with the [Equipment Qualification Readiness Planner](/tools/equipment-qualification-readiness-planner).
 - Walk the stages in the [Equipment Qualification workflow](/workflows/equipment-qualification-lifecycle).
 - Learn the background in [Equipment qualification](/library/equipment-qualification).
-- Check overall readiness with the [GMP Audit Readiness Scorecard](/tools).
+- Connect maintenance with [Calibration: the traceability under every number](/blog/calibration-the-traceability-under-every-number).
+- Compare scope in [Qualification vs validation](/blog/qualification-vs-validation).
 
-*General educational content — verify against the applicable regulations, your
-approved SOPs, and your validated quality system. Not a substitute for QA approval
-or a validated method.*
+## References
+
+- European Commission, [EU GMP Annex 15: Qualification and Validation](https://health.ec.europa.eu/system/files/2016-11/2015-10_annex15_0.pdf), 2015.
+- eCFR, [21 CFR 211.63 - Equipment design, size, and location](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-D/section-211.63).
+- eCFR, [21 CFR 211.67 - Equipment cleaning and maintenance](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-D/section-211.67).
+- eCFR, [21 CFR 211.68 - Automatic, mechanical, and electronic equipment](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211/subpart-D/section-211.68).
+- ICH, [Q10 Pharmaceutical Quality System](https://database.ich.org/sites/default/files/Q10%20Guideline.pdf).
+
+*General educational content. Verify against applicable GMP regulations, EU GMP
+Annex 15, FDA expectations where applicable, your approved SOPs, and your validated
+quality system. Not a substitute for QA approval or a validated qualification
+protocol.*

@@ -1,26 +1,153 @@
 ---
-title: "CAPA: getting the effectiveness check right"
+title: "CAPA: Getting the Effectiveness Check Right"
 slug: "capa-effectiveness-check"
 lang: "en"
 tier: "free"
 category: "Quality Systems"
-seoDescription: "Why the effectiveness check is the most under-done part of CAPA — and how to do it properly."
-updatedAt: "2026-05-30"
+seoDescription: "A practical guide to CAPA effectiveness checks: how to define measurable criteria, choose a meaningful window, collect objective evidence, and avoid closing on activity alone."
+updatedAt: "2026-07-03"
 ---
 
-# CAPA: getting the effectiveness check right
+# CAPA: Getting the Effectiveness Check Right
 
-Most CAPA findings aren't about missing actions — they're about **failing to
-prove the action worked**.
+Most weak CAPAs do not fail because nobody did anything. They fail because the
+record proves only that tasks were completed, not that the root cause was
+controlled.
 
-## What a good effectiveness check needs
+ICH Q10 treats CAPA as part of the pharmaceutical quality system and expects the
+effectiveness of actions to be evaluated. FDA's quality systems guidance also
+frames CAPA as a systematic approach that includes correction, corrective action,
+and preventive action. In practice, that means a CAPA is not ready for closure
+until the site can show objective evidence that the action worked.
 
-1. **Quantitative criteria** — set in advance and measurable (e.g. recurrence = 0 across 3 batches).
-2. **A clear time window** — checked over enough runs/batches to be meaningful.
-3. **Objective evidence** — data, not "training completed".
+## Implementation is not effectiveness
 
-## Common mistakes
+Implementation verification asks:
 
-- Closing the CAPA as soon as the action is done, before checking effectiveness.
-- Using "training completed" as the effectiveness evidence.
-- Not tying the check back to the original metric that triggered the issue.
+- Was the SOP updated?
+- Was the new checklist released?
+- Was the equipment modification completed?
+- Was the training assigned and documented?
+
+Effectiveness verification asks a harder question:
+
+- Did the same or related failure mode stop recurring?
+- Did the process metric return to control?
+- Did routine records show the new control is being used correctly?
+- Did the action create any unintended quality risk?
+
+Both checks matter, but they are not interchangeable. "Training completed" may
+prove implementation. It rarely proves effectiveness.
+
+## The minimum viable effectiveness check
+
+A defensible effectiveness check has eight parts:
+
+1. **Failure mode:** the exact problem the CAPA is meant to stop.
+2. **Verified root cause:** the cause that explains why the event happened.
+3. **Action-to-cause link:** how each action removes, controls, or detects that
+   cause.
+4. **Metric:** the measurable signal that will prove control.
+5. **Baseline:** the prior rate, trend, batch history, audit finding pattern, or
+   other comparator.
+6. **Acceptance criterion:** the pass/fail target defined before the check is
+   run.
+7. **Verification window:** enough batches, runs, records, or time to observe
+   recurrence.
+8. **Evidence owner:** who will collect the data, where it will be recorded, and
+   when QA will review it.
+
+If any of these are missing, the CAPA may still be an action plan, but it is not
+yet an effectiveness plan.
+
+## Better evidence by event type
+
+| Event type | Weak effectiveness check | Stronger effectiveness check |
+| --- | --- | --- |
+| OOS or lab investigation | "Analysts retrained." | No repeat OOS/OOT or invalid-run signal for the same root cause across a defined number of assays or batches, reviewed against the OOS trend. |
+| Process deviation | "SOP revised and operators trained." | Routine batch records show the new control was performed correctly, with no repeat deviation for the same failure mode across the next defined campaign or batch set. |
+| Environmental monitoring excursion | "Area cleaned and staff reminded." | EM trend for the affected location, organism group, or intervention type remains within the predefined response criteria over enough monitoring cycles. |
+| Audit finding | "Procedure updated." | Independent QA spot check confirms the revised requirement is present and followed in sampled records, with no repeat finding in the same area. |
+| Complaint trend | "Complaint investigated and closed." | Complaint rate or repeat defect code falls to the predefined target over a meaningful market feedback window, with batch disposition signals reviewed. |
+
+The exact window depends on process frequency and risk. Thirty calendar days may
+be meaningless if the process ran once. Three batches may be too weak if the
+failure mode is rare and historically appears once per quarter.
+
+## Write the criterion before you run the check
+
+An effectiveness check should read like a testable statement:
+
+> "For the next 20 assay runs or 90 days, whichever is longer, QA will review the
+> OOS/OOT trend and confirm zero repeat events linked to the same mobile-phase
+> preparation root cause. QA will also spot-check five mobile-phase preparation
+> records for correct expiry-field completion."
+
+That statement is useful because it defines:
+
+- the failure mode,
+- the data source,
+- the quantity or duration,
+- the acceptance criterion,
+- the reviewer,
+- and the record that will support closure.
+
+Compare that with:
+
+> "Effectiveness check: no recurrence."
+
+This is too thin. It does not say where recurrence will be checked, how long the
+site will wait, what related signals count, or who decides whether the evidence
+is enough.
+
+## Common traps
+
+- **Closing on activity:** SOP update, form change, training, or equipment work
+  is treated as proof the CAPA worked.
+- **No baseline:** the site cannot explain whether the metric improved because
+  there is no historical comparator.
+- **Wrong window:** the check expires before the process has run enough times.
+- **Metric drift:** the effectiveness metric does not match the original failure
+  mode or root cause.
+- **Training as default root cause:** "human error" is used without showing what
+  system control failed.
+- **No side-effect check:** the CAPA reduces one risk but creates delays,
+  workarounds, invalid tests, or new deviations.
+
+## What to do when the check fails
+
+A failed effectiveness check is not a paperwork problem. It is evidence that the
+CAPA did not control the issue as intended.
+
+When that happens:
+
+1. Reopen or extend the CAPA according to the approved procedure.
+2. Reassess whether the root cause was correct.
+3. Check whether the action addressed the cause or only the symptom.
+4. Update the product, batch, patient, or compliance risk assessment if the
+   recurrence changes the impact picture.
+5. Define a revised action and a new effectiveness criterion.
+6. Preserve the failed check as part of the learning record, not as a note to
+   hide.
+
+In a mature quality system, a failed check should improve the investigation. It
+should not be treated as an administrative embarrassment.
+
+## Try it on your own CAPA
+
+Use the free [CAPA Effectiveness Check Planner](/tools/capa-effectiveness-check-planner)
+to score whether a CAPA is ready for closure. It forces the questions auditors
+usually ask: what metric proves the root cause is controlled, what time window is
+long enough, what objective evidence will QA review, and what unintended effects
+should be checked before closure.
+
+If you need the full sequence from deviation capture to closure, start with the
+[Deviation & CAPA workflow](/workflows/deviation-capa). For the broader lesson,
+read [CAPA Fundamentals](/library/capa-fundamentals) and the plain-English
+overview [What Is CAPA?](/blog/what-is-capa).
+
+## References
+
+- [ICH Q10 Pharmaceutical Quality System](https://database.ich.org/sites/default/files/Q10%20Guideline.pdf)
+- [FDA Quality Systems Approach to Pharmaceutical CGMP Regulations](https://www.fda.gov/media/71023/download)
+- [21 CFR Part 211 - Current Good Manufacturing Practice for Finished Pharmaceuticals](https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211)

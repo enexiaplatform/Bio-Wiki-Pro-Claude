@@ -1,4 +1,4 @@
-# BioWikiPro — Claude Code Roadmap Prompts
+# Life Science Atlas — Claude Code Roadmap Prompts
 > Copy từng prompt bên dưới vào Claude Code. Làm theo thứ tự. Mỗi step là một session độc lập.
 
 ---
@@ -11,7 +11,7 @@
 ### STEP 1 — Fix Signup Route (404)
 
 ```
-Bạn đang làm việc trên BioWikiPro — một React + Express app (Wouter routing, shadcn/ui, Tailwind).
+Bạn đang làm việc trên Life Science Atlas — một React + Express app (Wouter routing, shadcn/ui, Tailwind).
 
 VẤN ĐỀ: Route /signup đang trả về 404. File RegisterPage.tsx tồn tại ở client/src/pages/RegisterPage.tsx nhưng chưa được đăng ký trong router.
 
@@ -32,7 +32,7 @@ Sau khi xong: chạy npm run dev, test thủ công flow signup → login → /qc
 ### STEP 2 — Tích hợp Stripe Checkout thật
 
 ```
-Bạn đang làm việc trên BioWikiPro — React + Express app. Stripe đã được cài (package stripe và @stripe/stripe-js có trong package.json).
+Bạn đang làm việc trên Life Science Atlas — React + Express app. Stripe đã được cài (package stripe và @stripe/stripe-js có trong package.json).
 
 VẤN ĐỀ: Các nút "Start Pro", "Get Access", "Buy Bundle" trên trang /pricing và /career hiện không làm gì khi click — không có Stripe Checkout, không có error.
 
@@ -61,7 +61,7 @@ KHÔNG làm: Đừng implement fulfillment logic (gửi file, unlock pro). Chỉ
 ### STEP 3 — Tạo trang sản phẩm GMP Audit Survival Kit
 
 ```
-Bạn đang làm việc trên BioWikiPro — React + Express app (Wouter routing, shadcn/ui, Tailwind, dark theme).
+Bạn đang làm việc trên Life Science Atlas — React + Express app (Wouter routing, shadcn/ui, Tailwind, dark theme).
 
 MỤC TIÊU: Tạo landing page cho sản phẩm "GMP Audit Survival Kit" — đây là sản phẩm revenue chính $59 one-time, nhắm vào Senior QC/QA Engineer trong ngành Pharma/F&B Vietnam đang chuẩn bị cho GMP audit.
 
@@ -114,7 +114,7 @@ KHÔNG làm: Đừng implement file delivery. Đừng thay đổi các page khá
 ### STEP 4 — Landing Page tại root `/`
 
 ```
-Bạn đang làm việc trên BioWikiPro. Hiện tại / tự redirect về /qc-hub — không có landing page. Người lạ vào domain không hiểu app này là gì.
+Bạn đang làm việc trên Life Science Atlas. Hiện tại / tự redirect về /qc-hub — không có landing page. Người lạ vào domain không hiểu app này là gì.
 
 MỤC TIÊU: Tạo landing page standalone tại / cho đối tượng Senior QC/QA Engineer Vietnam (3-7 năm kinh nghiệm, muốn lên Supervisor/Manager).
 
@@ -156,29 +156,29 @@ KHÔNG thay đổi: các page khác, routing của các module hiện tại.
 ### STEP 5 — SEO Meta Tags cho mọi route
 
 ```
-Bạn đang làm việc trên BioWikiPro — React SPA (Vite, Wouter). Hiện tại document.title rỗng trên mọi route, không có meta description, không có OG tags.
+Bạn đang làm việc trên Life Science Atlas — React SPA (Vite, Wouter). Hiện tại document.title rỗng trên mọi route, không có meta description, không có OG tags.
 
 LÀM:
 1. Tạo hook client/src/hooks/use-seo.ts:
    - Nhận { title, description, ogImage? }
-   - Set document.title = `${title} | BioWikiPro`
+   - Set document.title = `${title} | Life Science Atlas`
    - Set/update <meta name="description"> 
    - Set/update <meta property="og:title">, og:description, og:url
    - Cleanup khi unmount
 
 2. Áp dụng useSEO() vào từng page với nội dung phù hợp:
-   - LandingPage: "Nền tảng kiến thức QC/QA Pharma | BioWikiPro" / "48 bài học GMP, audit tools và career roadmap cho QC/QA professionals Vietnam"
-   - QCHub: "QC Hub — Kiến thức Microbiology QC | BioWikiPro" / "15 chủ đề từ USP <61>, Annex 1, môi trường kiểm soát đến CAPA"
-   - Academy: "Academy — Học QC/QA Pharma chuyên sâu | BioWikiPro" / "48 bài học director-level về GMP, sterility testing, OOS investigation"
-   - GMPAuditKit: "GMP Audit Survival Kit $59 | BioWikiPro" / "Bộ công cụ hoàn chỉnh: SOP gap analysis, CAPA templates, audit scripts cho Senior QC/QA Pharma Vietnam"
-   - Career: "Career Hub QC/QA Pharma Vietnam | BioWikiPro" / "Lộ trình từ QC Analyst đến QA Manager — salary, skills, employers Vietnam"
-   - LoginPage: "Đăng nhập | BioWikiPro"
-   - RegisterPage: "Đăng ký miễn phí | BioWikiPro"
+   - LandingPage: "Nền tảng kiến thức QC/QA Pharma | Life Science Atlas" / "48 bài học GMP, audit tools và career roadmap cho QC/QA professionals Vietnam"
+   - QCHub: "QC Hub — Kiến thức Microbiology QC | Life Science Atlas" / "15 chủ đề từ USP <61>, Annex 1, môi trường kiểm soát đến CAPA"
+   - Academy: "Academy — Học QC/QA Pharma chuyên sâu | Life Science Atlas" / "48 bài học director-level về GMP, sterility testing, OOS investigation"
+   - GMPAuditKit: "GMP Audit Survival Kit $59 | Life Science Atlas" / "Bộ công cụ hoàn chỉnh: SOP gap analysis, CAPA templates, audit scripts cho Senior QC/QA Pharma Vietnam"
+   - Career: "Career Hub QC/QA Pharma Vietnam | Life Science Atlas" / "Lộ trình từ QC Analyst đến QA Manager — salary, skills, employers Vietnam"
+   - LoginPage: "Đăng nhập | Life Science Atlas"
+   - RegisterPage: "Đăng ký miễn phí | Life Science Atlas"
 
 3. Trong index.html (Vite root): thêm default meta tags làm fallback:
-   - <title>BioWikiPro — Nền tảng kiến thức QC/QA Pharma Vietnam</title>
+   - <title>Life Science Atlas — Nền tảng kiến thức QC/QA Pharma Vietnam</title>
    - <meta name="description" content="...">
-   - <link rel="canonical" href="https://bio-wiki-pro-claude.vercel.app">
+   - <link rel="canonical" href="https://lifescienceatlas.com">
    - Open Graph tags cơ bản
 
 4. Thêm robots.txt vào public/ folder: Allow all, Sitemap: .../sitemap.xml
@@ -192,11 +192,11 @@ KHÔNG thay đổi: logic, styling, data của bất kỳ component nào.
 ### STEP 6 — Footer + Trang Legal
 
 ```
-Bạn đang làm việc trên BioWikiPro. Hiện tại không có footer, không có trang Terms/Privacy/Refund — đây là yêu cầu bắt buộc để kích hoạt Stripe live mode.
+Bạn đang làm việc trên Life Science Atlas. Hiện tại không có footer, không có trang Terms/Privacy/Refund — đây là yêu cầu bắt buộc để kích hoạt Stripe live mode.
 
 LÀM:
 1. Tạo component client/src/components/Footer.tsx:
-   - 3 cột: "BioWikiPro" (logo + tagline + copyright 2026), "Sản phẩm" (links: Academy, QC Hub, GMP Audit Kit, Career Hub), "Pháp lý" (links: Terms of Service, Privacy Policy, Refund Policy)
+   - 3 cột: "Life Science Atlas" (logo + tagline + copyright 2026), "Sản phẩm" (links: Academy, QC Hub, GMP Audit Kit, Career Hub), "Pháp lý" (links: Terms of Service, Privacy Policy, Refund Policy)
    - Background tối hơn main, border-top mỏng
    - Mobile: stack thành 1 cột
 
@@ -239,7 +239,7 @@ STYLE: Dùng prose layout, đơn giản. Max-width 700px, padding đủ để re
 ### STEP 7 — Email Transactional (Welcome + Receipt)
 
 ```
-Bạn đang làm việc trên BioWikiPro — Express 5 backend. 
+Bạn đang làm việc trên Life Science Atlas — Express 5 backend. 
 
 MỤC TIÊU: Gửi email tự động khi user đăng ký và khi mua hàng thành công.
 
@@ -247,7 +247,7 @@ LÀM:
 1. Cài đặt Resend: npm install resend (đây là email API đơn giản nhất, free tier 3000 emails/month)
 2. Thêm RESEND_API_KEY vào .env.example
 3. Tạo server/email.ts với các hàm:
-   - sendWelcomeEmail(to: string, name: string): "Chào mừng đến BioWikiPro — bắt đầu với Academy"
+   - sendWelcomeEmail(to: string, name: string): "Chào mừng đến Life Science Atlas — bắt đầu với Academy"
    - sendPurchaseConfirmation(to: string, productName: string, amount: number): receipt + hướng dẫn nhận file
    - sendDownloadLink(to: string, productName: string, downloadUrl: string): link download sản phẩm
 
@@ -269,7 +269,7 @@ KHÔNG làm: Đừng implement file delivery system phức tạp. Download link 
 ### STEP 8 — Lead Magnet: Email Capture + Free Checklist
 
 ```
-Bạn đang làm việc trên BioWikiPro.
+Bạn đang làm việc trên Life Science Atlas.
 
 MỤC TIÊU: Thu email của người dùng chưa đăng ký bằng cách offer free "GMP Audit Checklist" PDF — đây là bước đầu tiên của funnel GMP Audit Kit.
 
@@ -295,7 +295,7 @@ LÀM:
 5. Tạo nội dung file GMP Audit Quick Checklist (text để điền vào Google Doc/PDF):
    - 25 checklist items chia làm 5 nhóm: Documentation, Personnel, Equipment, Environment, Records
    - Mỗi item: checkbox + mô tả ngắn + reference (GMP WHO / Annex 1 / ISO)
-   - Footer: "Full toolkit tại bio-wiki-pro-claude.vercel.app/toolkits/gmp-audit-kit"
+   - Footer: "Full toolkit tại lifescienceatlas.com/toolkits/gmp-audit-kit"
    Xuất nội dung này ra file docs/gmp-audit-checklist-content.md để Henry dùng tạo PDF.
 
 KHÔNG làm: Đừng dùng third-party email marketing platform (Mailchimp, etc.) ở bước này. Chỉ dùng Resend để gửi file.
@@ -306,7 +306,7 @@ KHÔNG làm: Đừng dùng third-party email marketing platform (Mailchimp, etc.
 ### STEP 9 — Analytics: Track Key Events
 
 ```
-Bạn đang làm việc trên BioWikiPro — React + Vite frontend.
+Bạn đang làm việc trên Life Science Atlas — React + Vite frontend.
 
 MỤC TIÊU: Cài analytics để biết user đang làm gì — đặc biệt là funnel checkout.
 
@@ -340,7 +340,7 @@ KHÔNG làm: Đừng dùng Google Analytics (cần cookie consent banner phức 
 ### STEP 10 — Make Academy Fully Free + SEO Optimize
 
 ```
-Bạn đang làm việc trên BioWikiPro.
+Bạn đang làm việc trên Life Science Atlas.
 
 MỤC TIÊU: Theo pivot strategy, Academy chuyển thành fully free (lead magnet + SEO base). Bỏ Pro gate trên Academy entries. Đồng thời optimize từng entry cho SEO.
 
@@ -355,7 +355,7 @@ LÀM:
 3. Trong client/src/pages/AcademyEntryPage.tsx (lesson detail):
    - Ở cuối bài học: thêm "Related Tools" section link về /toolkits/gmp-audit-kit nếu bài học liên quan đến audit/GMP
    - Thêm "Bài tiếp theo" navigation
-   - Đảm bảo useSEO() được gọi với title = entry.title + " | BioWikiPro" và description = entry.summary hoặc 2 câu đầu của nội dung
+   - Đảm bảo useSEO() được gọi với title = entry.title + " | Life Science Atlas" và description = entry.summary hoặc 2 câu đầu của nội dung
 
 4. Trong mockData.ts, thêm field summary (1-2 câu) cho mỗi Academy entry nếu chưa có — dùng làm meta description.
 
@@ -374,7 +374,7 @@ KHÔNG thay đổi: Pro gate trên các module khác (Lab Tools, Compliance, Vau
 ### STEP 11 — Blog/SEO Content Hub
 
 ```
-Bạn đang làm việc trên BioWikiPro — React + Express app.
+Bạn đang làm việc trên Life Science Atlas — React + Express app.
 
 MỤC TIÊU: Tạo Blog section để publish SEO articles nhắm vào long-tail keywords tiếng Việt trong ngành QC/Pharma.
 
@@ -407,7 +407,7 @@ KHÔNG làm: Đừng kết nối với CMS bên ngoài. Static data trong blogPo
 ### STEP 12 — In-App Upgrade Prompts (Pro Conversion)
 
 ```
-Bạn đang làm việc trên BioWikiPro.
+Bạn đang làm việc trên Life Science Atlas.
 
 MỤC TIÊU: Khi user miễn phí chạm vào nội dung Pro (Lab Tools, Compliance, Vault), thay vì ProModal generic, hiển thị upgrade prompt thông minh hơn — có context, có urgency, có social proof.
 
@@ -440,7 +440,7 @@ KHÔNG làm: Đừng implement actual Pro subscription flow (Step 2 đã handle 
 ### STEP 13 — Digital Product Delivery System
 
 ```
-Bạn đang làm việc trên BioWikiPro — Express backend.
+Bạn đang làm việc trên Life Science Atlas — Express backend.
 
 MỤC TIÊU: Sau khi khách mua GMP Audit Kit $59, họ phải nhận được file tự động. Implement delivery system đơn giản.
 
@@ -476,7 +476,7 @@ KHÔNG làm: Đừng implement tự upload file lên server — file lưu ở cl
 ### STEP 14 — Performance & Stability Fixes
 
 ```
-Bạn đang làm việc trên BioWikiPro — React + Vite.
+Bạn đang làm việc trên Life Science Atlas — React + Vite.
 
 Report từ testing: có hiện tượng "Topics: 0 → Topics: 15" flash khi load, và khả năng memory leak / heavy re-render gây browser freeze.
 
@@ -509,7 +509,7 @@ KHÔNG thay đổi: logic nghiệp vụ, styling, data.
 ### STEP 15 — Vercel Production Config & Deploy
 
 ```
-Bạn đang làm việc trên BioWikiPro. App đang deploy trên Vercel tại bio-wiki-pro-claude.vercel.app.
+Bạn đang làm việc trên Life Science Atlas. App đang deploy trên Vercel tại lifescienceatlas.com.
 
 MỤC TIÊU: Đảm bảo production deployment ổn định, environment variables đúng, và Stripe webhook hoạt động với live URL.
 
@@ -525,7 +525,7 @@ LÀM:
      DATABASE_URL, SESSION_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, 
      VITE_STRIPE_PUBLISHABLE_KEY, RESEND_API_KEY, VITE_POSTHOG_KEY,
      GMP_KIT_DOWNLOAD_URL, CAREER_KIT_DOWNLOAD_URL, INTERVIEW_PREP_DOWNLOAD_URL
-   - Cách set up Stripe Webhook endpoint: https://bio-wiki-pro-claude.vercel.app/api/webhooks/stripe
+   - Cách set up Stripe Webhook endpoint: https://lifescienceatlas.com/api/webhooks/stripe
    - Cách chuyển từ Stripe Test mode sang Live mode
    - Cách verify email domain trên Resend
 
@@ -551,7 +551,7 @@ SAU KHI DEPLOY:
 ```
 Copy prompt này vào Claude Code để chạy final check:
 
-Bạn đang làm việc trên BioWikiPro. Trước khi launch chính thức, kiểm tra toàn bộ các điểm sau và báo cáo pass/fail cho từng mục:
+Bạn đang làm việc trên Life Science Atlas. Trước khi launch chính thức, kiểm tra toàn bộ các điểm sau và báo cáo pass/fail cho từng mục:
 
 CRITICAL (phải pass tất cả):
 [ ] / hiển thị LandingPage (không redirect /qc-hub)

@@ -1,6 +1,6 @@
-# BioWikiPro — Optimization Roadmap (to commercial)
+# Life Science Atlas — Optimization Roadmap (to commercial)
 
-The single source of truth for taking BioWikiPro from "launch-ready code" to a
+The single source of truth for taking Life Science Atlas from "launch-ready code" to a
 **self-sustaining commercial product**, then optimizing it for real.
 
 It is split into **work packages (WP)**, each sized at **~5–10% of the whole

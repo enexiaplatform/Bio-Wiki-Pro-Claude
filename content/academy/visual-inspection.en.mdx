@@ -4,39 +4,164 @@ slug: "visual-inspection"
 lang: "en"
 tier: "free"
 category: "Sterile Manufacturing"
-seoDescription: "100% visual inspection for particulates and defects in parenterals — USP <790>/<1790>, AQL, and operator qualification."
-updatedAt: "2026-06-02"
+seoDescription: "100% visual inspection for visible particulates and container defects in parenterals, covering USP 790/1790 principles, AQL, qualification, and investigations."
+updatedAt: "2026-07-02"
 quiz:
-  - q: "What does 100% visual inspection screen for?"
-    options: ["Label colour only", "Visible particulates and defects", "Weight only", "Temperature"]
+  - q: "What does 100% visual inspection mean?"
+    options: ["Every unit was inspected", "Every possible defect was guaranteed to be found", "Only a statistical sample was inspected", "Only labels were checked"]
+    answer: 0
+  - q: "Why is visual inspection described as probabilistic?"
+    options: ["Detection depends on product, particle, container, lighting, and human or machine performance", "It is optional", "Particles are always invisible", "It replaces all release testing"]
+    answer: 0
+  - q: "After 100% inspection, batch acceptance commonly includes:"
+    options: ["No further check", "AQL sampling against defect categories", "Sterility testing only", "Supplier inspection only"]
     answer: 1
-  - q: "After 100% inspection, batch acceptance often uses:"
-    options: ["A second 100% inspection", "An AQL sampling inspection", "No further check", "Microbial testing"]
-    answer: 1
-  - q: "Inspectors must be:"
-    options: ["Qualified and periodically re-qualified (incl. vision)", "Anyone available", "Only engineers", "Exempt from training"]
+  - q: "Manual visual inspectors should be:"
+    options: ["Qualified and periodically re-qualified, including appropriate vision checks", "Anyone available on shift", "Only engineers", "Exempt from training if experienced"]
     answer: 0
 ---
 
 # Visual Inspection of Injectables
 
-Every parenteral unit undergoes 100% visual inspection for visible particulate
-matter and container/closure defects, per **USP &lt;790&gt;** and the guidance in
-**USP &lt;1790&gt;**.
+Visual inspection is the routine patient-safety screen that looks for **visible
+particulates** and visible container/closure defects before injectable units are
+released. USP 790 sets the compendial expectation that injectable products are
+inspected for visible particulates; USP 1790 adds practical guidance for building
+the inspection process.
 
-## The two-step model
+The phrase "100% visual inspection" can be misleading. It means every unit is
+presented to an inspection process. It does **not** mean the process can detect
+every defect with perfect certainty. Visual inspection is probabilistic: detection
+changes with particle size, shape, color, density, product clarity, container
+geometry, fill volume, lighting, presentation time, inspector attention, and machine
+recipe performance.
 
-1. **100% inspection** — every unit is inspected (manual, semi-, or automated).
-2. **AQL inspection** — a statistical sample of the accepted batch confirms the
-   process, against defect category limits (critical/major/minor).
+## What the inspection screens for
 
-## Defect classification
+A good visual inspection program has a defined defect taxonomy. At minimum, it
+separates defects that can affect patient safety from defects that are primarily
+cosmetic.
 
-- **Critical:** could cause harm (e.g. large particulate, cracked container).
-- **Major / minor:** cosmetic or lower-risk defects with looser AQLs.
+| Area | Examples | Why it matters |
+| --- | --- | --- |
+| Visible particulates | Glass, metal, fibers, elastomer, precipitate, foreign matter | Particles may indicate direct patient risk or process loss of control |
+| Container integrity indicators | Cracks, chips, broken syringes, compromised seals, missing closures | A visible container/closure defect can signal sterility or dose risk |
+| Fill and appearance | Low fill, high fill, discoloration, haze, lyophilized cake defect | May indicate process, formulation, or handling problems |
+| Label and presentation | Wrong label, missing label, unreadable code, cosmetic damage | Can create use error or market-quality risk |
 
-## Operator qualification
+Critical defects usually require a much tighter acceptance approach than major or
+minor cosmetic defects. The exact categories, examples, and acceptance criteria must
+come from the approved SOP and product quality risk assessment.
 
-Manual inspection depends on the inspector — qualification includes vision
-testing and challenge sets, with periodic re-qualification. Fatigue management
-(inspection time limits) is expected.
+## The two-step release model
+
+Most operations use two complementary controls:
+
+1. **100% inspection.** Every accepted unit from filling, lyophilization, or final
+   packaging is inspected by manual, semi-automated, or automated methods.
+2. **AQL or statistical acceptance sampling.** A sample of the accepted population is
+   inspected against predefined critical, major, and minor defect limits.
+
+The second step does not replace the first. It verifies that the inspected batch
+quality is consistent with expectations and that the inspection process did not
+allow an unacceptable defect rate through.
+
+Review the sampling logic in [Acceptance Sampling and AQL](/library/acceptance-sampling-aql).
+
+## Manual inspection controls
+
+Manual inspection depends on a controlled environment and a qualified inspector.
+The SOP should define the practical details, including:
+
+- Lighting intensity, background contrast, and viewing distance.
+- How the unit is presented, swirled, inverted, and allowed to settle.
+- Minimum or maximum viewing time per background or view.
+- Rest breaks, inspection duration limits, and fatigue controls.
+- Rejection criteria for each defect category.
+- Line clearance, segregation of rejects, and reconciliation of inspected units.
+
+Inspector qualification should include appropriate vision checks, training on the
+defect library, and challenge-set performance. Requalification should be periodic
+and triggered by relevant changes, such as a new product, new container, new defect
+set, recurring inspection discrepancy, or long absence from inspection duties.
+
+## Automated inspection controls
+
+Automated visual inspection can improve consistency, but it still needs validation
+and lifecycle control. A practical validation package normally demonstrates that
+the recipe, machine setup, reject mechanism, and challenge set detect relevant
+defects at an acceptable level for the product and container.
+
+Key controls include:
+
+- Product-specific recipes with change control.
+- Representative challenge units for visible particle and container defects.
+- Sensitivity settings that balance false rejects against missed defects.
+- Reject-bin verification and reconciliation.
+- Periodic performance checks before, during, and after inspection campaigns.
+- Investigation rules for camera faults, reject spikes, or recurring false rejects.
+
+For difficult-to-inspect products, such as dark, opaque, highly viscous, foaming,
+or complex biologic formulations, the process may need additional studies because
+standard clear-solution assumptions may not hold.
+
+## Link to subvisible particles
+
+Visual inspection addresses visible particles. It does not replace subvisible
+particulate testing, which is handled by USP 788 methods such as light obscuration
+or microscopy. The two controls should be trended together because a visible particle
+increase and a subvisible particle increase can point to the same root cause:
+component shedding, glass delamination, stopper interaction, formulation
+instability, equipment wear, or cleaning failure.
+
+Review the companion lesson on [Particulate Matter in Injections](/library/particulate-matter-usp-788).
+
+## When to investigate
+
+Do not treat rejects as routine waste only. Visual inspection data is a process
+signal. Escalate when you see:
+
+- Any confirmed critical defect in accepted or sampled units.
+- AQL failure after 100% inspection.
+- Reject rates above alert or action limits.
+- A new particle type or recurring particle morphology.
+- A cluster linked to one filling line, stopper lot, vial lot, operator, or time
+  window.
+- A mismatch between manual and automated inspection outcomes.
+- Customer complaint, field defect, or retain sample defect matching the same trend.
+
+The investigation should identify the particle or defect where possible, assess
+whether the batch and related batches are affected, and connect the outcome to CAPA
+or continued process verification.
+
+## Release documentation checklist
+
+Before release, the evidence package should make the inspection decision
+traceable:
+
+- Approved inspection SOP and product defect library.
+- Inspector qualification or automated inspection validation status.
+- Lighting or machine setup checks.
+- Batch count reconciliation: inspected, accepted, rejected, sampled, destroyed, or
+  reworked as allowed.
+- Defect counts by category and trend review against limits.
+- AQL sampling record and disposition.
+- Deviation, investigation, and CAPA references where triggered.
+
+## Practical takeaway
+
+Visual inspection is not a final cosmetic step. It is a controlled detection system
+inside the contamination control and batch release strategy. The best programs treat
+inspection outcomes as data: they classify defects consistently, qualify people and
+machines, verify accepted batches statistically, and investigate trends before a
+particle reaches the patient.
+
+## Go deeper
+
+- [Acceptance Sampling and AQL](/library/acceptance-sampling-aql)
+- [Particulate Matter in Injections](/library/particulate-matter-usp-788)
+- [Visual inspection: catching the particle before the patient does](/blog/visual-inspection-the-human-and-the-particle)
+
+*General educational content. Verify against the applicable pharmacopeia, current
+guidance, approved SOPs, product registrations, and validated methods before use in
+GMP decisions.*

@@ -29,7 +29,7 @@ npm test                   # vitest (server unit + route tests)
 npm run test:e2e           # playwright public smoke (auto-starts dev server)
 ```
 
-**Testing:** `vitest` (42 unit/route tests in `server/__tests__/`) + `playwright` E2E (`e2e/smoke.spec.ts` — 7 public smoke tests; purchase flow opt-in via `E2E_RUN=1`). Two content guards: `validate:content` and `validate:paths`.
+**Testing:** `vitest` server/unit coverage in `server/__tests__/` + `playwright` E2E (`e2e/smoke.spec.ts`; purchase flow opt-in via `E2E_RUN=1`). Content guards include `validate:content`, `validate:paths`, `validate:links`, and `validate:tool-meta`.
 
 ## Localization (IMPORTANT — product direction)
 
@@ -50,7 +50,7 @@ npm run test:e2e           # playwright public smoke (auto-starts dev server)
 
 ## Architecture Overview
 
-BioWikiPro is a mobile-first PWA for QC/QA professionals in the Pharma/Biotech/Life-Science space, sold to a **global** audience (English-first; strong Vietnam presence). It is a monorepo with **client**, **server**, and **shared** code that share types and an API contract.
+Life Science Atlas is a mobile-first PWA for QC/QA professionals in the Pharma/Biotech/Life-Science space, sold to a **global** audience (English-first; strong Vietnam presence). It is a monorepo with **client**, **server**, and **shared** code that share types and an API contract.
 
 ### Project Layout
 

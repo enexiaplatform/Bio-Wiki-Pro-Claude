@@ -1,4 +1,4 @@
-# BioWikiPro — Analytics Events (PostHog)
+# Life Science Atlas — Analytics Events (PostHog)
 
 > Client analytics via PostHog. Snippet in `client/index.html`; helpers in
 > `client/src/hooks/use-analytics.ts`. Needs `VITE_POSTHOG_KEY` set at **build
