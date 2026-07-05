@@ -1,23 +1,40 @@
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
-  Microscope, ShieldCheck, FlaskConical, ClipboardCheck, Search,
-  TestTube2, Dna, Briefcase, ArrowRight, ChevronRight, Layers,
+  ArrowRight,
+  BookOpen,
+  Briefcase,
+  ChevronRight,
+  ClipboardCheck,
+  Dna,
+  Filter,
+  FlaskConical,
+  Layers,
+  Microscope,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  TestTube2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useSEO } from "@/hooks/use-seo";
-import { JsonLd } from "@/components/JsonLd";
-import {
-  workflowCategories, getWorkflowsInCategory, type WorkflowCategory,
-} from "@/data/workflows";
-import { getLearningPath } from "@/data/learningPaths";
-import { useReadLessons } from "@/hooks/use-read-lessons";
 
-// Icons mapped by category slug (data stays serializable).
+import { JsonLd } from "@/components/JsonLd";
+import { useReadLessons } from "@/hooks/use-read-lessons";
+import { useSEO } from "@/hooks/use-seo";
+import { getLearningPath } from "@/data/learningPaths";
+import {
+  getWorkflowsInCategory,
+  workflowCategories,
+  workflows,
+  type Workflow,
+  type WorkflowCategory,
+} from "@/data/workflows";
+
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "microbiology-qc": Microscope,
   "sterile-aseptic": ShieldCheck,
-  "validation": ClipboardCheck,
+  validation: ClipboardCheck,
   "quality-systems": Layers,
   "investigations-data-integrity": Search,
   "laboratory-controls": TestTube2,
@@ -25,33 +42,76 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "career-skills": Briefcase,
 };
 
-function categoryHref(c: WorkflowCategory): string {
-  // Categories with workflow pages → anchor on this page; otherwise straight to
-  // their learning path or dedicated route.
-  if (c.workflowSlugs.length > 0) return `#${c.slug}`;
-  if (c.pathSlug) return `/paths/${c.pathSlug}`;
-  return c.href ?? "/academy";
+function categoryHref(category: WorkflowCategory): string {
+  if (category.workflowSlugs.length > 0) return `#${category.slug}`;
+  if (category.pathSlug) return `/paths/${category.pathSlug}`;
+  return category.href ?? "/academy";
+}
+
+function workflowMatchesQuery(workflow: Workflow, query: string): boolean {
+  const normalizedQuery = query.trim().toLowerCase();
+  if (!normalizedQuery) return true;
+
+  return [
+    workflow.title,
+    workflow.purpose,
+    workflow.audience,
+    workflow.categorySlug,
+    ...workflow.useWhen,
+  ].some((value) => value.toLowerCase().includes(normalizedQuery));
 }
 
 export default function WorkflowsPage() {
   useSEO({
-    title: "Workflow Atlas — what are you working on?",
+    title: "Workflow Atlas - what are you working on?",
     description:
-      "Practical, step-by-step QC/QA workflows — culture media, environmental monitoring, biological indicators, and more. Pick a workflow, see the steps, control points, and the lessons and toolkits that support it.",
+      "Practical, step-by-step QC/QA workflows for microbiology, validation, quality systems, laboratory controls, and biologics QC.",
   });
-  const { read } = useReadLessons();
-  const readSet = new Set(read);
 
-  // Reading progress for a category, via its mapped learning path.
-  function pathProgress(c: WorkflowCategory): { done: number; total: number } | null {
-    const path = c.pathSlug ? getLearningPath(c.pathSlug) : undefined;
+  const { read } = useReadLessons();
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const readSet = useMemo(() => new Set(read), [read]);
+
+  function pathProgress(category: WorkflowCategory): { done: number; total: number } | null {
+    const path = category.pathSlug ? getLearningPath(category.pathSlug) : undefined;
     if (!path || path.lessonSlugs.length === 0) return null;
-    const done = path.lessonSlugs.filter((s) => readSet.has(s)).length;
+    const done = path.lessonSlugs.filter((slug) => readSet.has(slug)).length;
     return { done, total: path.lessonSlugs.length };
   }
 
+  const categoryOptions = useMemo(
+    () => ["All", ...workflowCategories.map((category) => category.title)],
+    [],
+  );
+
+  const visibleCategories = useMemo(() => {
+    return workflowCategories
+      .map((category) => {
+        const categoryWorkflows = getWorkflowsInCategory(category.slug).filter((workflow) =>
+          workflowMatchesQuery(workflow, query),
+        );
+        const categoryTextMatches =
+          !query.trim() ||
+          [category.title, category.description, category.audience].some((value) =>
+            value.toLowerCase().includes(query.trim().toLowerCase()),
+          );
+
+        return { category, workflows: categoryWorkflows, categoryTextMatches };
+      })
+      .filter(({ category, workflows: categoryWorkflows, categoryTextMatches }) => {
+        const categoryMatch = activeCategory === "All" || category.title === activeCategory;
+        const queryMatch = categoryTextMatches || categoryWorkflows.length > 0;
+        return categoryMatch && queryMatch;
+      });
+  }, [activeCategory, query]);
+
+  const featuredWorkflows = workflows.slice(0, 3);
+  const totalWorkflowCount = workflows.length;
+  const shownWorkflowCount = visibleCategories.reduce((total, item) => total + item.workflows.length, 0);
+
   return (
-    <div className="pb-24 pt-6 md:pt-10 max-w-5xl mx-auto px-4">
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       <JsonLd
         id="workflows-breadcrumb"
         data={{
@@ -64,130 +124,253 @@ export default function WorkflowsPage() {
         }}
       />
 
-      {/* ── HEADER ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }} className="mb-10 text-center"
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+        className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7"
       >
-        <span className="inline-flex items-center gap-2 text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1.5 rounded-full mb-5">
-          <FlaskConical className="w-3 h-3" /> Workflow Atlas
-        </span>
-        <h1 className="text-3xl md:text-4xl font-bold mb-3 font-display">
-          What workflow are you working on?
-        </h1>
-        <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-          Start from the task in front of you. Each workflow gives you the steps,
-          the control points, the common mistakes — and the lessons and toolkits
-          that back it up.
-        </p>
-      </motion.div>
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_90%_20%,rgba(16,185,129,0.1),transparent_28%)]" />
+        <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-end">
+          <div>
+            <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300">
+              <FlaskConical className="h-3.5 w-3.5" />
+              Workflow Atlas
+            </span>
+            <h1 className="mb-3 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">
+              What workflow are you working on?
+            </h1>
+            <p className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base">
+              Start from the task in front of you. Each workflow gives you the steps, control points,
+              common mistakes, and the lessons and toolkits that support the work.
+            </p>
+          </div>
 
-      {/* ── CATEGORY GRID ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-14">
-        {workflowCategories.map((c, i) => {
-          const Icon = CATEGORY_ICONS[c.slug] ?? FlaskConical;
-          const count = c.workflowSlugs.length;
-          const href = categoryHref(c);
-          const internal = href.startsWith("#");
-          const card = (
-            <motion.div
-              initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.4, delay: (i % 2) * 0.08 }}
-              className="group h-full bg-card border border-white/5 rounded-2xl p-5 hover:border-teal-500/30 transition-colors flex flex-col"
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3">
+            <div>
+              <div className="text-xl font-bold text-teal-300">{totalWorkflowCount}</div>
+              <div className="text-[11px] text-muted-foreground">Workflows</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-teal-300">{workflowCategories.length}</div>
+              <div className="text-[11px] text-muted-foreground">Tracks</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-teal-300">Stepwise</div>
+              <div className="text-[11px] text-muted-foreground">Guides</div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
+      <section className="mb-6 grid gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-3 md:grid-cols-[1fr_auto]">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search workflows, tasks, or GMP topics"
+            className="h-11 w-full rounded-lg border border-white/10 bg-background/70 pl-10 pr-3 text-sm outline-none transition-colors placeholder:text-muted-foreground focus:border-teal-400/50 focus:ring-2 focus:ring-teal-400/20"
+            aria-label="Search workflows"
+          />
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:max-w-xl md:pb-0">
+          <span className="hidden items-center gap-1.5 text-xs font-semibold text-muted-foreground md:inline-flex">
+            <Filter className="h-3.5 w-3.5" />
+            Track
+          </span>
+          {categoryOptions.map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => setActiveCategory(category)}
+              className={`shrink-0 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${
+                activeCategory === category
+                  ? "border-teal-400/40 bg-teal-400/15 text-teal-200"
+                  : "border-white/10 bg-white/[0.04] text-muted-foreground hover:border-white/20 hover:text-foreground"
+              }`}
             >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="w-11 h-11 rounded-xl bg-teal-500/10 flex items-center justify-center shrink-0">
-                  <Icon className="w-5 h-5 text-teal-400" />
+              {category}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <div>
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-teal-300">
+              <Sparkles className="h-3.5 w-3.5" />
+              Start here
+            </p>
+            <h2 className="mt-1 text-lg font-bold">High-signal workflows for first-time users</h2>
+          </div>
+          <Link href="/tools" className="hidden text-sm font-semibold text-teal-300 hover:underline sm:inline-flex">
+            Open tools
+          </Link>
+        </div>
+        <div className="grid gap-3 md:grid-cols-3">
+          {featuredWorkflows.map((workflow) => (
+            <Link
+              key={workflow.slug}
+              href={`/workflows/${workflow.slug}`}
+              className="group rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:border-teal-400/35 hover:bg-white/[0.07]"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-400/10 text-teal-300">
+                  <BookOpen className="h-5 w-5" />
                 </div>
-                {count > 0 ? (
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 bg-teal-400/10 px-2 py-1 rounded">
-                    {count} workflow{count > 1 ? "s" : ""}
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-white/5 px-2 py-1 rounded">
-                    Learning path
-                  </span>
-                )}
+                <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  {workflow.accessTier === "pro" ? "Pro" : "Free"}
+                </span>
               </div>
-              <h2 className="font-bold text-base mb-1.5">{c.title}</h2>
-              <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">{c.description}</p>
-              {(() => {
-                const p = pathProgress(c);
-                if (!p || p.done === 0) return null;
-                return (
-                  <div className="mb-3 flex items-center gap-2">
-                    <div className="h-1 flex-1 rounded-full bg-white/5 overflow-hidden">
-                      <div className="h-full rounded-full bg-teal-400" style={{ width: `${(p.done / p.total) * 100}%` }} />
-                    </div>
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{p.done}/{p.total} read</span>
-                  </div>
-                );
-              })()}
-              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-400 group-hover:gap-2.5 transition-all">
-                {count > 0 ? "See workflows" : "Browse the path"}
-                <ChevronRight className="w-4 h-4" />
+              <h3 className="mb-1.5 text-sm font-bold leading-snug">{workflow.title}</h3>
+              <p className="mb-3 text-xs leading-relaxed text-muted-foreground">{workflow.purpose}</p>
+              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-300 transition-all group-hover:gap-2.5">
+                Open workflow <ArrowRight className="h-4 w-4" />
               </span>
-            </motion.div>
-          );
-          return internal ? (
-            <a key={c.slug} href={href} className="block h-full">{card}</a>
-          ) : (
-            <Link key={c.slug} href={href} className="block h-full">{card}</Link>
-          );
-        })}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-xl font-bold">Explore by track</h2>
+        <span className="text-sm text-muted-foreground">
+          {shownWorkflowCount} of {totalWorkflowCount} workflows
+        </span>
       </div>
 
-      {/* ── CATEGORIES WITH WORKFLOW PAGES ── */}
-      {workflowCategories
-        .filter((c) => c.workflowSlugs.length > 0)
-        .map((c) => {
-          const workflows = getWorkflowsInCategory(c.slug);
-          const path = c.pathSlug ? getLearningPath(c.pathSlug) : undefined;
-          return (
-            <section key={c.slug} id={c.slug} className="mb-14 scroll-mt-24">
-              <div className="flex items-end justify-between gap-4 mb-5">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-bold">{c.title}</h2>
-                  <p className="text-xs text-muted-foreground mt-1">{c.audience}</p>
-                </div>
-                {path && (
-                  <Link
-                    href={`/paths/${path.slug}`}
-                    className="shrink-0 text-xs font-semibold text-teal-400 hover:underline whitespace-nowrap"
-                  >
-                    Full learning path →
-                  </Link>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {workflows.map((w) => (
-                  <Link
-                    key={w.slug}
-                    href={`/workflows/${w.slug}`}
-                    className="group bg-card border border-white/5 rounded-2xl p-5 hover:border-teal-500/30 transition-colors flex flex-col"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <Microscope className="w-5 h-5 text-teal-400" />
-                      <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                        w.accessTier === "pro"
-                          ? "text-amber-400 bg-amber-400/10"
-                          : "text-emerald-400 bg-emerald-400/10"
-                      }`}>
-                        {w.accessTier === "pro" ? "Pro" : "Free"}
+      {visibleCategories.length === 0 ? (
+        <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.035] p-8 text-center">
+          <Search className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
+          <h2 className="mb-2 text-lg font-bold">No workflows match that filter</h2>
+          <p className="mx-auto mb-4 max-w-md text-sm leading-relaxed text-muted-foreground">
+            Try a broader search term or return to all workflow tracks.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setQuery("");
+              setActiveCategory("All");
+            }}
+            className="inline-flex items-center justify-center rounded-lg bg-teal-400 px-4 py-2 text-sm font-bold text-teal-950 hover:bg-teal-300"
+          >
+            Reset filters
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="mb-12 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {visibleCategories.map(({ category }, index) => {
+              const Icon = CATEGORY_ICONS[category.slug] ?? FlaskConical;
+              const count = category.workflowSlugs.length;
+              const href = categoryHref(category);
+              const internal = href.startsWith("#");
+              const progress = pathProgress(category);
+              const card = (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.35, delay: (index % 2) * 0.06 }}
+                  className="group flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-teal-400/35 hover:bg-white/[0.07]"
+                >
+                  <div className="mb-3 flex items-start justify-between gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-teal-500/10">
+                      <Icon className="h-5 w-5 text-teal-300" />
+                    </div>
+                    <span className="rounded-lg bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      {count > 0 ? `${count} workflow${count > 1 ? "s" : ""}` : "Learning path"}
+                    </span>
+                  </div>
+                  <h3 className="mb-1.5 text-base font-bold">{category.title}</h3>
+                  <p className="mb-4 flex-1 text-xs leading-relaxed text-muted-foreground">{category.description}</p>
+                  {progress && progress.done > 0 && (
+                    <div className="mb-3 flex items-center gap-2">
+                      <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/5">
+                        <div
+                          className="h-full rounded-full bg-teal-400"
+                          style={{ width: `${(progress.done / progress.total) * 100}%` }}
+                        />
+                      </div>
+                      <span className="whitespace-nowrap text-[10px] text-muted-foreground">
+                        {progress.done}/{progress.total} read
                       </span>
                     </div>
-                    <h3 className="font-bold text-sm mb-1.5">{w.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-4 flex-1">{w.purpose}</p>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-400 group-hover:gap-2.5 transition-all">
-                      Open workflow <ArrowRight className="w-4 h-4" />
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          );
-        })}
+                  )}
+                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-300 transition-all group-hover:gap-2.5">
+                    {count > 0 ? "See workflows" : "Browse the path"}
+                    <ChevronRight className="h-4 w-4" />
+                  </span>
+                </motion.div>
+              );
+
+              return internal ? (
+                <a key={category.slug} href={href} className="block h-full">
+                  {card}
+                </a>
+              ) : (
+                <Link key={category.slug} href={href} className="block h-full">
+                  {card}
+                </Link>
+              );
+            })}
+          </div>
+
+          {visibleCategories
+            .filter(({ category, workflows: categoryWorkflows }) => category.workflowSlugs.length > 0 && categoryWorkflows.length > 0)
+            .map(({ category, workflows: categoryWorkflows }) => {
+              const path = category.pathSlug ? getLearningPath(category.pathSlug) : undefined;
+              return (
+                <section key={category.slug} id={category.slug} className="mb-12 scroll-mt-24">
+                  <div className="mb-5 flex items-end justify-between gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold md:text-2xl">{category.title}</h2>
+                      <p className="mt-1 text-xs text-muted-foreground">{category.audience}</p>
+                    </div>
+                    {path && (
+                      <Link
+                        href={`/paths/${path.slug}`}
+                        className="shrink-0 whitespace-nowrap text-xs font-semibold text-teal-300 hover:underline"
+                      >
+                        Full learning path
+                      </Link>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    {categoryWorkflows.map((workflow) => (
+                      <Link
+                        key={workflow.slug}
+                        href={`/workflows/${workflow.slug}`}
+                        className="group flex flex-col rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-teal-400/35 hover:bg-white/[0.07]"
+                      >
+                        <div className="mb-3 flex items-center justify-between">
+                          <Microscope className="h-5 w-5 text-teal-300" />
+                          <span
+                            className={`rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                              workflow.accessTier === "pro"
+                                ? "bg-amber-400/10 text-amber-300"
+                                : "bg-emerald-400/10 text-emerald-300"
+                            }`}
+                          >
+                            {workflow.accessTier === "pro" ? "Pro" : "Free"}
+                          </span>
+                        </div>
+                        <h3 className="mb-1.5 text-sm font-bold leading-snug">{workflow.title}</h3>
+                        <p className="mb-4 flex-1 text-xs leading-relaxed text-muted-foreground">{workflow.purpose}</p>
+                        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-300 transition-all group-hover:gap-2.5">
+                          Open workflow <ArrowRight className="h-4 w-4" />
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+        </>
+      )}
 
       <p className="text-center text-xs text-muted-foreground">
         More workflow verticals are being built out from the learning paths above.

@@ -10,6 +10,9 @@ import { JsonLd } from "@/components/JsonLd";
 import { TrustBadges } from "@/components/TrustBadges";
 
 type ProductType = "pro_subscription" | "pro_subscription_annual" | "starter_kit" | "interview_prep" | "bundle";
+const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
+const planCardClass = "rounded-lg border border-white/10 bg-white/[0.045] p-6 shadow-lg shadow-black/10";
+const primaryButtonClass = "w-full rounded-lg bg-teal-400 py-2.5 text-sm font-bold text-teal-950 transition-all hover:-translate-y-0.5 hover:bg-teal-300 disabled:cursor-wait disabled:opacity-60";
 const ONE_TIME_PRODUCTS: { productType: Exclude<ProductType, "pro_subscription">; price: string }[] = [
   { productType: "starter_kit", price: "$15" },
   { productType: "interview_prep", price: "$20" },
@@ -77,7 +80,7 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-5xl mx-auto px-4">
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       {Array.isArray(faqs) && faqs.length > 0 && (
         <JsonLd
           id="pricing-faq"
@@ -92,27 +95,43 @@ export default function PricingPage() {
           }}
         />
       )}
-      {/* Header */}
-      <div className="mb-12 text-center">
-        <h1 className="text-3xl md:text-5xl font-bold mb-4 font-display text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">
+      <section className="relative mb-8 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 text-center shadow-xl shadow-black/10 md:p-8">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.1),transparent_28%)]" />
+        <span className={`${pillClass} mb-5`}>
+          <Zap className="h-3.5 w-3.5" />
+          Life Science Atlas Pro
+        </span>
+        <h1 className="mx-auto mb-4 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">
           {t("title")}
         </h1>
-        <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+        <p className="mx-auto max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
           {t("subtitle")}
         </p>
-      </div>
+        <div className="mx-auto mt-6 grid max-w-3xl gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 text-left sm:grid-cols-3">
+          {[
+            "Workflow-backed lessons",
+            "Pro templates and toolkits",
+            "Free tools stay available",
+          ].map((item) => (
+            <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" />
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {error && (
-        <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
+        <div className="mb-8 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-sm text-red-400">
           {error}
         </div>
       )}
 
       {/* 3-column plan cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <div className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
 
         {/* Free */}
-        <div className="bg-card border border-white/10 rounded-2xl p-7 flex flex-col">
+        <div className={`${planCardClass} flex flex-col`}>
           <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground bg-white/5 px-2 py-1 rounded w-fit mb-4">
             {t("free.badge")}
           </span>
@@ -129,16 +148,16 @@ export default function PricingPage() {
             ))}
           </ul>
           <Link href="/register">
-            <button className="w-full py-2.5 rounded-xl border border-white/10 text-sm font-semibold hover:border-white/30 transition-colors">
+            <button className="w-full rounded-lg border border-white/10 py-2.5 text-sm font-semibold transition-colors hover:border-white/30 hover:bg-white/5">
               {t("free.cta")}
             </button>
           </Link>
         </div>
 
         {/* Pro */}
-        <div className="bg-card border-2 border-teal-500/60 rounded-2xl p-7 flex flex-col relative shadow-[0_0_40px_rgba(20,184,166,0.12)]">
+        <div className="relative flex flex-col rounded-lg border-2 border-teal-400/60 bg-white/[0.06] p-6 shadow-[0_0_40px_rgba(20,184,166,0.16)]">
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-            <span className="bg-teal-500 text-teal-950 text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full">
+            <span className="rounded-full bg-teal-400 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-950">
               {t("pro.popular")}
             </span>
           </div>
@@ -146,14 +165,14 @@ export default function PricingPage() {
             {t("pro.badge")}
           </span>
           {annualAvailable && !isPro && (
-            <div className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-background/60 p-0.5 mb-3 w-fit">
+            <div className="mb-3 inline-flex w-fit items-center gap-1 rounded-lg border border-white/10 bg-background/60 p-0.5">
               {(["monthly", "annual"] as const).map((p) => (
                 <button
                   key={p}
                   onClick={() => setProPlan(p)}
                   className={clsx(
-                    "px-3 py-1 rounded-full text-xs font-semibold transition-colors",
-                    proPlan === p ? "bg-teal-500 text-teal-950" : "text-muted-foreground hover:text-foreground"
+                    "rounded-md px-3 py-1 text-xs font-semibold transition-colors",
+                    proPlan === p ? "bg-teal-400 text-teal-950" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {p === "monthly" ? "Monthly" : "Annual"}
@@ -181,7 +200,7 @@ export default function PricingPage() {
           {isPro ? (
             <button
               disabled
-              className="w-full py-2.5 rounded-xl bg-teal-500/20 text-teal-400 text-sm font-semibold cursor-default"
+              className="w-full cursor-default rounded-lg bg-teal-500/20 py-2.5 text-sm font-semibold text-teal-300"
             >
               {t("pro.current")}
             </button>
@@ -190,7 +209,7 @@ export default function PricingPage() {
               onClick={() => handleCheckout(proProductType)}
               disabled={loadingProduct === proProductType}
               className={clsx(
-                "w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-teal-950 text-sm font-bold transition-all",
+                primaryButtonClass,
                 loadingProduct === proProductType && "opacity-60 cursor-wait"
               )}
             >
@@ -209,7 +228,7 @@ export default function PricingPage() {
         </div>
 
         {/* Career Products */}
-        <div className="bg-card border border-white/10 rounded-2xl p-7 flex flex-col">
+        <div className={`${planCardClass} flex flex-col`}>
           <span className="text-[10px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded w-fit mb-4">
             {t("oneTime.badge")}
           </span>
@@ -227,7 +246,7 @@ export default function PricingPage() {
                   onClick={() => handleCheckout(p.productType)}
                   disabled={loadingProduct === p.productType}
                   className={clsx(
-                    "text-xs font-bold px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-teal-500 hover:text-teal-950 hover:border-teal-500 transition-all whitespace-nowrap",
+                    "whitespace-nowrap rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold transition-all hover:border-teal-400 hover:bg-teal-400 hover:text-teal-950",
                     loadingProduct === p.productType && "opacity-60 cursor-wait"
                   )}
                 >
@@ -243,12 +262,12 @@ export default function PricingPage() {
       </div>
 
       {/* Trust strip */}
-      <TrustBadges className="mb-16" />
+      <TrustBadges className="mb-12" />
 
       {/* FAQ row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+      <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-3">
         {faqs.map((item, i) => (
-          <div key={item.q} className="bg-card border border-white/5 rounded-xl p-5">
+          <div key={item.q} className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10">
             {[<Lock className="w-5 h-5 mx-auto mb-2 text-teal-400" />, <Zap className="w-5 h-5 mx-auto mb-2 text-teal-400" />, <Package className="w-5 h-5 mx-auto mb-2 text-teal-400" />][i]}
             <p className="text-sm font-semibold mb-1">{item.q}</p>
             <p className="text-xs text-muted-foreground">{item.a}</p>

@@ -16,6 +16,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
 
 const all = "All";
+const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
+const hubCardClass = "rounded-lg border border-white/10 bg-white/[0.045] shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:bg-white/[0.07]";
 
 export default function AcademyPage() {
   const { t } = useTranslation("sections");
@@ -71,7 +73,7 @@ export default function AcademyPage() {
   });
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-6xl mx-auto px-4">
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       {libraryEntries.length > 0 && (
         <JsonLd
           id="academy-itemlist"
@@ -89,27 +91,58 @@ export default function AcademyPage() {
         />
       )}
       <LeadMagnetBanner />
-      <section className="mb-8 rounded-2xl border border-white/10 bg-card p-5 md:p-7 shadow-xl shadow-black/10">
-        <div className="flex items-start gap-4">
-          <div className="hidden sm:flex w-12 h-12 rounded-2xl bg-primary/10 text-primary items-center justify-center">
-            <ShieldCheck className="w-6 h-6" />
+      <section className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.1),transparent_28%)]" />
+        <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-end">
+          <div className="flex items-start gap-4">
+            <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex">
+              <ShieldCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <p className={`${pillClass} mb-3`}>{t("academy.eyebrow")}</p>
+              <h1 className="mb-3 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">{t("academy.title")}</h1>
+              <p className="max-w-3xl text-sm leading-7 text-muted-foreground md:text-base">
+                {t("academy.subtitle")}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-primary mb-2">{t("academy.eyebrow")}</p>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("academy.title")}</h1>
-            <p className="text-muted-foreground max-w-3xl leading-relaxed">
-              {t("academy.subtitle")}
-            </p>
+
+          <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3">
+            <div>
+              <div className="text-xl font-bold text-teal-300">{libraryEntries.length}</div>
+              <div className="text-[11px] text-muted-foreground">Lessons</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-teal-300">{learningPaths.length}</div>
+              <div className="text-[11px] text-muted-foreground">Paths</div>
+            </div>
+            <div>
+              <div className="text-xl font-bold text-teal-300">{readCount}</div>
+              <div className="text-[11px] text-muted-foreground">Read</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {libraryEntries.length > 0 && <ContinueLearning />}
+      {libraryEntries.length > 0 && (
+        <div className="mb-8">
+          <ContinueLearning />
+        </div>
+      )}
 
       {/* Learning paths */}
       <section className="mb-8">
-        <h2 className="text-lg font-bold mb-1">Learning paths</h2>
-        <p className="text-sm text-muted-foreground mb-4">Structured tracks that take you from fundamentals to audit-ready.</p>
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p className="mb-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-teal-300">
+              <BookOpen className="h-3.5 w-3.5" />
+              Start with a path
+            </p>
+            <h2 className="text-lg font-bold">Learning paths</h2>
+            <p className="text-sm text-muted-foreground">Structured tracks that take you from fundamentals to audit-ready.</p>
+          </div>
+          <span className="hidden text-sm text-muted-foreground sm:inline">{learningPaths.length} tracks</span>
+        </div>
         <div className="grid gap-3 sm:grid-cols-2">
           {learningPaths.map((p) => {
             const done = p.lessonSlugs.filter((s) => isRead(s)).length;
@@ -119,7 +152,7 @@ export default function AcademyPage() {
               <Link
                 key={p.slug}
                 href={`/paths/${p.slug}`}
-                className="block rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors group"
+                className={`group block p-4 ${hubCardClass}`}
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <p className="font-bold text-sm group-hover:text-primary transition-colors">{p.title}</p>
@@ -144,12 +177,17 @@ export default function AcademyPage() {
 
       {libraryEntries.length > 0 && (
         <section className="mb-8">
-          <h2 className="text-lg font-bold mb-1">{t("academy.libraryHeading")}</h2>
-          <p className="text-sm text-muted-foreground mb-3">{t("academy.librarySubtitle")}</p>
+          <div className="mb-3 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold">{t("academy.libraryHeading")}</h2>
+              <p className="text-sm text-muted-foreground">{t("academy.librarySubtitle")}</p>
+            </div>
+            <span className="hidden text-sm text-muted-foreground sm:inline">{filteredLibrary.length} shown</span>
+          </div>
 
           {/* Reading progress */}
-          <div className="mb-4 flex items-center gap-3">
-            <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden max-w-xs">
+          <div className="mb-4 flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-3">
+            <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden">
               <div className="h-full bg-primary transition-all" style={{ width: `${progressPct}%` }} />
             </div>
             <span className="text-xs text-muted-foreground shrink-0">
@@ -165,7 +203,7 @@ export default function AcademyPage() {
                 value={libQuery}
                 onChange={(event) => setLibQuery(event.target.value)}
                 placeholder="Search the library…"
-                className="w-full rounded-xl border border-border bg-card py-2.5 pl-9 pr-4 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
+                className="w-full rounded-lg border border-white/10 bg-background/70 py-2.5 pl-9 pr-4 text-sm outline-none transition focus:border-teal-400/50 focus:ring-2 focus:ring-teal-400/20"
               />
             </div>
             <div className="grid gap-3 md:grid-cols-[1fr_1fr]">
@@ -183,7 +221,7 @@ export default function AcademyPage() {
           </div>
 
           {filteredLibrary.length === 0 ? (
-            <div className="rounded-2xl border border-white/10 bg-card p-8 text-center text-sm text-muted-foreground">
+            <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.035] p-8 text-center text-sm text-muted-foreground">
               No lessons match your search. Try a broader term or clear the filters.
             </div>
           ) : (
@@ -192,7 +230,7 @@ export default function AcademyPage() {
               <Link
                 key={e.slug}
                 href={`/library/${e.slug}`}
-                className="block rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors group"
+                className={`group block p-4 ${hubCardClass}`}
               >
                 <div className="flex items-center gap-2 text-[11px] mb-2">
                   <span className="rounded-md bg-primary/10 text-primary px-2 py-0.5 font-semibold">{e.category}</span>
@@ -232,18 +270,22 @@ export default function AcademyPage() {
       )}
 
       <section className="mb-3">
+        <p className="mb-1 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-teal-300">
+          <GraduationCap className="h-3.5 w-3.5" />
+          Guided practice
+        </p>
         <h2 className="text-lg font-bold mb-1">{t("academy.guidedHeading")}</h2>
         <p className="text-sm text-muted-foreground">{t("academy.guidedSubtitle")}</p>
       </section>
 
-      <section className="space-y-4 mb-8 sticky top-[60px] md:top-20 z-30 bg-background/95 backdrop-blur-xl py-3 -mx-4 px-4 border-b border-white/5 md:static md:border-none md:bg-transparent md:p-0">
+      <section className="space-y-4 mb-8 sticky top-[60px] md:top-20 z-30 bg-background/95 backdrop-blur-xl py-3 -mx-4 px-4 border-b border-white/5 md:static md:rounded-lg md:border md:border-white/10 md:bg-white/[0.035] md:p-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder={t("academy.search")}
-            className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-sm outline-none transition focus:ring-2 focus:ring-primary/40"
+            className="w-full rounded-lg border border-white/10 bg-background/70 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-teal-400/50 focus:ring-2 focus:ring-teal-400/20"
           />
         </div>
 
@@ -265,7 +307,7 @@ export default function AcademyPage() {
       </div>
 
       {filteredLessons.length === 0 && (
-        <div className="rounded-2xl border border-white/10 bg-card p-10 text-center text-muted-foreground">
+        <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.035] p-10 text-center text-muted-foreground">
           No matching lessons yet. Try a broader search or filter.
         </div>
       )}
@@ -286,8 +328,8 @@ function FilterBar({ label, values, active, onChange, labelFor }: { label: strin
             key={value}
             onClick={() => onChange(value)}
             className={clsx(
-              "shrink-0 rounded-full border px-4 py-1.5 text-xs font-medium transition-colors",
-              active === value ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground hover:border-primary/50",
+              "shrink-0 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors",
+              active === value ? "border-teal-400/40 bg-teal-400/15 text-teal-200" : "border-white/10 bg-white/[0.04] text-muted-foreground hover:border-white/20 hover:text-foreground",
             )}
           >
             {labelFor ? labelFor(value) : value}
