@@ -1,5 +1,15 @@
 import { Link } from "wouter";
-import { GraduationCap, Award, CheckCircle2, ChevronRight, Route as RouteIcon, BookOpen, Trophy, Lock, Flame } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  Flame,
+  GraduationCap,
+  Lock,
+  Route as RouteIcon,
+  Trophy,
+} from "lucide-react";
 import clsx from "clsx";
 import { learningPaths } from "@/data/learningPaths";
 import { listContent } from "@/lib/content";
@@ -11,6 +21,9 @@ import { ContinueLearning } from "@/components/ContinueLearning";
 import { VerifyEmailBanner } from "@/components/VerifyEmailBanner";
 import { useSEO } from "@/hooks/use-seo";
 
+const statCardClass = "rounded-lg border border-white/10 bg-background/35 p-4";
+const panelClass = "rounded-lg border border-white/10 bg-white/[0.035] p-5 shadow-lg shadow-black/10 md:p-6";
+
 export default function MyLearningPage() {
   useSEO({ title: "My learning", description: "Your QC/QA learning progress, paths, and certificates." });
   const { language } = useLanguage();
@@ -19,15 +32,15 @@ export default function MyLearningPage() {
   const { user } = useUser();
 
   const library = listContent({ collection: "academy", lang: language });
-  const readInLibrary = library.filter((e) => isRead(e.slug)).length;
+  const readInLibrary = library.filter((entry) => isRead(entry.slug)).length;
   const pct = library.length ? Math.round((readInLibrary / library.length) * 100) : 0;
 
-  const paths = learningPaths.map((p) => {
-    const done = p.lessonSlugs.filter((s) => isRead(s)).length;
-    const total = p.lessonSlugs.length;
-    return { ...p, done, total, complete: total > 0 && done === total, pct: total ? Math.round((done / total) * 100) : 0 };
+  const paths = learningPaths.map((path) => {
+    const done = path.lessonSlugs.filter((slug) => isRead(slug)).length;
+    const total = path.lessonSlugs.length;
+    return { ...path, done, total, complete: total > 0 && done === total, pct: total ? Math.round((done / total) * 100) : 0 };
   });
-  const certificates = paths.filter((p) => p.complete);
+  const certificates = paths.filter((path) => path.complete);
   const completedPaths = certificates.length;
   const halfway = Math.ceil(library.length / 2);
 
@@ -39,105 +52,163 @@ export default function MyLearningPage() {
     { label: "Track master", desc: "Complete every path", earned: completedPaths >= paths.length && paths.length > 0 },
     { label: "Completionist", desc: "Read every lesson", earned: library.length > 0 && readInLibrary >= library.length },
   ];
-  const earnedCount = badges.filter((b) => b.earned).length;
-
+  const earnedCount = badges.filter((badge) => badge.earned).length;
   const greetingName = user?.firstName?.trim();
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-3xl mx-auto px-4">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-          <GraduationCap className="w-5 h-5" />
-        </div>
-        <div>
-          <h1 className="text-2xl md:text-3xl font-display font-bold">My learning</h1>
-          <p className="text-sm text-muted-foreground">
-            {greetingName ? `Welcome back, ${greetingName}.` : "Track your progress, paths, and certificates."}
-          </p>
-        </div>
-      </div>
-
-      <VerifyEmailBanner />
-
-      {/* Overall library progress */}
-      <div className="rounded-2xl border border-white/10 bg-card p-5 mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-semibold">Library progress</p>
-          <span className="text-xs text-muted-foreground">{readInLibrary} / {library.length} lessons</span>
-        </div>
-        <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-          <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
-        </div>
-        <div className="flex items-center justify-between mt-2 gap-3">
-          <p className="text-xs text-muted-foreground">
-            {pct === 100 ? "You've read the entire library — outstanding." : `${pct}% of the in-depth library read.`}
-          </p>
-          {streak >= 1 && (
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/10 border border-amber-400/20 px-2.5 py-1 text-[11px] font-semibold text-amber-300 shrink-0"
-              title={longestStreak > streak ? `Longest streak: ${longestStreak} days` : undefined}
-            >
-              <Flame className="w-3.5 h-3.5" /> {streak}-day streak
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
+      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
+              <GraduationCap className="h-3.5 w-3.5" />
+              My learning
             </span>
-          )}
-        </div>
-      </div>
-
-      <ContinueLearning />
-
-      {/* Achievements */}
-      <section className="mb-8">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-primary" />
-            <h2 className="text-lg font-bold">Achievements</h2>
+            <h1 className="mt-5 font-display text-3xl font-bold leading-tight md:text-5xl">
+              {greetingName ? `Welcome back, ${greetingName}` : "Track your learning momentum"}
+            </h1>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              Keep paths, certificates, lesson progress, and streaks in one calm workspace.
+            </p>
           </div>
-          <span className="text-xs text-muted-foreground">{earnedCount} / {badges.length}</span>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {badges.map((b) => (
-            <div
-              key={b.label}
-              className={clsx(
-                "rounded-2xl border p-4 text-center transition-colors",
-                b.earned ? "border-primary/30 bg-primary/5" : "border-white/10 bg-card opacity-60",
-              )}
-            >
-              <div
-                className={clsx(
-                  "w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-2",
-                  b.earned ? "bg-primary/15 text-primary" : "bg-white/5 text-muted-foreground",
-                )}
-              >
-                {b.earned ? <Trophy className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
-              </div>
-              <p className="text-sm font-semibold">{b.label}</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">{b.desc}</p>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className={statCardClass}>
+              <p className="text-2xl font-bold text-teal-200">{pct}%</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Library read</p>
             </div>
-          ))}
+            <div className={statCardClass}>
+              <p className="text-2xl font-bold text-teal-200">{completedPaths}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Paths done</p>
+            </div>
+            <div className={statCardClass}>
+              <p className="text-2xl font-bold text-teal-200">{streak}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Day streak</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Certificates earned */}
+      <VerifyEmailBanner />
+
+      <section className={`${panelClass} mb-6`}>
+        <div className="mb-3 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-bold">Library progress</p>
+            <p className="mt-1 text-xs text-muted-foreground">{readInLibrary} of {library.length} lessons read</p>
+          </div>
+          {streak >= 1 && (
+            <span
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-300"
+              title={longestStreak > streak ? `Longest streak: ${longestStreak} days` : undefined}
+            >
+              <Flame className="h-3.5 w-3.5" />
+              {streak}-day streak
+            </span>
+          )}
+        </div>
+        <div className="h-3 overflow-hidden rounded-full bg-white/10">
+          <div className="h-full bg-teal-400 transition-all" style={{ width: `${pct}%` }} />
+        </div>
+        <p className="mt-3 text-sm text-muted-foreground">
+          {pct === 100 ? "You've read the entire library. Nicely done." : `${pct}% of the in-depth library read.`}
+        </p>
+      </section>
+
+      <div className="mb-8">
+        <ContinueLearning />
+      </div>
+
+      <section className="mb-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className={panelClass}>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-teal-300" />
+              <h2 className="text-lg font-bold">Achievements</h2>
+            </div>
+            <span className="text-xs text-muted-foreground">{earnedCount} / {badges.length}</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {badges.map((badge) => (
+              <div
+                key={badge.label}
+                className={clsx(
+                  "rounded-lg border p-4 text-center transition-colors",
+                  badge.earned ? "border-teal-400/30 bg-teal-400/10" : "border-white/10 bg-background/35 opacity-70",
+                )}
+              >
+                <div
+                  className={clsx(
+                    "mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-lg",
+                    badge.earned ? "bg-teal-400/15 text-teal-200" : "bg-white/5 text-muted-foreground",
+                  )}
+                >
+                  {badge.earned ? <Trophy className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                </div>
+                <p className="text-sm font-semibold">{badge.label}</p>
+                <p className="mt-1 text-[11px] text-muted-foreground">{badge.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={panelClass}>
+          <div className="mb-4 flex items-center gap-2">
+            <RouteIcon className="h-4 w-4 text-teal-300" />
+            <h2 className="text-lg font-bold">Learning paths</h2>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {paths.map((path) => (
+              <Link
+                key={path.slug}
+                href={`/paths/${path.slug}`}
+                className="group rounded-lg border border-white/10 bg-background/35 p-4 transition-colors hover:border-teal-400/35"
+              >
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <p className="text-sm font-bold transition-colors group-hover:text-teal-300">{path.title}</p>
+                  {path.complete && (
+                    <span className="inline-flex shrink-0 items-center gap-1 text-[11px] text-emerald-300">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      Done
+                    </span>
+                  )}
+                </div>
+                <p className="mb-3 line-clamp-2 text-xs text-muted-foreground">{path.description}</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                    <div className={clsx("h-full", path.complete ? "bg-emerald-400" : "bg-teal-400")} style={{ width: `${path.pct}%` }} />
+                  </div>
+                  <span className="shrink-0 text-[11px] text-muted-foreground">{path.done}/{path.total}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {certificates.length > 0 && (
-        <section className="mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <Award className="w-4 h-4 text-primary" />
+        <section className={`${panelClass} mb-8`}>
+          <div className="mb-4 flex items-center gap-2">
+            <Award className="h-4 w-4 text-teal-300" />
             <h2 className="text-lg font-bold">Certificates earned</h2>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {certificates.map((p) => (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {certificates.map((path) => (
               <Link
-                key={p.slug}
-                href={`/certificate/${p.slug}`}
-                className="group rounded-2xl border border-primary/20 bg-gradient-to-b from-primary/10 to-transparent p-4 hover:border-primary/40 transition-colors"
+                key={path.slug}
+                href={`/certificate/${path.slug}`}
+                className="group rounded-lg border border-teal-400/25 bg-teal-400/10 p-4 transition-colors hover:border-teal-400/45"
               >
-                <div className="flex items-center gap-2 text-xs text-primary font-semibold mb-1">
-                  <Award className="w-3.5 h-3.5" /> Certificate
+                <div className="mb-1 flex items-center gap-2 text-xs font-semibold text-teal-200">
+                  <Award className="h-3.5 w-3.5" />
+                  Certificate
                 </div>
-                <p className="font-bold text-sm group-hover:text-primary transition-colors">{p.title}</p>
-                <span className="inline-flex items-center gap-1 text-xs text-primary mt-2">
-                  View &amp; print <ChevronRight className="w-3.5 h-3.5" />
+                <p className="text-sm font-bold transition-colors group-hover:text-teal-200">{path.title}</p>
+                <span className="mt-2 inline-flex items-center gap-1 text-xs text-teal-200">
+                  View and print
+                  <ChevronRight className="h-3.5 w-3.5" />
                 </span>
               </Link>
             ))}
@@ -145,54 +216,18 @@ export default function MyLearningPage() {
         </section>
       )}
 
-      {/* Learning paths */}
-      <section className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <RouteIcon className="w-4 h-4 text-primary" />
-          <h2 className="text-lg font-bold">Learning paths</h2>
+      <div className="flex flex-col items-start gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-semibold">Ready for the next lesson?</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {count === 0 ? "Open any lesson and your progress will show up here." : "Browse the full library or continue from your active path."}
+          </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {paths.map((p) => (
-            <Link
-              key={p.slug}
-              href={`/paths/${p.slug}`}
-              className="group rounded-2xl border border-white/10 bg-card p-4 hover:border-primary/30 transition-colors"
-            >
-              <div className="flex items-center justify-between gap-2 mb-1">
-                <p className="font-bold text-sm group-hover:text-primary transition-colors">{p.title}</p>
-                {p.complete && (
-                  <span className="inline-flex items-center gap-1 text-[11px] text-emerald-400 shrink-0">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> Done
-                  </span>
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{p.description}</p>
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden">
-                  <div
-                    className={clsx("h-full", p.complete ? "bg-emerald-400" : "bg-primary")}
-                    style={{ width: `${p.pct}%` }}
-                  />
-                </div>
-                <span className="text-[11px] text-muted-foreground shrink-0">{p.done}/{p.total}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <Link
-        href="/academy"
-        className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
-      >
-        <BookOpen className="w-4 h-4" /> Browse the full library
-      </Link>
-
-      {count === 0 && (
-        <p className="text-xs text-muted-foreground mt-4">
-          You haven't started yet — open any lesson and your progress will show up here.
-        </p>
-      )}
+        <Link href="/academy" className="inline-flex items-center gap-2 rounded-lg bg-teal-400 px-4 py-2 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300">
+          <BookOpen className="h-4 w-4" />
+          Browse library
+        </Link>
+      </div>
     </div>
   );
 }

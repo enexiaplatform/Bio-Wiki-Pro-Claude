@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Search, ChevronDown, ChevronUp, AlertCircle } from "lucide-react";
+import { AlertCircle, BookMarked, ChevronDown, ChevronUp, Filter, Search } from "lucide-react";
 import clsx from "clsx";
 import { useAcademyTerms } from "@/hooks/use-data";
 import { useSEO } from "@/hooks/use-seo";
@@ -10,8 +10,8 @@ const ALL = "All";
 
 export default function Glossary() {
   useSEO({
-    title: "Glossary — QC/QA & Life Science terms",
-    description: "A searchable glossary of QC/QA, microbiology, and life-science terms — definitions, why they matter, and common mistakes.",
+    title: "Glossary: QC/QA & Life Science terms",
+    description: "A searchable glossary of QC/QA, microbiology, and life-science terms: definitions, why they matter, and common mistakes.",
   });
 
   const { data: terms, isLoading } = useAcademyTerms();
@@ -20,27 +20,25 @@ export default function Glossary() {
   const [openId, setOpenId] = useState<string | null>(null);
 
   const all = terms ?? [];
-  const categories = useMemo(
-    () => [ALL, ...Array.from(new Set(all.map((t) => t.category))).sort()],
-    [all]
-  );
-
+  const categories = useMemo(() => [ALL, ...Array.from(new Set(all.map((term) => term.category))).sort()], [all]);
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return all
-      .filter((t) => (category === ALL ? true : t.category === category))
+      .filter((term) => (category === ALL ? true : term.category === category))
       .filter(
-        (t) =>
+        (term) =>
           !q ||
-          t.title.toLowerCase().includes(q) ||
-          t.summary.toLowerCase().includes(q) ||
-          t.tags.some((tag) => tag.toLowerCase().includes(q))
+          term.title.toLowerCase().includes(q) ||
+          term.summary.toLowerCase().includes(q) ||
+          term.tags.some((tag) => tag.toLowerCase().includes(q)),
       )
       .sort((a, b) => a.title.localeCompare(b.title));
   }, [all, search, category]);
 
+  const difficultyCount = useMemo(() => new Set(all.map((term) => term.difficulty)).size, [all]);
+
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-3xl mx-auto px-4">
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       {all.length > 0 && (
         <JsonLd
           id="glossary-termset"
@@ -59,98 +57,151 @@ export default function Glossary() {
         />
       )}
 
-      <div className="mb-6">
-        <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">Glossary</h1>
-        <p className="text-muted-foreground">Definitions for QC/QA, microbiology, and life-science terms.</p>
-      </div>
+      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
+              <BookMarked className="h-3.5 w-3.5" />
+              Glossary
+            </span>
+            <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">
+              QC/QA terms without the fog.
+            </h1>
+            <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              Search definitions, why they matter, and common mistakes across microbiology, GMP, validation, and quality systems.
+            </p>
+          </div>
 
-      {/* Search + filters */}
-      <div className="space-y-3 mb-6 sticky top-[60px] md:top-20 z-30 bg-background/95 backdrop-blur-xl py-2 -mx-4 px-4 md:static md:bg-transparent md:p-0 md:mx-0">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+              <p className="text-2xl font-bold text-teal-200">{all.length}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Terms</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+              <p className="text-2xl font-bold text-teal-200">{Math.max(categories.length - 1, 0)}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Categories</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+              <p className="text-2xl font-bold text-teal-200">{difficultyCount}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Levels</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="sticky top-[60px] z-30 -mx-4 mb-6 border-y border-white/10 bg-background/95 px-4 py-3 backdrop-blur-xl md:static md:mx-0 md:rounded-lg md:border md:bg-white/[0.035] md:shadow-lg md:shadow-black/10">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search terms…"
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search terms, tags, or mistakes..."
             aria-label="Search glossary terms"
-            className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full rounded-lg border border-white/10 bg-background/65 py-3 pl-10 pr-4 text-sm outline-none transition focus:border-teal-400/45 focus:ring-2 focus:ring-teal-400/20"
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {categories.map((c) => (
+
+        <div className="mt-3 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          <span className="hidden shrink-0 items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold text-muted-foreground sm:inline-flex">
+            <Filter className="h-3.5 w-3.5" />
+            Category
+          </span>
+          {categories.map((item) => (
             <button
-              key={c}
-              onClick={() => setCategory(c)}
-              aria-pressed={c === category}
+              key={item}
+              onClick={() => setCategory(item)}
+              aria-pressed={item === category}
               className={clsx(
-                "whitespace-nowrap rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                c === category ? "bg-primary/15 text-primary" : "bg-white/5 text-muted-foreground hover:text-foreground"
+                "shrink-0 rounded-full border px-4 py-1.5 text-xs font-semibold transition-colors",
+                item === category
+                  ? "border-teal-400 bg-teal-400 text-teal-950"
+                  : "border-white/10 bg-white/5 text-muted-foreground hover:border-teal-400/40 hover:text-foreground",
               )}
             >
-              {c}
+              {item}
             </button>
           ))}
         </div>
+      </section>
+
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">{filtered.length} terms shown</p>
+        {(search || category !== ALL) && (
+          <button
+            onClick={() => {
+              setSearch("");
+              setCategory(ALL);
+              setOpenId(null);
+            }}
+            className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-semibold transition-colors hover:border-teal-400/40"
+          >
+            Reset
+          </button>
+        )}
       </div>
 
-      <p className="text-xs text-muted-foreground mb-4">{filtered.length} terms</p>
-
       {isLoading ? (
-        <p className="text-muted-foreground py-12 text-center text-sm">Loading…</p>
+        <div className="rounded-lg border border-white/10 bg-white/[0.035] p-12 text-center text-sm text-muted-foreground">
+          Loading terms...
+        </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <AlertCircle className="w-10 h-10 mx-auto mb-3 opacity-30" />
-          <p className="text-sm">No terms match your search.</p>
+        <div className="rounded-lg border border-dashed border-white/15 bg-white/[0.035] p-12 text-center">
+          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+          <p className="font-semibold">No terms match your search.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Try a broader term like deviation, sterility, validation, or audit.</p>
         </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map((t) => {
-            const open = openId === t.id;
+        <div className="grid gap-3 lg:grid-cols-2">
+          {filtered.map((term) => {
+            const open = openId === term.id;
             return (
-              <div key={t.id} className="rounded-xl border border-white/10 bg-card overflow-hidden">
+              <article key={term.id} className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] shadow-lg shadow-black/10">
                 <button
-                  onClick={() => setOpenId(open ? null : t.id)}
+                  onClick={() => setOpenId(open ? null : term.id)}
                   aria-expanded={open}
-                  className="w-full text-left p-4 hover:bg-white/5 transition-colors"
+                  className="w-full p-4 text-left transition-colors hover:bg-white/5"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="font-bold text-sm">{t.title}</span>
-                    {open ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="font-bold">{term.title}</h2>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px]">
+                        <span className="rounded-full bg-teal-400/10 px-2.5 py-1 font-semibold text-teal-200">{term.category}</span>
+                        <span className="rounded-full border border-white/10 px-2.5 py-1 text-muted-foreground">{term.difficulty}</span>
+                      </div>
+                    </div>
+                    {open ? <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />}
                   </div>
-                  <div className="flex items-center gap-2 mt-1.5 text-[11px]">
-                    <span className="rounded-md bg-primary/10 text-primary px-2 py-0.5 font-semibold">{t.category}</span>
-                    <span className="text-muted-foreground">{t.difficulty}</span>
-                  </div>
-                  {!open && <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{t.summary}</p>}
+                  {!open && <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{term.summary}</p>}
                 </button>
+
                 {open && (
-                  <div className="px-4 pb-4 border-t border-white/5 pt-3 text-sm text-muted-foreground space-y-3">
-                    <p>{t.summary}</p>
-                    {t.whyItMatters && (
-                      <div>
-                        <p className="text-xs font-semibold text-foreground uppercase tracking-wide mb-1">Why it matters</p>
-                        <p>{t.whyItMatters}</p>
+                  <div className="space-y-4 border-t border-white/10 px-4 pb-4 pt-4 text-sm leading-relaxed text-muted-foreground">
+                    <p>{term.summary}</p>
+                    {term.whyItMatters && (
+                      <div className="rounded-lg border border-white/10 bg-background/35 p-3">
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-foreground">Why it matters</p>
+                        <p>{term.whyItMatters}</p>
                       </div>
                     )}
-                    {t.commonMistakes?.length > 0 && (
+                    {term.commonMistakes?.length > 0 && (
                       <div>
-                        <p className="text-xs font-semibold text-foreground uppercase tracking-wide mb-1">Common mistakes</p>
-                        <ul className="list-disc ml-5 space-y-1">
-                          {t.commonMistakes.map((m, i) => <li key={i}>{m}</li>)}
+                        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-foreground">Common mistakes</p>
+                        <ul className="ml-5 list-disc space-y-1">
+                          {term.commonMistakes.map((mistake, index) => <li key={index}>{mistake}</li>)}
                         </ul>
                       </div>
                     )}
-                    {t.tags?.length > 0 && (
+                    {term.tags?.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 pt-1">
-                        {t.tags.map((tag) => (
-                          <span key={tag} className="text-[10px] bg-white/5 border border-white/10 px-2 py-0.5 rounded">{tag}</span>
+                        {term.tags.map((tag) => (
+                          <span key={tag} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px]">{tag}</span>
                         ))}
                       </div>
                     )}
                   </div>
                 )}
-              </div>
+              </article>
             );
           })}
         </div>

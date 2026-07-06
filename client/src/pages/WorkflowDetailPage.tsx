@@ -1,32 +1,40 @@
 import type { ReactNode } from "react";
-import { Link, useRoute, useLocation } from "wouter";
+import { Link, useLocation, useRoute } from "wouter";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft, ArrowRight, Target, ListChecks, AlertTriangle,
-  Wrench, BookOpen, Package, Crown, ShieldAlert, Lightbulb, CheckCircle2,
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  CheckCircle2,
+  Crown,
+  Lightbulb,
+  ListChecks,
+  Package,
+  ShieldAlert,
+  Target,
+  Wrench,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useSEO } from "@/hooks/use-seo";
-import { JsonLd } from "@/components/JsonLd";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ContentDisclaimer } from "@/components/ContentDisclaimer";
-import {
-  Accordion, AccordionItem, AccordionTrigger, AccordionContent,
-} from "@/components/ui/accordion";
+import { JsonLd } from "@/components/JsonLd";
 import { analytics } from "@/hooks/use-analytics";
 import { useReadLessons } from "@/hooks/use-read-lessons";
-import { getWorkflow, getWorkflowCategory } from "@/data/workflows";
-import { getToolkit } from "@/data/toolkits";
+import { useSEO } from "@/hooks/use-seo";
 import { getToolMeta } from "@/data/tools/catalog";
+import { getToolkit } from "@/data/toolkits";
+import { getWorkflow, getWorkflowCategory } from "@/data/workflows";
 import { listContent } from "@/lib/content";
 
-function Section({
-  icon: Icon, title, children,
-}: { icon: LucideIcon; title: string; children: ReactNode }) {
+const panelClass = "rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10";
+
+function Section({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: ReactNode }) {
   return (
-    <section className="mb-10">
-      <div className="flex items-center gap-2.5 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center shrink-0">
-          <Icon className="w-4 h-4 text-teal-400" />
+    <section className="mb-8">
+      <div className="mb-4 flex items-center gap-2.5">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10">
+          <Icon className="h-4 w-4 text-teal-300" />
         </div>
         <h2 className="text-lg font-bold">{title}</h2>
       </div>
@@ -49,13 +57,11 @@ export default function WorkflowDetailPage() {
 
   if (!workflow) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-24 text-center">
-        <h1 className="text-2xl font-bold mb-3">Workflow not found</h1>
-        <p className="text-muted-foreground text-sm mb-6">
-          This workflow doesn&rsquo;t exist yet. Browse the full atlas instead.
-        </p>
-        <Link href="/workflows" className="text-teal-400 font-semibold hover:underline">
-          ← Back to the Workflow Atlas
+      <div className="mx-auto max-w-2xl px-4 py-24 text-center">
+        <h1 className="mb-3 text-2xl font-bold">Workflow not found</h1>
+        <p className="mb-6 text-sm text-muted-foreground">This workflow does not exist yet. Browse the full atlas instead.</p>
+        <Link href="/workflows" className="font-semibold text-teal-300 hover:underline">
+          Back to the Workflow Atlas
         </Link>
       </div>
     );
@@ -63,25 +69,17 @@ export default function WorkflowDetailPage() {
 
   const category = getWorkflowCategory(workflow.categorySlug);
   const academy = listContent({ collection: "academy", lang: "en" });
-  const lessonBySlug = new Map(academy.map((l) => [l.slug, l]));
+  const lessonBySlug = new Map(academy.map((lesson) => [lesson.slug, lesson]));
   const relatedLessons = workflow.relatedLessonSlugs
-    .map((s) => lessonBySlug.get(s))
-    .filter((l): l is NonNullable<typeof l> => Boolean(l));
-  const relatedToolkits = workflow.relatedToolkitSlugs
-    .map(getToolkit)
-    .filter((t): t is NonNullable<typeof t> => Boolean(t));
-  const relatedTools = (workflow.relatedToolSlugs ?? [])
-    .map(getToolMeta)
-    .filter((t): t is NonNullable<typeof t> => Boolean(t));
+    .map((lessonSlug) => lessonBySlug.get(lessonSlug))
+    .filter((lesson): lesson is NonNullable<typeof lesson> => Boolean(lesson));
+  const relatedToolkits = workflow.relatedToolkitSlugs.map(getToolkit).filter((toolkit): toolkit is NonNullable<typeof toolkit> => Boolean(toolkit));
+  const relatedTools = (workflow.relatedToolSlugs ?? []).map(getToolMeta).filter((tool): tool is NonNullable<typeof tool> => Boolean(tool));
 
-  // Tie the workflow back to learning progress (localStorage + server sync).
   const readSet = new Set(read);
-  const lessonsRead = relatedLessons.filter((l) => readSet.has(l.slug)).length;
-  // The next lesson to read drives a "continue learning" nudge.
-  const nextLesson = relatedLessons.find((l) => !readSet.has(l.slug));
-
-  // The primary action: open an available toolkit, or drive Pro for a locked one.
-  const availableToolkit = relatedToolkits.find((t) => t.status === "available");
+  const lessonsRead = relatedLessons.filter((lesson) => readSet.has(lesson.slug)).length;
+  const nextLesson = relatedLessons.find((lesson) => !readSet.has(lesson.slug));
+  const availableToolkit = relatedToolkits.find((toolkit) => toolkit.status === "available");
   const proCtaPlacement = `workflow_${workflow.slug}`;
 
   function handleUnlock() {
@@ -90,7 +88,7 @@ export default function WorkflowDetailPage() {
   }
 
   return (
-    <div className="pb-24 pt-6 md:pt-10 max-w-3xl mx-auto px-4">
+    <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       <JsonLd
         id={`workflow-${workflow.slug}`}
         data={{
@@ -98,239 +96,260 @@ export default function WorkflowDetailPage() {
           "@type": "HowTo",
           name: workflow.title,
           description: workflow.purpose,
-          step: workflow.steps.map((s, i) => ({
+          step: workflow.steps.map((step, index) => ({
             "@type": "HowToStep",
-            position: i + 1,
-            name: s.title,
-            text: s.detail,
+            position: index + 1,
+            name: step.title,
+            text: step.detail,
           })),
         }}
       />
 
-      {/* ── BREADCRUMB ── */}
-      <Link href="/workflows" className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-5">
-        <ArrowLeft className="w-3.5 h-3.5" /> Workflow Atlas
+      <Link href="/workflows" className="mb-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Workflow Atlas
       </Link>
 
-      {/* ── HEADER ── */}
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-        {category && (
-          <span className="text-[11px] uppercase font-bold tracking-widest text-teal-400">{category.title}</span>
-        )}
-        <h1 className="text-2xl md:text-4xl font-bold mt-1.5 mb-3 font-display leading-tight">{workflow.title}</h1>
-        <p className="text-muted-foreground text-base leading-relaxed mb-5">{workflow.purpose}</p>
-
-        <div className="flex flex-wrap items-center gap-2 mb-6">
-          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded ${
-            workflow.accessTier === "pro" ? "text-amber-400 bg-amber-400/10" : "text-emerald-400 bg-emerald-400/10"
-          }`}>
-            {workflow.accessTier === "pro" ? "Pro workflow" : "Free workflow"}
-          </span>
-          <span className="text-xs text-muted-foreground">{workflow.audience}</span>
-        </div>
-
-        {/* Primary action */}
-        {availableToolkit ? (
-          <Link
-            href={availableToolkit.href ?? "/toolkits"}
-            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-teal-500/20"
-          >
-            <Package className="w-4 h-4" /> Use the {availableToolkit.title}
-          </Link>
-        ) : relatedToolkits.length > 0 ? (
-          <button
-            onClick={handleUnlock}
-            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-teal-500/20"
-          >
-            <Crown className="w-4 h-4" /> Unlock the checklist with Pro
-          </button>
-        ) : null}
-      </motion.div>
-
-      <div className="my-8 h-px bg-white/5" />
-
-      {/* ── USE THIS WHEN ── */}
-      <Section icon={Target} title="Use this when">
-        <ul className="space-y-2.5">
-          {workflow.useWhen.map((u) => (
-            <li key={u} className="flex items-start gap-2.5 text-sm">
-              <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-              <span>{u}</span>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      {/* ── INPUTS ── */}
-      <Section icon={ListChecks} title="Inputs & prerequisites">
-        <div className="bg-card border border-white/5 rounded-2xl p-5">
-          <ul className="space-y-2.5">
-            {workflow.inputs.map((inp) => (
-              <li key={inp} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0" />
-                <span>{inp}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Section>
-
-      {/* ── STEPS ── */}
-      <Section icon={ArrowRight} title="Step-by-step workflow">
-        <ol className="space-y-3">
-          {workflow.steps.map((s, i) => (
-            <li key={s.title} className="bg-card border border-white/5 rounded-2xl p-5 flex gap-4">
-              <span className="shrink-0 w-7 h-7 rounded-full bg-teal-500/15 text-teal-400 text-sm font-bold flex items-center justify-center">
-                {i + 1}
+      <motion.section
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="mb-8 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8"
+      >
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
+              <Target className="h-3.5 w-3.5" />
+              {category?.title ?? "Workflow"}
+            </span>
+            <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">{workflow.title}</h1>
+            <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">{workflow.purpose}</p>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${
+                  workflow.accessTier === "pro" ? "bg-amber-400/10 text-amber-200" : "bg-emerald-400/10 text-emerald-200"
+                }`}
+              >
+                {workflow.accessTier === "pro" ? "Pro workflow" : "Free workflow"}
               </span>
-              <div>
-                <p className="font-semibold text-sm mb-1">{s.title}</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{s.detail}</p>
+              <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-muted-foreground">{workflow.audience}</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+              <p className="text-2xl font-bold text-teal-200">{workflow.steps.length}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Steps</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+              <p className="text-2xl font-bold text-teal-200">{relatedLessons.length}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Lessons</p>
+            </div>
+            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+              <p className="text-2xl font-bold text-teal-200">{relatedTools.length + relatedToolkits.length}</p>
+              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Resources</p>
+            </div>
+          </div>
+        </div>
+
+        {(availableToolkit || relatedToolkits.length > 0) && (
+          <div className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-muted-foreground">Use the workflow now, then deepen with lessons and templates below.</p>
+            {availableToolkit ? (
+              <Link
+                href={availableToolkit.href ?? "/toolkits"}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-2.5 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300"
+              >
+                <Package className="h-4 w-4" />
+                Use {availableToolkit.title}
+              </Link>
+            ) : (
+              <button
+                onClick={handleUnlock}
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-2.5 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300"
+              >
+                <Crown className="h-4 w-4" />
+                Unlock checklist with Pro
+              </button>
+            )}
+          </div>
+        )}
+      </motion.section>
+
+      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+        <div>
+          <Section icon={Target} title="Use this when">
+            <div className={panelClass}>
+              <ul className="space-y-3">
+                {workflow.useWhen.map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Section>
+
+          <Section icon={ListChecks} title="Inputs and prerequisites">
+            <div className={panelClass}>
+              <ul className="space-y-3">
+                {workflow.inputs.map((input) => (
+                  <li key={input} className="flex items-start gap-3 text-sm text-muted-foreground">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-300" />
+                    <span>{input}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Section>
+
+          <Section icon={ShieldAlert} title="Critical control points">
+            <div className="grid gap-3">
+              {workflow.criticalControlPoints.map((item) => (
+                <div key={item} className="flex items-start gap-2.5 rounded-lg border border-teal-400/20 bg-teal-400/10 p-3.5 text-sm">
+                  <Target className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          </Section>
+        </div>
+
+        <div>
+          <Section icon={ArrowRight} title="Step-by-step workflow">
+            <ol className="space-y-3">
+              {workflow.steps.map((step, index) => (
+                <li key={step.title} className="flex gap-4 rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-teal-400/25 bg-teal-400/10 text-sm font-bold text-teal-200">
+                    {index + 1}
+                  </span>
+                  <div>
+                    <p className="mb-1 text-sm font-bold">{step.title}</p>
+                    <p className="text-sm leading-relaxed text-muted-foreground">{step.detail}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </Section>
+        </div>
+      </div>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Section icon={AlertTriangle} title="Common mistakes">
+          <div className="space-y-3">
+            {workflow.commonMistakes.map((item) => (
+              <div key={item} className="flex items-start gap-2.5 rounded-lg border border-amber-400/20 bg-amber-400/10 p-3.5 text-sm">
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                <span>{item}</span>
               </div>
-            </li>
-          ))}
-        </ol>
-      </Section>
+            ))}
+          </div>
+        </Section>
 
-      {/* ── CRITICAL CONTROL POINTS ── */}
-      <Section icon={ShieldAlert} title="Critical control points">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {workflow.criticalControlPoints.map((c) => (
-            <div key={c} className="flex items-start gap-2.5 bg-teal-500/[0.06] border border-teal-500/15 rounded-xl p-3.5 text-sm">
-              <Target className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-              <span>{c}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
+        <Section icon={Wrench} title="Troubleshooting">
+          <div className="space-y-3">
+            {workflow.troubleshooting.map((item) => (
+              <div key={item.problem} className={panelClass}>
+                <p className="mb-2 flex items-center gap-2 text-sm font-bold">
+                  <AlertTriangle className="h-4 w-4 text-amber-300" />
+                  {item.problem}
+                </p>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  <span className="font-semibold text-teal-300">Do this: </span>
+                  {item.action}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      </section>
 
-      {/* ── COMMON MISTAKES ── */}
-      <Section icon={AlertTriangle} title="Common mistakes">
-        <div className="space-y-2.5">
-          {workflow.commonMistakes.map((m) => (
-            <div key={m} className="flex items-start gap-2.5 bg-amber-500/[0.06] border border-amber-500/15 rounded-xl p-3.5 text-sm">
-              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <span>{m}</span>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── TROUBLESHOOTING ── */}
-      <Section icon={Wrench} title="Troubleshooting">
-        <div className="space-y-3">
-          {workflow.troubleshooting.map((t) => (
-            <div key={t.problem} className="bg-card border border-white/5 rounded-2xl p-5">
-              <p className="text-sm font-semibold mb-1.5 flex items-center gap-2">
-                <span className="text-amber-400">⚠</span> {t.problem}
-              </p>
-              <p className="text-sm text-muted-foreground leading-relaxed pl-6">
-                <span className="font-semibold text-teal-400">Do this: </span>{t.action}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Section>
-
-      {/* ── DEEP DIVE (collapsed) ── */}
       {workflow.deepDive && (
-        <Accordion type="single" collapsible className="mb-10 bg-card border border-white/5 rounded-2xl px-5">
+        <Accordion type="single" collapsible className="mb-8 rounded-lg border border-white/10 bg-white/[0.035] px-5 shadow-lg shadow-black/10">
           <AccordionItem value="deep-dive" className="border-b-0">
             <AccordionTrigger className="hover:no-underline">
-              <span className="flex items-center gap-2.5 text-sm font-semibold">
-                <Lightbulb className="w-4 h-4 text-teal-400" /> Deep dive — why this matters
+              <span className="flex items-center gap-2.5 text-sm font-bold">
+                <Lightbulb className="h-4 w-4 text-teal-300" />
+                Deep dive: why this matters
               </span>
             </AccordionTrigger>
-            <AccordionContent className="text-sm text-muted-foreground leading-relaxed">
-              {workflow.deepDive}
-            </AccordionContent>
+            <AccordionContent className="text-sm leading-relaxed text-muted-foreground">{workflow.deepDive}</AccordionContent>
           </AccordionItem>
         </Accordion>
       )}
 
-      {/* ── RELATED LESSONS (with reading progress) ── */}
       {relatedLessons.length > 0 && (
         <Section icon={BookOpen} title="Learn the background">
-          <div className="mb-4 flex items-center gap-3">
-            <div className="h-1.5 flex-1 rounded-full bg-white/5 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-teal-400 transition-all"
-                style={{ width: `${(lessonsRead / relatedLessons.length) * 100}%` }}
-              />
-            </div>
-            <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {lessonsRead} of {relatedLessons.length} read
-            </span>
-          </div>
-
-          {/* Continue-learning nudge: point at the next unread lesson. */}
-          {nextLesson ? (
-            <Link
-              href={`/library/${nextLesson.slug}`}
-              className="group mb-4 flex items-center gap-3 rounded-xl border border-teal-500/20 bg-teal-500/[0.06] p-4 transition-colors hover:border-teal-500/40"
-            >
-              <ArrowRight className="w-4 h-4 text-teal-400 shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wider text-teal-400">
-                  {lessonsRead === 0 ? "Start here" : `Next — you're ${lessonsRead} of ${relatedLessons.length}`}
-                </p>
-                <p className="text-sm font-semibold truncate group-hover:text-teal-400 transition-colors">
-                  {nextLesson.title}
-                </p>
+          <div className={panelClass}>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-teal-400 transition-all" style={{ width: `${(lessonsRead / relatedLessons.length) * 100}%` }} />
               </div>
-            </Link>
-          ) : (
-            <div className="mb-4 flex items-center gap-3 rounded-xl border border-teal-500/20 bg-teal-500/[0.06] p-4">
-              <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
-              <p className="text-sm font-semibold">
-                All background lessons read — you&rsquo;re ready to run this workflow.
-              </p>
+              <span className="whitespace-nowrap text-xs text-muted-foreground">{lessonsRead} of {relatedLessons.length} read</span>
             </div>
-          )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {relatedLessons.map((l) => {
-              const done = readSet.has(l.slug);
-              return (
-                <Link
-                  key={l.slug}
-                  href={`/library/${l.slug}`}
-                  className="group bg-card border border-white/5 rounded-xl p-4 hover:border-teal-500/30 transition-colors flex items-center gap-3"
-                >
-                  {done
-                    ? <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
-                    : l.tier === "free"
-                      ? <BookOpen className="w-4 h-4 text-emerald-400 shrink-0" />
-                      : <Crown className="w-4 h-4 text-amber-400 shrink-0" />}
-                  <span className={`text-sm font-medium flex-1 transition-colors ${done ? "text-muted-foreground" : "group-hover:text-teal-400"}`}>
-                    {l.title}
-                  </span>
-                  {done
-                    ? <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 shrink-0">Read</span>
-                    : <ArrowRight className="w-3.5 h-3.5 text-muted-foreground shrink-0" />}
-                </Link>
-              );
-            })}
+            {nextLesson ? (
+              <Link
+                href={`/library/${nextLesson.slug}`}
+                className="group mb-4 flex items-center gap-3 rounded-lg border border-teal-400/25 bg-teal-400/10 p-4 transition-colors hover:border-teal-400/45"
+              >
+                <ArrowRight className="h-4 w-4 shrink-0 text-teal-300" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-teal-300">
+                    {lessonsRead === 0 ? "Start here" : `Next: ${lessonsRead} of ${relatedLessons.length}`}
+                  </p>
+                  <p className="truncate text-sm font-bold transition-colors group-hover:text-teal-200">{nextLesson.title}</p>
+                </div>
+              </Link>
+            ) : (
+              <div className="mb-4 flex items-center gap-3 rounded-lg border border-teal-400/25 bg-teal-400/10 p-4">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" />
+                <p className="text-sm font-semibold">All background lessons read. You are ready to run this workflow.</p>
+              </div>
+            )}
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {relatedLessons.map((lesson) => {
+                const done = readSet.has(lesson.slug);
+                return (
+                  <Link
+                    key={lesson.slug}
+                    href={`/library/${lesson.slug}`}
+                    className="group flex items-center gap-3 rounded-lg border border-white/10 bg-background/35 p-4 transition-colors hover:border-teal-400/35"
+                  >
+                    {done ? (
+                      <CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" />
+                    ) : lesson.tier === "free" ? (
+                      <BookOpen className="h-4 w-4 shrink-0 text-emerald-300" />
+                    ) : (
+                      <Crown className="h-4 w-4 shrink-0 text-amber-300" />
+                    )}
+                    <span className={`flex-1 text-sm font-semibold transition-colors ${done ? "text-muted-foreground" : "group-hover:text-teal-300"}`}>
+                      {lesson.title}
+                    </span>
+                    {done ? <span className="text-[10px] font-bold uppercase tracking-wide text-teal-300">Read</span> : <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </Section>
       )}
 
-      {/* ── RELATED TOOLKITS ── */}
       {relatedTools.length > 0 && (
         <Section icon={Wrench} title="Try the free tools">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {relatedTools.map((tool) => (
               <Link key={tool.slug} href={`/tools/${tool.slug}`} className="block h-full">
-                <div className="h-full bg-card border border-white/5 rounded-xl p-4 hover:border-teal-500/30 transition-colors flex flex-col">
-                  <div className="flex items-center justify-between mb-2">
-                    <Wrench className="w-4 h-4 text-teal-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-emerald-400 bg-emerald-400/10">
-                      Free
-                    </span>
+                <div className="flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-colors hover:border-teal-400/35">
+                  <div className="mb-2 flex items-center justify-between">
+                    <Wrench className="h-4 w-4 text-teal-300" />
+                    <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-200">Free</span>
                   </div>
-                  <p className="text-sm font-semibold mb-1">{tool.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed flex-1">{tool.blurb}</p>
-                  <span className="mt-3 text-xs font-semibold text-teal-400">Open tool →</span>
+                  <p className="mb-1 text-sm font-bold">{tool.title}</p>
+                  <p className="flex-1 text-xs leading-relaxed text-muted-foreground">{tool.blurb}</p>
+                  <span className="mt-3 text-xs font-semibold text-teal-300">Open tool</span>
                 </div>
               </Link>
             ))}
@@ -339,29 +358,31 @@ export default function WorkflowDetailPage() {
       )}
 
       {relatedToolkits.length > 0 && (
-        <Section icon={Package} title="Checklists & toolkits">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {relatedToolkits.map((tk) => {
+        <Section icon={Package} title="Checklists and toolkits">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {relatedToolkits.map((toolkit) => {
               const inner = (
-                <div className="h-full bg-card border border-white/5 rounded-xl p-4 hover:border-teal-500/30 transition-colors flex flex-col">
-                  <div className="flex items-center justify-between mb-2">
-                    <Package className="w-4 h-4 text-teal-400" />
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
-                      tk.accessTier === "pro" ? "text-amber-400 bg-amber-400/10" : "text-emerald-400 bg-emerald-400/10"
-                    }`}>
-                      {tk.accessTier === "pro" ? "Pro" : "Free"}
+                <div className="flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-colors hover:border-teal-400/35">
+                  <div className="mb-2 flex items-center justify-between">
+                    <Package className="h-4 w-4 text-teal-300" />
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
+                        toolkit.accessTier === "pro" ? "bg-amber-400/10 text-amber-200" : "bg-emerald-400/10 text-emerald-200"
+                      }`}
+                    >
+                      {toolkit.accessTier === "pro" ? "Pro" : "Free"}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold mb-1">{tk.title}</p>
-                  <p className="text-xs text-muted-foreground leading-relaxed flex-1">{tk.problemSolved}</p>
-                  <span className="mt-3 text-xs font-semibold text-teal-400">
-                    {tk.status === "available" ? "Open toolkit →" : "Coming soon"}
-                  </span>
+                  <p className="mb-1 text-sm font-bold">{toolkit.title}</p>
+                  <p className="flex-1 text-xs leading-relaxed text-muted-foreground">{toolkit.problemSolved}</p>
+                  <span className="mt-3 text-xs font-semibold text-teal-300">{toolkit.status === "available" ? "Open toolkit" : "Coming soon"}</span>
                 </div>
               );
-              return tk.status === "available" && tk.href
-                ? <Link key={tk.slug} href={tk.href} className="block h-full">{inner}</Link>
-                : <div key={tk.slug} className="opacity-80">{inner}</div>;
+              return toolkit.status === "available" && toolkit.href ? (
+                <Link key={toolkit.slug} href={toolkit.href} className="block h-full">{inner}</Link>
+              ) : (
+                <div key={toolkit.slug} className="opacity-80">{inner}</div>
+              );
             })}
           </div>
         </Section>
