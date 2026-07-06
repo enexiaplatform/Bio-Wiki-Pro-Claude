@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useParams } from "wouter";
-import { Award, Printer, Lock, ChevronRight, FlaskConical, Download } from "lucide-react";
-import { getLearningPath } from "@/data/learningPaths";
+import { Award, BadgeCheck, ChevronRight, Download, Lock, Printer, ShieldCheck } from "lucide-react";
 import { getContentBySlug } from "@/lib/content";
+import { getLearningPath } from "@/data/learningPaths";
 import { useReadLessons } from "@/hooks/use-read-lessons";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
@@ -15,7 +15,7 @@ export default function CertificatePage() {
   const path = getLearningPath(slug);
 
   useSEO({
-    title: path ? `Certificate — ${path.title}` : "Certificate",
+    title: path ? `Certificate - ${path.title}` : "Certificate",
     description: path ? `Certificate of completion for the ${path.title} learning path.` : undefined,
   });
 
@@ -23,33 +23,34 @@ export default function CertificatePage() {
   const [name, setName] = useState(defaultName);
 
   if (!path) return <NotFound />;
+  const currentPath = path;
 
-  const lessons = path.lessonSlugs
+  const lessons = currentPath.lessonSlugs
     .map((s) => getContentBySlug("academy", s, "en"))
     .filter((e): e is NonNullable<typeof e> => !!e);
   const readCount = lessons.filter((l) => isRead(l.slug)).length;
   const complete = lessons.length > 0 && readCount === lessons.length;
-
+  const percent = lessons.length ? Math.round((readCount / lessons.length) * 100) : 0;
+  const remaining = Math.max(lessons.length - readCount, 0);
   const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
-  // Deterministic, human-readable certificate id (cosmetic — same inputs → same id).
   function shortHash(s: string): string {
     let h = 5381;
     for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
     return h.toString(36).toUpperCase().padStart(6, "0").slice(0, 6);
   }
-  const certId = `LSA-${path.slug.slice(0, 3).toUpperCase()}-${shortHash(`${path.slug}|${name.trim().toLowerCase()}|${today}`)}`;
 
-  // Render the certificate to a 1200×800 PNG entirely client-side (no deps),
-  // for sharing on LinkedIn etc.
+  const displayName = name.trim() || "Your name";
+  const certId = `LSA-${currentPath.slug.slice(0, 3).toUpperCase()}-${shortHash(`${currentPath.slug}|${displayName.toLowerCase()}|${today}`)}`;
+
   async function downloadImage() {
-    if (!path) return;
     try {
       await (document as any).fonts?.ready;
     } catch {
-      /* fonts API optional */
+      /* optional browser API */
     }
-    const W = 1200, H = 800;
+    const W = 1200;
+    const H = 800;
     const canvas = document.createElement("canvas");
     canvas.width = W;
     canvas.height = H;
@@ -69,8 +70,8 @@ export default function CertificatePage() {
     };
 
     const bg = ctx.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0, "#0b1220");
-    bg.addColorStop(1, "#0f2420");
+    bg.addColorStop(0, "#08131f");
+    bg.addColorStop(1, "#0d241f");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
@@ -84,12 +85,11 @@ export default function CertificatePage() {
     ctx.lineWidth = 2;
     if ((ctx as any).roundRect) {
       ctx.beginPath();
-      (ctx as any).roundRect(40, 40, W - 80, H - 80, 20);
+      (ctx as any).roundRect(44, 44, W - 88, H - 88, 18);
       ctx.stroke();
     }
 
     ctx.textAlign = "center";
-
     ctx.fillStyle = "#f8fafc";
     ctx.font = "700 34px 'Space Grotesk', sans-serif";
     ctx.fillText("Life Science Atlas", cx, 132);
@@ -104,37 +104,36 @@ export default function CertificatePage() {
     ctx.font = "400 20px 'Inter', sans-serif";
     ctx.fillText("This certifies that", cx, 300);
 
-    const nm = name.trim() || "—";
     ctx.fillStyle = "#f8fafc";
-    ctx.font = `700 ${fit(nm, 54, "700")}px 'Space Grotesk', sans-serif`;
-    ctx.fillText(nm, cx, 372);
+    ctx.font = `700 ${fit(displayName, 54, "700")}px 'Space Grotesk', sans-serif`;
+    ctx.fillText(displayName, cx, 372);
 
     ctx.fillStyle = "#94a3b8";
     ctx.font = "400 20px 'Inter', sans-serif";
     ctx.fillText("has successfully completed the learning path", cx, 432);
 
     ctx.fillStyle = "#f8fafc";
-    ctx.font = `600 ${fit(path.title, 32, "600")}px 'Space Grotesk', sans-serif`;
-    ctx.fillText(path.title, cx, 482);
+    ctx.font = `600 ${fit(currentPath.title, 32, "600")}px 'Space Grotesk', sans-serif`;
+    ctx.fillText(currentPath.title, cx, 482);
 
     ctx.fillStyle = "#94a3b8";
     ctx.font = "400 18px 'Inter', sans-serif";
-    ctx.fillText(`${lessons.length} lessons    ·    ${today}`, cx, 560);
+    ctx.fillText(`${lessons.length} lessons | ${today}`, cx, 560);
 
     ctx.fillStyle = "#34d399";
     ctx.font = "600 15px 'Inter', sans-serif";
-    ctx.fillText("✓ Verified completion · Life Science Atlas", cx, 662);
+    ctx.fillText("Verified completion | Life Science Atlas", cx, 662);
 
     ctx.fillStyle = "#64748b";
     ctx.font = "400 14px 'Inter', sans-serif";
-    ctx.fillText(`Certificate ID: ${certId} · Life Science Atlas`, cx, 692);
+    ctx.fillText(`Certificate ID: ${certId} | Life Science Atlas`, cx, 692);
 
     canvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `life-science-atlas-certificate-${path.slug}.png`;
+      a.download = `life-science-atlas-certificate-${currentPath.slug}.png`;
       a.click();
       URL.revokeObjectURL(url);
     }, "image/png");
@@ -142,108 +141,128 @@ export default function CertificatePage() {
 
   if (!complete) {
     return (
-      <div className="pb-24 pt-10 max-w-xl mx-auto px-4 text-center">
-        <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
-          <Lock className="w-6 h-6" />
-        </div>
-        <h1 className="text-2xl font-display font-bold mb-2">Certificate locked</h1>
-        <p className="text-muted-foreground mb-6">
-          Finish all {lessons.length} lessons in <strong>{path.title}</strong> to unlock your certificate. You've completed {readCount}.
-        </p>
-        <Link
-          href={`/paths/${path.slug}`}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Go to the path <ChevronRight className="w-4 h-4" />
-        </Link>
-      </div>
+      <main className="mx-auto max-w-4xl px-4 pb-20 pt-6 md:pt-10">
+        <section className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] p-6 text-center shadow-xl shadow-black/10 md:p-8">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
+            <Lock className="h-6 w-6" />
+          </div>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Certificate locked</p>
+          <h1 className="text-3xl font-bold tracking-tight">Finish the path to unlock your certificate</h1>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
+            You have completed {readCount} of {lessons.length} lessons in <strong className="text-foreground">{path.title}</strong>.
+            Finish {remaining} more {remaining === 1 ? "lesson" : "lessons"} to generate a verified completion certificate.
+          </p>
+          <div className="mx-auto mt-6 max-w-md rounded-lg border border-white/10 bg-background/45 p-4 text-left">
+            <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+              <span>Path progress</span>
+              <span>{percent}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="h-full rounded-full bg-teal-400" style={{ width: `${percent}%` }} />
+            </div>
+          </div>
+          <Link
+            href={`/paths/${path.slug}`}
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-teal-400 px-5 py-2.5 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300"
+          >
+            Continue the path <ChevronRight className="h-4 w-4" />
+          </Link>
+        </section>
+      </main>
     );
   }
 
   return (
-    <div className="pb-24 pt-4 md:pt-8 max-w-3xl mx-auto px-4">
-      {/* Controls — hidden when printing */}
-      <div className="flex items-center justify-between gap-3 mb-6" data-print="hide">
-        <Link href={`/paths/${path.slug}`} className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
-          <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back to path
+    <main className="mx-auto max-w-5xl px-4 pb-20 pt-6 md:pt-10">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between" data-print="hide">
+        <Link href={`/paths/${path.slug}`} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">
+          <ChevronRight className="h-4 w-4 rotate-180" /> Back to path
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <button
             onClick={downloadImage}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold hover:border-white/30 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold transition-colors hover:border-white/30"
           >
-            <Download className="w-4 h-4" /> Download image
+            <Download className="h-4 w-4" /> Download image
           </button>
           <button
             onClick={() => window.print()}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-4 py-2 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300"
           >
-            <Printer className="w-4 h-4" /> Print / PDF
+            <Printer className="h-4 w-4" /> Print / PDF
           </button>
         </div>
       </div>
 
-      <div className="mb-4" data-print="hide">
-        <label htmlFor="cert-name" className="block text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1.5">
-          Name on certificate
+      <section className="mb-5 grid gap-4 rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 md:grid-cols-[1fr_auto] md:items-end" data-print="hide">
+        <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Verified completion</p>
+          <h1 className="text-2xl font-bold md:text-3xl">{path.title}</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Personalize the certificate name, then download an image or save as PDF.
+          </p>
+        </div>
+        <label className="block min-w-0 md:w-72">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Name on certificate
+          </span>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Your full name"
+            className="w-full rounded-lg border border-white/10 bg-background/65 px-3 py-2 text-sm outline-none transition focus:border-teal-400/50 focus:ring-2 focus:ring-teal-400/20"
+          />
         </label>
-        <input
-          id="cert-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Your full name"
-          className="w-full max-w-sm rounded-lg border border-border bg-card py-2 px-3 text-sm outline-none focus:ring-2 focus:ring-primary/40"
-        />
-      </div>
+      </section>
 
-      {/* The certificate */}
-      <div className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-gradient-to-b from-card to-background p-8 md:p-12 text-center print:border-gray-300 print:bg-white print:from-white print:to-white">
+      <section className="relative overflow-hidden rounded-lg border border-teal-400/25 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-5 text-center shadow-xl shadow-black/15 print:border-gray-300 print:bg-white print:from-white print:to-white md:p-10">
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-teal-400 to-emerald-400" />
 
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-primary/15 text-primary flex items-center justify-center print:bg-emerald-100">
-            <FlaskConical className="w-5 h-5" />
-          </div>
-          <span className="font-display font-bold text-lg print:text-gray-900">Life Science <span className="text-primary">Atlas</span></span>
+        <div className="mx-auto mb-6 flex max-w-fit items-center gap-2 rounded-lg border border-white/10 bg-background/45 px-3 py-2 print:border-gray-200 print:bg-white">
+          <ShieldCheck className="h-4 w-4 text-teal-300 print:text-emerald-700" />
+          <span className="text-sm font-bold print:text-gray-900">Life Science Atlas</span>
         </div>
 
-        <div className="w-14 h-14 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4 print:bg-emerald-100">
-          <Award className="w-7 h-7" />
+        <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-lg border border-teal-400/25 bg-teal-400/10 text-teal-300 print:bg-emerald-50">
+          <Award className="h-7 w-7" />
         </div>
 
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-3">Certificate of Completion</p>
-        <p className="text-sm text-muted-foreground mb-1 print:text-gray-600">This certifies that</p>
-        <p className="text-2xl md:text-3xl font-display font-bold mb-3 print:text-gray-900 break-words">
-          {name.trim() || "—"}
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-teal-300 print:text-emerald-700">
+          Certificate of Completion
         </p>
-        <p className="text-sm text-muted-foreground mb-1 print:text-gray-600">has successfully completed the learning path</p>
-        <p className="text-lg md:text-xl font-semibold mb-6 print:text-gray-900">{path.title}</p>
+        <p className="mb-2 text-sm text-muted-foreground print:text-gray-600">This certifies that</p>
+        <p className="mb-3 break-words text-3xl font-bold tracking-tight print:text-gray-900 md:text-4xl">{displayName}</p>
+        <p className="mb-2 text-sm text-muted-foreground print:text-gray-600">has successfully completed the learning path</p>
+        <p className="mx-auto mb-8 max-w-2xl text-xl font-semibold print:text-gray-900 md:text-2xl">{path.title}</p>
 
-        <div className="flex items-center justify-center gap-8 text-xs text-muted-foreground print:text-gray-600">
-          <div>
-            <p className="font-bold text-foreground print:text-gray-900">{lessons.length}</p>
-            <p>lessons</p>
+        <div className="mx-auto grid max-w-xl grid-cols-3 gap-3 text-sm">
+          <div className="rounded-lg border border-white/10 bg-background/45 p-3 print:border-gray-200 print:bg-white">
+            <p className="font-bold print:text-gray-900">{lessons.length}</p>
+            <p className="text-xs text-muted-foreground print:text-gray-600">lessons</p>
           </div>
-          <div className="h-8 w-px bg-white/10 print:bg-gray-300" />
-          <div>
-            <p className="font-bold text-foreground print:text-gray-900">{today}</p>
-            <p>date completed</p>
+          <div className="rounded-lg border border-white/10 bg-background/45 p-3 print:border-gray-200 print:bg-white">
+            <p className="font-bold print:text-gray-900">{today}</p>
+            <p className="text-xs text-muted-foreground print:text-gray-600">completed</p>
+          </div>
+          <div className="rounded-lg border border-white/10 bg-background/45 p-3 print:border-gray-200 print:bg-white">
+            <p className="font-bold print:text-gray-900">{certId}</p>
+            <p className="text-xs text-muted-foreground print:text-gray-600">certificate ID</p>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-1">
-          <p className="text-[11px] font-semibold tracking-wide text-primary/80 print:text-emerald-700">
-            ✓ Verified completion · Life Science Atlas
+          <p className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-teal-300 print:text-emerald-700">
+            <BadgeCheck className="h-4 w-4" /> Verified completion
           </p>
-          <p className="text-[11px] text-muted-foreground/70 print:text-gray-500">
-            Certificate ID: {certId} · Practical workflows & learning for QC/QA · Life Science Atlas
+          <p className="text-xs text-muted-foreground/80 print:text-gray-500">
+            Practical workflows and learning for QC/QA | Life Science Atlas
           </p>
         </div>
-      </div>
+      </section>
 
-      <p className="text-center text-xs text-muted-foreground mt-4" data-print="hide">
-        Tip: use "Save as PDF" in the print dialog, then share it on LinkedIn.
+      <p className="mt-4 text-center text-xs text-muted-foreground" data-print="hide">
+        Tip: choose "Save as PDF" in the print dialog for a clean shareable copy.
       </p>
-    </div>
+    </main>
   );
 }

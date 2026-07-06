@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Download, GraduationCap, ShieldCheck } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { analytics } from "@/hooks/use-analytics";
+import { useSEO } from "@/hooks/use-seo";
 
 const REDIRECT_SECONDS = 3;
 
@@ -13,17 +14,19 @@ export default function PaymentSuccessPage() {
   const [, navigate] = useLocation();
   const [countdown, setCountdown] = useState(REDIRECT_SECONDS);
 
-  // Read session_id + product from query string
   const sessionId = new URLSearchParams(window.location.search).get("session_id");
   const productType = new URLSearchParams(window.location.search).get("product") ?? "unknown";
-  // One-time kits deliver files; subscriptions unlock Pro content.
   const isKit = productType !== "unknown" && !productType.startsWith("pro_subscription");
   const destination = isKit ? "/my-downloads" : "/academy";
+  const destinationLabel = isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
+
+  useSEO({
+    title: "Payment successful",
+    description: "Your Life Science Atlas access is ready.",
+  });
 
   useEffect(() => {
-    // Refresh auth state so isPro updates immediately
     queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-    // Funnel terminal event (client proxy; webhook is the authoritative record)
     analytics.purchaseCompleted(productType);
   }, [queryClient, productType]);
 
@@ -32,40 +35,71 @@ export default function PaymentSuccessPage() {
       navigate(destination);
       return;
     }
-    const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+    const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [countdown, navigate, destination]);
 
+  const nextSteps = isKit
+    ? [
+        "Open the download library and save your files.",
+        "Keep the templates with your site procedures.",
+        "Return any time from My downloads.",
+      ]
+    : [
+        "Open Academy and continue your learning path.",
+        "Use Pro lessons, toolkits, and premium tools.",
+        "Track certificates from My learning.",
+      ];
+
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center">
-        {/* Animated checkmark */}
-        <div className="flex justify-center mb-6">
-          <div className="w-24 h-24 rounded-full bg-teal-500/10 border-2 border-teal-500/30 flex items-center justify-center animate-in zoom-in duration-500">
-            <CheckCircle2 className="w-12 h-12 text-teal-400" />
-          </div>
+    <main className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-5xl items-center px-4 py-8">
+      <section className="w-full overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 text-center shadow-xl shadow-black/15 md:p-8">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-lg border border-teal-400/25 bg-teal-400/10 text-teal-300">
+          <CheckCircle2 className="h-8 w-8" />
+        </div>
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Payment confirmed</p>
+        <h1 className="text-3xl font-bold tracking-tight md:text-5xl">{t("paymentSuccess.title")}</h1>
+        <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
+          {isKit ? "Your files are ready in your download library." : t("paymentSuccess.subtitle")}
+        </p>
+
+        <div className="mx-auto mt-7 grid max-w-3xl gap-3 text-left md:grid-cols-3">
+          {nextSteps.map((step, index) => (
+            <div key={step} className="rounded-lg border border-white/10 bg-background/45 p-4">
+              <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-teal-300">
+                {index === 0 ? <ArrowRight className="h-4 w-4" /> : index === 1 ? <ShieldCheck className="h-4 w-4" /> : <GraduationCap className="h-4 w-4" />}
+              </div>
+              <p className="text-sm font-medium leading-6">{step}</p>
+            </div>
+          ))}
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">{t("paymentSuccess.title")}</h1>
-        <p className="text-muted-foreground text-lg mb-2">
-          {t("paymentSuccess.subtitle")}
-        </p>
-        <p className="text-sm text-muted-foreground mb-10">
+        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            href={destination}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-400 px-6 py-3 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300 sm:w-auto"
+          >
+            {isKit ? <Download className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+            {destinationLabel}
+          </Link>
+          <Link
+            href="/settings"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/15 px-6 py-3 text-sm font-semibold transition-colors hover:border-white/30 sm:w-auto"
+          >
+            Account settings
+          </Link>
+        </div>
+
+        <p className="mt-5 text-sm text-muted-foreground">
           {t("paymentSuccess.redirecting", { count: countdown })}
         </p>
 
-        <Link href={destination}>
-          <button className="w-full sm:w-auto px-8 py-3 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold rounded-xl transition-all text-sm">
-            {isKit ? "Go to my downloads" : t("paymentSuccess.goNow")}
-          </button>
-        </Link>
-
         {sessionId && (
-          <p className="mt-6 text-[11px] text-muted-foreground/50 font-mono break-all">
+          <p className="mx-auto mt-5 max-w-xl break-all rounded-lg border border-white/10 bg-background/35 p-3 font-mono text-[11px] text-muted-foreground/70">
             {t("paymentSuccess.session")}: {sessionId}
           </p>
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }

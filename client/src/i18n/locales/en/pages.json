@@ -1,14 +1,14 @@
 {
   "paymentSuccess": {
-    "title": "Payment Successful!",
+    "title": "Payment successful",
     "subtitle": "Your Pro access is now active.",
-    "redirecting_one": "Redirecting to Academy in {{count}} second…",
-    "redirecting_other": "Redirecting to Academy in {{count}} seconds…",
+    "redirecting_one": "Redirecting in {{count}} second...",
+    "redirecting_other": "Redirecting in {{count}} seconds...",
     "goNow": "Go to Academy now",
     "session": "Session"
   },
   "notFound": {
-    "title": "404 — Page not found",
+    "title": "404 - Page not found",
     "subtitle": "The page you're looking for doesn't exist or has moved.",
     "home": "Back to home"
   },
