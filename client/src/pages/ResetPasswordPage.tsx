@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
+import { KeyRound } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { AuthShell } from "@/components/AuthShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { FlaskConical } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 
 function getToken(): string {
@@ -32,14 +32,14 @@ export default function ResetPasswordPage() {
       return;
     }
     if (password !== confirm) {
-      toast({ title: "Passwords don't match", description: "Please re-enter them.", variant: "destructive" });
+      toast({ title: "Passwords do not match", description: "Please re-enter them.", variant: "destructive" });
       return;
     }
     setIsLoading(true);
     try {
       await apiRequest("POST", "/api/auth/reset-password", { token, password });
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      toast({ title: "Password updated", description: "You're now signed in." });
+      toast({ title: "Password updated", description: "You are now signed in." });
       setLocation("/academy");
     } catch (err: any) {
       toast({
@@ -52,36 +52,40 @@ export default function ResetPasswordPage() {
     }
   };
 
-  if (!token) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-white/10 bg-card">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Invalid reset link</CardTitle>
-            <CardDescription>This link is missing its token. Request a new one.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button asChild className="w-full">
-              <Link href="/forgot-password">Request a new link</Link>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-white/10 bg-card">
-        <CardHeader className="space-y-1 text-center">
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center mx-auto mb-4">
-            <FlaskConical className="w-6 h-6 text-white" />
-          </div>
-          <CardTitle className="text-2xl font-bold">Set a new password</CardTitle>
-          <CardDescription>Choose a strong password you haven't used before.</CardDescription>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+    <AuthShell
+      eyebrow="Secure reset"
+      title={token ? "Create a new password" : "Request a fresh reset link"}
+      description={
+        token
+          ? "Choose a password you have not used before. After it updates, you will go back to your Academy workspace."
+          : "This reset link is missing its token. Request a new one and use the latest email from Life Science Atlas."
+      }
+      footer={
+        <Link href="/login" className="font-semibold text-teal-300 hover:text-teal-200">
+          Back to sign in
+        </Link>
+      }
+    >
+      <div className="mb-6 flex items-start gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
+          <KeyRound className="h-5 w-5" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold">{token ? "Set a new password" : "Invalid reset link"}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {token ? "Use at least 8 characters." : "The link is incomplete or expired."}
+          </p>
+        </div>
+      </div>
+
+      {!token ? (
+        <Button asChild className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300">
+          <Link href="/forgot-password">Request a new link</Link>
+        </Button>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="password">New password</Label>
               <Input
@@ -103,19 +107,12 @@ export default function ResetPasswordPage() {
                 required
               />
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Updating…" : "Update password"}
-            </Button>
-            <div className="text-sm text-center text-muted-foreground">
-              <Link href="/login" className="text-primary hover:underline font-medium">
-                Back to sign in
-              </Link>
-            </div>
-          </CardFooter>
+          </div>
+          <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
+            {isLoading ? "Updating..." : "Update password"}
+          </Button>
         </form>
-      </Card>
-    </div>
+      )}
+    </AuthShell>
   );
 }

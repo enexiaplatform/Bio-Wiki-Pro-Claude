@@ -1,9 +1,9 @@
 {
-  "welcomeTitle": "Welcome to Life Science Atlas! 🎉",
-  "welcomeSubtitle": "Your account is ready. Start with the 3 steps below.",
+  "welcomeTitle": "Welcome to Life Science Atlas",
+  "welcomeSubtitle": "Your account is ready. Start with the best next step for your work today.",
   "step1": {
     "title": "Start a learning path",
-    "desc": "Microbiology QC Fundamentals — sterility, bioburden, EM, endotoxin & water, in order (free).",
+    "desc": "Microbiology QC Fundamentals: sterility, bioburden, EM, endotoxin, and water in order.",
     "cta": "Start the path"
   },
   "step2": {
@@ -13,7 +13,7 @@
   },
   "step3": {
     "title": "Explore Pro",
-    "desc": "Unlock in-depth Pro lessons, tools, and the compliance library — $8/month.",
+    "desc": "Unlock in-depth Pro lessons, tools, and the compliance library for $8/month.",
     "cta": "See Pro plan"
   },
   "skip": "Skip, go to Academy"

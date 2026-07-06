@@ -4,9 +4,9 @@ import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { FlaskConical, MailCheck } from "lucide-react";
+import { MailCheck, RotateCcw } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
+import { AuthShell } from "@/components/AuthShell";
 
 export default function ForgotPasswordPage() {
   useSEO({ title: "Forgot password", description: "Reset your Life Science Atlas password." });
@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
     try {
       await apiRequest("POST", "/api/auth/forgot-password", { email });
     } catch {
-      // Endpoint always succeeds (enumeration protection); ignore errors.
+      // The endpoint is enumeration-safe; show the same state either way.
     } finally {
       setIsLoading(false);
       setSent(true);
@@ -28,62 +28,64 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md border-white/10 bg-card">
-        <CardHeader className="space-y-1 text-center">
-          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center mx-auto mb-4">
-            {sent ? <MailCheck className="w-6 h-6 text-white" /> : <FlaskConical className="w-6 h-6 text-white" />}
-          </div>
-          <CardTitle className="text-2xl font-bold">{sent ? "Check your inbox" : "Forgot password?"}</CardTitle>
-          <CardDescription>
+    <AuthShell
+      eyebrow="Account recovery"
+      title="Reset access without losing your workspace"
+      description="Use your account email and we will send a secure reset link. Your saved lessons, notes, and downloads stay attached to the same account."
+      footer={
+        <>
+          Remembered it?{" "}
+          <Link href="/login" className="font-semibold text-teal-300 hover:text-teal-200">
+            Sign in
+          </Link>
+        </>
+      }
+    >
+      <div className="mb-6 flex items-start gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
+          {sent ? <MailCheck className="h-5 w-5" /> : <RotateCcw className="h-5 w-5" />}
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold">{sent ? "Check your inbox" : "Forgot password?"}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
             {sent
-              ? "If an account exists for that email, we've sent a reset link. It expires in 1 hour."
-              : "Enter your email and we'll send you a link to reset your password."}
-          </CardDescription>
-        </CardHeader>
+              ? "If an account exists for that email, we sent a reset link. It expires in 1 hour."
+              : "Enter your email and we will send a link to reset your password."}
+          </p>
+        </div>
+      </div>
 
-        {sent ? (
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground text-center">
-              Didn't get it? Check spam, or{" "}
-              <button onClick={() => setSent(false)} className="text-primary hover:underline">
-                try again
-              </button>
-              .
-            </p>
-            <Button asChild variant="outline" className="w-full">
-              <Link href="/login">Back to sign in</Link>
-            </Button>
-          </CardContent>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m.curie@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Sending…" : "Send reset link"}
-              </Button>
-              <div className="text-sm text-center text-muted-foreground">
-                Remembered it?{" "}
-                <Link href="/login" className="text-primary hover:underline font-medium">
-                  Sign in
-                </Link>
-              </div>
-            </CardFooter>
-          </form>
-        )}
-      </Card>
-    </div>
+      {sent ? (
+        <div className="space-y-4">
+          <p className="rounded-lg border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-muted-foreground">
+            Did not get it? Check spam, or{" "}
+            <button type="button" onClick={() => setSent(false)} className="font-semibold text-teal-300 hover:text-teal-200">
+              try again
+            </button>
+            .
+          </p>
+          <Button asChild className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300">
+            <Link href="/login">Back to sign in</Link>
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m.curie@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
+            {isLoading ? "Sending..." : "Send reset link"}
+          </Button>
+        </form>
+      )}
+    </AuthShell>
   );
 }
