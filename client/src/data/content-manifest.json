@@ -734,44 +734,54 @@
     "collection": "academy",
     "slug": "change-control",
     "lang": "en",
-    "title": "Change Control",
+    "title": "Change Control - Protecting the Validated State",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Manage changes to processes, equipment, and documents — impact assessment, approval, implementation, and effectiveness verification.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Run GMP change control with prospective impact assessment, quality risk management, validation and stability actions, regulatory impact, implementation controls, effectiveness checks, and cumulative change review.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "The core purpose of change control is to:",
+        "q": "What is the core purpose of GMP change control?",
         "options": [
-          "Slow everything down",
-          "Assess and approve changes before implementation",
-          "Avoid documentation",
-          "Replace CAPA"
+          "To evaluate and approve planned GMP changes before implementation",
+          "To document unplanned deviations after the fact",
+          "To slow all improvement",
+          "To replace batch release review"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "A change request must include:",
+        "q": "Which item belongs in a strong change-control impact assessment?",
         "options": [
-          "Only the change date",
-          "An impact/risk assessment",
-          "Nothing",
-          "A marketing plan"
+          "Product quality, validation, stability, regulatory, supplier, data, and batch-release impact",
+          "Only the proposed implementation date",
+          "Only the estimated cost",
+          "Only the department requesting it"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Implemented changes should be checked for:",
+        "q": "If a change was already made without approval, the first response should usually be:",
         "options": [
-          "Effectiveness against the intended outcome",
-          "Speed only",
-          "Cost only",
-          "Nothing"
+          "Open a deviation and assess retrospective impact",
+          "Hide it in a normal change request",
+          "Ignore it if no complaint occurred",
+          "Close the batch record faster"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "After implementation, change control should verify:",
+        "options": [
+          "The change achieved its objective and did not cause unintended product-quality impact",
+          "The form has enough signatures only",
+          "The change was cheap",
+          "No one asks questions"
         ],
         "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 10
   },
   {
     "collection": "academy",
