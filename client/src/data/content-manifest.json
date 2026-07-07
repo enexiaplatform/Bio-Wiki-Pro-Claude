@@ -1634,44 +1634,54 @@
     "collection": "academy",
     "slug": "gowning-qualification",
     "lang": "en",
-    "title": "Gowning & Personnel Qualification",
+    "title": "Gowning Qualification - Personnel Control for Aseptic Areas",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Initial and periodic gowning qualification for cleanroom personnel — contact-plate locations, frequency, and disqualification triggers.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Qualify aseptic operators with gowning theory, observed technique, microbiological gown sampling, Grade A/B access rules, APS linkage, requalification triggers, and personnel monitoring trend review.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "Gowning qualification confirms an operator can:",
+        "q": "What does gowning qualification prove?",
         "options": [
-          "Type quickly",
-          "Gown without contaminating the suit",
-          "Lift heavy loads",
-          "Pass an exam"
+          "That an operator can gown without compromising the microbial quality of the gown",
+          "That the operator can pass a written test only",
+          "That the gown supplier is inexpensive",
+          "That EM is no longer needed"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Gowning is verified using:",
+        "q": "Which evidence should be included in a strong initial gowning qualification?",
         "options": [
-          "A questionnaire",
-          "Microbial contact plates on the gown",
-          "Weight checks",
-          "Temperature logs"
+          "Training, observed technique, and microbiological sampling of defined gown locations",
+          "Only a signature on the SOP",
+          "Only one clean glove plate",
+          "Only a supervisor's memory"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "An operator failing personnel monitoring should be:",
+        "q": "Grade A/B access for aseptic operations should normally be limited to personnel who:",
         "options": [
-          "Ignored",
-          "Re-trained / re-qualified before aseptic work",
-          "Promoted",
-          "Reassigned permanently"
+          "Are trained, gown-qualified, and have participated in a successful APS",
+          "Have worked longest at the company",
+          "Can enter quickly",
+          "Do not need personnel monitoring"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "A repeated personnel-monitoring excursion should trigger:",
+        "options": [
+          "Investigation, retraining, and requalification or access restriction as justified",
+          "No action if the batch passed sterility test",
+          "Promotion",
+          "A change to hide the sampling site"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 10
   },
   {
     "collection": "academy",
