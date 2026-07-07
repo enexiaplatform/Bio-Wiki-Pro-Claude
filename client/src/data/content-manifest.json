@@ -820,44 +820,54 @@
     "collection": "academy",
     "slug": "complaint-handling",
     "lang": "en",
-    "title": "Complaint Handling & Recall",
+    "title": "Complaint Handling - Quality Defects, CAPA, and Recall Signals",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Receive, assess, and investigate product complaints — severity, reportability, and the link to recall decisions.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Build a GMP complaint handling system: intake, quality defect triage, adverse-event screening, investigation depth, batch impact, CAPA, trending, reportability, and recall escalation.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "The first action on a product complaint is to:",
+        "q": "What should happen first when a product complaint is received?",
         "options": [
-          "Recall the batch",
-          "Log it and assess for patient risk / reportability",
-          "Discard it",
-          "Blame distribution"
+          "Log it, preserve original details, and assess risk/reportability",
+          "Wait for three similar complaints",
+          "Recall every batch immediately",
+          "Send it only to marketing"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "A complaint suggesting a possible defect affecting safety may trigger:",
+        "q": "Which complaint usually needs rapid escalation?",
         "options": [
-          "Nothing",
-          "A recall decision and possible regulatory reporting",
-          "A price change",
-          "A new product"
+          "A possible quality defect affecting patient safety or product compliance",
+          "A general pricing comment",
+          "A duplicate sales inquiry",
+          "A request for a brochure"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "If no investigation is performed for a complaint, the record should include:",
+        "options": [
+          "The rationale and responsible person for that decision",
+          "Nothing, because no investigation occurred",
+          "Only the customer name",
+          "Only the product price"
+        ],
+        "answer": 0
       },
       {
         "q": "Complaint trends should feed into:",
         "options": [
-          "Marketing",
-          "Quality review / CAPA",
-          "Payroll",
-          "Nothing"
+          "CAPA, APR/PQR, management review, and recall readiness",
+          "Payroll only",
+          "Advertising slogans",
+          "Warehouse decoration"
         ],
-        "answer": 1
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 10
   },
   {
     "collection": "academy",
