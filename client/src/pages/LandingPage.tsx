@@ -45,7 +45,7 @@ const fadeUp = {
 const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
 const primaryCtaClass = "inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-bold text-teal-950 shadow-lg shadow-teal-500/20 transition-all hover:-translate-y-0.5 hover:bg-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 const secondaryCtaClass = "inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-foreground transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
-const elevatedCardClass = "group h-full rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-teal-400/35 hover:bg-white/[0.07]";
+const elevatedCardClass = "group flex h-full min-h-[150px] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-teal-400/35 hover:bg-white/[0.07]";
 
 // Non-translatable presentation metadata, merged with translated copy by index.
 const solutionMeta = [
