@@ -304,44 +304,54 @@
     "collection": "academy",
     "slug": "annual-product-review",
     "lang": "en",
-    "title": "Annual Product Review (APR / PQR)",
+    "title": "Annual Product Review - APR/PQR That Drives Improvement",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "The Annual Product Review / Product Quality Review — what 21 CFR 211.180(e) and EU GMP Chapter 1 require, and how to turn it into a real improvement tool.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Build an APR/PQR that verifies process consistency, specification suitability, trend signals, recurring deviations, complaints, stability, CAPA, change control, supplier performance, and product-quality improvement actions.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
         "q": "What is the primary purpose of an APR/PQR?",
         "options": [
-          "Marketing report",
-          "Verify process consistency and identify improvements",
-          "Tax filing",
-          "Sales forecast"
+          "To verify process consistency, specification suitability, trends, and improvement needs",
+          "To replace batch release",
+          "To forecast sales",
+          "To archive payroll data"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Which US regulation requires an annual review of product quality standards?",
+        "q": "Which US regulation requires at least annual product quality review?",
         "options": [
-          "21 CFR 11",
           "21 CFR 211.180(e)",
-          "21 CFR 820",
-          "ICH Q1A"
+          "21 CFR Part 11",
+          "ICH Q1A",
+          "USP 788"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Which of these is a typical APR input?",
+        "q": "Which input belongs in a meaningful APR/PQR?",
         "options": [
-          "Batch records, deviations, OOS, complaints, stability",
-          "Payroll data",
-          "Marketing spend",
-          "Office rent"
+          "Batch results, deviations, OOS/OOT, complaints, stability, changes, CAPA, and recalls",
+          "Only marketing demand",
+          "Only headcount",
+          "Only office expenses"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "A weak APR/PQR usually:",
+        "options": [
+          "Copies last year's report without interpreting trends or driving actions",
+          "Challenges specifications with evidence",
+          "Links trends to CAPA",
+          "Escalates recurring risks"
         ],
         "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 9
   },
   {
     "collection": "academy",
