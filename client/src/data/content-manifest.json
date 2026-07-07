@@ -2922,44 +2922,54 @@
     "collection": "academy",
     "slug": "stability-studies",
     "lang": "en",
-    "title": "Stability Studies (ICH Q1A)",
+    "title": "Stability Studies - ICH Q1A Program Design",
     "tier": "free",
     "category": "Analytical QC",
-    "seoDescription": "Long-term, intermediate, and accelerated stability conditions per ICH Q1A(R2) — how shelf life and storage statements are set.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Design ICH Q1A stability studies with long-term, intermediate, accelerated, photostability, stress, pull schedules, CQA selection, shelf-life logic, Q1D reduced designs, and Q1E data evaluation.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "Typical long-term condition for a general (Zone II) product?",
+        "q": "What is the main purpose of a formal stability study?",
         "options": [
-          "25°C / 60% RH",
-          "40°C / 75% RH",
-          "5°C",
-          "-20°C"
+          "To establish shelf life or retest period and label storage conditions",
+          "To replace batch release testing",
+          "To qualify a balance",
+          "To reduce documentation"
         ],
         "answer": 0
       },
       {
-        "q": "Accelerated conditions are typically:",
+        "q": "For a general Zone I/II product, a common long-term ICH Q1A condition is:",
         "options": [
-          "25°C / 60% RH",
-          "40°C / 75% RH",
-          "30°C / 65% RH",
-          "2–8°C"
+          "25 deg C / 60% RH",
+          "40 deg C / 75% RH",
+          "-20 deg C",
+          "50 deg C / dry heat only"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Stability data primarily supports:",
+        "q": "What does accelerated stability mainly help evaluate?",
         "options": [
-          "Batch release only",
-          "Shelf life and storage statements",
-          "Cleaning limits",
-          "Supplier audits"
+          "Longer-term chemical effects and short excursions, with limits on predictability",
+          "Operator gowning",
+          "Media growth promotion",
+          "Supplier payment terms"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "When can bracketing or matrixing be used?",
+        "options": [
+          "When scientifically justified and able to support shelf-life prediction",
+          "Whenever testing is expensive",
+          "Only after an OOS",
+          "For every biologic without rationale"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 13
   },
   {
     "collection": "academy",
