@@ -1045,44 +1045,54 @@
     "collection": "academy",
     "slug": "deviation-management",
     "lang": "en",
-    "title": "Deviation Management",
+    "title": "Deviation Management - Investigation, Impact, and CAPA",
     "tier": "free",
     "category": "Quality Systems",
-    "seoDescription": "Classify, investigate, and close deviations on time — the lifecycle, severity tiers, and how deviations link to CAPA.",
-    "updatedAt": "2026-06-01",
+    "seoDescription": "Manage GMP deviations with factual capture, immediate containment, severity classification, batch impact assessment, root-cause analysis, CAPA, effectiveness checks, recurrence trending, and release decisions.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "What is the first step when a deviation is detected?",
+        "q": "What is the first GMP action when a deviation is detected?",
         "options": [
-          "Close it",
-          "Document and assess immediate impact",
-          "Ignore if minor",
-          "Blame the operator"
+          "Document the event and assess immediate product, patient, and process impact",
+          "Wait until the batch is finished",
+          "Rewrite the SOP quietly",
+          "Close it as minor"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "A critical deviation is one that:",
+        "q": "A critical deviation is best defined as one that:",
         "options": [
+          "May affect product quality, safety, efficacy, sterility assurance, or regulatory compliance",
           "Is easy to fix",
-          "May affect product quality, safety, or efficacy",
-          "Happens on a Friday",
-          "Has no impact"
+          "Happens during night shift",
+          "Has a short investigation report"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Deviations that recur often should trigger:",
+        "q": "What is weak root-cause logic?",
         "options": [
-          "A CAPA",
-          "Nothing",
-          "A new SOP only",
-          "Operator dismissal"
+          "Blaming human error without checking process, procedure, training, design, or system causes",
+          "Using evidence to test hypotheses",
+          "Reviewing related batches",
+          "Checking recurrence history"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Before closing a significant deviation, QA should confirm:",
+        "options": [
+          "Impact is assessed, root cause is justified, CAPA is adequate, and effectiveness is defined where needed",
+          "The record is old enough",
+          "The batch passed final testing only",
+          "The operator has signed a memo"
         ],
         "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 11
   },
   {
     "collection": "academy",
