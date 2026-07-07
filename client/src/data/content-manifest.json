@@ -2426,44 +2426,54 @@
     "collection": "academy",
     "slug": "particulate-matter-usp-788",
     "lang": "en",
-    "title": "Particulate Matter in Injections (USP 788)",
+    "title": "Particulate Matter in Injections - USP 788",
     "tier": "free",
     "category": "Laboratory Controls",
-    "seoDescription": "Subvisible particulate testing per USP 788 — light obscuration vs microscopic methods, the two-stage approach, and small-volume injection limits.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Control subvisible particulate matter in injections under USP 788: light obscuration, microscopic particle count, small- and large-volume limits, sample handling, method suitability, investigation, and trend review.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "What does USP 788 control?",
+        "q": "What does USP 788 primarily control?",
         "options": [
-          "Sterility",
           "Subvisible particulate matter in injections",
-          "Endotoxin",
-          "pH"
+          "Sterility assurance",
+          "Endotoxin only",
+          "Container closure integrity only"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Which is the primary (Method 1) test?",
+        "q": "Which USP 788 method is generally preferred when the product is suitable?",
         "options": [
-          "Microscopic particle count",
-          "Light obscuration particle count",
-          "Dye ingress",
-          "Conductivity"
+          "Method 1, light obscuration particle count",
+          "Method 2, microscopic particle count",
+          "Visual inspection only",
+          "pH measurement"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "If a product fails or is unsuitable for light obscuration, what is the next step?",
+        "q": "Why can air bubbles create false particle results?",
         "options": [
-          "Release anyway",
-          "Use the microscopic method (Method 2)",
-          "Retest until pass",
-          "Discard the monograph"
+          "They may be counted as particles if sample preparation is poor",
+          "They reduce endotoxin",
+          "They sterilize the product",
+          "They make the product more stable"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "Visible inspection and USP 788 subvisible particle testing are:",
+        "options": [
+          "Related controls but not interchangeable",
+          "The same test",
+          "Both optional for injectables",
+          "Only packaging tests"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 9
   },
   {
     "collection": "academy",
