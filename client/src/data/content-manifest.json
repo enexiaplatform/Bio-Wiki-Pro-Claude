@@ -1293,16 +1293,16 @@
     "collection": "academy",
     "slug": "endotoxin-lal-testing",
     "lang": "en",
-    "title": "Bacterial Endotoxins — LAL Testing",
+    "title": "Bacterial Endotoxins - BET/LAL Testing",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Bacterial endotoxin testing per USP <85> — gel-clot, kinetic turbidimetric & chromogenic methods, and endotoxin limit calculation.",
-    "updatedAt": "2026-05-30",
+    "seoDescription": "Bacterial endotoxin testing per USP <85>: gel-clot, turbidimetric, chromogenic and recombinant reagent approaches, endotoxin limits, MVD, interference, spike recovery, and investigation logic.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "The endotoxin limit is calculated as:",
+        "q": "The endotoxin limit for many parenteral drugs is calculated as:",
         "options": [
-          "K × M",
+          "K x M",
           "K / M",
           "M / K",
           "K + M"
@@ -1310,70 +1310,90 @@
         "answer": 1
       },
       {
-        "q": "Which is the historical reference LAL method?",
+        "q": "What does Maximum Valid Dilution (MVD) protect?",
         "options": [
-          "Kinetic chromogenic",
-          "Gel-clot",
-          "Kinetic turbidimetric",
-          "ELISA"
-        ],
-        "answer": 1
-      },
-      {
-        "q": "Acceptable spike recovery range for interference testing?",
-        "options": [
-          "50–200%",
-          "80–120%",
-          "0–100%",
-          "90–110%"
+          "The sample is diluted beyond the point where the endotoxin limit can still be detected",
+          "The analyst from doing calculations",
+          "The need for controls",
+          "The sterility test incubation time"
         ],
         "answer": 0
+      },
+      {
+        "q": "For many photometric BET methods, acceptable product positive control recovery is typically:",
+        "options": [
+          "50-200%",
+          "80-120%",
+          "0-100%",
+          "Exactly 100%"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "If a product inhibits endotoxin recovery, the first technical response is usually to:",
+        "options": [
+          "Ignore the positive control",
+          "Use a validated dilution or treatment not exceeding the MVD",
+          "Report zero endotoxin",
+          "Switch to sterility testing"
+        ],
+        "answer": 1
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 9
   },
   {
     "collection": "academy",
     "slug": "environmental-monitoring-basics",
     "lang": "en",
-    "title": "Environmental Monitoring — Foundations",
+    "title": "Environmental Monitoring - Program Design and Trending",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "How environmental monitoring (EM) detects contamination risk in cleanrooms — viable & non-viable, alert/action limits, trending.",
-    "updatedAt": "2026-05-30",
+    "seoDescription": "Risk-based environmental monitoring for sterile and controlled manufacturing: viable and non-viable monitoring, Annex 1 CCS logic, sampling locations, alert/action levels, trending, investigations, and batch release review.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "What does an alert limit indicate?",
+        "q": "In Annex 1 logic, environmental monitoring should be treated as:",
         "options": [
-          "An out-of-spec failure",
-          "An early warning / trend signal",
-          "A sterility failure",
-          "A calibration error"
+          "A standalone sterility proof",
+          "Part of the Contamination Control Strategy",
+          "A replacement for media fills",
+          "A housekeeping checklist only"
         ],
         "answer": 1
       },
       {
-        "q": "Which is a viable monitoring method?",
-        "options": [
-          "Airborne particle count",
-          "Settle plates",
-          "Conductivity",
-          "TOC"
-        ],
-        "answer": 1
-      },
-      {
-        "q": "What should drive sampling location selection?",
+        "q": "What should drive EM sampling locations and frequency?",
         "options": [
           "Convenience",
-          "Risk / proximity to product",
-          "Alphabetical order",
-          "Room size"
+          "Risk to product and critical surfaces",
+          "Alphabetical room order",
+          "The newest room first"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What does an alert level usually indicate?",
+        "options": [
+          "An early warning or adverse trend signal",
+          "Automatic batch rejection",
+          "A sterility test failure",
+          "A calibration interval"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "A mature EM review should evaluate:",
+        "options": [
+          "Only pass/fail against limits",
+          "Location, organism, trend, process event, and product impact",
+          "Only colony colour",
+          "Only non-viable particles"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 10
   },
   {
     "collection": "academy",
@@ -1637,19 +1657,19 @@
     "collection": "academy",
     "slug": "growth-promotion-testing",
     "lang": "en",
-    "title": "Growth Promotion Testing (GPT)",
+    "title": "Growth Promotion Testing - Media Suitability and Control",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Why every microbiology media lot needs growth promotion testing: low-inoculum challenge, solid vs liquid acceptance, selective-media inhibition, and common failure modes.",
-    "updatedAt": "2026-07-05",
+    "seoDescription": "Growth Promotion Testing for pharmaceutical microbiology media: low-inoculum challenge, solid and liquid media acceptance, selective/inhibitory/indicative properties, local isolates, media release, failure investigation, and product-impact review.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
         "q": "What does growth promotion testing primarily prove?",
         "options": [
-          "The media lot can support microbial growth under the test conditions",
+          "The media lot can support the intended microbial growth under defined conditions",
           "The product is sterile",
           "The incubator is calibrated",
-          "The analyst found every possible organism"
+          "Every possible organism will be found"
         ],
         "answer": 0
       },
@@ -1658,23 +1678,33 @@
         "options": [
           "To challenge media sensitivity instead of overwhelming the medium",
           "To make the test faster only",
-          "To avoid using controls",
-          "To prove the product has no preservative"
+          "To avoid controls",
+          "To prove product preservative effectiveness"
         ],
         "answer": 0
       },
       {
-        "q": "What extra property must selective media demonstrate?",
+        "q": "For selective media, the control set should usually demonstrate:",
         "options": [
-          "Only color change",
-          "Inhibition of organisms the medium is intended to suppress",
-          "Sterility of the product",
+          "Growth of target organisms and inhibition/indication as appropriate",
+          "Only colour change",
+          "Product sterility",
           "Endotoxin removal"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "If a media lot fails GPT after it has already been used, the lab should:",
+        "options": [
+          "Only repeat GPT until it passes",
+          "Assess all affected tests and investigate media/product-impact risk",
+          "Ignore it if no product failed",
+          "Shorten incubation"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 2
+    "readMinutes": 9
   },
   {
     "collection": "academy",
@@ -2432,44 +2462,54 @@
     "collection": "academy",
     "slug": "pharmaceutical-water-systems",
     "lang": "en",
-    "title": "Pharmaceutical Water Systems — Monitoring",
+    "title": "Pharmaceutical Water Systems - Monitoring and Control",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Monitoring Purified Water and Water for Injection — TOC, conductivity, microbial limits, and the action/alert philosophy.",
-    "updatedAt": "2026-05-31",
+    "seoDescription": "Pharmaceutical water system monitoring for Purified Water and WFI: grade selection, conductivity, TOC, bioburden, endotoxin, point-of-use sampling, biofilm control, alert/action levels, excursions, and lifecycle review.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "What attribute controls pyrogens in Water for Injection?",
+        "q": "For parenteral product formulation and final rinse of parenteral product-contact equipment, the expected water grade is usually:",
         "options": [
-          "Conductivity",
-          "TOC",
-          "Endotoxin",
-          "pH"
+          "Potable water",
+          "Purified Water",
+          "Water for Injection",
+          "Any water that passes conductivity"
         ],
         "answer": 2
       },
       {
-        "q": "Typical microbial action limit for Purified Water?",
+        "q": "Which attribute is specifically tied to pyrogen control in WFI?",
         "options": [
-          "10 CFU/100 mL",
-          "100 CFU/mL",
-          "1 CFU/mL",
-          "1000 CFU/mL"
+          "Conductivity",
+          "TOC",
+          "Bacterial endotoxins",
+          "Colour"
         ],
-        "answer": 1
+        "answer": 2
       },
       {
-        "q": "What early signal does an upward count drift indicate?",
+        "q": "Why is point-of-use sampling important?",
         "options": [
-          "Calibration drift",
-          "Biofilm formation",
-          "Sensor failure",
-          "Normal variation"
+          "It checks water after distribution piping and outlet conditions",
+          "It replaces loop validation",
+          "It avoids all microbial testing",
+          "It proves the tank is sterile"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "A slow upward microbial trend in a water loop often suggests:",
+        "options": [
+          "Biofilm development or loss of system control",
+          "A successful sanitization",
+          "A lower product risk",
+          "No action until an annual review"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 10
   },
   {
     "collection": "academy",
@@ -2647,14 +2687,14 @@
     "collection": "academy",
     "slug": "rapid-sterility-testing",
     "lang": "en",
-    "title": "Rapid Sterility Testing",
+    "title": "Rapid Sterility Testing - RMM Validation and Release Strategy",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Faster sterility results with rapid microbiological methods — validation vs USP <71>, and why short-shelf-life products benefit most.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Rapid sterility testing and rapid microbiological methods for short-shelf-life sterile products: technology categories, USP <1223>/Ph. Eur. 5.1.6 validation logic, equivalence, release strategy, and investigation controls.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "The compendial sterility test (USP <71>) incubates for:",
+        "q": "The compendial sterility test described in USP <71> normally incubates for:",
         "options": [
           "24 hours",
           "14 days",
@@ -2664,27 +2704,37 @@
         "answer": 1
       },
       {
-        "q": "Rapid sterility methods are most valuable for:",
+        "q": "Rapid sterility methods are most valuable when:",
         "options": [
-          "Long-shelf-life tablets",
-          "Short-shelf-life products (e.g. cell therapies)",
-          "Packaging",
-          "Labels"
+          "The product has a short shelf life or urgent clinical release need",
+          "The product is a long-shelf-life tablet",
+          "The site wants to skip method suitability",
+          "The method has no false positives"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Before routine use, a rapid method must demonstrate:",
+        "q": "Before routine GMP use, an alternative rapid sterility method should demonstrate:",
         "options": [
-          "Lower cost",
-          "Validation & equivalence to the compendial method",
-          "Faster shipping",
-          "A new SOP only"
+          "Equivalent or superior fitness for its intended use against the reference method",
+          "Only lower cost",
+          "Only a new SOP",
+          "That incubation is unnecessary for all products"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "A negative rapid result before final compendial completion should be treated as:",
+        "options": [
+          "Part of a justified release strategy with defined residual risk controls",
+          "Proof that the batch is sterile",
+          "A reason to delete the 14-day test",
+          "A substitute for contamination control"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 8
   },
   {
     "collection": "academy",
@@ -3312,44 +3362,54 @@
     "collection": "academy",
     "slug": "water-system-validation",
     "lang": "en",
-    "title": "Pharmaceutical Water System Validation",
+    "title": "Pharmaceutical Water System Validation - Lifecycle Qualification",
     "tier": "pro",
     "category": "Microbiology QC",
-    "seoDescription": "Validating a pharmaceutical water system — the three-phase qualification approach, sampling every point of use, and ongoing monitoring with alert/action levels.",
-    "updatedAt": "2026-06-11",
+    "seoDescription": "Lifecycle validation of Purified Water and WFI systems: URS/DQ/IQ/OQ/PQ, the three-phase sampling approach, point-of-use rationale, operating ranges, biofilm control, continued verification, and change control.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "During Phase 1 of water-system validation, you should:",
+        "q": "During Phase 1 of water-system validation, the usual focus is to:",
         "options": [
-          "Use the water for production immediately",
-          "Sample every point of use intensively and not yet use the water",
-          "Sample once",
+          "Release all water for production immediately",
+          "Sample intensively while establishing operating and sanitization procedures",
+          "Sample only the return loop once",
           "Skip microbial testing"
         ],
         "answer": 1
       },
       {
-        "q": "Phase 3 runs for about a year mainly to:",
+        "q": "Why does Phase 3 usually extend across a long routine period?",
         "options": [
-          "Save reagents",
-          "Capture seasonal variation in feed water",
-          "Avoid sampling",
-          "Replace Phase 1"
+          "To avoid sampling",
+          "To capture seasonal/feedwater variation and routine operating behavior",
+          "To replace IQ",
+          "To eliminate alert levels"
         ],
         "answer": 1
       },
       {
-        "q": "The main microbial enemy in a water distribution loop is:",
+        "q": "Point-of-use sampling should reflect:",
         "options": [
-          "Endotoxin spikes only",
-          "Biofilm",
-          "High conductivity",
-          "Low TOC"
+          "How production or QC actually draws the water",
+          "Only the cleanest possible sample",
+          "Only the generation skid",
+          "Only an engineering preference"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "A validated water system remains validated only when:",
+        "options": [
+          "The original protocol is archived",
+          "Continued monitoring, maintenance, sanitization, review, and change control keep it in control",
+          "The tank is large enough",
+          "Conductivity always passes"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 3
+    "readMinutes": 11
   },
   {
     "collection": "blog",
