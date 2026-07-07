@@ -1078,44 +1078,54 @@
     "collection": "academy",
     "slug": "disinfectant-qualification",
     "lang": "en",
-    "title": "Disinfectant Efficacy & Cleanroom Disinfection",
+    "title": "Disinfectant Qualification - Cleanroom Surface Control",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "Qualifying cleanroom disinfectants — contact time, surface efficacy, rotation and sporicide use, and the in-use studies Annex 1 expects.",
-    "updatedAt": "2026-06-04",
+    "seoDescription": "Qualify cleanroom disinfectants with surface coupon studies, wet contact time, sporicide strategy, sterile Grade A/B use, in-use expiry, residue control, and EM trend linkage.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "Why is a sporicidal agent rotated into a cleanroom disinfection program?",
+        "q": "What should disinfectant qualification prove?",
         "options": [
-          "To save money",
-          "Routine disinfectants may not kill bacterial/fungal spores",
-          "To change the smell",
-          "It is never needed"
+          "The selected agent and procedure work on site surfaces, organisms, and contact time",
+          "The supplier has a brochure",
+          "The cleanroom smells clean",
+          "Operators can spray quickly"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "What parameter must a disinfectant efficacy study confirm for each surface?",
+        "q": "What does validated wet contact time mean?",
         "options": [
-          "Color",
-          "Log reduction at the validated contact (wet) time",
-          "Price",
-          "Viscosity"
+          "The surface remains visibly wet for the qualified duration",
+          "The disinfectant bottle was opened that day",
+          "The operator wiped once",
+          "The room was idle for one hour"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Disinfectants used in aseptic (Grade A/B) areas should be:",
+        "q": "Why is a sporicidal agent included in a cleanroom disinfection program?",
         "options": [
-          "Tap-water diluted",
-          "Sterile (or sterile-filtered) and within expiry",
-          "Any household cleaner",
-          "Unlabeled"
+          "Routine disinfectants may not be effective against bacterial or fungal spores",
+          "It replaces all environmental monitoring",
+          "It removes the need for cleaning",
+          "It is used only for odor control"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "Disinfectants and detergents used in Grade A/B areas should generally be:",
+        "options": [
+          "Sterile before use and controlled within expiry",
+          "Tap-water diluted at point of use",
+          "Shared with uncontrolled areas",
+          "Unlabeled after preparation"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 12
   },
   {
     "collection": "academy",
