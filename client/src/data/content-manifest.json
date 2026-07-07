@@ -2525,44 +2525,54 @@
     "collection": "academy",
     "slug": "process-validation-stages",
     "lang": "en",
-    "title": "Process Validation — The Three Stages",
+    "title": "Process Validation - Lifecycle Stages, PPQ, and CPV",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "The FDA lifecycle approach to process validation — Stage 1 design, Stage 2 PPQ, Stage 3 continued process verification.",
-    "updatedAt": "2026-06-02",
+    "seoDescription": "Understand FDA lifecycle process validation: Stage 1 process design, Stage 2 qualification and PPQ, Stage 3 continued process verification, control strategy, deviations, statistics, and revalidation triggers.",
+    "updatedAt": "2026-07-07",
     "quiz": [
       {
-        "q": "Stage 1 of process validation is:",
+        "q": "What is Stage 1 of lifecycle process validation?",
         "options": [
-          "Process design",
-          "Process qualification (PPQ)",
-          "Continued verification",
-          "Cleaning validation"
+          "Process design based on development and scale-up knowledge",
+          "Routine annual product review",
+          "Cleaning validation only",
+          "Final product release testing"
         ],
         "answer": 0
       },
       {
-        "q": "What does PPQ stand for?",
+        "q": "What does PPQ evaluate in Stage 2?",
         "options": [
-          "Pre-Production Quality",
-          "Process Performance Qualification",
-          "Product Purity Quotient",
-          "Periodic Process Quality"
+          "Whether the process design can reproducibly manufacture commercial product",
+          "Whether operators like the batch record",
+          "Whether marketing demand is high",
+          "Whether the warehouse has enough labels"
         ],
-        "answer": 1
+        "answer": 0
       },
       {
-        "q": "Stage 3 ensures the process stays in control by:",
+        "q": "What is the purpose of Stage 3 continued process verification?",
         "options": [
-          "A one-time test",
-          "Ongoing monitoring & trending in commercial production",
-          "Ignoring data",
-          "Re-designing the product"
+          "To gain ongoing assurance that the process remains in a state of control",
+          "To stop trending after PPQ",
+          "To replace change control",
+          "To avoid statistical review"
         ],
-        "answer": 1
+        "answer": 0
+      },
+      {
+        "q": "Which mindset is weakest for modern process validation?",
+        "options": [
+          "Three batches and done",
+          "Lifecycle control",
+          "Risk-based sampling",
+          "Continued process verification"
+        ],
+        "answer": 0
       }
     ],
-    "readMinutes": 1
+    "readMinutes": 11
   },
   {
     "collection": "academy",
