@@ -1,8 +1,11 @@
 # Life Science Atlas — Product Source of Truth
 
-> **Status:** Canonical product and business direction  
-> **Effective:** 2026-07-10  
-> **Owner:** Founder, Life Science Atlas  
+> **Status:** Canonical product and business direction
+>
+> **Effective:** 2026-07-10
+>
+> **Owner:** Founder, Life Science Atlas
+>
 > **Applies to:** Product, content, engineering, commercialization, partnerships, and roadmap decisions
 
 This document supersedes earlier positioning that described Life Science Atlas primarily as a freemium QC/QA learning app, a microbiology-only product, a generic lab-design tool, or a toolkit-first content business. Older documents remain useful as historical and operational references, but conflicts must be resolved in favor of this document.
@@ -378,4 +381,3 @@ A feature is done only when:
 - **Moat:** Evidence-linked Method Graph, rules, benchmarks, templates, and project outcomes.
 - **Commercialization Studio:** A selective revenue and IP-acquisition motion that must compound the same Atlas intelligence.
 - **Not building:** Another content subscription, generic AI assistant, LIMS, CAD tool, procurement marketplace, or deeptech factory.
-

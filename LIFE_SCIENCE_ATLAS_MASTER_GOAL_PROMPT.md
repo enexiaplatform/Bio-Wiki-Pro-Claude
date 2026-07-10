@@ -146,4 +146,3 @@ If the goal interface accepts a shorter objective and this file remains availabl
 ```text
 Continuously execute the Life Science Atlas product transition according to docs/PRODUCT_SOURCE_OF_TRUTH.md and LIFE_SCIENCE_ATLAS_MASTER_GOAL_PROMPT.md. Complete the earliest unfinished roadmap gate through verified end-to-end vertical slices; preserve regulated-quality trust, compound the Atlas Method Graph/rules/benchmarks, and publish coherent work through preview PRs. Do not stop at plans, hidden routes, or code volume when the real customer journey is still incomplete.
 ```
-
