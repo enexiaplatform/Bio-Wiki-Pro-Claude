@@ -122,4 +122,23 @@ export const analytics = {
 
   workflowClicked: (workflowName: string) =>
     capture("workflow_clicked", { workflow_name: workflowName }),
+
+  blueprintCtaClicked: (placement: string, destination: string) =>
+    capture("blueprint_cta_clicked", { placement, destination }),
+
+  blueprintStarted: (source = "planner") =>
+    capture("blueprint_started", { source }),
+
+  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number) =>
+    capture("blueprint_compiled", {
+      project_id: projectId,
+      facility_type: facilityType,
+      scope_count: scopeCount,
+    }),
+
+  expertReviewStarted: (source: string) =>
+    capture("expert_review_started", { source }),
+
+  expertReviewRequested: (hasProject: boolean) =>
+    capture("expert_review_requested", { has_project: hasProject }),
 };

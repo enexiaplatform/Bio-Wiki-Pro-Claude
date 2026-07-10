@@ -305,6 +305,25 @@ export function serveStatic(app: Express) {
     }
   });
 
+  app.get("/quality-lab/review", async (_req, res, next) => {
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.setHeader("X-Robots-Tag", "noindex, nofollow");
+      return res.send(
+        injectMeta(html, {
+          title: "Request Expert Blueprint Review",
+          description: "Request a scoped expert review of Atlas Quality Lab Blueprint assumptions, gaps and operating scenarios.",
+          url: `${SITE_URL}/quality-lab/review`,
+          type: "website",
+          image: `${SITE_URL}/quality-lab-og.png`,
+        }),
+      );
+    } catch {
+      return next();
+    }
+  });
+
   // SPA fallback for everything else.
   app.use("/{*path}", (_req, res) => {
     res.sendFile(indexPath);

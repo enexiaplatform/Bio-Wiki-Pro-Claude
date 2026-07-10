@@ -22,7 +22,10 @@ export function Footer() {
           {/* Links */}
           <nav className="flex items-center gap-6 text-xs text-muted-foreground">
             <Link href="/quality-lab" className="hover:text-primary transition-colors">
-              For Labs
+              Blueprint
+            </Link>
+            <Link href="/quality-lab/review" className="hover:text-primary transition-colors">
+              Expert review
             </Link>
             <Link href="/workflows" className="hover:text-primary transition-colors">
               Workflows

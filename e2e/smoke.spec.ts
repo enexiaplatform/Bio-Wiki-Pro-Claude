@@ -70,13 +70,25 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/toolkit/i).first()).toBeVisible();
   });
 
-  // Workflow Learning OS: the front door is workflow-first.
-  test("homepage is workflow-first", async ({ page }) => {
+  // Atlas Quality Lab Compiler is the flagship front door; knowledge surfaces
+  // remain reachable as the supporting Atlas Evidence layer.
+  test("homepage leads with the Quality Lab Blueprint funnel", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /What workflow are you working on/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Start with Microbiology QC/i })).toBeVisible();
-    // Subscription-first: no standalone kit price leaks onto the landing page.
-    await expect(page.getByText(/\$59/)).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /defensible quality lab blueprint/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Compile an initial blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
+    await expect(page.getByText(/Atlas Evidence/i).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /QC workflows/i })).toHaveAttribute("href", "/workflows");
+  });
+
+  test("quality lab funnel reaches planner and expert review intake", async ({ page }) => {
+    await page.goto("/quality-lab");
+    await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
+    await page.getByRole("link", { name: /Build a blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/planner$/);
+    await expect(page.getByText(/Microbiology compiler/i)).toBeVisible();
+    await page.goto("/quality-lab/review");
+    await expect(page.getByRole("heading", { name: /reviewable project basis/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Request a scope review/i })).toBeVisible();
   });
 
   test("workflow atlas lists workflows", async ({ page }) => {
@@ -457,10 +469,10 @@ test.describe("public smoke", () => {
 
   test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /Skill Gap Analyzer/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build a practical learning roadmap/i })).toBeVisible();
     await page.getByRole("button", { name: /^Need it$/ }).first().click();
-    await page.getByRole("button", { name: /Build my learning roadmap/i }).click();
-    await expect(page.getByRole("heading", { name: /learning roadmap/i })).toBeVisible();
+    await page.getByRole("button", { name: /^Build roadmap$/i }).click();
+    await expect(page.getByRole("heading", { name: /^Your .* roadmap$/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Start with/i })).toBeVisible();
   });
 

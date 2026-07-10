@@ -14,9 +14,12 @@ import {
   Printer,
   ShieldCheck,
   Users,
+  ArrowRight,
 } from "lucide-react";
 import type { QualityLabProject } from "@shared/quality-lab";
 import { exportQualityLabProject } from "@/lib/quality-lab-projects";
+import { Link } from "wouter";
+import { analytics } from "@/hooks/use-analytics";
 
 interface Props {
   project: QualityLabProject;
@@ -71,6 +74,9 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-teal-200">
             <Printer className="h-4 w-4" /> Print / save PDF
           </button>
+          <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-300/15">
+            Request expert review <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
 

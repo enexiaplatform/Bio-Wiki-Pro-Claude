@@ -51,6 +51,7 @@ const FaqPage = lazy(() => import("@/pages/FaqPage"));
 const QualityLabLandingPage = lazy(() => import("@/pages/QualityLabLandingPage"));
 const QualityLabPlannerPage = lazy(() => import("@/pages/QualityLabPlannerPage"));
 const QualityLabProjectsPage = lazy(() => import("@/pages/QualityLabProjectsPage"));
+const QualityLabReviewPage = lazy(() => import("@/pages/QualityLabReviewPage"));
 
 function PageFallback() {
   return (
@@ -85,6 +86,7 @@ function Layout() {
           <Route path="/quality-lab/planner" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/projects" component={QualityLabProjectsPage} />
           <Route path="/quality-lab/projects/:id" component={QualityLabPlannerPage} />
+          <Route path="/quality-lab/review" component={QualityLabReviewPage} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
           <Route path="/library/:slug" component={LibraryEntry} />

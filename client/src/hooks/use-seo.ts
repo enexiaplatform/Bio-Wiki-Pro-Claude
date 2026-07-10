@@ -6,6 +6,7 @@ interface SEOProps {
   description?: string;
   ogImage?: string;
   canonical?: string;
+  noIndex?: boolean;
 }
 
 const SITE_NAME = "Life Science Atlas";
@@ -31,7 +32,7 @@ function setLink(rel: string, href: string) {
 }
 
 // English-only global product: clean URLs, single canonical, no hreflang.
-export function useSEO({ title, description, ogImage, canonical }: SEOProps) {
+export function useSEO({ title, description, ogImage, canonical, noIndex = false }: SEOProps) {
   useEffect(() => {
     const fullTitle = `${title} | ${SITE_NAME}`;
     const desc =
@@ -56,11 +57,12 @@ export function useSEO({ title, description, ogImage, canonical }: SEOProps) {
     setMeta("twitter:title", fullTitle);
     setMeta("twitter:description", desc);
     setMeta("twitter:image", image);
+    setMeta("robots", noIndex ? "noindex, nofollow" : "index, follow");
 
     setLink("canonical", url);
 
     return () => {
       document.title = SITE_NAME;
     };
-  }, [title, description, ogImage, canonical]);
+  }, [title, description, ogImage, canonical, noIndex]);
 }

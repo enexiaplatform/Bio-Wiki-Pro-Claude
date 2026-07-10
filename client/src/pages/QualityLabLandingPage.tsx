@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { SITE_URL } from "@/lib/site";
+import { analytics } from "@/hooks/use-analytics";
 
 const steps = [
   { icon: Boxes, label: "Product portfolio", detail: "Products, raw materials, batches and markets" },
@@ -76,7 +77,7 @@ export default function QualityLabLandingPage() {
               Atlas converts production demand and microbiology scope into workload, equipment, people, space, cost and procurement decisions — with every assumption visible.
             </motion.p>
             <motion.div variants={fade} initial="hidden" animate="show" custom={3} className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/quality-lab/planner" className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-xl shadow-teal-500/20 transition hover:-translate-y-0.5 hover:bg-teal-200">
+              <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("quality_lab_hero", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-xl shadow-teal-500/20 transition hover:-translate-y-0.5 hover:bg-teal-200">
                 Build a blueprint <ArrowRight className="h-4 w-4" />
               </Link>
               <Link href="/quality-lab/projects" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30 hover:bg-white/10">
@@ -201,9 +202,12 @@ export default function QualityLabLandingPage() {
               <h2 className="mt-6 text-3xl font-bold">Compile your first microbiology blueprint.</h2>
               <p className="mt-3 leading-7 text-slate-300">Use the concept engine now, then review the assumptions with QC, QA, engineering and procurement before making investment decisions.</p>
             </div>
-            <Link href="/quality-lab/planner" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">
-              Start a project <ArrowRight className="h-4 w-4" />
-            </Link>
+              <div className="flex shrink-0 flex-col gap-3">
+              <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("quality_lab_final", "planner")} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">
+                Start a project <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/quality-lab/review" onClick={() => analytics.blueprintCtaClicked("quality_lab_final", "expert_review")} className="inline-flex shrink-0 items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30 hover:bg-white/10">Discuss a real lab project</Link>
+              </div>
           </div>
         </div>
       </section>

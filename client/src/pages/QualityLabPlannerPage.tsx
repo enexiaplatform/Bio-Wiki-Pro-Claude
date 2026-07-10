@@ -28,6 +28,7 @@ import {
 import { BlueprintReport } from "@/components/quality-lab/BlueprintReport";
 import { getQualityLabProject, saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
+import { analytics } from "@/hooks/use-analytics";
 
 const steps = [
   { title: "Project basis", subtitle: "Facility, market and portfolio", icon: Building2 },
@@ -105,6 +106,10 @@ export default function QualityLabPlannerPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!params?.id) analytics.blueprintStarted("planner");
+  }, [params?.id]);
+
+  useEffect(() => {
     if (!params?.id) return;
     const saved = getQualityLabProject(params.id);
     if (saved) {
@@ -160,6 +165,11 @@ export default function QualityLabPlannerPage() {
       return;
     }
     const saved = saveQualityLabProject(parsed.data, project?.id);
+    analytics.blueprintCompiled(
+      saved.id,
+      saved.input.facilityType,
+      Object.values(saved.input.scope).filter(Boolean).length,
+    );
     setProject(saved);
     setInput(saved.input);
     setView("report");
