@@ -1,6 +1,8 @@
 # Life Science Atlas — Claude Code Roadmap Prompts
 > Copy từng prompt bên dưới vào Claude Code. Làm theo thứ tự. Mỗi step là một session độc lập.
 
+> **SUPERSEDED FOR PRODUCT DIRECTION (2026-07-10):** This file is a historical implementation roadmap and contains obsolete toolkit-first, Vietnam-first, and content-subscription-first assumptions. For all new work, use `docs/PRODUCT_SOURCE_OF_TRUTH.md` and `LIFE_SCIENCE_ATLAS_MASTER_GOAL_PROMPT.md`. Retain this file only for implementation history; do not execute it sequentially as the current roadmap.
+
 ---
 
 ## PHASE 1 — REVENUE-READY (Tuần 1–2)

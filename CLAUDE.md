@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Current product direction:** Read `docs/PRODUCT_SOURCE_OF_TRUTH.md` before product, roadmap, positioning, commercialization, or major UX work. It supersedes older toolkit-first, content-subscription-first, microbiology-only, and generic SaaS positioning. Use `LIFE_SCIENCE_ATLAS_MASTER_GOAL_PROMPT.md` for persistent goal execution.
+
 ## Commands
 
 ```bash
