@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2 } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -64,6 +64,7 @@ const mobileTabs = [
 ];
 
 const desktopTabs = [
+  { key: "qualityLab", name: "For Labs", icon: Building2, path: "/quality-lab" },
   { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
   { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
@@ -75,6 +76,7 @@ const desktopTabs = [
 // Secondary destinations for the mobile "More" drawer — everything not on the
 // 4-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
 const moreLinks = [
+  { name: "Quality Lab Blueprint", icon: Building2, path: "/quality-lab" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { name: "Career", icon: Briefcase, path: "/career" },
   { name: "Blog", icon: TrendingUp, path: "/blog" },

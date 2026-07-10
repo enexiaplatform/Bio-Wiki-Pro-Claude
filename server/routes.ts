@@ -964,7 +964,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
     const corePaths = [
       "", "/workflows", "/toolkits", "/academy",
-      "/glossary", "/about", "/tools", "/compliance", "/career",
+      "/glossary", "/about", "/tools", "/compliance", "/career", "/quality-lab",
       "/pricing", "/toolkits/gmp-audit-kit",
       "/blog", "/upgrade", "/login", "/signup", "/faq", "/terms", "/privacy",
     ];

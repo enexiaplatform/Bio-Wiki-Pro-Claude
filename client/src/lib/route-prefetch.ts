@@ -4,6 +4,7 @@
 // it doesn't create new chunks.
 
 const importers: Record<string, () => Promise<unknown>> = {
+  "/quality-lab": () => import("@/pages/QualityLabLandingPage"),
   "/academy": () => import("@/pages/Academy"),
   "/register": () => import("@/pages/RegisterPage"),
   "/login": () => import("@/pages/LoginPage"),

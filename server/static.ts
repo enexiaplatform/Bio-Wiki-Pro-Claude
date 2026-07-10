@@ -178,13 +178,13 @@ function escapeHtml(s: string): string {
  */
 function injectMeta(
   html: string,
-  meta: { title: string; description: string; url: string; type: string },
+  meta: { title: string; description: string; url: string; type: string; image?: string },
 ): string {
   const title = escapeHtml(`${meta.title} | Life Science Atlas`);
   const desc = escapeHtml(meta.description);
   const url = escapeHtml(meta.url);
   const type = escapeHtml(meta.type);
-  return html
+  const withCoreMeta = html
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
     .replace(/(<meta name="description" content=")[^"]*(")/, `$1${desc}$2`)
     .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${title}$2`)
@@ -194,6 +194,11 @@ function injectMeta(
     .replace(/(<link rel="canonical" href=")[^"]*(")/, `$1${url}$2`)
     .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${title}$2`)
     .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${desc}$2`);
+  if (!meta.image) return withCoreMeta;
+  const image = escapeHtml(meta.image);
+  return withCoreMeta
+    .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`)
+    .replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`);
 }
 
 async function readFrontmatter(
@@ -275,6 +280,24 @@ export function serveStatic(app: Express) {
           description: meta.description,
           url: `${SITE_URL}/tools/${slug}`,
           type: "website",
+        }),
+      );
+    } catch {
+      return next();
+    }
+  });
+
+  app.get("/quality-lab", async (_req, res, next) => {
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(
+        injectMeta(html, {
+          title: "Atlas Quality Lab Blueprint",
+          description: "Turn product portfolio, production demand and microbiology testing scope into a vendor-neutral QC laboratory operating blueprint.",
+          url: `${SITE_URL}/quality-lab`,
+          type: "website",
+          image: `${SITE_URL}/quality-lab-og.png`,
         }),
       );
     } catch {

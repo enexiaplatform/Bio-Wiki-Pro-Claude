@@ -109,4 +109,20 @@
     color: #111 !important;
     text-decoration: underline;
   }
+  .quality-blueprint-report,
+  .quality-blueprint-report * {
+    color: #111 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .quality-blueprint-report > header {
+    display: block !important;
+  }
+  .quality-blueprint-report section,
+  .quality-blueprint-report header,
+  .quality-blueprint-report footer,
+  .quality-blueprint-report article,
+  .quality-blueprint-report div {
+    print-color-adjust: exact;
+  }
 }
