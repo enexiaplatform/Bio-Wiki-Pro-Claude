@@ -93,6 +93,13 @@ test.describe("public smoke", () => {
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByRole("heading", { name: /What must be resolved before controlled use/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
+    await page.getByRole("link", { name: /Review workspace/i }).click();
+    await page.waitForURL(/\/quality-lab\/engagements\/qlp_/);
+    await expect(page.getByRole("heading", { name: /Estimate-to-actual baseline/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Evidence and review checklist/i })).toBeVisible();
+    await page.getByLabel(/Monthly tests actual/i).fill("500");
+    await expect(page.getByText(/Variance:/i).first()).not.toHaveText(/open/i);
+    await page.goBack();
     await expect(page.getByText("quality-lab-blueprint/v1")).toBeVisible();
     await expect(page.getByRole("heading", { name: /Versioned calculation trace/i })).toBeVisible();
     await page.getByRole("link", { name: /Request expert review/i }).click();

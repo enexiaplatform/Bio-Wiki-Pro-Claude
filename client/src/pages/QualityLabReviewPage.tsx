@@ -80,6 +80,7 @@ export default function QualityLabReviewPage() {
               <button type="button" onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("review_success", project.blueprint.unresolvedInputs.length); }} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200 transition hover:bg-teal-300/15">
                 <FileDown className="h-4 w-4" /> Download engagement packet
               </button>
+              <Link href={`/quality-lab/engagements/${project.id}`} className="ml-0 mt-3 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 sm:ml-2">Open review workspace</Link>
             </div>
           )}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
