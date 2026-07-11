@@ -1,5 +1,7 @@
 # Life Science Atlas — Status & Launch-Readiness
 
+> **Strategic status notice (2026-07-10):** This report remains an operational snapshot of the legacy knowledge-PWA and monetization stack. Its product definition and future-bet priorities are superseded by `docs/PRODUCT_SOURCE_OF_TRUTH.md`. Do not use this report as the current product strategy.
+
 > **Purpose:** Hand-off doc so a future session (or the owner) knows the true state of the product and exactly what remains to flip on before / during commercial onboarding.
 > **Updated:** 2026-06-12
 > **Latest commit:** `ae9659f`

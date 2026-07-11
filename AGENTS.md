@@ -2,6 +2,10 @@
 
 This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
+## Strategic Source of Truth
+
+Before product, roadmap, positioning, commercialization, or major UX work, read `docs/PRODUCT_SOURCE_OF_TRUTH.md`. It is canonical when older briefs, roadmap prompts, status reports, UI copy, or implementation notes conflict with the current direction. `LIFE_SCIENCE_ATLAS_MASTER_GOAL_PROMPT.md` defines the persistent execution loop for continuous-goal development.
+
 ## Commands
 
 ```bash

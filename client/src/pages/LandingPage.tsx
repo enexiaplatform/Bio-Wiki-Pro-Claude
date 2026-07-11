@@ -1,576 +1,310 @@
-import { useEffect } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import {
-  BookOpen, Package, Briefcase, ArrowRight, CheckCircle2,
-  FlaskConical, ChevronRight, TrendingUp, Users, Star,
-  Microscope, ShieldCheck, ClipboardCheck, Layers, Search, TestTube2, Dna, Workflow, Calculator,
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  Boxes,
+  Building2,
+  Calculator,
+  CheckCircle2,
+  ClipboardCheck,
+  FileOutput,
+  FlaskConical,
+  Gauge,
+  Layers3,
+  Microscope,
+  Network,
+  ShieldCheck,
+  Users,
+  Workflow,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
-import { listContent } from "@/lib/content";
-import { useReadLessons } from "@/hooks/use-read-lessons";
-import { prefetchLikelyNext } from "@/lib/route-prefetch";
-import { ContinueLearning } from "@/components/ContinueLearning";
-import { workflowCategories } from "@/data/workflows";
-import { TOOL_CATALOG } from "@/data/tools/catalog";
-
-// Workflow category → icon (data stays serializable).
-const WORKFLOW_ICONS: Record<string, LucideIcon> = {
-  "microbiology-qc": Microscope,
-  "sterile-aseptic": ShieldCheck,
-  "validation": ClipboardCheck,
-  "quality-systems": Layers,
-  "investigations-data-integrity": Search,
-  "laboratory-controls": TestTube2,
-  "biologics-qc": Dna,
-  "career-skills": Briefcase,
-};
-
-function workflowHref(c: typeof workflowCategories[number]): string {
-  if (c.workflowSlugs.length > 0) return `/workflows#${c.slug}`;
-  if (c.pathSlug) return `/paths/${c.pathSlug}`;
-  return c.href ?? "/workflows";
-}
-
-const byUpdatedDesc = (a: { updatedAt?: string }, b: { updatedAt?: string }) =>
-  (b.updatedAt ?? "").localeCompare(a.updatedAt ?? "");
+import { analytics } from "@/hooks/use-analytics";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.1 } }),
+  hidden: { opacity: 0, y: 20 },
+  show: (index = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.48, delay: index * 0.07 },
+  }),
 };
 
-const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
-const primaryCtaClass = "inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-bold text-teal-950 shadow-lg shadow-teal-500/20 transition-all hover:-translate-y-0.5 hover:bg-teal-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
-const secondaryCtaClass = "inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-foreground transition-all hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300 focus-visible:ring-offset-2 focus-visible:ring-offset-background";
-const elevatedCardClass = "group flex h-full min-h-[150px] flex-col rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-teal-400/35 hover:bg-white/[0.07]";
-
-// Non-translatable presentation metadata, merged with translated copy by index.
-const solutionMeta = [
-  { icon: BookOpen, badgeColor: "text-emerald-400 bg-emerald-400/10", href: "/academy", ctaStyle: "border border-white/10 hover:border-white/30", featured: false },
-  { icon: Package, badgeColor: "text-teal-400 bg-teal-400/10", href: "/toolkits/gmp-audit-kit", ctaStyle: "bg-teal-500 hover:bg-teal-400 text-teal-950", featured: true },
-  { icon: Briefcase, badgeColor: "text-blue-400 bg-blue-400/10", href: "/career", ctaStyle: "border border-white/10 hover:border-white/30", featured: false },
+const compilationSteps = [
+  { icon: Boxes, label: "Products & markets", detail: "Portfolio, batches, target markets" },
+  { icon: ClipboardCheck, label: "Quality requirements", detail: "Tests, methods, frequency, TAT" },
+  { icon: Network, label: "Capability architecture", detail: "People, equipment, space, utilities" },
+  { icon: FileOutput, label: "Operating blueprint", detail: "Scenarios, costs, risks, URS/RFQ basis" },
 ];
 
-const trustCardMeta = [
-  { icon: BookOpen, color: "text-emerald-400" },
-  { icon: Users, color: "text-blue-400" },
-  { icon: Star, color: "text-amber-400" },
-  { icon: TrendingUp, color: "text-teal-400" },
+const outputs = [
+  { icon: Microscope, title: "Capability map", body: "Define which testing capabilities the site must own, phase, or outsource." },
+  { icon: Gauge, title: "Capacity model", body: "Translate demand into hands-on hours, equipment loading, headroom, and bottlenecks." },
+  { icon: Users, title: "Operating model", body: "Estimate staffing, shifts, review load, resilience, and turnaround constraints." },
+  { icon: Building2, title: "Space concept", body: "Create planning allowances for receipt, preparation, testing, incubation, and support flows." },
+  { icon: BarChart3, title: "CAPEX & OPEX", body: "Compare vendor-neutral budget bands, consumables, maintenance, and growth scenarios." },
+  { icon: ShieldCheck, title: "Decision traceability", body: "Keep assumptions, confidence, unresolved inputs, and expert-review points visible." },
 ];
 
-const problemCardMeta = [
-  { icon: TrendingUp, color: "text-emerald-300", bg: "bg-emerald-400/10" },
-  { icon: ShieldCheck, color: "text-amber-300", bg: "bg-amber-400/10" },
-  { icon: Search, color: "text-cyan-300", bg: "bg-cyan-400/10" },
+const layers = [
+  {
+    number: "01",
+    eyebrow: "Atlas Evidence",
+    title: "The basis for trust",
+    body: "Evidence-backed workflows, method context, and regulatory source mapping support every decision path.",
+    icon: BookOpen,
+  },
+  {
+    number: "02",
+    eyebrow: "Atlas Intelligence",
+    title: "The compounding asset",
+    body: "A versioned Method Graph, calculation rules, assumptions, and project benchmarks turn knowledge into decisions.",
+    icon: Network,
+  },
+  {
+    number: "03",
+    eyebrow: "Atlas Blueprint",
+    title: "The commercial output",
+    body: "An expert-review-ready operating model that QC, QA, engineering, and procurement can challenge together.",
+    icon: Layers3,
+  },
 ];
 
-// Flagship free calculators surfaced on the home page (links only — the tool
-// components are NOT imported here, to keep the landing bundle lean).
-const FLAGSHIP_TOOLS: { slug: string; label: string; blurb: string; icon: LucideIcon }[] = [
-  { slug: "endotoxin-limit-calculator", label: "Endotoxin Limit & MVD", blurb: "Endotoxin limit (K/M) and Maximum Valid Dilution for a BET.", icon: FlaskConical },
-  { slug: "cleaning-validation-maco-calculator", label: "Cleaning Validation MACO", blurb: "Carryover limits by dose, HBEL, and 10 ppm, plus swab limits.", icon: TestTube2 },
-  { slug: "process-capability-calculator", label: "Process Capability (Cpk)", blurb: "Cp, Cpk, and estimated out-of-spec PPM from your data.", icon: TrendingUp },
-  { slug: "microbial-count-calculator", label: "Microbial Count (CFU)", blurb: "Plate or membrane counts back to CFU/mL in the sample.", icon: Dna },
+const evidenceLinks = [
+  { href: "/workflows", icon: Workflow, title: "QC workflows", body: "See the process logic behind a capability." },
+  { href: "/academy", icon: BookOpen, title: "Evidence library", body: "Explore structured lessons and source context." },
+  { href: "/tools", icon: Calculator, title: "Decision tools", body: "Check focused calculations with visible formulas." },
 ];
 
-interface Stat { value: string; label: string }
-interface Problem { emoji: string; title: string; desc: string }
-interface Solution { badge: string; title: string; desc: string; cta: string }
-interface TrustCard { label: string; value: string }
+const boundaries = [
+  "Planning intelligence — not detailed architectural, HVAC, or construction design",
+  "Vendor-neutral requirements — not supplier quotations or product placement",
+  "Regulatory mapping support — not legal advice or an approved site specification",
+  "Human-reviewed decisions — not autonomous compliance or investment approval",
+];
+
+const primaryCta = "inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-xl shadow-teal-500/20 transition hover:-translate-y-0.5 hover:bg-teal-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#08111f]";
+const secondaryCta = "inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#08111f]";
 
 export default function LandingPage() {
-  const { t } = useTranslation("landing");
-  useSEO({ title: t("seo.title"), description: t("seo.description") });
-  const { count: readCount } = useReadLessons();
+  useSEO({
+    title: "Quality Laboratory Decision Intelligence",
+    description: "Atlas converts products, regulations and testing demand into an expert-review-ready quality laboratory operating blueprint.",
+  });
 
-  // Warm the chunks a visitor is most likely to click next, once idle.
-  useEffect(() => { prefetchLikelyNext(); }, []);
-
-  const latestLessons = [...listContent({ collection: "academy", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
-  const latestPosts = [...listContent({ collection: "blog", lang: "en" })].sort(byUpdatedDesc).slice(0, 4);
-
-  const stats = t("stats", { returnObjects: true }) as Stat[];
-  const problems = t("problems.items", { returnObjects: true }) as Problem[];
-  const solutions = t("solutions.items", { returnObjects: true }) as Solution[];
-  const features = t("trust.features", { returnObjects: true }) as string[];
-  const cards = t("trust.cards", { returnObjects: true }) as TrustCard[];
+  const trackCta = (placement: string, destination: string) => () => {
+    analytics.blueprintCtaClicked(placement, destination);
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* Returning visitor — resume where they left off */}
-      {readCount > 0 && (
-        <div className="mx-auto max-w-4xl px-4 pt-6">
-          <ContinueLearning />
+    <div className="min-h-screen overflow-hidden bg-[#08111f] text-slate-100">
+      <section className="relative isolate border-b border-white/10 px-4 pb-16 pt-14 md:pb-24 md:pt-24">
+        <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_8%,rgba(45,212,191,0.2),transparent_28%),radial-gradient(circle_at_84%_16%,rgba(56,189,248,0.13),transparent_28%)]" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.05)_1px,transparent_1px)] bg-[size:52px_52px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" />
+
+        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.03fr_0.97fr] lg:items-center">
+          <div>
+            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
+              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-200">
+                <FlaskConical className="h-3.5 w-3.5" /> Decision intelligence for regulated manufacturing quality
+              </span>
+            </motion.div>
+
+            <motion.h1 variants={fadeUp} initial="hidden" animate="show" custom={1} className="mt-6 max-w-3xl font-display text-4xl font-bold leading-[1.03] md:text-6xl">
+              From products and regulations to a <span className="text-teal-300">defensible quality lab blueprint.</span>
+            </motion.h1>
+
+            <motion.p variants={fadeUp} initial="hidden" animate="show" custom={2} className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
+              Atlas compiles testing demand into the capabilities, equipment, people, space, cost, and procurement basis your QC laboratory needs — with assumptions and uncertainty kept visible.
+            </motion.p>
+
+            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={3} className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_hero", "planner")}>
+                Compile an initial blueprint <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/quality-lab" className={secondaryCta} onClick={trackCta("home_hero", "product_overview")}>
+                See how Atlas works
+              </Link>
+            </motion.div>
+
+            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4} className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-300">
+              {["Vendor-neutral", "Scenario-based", "Expert-review-ready"].map((item) => (
+                <span key={item} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-300" /> {item}</span>
+              ))}
+            </motion.div>
+          </div>
+
+          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2} className="relative">
+            <div className="absolute -inset-8 -z-10 rounded-full bg-teal-400/10 blur-3xl" />
+            <div className="overflow-hidden rounded-3xl border border-white/12 bg-slate-950/80 p-5 shadow-2xl shadow-black/40 backdrop-blur md:p-6">
+              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Compilation trace</p>
+                  <p className="mt-1 font-display text-lg font-bold">Non-sterile pharma expansion</p>
+                </div>
+                <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200">Concept</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 py-5">
+                {[["40", "finished products"], ["30/mo", "production batches"], ["70%", "three-year growth"], ["EU + ASEAN", "target markets"]].map(([value, label]) => (
+                  <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5">
+                    <p className="text-xl font-bold text-teal-200">{value}</p>
+                    <p className="mt-1 text-[11px] text-slate-400">{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2.5">
+                {compilationSteps.map((step, index) => (
+                  <div key={step.label} className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.025] px-3 py-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-teal-200"><step.icon className="h-4 w-4" /></div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold">{step.label}</p>
+                      <p className="truncate text-xs text-slate-500">{step.detail}</p>
+                    </div>
+                    <span className="text-[10px] font-bold text-slate-600">0{index + 1}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
-      )}
+      </section>
 
-      {/* ── HERO ── */}
-      <section className="relative isolate overflow-hidden border-b border-white/10 px-4 py-12 md:py-20">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_12%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.12),transparent_28%)]" />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(255,255,255,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_78%)]" />
+      <section className="border-b border-white/10 bg-slate-950/35 px-4 py-8">
+        <div className="mx-auto grid max-w-6xl gap-3 text-center text-xs font-semibold uppercase tracking-[0.14em] text-slate-400 sm:grid-cols-4">
+          {["Requirements", "Capabilities", "Resources", "Controlled output"].map((item, index) => (
+            <div key={item} className="flex items-center justify-center gap-3 rounded-xl border border-white/8 bg-white/[0.025] px-3 py-3">
+              <span className="text-teal-300">0{index + 1}</span> {item}
+              {index < 3 && <ArrowRight className="hidden h-3.5 w-3.5 text-slate-600 sm:block" />}
+            </div>
+          ))}
+        </div>
+      </section>
 
-        <div className="relative mx-auto max-w-6xl text-center">
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
-            <span className={`${pillClass} mb-6`}>
-              <FlaskConical className="h-3.5 w-3.5" />
-              {t("hero.badge")}
-            </span>
-          </motion.div>
+      <section className="px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-10 max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Requirements-to-blueprint</p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">Define what the laboratory must be capable of before choosing vendors or drawing rooms.</h2>
+            <p className="mt-4 max-w-2xl leading-7 text-slate-400">Atlas gives QC, QA, engineering, and procurement one operating model to challenge together before expensive commitments are made.</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {outputs.map((item, index) => (
+              <motion.div key={item.title} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: (index % 3) * 0.07 }} className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.055] to-white/[0.02] p-5 shadow-lg shadow-black/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-300/15 bg-teal-300/10 text-teal-200"><item.icon className="h-5 w-5" /></div>
+                <h3 className="mt-5 text-lg font-bold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <motion.h1
-            variants={fadeUp} initial="hidden" animate="show" custom={1}
-            className="mx-auto mb-6 max-w-4xl font-display text-4xl font-bold leading-[1.04] md:text-6xl"
-          >
-            {t("hero.titleLead")}{" "}
-            <span className="bg-gradient-to-r from-teal-300 via-emerald-300 to-cyan-300 bg-clip-text text-transparent">
-              {t("hero.titleHighlight")}
-            </span>
-            <br className="hidden md:block" />
-            {" "}{t("hero.titleTail")}
-          </motion.h1>
+      <section className="border-y border-white/10 bg-slate-950/45 px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">One compounding system</p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">Knowledge becomes intelligence. Intelligence becomes a controlled decision package.</h2>
+          </div>
+          <div className="grid gap-4 lg:grid-cols-3">
+            {layers.map((layer) => (
+              <div key={layer.number} className="relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] p-6">
+                <span className="absolute right-5 top-4 font-display text-4xl font-bold text-white/[0.045]">{layer.number}</span>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-300/10 text-teal-200"><layer.icon className="h-5 w-5" /></div>
+                <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">{layer.eyebrow}</p>
+                <h3 className="mt-2 text-xl font-bold">{layer.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-400">{layer.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <motion.p
-            variants={fadeUp} initial="hidden" animate="show" custom={2}
-            className="mx-auto mb-10 max-w-2xl text-base leading-8 text-muted-foreground md:text-lg"
-          >
-            {t("hero.subtitle")}
-          </motion.p>
-
-          <motion.div
-            variants={fadeUp} initial="hidden" animate="show" custom={3}
-            className="mb-8 flex flex-col justify-center gap-3 sm:flex-row"
-          >
-            <Link href="/workflows">
-              <button className={primaryCtaClass}>
-                <Workflow className="h-4 w-4" />
-                {t("hero.ctaWorkflows")}
-              </button>
-            </Link>
-            <Link href="/register">
-              <button className={secondaryCtaClass}>
-                {t("hero.ctaStart")}
-                <ArrowRight className="h-4 w-4" />
-              </button>
-            </Link>
-          </motion.div>
-
-          <motion.div
-            variants={fadeUp} initial="hidden" animate="show" custom={4}
-            className="mx-auto mb-8 grid max-w-4xl gap-3 rounded-lg border border-white/10 bg-slate-950/50 p-3 text-left shadow-2xl shadow-black/20 backdrop-blur md:grid-cols-3"
-          >
-            {[
-              { href: "/workflows", icon: Workflow, title: "Follow a workflow", desc: "Steps, controls, mistakes, and linked tools." },
-              { href: "/tools", icon: Calculator, title: "Use a calculator", desc: "Run QC math with formulas visible." },
-              { href: "/academy", icon: BookOpen, title: "Deepen the topic", desc: "Structured lessons and articles behind the task." },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex items-start gap-3 rounded-lg border border-white/10 bg-white/[0.04] p-3 transition-all hover:border-teal-400/35 hover:bg-teal-400/10"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white/5 text-teal-300">
-                  <item.icon className="h-5 w-5" />
+      <section className="px-4 py-16 md:py-20">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[1.03fr_0.97fr] lg:items-center">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Focused entry, wider destination</p>
+            <h2 className="mt-3 text-3xl font-bold md:text-4xl">Microbiology is the first Domain Pack — not the edge of the map.</h2>
+            <p className="mt-5 max-w-2xl leading-7 text-slate-400">The concept edition starts with non-sterile pharmaceutical microbiology because the workflows are structured and the domain knowledge is strongest. The Compiler Core is designed for regulated manufacturing quality across pharma, biologics, food, cosmetics, and medical devices.</p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_domain", "planner")}>
+                Start with Microbiology <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/quality-lab/review" className={secondaryCta} onClick={trackCta("home_domain", "expert_review")}>
+                Discuss a real lab project
+              </Link>
+            </div>
+          </div>
+          <div className="rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/20 md:p-6">
+            <div className="rounded-2xl border border-teal-300/20 bg-teal-300/10 p-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200">Domain Pack 01 · active concept</p>
+              <h3 className="mt-2 text-xl font-bold">Non-sterile Pharma Microbiology</h3>
+              <p className="mt-2 text-sm leading-6 text-slate-300">Microbial limits, specified organisms, water, media QC, growth promotion, suitability, and capacity planning.</p>
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {["Sterile & biologics", "Analytical chemistry", "Stability", "Food & beverage"].map((item) => (
+                <div key={item} className="rounded-xl border border-dashed border-white/12 bg-white/[0.025] p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-slate-600">Evidence-gated</p>
+                  <p className="mt-1 text-sm font-semibold text-slate-400">{item}</p>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold">{item.title}</p>
-                  <p className="mt-1 text-xs leading-5 text-muted-foreground">{item.desc}</p>
-                </div>
-                <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-teal-300" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-slate-950/45 px-4 py-16">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">Strict product boundary</p>
+            <h2 className="mt-3 text-3xl font-bold">Planning intelligence, with expert judgment kept in the loop.</h2>
+            <p className="mt-4 leading-7 text-slate-400">Atlas improves the basis of design. It does not pretend to replace qualified site teams, engineering, validation, or regulatory review.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {boundaries.map((item) => (
+              <div key={item} className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-6 text-slate-300">
+                <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /> {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Atlas Evidence</p>
+            <h2 className="mt-3 text-3xl font-bold">Inspect the knowledge behind the decisions.</h2>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {evidenceLinks.map((item) => (
+              <Link key={item.href} href={item.href} className="group rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-1 hover:border-teal-300/30 hover:bg-white/[0.055]">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-teal-200"><item.icon className="h-5 w-5" /></div>
+                <h3 className="mt-5 text-lg font-bold">{item.title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300">Explore evidence <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
               </Link>
             ))}
-          </motion.div>
-
-          <motion.div
-            variants={fadeUp} initial="hidden" animate="show" custom={5}
-            className="mx-auto grid max-w-3xl grid-cols-2 gap-3 md:grid-cols-4"
-          >
-            {stats.map((s) => (
-              <div key={s.label} className="rounded-lg border border-white/10 bg-white/[0.04] p-3">
-                <div className="text-xl font-bold text-teal-300">{s.value}</div>
-                <div className="mt-1 text-[11px] text-muted-foreground">{s.label}</div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── WORKFLOW START (workflow-first front door) ── */}
-      <section className="py-12 px-4 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="text-center mb-8"
-          >
-            <span className={`${pillClass} mb-4`}>
-              <Workflow className="w-3 h-3" /> Workflow Atlas
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">What workflow are you working on?</h2>
-            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
-              Start from the task in front of you — the steps, control points, common mistakes,
-              and the lessons and toolkits that back it up.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-            {workflowCategories.map((c, i) => {
-              const Icon = WORKFLOW_ICONS[c.slug] ?? FlaskConical;
-              return (
-                <motion.div
-                  key={c.slug}
-                  initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ duration: 0.35, delay: (i % 4) * 0.06 }}
-                >
-                  <Link
-                    href={workflowHref(c)}
-                    className={elevatedCardClass}
-                  >
-                    <div className="flex items-center justify-between mb-2.5">
-                      <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center">
-                        <Icon className="w-4 h-4 text-teal-400" />
-                      </div>
-                      {c.workflowSlugs.length > 0 && (
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-teal-400 bg-teal-400/10 px-1.5 py-0.5 rounded">
-                          {c.workflowSlugs.length} flows
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="font-bold text-sm mb-1 leading-snug">{c.title}</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">{c.description}</p>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
-            <Link href="/workflows#microbiology-qc">
-              <button className={primaryCtaClass}>
-                <Microscope className="w-4 h-4" /> Start with Microbiology QC
-              </button>
-            </Link>
-            <Link href="/tools">
-              <button className={secondaryCtaClass}>
-                <Calculator className="w-4 h-4" /> Try a free tool
-              </button>
-            </Link>
-            <Link href="/toolkits">
-              <button className={secondaryCtaClass}>
-                <Package className="w-4 h-4" /> Browse toolkits
-              </button>
-            </Link>
           </div>
         </div>
       </section>
 
-      {/* ── FREE CALCULATORS ── */}
-      <section className="py-12 px-4 border-t border-white/5">
-        <div className="max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="text-center mb-8"
-          >
-            <span className={`${pillClass} mb-4`}>
-              <Calculator className="w-3 h-3" /> Free calculators
-            </span>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">The QC math, done for you</h2>
-            <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
-              Interactive calculators for the work you actually do — no sign-up, instant answers,
-              with the formula shown so you can check it.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-            {FLAGSHIP_TOOLS.map((tool, i) => {
-              const Icon = tool.icon;
-              return (
-                <motion.div
-                  key={tool.slug}
-                  initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ duration: 0.35, delay: (i % 4) * 0.06 }}
-                >
-                  <Link
-                    href={`/tools/${tool.slug}`}
-                    className={elevatedCardClass}
-                  >
-                    <div className="w-9 h-9 rounded-lg bg-teal-500/10 flex items-center justify-center mb-2.5">
-                      <Icon className="w-4 h-4 text-teal-400" />
-                    </div>
-                    <h3 className="font-bold text-sm mb-1 leading-snug">{tool.label}</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed flex-1">{tool.blurb}</p>
-                    <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-teal-400 group-hover:gap-2 transition-all">
-                      Open <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div className="text-center">
-            <Link href="/tools">
-              <button className={secondaryCtaClass}>
-                <Calculator className="w-4 h-4" /> See all {TOOL_CATALOG.length} free tools
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── PROBLEMS ── */}
-      <section className="py-16 px-4 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("problems.heading")}</h2>
-            <p className="text-muted-foreground text-sm">{t("problems.subtitle")}</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {problems.map((p, i) => {
-              const meta = problemCardMeta[i] ?? problemCardMeta[0];
-              const Icon = meta.icon;
-              return (
-                <motion.div
-                  key={p.title}
-                  initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className="rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10"
-                >
-                  <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-lg ${meta.bg} ${meta.color}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mb-2 text-sm font-bold leading-snug">{p.title}</h3>
-                  <p className="text-xs leading-relaxed text-muted-foreground">{p.desc}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── SOLUTIONS ── */}
-      <section className="py-16 px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("solutions.heading")}</h2>
-            <p className="text-muted-foreground text-sm">{t("solutions.subtitle")}</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {solutionMeta.map((m, i) => {
-              const s = solutions[i];
-              return (
-                <motion.div
-                  key={s.title}
-                  initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.1 }}
-                  className={`bg-card rounded-2xl p-6 flex flex-col relative overflow-hidden ${
-                    m.featured
-                      ? "border-2 border-teal-500/40 shadow-[0_0_30px_rgba(20,184,166,0.1)]"
-                      : "border border-white/5"
-                  }`}
-                >
-                  {m.featured && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-teal-500 text-teal-950 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">
-                        {t("solutions.featuredBadge")}
-                      </span>
-                    </div>
-                  )}
-                  <div className="mt-2">
-                    <span className={`text-[10px] uppercase font-bold px-2 py-1 rounded w-fit block mb-3 ${m.badgeColor}`}>
-                      {s.badge}
-                    </span>
-                    <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-4">
-                      <m.icon className="w-5 h-5 text-teal-400" />
-                    </div>
-                    <h3 className="font-bold text-lg mb-2">{s.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{s.desc}</p>
-                  </div>
-                  <Link href={m.href}>
-                    <button className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 ${m.ctaStyle}`}>
-                      {s.cta}
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FEATURED PRODUCT BANNER ── */}
-      <section className="py-8 px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="relative bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-transparent border border-teal-500/20 rounded-2xl p-8 md:p-10 overflow-hidden"
-          >
-            <div className="absolute right-0 top-0 w-80 h-80 bg-teal-400/8 blur-3xl rounded-full -mr-20 -mt-20 pointer-events-none" />
-            <div className="relative flex flex-col md:flex-row items-start md:items-center gap-6 justify-between">
-              <div className="max-w-xl">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-teal-400 mb-3 block">
-                  {t("banner.eyebrow")}
-                </span>
-                <h3 className="text-2xl font-bold mb-2">{t("banner.title")}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{t("banner.desc")}</p>
-                <div className="flex flex-wrap gap-2">
-                  {["GMP WHO", "Annex 1 EU", "FSSC 22000", "ISO 15189"].map((tag) => (
-                    <span key={tag} className="text-[10px] font-semibold bg-white/5 border border-white/10 px-2 py-1 rounded">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="shrink-0 text-center md:text-right">
-                <div className="mb-1 inline-flex items-center gap-1.5 text-teal-400 font-bold">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="text-xl">{t("banner.includedBadge")}</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-4">{t("banner.priceNote")}</p>
-                <div className="flex flex-col sm:flex-row gap-2 md:justify-end">
-                  <Link href="/pricing">
-                    <button className="bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20 w-full sm:w-auto">
-                      {t("banner.cta")}
-                    </button>
-                  </Link>
-                  <Link href="/toolkits/gmp-audit-kit">
-                    <button className="border border-white/10 hover:border-white/30 font-semibold px-5 py-3 rounded-xl transition-all w-full sm:w-auto">
-                      {t("banner.ctaSecondary")}
-                    </button>
-                  </Link>
-                </div>
-              </div>
+      <section className="px-4 pb-20 pt-4">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-teal-300/25 bg-gradient-to-br from-teal-300/15 via-sky-300/5 to-transparent p-7 shadow-2xl shadow-teal-950/25 md:p-10">
+          <div className="flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-300 text-slate-950"><Layers3 className="h-5 w-5" /></div>
+              <h2 className="mt-6 text-3xl font-bold">Build the first model. Then pressure-test it with experts.</h2>
+              <p className="mt-3 leading-7 text-slate-300">The concept engine gives your team a shared starting point. Expert review turns assumptions, gaps, and scenarios into a controlled project brief.</p>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ── TRUST / CREDIBILITY ── */}
-      <section className="py-16 px-4 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -16 }} whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-2xl font-bold mb-4">{t("trust.heading")}</h2>
-              <p className="text-muted-foreground text-sm leading-relaxed mb-6">{t("trust.body")}</p>
-              <div className="space-y-3">
-                {features.map((f) => (
-                  <div key={f} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />
-                    <span className="text-sm">{f}</span>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 16 }} whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }} transition={{ duration: 0.5 }}
-              className="grid grid-cols-1 gap-4"
-            >
-              {trustCardMeta.map((m, i) => {
-                const c = cards[i];
-                return (
-                  <div key={c.label} className="bg-card border border-white/5 rounded-xl p-4 flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center ${m.color}`}>
-                      <m.icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">{c.label}</p>
-                      <p className="text-sm font-semibold">{c.value}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── LATEST CONTENT ── */}
-      <section className="py-16 px-4 border-t border-white/5">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.5 }}
-            className="text-center mb-10"
-          >
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">{t("latest.heading")}</h2>
-            <p className="text-muted-foreground text-sm">{t("latest.subtitle")}</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">{t("latest.academyLabel")}</h3>
-              <ul className="space-y-2 mb-3">
-                {latestLessons.map((l) => (
-                  <li key={l.slug}>
-                    <Link href={`/library/${l.slug}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                      <BookOpen className="w-3.5 h-3.5 text-teal-400 shrink-0" />
-                      <span className="truncate">{l.title}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link href="/academy" className="text-xs text-primary hover:underline">{t("latest.browseAcademy")}</Link>
-            </div>
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">{t("latest.blogLabel")}</h3>
-              <ul className="space-y-2 mb-3">
-                {latestPosts.map((p) => (
-                  <li key={p.slug}>
-                    <Link href={`/blog/${p.slug}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                      <ChevronRight className="w-3.5 h-3.5 text-teal-400 shrink-0" />
-                      <span className="truncate">{p.title}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link href="/blog" className="text-xs text-primary hover:underline">{t("latest.browseBlog")}</Link>
+            <div className="flex shrink-0 flex-col gap-3">
+              <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_final", "planner")}>Compile a blueprint <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/quality-lab/review" className={secondaryCta} onClick={trackCta("home_final", "expert_review")}>Request expert review</Link>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* ── FINAL CTA ── */}
-      <section className="py-20 px-4 border-t border-white/5">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.5 }}
-          className="max-w-2xl mx-auto text-center"
-        >
-          <h2 className="text-2xl md:text-4xl font-bold mb-4 font-display">{t("finalCta.heading")}</h2>
-          <p className="text-muted-foreground mb-8">{t("finalCta.subtitle")}</p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/register">
-              <button className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-6 py-3 rounded-xl transition-all shadow-lg shadow-teal-500/20">
-                <ArrowRight className="w-4 h-4" /> {t("finalCta.ctaStart")}
-              </button>
-            </Link>
-            <Link href="/academy">
-              <button className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/10 font-semibold px-6 py-3 rounded-xl transition-all">
-                <BookOpen className="w-4 h-4" /> {t("finalCta.ctaAcademy")}
-              </button>
-            </Link>
-          </div>
-        </motion.div>
       </section>
     </div>
   );

@@ -170,6 +170,39 @@ describe("lead capture", () => {
   });
 });
 
+describe("Quality Lab expert review", () => {
+  it("stores a structured review brief in the existing commercial intake", async () => {
+    const app = await buildApp();
+    storageMock.createQuoteRequest.mockImplementationOnce(async (value: any) => ({ id: 12, ...value }));
+    const res = await request(app).post("/api/quality-lab/reviews").send({
+      briefVersion: "quality-lab-review-brief/v1",
+      contact: { name: "Quality Lead", email: "QUALITY@EXAMPLE.COM", company: "Example Pharma", role: "QC Manager" },
+      projectContext: "We need a scoped review before the capital planning workshop.",
+      project: null,
+      confidentialityConfirmed: true,
+    });
+    expect(res.status).toBe(201);
+    expect(storageMock.createQuoteRequest).toHaveBeenCalledWith(expect.objectContaining({
+      email: "quality@example.com",
+      productOfInterest: "Atlas Quality Lab Blueprint expert review",
+      need: expect.stringContaining("[quality-lab-review-brief/v1]"),
+    }));
+  });
+
+  it("rejects review context that is not confirmed non-confidential", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/quality-lab/reviews").send({
+      briefVersion: "quality-lab-review-brief/v1",
+      contact: { name: "Quality Lead", email: "quality@example.com", company: null, role: null },
+      projectContext: "We need a scoped review before the capital planning workshop.",
+      project: null,
+      confidentialityConfirmed: false,
+    });
+    expect(res.status).toBe(400);
+    expect(storageMock.createQuoteRequest).not.toHaveBeenCalled();
+  });
+});
+
 describe("content API", () => {
   it("rejects legacy non-English content language requests", async () => {
     const app = await buildApp();

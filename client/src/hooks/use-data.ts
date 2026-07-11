@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, type InsertQuoteRequest } from "@shared/routes";
+import type { QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useToast } from "@/hooks/use-toast";
 
 // ============================================
@@ -104,5 +105,22 @@ export function useCreateQuoteRequest() {
         variant: "destructive",
       });
     }
+  });
+}
+
+export function useCreateQualityLabReview() {
+  const { toast } = useToast();
+  return useMutation({
+    mutationFn: async (data: QualityLabReviewRequest) => {
+      const res = await fetch(api.qualityLabReviews.create.path, {
+        method: api.qualityLabReviews.create.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to submit the Blueprint review brief");
+      return api.qualityLabReviews.create.responses[201].parse(await res.json());
+    },
+    onSuccess: () => toast({ title: "Review brief received", description: "The structured project basis is ready for scope triage." }),
+    onError: (error) => toast({ title: "Review request failed", description: error.message, variant: "destructive" }),
   });
 }

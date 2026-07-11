@@ -1,0 +1,47 @@
+import { describe, expect, it } from "vitest";
+import { compileQualityLabBlueprint, defaultQualityLabInput } from "./quality-lab";
+import { formatQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, qualityLabReviewRequestSchema } from "./quality-lab-review";
+
+describe("Quality Lab review brief", () => {
+  it("creates a versioned, deterministic triage brief from a Blueprint", () => {
+    const blueprint = compileQualityLabBlueprint(defaultQualityLabInput);
+    const request = qualityLabReviewRequestSchema.parse({
+      briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
+      contact: { name: "Quality Lead", email: "quality@example.com", company: "Example Pharma", role: "QC Manager" },
+      projectContext: "We need a review before the capital planning workshop next month.",
+      project: {
+        localProjectId: "qlp_test",
+        projectName: defaultQualityLabInput.projectName,
+        country: defaultQualityLabInput.country,
+        facilityType: defaultQualityLabInput.facilityType,
+        inputContractVersion: defaultQualityLabInput.contractVersion,
+        outputContractVersion: blueprint.contractVersion,
+        compilerCoreVersion: blueprint.compilerCoreVersion,
+        domainPackId: blueprint.domainPack.id,
+        domainPackVersion: blueprint.domainPack.version,
+        monthlyTests: blueprint.current.monthlyTests,
+        readinessPercent: blueprint.dataQuality.completenessPercent,
+        blockingOpenCount: blueprint.dataQuality.blockingOpenCount,
+        importantOpenCount: blueprint.dataQuality.importantOpenCount,
+        unresolvedInputs: blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
+      },
+      confidentialityConfirmed: true,
+    });
+    const brief = formatQualityLabReviewBrief(request);
+    expect(brief).toContain("[quality-lab-review-brief/v1]");
+    expect(brief).toContain("Open-input checklist:");
+    expect(brief).toContain("quality-lab-blueprint/v1");
+    expect(brief).not.toContain(request.contact.email);
+  });
+
+  it("rejects a submission without confidentiality confirmation", () => {
+    const parsed = qualityLabReviewRequestSchema.safeParse({
+      briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
+      contact: { name: "Quality Lead", email: "quality@example.com", company: null, role: null },
+      projectContext: "A sufficiently detailed non-confidential project context.",
+      project: null,
+      confidentialityConfirmed: false,
+    });
+    expect(parsed.success).toBe(false);
+  });
+});

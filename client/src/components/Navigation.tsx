@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -53,17 +53,17 @@ function AtlasMark({ className }: { className?: string }) {
 }
 
 // `key` maps to nav.json translation keys; `name` is the fallback label.
-// Workflow-first: "Workflows" leads on both bars. "Learn" (route /academy) is
-// the single unified learning hub — it already surfaces paths + the MDX library
-// + structured lessons, so QC Hub and the Library index were folded into it.
+// Blueprint is the flagship front door. Workflows, Learn and Tools are the
+// supporting Atlas Evidence surfaces; QC Hub and Library were folded into Learn.
 const mobileTabs = [
+  { key: "qualityLab", name: "Blueprint", icon: Building2, path: "/quality-lab" },
   { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
   { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
-  { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits" },
 ];
 
 const desktopTabs = [
+  { key: "qualityLab", name: "Blueprint", icon: Building2, path: "/quality-lab" },
   { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
   { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
   { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
@@ -75,6 +75,8 @@ const desktopTabs = [
 // Secondary destinations for the mobile "More" drawer — everything not on the
 // 4-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
 const moreLinks = [
+  { name: "Request Blueprint Review", icon: ClipboardCheck, path: "/quality-lab/review" },
+  { name: "Toolkits", icon: Package, path: "/toolkits" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
   { name: "Career", icon: Briefcase, path: "/career" },
   { name: "Blog", icon: TrendingUp, path: "/blog" },
