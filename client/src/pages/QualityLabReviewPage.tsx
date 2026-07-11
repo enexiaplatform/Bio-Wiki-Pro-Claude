@@ -1,10 +1,11 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, Loader2, ShieldCheck } from "lucide-react";
-import { useCreateQuoteRequest } from "@/hooks/use-data";
+import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
-import { getQualityLabProject } from "@/lib/quality-lab-projects";
+import { getQualityLabProject, markQualityLabReviewRequested } from "@/lib/quality-lab-projects";
+import { QUALITY_LAB_REVIEW_BRIEF_VERSION } from "@shared/quality-lab-review";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -17,8 +18,9 @@ export default function QualityLabReviewPage() {
 
   const projectId = useMemo(() => new URLSearchParams(window.location.search).get("project"), []);
   const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
-  const request = useCreateQuoteRequest();
+  const request = useCreateQualityLabReview();
   const [submitted, setSubmitted] = useState(false);
+  const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -34,12 +36,28 @@ export default function QualityLabReviewPage() {
     analytics.expertReviewStarted(project ? "blueprint_report" : "standalone");
     try {
       await request.mutateAsync({
-        name: form.name.trim(),
-        email: form.email.trim(),
-        company: form.company.trim() || null,
-        need: [form.role.trim() ? `Role: ${form.role.trim()}.` : "", form.need.trim(), project ? `Local project ID: ${project.id}.` : ""].filter(Boolean).join(" "),
-        productOfInterest: "Atlas Quality Lab Blueprint expert review",
+        briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
+        contact: { name: form.name, email: form.email, company: form.company || null, role: form.role || null },
+        projectContext: form.need,
+        project: project ? {
+          localProjectId: project.id,
+          projectName: project.name,
+          country: project.input.country,
+          facilityType: project.input.facilityType,
+          inputContractVersion: project.input.contractVersion,
+          outputContractVersion: project.blueprint.contractVersion,
+          compilerCoreVersion: project.blueprint.compilerCoreVersion,
+          domainPackId: project.blueprint.domainPack.id,
+          domainPackVersion: project.blueprint.domainPack.version,
+          monthlyTests: project.blueprint.current.monthlyTests,
+          readinessPercent: project.blueprint.dataQuality.completenessPercent,
+          blockingOpenCount: project.blueprint.dataQuality.blockingOpenCount,
+          importantOpenCount: project.blueprint.dataQuality.importantOpenCount,
+          unresolvedInputs: project.blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
+        } : null,
+        confidentialityConfirmed: true,
       });
+      if (project) markQualityLabReviewRequested(project.id);
       analytics.expertReviewRequested(Boolean(project));
       setSubmitted(true);
     } catch {
@@ -89,6 +107,11 @@ export default function QualityLabReviewPage() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Attached browser-local model</p>
                 <p className="mt-1 font-semibold">{project.name}</p>
                 <p className="mt-1 text-xs text-slate-500">The model itself remains in this browser. Only the written context below is submitted.</p>
+                <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] text-slate-400">
+                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-red-200">{project.blueprint.dataQuality.blockingOpenCount}</strong>blocking</span>
+                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.importantOpenCount}</strong>important</span>
+                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</strong>readiness</span>
+                </div>
               </div>
             )}
             <div className="grid gap-5 sm:grid-cols-2">
@@ -100,10 +123,14 @@ export default function QualityLabReviewPage() {
             <label className="mt-5 block text-xs font-semibold text-slate-300">Project context *
               <textarea required minLength={20} rows={7} value={form.need} onChange={(event) => setForm({ ...form, need: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
             </label>
-            <button type="submit" disabled={request.isPending} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60">
+            <label className="mt-5 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-slate-400">
+              <input required type="checkbox" checked={confidentialityConfirmed} onChange={(event) => setConfidentialityConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-teal-300" />
+              <span>I confirm this submission contains no confidential formulations, proprietary methods, credentials, or personal data about other people.</span>
+            </label>
+            <button type="submit" disabled={request.isPending || !confidentialityConfirmed} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60">
               {request.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending request</> : <>Request a scope review <ArrowRight className="h-4 w-4" /></>}
             </button>
-            <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Submit only business contact details and non-confidential project context. Do not include registered formulations, proprietary methods, credentials, or personal data about other people.</p>
+            <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. It includes contract versions, model summary, and open-input checklist—not the complete browser-local model.</p>
           </form>
         </div>
       </div>

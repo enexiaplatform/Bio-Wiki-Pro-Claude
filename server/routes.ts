@@ -641,6 +641,26 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
+  app.post(api.qualityLabReviews.create.path, async (req, res) => {
+    try {
+      const input = api.qualityLabReviews.create.input.parse(req.body);
+      const { formatQualityLabReviewBrief } = await import("../shared/quality-lab-review.js");
+      const quote = await storage.createQuoteRequest({
+        name: input.contact.name,
+        email: input.contact.email.toLowerCase(),
+        company: input.contact.company,
+        need: formatQualityLabReviewBrief(input),
+        productOfInterest: "Atlas Quality Lab Blueprint expert review",
+      });
+      res.status(201).json(quote);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
+      }
+      throw err;
+    }
+  });
+
   // ── Lead capture ────────────────────────────────────────────────────────
 
   app.post("/api/leads/capture", async (req, res) => {

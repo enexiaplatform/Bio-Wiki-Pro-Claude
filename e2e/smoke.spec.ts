@@ -98,6 +98,8 @@ test.describe("public smoke", () => {
     await page.waitForURL(/\/quality-lab\/review\?project=/);
     await expect(page.getByRole("heading", { name: /reviewable project basis/i })).toBeVisible();
     await expect(page.getByText(/Attached browser-local model/i)).toBeVisible();
+    await expect(page.getByText(/quality-lab-review-brief\/v1/i)).toBeVisible();
+    await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a scope review/i })).toBeVisible();
   });
 

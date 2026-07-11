@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { insertQuoteRequestSchema, quoteRequests } from './schema.js';
 import { users } from './models/auth.js';
+import { qualityLabReviewRequestSchema } from './quality-lab-review.js';
 
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
 export const errorSchemas = {
@@ -17,6 +18,17 @@ export const errorSchemas = {
 };
 
 export const api = {
+  qualityLabReviews: {
+    create: {
+      method: 'POST' as const,
+      path: '/api/quality-lab/reviews' as const,
+      input: qualityLabReviewRequestSchema,
+      responses: {
+        201: z.custom<typeof quoteRequests.$inferSelect>(),
+        400: errorSchemas.validation,
+      },
+    },
+  },
   quoteRequests: {
     create: {
       method: 'POST' as const,

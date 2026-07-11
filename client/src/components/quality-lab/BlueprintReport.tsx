@@ -76,7 +76,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
             <Printer className="h-4 w-4" /> Print / save PDF
           </button>
           <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-300/15">
-            Request expert review <ArrowRight className="h-4 w-4" />
+            {project.reviewRequestedAt ? "Review brief submitted" : "Request expert review"} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
       </div>
@@ -86,7 +86,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:border-slate-400 print:bg-white print:text-slate-700">
-              <ShieldCheck className="h-3.5 w-3.5" /> Concept blueprint · SME review required
+              <ShieldCheck className="h-3.5 w-3.5" /> {project.reviewRequestedAt ? "Review requested · triage pending" : "Concept blueprint · SME review required"}
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300 print:text-slate-600">Atlas Quality Lab Blueprint</p>
             <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight md:text-5xl print:text-slate-950">{project.name}</h1>

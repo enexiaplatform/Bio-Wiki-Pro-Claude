@@ -67,6 +67,16 @@ export function deleteQualityLabProject(id: string) {
   write(listQualityLabProjects().filter((project) => project.id !== id));
 }
 
+export function markQualityLabReviewRequested(id: string): QualityLabProject | undefined {
+  const projects = listQualityLabProjects();
+  const project = projects.find((item) => item.id === id);
+  if (!project) return undefined;
+  const now = new Date().toISOString();
+  const updated = { ...project, reviewRequestedAt: now, updatedAt: now };
+  write([updated, ...projects.filter((item) => item.id !== id)]);
+  return updated;
+}
+
 export function exportQualityLabProject(project: QualityLabProject) {
   const blob = new Blob([JSON.stringify(project, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);

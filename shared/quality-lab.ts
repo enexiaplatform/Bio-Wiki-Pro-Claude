@@ -213,6 +213,7 @@ export interface QualityLabProject {
   updatedAt: string;
   input: QualityLabInput;
   blueprint: QualityLabBlueprint;
+  reviewRequestedAt?: string;
 }
 
 export const defaultQualityLabInput: QualityLabInput = {
