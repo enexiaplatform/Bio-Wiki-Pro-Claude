@@ -92,6 +92,7 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByRole("heading", { name: /What must be resolved before controlled use/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
     await expect(page.getByText("quality-lab-blueprint/v1")).toBeVisible();
     await expect(page.getByRole("heading", { name: /Versioned calculation trace/i })).toBeVisible();
     await page.getByRole("link", { name: /Request expert review/i }).click();

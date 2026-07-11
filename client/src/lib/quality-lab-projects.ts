@@ -1,5 +1,6 @@
 import type { QualityLabInput, QualityLabProject } from "@shared/quality-lab";
 import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema } from "@shared/quality-lab";
+import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 
 const STORAGE_KEY = "lsa:quality-lab-projects:v1";
 
@@ -83,6 +84,17 @@ export function exportQualityLabProject(project: QualityLabProject) {
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = `${project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "quality-lab-blueprint"}.json`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export function exportQualityLabEngagementPacket(project: QualityLabProject) {
+  const packet = createQualityLabEngagementPacket(project);
+  const blob = new Blob([JSON.stringify(packet, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "quality-lab"}-engagement-packet.json`;
   anchor.click();
   URL.revokeObjectURL(url);
 }

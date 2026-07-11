@@ -141,4 +141,7 @@ export const analytics = {
 
   expertReviewRequested: (hasProject: boolean) =>
     capture("expert_review_requested", { has_project: hasProject }),
+
+  engagementPacketDownloaded: (placement: string, openItems: number) =>
+    capture("engagement_packet_downloaded", { placement, open_items: openItems }),
 };
