@@ -1,10 +1,10 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, ShieldCheck } from "lucide-react";
 import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
-import { getQualityLabProject, markQualityLabReviewRequested } from "@/lib/quality-lab-projects";
+import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested } from "@/lib/quality-lab-projects";
 import { QUALITY_LAB_REVIEW_BRIEF_VERSION } from "@shared/quality-lab-review";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
@@ -73,6 +73,16 @@ export default function QualityLabReviewPage() {
           <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Request received</p>
           <h1 className="mt-3 text-3xl font-bold">Your review request has been captured.</h1>
           <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">The next step is a scope check: project basis, available inputs, decision deadline, and which assumptions need qualified review. No model output will be treated as approved until that review is complete.</p>
+          {project && (
+            <div className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-4 text-left">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-300">Engagement handoff</p>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Download a contact-free working packet with the triage checklist, estimate baselines, correction log and decision log. Complete it with qualified reviewers outside Atlas.</p>
+              <button type="button" onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("review_success", project.blueprint.unresolvedInputs.length); }} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200 transition hover:bg-teal-300/15">
+                <FileDown className="h-4 w-4" /> Download engagement packet
+              </button>
+              <Link href={`/quality-lab/engagements/${project.id}`} className="ml-0 mt-3 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 sm:ml-2">Open review workspace</Link>
+            </div>
+          )}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/quality-lab" className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950">Quality Lab overview <ArrowRight className="h-4 w-4" /></Link>
             {project && <Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold">Return to blueprint</Link>}

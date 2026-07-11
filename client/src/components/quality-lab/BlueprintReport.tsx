@@ -18,7 +18,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import type { QualityLabProject } from "@shared/quality-lab";
-import { exportQualityLabProject } from "@/lib/quality-lab-projects";
+import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
 
@@ -72,6 +72,12 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <Download className="h-4 w-4" /> Export model
           </button>
+          <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
+            <ClipboardCheck className="h-4 w-4" /> Engagement packet
+          </button>
+          <Link href={`/quality-lab/engagements/${project.id}`} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
+            <ClipboardCheck className="h-4 w-4" /> Review workspace
+          </Link>
           <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-teal-200">
             <Printer className="h-4 w-4" /> Print / save PDF
           </button>
