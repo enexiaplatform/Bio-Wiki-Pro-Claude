@@ -21,6 +21,7 @@ import {
   defaultQualityLabInput,
   facilityTypeValues,
   marketValues,
+  MICROBIOLOGY_DOMAIN_PACK,
   qualityLabInputSchema,
   type QualityLabInput,
   type QualityLabProject,
@@ -196,7 +197,7 @@ export default function QualityLabPlannerPage() {
         <header className="mb-6 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/5 p-6 md:p-8">
           <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> Microbiology compiler · v1</span>
+              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> {MICROBIOLOGY_DOMAIN_PACK.version} · concept</span>
               <h1 className="mt-5 text-3xl font-bold md:text-5xl">Build the basis of design.</h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400 md:text-base">Enter the operational facts you know. Atlas will expose the assumptions it adds and separate concept estimates from decisions that require site verification.</p>
             </div>
@@ -356,6 +357,9 @@ export default function QualityLabPlannerPage() {
                     <div className="flex justify-between gap-2"><span>Selected workflows</span><strong className="text-slate-200">{preview.workflows.length}</strong></div>
                     <div className="flex justify-between gap-2"><span>Equipment classes</span><strong className="text-slate-200">{preview.equipment.length}</strong></div>
                     <div className="flex justify-between gap-2"><span>Future multiplier</span><strong className="text-slate-200">{preview.future.multiplier}×</strong></div>
+                    <div className="flex justify-between gap-2 border-t border-white/10 pt-2"><span>Controlled-use readiness</span><strong className="text-teal-200">{preview.dataQuality.completenessPercent}%</strong></div>
+                    <div className="flex justify-between gap-2"><span>Blocking inputs open</span><strong className="text-red-200">{preview.dataQuality.blockingOpenCount}</strong></div>
+                    <div className="flex justify-between gap-2"><span>Versioned rules traced</span><strong className="text-sky-200">{preview.dataQuality.tracedRuleCount}</strong></div>
                   </div>
                 </>
               ) : <p className="mt-4 text-xs leading-5 text-slate-500">Complete the required fields to preview the model.</p>}

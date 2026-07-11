@@ -85,9 +85,19 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
     await page.getByRole("link", { name: /Build a blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/planner$/);
-    await expect(page.getByText(/Microbiology compiler/i)).toBeVisible();
-    await page.goto("/quality-lab/review");
+    await expect(page.getByText(/microbiology-pack\/v1\.1/i)).toBeVisible();
+    for (let step = 0; step < 3; step++) {
+      await page.getByRole("button", { name: /^Continue$/ }).click();
+    }
+    await page.getByRole("button", { name: /Compile blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+    await expect(page.getByRole("heading", { name: /What must be resolved before controlled use/i })).toBeVisible();
+    await expect(page.getByText("quality-lab-blueprint/v1")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Versioned calculation trace/i })).toBeVisible();
+    await page.getByRole("link", { name: /Request expert review/i }).click();
+    await page.waitForURL(/\/quality-lab\/review\?project=/);
     await expect(page.getByRole("heading", { name: /reviewable project basis/i })).toBeVisible();
+    await expect(page.getByText(/Attached browser-local model/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a scope review/i })).toBeVisible();
   });
 

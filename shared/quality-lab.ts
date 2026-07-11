@@ -1,6 +1,30 @@
 import { z } from "zod";
+import {
+  QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
+  QUALITY_LAB_COMPILER_CORE_VERSION,
+  QUALITY_LAB_INPUT_CONTRACT_VERSION,
+  blueprintReviewSchema,
+  dataQualitySummarySchema,
+  evidenceRecordSchema,
+  ruleTraceSchema,
+  unresolvedInputSchema,
+  type EvidenceRecord,
+  type RuleTrace,
+  type UnresolvedInput,
+} from "./quality-lab-contract";
+import {
+  MICROBIOLOGY_DOMAIN_PACK,
+  MICROBIOLOGY_EVIDENCE_CATALOG,
+  MICROBIOLOGY_SHARED_RULE_TRACE,
+  MICROBIOLOGY_WORKFLOW_RULES,
+  workflowRuleTrace,
+  type MicrobiologyWorkflowKey,
+} from "./quality-lab-microbiology-pack";
 
-export const QUALITY_LAB_ENGINE_VERSION = "microbiology-v1.0";
+export * from "./quality-lab-contract";
+export * from "./quality-lab-microbiology-pack";
+
+export const QUALITY_LAB_ENGINE_VERSION = `${QUALITY_LAB_COMPILER_CORE_VERSION}+${MICROBIOLOGY_DOMAIN_PACK.version}`;
 
 export const facilityTypeValues = [
   "nonsterile-pharma",
@@ -14,6 +38,7 @@ export const facilityTypeValues = [
 export const marketValues = ["vietnam", "asean", "eu", "us", "who"] as const;
 
 export const qualityLabInputSchema = z.object({
+  contractVersion: z.literal(QUALITY_LAB_INPUT_CONTRACT_VERSION).default(QUALITY_LAB_INPUT_CONTRACT_VERSION),
   projectName: z.string().trim().min(2).max(120),
   companyName: z.string().trim().max(120).default(""),
   country: z.string().trim().min(2).max(80),
@@ -59,6 +84,7 @@ export type QualityLabMarket = QualityLabInput["markets"][number];
 
 export interface WorkflowDemand {
   id: string;
+  ruleId: string;
   label: string;
   monthlyUnits: number;
   monthlyHandsOnHours: number;
@@ -66,6 +92,8 @@ export interface WorkflowDemand {
   monthlyMediaLiters: number;
   turnaroundDays: number;
   criticality: "routine" | "important" | "critical";
+  confidence: "high" | "medium" | "indicative";
+  evidenceIds: string[];
   basis: string;
 }
 
@@ -114,6 +142,14 @@ export interface BlueprintAssumption {
   source: string;
 }
 
+export interface BlueprintRecommendation {
+  id: string;
+  priority: "before-design-freeze" | "before-budget-approval" | "improvement";
+  recommendation: string;
+  rationale: string;
+  relatedRuleIds: string[];
+}
+
 export interface BlueprintScenario {
   label: string;
   multiplier: number;
@@ -128,22 +164,47 @@ export interface BlueprintScenario {
   annualOpexHighUsd: number;
 }
 
-export interface QualityLabBlueprint {
-  engineVersion: string;
-  generatedAt: string;
-  input: QualityLabInput;
-  workflows: WorkflowDemand[];
-  equipment: EquipmentRecommendation[];
-  consumables: ConsumableForecast[];
-  spaces: SpaceRecommendation[];
-  risks: BlueprintRisk[];
-  assumptions: BlueprintAssumption[];
-  recommendations: string[];
-  procurementSequence: { phase: string; timing: string; items: string[] }[];
-  current: BlueprintScenario;
-  future: BlueprintScenario;
-  reviewStatus: "concept-only";
-}
+const workflowDemandSchema = z.object({
+  id: z.string(), ruleId: z.string(), label: z.string(), monthlyUnits: z.number(), monthlyHandsOnHours: z.number(), monthlyPlateDays: z.number(), monthlyMediaLiters: z.number(), turnaroundDays: z.number(), criticality: z.enum(["routine", "important", "critical"]), confidence: z.enum(["high", "medium", "indicative"]), evidenceIds: z.array(z.string()), basis: z.string(),
+});
+const equipmentRecommendationSchema = z.object({
+  id: z.string(), name: z.string(), category: z.string(), quantityNow: z.number(), quantityFuture: z.number(), unitCapexLowUsd: z.number(), unitCapexHighUsd: z.number(), confidence: z.enum(["high", "medium", "indicative"]), rationale: z.string(), specification: z.string(),
+});
+const consumableForecastSchema = z.object({
+  id: z.string(), name: z.string(), unit: z.string(), quantityPerMonthNow: z.number(), quantityPerMonthFuture: z.number(), unitCostLowUsd: z.number(), unitCostHighUsd: z.number(),
+});
+const spaceRecommendationSchema = z.object({ name: z.string(), areaSqm: z.number(), rationale: z.string() });
+const blueprintRiskSchema = z.object({ id: z.string(), severity: z.enum(["high", "medium", "low"]), title: z.string(), description: z.string(), mitigation: z.string() });
+const blueprintAssumptionSchema = z.object({ id: z.string(), label: z.string(), value: z.string(), confidence: z.enum(["high", "medium", "indicative"]), source: z.string() });
+const blueprintRecommendationSchema = z.object({ id: z.string(), priority: z.enum(["before-design-freeze", "before-budget-approval", "improvement"]), recommendation: z.string(), rationale: z.string(), relatedRuleIds: z.array(z.string()) });
+const blueprintScenarioSchema = z.object({ label: z.string(), multiplier: z.number(), monthlyTests: z.number(), monthlyHandsOnHours: z.number(), analystFte: z.number(), totalTeamFte: z.number(), estimatedAreaSqm: z.number(), capexLowUsd: z.number(), capexHighUsd: z.number(), annualOpexLowUsd: z.number(), annualOpexHighUsd: z.number() });
+
+export const qualityLabBlueprintSchema = z.object({
+  contractVersion: z.literal(QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION),
+  engineVersion: z.string(),
+  compilerCoreVersion: z.literal(QUALITY_LAB_COMPILER_CORE_VERSION),
+  generatedAt: z.string().datetime(),
+  domainPack: z.object({ id: z.string(), version: z.string(), status: z.literal("concept"), scope: z.string() }),
+  input: qualityLabInputSchema,
+  workflows: z.array(workflowDemandSchema),
+  equipment: z.array(equipmentRecommendationSchema),
+  consumables: z.array(consumableForecastSchema),
+  spaces: z.array(spaceRecommendationSchema),
+  risks: z.array(blueprintRiskSchema),
+  assumptions: z.array(blueprintAssumptionSchema),
+  recommendations: z.array(blueprintRecommendationSchema),
+  procurementSequence: z.array(z.object({ phase: z.string(), timing: z.string(), items: z.array(z.string()) })),
+  current: blueprintScenarioSchema,
+  future: blueprintScenarioSchema,
+  evidence: z.array(evidenceRecordSchema),
+  ruleTrace: z.array(ruleTraceSchema),
+  unresolvedInputs: z.array(unresolvedInputSchema),
+  dataQuality: dataQualitySummarySchema,
+  review: blueprintReviewSchema,
+  reviewStatus: z.literal("concept-only"),
+});
+
+export type QualityLabBlueprint = z.infer<typeof qualityLabBlueprintSchema>;
 
 export interface QualityLabProject {
   id: string;
@@ -155,6 +216,7 @@ export interface QualityLabProject {
 }
 
 export const defaultQualityLabInput: QualityLabInput = {
+  contractVersion: QUALITY_LAB_INPUT_CONTRACT_VERSION,
   projectName: "Vietnam non-sterile QC expansion",
   companyName: "",
   country: "Vietnam",
@@ -194,17 +256,6 @@ export const defaultQualityLabInput: QualityLabInput = {
   analystAnnualCostUsd: 18_000,
 };
 
-const WORKFLOW_RULES = {
-  rawMaterials: { id: "raw-material-micro", label: "Raw-material microbiology", hours: 3.2, plateDays: 36, media: 0.32, tat: 5, criticality: "important" as const },
-  finishedProducts: { id: "finished-product-mlt", label: "Finished-product microbial limits", hours: 4.2, plateDays: 46, media: 0.45, tat: 5, criticality: "critical" as const },
-  water: { id: "water-microbiology", label: "Pharmaceutical water microbiology", hours: 0.85, plateDays: 10, media: 0.12, tat: 5, criticality: "critical" as const },
-  environmentalMonitoring: { id: "environmental-monitoring", label: "Environmental monitoring", hours: 0.65, plateDays: 9, media: 0.08, tat: 5, criticality: "critical" as const },
-  sterility: { id: "sterility-testing", label: "Sterility testing", hours: 6, plateDays: 0, media: 0.5, tat: 14, criticality: "critical" as const },
-  endotoxin: { id: "bacterial-endotoxin", label: "Bacterial endotoxin testing", hours: 1.6, plateDays: 0, media: 0, tat: 1, criticality: "critical" as const },
-  bioburden: { id: "bioburden", label: "Bioburden testing", hours: 1.8, plateDays: 12, media: 0.16, tat: 5, criticality: "critical" as const },
-  growthPromotion: { id: "growth-promotion", label: "Growth-promotion testing", hours: 4, plateDays: 28, media: 1, tat: 5, criticality: "important" as const },
-};
-
 function ceil(value: number, minimum = 0): number {
   return Math.max(minimum, Math.ceil(value - 1e-9));
 }
@@ -215,15 +266,16 @@ function round(value: number, digits = 1): number {
 }
 
 function workflow(
-  key: keyof typeof WORKFLOW_RULES,
+  key: MicrobiologyWorkflowKey,
   units: number,
   insourceFactor: number,
   growthMultiplier = 1,
 ): WorkflowDemand {
-  const rule = WORKFLOW_RULES[key];
+  const rule = MICROBIOLOGY_WORKFLOW_RULES[key];
   const monthlyUnits = Math.max(0, units * insourceFactor * growthMultiplier);
   return {
     id: rule.id,
+    ruleId: rule.ruleId,
     label: rule.label,
     monthlyUnits: round(monthlyUnits),
     monthlyHandsOnHours: round(monthlyUnits * rule.hours),
@@ -231,6 +283,8 @@ function workflow(
     monthlyMediaLiters: round(monthlyUnits * rule.media),
     turnaroundDays: rule.tat,
     criticality: rule.criticality,
+    confidence: rule.confidence,
+    evidenceIds: rule.evidenceIds,
     basis: `${rule.hours} hands-on h/unit; ${rule.plateDays} plate-days/unit; ${rule.media} L media/unit. Validate against site methods.`,
   };
 }
@@ -239,7 +293,7 @@ function buildWorkflowDemand(input: QualityLabInput, multiplier = 1): WorkflowDe
   const insourceFactor = 1 - input.outsourcePercent / 100;
   const monthlyWaterSamples = input.waterPoints * input.waterRoundsPerWeek * 4.33;
   const monthlyEmSamples = input.emLocations * input.emRoundsPerWeek * 4.33;
-  const values: [keyof typeof WORKFLOW_RULES, boolean, number][] = [
+  const values: [MicrobiologyWorkflowKey, boolean, number][] = [
     ["rawMaterials", input.scope.rawMaterials, input.rawMaterialLotsPerMonth],
     ["finishedProducts", input.scope.finishedProducts, input.finishedBatchesPerMonth],
     ["water", input.scope.water, monthlyWaterSamples],
@@ -518,17 +572,57 @@ function buildAssumptions(input: QualityLabInput, multiplier: number): Blueprint
   ];
 }
 
-function buildRecommendations(input: QualityLabInput, equipment: EquipmentRecommendation[], future: BlueprintScenario): string[] {
-  const recommendations = [
-    "Create a product × market × test matrix before approving the equipment list; the compiler currently models demand, not registered specifications.",
-    "Validate workflow standard times with a two-week time study covering preparation, execution, incubation handling, reading, review and investigations.",
-    "Treat every cost as a budget range and issue vendor-neutral URS documents before requesting supplier quotations.",
-    "Approve zoning, HVAC, utilities and personnel/material flows through a qualified laboratory engineering partner.",
+function buildRecommendations(input: QualityLabInput, equipment: EquipmentRecommendation[], future: BlueprintScenario): BlueprintRecommendation[] {
+  const recommendations: BlueprintRecommendation[] = [
+    { id: "product-test-matrix", priority: "before-design-freeze", recommendation: "Create and approve a product × market × test matrix before fixing the equipment list.", rationale: "The concept compiler models aggregate demand, not registered specifications or product-specific methods.", relatedRuleIds: ["micro.workflow.finished-products", "micro.workflow.raw-materials"] },
+    { id: "workflow-time-study", priority: "before-design-freeze", recommendation: "Validate workflow standard times with a site time study covering preparation, execution, incubation handling, reading, review and investigations.", rationale: "Hands-on benchmarks are the main driver of staffing and several equipment allowances.", relatedRuleIds: ["core.capacity.people", ...Object.values(MICROBIOLOGY_WORKFLOW_RULES).map((rule) => rule.ruleId)] },
+    { id: "vendor-neutral-budget", priority: "before-budget-approval", recommendation: "Treat every cost as a planning range and issue reviewed vendor-neutral requirements before requesting quotations.", rationale: "Concept bands exclude site, vendor, installation, validation, tax, freight, service and commercial-term effects.", relatedRuleIds: ["core.cost.concept", "core.capacity.equipment"] },
+    { id: "qualified-engineering", priority: "before-design-freeze", recommendation: "Approve zoning, HVAC, utilities and personnel/material flows through qualified laboratory engineering review.", rationale: "Atlas provides a capability and space basis, not architectural or engineering design.", relatedRuleIds: ["core.space.concept", "core.capacity.equipment"] },
   ];
-  if (input.outsourcePercent > 0) recommendations.push("Document the insource/outsource decision per test, including sample stability, transport, queue time, data ownership and backup capacity.");
-  if (equipment.some((item) => item.quantityFuture > item.quantityNow)) recommendations.push("Reserve utilities and floor space for future equipment now; release purchase orders only when demand triggers are reached.");
-  if (future.analystFte >= 6) recommendations.push("Separate routine execution, media/EM support and technical review responsibilities to prevent reviewer capacity from becoming the bottleneck.");
+  if (input.outsourcePercent > 0) recommendations.push({ id: "outsource-strategy", priority: "before-design-freeze", recommendation: "Document the insource/outsource decision per test, including sample stability, transport, queue time, data ownership and backup capacity.", rationale: "A global outsource percentage cannot represent method-specific operational and continuity risk.", relatedRuleIds: ["core.capacity.people", ...Object.values(MICROBIOLOGY_WORKFLOW_RULES).map((rule) => rule.ruleId)] });
+  if (equipment.some((item) => item.quantityFuture > item.quantityNow)) recommendations.push({ id: "future-capacity-triggers", priority: "before-budget-approval", recommendation: "Reserve utilities and floor space for future equipment now; release purchases against approved demand triggers.", rationale: "The future scenario requires additional equipment classes or quantities, but demand growth may not be linear.", relatedRuleIds: ["core.capacity.equipment", "core.space.concept"] });
+  if (future.analystFte >= 6) recommendations.push({ id: "role-separation", priority: "improvement", recommendation: "Separate routine execution, media/EM support and technical review responsibilities.", rationale: "At the modeled team size, reviewer and specialist capacity can become a bottleneck hidden by aggregate FTE.", relatedRuleIds: ["core.capacity.people"] });
   return recommendations;
+}
+
+function buildUnresolvedInputs(input: QualityLabInput, workflows: WorkflowDemand[]): UnresolvedInput[] {
+  const unresolved: UnresolvedInput[] = [
+    { id: "product-market-test-matrix", category: "portfolio", severity: "blocking", question: "Which approved tests, methods and frequencies apply to each product, material and target market?", impact: "The capability scope and equipment list may be incomplete or overstated without the authoritative test portfolio.", resolution: "Provide an approved product/material × market × specification × method matrix.", relatedRuleIds: workflows.map((row) => row.ruleId) },
+    { id: "approved-method-detail", category: "method", severity: "blocking", question: "What are the current approved method steps, sample counts, replicates, controls, incubation conditions and review requirements?", impact: "Hands-on time, media, plates, equipment loading and turnaround are concept allowances only.", resolution: "Reconcile every selected workflow against current approved methods and SOPs during SME review.", relatedRuleIds: workflows.map((row) => row.ruleId) },
+    { id: "site-time-study", category: "workload", severity: "important", question: "What are the observed preparation, execution, handling, reading, review and investigation times by method?", impact: "Staffing and utilization estimates may differ materially from actual site performance.", resolution: "Complete a representative time study and replace Domain Pack benchmarks.", relatedRuleIds: ["core.capacity.people", ...workflows.map((row) => row.ruleId)] },
+    { id: "equipment-cycle-data", category: "equipment", severity: "important", question: "What usable capacity, cycle duration, load pattern, downtime and redundancy standard applies to each critical equipment class?", impact: "Final quantities and utility requirements cannot be approved from class-level throughput assumptions.", resolution: "Obtain reviewed URS inputs and vendor budget data for shortlisted equipment classes.", relatedRuleIds: ["core.capacity.equipment"] },
+    { id: "facility-engineering-basis", category: "facility", severity: "blocking", question: "What zoning, biosafety, HVAC, utility, flow, building-code and site constraints govern the laboratory?", impact: "The reported area is an allowance and cannot be used as an architectural design.", resolution: "Complete a qualified engineering basis-of-design review using the approved capability model.", relatedRuleIds: ["core.space.concept", "core.capacity.equipment"] },
+    { id: "local-cost-basis", category: "cost", severity: "important", question: "What local installed costs, service terms, staffing structure, taxes, freight, validation and inflation assumptions apply?", impact: "CAPEX and OPEX bands are not suitable for budget approval.", resolution: "Replace concept bands with dated local quotations and an approved cost basis.", relatedRuleIds: ["core.cost.concept"] },
+    { id: "quality-governance", category: "governance", severity: "blocking", question: "Who owns QC, QA, engineering, EHS and procurement review, and what constitutes approval outside Atlas?", impact: "No Blueprint output can move from concept to controlled use without accountable reviewers and site governance.", resolution: "Name required reviewers, decision rights, document controls and approval records.", relatedRuleIds: ["core.capacity.people", "core.capacity.equipment", "core.space.concept", "core.cost.concept"] },
+  ];
+  if (!input.companyName.trim()) unresolved.push({ id: "site-identity", category: "governance", severity: "advisory", question: "Which legal entity and site owns this project?", impact: "The model cannot yet be tied to a controlled project record.", resolution: "Add the company and site identifier before expert review.", relatedRuleIds: [] });
+  if (input.finishedProducts > 0 && input.finishedBatchesPerMonth === 0) unresolved.push({ id: "finished-batch-demand", category: "workload", severity: "blocking", question: "What is the monthly finished-product batch and sample demand?", impact: "Finished-product capability is present but no release workload is modeled.", resolution: "Provide current and future monthly batch/sample forecasts by product family.", relatedRuleIds: ["micro.workflow.finished-products"] });
+  if (input.rawMaterials > 0 && input.rawMaterialLotsPerMonth === 0) unresolved.push({ id: "raw-material-demand", category: "workload", severity: "blocking", question: "What is the monthly incoming-lot and sample demand?", impact: "Raw-material capability is present but no incoming workload is modeled.", resolution: "Provide current and future incoming-lot/sample forecasts by material family.", relatedRuleIds: ["micro.workflow.raw-materials"] });
+  return unresolved;
+}
+
+function buildTraceability(workflows: WorkflowDemand[]): { evidence: EvidenceRecord[]; ruleTrace: RuleTrace[] } {
+  const workflowKeys = Object.entries(MICROBIOLOGY_WORKFLOW_RULES)
+    .filter(([, rule]) => workflows.some((row) => row.ruleId === rule.ruleId))
+    .map(([key]) => key as MicrobiologyWorkflowKey);
+  const ruleTrace = [...workflowRuleTrace(workflowKeys), ...MICROBIOLOGY_SHARED_RULE_TRACE];
+  const evidenceIds = new Set(ruleTrace.flatMap((rule) => rule.evidenceIds));
+  return {
+    ruleTrace,
+    evidence: MICROBIOLOGY_EVIDENCE_CATALOG.filter((record) => evidenceIds.has(record.id)),
+  };
+}
+
+function summarizeDataQuality(unresolvedInputs: UnresolvedInput[], evidence: EvidenceRecord[], ruleTrace: RuleTrace[]) {
+  const blockingOpenCount = unresolvedInputs.filter((item) => item.severity === "blocking").length;
+  const importantOpenCount = unresolvedInputs.filter((item) => item.severity === "important").length;
+  return {
+    completenessPercent: Math.max(0, Math.min(100, 100 - blockingOpenCount * 12 - importantOpenCount * 5)),
+    blockingOpenCount,
+    importantOpenCount,
+    evidenceCount: evidence.length,
+    tracedRuleCount: ruleTrace.length,
+  };
 }
 
 export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLabBlueprint {
@@ -542,9 +636,14 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
   const futureSpaces = buildSpaces(input, equipment, futureWorkflows, true);
   const current = scenario("Current demand", 1, input, currentWorkflows, equipment, consumables, currentSpaces, false);
   const future = scenario(`Year ${input.horizonYears}`, growthMultiplier, input, futureWorkflows, equipment, consumables, futureSpaces, true);
-  return {
+  const unresolvedInputs = buildUnresolvedInputs(input, currentWorkflows);
+  const { evidence, ruleTrace } = buildTraceability(currentWorkflows);
+  const blueprint: QualityLabBlueprint = {
+    contractVersion: QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
     engineVersion: QUALITY_LAB_ENGINE_VERSION,
+    compilerCoreVersion: QUALITY_LAB_COMPILER_CORE_VERSION,
     generatedAt: new Date().toISOString(),
+    domainPack: MICROBIOLOGY_DOMAIN_PACK,
     input,
     workflows: currentWorkflows,
     equipment,
@@ -561,8 +660,20 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
     ].filter((phase) => phase.items.length > 0),
     current,
     future,
+    evidence,
+    ruleTrace,
+    unresolvedInputs,
+    dataQuality: summarizeDataQuality(unresolvedInputs, evidence, ruleTrace),
+    review: {
+      status: "concept-only",
+      requiredRoles: ["QC method owner", "QA", "Laboratory engineering", "Procurement / finance"],
+      blockingInputIds: unresolvedInputs.filter((item) => item.severity === "blocking").map((item) => item.id),
+      lastReviewedAt: null,
+      reviewNote: "Atlas generated this concept model. Approval, validation and controlled use occur outside Atlas under the client quality system.",
+    },
     reviewStatus: "concept-only",
   };
+  return qualityLabBlueprintSchema.parse(blueprint);
 }
 
 export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date.now().toString(36)}`): QualityLabProject {

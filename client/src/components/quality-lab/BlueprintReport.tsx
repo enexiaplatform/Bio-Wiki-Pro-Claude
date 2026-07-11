@@ -11,6 +11,7 @@ import {
   FlaskConical,
   Gauge,
   Info,
+  Network,
   Printer,
   ShieldCheck,
   Users,
@@ -43,7 +44,7 @@ const severityClass = {
 
 function Section({ icon: Icon, eyebrow, title, children }: { icon: typeof Gauge; eyebrow: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="break-inside-avoid rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-lg shadow-black/10 md:p-6 print:border-slate-300 print:bg-white print:shadow-none">
+    <section className="min-w-0 break-inside-avoid rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-lg shadow-black/10 md:p-6 print:border-slate-300 print:bg-white print:shadow-none">
       <div className="mb-5 flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200 print:border-slate-300 print:bg-slate-100 print:text-slate-800"><Icon className="h-5 w-5" /></div>
         <div>
@@ -90,7 +91,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300 print:text-slate-600">Atlas Quality Lab Blueprint</p>
             <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight md:text-5xl print:text-slate-950">{project.name}</h1>
             <p className="mt-3 text-sm text-slate-400 print:text-slate-600">
-              {input.companyName || "Company not specified"} · {input.country} · {input.facilityType.replaceAll("-", " ")} · Engine {blueprint.engineVersion}
+              {input.companyName || "Company not specified"} · {input.country} · {input.facilityType.replaceAll("-", " ")} · {blueprint.domainPack.version}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2 md:w-72">
@@ -106,6 +107,12 @@ export function BlueprintReport({ project, onEdit }: Props) {
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
               <p className="text-xl font-bold text-amber-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high-priority risks</p>
             </div>
+          </div>
+          <div className="mt-5 grid gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">controlled-use readiness</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">blocking inputs open</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{blueprint.dataQuality.tracedRuleCount}</p><p className="text-[10px] text-slate-500">versioned rules traced</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="truncate text-xs font-bold text-amber-200 print:text-slate-950">{blueprint.contractVersion}</p><p className="mt-1 text-[10px] text-slate-500">output contract</p></div>
           </div>
         </div>
       </header>
@@ -222,7 +229,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <Section icon={ClipboardCheck} eyebrow="Action plan" title="Recommended next decisions">
             <ol className="space-y-3">
               {blueprint.recommendations.map((recommendation, index) => (
-                <li key={recommendation} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span>{recommendation}</li>
+                <li key={recommendation.id} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span><div><div className="mb-1 flex flex-wrap items-center gap-2"><span>{recommendation.recommendation}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 print:border-slate-300">{recommendation.priority.replaceAll("-", " ")}</span></div><p className="text-xs leading-5 text-slate-500">{recommendation.rationale}</p></div></li>
               ))}
             </ol>
           </Section>
@@ -249,6 +256,55 @@ export function BlueprintReport({ project, onEdit }: Props) {
             ))}
           </div>
         </Section>
+
+        <Section icon={AlertTriangle} eyebrow="Open information" title="What must be resolved before controlled use">
+          <div className="mb-4 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-wider">
+            <span className="rounded-full border border-red-300/20 bg-red-300/10 px-2.5 py-1 text-red-200 print:border-slate-300 print:bg-white print:text-slate-700">{blueprint.dataQuality.blockingOpenCount} blocking</span>
+            <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-amber-200 print:border-slate-300 print:bg-white print:text-slate-700">{blueprint.dataQuality.importantOpenCount} important</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {blueprint.unresolvedInputs.map((item) => (
+              <div key={item.id} className={`rounded-xl border p-4 ${item.severity === "blocking" ? "border-red-300/20 bg-red-300/[0.06]" : item.severity === "important" ? "border-amber-300/20 bg-amber-300/[0.05]" : "border-white/10 bg-white/[0.025]"} print:border-slate-300 print:bg-white`}>
+                <div className="flex flex-wrap items-center gap-2"><span className="text-[9px] font-bold uppercase tracking-wider text-slate-500">{item.category}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase text-slate-400 print:border-slate-300">{item.severity}</span></div>
+                <h3 className="mt-2 text-sm font-bold print:text-slate-950">{item.question}</h3>
+                <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">{item.impact}</p>
+                <p className="mt-2 text-xs leading-5 text-slate-300 print:text-slate-800"><strong>Resolve:</strong> {item.resolution}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.025] p-4 text-xs leading-6 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700">
+            <p><strong className="text-slate-200 print:text-slate-950">Review status:</strong> {blueprint.review.status.replaceAll("-", " ")} · Required roles: {blueprint.review.requiredRoles.join(" · ")}</p>
+            <p className="mt-1">{blueprint.review.reviewNote}</p>
+          </div>
+        </Section>
+
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Section icon={FileText} eyebrow="Evidence register" title="Sources and missing site evidence">
+            <div className="space-y-3">
+              {blueprint.evidence.map((record) => (
+                <div key={record.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white">
+                  <div className="flex items-start justify-between gap-3"><h3 className="text-sm font-bold print:text-slate-950">{record.title}</h3><span className="shrink-0 rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase text-slate-500 print:border-slate-300">{record.status.replaceAll("-", " ")}</span></div>
+                  <p className="mt-1 text-[11px] text-slate-500">{record.publisher} · {record.version}</p>
+                  <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">{record.scope}</p>
+                  <p className="mt-2 break-all text-[11px] leading-5 text-sky-200/70 print:text-slate-600">Locator: {record.locator.startsWith("https://") ? <a href={record.locator} target="_blank" rel="noreferrer" className="underline underline-offset-2">{record.locator}</a> : record.locator}</p>
+                  <p className="mt-2 text-[11px] leading-5 text-amber-200/70 print:text-slate-600">Limit: {record.limitations}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+          <Section icon={Network} eyebrow="Rule registry" title="Versioned calculation trace">
+            <div className="space-y-3">
+              {blueprint.ruleTrace.map((rule) => (
+                <div key={rule.ruleId} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white">
+                  <div className="flex items-start justify-between gap-3"><div><h3 className="text-sm font-bold print:text-slate-950">{rule.name}</h3><p className="mt-1 font-mono text-[10px] text-slate-500">{rule.ruleId} · {rule.ruleVersion}</p></div><span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase ${confidenceClass[rule.confidence]} print:border-slate-300 print:bg-white print:text-slate-700`}>{rule.confidence}</span></div>
+                  <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">Applies when: {rule.applicability}</p>
+                  <p className="mt-2 break-words font-mono text-[10px] leading-5 text-sky-200/70 print:text-slate-600">Evidence: {rule.evidenceIds.join(" · ")}</p>
+                  <p className="mt-2 text-[11px] leading-5 text-amber-200/70 print:text-slate-600">Limit: {rule.limitations}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        </div>
       </div>
 
       <footer className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-5 text-xs leading-6 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700">
