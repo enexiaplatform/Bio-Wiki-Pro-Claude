@@ -55,4 +55,16 @@ describe("Test Method Application Packs", () => {
     expect(assessApplicationPack(microbialIdentification!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
     expect(assessApplicationPack(microbialIdentification!).readyForExecutableMethodGraph).toBe(false);
   });
+
+  it("deepens BET/LAL without removing the specialist gate", () => {
+    const bet = testMethodApplicationPacks.find((pack) => pack.id === "bet-lal");
+    expect(bet).toMatchObject({
+      stage: "specialist-gated",
+      methodGraphStatus: "workflow-only",
+      guideHref: "/blog/bacterial-endotoxins-bet-lal-application-pack",
+    });
+    expect(bet?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
+    expect(assessApplicationPack(bet!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
+    expect(assessApplicationPack(bet!).readyForExecutableMethodGraph).toBe(false);
+  });
 });

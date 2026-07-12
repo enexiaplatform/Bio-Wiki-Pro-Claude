@@ -71,6 +71,12 @@ describe("Atlas Evidence Graph", () => {
     expect(ruleEvidenceMappings.some((mapping) => mapping.ruleId.includes("identification"))).toBe(false);
   });
 
+  it("routes endotoxin workflow rules to the specialist-gated BET application pack", () => {
+    const guidance = ruleGuidanceForIds(["micro.workflow.endotoxin"]);
+    expect(guidance.resources[0]?.href).toBe("/blog/bacterial-endotoxins-bet-lal-application-pack");
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "method-architecture", "control-investigation"]));
+  });
+
   it("routes equipment-cycle blockers to usable-capacity guidance", () => {
     const guidance = ruleGuidanceForIds(["core.capacity.equipment"]);
     expect(guidance.fallbackUsed).toBe(false);

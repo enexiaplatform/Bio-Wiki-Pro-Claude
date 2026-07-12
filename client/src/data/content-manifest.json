@@ -3602,6 +3602,17 @@
   },
   {
     "collection": "blog",
+    "slug": "bacterial-endotoxins-bet-lal-application-pack",
+    "lang": "en",
+    "title": "Bacterial endotoxins BET/LAL application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A specialist-gated BET application framework covering intended use, endotoxin limits, MVD, interference, gel-clot and photometric methods, controls, invalidity, lifecycle and capacity.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "batch-release-the-decision-everything-converges-on",
     "lang": "en",
     "title": "Batch release: the decision everything converges on",

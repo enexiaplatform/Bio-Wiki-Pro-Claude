@@ -352,6 +352,16 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
   });
 
+  test("BET application pack connects limit basis to interference, validity and specialist gates", async ({ page }) => {
+    await page.goto("/blog/bacterial-endotoxins-bet-lal-application-pack");
+    await expect(page.getByRole("heading", { level: 1, name: "Bacterial endotoxins BET/LAL application pack" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the article–limit–method matrix" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Demonstrate interfering-factors suitability" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Define run validity before sample interpretation" })).toBeVisible();
+    await expect(page.getByText(/This pack remains specialist-gated/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Endotoxin Limit Calculator/i }).first()).toHaveAttribute("href", "/tools/endotoxin-limit-calculator");
+  });
+
   test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {
     const surfaces = [
       ["/blog/how-to-scope-nonsterile-microbiology-qc-lab", /Non-sterile pharmaceutical microbiology/i],
