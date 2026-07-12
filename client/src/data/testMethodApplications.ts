@@ -1,0 +1,108 @@
+export type ApplicationPackStage = "application-development" | "content-foundation" | "specialist-gated";
+export type ApplicationDimensionStatus = "structured" | "partial" | "evidence-required";
+
+export interface TestMethodApplicationPack {
+  id: string;
+  sequence: number;
+  title: string;
+  domain: string;
+  stage: ApplicationPackStage;
+  decision: string;
+  boundary: string;
+  guideHref: string;
+  evidenceHrefs: string[];
+  dimensions: Array<{ id: string; label: string; status: ApplicationDimensionStatus; currentBasis: string; exitEvidence: string }>;
+  methodGraphStatus: "executable-concept" | "workflow-only" | "not-executable";
+}
+
+const commonExit = {
+  intendedUse: "Approved use cases linked to product/process decisions, water grade or monitoring purpose and market/site requirements.",
+  matrix: "Representative matrices, sampling conditions, hold-time evidence and known interference or recovery risks.",
+  method: "Current approved method steps, volumes, dilutions, media/reagents, incubation/run conditions, controls and calculations.",
+  decision: "Approved specification or alert/action framework, result interpretation, review and investigation pathway.",
+  resources: "Observed hands-on time, BOM, equipment occupancy, skill, queue and exception demand from controlled cases.",
+  lifecycle: "Transfer/verification/validation status, change controls, version ownership, performance monitoring and qualified alternates.",
+} as const;
+
+export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
+  {
+    id: "water-microbiology", sequence: 1, title: "Pharmaceutical water microbiology", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "workflow-only",
+    decision: "Determine whether a water system remains in microbial control and whether sampled water is fit for its intended use under the site's approved program.",
+    boundary: "Atlas structures monitoring and laboratory capability. It does not set universal microbial specifications, approve sampling representativeness or replace the site water-system control strategy.",
+    guideHref: "/blog/pharmaceutical-water-microbiology-application-pack",
+    evidenceHrefs: ["/blog/water-environmental-monitoring-capability-planning", "/library/pharmaceutical-water-systems", "/workflows/water-system-monitoring", "/tools/lab-water-type-selector"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Process-control versus QC/fitness-for-use purpose is explicitly separated.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Sampling & matrix", status: "partial", currentBasis: "Point/frequency demand exists; true point-of-use representativeness, flush, container and hold time remain site evidence.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Filtration/plating capability is modeled broadly; sample volume, medium, temperature and incubation are not frozen.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "partial", currentBasis: "Trending and excursion logic exists; no universal limit is inferred.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Workflow hours, plate-days, media and filtration demand are class-level allowances.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "No paid/site-calibrated application case has been approved as an Atlas benchmark.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+  {
+    id: "growth-promotion-media-qc", sequence: 2, title: "Growth promotion and media QC", domain: "Non-sterile microbiology", stage: "content-foundation", methodGraphStatus: "workflow-only",
+    decision: "Establish whether each prepared or purchased media lot is suitable for its intended recovery/selectivity role before use.", boundary: "Organism panels, inoculum targets, acceptance rules and reduced-testing strategies remain method- and site-controlled.", guideHref: "/blog/growth-promotion-testing-what-good-looks-like", evidenceHrefs: ["/library/growth-promotion-testing", "/workflows/culture-media-selection"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "partial", currentBasis: "Media suitability and release purpose are described.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Media/organism matrix", status: "evidence-required", currentBasis: "No media × organism × method application matrix is compiled.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Controls and broad execution are documented but not encoded as method nodes.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "partial", currentBasis: "Qualitative decision logic exists without site acceptance configuration.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Media-lot workflow allowance exists.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "Supplier qualification, skip/reduced testing and failure history are not calibrated.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+  {
+    id: "bioburden-filtration", sequence: 3, title: "Bioburden and membrane filtration", domain: "Microbiology", stage: "content-foundation", methodGraphStatus: "workflow-only",
+    decision: "Estimate recoverable microbial load for a defined material, process sample or product decision using a suitable recovery method.", boundary: "Matrices, recovery, filtration compatibility, sample quantity, limits and method suitability are not generalized across products.", guideHref: "/blog/what-is-bioburden-testing", evidenceHrefs: ["/library/bioburden-usp-61", "/tools/microbial-count-calculator"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "partial", currentBasis: "Broad bioburden purpose is covered.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Sample/matrix", status: "evidence-required", currentBasis: "No application-family matrix exists.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Workflow demand exists; filtration/direct-plating branches are not structured.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "evidence-required", currentBasis: "Limits and downstream decisions remain external.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Filtration-unit, analyst and incubation allowances exist.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "No calibrated suitability or recovery case set.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+  {
+    id: "bet-lal", sequence: 4, title: "Bacterial endotoxins (BET/LAL)", domain: "Microbiology / sterile & biologics", stage: "specialist-gated", methodGraphStatus: "workflow-only",
+    decision: "Determine whether endotoxin is within the approved product/material limit using a suitable method and valid interference controls.", boundary: "Atlas does not infer K/M limits, MVD, dilution, inhibition/enhancement, platform or release acceptance.", guideHref: "/blog/bacterial-endotoxin-test-what-lal-actually-measures", evidenceHrefs: ["/library/endotoxin-lal-testing", "/tools/endotoxin-limit-calculator"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "partial", currentBasis: "Limit/MVD concepts are covered.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Sample/matrix", status: "evidence-required", currentBasis: "Product interference evidence is not represented in the graph.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Platform-neutral educational logic exists.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "partial", currentBasis: "Calculator supports exploration, not approved release logic.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Sample-equivalent and reader allowances exist.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "Specialist owner and validation cases are required.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+  {
+    id: "environmental-monitoring", sequence: 5, title: "Environmental monitoring methods", domain: "Water & environmental microbiology", stage: "content-foundation", methodGraphStatus: "workflow-only",
+    decision: "Detect and trend viable contamination signals across defined locations, activities and personnel to support contamination-control decisions.", boundary: "Grades, locations, methods, volumes, frequencies, limits, incubation and excursion actions require the approved site program.", guideHref: "/blog/water-environmental-monitoring-capability-planning", evidenceHrefs: ["/library/environmental-monitoring-basics", "/workflows/environmental-monitoring"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Program decisions and excursion burden are described.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Location/activity matrix", status: "evidence-required", currentBasis: "No site grade × location × activity application matrix exists.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Active air, passive air, surface and personnel branches are not yet method nodes.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "partial", currentBasis: "Trending/investigation guidance exists without site limits.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Location-round workload and consumables are modeled broadly.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "Recovery, incubation and trend performance are not calibrated.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+  {
+    id: "microbial-identification", sequence: 6, title: "Microbial identification", domain: "Microbiology", stage: "content-foundation", methodGraphStatus: "not-executable",
+    decision: "Identify an isolate to the level required for product, process, contamination-control or investigation decisions.", boundary: "Required identification level, library coverage, confirmation, data interpretation and disposition are risk- and platform-specific.", guideHref: "/blog/microbial-identification-knowing-your-bug", evidenceHrefs: ["/library/microbial-identification"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "partial", currentBasis: "Risk-based identification purpose is covered.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Isolate/application matrix", status: "evidence-required", currentBasis: "No decision × source × required-resolution matrix exists.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Phenotypic, MALDI-TOF and sequencing concepts exist but are not structured nodes.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "partial", currentBasis: "Investigation relevance is described; confidence/discordance rules are absent.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "evidence-required", currentBasis: "No executable resource model exists.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "Library, database, platform and change-control evidence require specialist ownership.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+];
+
+export function assessApplicationPack(pack: TestMethodApplicationPack) {
+  const blockers = pack.dimensions.filter((dimension) => dimension.status === "evidence-required");
+  return { blockers, readyForExecutableMethodGraph: blockers.length === 0 && pack.methodGraphStatus !== "not-executable" };
+}

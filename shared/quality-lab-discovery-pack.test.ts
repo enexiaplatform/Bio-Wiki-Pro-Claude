@@ -10,6 +10,7 @@ describe("Quality Lab Discovery Pack templates", () => {
       "atlas-space-flow-engineering-basis.csv",
       "atlas-turnaround-queue-calendar-basis.csv",
       "atlas-qc-lab-cost-basis.csv",
+      "atlas-test-method-application-matrix.csv",
       "atlas-domain-pack-validation-case.csv",
       "atlas-rule-change-impact-assessment.csv",
     ]);

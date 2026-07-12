@@ -4174,6 +4174,17 @@
   },
   {
     "collection": "blog",
+    "slug": "pharmaceutical-water-microbiology-application-pack",
+    "lang": "en",
+    "title": "Pharmaceutical water microbiology application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A method-application framework for pharmaceutical water microbiology covering intended use, representative sampling, recovery method selection, incubation, controls, trending, investigations and resource demand.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "pharmaceutical-water-systems-keeping-it-clean",
     "lang": "en",
     "title": "Pharmaceutical water systems: why the loop never stops moving",

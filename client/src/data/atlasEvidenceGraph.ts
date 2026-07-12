@@ -100,6 +100,7 @@ export const atlasEvidenceDomains: EvidenceDomain[] = [
     guideHref: "/blog/water-environmental-monitoring-capability-planning",
     resources: [
       resource("guide", "Water and EM capability planning", "/blog/water-environmental-monitoring-capability-planning", "Translate monitoring design into sampling, incubation, trending and resilience demand.", ["scope-applicability", "workload-capacity", "control-investigation"]),
+      resource("guide", "Pharmaceutical water microbiology application pack", "/blog/pharmaceutical-water-microbiology-application-pack", "Connect monitoring purpose, true point-of-use sampling, hold time, recovery architecture, controls, trending and resource demand.", ["scope-applicability", "method-architecture", "workload-capacity", "control-investigation", "lifecycle-governance"]),
       resource("lesson", "Environmental Monitoring Program Design", "/library/environmental-monitoring-basics", "Connect locations, methods, limits, trending and investigations into one control program.", ["scope-applicability", "control-investigation", "lifecycle-governance"]),
       resource("workflow", "Pharmaceutical Water System Monitoring", "/workflows/water-system-monitoring", "Structure sampling, testing, trending and response for a water system.", ["method-architecture", "workload-capacity", "control-investigation"]),
       resource("tool", "Lab Water Type Selector", "/tools/lab-water-type-selector", "Frame water-grade selection and the controls that follow from intended use.", ["scope-applicability", "method-architecture"]),

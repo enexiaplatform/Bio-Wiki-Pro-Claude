@@ -144,7 +144,7 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
-    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(8);
+    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(9);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
     const download = await downloadPromise;
@@ -158,11 +158,14 @@ test.describe("public smoke", () => {
     const costDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(5).click();
     expect((await costDownload).suggestedFilename()).toBe("atlas-qc-lab-cost-basis.csv");
-    const validationDownload = page.waitForEvent("download");
+    const applicationDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(6).click();
+    expect((await applicationDownload).suggestedFilename()).toBe("atlas-test-method-application-matrix.csv");
+    const validationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(7).click();
     expect((await validationDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case.csv");
     const impactDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download CSV/i }).nth(7).click();
+    await page.getByRole("button", { name: /Download CSV/i }).nth(8).click();
     expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
   });
 
@@ -188,6 +191,17 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/What vendor-neutral resources, resilience and qualification basis must exist/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Equipment Qualification Readiness Planner/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Water & environmental monitoring/i })).not.toBeVisible();
+  });
+
+  test("Test Method Application Packs expose maturity and evidence blockers", async ({ page }) => {
+    await page.goto("/quality-lab/method-applications");
+    await expect(page.getByRole("heading", { name: /A test name becomes useful only when its application is explicit/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Pharmaceutical water microbiology/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Growth promotion and media QC/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Microbial identification/i })).toBeVisible();
+    await expect(page.getByText(/workflow only/i).first()).toBeVisible();
+    await expect(page.getByText(/evidence blocker/i).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open application guide/i }).first()).toHaveAttribute("href", "/blog/pharmaceutical-water-microbiology-application-pack");
   });
 
   test("Domain Pack readiness keeps expansion evidence-gated", async ({ page }) => {
@@ -288,6 +302,17 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Blueprint Discovery Pack/i })).toHaveAttribute("href", "/quality-lab/discovery-pack");
     const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
     await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Water microbiology application pack connects sampling purpose to method and resources", async ({ page }) => {
+    await page.goto("/blog/pharmaceutical-water-microbiology-application-pack");
+    await expect(page.getByRole("heading", { name: /Pharmaceutical water microbiology application pack/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build a sampling-point application matrix/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Select a recovery strategy by purpose/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Evidence required for an executable Atlas node/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Water & environmental monitoring/i })).toBeVisible();
   });
 
   test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {

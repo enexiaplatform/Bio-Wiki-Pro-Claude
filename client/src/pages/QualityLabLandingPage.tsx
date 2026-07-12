@@ -283,6 +283,9 @@ export default function QualityLabLandingPage() {
               <Link href="/quality-lab/evidence" onClick={() => analytics.blueprintCtaClicked("quality_lab_evidence", "evidence_graph")} className="inline-flex items-center gap-2 text-sm font-bold text-sky-300 transition hover:text-sky-200">
                 Navigate the Evidence Graph <Network className="h-4 w-4" />
               </Link>
+              <Link href="/quality-lab/method-applications" className="inline-flex items-center gap-2 text-sm font-bold text-teal-300 transition hover:text-teal-200">
+                Inspect Test Method Applications <FlaskConical className="h-4 w-4" />
+              </Link>
               <Link href="/quality-lab/domain-readiness" className="inline-flex items-center gap-2 text-sm font-bold text-amber-300 transition hover:text-amber-200">
                 Review expansion gates <ShieldCheck className="h-4 w-4" />
               </Link>

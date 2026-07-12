@@ -63,6 +63,15 @@ export const blueprintDiscoveryTemplates = [
     ],
   },
   {
+    filename: "atlas-test-method-application-matrix.csv",
+    title: "Test method application matrix",
+    description: "Define intended use, matrix, sampling, method architecture, suitability, controls, decisions, resources and lifecycle evidence before a test becomes an executable Atlas node.",
+    rows: [
+      ["application_id", "domain", "product_process_system_or_location", "market_or_site_basis", "intended_use", "quality_decision", "sample_or_matrix", "sampling_and_representativeness", "container_transport_hold", "method_id_and_version", "preparation_and_dilution", "interference_or_suitability", "media_reagents_and_critical_materials", "equipment_and_software", "incubation_run_or_hold_conditions", "controls_and_system_suitability", "calculation_and_reporting_unit", "specification_alert_action_or_acceptance", "review_and_investigation_path", "bom_and_capacity_basis", "analyst_reviewer_skill", "transfer_verification_validation_status", "performance_monitoring", "change_control_dependencies", "source_references", "owner", "confidence", "status", "blocking_evidence"],
+      ["APP-001", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "proposed / transferred / verified / validated", "", "", "", "", "high / medium / indicative", "content-foundation / application-development / executable-review", ""],
+    ],
+  },
+  {
     filename: "atlas-domain-pack-validation-case.csv",
     title: "Domain Pack validation case",
     description: "Compare a frozen estimate with qualified actuals, classify variance and decide whether learning remains project-only or enters controlled review.",

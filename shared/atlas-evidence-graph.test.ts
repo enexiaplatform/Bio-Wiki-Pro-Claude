@@ -45,6 +45,13 @@ describe("Atlas Evidence Graph", () => {
     expect(guidance.resources[0]?.href).toBe("/blog/method-suitability-to-microbiology-lab-capacity");
   });
 
+  it("routes water workflow decisions to the water microbiology application pack", () => {
+    const guidance = ruleGuidanceForIds(["micro.workflow.water"]);
+    expect(guidance.fallbackUsed).toBe(false);
+    expect(guidance.resources[0]?.href).toBe("/blog/pharmaceutical-water-microbiology-application-pack");
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "method-architecture", "workload-capacity", "control-investigation"]));
+  });
+
   it("routes equipment-cycle blockers to usable-capacity guidance", () => {
     const guidance = ruleGuidanceForIds(["core.capacity.equipment"]);
     expect(guidance.fallbackUsed).toBe(false);
