@@ -206,8 +206,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Growth promotion and media QC/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Microbial identification/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Specified microorganisms and objectionability/i })).toBeVisible();
-    await expect(page.getByLabel("Application portfolio readiness").getByText("42")).toBeVisible();
-    await expect(page.getByLabel("Application portfolio readiness").getByText("28 / 7")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Microbial method suitability and recovery/i })).toBeVisible();
+    await expect(page.getByLabel("Application portfolio readiness").getByText("48")).toBeVisible();
+    await expect(page.getByLabel("Application portfolio readiness").getByText("32 / 8")).toBeVisible();
     await expect(page.getByText(/5 unresolved dimensions \(4 partial, 1 evidence blocker\)/).first()).toBeVisible();
     const readinessBaselineDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download readiness baseline CSV/i }).click();
@@ -242,7 +243,7 @@ test.describe("public smoke", () => {
 
   test("Method suitability guide connects recovery evidence to BOM and capacity", async ({ page }) => {
     await page.goto("/blog/method-suitability-to-microbiology-lab-capacity");
-    await expect(page.getByRole("heading", { name: /From method suitability to microbiology lab capacity/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Microbial method suitability and recovery application pack/i }).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /How suitability changes the method bill of materials/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Convert method steps into capacity demand/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /What Atlas should block when suitability is unresolved/i })).toBeVisible();
