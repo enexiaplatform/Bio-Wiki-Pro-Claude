@@ -4405,6 +4405,17 @@
   },
   {
     "collection": "blog",
+    "slug": "specified-microorganisms-objectionability-application-pack",
+    "lang": "en",
+    "title": "Specified microorganisms and objectionability application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A non-sterile microbiology application framework for specified-organism absence tests, method suitability, enrichment, confirmation, objectionability and laboratory capacity.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "stability-sample-management-capability-planning",
     "lang": "en",
     "title": "How to plan stability and sample-management capability as a time-based operating system",

@@ -65,7 +65,19 @@ export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
     ],
   },
   {
-    id: "bet-lal", sequence: 4, title: "Bacterial endotoxins (BET/LAL)", domain: "Microbiology / sterile & biologics", stage: "specialist-gated", methodGraphStatus: "workflow-only",
+    id: "specified-microorganisms", sequence: 4, title: "Specified microorganisms and objectionability", domain: "Non-sterile microbiology", stage: "application-development", methodGraphStatus: "executable-concept",
+    decision: "Determine whether a defined organism or organism group is detected under an approved recovery and confirmation sequence, then assess broader product-specific objectionability.", boundary: "Atlas does not assign organism requirements, approve absence claims, validate neutralization or determine that an unlisted recovery is non-objectionable.", guideHref: "/blog/specified-microorganisms-objectionability-application-pack", evidenceHrefs: ["/library/bioburden-usp-61", "/library/objectionable-organisms", "/blog/objectionable-organisms-its-not-just-the-count"],
+    dimensions: [
+      { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Compendial/registered absence, product objectionability and contamination-control decisions are separated.", exitEvidence: commonExit.intendedUse },
+      { id: "matrix", label: "Product/organism matrix", status: "partial", currentBasis: "The product × organism × decision contract is defined; controlled market and product applicability remain required.", exitEvidence: commonExit.matrix },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Preparation, resuscitation, enrichment, selection, confirmation and controls are structured around the existing USP <62> concept node.", exitEvidence: commonExit.method },
+      { id: "decision", label: "Result decision", status: "partial", currentBasis: "Presumptive, confirmed, invalid, absence and broader objectionability pathways are explicit without inferring specifications.", exitEvidence: commonExit.decision },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Organism-specific enrichment trees, vessel-days, transfers, confirmation and exception demand are defined for case capture.", exitEvidence: commonExit.resources },
+      { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "No controlled site case has calibrated suitability, positive/invalid rates or organism-pathway resource demand.", exitEvidence: commonExit.lifecycle },
+    ],
+  },
+  {
+    id: "bet-lal", sequence: 5, title: "Bacterial endotoxins (BET/LAL)", domain: "Microbiology / sterile & biologics", stage: "specialist-gated", methodGraphStatus: "workflow-only",
     decision: "Determine whether endotoxin is within the approved product/material limit using a suitable method and valid interference controls.", boundary: "Atlas does not infer K/M limits, MVD, dilution, inhibition/enhancement, platform or release acceptance.", guideHref: "/blog/bacterial-endotoxins-bet-lal-application-pack", evidenceHrefs: ["/blog/bacterial-endotoxin-test-what-lal-actually-measures", "/library/endotoxin-lal-testing", "/tools/endotoxin-limit-calculator"],
     dimensions: [
       { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Release, in-process, water, material/device, change and investigation applications are separated.", exitEvidence: commonExit.intendedUse },
@@ -77,7 +89,7 @@ export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
     ],
   },
   {
-    id: "environmental-monitoring", sequence: 5, title: "Environmental monitoring methods", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "workflow-only",
+    id: "environmental-monitoring", sequence: 6, title: "Environmental monitoring methods", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "workflow-only",
     decision: "Detect and trend viable contamination signals across defined locations, activities and personnel to support contamination-control decisions.", boundary: "Grades, locations, methods, volumes, frequencies, limits, incubation and excursion actions require the approved site program.", guideHref: "/blog/pharmaceutical-environmental-monitoring-application-pack", evidenceHrefs: ["/blog/water-environmental-monitoring-capability-planning", "/library/environmental-monitoring-basics", "/workflows/environmental-monitoring"],
     dimensions: [
       { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Program decisions and excursion burden are described.", exitEvidence: commonExit.intendedUse },
@@ -89,7 +101,7 @@ export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
     ],
   },
   {
-    id: "microbial-identification", sequence: 6, title: "Microbial identification", domain: "Microbiology", stage: "application-development", methodGraphStatus: "not-executable",
+    id: "microbial-identification", sequence: 7, title: "Microbial identification", domain: "Microbiology", stage: "application-development", methodGraphStatus: "not-executable",
     decision: "Identify an isolate to the level required for product, process, contamination-control or investigation decisions.", boundary: "Required identification level, library coverage, confirmation, data interpretation and disposition are risk- and platform-specific.", guideHref: "/blog/pharmaceutical-microbial-identification-application-pack", evidenceHrefs: ["/blog/microbial-identification-knowing-your-bug", "/library/microbial-identification"],
     dimensions: [
       { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Routine flora, excursion, water, product, sterility-positive and recurrence decisions are separated by required resolution.", exitEvidence: commonExit.intendedUse },

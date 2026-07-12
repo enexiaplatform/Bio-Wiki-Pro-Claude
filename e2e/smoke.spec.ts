@@ -205,8 +205,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Pharmaceutical water microbiology/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Growth promotion and media QC/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Microbial identification/i })).toBeVisible();
-    await expect(page.getByLabel("Application portfolio readiness").getByText("36")).toBeVisible();
-    await expect(page.getByLabel("Application portfolio readiness").getByText("24 / 6")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Specified microorganisms and objectionability/i })).toBeVisible();
+    await expect(page.getByLabel("Application portfolio readiness").getByText("42")).toBeVisible();
+    await expect(page.getByLabel("Application portfolio readiness").getByText("28 / 7")).toBeVisible();
     await expect(page.getByText(/5 unresolved dimensions \(4 partial, 1 evidence blocker\)/).first()).toBeVisible();
     const readinessBaselineDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download readiness baseline CSV/i }).click();
@@ -372,6 +373,15 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: "Define run validity before sample interpretation" })).toBeVisible();
     await expect(page.getByText(/This pack remains specialist-gated/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Endotoxin Limit Calculator/i }).first()).toHaveAttribute("href", "/tools/endotoxin-limit-calculator");
+  });
+
+  test("Specified-organism application pack separates absence testing from objectionability", async ({ page }) => {
+    await page.goto("/blog/specified-microorganisms-objectionability-application-pack");
+    await expect(page.getByRole("heading", { level: 1, name: "Specified microorganisms and objectionability application pack" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the product–organism–decision matrix" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Preserve the detection architecture" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Add the objectionability assessment" })).toBeVisible();
+    await expect(page.getByText(/site-approved method or product specification/i)).toBeVisible();
   });
 
   test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {

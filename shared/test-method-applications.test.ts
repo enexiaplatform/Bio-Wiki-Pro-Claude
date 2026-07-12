@@ -3,7 +3,7 @@ import { applicationReadinessBaselineRows, assessApplicationPack, assessApplicat
 
 describe("Test Method Application Packs", () => {
   it("keeps the microbiology-first application sequence explicit and evidence gated", () => {
-    expect(testMethodApplicationPacks.map((pack) => pack.id)).toEqual(["water-microbiology", "growth-promotion-media-qc", "bioburden-filtration", "bet-lal", "environmental-monitoring", "microbial-identification"]);
+    expect(testMethodApplicationPacks.map((pack) => pack.id)).toEqual(["water-microbiology", "growth-promotion-media-qc", "bioburden-filtration", "specified-microorganisms", "bet-lal", "environmental-monitoring", "microbial-identification"]);
     expect(new Set(testMethodApplicationPacks.map((pack) => pack.id)).size).toBe(testMethodApplicationPacks.length);
     for (const pack of testMethodApplicationPacks) {
       expect(pack.dimensions.map((dimension) => dimension.id)).toEqual(["intended-use", "matrix", "method", "decision", "resources", "lifecycle"]);
@@ -78,22 +78,33 @@ describe("Test Method Application Packs", () => {
 
     const portfolio = assessApplicationPortfolio();
     expect(portfolio).toEqual({
-      packCount: 6,
-      dimensionCount: 36,
-      structuredCount: 6,
-      partialCount: 24,
-      blockerCount: 6,
+      packCount: 7,
+      dimensionCount: 42,
+      structuredCount: 7,
+      partialCount: 28,
+      blockerCount: 7,
       executableReadyCount: 0,
     });
   });
 
   it("exports one readiness baseline row for every application dimension", () => {
     const [header, ...rows] = applicationReadinessBaselineRows();
-    expect(rows).toHaveLength(36);
-    expect(new Set(rows.map((row) => row[0])).size).toBe(36);
+    expect(rows).toHaveLength(42);
+    expect(new Set(rows.map((row) => row[0])).size).toBe(42);
     expect(header).toEqual(expect.arrayContaining(["application_id", "dimension", "current_status", "required_evidence", "method_graph_eligibility", "eligibility_rationale"]));
     expect(rows.every((row) => row.length === header.length)).toBe(true);
-    expect(rows.filter((row) => row[4] === "structured")).toHaveLength(6);
-    expect(rows.filter((row) => row[4] === "evidence-required")).toHaveLength(6);
+    expect(rows.filter((row) => row[4] === "structured")).toHaveLength(7);
+    expect(rows.filter((row) => row[4] === "evidence-required")).toHaveLength(7);
+  });
+
+  it("separates specified-organism absence and objectionability from enumeration", () => {
+    const specified = testMethodApplicationPacks.find((pack) => pack.id === "specified-microorganisms");
+    expect(specified).toMatchObject({
+      stage: "application-development",
+      methodGraphStatus: "executable-concept",
+      guideHref: "/blog/specified-microorganisms-objectionability-application-pack",
+    });
+    expect(specified?.dimensions.find((dimension) => dimension.id === "method")?.currentBasis).toContain("USP <62> concept node");
+    expect(assessApplicationPack(specified!).readyForExecutableMethodGraph).toBe(false);
   });
 });

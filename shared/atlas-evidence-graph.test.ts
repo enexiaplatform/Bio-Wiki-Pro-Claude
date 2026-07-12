@@ -77,6 +77,12 @@ describe("Atlas Evidence Graph", () => {
     expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "method-architecture", "control-investigation"]));
   });
 
+  it("routes the USP 62 concept to specified-organism and objectionability evidence", () => {
+    const guidance = ruleGuidanceForIds(["usp-62-concept"]);
+    expect(guidance.resources[0]?.href).toBe("/blog/specified-microorganisms-objectionability-application-pack");
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["method-architecture", "workload-capacity", "control-investigation"]));
+  });
+
   it("routes equipment-cycle blockers to usable-capacity guidance", () => {
     const guidance = ruleGuidanceForIds(["core.capacity.equipment"]);
     expect(guidance.fallbackUsed).toBe(false);
