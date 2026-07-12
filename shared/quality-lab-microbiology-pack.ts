@@ -117,6 +117,18 @@ export const MICROBIOLOGY_WORKFLOW_RULES: Record<MicrobiologyWorkflowKey, Microb
 
 export const MICROBIOLOGY_SHARED_RULE_TRACE: RuleTrace[] = [
   {
+    ruleId: "core.turnaround.feasibility",
+    ruleVersion: "v1.0",
+    name: "Turnaround and schedule-feasibility boundary",
+    domainPackId: MICROBIOLOGY_DOMAIN_PACK.id,
+    outputTypes: ["turnaround", "risk", "staffing", "equipment"],
+    evidenceIds: ["project-inputs", "atlas-microbiology-benchmarks-v1", "site-approved-methods"],
+    applicability: "All compiled projects with a target turnaround and positive in-house demand",
+    confidence: "indicative",
+    limitations: "Compares target days with concept workflow durations; it does not simulate arrivals, queues, calendars, batch formation, incubation reads, handoffs, review, failures, investigations or release governance.",
+    reviewRequired: true,
+  },
+  {
     ruleId: "core.capacity.people",
     ruleVersion: "v1.0",
     name: "Analyst and reviewer capacity model",

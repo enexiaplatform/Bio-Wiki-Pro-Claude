@@ -3899,6 +3899,17 @@
   },
   {
     "collection": "blog",
+    "slug": "from-monthly-workload-to-qc-turnaround-and-queue-feasibility",
+    "lang": "en",
+    "title": "From monthly workload to QC turnaround and queue feasibility",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate QC workload into a calendar-aware turnaround model that separates touch, wait, incubation, queue, handoff and review time and defines when schedule simulation is required.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "from-qc-capability-map-to-space-zoning-and-flow-basis",
     "lang": "en",
     "title": "From QC capability map to space, zoning and flow basis",

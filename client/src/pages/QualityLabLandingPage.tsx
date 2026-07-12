@@ -124,6 +124,12 @@ const evidenceGuides = [
     body: "Separate equipment price, installed cost, validation, OPEX, lifecycle spend, escalation, contingency, exclusions and estimate maturity.",
     href: "/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis",
   },
+  {
+    eyebrow: "Compiler Core deep dive",
+    title: "Prove turnaround beyond monthly capacity",
+    body: "Separate touch, incubation, queue, handoff, calendar and review time, then trigger schedule or discrete-event simulation where timing risk matters.",
+    href: "/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility",
+  },
 ];
 
 const fade = {

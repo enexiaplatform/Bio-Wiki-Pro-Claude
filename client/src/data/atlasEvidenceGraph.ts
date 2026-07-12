@@ -69,7 +69,8 @@ export const atlasEvidenceDomains: EvidenceDomain[] = [
       resource("guide", "From QC capability map to space, zoning and flow basis", "/blog/from-qc-capability-map-to-space-zoning-and-flow-basis", "Translate activities into functional zones, adjacencies, segregation, four flow paths, usable envelopes and an engineering-ready evidence package.", ["method-architecture", "equipment-utilities", "lifecycle-governance"]),
       resource("guide", "From concept cost band to a controlled QC laboratory cost basis", "/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis", "Separate purchase price, installed cost, implementation, recurring OPEX, lifecycle cost, escalation, contingency and estimate maturity.", ["scope-applicability", "equipment-utilities", "lifecycle-governance"]),
       resource("guide", "From workload to usable QC equipment capacity", "/blog/from-workload-to-usable-qc-equipment-capacity", "Convert method load into qualified usable capacity with peaks, downtime, queue risk, redundancy and procurement triggers.", ["workload-capacity", "equipment-utilities", "lifecycle-governance"]),
-      resource("guide", "From hands-on hours to resilient QC staffing", "/blog/from-hands-on-hours-to-resilient-qc-staffing", "Convert method workload into analyst, reviewer and specialist capacity with productive hours, skills, shifts, peaks and resilience.", ["workload-capacity", "control-investigation", "lifecycle-governance"]),
+      resource("guide", "From hands-on hours to resilient QC staffing", "/blog/from-hands-on-hours-to-resilient-qc-staffing", "Convert method workload into analyst, reviewer and specialist capacity with productive hours, skills, shifts, peaks and resilience.", ["method-architecture", "workload-capacity", "control-investigation", "lifecycle-governance"]),
+      resource("guide", "From monthly workload to QC turnaround and queue feasibility", "/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility", "Separate touch, hold, queue, handoff, calendar and review time; define when a static map, schedule or queue simulation is required.", ["scope-applicability", "workload-capacity", "control-investigation", "lifecycle-governance"]),
     ],
   },
   {
@@ -166,7 +167,8 @@ export interface RuleEvidenceMapping {
 }
 
 export const ruleEvidenceMappings: RuleEvidenceMapping[] = [
-  { ruleId: "core.capacity.people", domainId: "compiler-core", decisions: ["workload-capacity", "control-investigation", "lifecycle-governance"] },
+  { ruleId: "core.turnaround.feasibility", domainId: "compiler-core", decisions: ["scope-applicability", "workload-capacity", "control-investigation", "lifecycle-governance"] },
+  { ruleId: "core.capacity.people", domainId: "compiler-core", decisions: ["method-architecture", "workload-capacity", "control-investigation", "lifecycle-governance"] },
   { ruleId: "core.capacity.equipment", domainId: "compiler-core", decisions: ["workload-capacity", "equipment-utilities", "lifecycle-governance"] },
   { ruleId: "core.supply.consumables", domainId: "compiler-core", decisions: ["method-architecture", "workload-capacity", "lifecycle-governance"] },
   { ruleId: "core.cost.concept", domainId: "compiler-core", decisions: ["scope-applicability", "equipment-utilities", "lifecycle-governance"] },
@@ -197,7 +199,7 @@ export function ruleGuidanceForIds(ruleIds: string[], limit = 4) {
     .filter((domain) => domainIds.has(domain.id))
     .flatMap((domain) => domain.resources.map((resource) => ({ resource, score: resource.decisions.filter((decision) => decisionIds.has(decision)).length })))
     .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score || (a.resource.kind === "guide" ? -1 : 1));
+    .sort((a, b) => b.score - a.score || Number(b.resource.kind === "guide") - Number(a.resource.kind === "guide"));
   return {
     matchedRuleIds: matchedMappings.map((mapping) => mapping.ruleId),
     unmatchedRuleIds: uniqueRuleIds.filter((ruleId) => !matchedMappings.some((mapping) => mapping.ruleId === ruleId)),

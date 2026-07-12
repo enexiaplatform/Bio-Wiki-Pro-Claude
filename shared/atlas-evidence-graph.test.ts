@@ -56,7 +56,14 @@ describe("Atlas Evidence Graph", () => {
     const guidance = ruleGuidanceForIds(["core.capacity.people"]);
     expect(guidance.fallbackUsed).toBe(false);
     expect(guidance.resources[0]?.href).toBe("/blog/from-hands-on-hours-to-resilient-qc-staffing");
-    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["workload-capacity", "control-investigation", "lifecycle-governance"]));
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["method-architecture", "workload-capacity", "control-investigation", "lifecycle-governance"]));
+  });
+
+  it("routes turnaround blockers to queue and calendar feasibility guidance", () => {
+    const guidance = ruleGuidanceForIds(["core.turnaround.feasibility"]);
+    expect(guidance.fallbackUsed).toBe(false);
+    expect(guidance.resources[0]?.href).toBe("/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility");
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "workload-capacity", "control-investigation", "lifecycle-governance"]));
   });
 
   it("routes supply blockers to consumable resilience guidance", () => {

@@ -1,0 +1,344 @@
+---
+title: "From monthly workload to QC turnaround and queue feasibility"
+slug: "from-monthly-workload-to-qc-turnaround-and-queue-feasibility"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Translate QC workload into a calendar-aware turnaround model that separates touch, wait, incubation, queue, handoff and review time and defines when schedule simulation is required."
+updatedAt: "2026-07-12"
+---
+
+# From monthly workload to QC turnaround and queue feasibility
+
+A laboratory can have enough monthly capacity and still miss every important
+deadline.
+
+Capacity asks:
+
+> Can the available resources process the expected volume over a period?
+
+Turnaround feasibility asks:
+
+> Can each sample, event and decision move through the required sequence before its
+> deadline under the actual operating calendar and competing demand?
+
+The second question requires time, order and dependency. Dividing monthly workload
+by monthly capacity cannot answer it.
+
+## Decompose end-to-end turnaround
+
+For each sample or event, separate:
+
+```text
+transport and receipt time
++ receipt queue
++ accessioning and status verification
++ preparation queue
++ hands-on preparation time
++ equipment or analyst queue
++ execution time
++ incubation, hold or instrument time
++ scheduled reading or collection window
++ data processing and calculation
++ technical review queue and review time
++ QA or disposition handoff
+= end-to-end decision latency
+```
+
+Some components are active work. Others are elapsed time, queues or fixed biological
+holds. They respond to different interventions.
+
+Adding analysts may reduce a preparation queue. It does not shorten a compendial
+incubation period. A rapid method may shorten detection time but still fail to
+improve release if sample transport, batch formation or review remains the dominant
+delay.
+
+## Distinguish six kinds of time
+
+| Time type | Meaning | Typical control |
+| --- | --- | --- |
+| Touch time | Active analyst or reviewer work | Standard work, staffing, automation |
+| Equipment time | Resource occupied by a run or cycle | Quantity, scheduling, changeover, uptime |
+| Biological/required hold | Incubation, equilibration or mandated wait | Approved method and conditions |
+| Queue time | Work waits for a constrained resource | Arrival smoothing, priority, capacity, schedule |
+| Handoff time | Work waits between owners or systems | Cutoffs, notifications, role coverage |
+| Calendar time | Nights, weekends, holidays and unavailable shifts | Operating model, on-call and read windows |
+
+Report these separately. A single “five-day method” label can hide hours or days of
+avoidable waiting.
+
+## Map arrival patterns, not only monthly totals
+
+Monthly averages smooth the very peaks that create queues. Capture:
+
+- production batch completion by day and shift;
+- raw-material delivery and sampling windows;
+- water and EM rounds with fixed collection times;
+- stability pull dates and protocol windows;
+- campaign or product-family clustering;
+- weekend, holiday and shutdown effects;
+- unexpected events, repeats and investigation samples;
+- external-laboratory pickup and transport cutoffs.
+
+Use timestamped history where available. If only forecasts exist, state whether
+arrivals are level, scheduled batches, campaigns, fixed rounds or uncertain events.
+
+## Define the deadline at the quality decision
+
+“Five-day TAT” is ambiguous. Define:
+
+- start event: collection, receipt, accession, test start or batch completion;
+- end event: preliminary result, technically reviewed result, QA disposition or
+  release decision;
+- clock: calendar days, business days or operating hours;
+- service class: routine, urgent, stability, investigation or release-critical;
+- target percentile: average, 90th percentile, 95th percentile or maximum;
+- pause rules: client hold, missing information or invalid sample;
+- consequence and escalation when the target is threatened.
+
+An average target can conceal a long tail. Release planning normally needs a defined
+service level and exception rule.
+
+## Build the workflow dependency graph
+
+Turnaround is governed by the critical path. Map predecessor relationships such as:
+
+```text
+sample receipt
+→ suitability-confirmed preparation
+→ plating or filtration
+→ incubation condition A
+→ transfer or reading
+→ incubation condition B where applicable
+→ result calculation
+→ technical review
+→ disposition
+```
+
+Include shared prerequisites:
+
+- released media and reagents;
+- equipment readiness and environmental status;
+- culture or standard preparation;
+- analyst qualification;
+- system access and data availability;
+- sampling or transport completion;
+- specification and method version.
+
+The resource with the highest utilization is not always on the critical path. A
+low-utilization reviewer or scheduled reading window can control the decision date.
+
+## Put the method onto a real calendar
+
+For every step, record:
+
+- earliest start and latest acceptable finish;
+- duration distribution or planning range;
+- allowed operating days and shifts;
+- required role and skill;
+- equipment and room dependency;
+- batch-size and batch-formation rule;
+- setup, cleaning and changeover;
+- fixed reading, transfer or hold window;
+- predecessor and successor;
+- priority and preemption rule;
+- failure, repeat and escalation path.
+
+Then test weekends and holidays explicitly. A 48-hour incubation that ends Saturday
+morning may create a Monday read unless qualified coverage exists. Starting later
+may change the read window and downstream release date even though total incubation
+duration is unchanged.
+
+## Batching creates both efficiency and delay
+
+Batching samples can reduce setup, control and review effort. It also makes early
+arrivals wait for a batch.
+
+For each batched activity, define:
+
+- minimum and maximum batch size;
+- maximum wait-to-form-batch;
+- scheduled start times;
+- compatibility and segregation rules;
+- shared controls and blank allocation;
+- equipment sequence or load limit;
+- urgent-work insertion rule;
+- partial-batch decision authority.
+
+Model the tradeoff between resource efficiency and decision latency. “Run once per
+day” may be economical but incompatible with a same-day in-process decision.
+
+## Model reviewer capacity independently
+
+Review is a queue with its own arrivals, priorities and service times. Capture:
+
+- review minutes by method/result type;
+- first-pass versus exception review;
+- reviewer authorization and skill coverage;
+- shift, weekend and holiday availability;
+- batch review or individual-result review;
+- data-system and audit-trail dependencies;
+- QA escalation and disposition windows;
+- rework caused by incomplete records.
+
+Adding execution capacity can worsen the review queue by releasing more results at
+the same time. An FTE ratio does not prove that the right reviewer is available when
+the result becomes ready.
+
+## Include incubation reading and transfer windows
+
+Microbiology schedules often have time-sensitive actions:
+
+- plate reading within an approved window;
+- sequential temperature incubation;
+- growth-promotion observation;
+- organism subculture or identification;
+- result confirmation and investigation initiation;
+- sample or culture disposal after approved retention.
+
+Record the earliest, target and latest time for each action. Missing a window may
+cause deviation, repeat work or invalid interpretation rather than a simple delay.
+
+## Separate external-laboratory lead time
+
+Outsourced testing includes:
+
+```text
+sample preparation and documentation
+→ pickup cutoff
+→ transport and customs where applicable
+→ external receipt and accessioning
+→ provider queue
+→ testing and review
+→ report issue
+→ client technical review and disposition
+```
+
+The provider's advertised TAT may start at accession and end at report issue. The
+client decision needs the complete chain. Include sample stability, rejected
+shipments, investigation ownership, data access and backup-provider activation.
+
+## Represent failures and non-routine demand
+
+Routine schedules are fragile when they use all apparent capacity. Add scenarios
+for:
+
+- equipment breakdown or qualification hold;
+- invalid run or failed controls;
+- OOS/OOT or contamination investigation;
+- media or reagent shortage;
+- absent qualified analyst or reviewer;
+- delayed sample transport;
+- data-system outage;
+- urgent production or regulatory request;
+- method transfer or validation campaign.
+
+Measure recovery time and backlog clearance, not only steady-state utilization.
+
+## Use the right modeling depth
+
+### Static duration map
+
+Use when volumes are low, resources are dedicated and arrival timing is predictable.
+It reveals the nominal critical path and calendar conflicts.
+
+### Spreadsheet schedule
+
+Use when activities, batches and resource calendars are finite and can be placed on
+a planning horizon. It reveals overlaps, weekend reads and obvious contention.
+
+### Queue or discrete-event simulation
+
+Use when:
+
+- arrivals and service times vary materially;
+- several methods share analysts or equipment;
+- priority classes compete;
+- batching and setup affect flow;
+- failures, repeats or downtime matter;
+- the required service level is percentile-based;
+- one resource change can move the bottleneck elsewhere.
+
+Do not use a sophisticated simulation to hide poor input evidence. Calibrate arrival,
+service, failure and queue distributions before trusting the result.
+
+## Define operational metrics that expose the cause
+
+Track more than total TAT:
+
+- arrival-to-start queue time;
+- touch time and elapsed processing time;
+- incubation/hold time;
+- equipment queue and utilization;
+- reviewer queue and review time;
+- percent meeting service target;
+- 50th, 90th and 95th percentile TAT;
+- backlog age by priority;
+- missed read/transfer windows;
+- first-pass completion and repeat rate;
+- downtime recovery and backlog-clearance time;
+- outsourced transport and provider latency.
+
+These metrics show whether the remedy belongs in staffing, equipment, calendar,
+method, batching, review or external-partner governance.
+
+## Test scenarios before design freeze
+
+At minimum, test:
+
+1. routine forecast under the actual calendar;
+2. peak production or sampling week;
+3. weekend and holiday boundary;
+4. critical resource downtime;
+5. reviewer absence or review surge;
+6. invalid run and repeat;
+7. investigation workload;
+8. future growth or new-product launch;
+9. insource/outsource transition;
+10. proposed rapid method or automation.
+
+Compare not only mean TAT but service-level attainment, maximum queue, backlog and
+recovery.
+
+## Evidence required for a controlled schedule model
+
+Collect:
+
+- timestamped arrival and completion history;
+- deadline definitions and priority classes;
+- approved method steps and time windows;
+- analyst, reviewer, equipment and room calendars;
+- batch formation, setup and changeover rules;
+- incubation, hold, reading and transfer windows;
+- handoff cutoffs and escalation rules;
+- downtime, invalid-run, repeat and investigation history;
+- external-provider logistics and contractual TAT definitions;
+- actual queue, backlog and service-level performance;
+- owner, source period and data-quality assessment.
+
+## What Atlas should block
+
+Atlas can flag a target that is shorter than nominal workflow duration. It should
+block any claim of schedule feasibility when:
+
+- start/end events and clock basis are undefined;
+- arrival patterns are replaced by monthly averages;
+- batch and priority rules are missing;
+- reviewer and handoff calendars are excluded;
+- weekends, holidays and read windows are not modeled;
+- downtime, repeats and investigations are absent;
+- external-lab TAT excludes logistics or client review;
+- service-level evidence is unavailable;
+- simulation inputs have not been calibrated.
+
+## Apply the turnaround workflow
+
+Use the [Quality Lab Planner](/quality-lab/planner) to identify workflows, nominal
+durations, resource loads and the target turnaround boundary. Use the [Blueprint
+Discovery Pack](/quality-lab/discovery-pack) to capture timestamp definitions,
+calendars, dependencies, queues and exceptions. Follow related capacity and
+governance evidence through the [Evidence Graph](/quality-lab/evidence).
+
+Atlas does not replace LIMS scheduling, production planning or validated operational
+control. It provides an evidence-linked basis for deciding when a static allowance
+is adequate and when a qualified schedule or queue simulation is required.

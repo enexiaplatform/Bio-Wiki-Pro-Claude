@@ -21,6 +21,8 @@ describe("quality lab compiler", () => {
     expect(result.workforceCapacity?.excludedLoads.map((item) => item.id)).toEqual(expect.arrayContaining(["investigations", "training-qualification", "method-lifecycle", "absence-shift"]));
     expect(result.consumableSupply?.current.length).toBe(result.consumables.length);
     expect(result.consumableSupply?.current.every((item) => item.grossMonthlyDemand >= item.netMonthlyDemand && item.targetStock === item.reorderPoint + item.safetyStock)).toBe(true);
+    expect(result.ruleTrace.some((rule) => rule.ruleId === "core.turnaround.feasibility")).toBe(true);
+    expect(result.unresolvedInputs.some((item) => item.id === "arrival-calendar-and-queues" && item.relatedRuleIds.includes("core.turnaround.feasibility"))).toBe(true);
     expect(result.equipment.some((item) => item.id === "incubator-20-25")).toBe(true);
     expect(result.equipment.some((item) => item.id === "incubator-30-35")).toBe(true);
     expect(result.future.monthlyTests).toBeGreaterThan(result.current.monthlyTests);

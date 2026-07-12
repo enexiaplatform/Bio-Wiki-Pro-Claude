@@ -45,6 +45,15 @@ export const blueprintDiscoveryTemplates = [
     ],
   },
   {
+    filename: "atlas-turnaround-queue-calendar-basis.csv",
+    title: "Turnaround, queue and calendar basis",
+    description: "Capture arrival and deadline definitions, step timing, resource calendars, queues, batching, handoffs, failures and service-level evidence.",
+    rows: [
+      ["record_id", "workflow_or_method", "sample_or_event_class", "priority", "arrival_event", "deadline_event", "clock_basis", "target_service_level", "step", "predecessor", "touch_time", "equipment_time", "hold_or_incubation_time", "resource_or_skill", "operating_calendar", "batch_rule", "queue_limit", "handoff_or_cutoff", "earliest_action", "latest_action", "failure_repeat_or_investigation_path", "observed_period", "evidence_reference", "owner", "confidence", "simulation_required", "open_question"],
+      ["TAT-001", "", "routine / urgent / release / stability / investigation", "", "", "", "calendar days / business days / operating hours", "average / P90 / P95 / maximum", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "high / medium / indicative", "yes / no / review", ""],
+    ],
+  },
+  {
     filename: "atlas-qc-lab-cost-basis.csv",
     title: "QC laboratory cost basis",
     description: "Reconcile each cost element to technical scope, evidence, timing, estimate maturity, uncertainty and approval ownership.",

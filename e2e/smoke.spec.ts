@@ -144,7 +144,7 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
-    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(7);
+    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(8);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
     const download = await downloadPromise;
@@ -152,14 +152,17 @@ test.describe("public smoke", () => {
     const spaceDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(3).click();
     expect((await spaceDownload).suggestedFilename()).toBe("atlas-space-flow-engineering-basis.csv");
-    const costDownload = page.waitForEvent("download");
+    const turnaroundDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(4).click();
+    expect((await turnaroundDownload).suggestedFilename()).toBe("atlas-turnaround-queue-calendar-basis.csv");
+    const costDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(5).click();
     expect((await costDownload).suggestedFilename()).toBe("atlas-qc-lab-cost-basis.csv");
     const validationDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download CSV/i }).nth(5).click();
+    await page.getByRole("button", { name: /Download CSV/i }).nth(6).click();
     expect((await validationDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case.csv");
     const impactDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download CSV/i }).nth(6).click();
+    await page.getByRole("button", { name: /Download CSV/i }).nth(7).click();
     expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
   });
 
@@ -271,6 +274,17 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Label estimate maturity by scope definition/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Keep price, installed cost and total project cost separate/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Separate escalation from contingency/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Blueprint Discovery Pack/i })).toHaveAttribute("href", "/quality-lab/discovery-pack");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Turnaround guide separates queue, hold, handoff and calendar time", async ({ page }) => {
+    await page.goto("/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility");
+    await expect(page.getByRole("heading", { name: /From monthly workload to QC turnaround and queue feasibility/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Distinguish six kinds of time/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Put the method onto a real calendar/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Use the right modeling depth/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Blueprint Discovery Pack/i })).toHaveAttribute("href", "/quality-lab/discovery-pack");
     const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
     await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
