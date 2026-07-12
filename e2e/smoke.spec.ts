@@ -333,6 +333,15 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
   });
 
+  test("Environmental monitoring application pack connects contamination risk to methods and excursions", async ({ page }) => {
+    await page.goto("/blog/pharmaceutical-environmental-monitoring-application-pack");
+    await expect(page.getByRole("heading", { level: 1, name: "Pharmaceutical environmental monitoring application pack" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the location–activity–method matrix" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Separate the monitoring method architectures" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the excursion pathway before monitoring starts" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
+  });
+
   test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {
     const surfaces = [
       ["/blog/how-to-scope-nonsterile-microbiology-qc-lab", /Non-sterile pharmaceutical microbiology/i],

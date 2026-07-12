@@ -32,4 +32,15 @@ describe("Test Method Application Packs", () => {
     expect(assessApplicationPack(growthPromotion!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
     expect(assessApplicationPack(bioburden!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
   });
+
+  it("advances environmental monitoring without inventing site limits or executable maturity", () => {
+    const environmentalMonitoring = testMethodApplicationPacks.find((pack) => pack.id === "environmental-monitoring");
+    expect(environmentalMonitoring).toMatchObject({
+      stage: "application-development",
+      methodGraphStatus: "workflow-only",
+      guideHref: "/blog/pharmaceutical-environmental-monitoring-application-pack",
+    });
+    expect(environmentalMonitoring?.dimensions.find((dimension) => dimension.id === "matrix")?.status).toBe("partial");
+    expect(assessApplicationPack(environmentalMonitoring!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
+  });
 });

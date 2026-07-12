@@ -4196,6 +4196,17 @@
   },
   {
     "collection": "blog",
+    "slug": "pharmaceutical-environmental-monitoring-application-pack",
+    "lang": "en",
+    "title": "Pharmaceutical environmental monitoring application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A method-application framework for viable environmental monitoring covering risk-based locations, activity states, air, surface and personnel methods, trending, excursions and capacity.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "pharmaceutical-water-microbiology-application-pack",
     "lang": "en",
     "title": "Pharmaceutical water microbiology application pack",
