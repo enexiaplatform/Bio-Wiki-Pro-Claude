@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { qualityLabBlueprintSchema, qualityLabInputSchema } from "./quality-lab";
-import { qualityLabEngagementPacketSchema } from "./quality-lab-engagement";
+import { qualityLabBlueprintSchema, qualityLabInputSchema } from "./quality-lab.js";
+import { qualityLabEngagementPacketSchema } from "./quality-lab-engagement.js";
 
 /**
  * A deliberately narrow server-side record. It is created only for an

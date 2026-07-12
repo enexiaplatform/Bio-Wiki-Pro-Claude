@@ -11,7 +11,7 @@ import {
   type EvidenceRecord,
   type RuleTrace,
   type UnresolvedInput,
-} from "./quality-lab-contract";
+} from "./quality-lab-contract.js";
 import {
   MICROBIOLOGY_DOMAIN_PACK,
   MICROBIOLOGY_EVIDENCE_CATALOG,
@@ -19,7 +19,7 @@ import {
   MICROBIOLOGY_WORKFLOW_RULES,
   workflowRuleTrace,
   type MicrobiologyWorkflowKey,
-} from "./quality-lab-microbiology-pack";
+} from "./quality-lab-microbiology-pack.js";
 import {
   compileNonSterileMethodGraph,
   productProfileSchema,
@@ -27,11 +27,11 @@ import {
   methodBomItemSchema,
   methodCapacityDemandSchema,
   type ProductProfile,
-} from "./quality-lab-method-graph";
+} from "./quality-lab-method-graph.js";
 
-export * from "./quality-lab-contract";
-export * from "./quality-lab-microbiology-pack";
-export * from "./quality-lab-method-graph";
+export * from "./quality-lab-contract.js";
+export * from "./quality-lab-microbiology-pack.js";
+export * from "./quality-lab-method-graph.js";
 
 export const QUALITY_LAB_ENGINE_VERSION = `${QUALITY_LAB_COMPILER_CORE_VERSION}+${MICROBIOLOGY_DOMAIN_PACK.version}`;
 
