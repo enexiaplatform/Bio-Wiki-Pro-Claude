@@ -52,6 +52,11 @@ describe("Atlas Evidence Graph", () => {
     expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "method-architecture", "workload-capacity", "control-investigation"]));
   });
 
+  it("routes growth-promotion and bioburden rules to their specific application packs", () => {
+    expect(ruleGuidanceForIds(["micro.workflow.growth-promotion"]).resources[0]?.href).toBe("/blog/growth-promotion-media-qc-application-pack");
+    expect(ruleGuidanceForIds(["micro.workflow.bioburden"]).resources[0]?.href).toBe("/blog/bioburden-membrane-filtration-application-pack");
+  });
+
   it("routes equipment-cycle blockers to usable-capacity guidance", () => {
     const guidance = ruleGuidanceForIds(["core.capacity.equipment"]);
     expect(guidance.fallbackUsed).toBe(false);

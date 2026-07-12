@@ -82,6 +82,8 @@ export const atlasEvidenceDomains: EvidenceDomain[] = [
     guideHref: "/blog/how-to-scope-nonsterile-microbiology-qc-lab",
     resources: [
       resource("guide", "Scope a non-sterile microbiology QC lab", "/blog/how-to-scope-nonsterile-microbiology-qc-lab", "Connect product profiles, markets and execution choices to methods, BOM and capacity.", ["scope-applicability", "method-architecture", "workload-capacity"]),
+      resource("guide", "Growth promotion and media QC application pack", "/blog/growth-promotion-media-qc-application-pack", "Connect media lots and preparations to required properties, challenge cultures, release decisions, failures and resource demand.", ["method-architecture", "workload-capacity", "control-investigation", "lifecycle-governance"]),
+      resource("guide", "Bioburden and membrane filtration application pack", "/blog/bioburden-membrane-filtration-application-pack", "Connect sample purpose and matrix preparation to recovery suitability, enumeration architecture, decisions and capacity.", ["scope-applicability", "method-architecture", "workload-capacity", "control-investigation", "lifecycle-governance"]),
       resource("lesson", "Growth Promotion Testing", "/library/growth-promotion-testing", "Understand media suitability, organism controls and the evidence behind media release.", ["method-architecture", "control-investigation"]),
       resource("workflow", "Culture Media Selection", "/workflows/culture-media-selection", "Operationalize media choice, preparation, GPT and lot release controls.", ["method-architecture", "workload-capacity", "control-investigation"]),
       resource("tool", "Microbial Count Calculator", "/tools/microbial-count-calculator", "Check dilution and count calculations while preserving method and suitability boundaries.", ["method-architecture", "control-investigation"]),
@@ -165,6 +167,7 @@ export interface RuleEvidenceMapping {
   ruleId: string;
   domainId: EvidenceDomainId;
   decisions: BlueprintDecisionId[];
+  preferredResourceHref?: string;
 }
 
 export const ruleEvidenceMappings: RuleEvidenceMapping[] = [
@@ -176,31 +179,32 @@ export const ruleEvidenceMappings: RuleEvidenceMapping[] = [
   { ruleId: "core.space.concept", domainId: "compiler-core", decisions: ["method-architecture", "equipment-utilities", "lifecycle-governance"] },
   { ruleId: "micro.workflow.raw-materials", domainId: "nonsterile-microbiology", decisions: ["scope-applicability", "method-architecture", "workload-capacity"] },
   { ruleId: "micro.workflow.finished-products", domainId: "nonsterile-microbiology", decisions: ["scope-applicability", "method-architecture", "workload-capacity"] },
-  { ruleId: "micro.workflow.bioburden", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "workload-capacity", "control-investigation"] },
-  { ruleId: "micro.workflow.growth-promotion", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "workload-capacity", "control-investigation"] },
+  { ruleId: "micro.workflow.bioburden", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "workload-capacity", "control-investigation"], preferredResourceHref: "/blog/bioburden-membrane-filtration-application-pack" },
+  { ruleId: "micro.workflow.growth-promotion", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "workload-capacity", "control-investigation"], preferredResourceHref: "/blog/growth-promotion-media-qc-application-pack" },
   { ruleId: "micro.workflow.endotoxin", domainId: "nonsterile-microbiology", decisions: ["scope-applicability", "method-architecture", "control-investigation"] },
   { ruleId: "micro.workflow.water", domainId: "water-em", decisions: ["scope-applicability", "method-architecture", "workload-capacity", "control-investigation"] },
   { ruleId: "micro.workflow.environmental-monitoring", domainId: "water-em", decisions: ["scope-applicability", "workload-capacity", "control-investigation", "lifecycle-governance"] },
   { ruleId: "micro.workflow.sterility", domainId: "sterile-biologics", decisions: ["scope-applicability", "method-architecture", "equipment-utilities", "control-investigation"] },
   { ruleId: "usp-61-concept", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "workload-capacity", "control-investigation"] },
   { ruleId: "usp-62-concept", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "workload-capacity", "control-investigation"] },
-  { ruleId: "method-suitability", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "control-investigation", "lifecycle-governance"] },
+  { ruleId: "method-suitability", domainId: "nonsterile-microbiology", decisions: ["method-architecture", "control-investigation", "lifecycle-governance"], preferredResourceHref: "/blog/method-suitability-to-microbiology-lab-capacity" },
 ];
 
 export function ruleGuidanceForIds(ruleIds: string[], limit = 4) {
   const uniqueRuleIds = Array.from(new Set(ruleIds));
   const matchedMappings = ruleEvidenceMappings.filter((mapping) => uniqueRuleIds.includes(mapping.ruleId));
   const fallbackUsed = matchedMappings.length === 0;
-  const activeMappings = fallbackUsed
+  const activeMappings: RuleEvidenceMapping[] = fallbackUsed
     ? [{ ruleId: "unmapped", domainId: "compiler-core" as const, decisions: ["scope-applicability" as const, "lifecycle-governance" as const] }]
     : matchedMappings;
   const domainIds = new Set(activeMappings.map((mapping) => mapping.domainId));
   const decisionIds = new Set(activeMappings.flatMap((mapping) => mapping.decisions));
+  const preferredResourceHrefs = new Set(activeMappings.flatMap((mapping) => mapping.preferredResourceHref ? [mapping.preferredResourceHref] : []));
   const scored = atlasEvidenceDomains
     .filter((domain) => domainIds.has(domain.id))
-    .flatMap((domain) => domain.resources.map((resource) => ({ resource, score: resource.decisions.filter((decision) => decisionIds.has(decision)).length })))
+    .flatMap((domain) => domain.resources.map((resource) => ({ resource, preferred: preferredResourceHrefs.has(resource.href), score: resource.decisions.filter((decision) => decisionIds.has(decision)).length })))
     .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score || Number(b.resource.kind === "guide") - Number(a.resource.kind === "guide"));
+    .sort((a, b) => Number(b.preferred) - Number(a.preferred) || b.score - a.score || Number(b.resource.kind === "guide") - Number(a.resource.kind === "guide"));
   return {
     matchedRuleIds: matchedMappings.map((mapping) => mapping.ruleId),
     unmatchedRuleIds: uniqueRuleIds.filter((ruleId) => !matchedMappings.some((mapping) => mapping.ruleId === ruleId)),

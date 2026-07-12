@@ -3613,6 +3613,17 @@
   },
   {
     "collection": "blog",
+    "slug": "bioburden-membrane-filtration-application-pack",
+    "lang": "en",
+    "title": "Bioburden and membrane filtration application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A method-application framework for bioburden enumeration covering sample purpose, preparation, membrane filtration, recovery suitability, calculations, decisions and capacity.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 7
+  },
+  {
+    "collection": "blog",
     "slug": "biological-indicators-positive-control",
     "lang": "en",
     "title": "Biological indicators: why the positive control is everything",
@@ -3973,6 +3984,17 @@
     "seoDescription": "In aseptic manufacturing, the gowned operator is often the largest contamination risk. Learn how gowning qualification, monitoring, requalification, APS coverage, and CAPA fit together.",
     "updatedAt": "2026-07-03",
     "readMinutes": 9
+  },
+  {
+    "collection": "blog",
+    "slug": "growth-promotion-media-qc-application-pack",
+    "lang": "en",
+    "title": "Growth promotion and media QC application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A method-application framework for culture-media receipt, preparation, growth promotion, inhibitory and indicative properties, release decisions, failures and resource demand.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 7
   },
   {
     "collection": "blog",

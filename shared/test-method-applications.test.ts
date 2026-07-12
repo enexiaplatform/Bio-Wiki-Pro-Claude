@@ -20,4 +20,16 @@ describe("Test Method Application Packs", () => {
     expect(water.guideHref).toBe("/blog/pharmaceutical-water-microbiology-application-pack");
     expect(assessApplicationPack(water).blockers.map((item) => item.id)).toContain("lifecycle");
   });
+
+  it("advances growth promotion and bioburden into evidence-gated application development", () => {
+    const growthPromotion = testMethodApplicationPacks.find((pack) => pack.id === "growth-promotion-media-qc");
+    const bioburden = testMethodApplicationPacks.find((pack) => pack.id === "bioburden-filtration");
+
+    expect(growthPromotion).toMatchObject({ stage: "application-development", methodGraphStatus: "workflow-only", guideHref: "/blog/growth-promotion-media-qc-application-pack" });
+    expect(bioburden).toMatchObject({ stage: "application-development", methodGraphStatus: "workflow-only", guideHref: "/blog/bioburden-membrane-filtration-application-pack" });
+    expect(growthPromotion?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
+    expect(bioburden?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
+    expect(assessApplicationPack(growthPromotion!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
+    expect(assessApplicationPack(bioburden!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
+  });
 });

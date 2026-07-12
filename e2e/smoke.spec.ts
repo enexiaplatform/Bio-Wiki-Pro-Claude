@@ -315,6 +315,24 @@ test.describe("public smoke", () => {
     await expect(context.getByRole("heading", { name: /Water & environmental monitoring/i })).toBeVisible();
   });
 
+  test("Growth promotion application pack connects media properties to release and failure decisions", async ({ page }) => {
+    await page.goto("/blog/growth-promotion-media-qc-application-pack");
+    await expect(page.getByRole("heading", { level: 1, name: "Growth promotion and media QC application pack" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the media–method–property matrix" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the release decision" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Investigate failures by genealogy and impact" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
+  });
+
+  test("Bioburden application pack connects matrix recovery to downstream decisions and capacity", async ({ page }) => {
+    await page.goto("/blog/bioburden-membrane-filtration-application-pack");
+    await expect(page.getByRole("heading", { level: 1, name: "Bioburden and membrane filtration application pack" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the product–preparation–recovery matrix" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Decide whether membrane filtration is fit for the application" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Connect the result to its downstream decision" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
+  });
+
   test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {
     const surfaces = [
       ["/blog/how-to-scope-nonsterile-microbiology-qc-lab", /Non-sterile pharmaceutical microbiology/i],
