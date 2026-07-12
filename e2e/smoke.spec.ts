@@ -208,6 +208,9 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel("Application portfolio readiness").getByText("36")).toBeVisible();
     await expect(page.getByLabel("Application portfolio readiness").getByText("24 / 6")).toBeVisible();
     await expect(page.getByText(/5 unresolved dimensions \(4 partial, 1 evidence blocker\)/).first()).toBeVisible();
+    const readinessBaselineDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download readiness baseline CSV/i }).click();
+    expect((await readinessBaselineDownload).suggestedFilename()).toBe("atlas-application-readiness-baseline.csv");
     await expect(page.getByText(/workflow only/i).first()).toBeVisible();
     await expect(page.getByText(/evidence blocker/i).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /Open application guide/i }).first()).toHaveAttribute("href", "/blog/pharmaceutical-water-microbiology-application-pack");

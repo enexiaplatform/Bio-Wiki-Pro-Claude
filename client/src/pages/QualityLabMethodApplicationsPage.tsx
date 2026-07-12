@@ -1,11 +1,26 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, CircleDashed, FlaskConical, Layers3, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, CircleDashed, Download, FlaskConical, Layers3, ShieldAlert } from "lucide-react";
 import { Link } from "wouter";
-import { assessApplicationPack, assessApplicationPortfolio, testMethodApplicationPacks, type ApplicationDimensionStatus, type ApplicationPackStage } from "@/data/testMethodApplications";
+import { applicationReadinessBaselineRows, assessApplicationPack, assessApplicationPortfolio, testMethodApplicationPacks, type ApplicationDimensionStatus, type ApplicationPackStage } from "@/data/testMethodApplications";
+import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 
 const stageLabel: Record<ApplicationPackStage, string> = { "application-development": "Application development", "content-foundation": "Content foundation", "specialist-gated": "Specialist gated" };
 const statusLabel: Record<ApplicationDimensionStatus, string> = { structured: "Structured", partial: "Partial", "evidence-required": "Evidence required" };
 const statusStyle: Record<ApplicationDimensionStatus, string> = { structured: "border-teal-300/25 bg-teal-300/10 text-teal-200", partial: "border-sky-300/20 bg-sky-300/10 text-sky-200", "evidence-required": "border-amber-300/20 bg-amber-300/10 text-amber-200" };
+
+function downloadReadinessBaseline() {
+  const csvCell = (value: string) => `"${value.replaceAll('"', '""')}"`;
+  const csv = applicationReadinessBaselineRows().map((row) => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "atlas-application-readiness-baseline.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  analytics.downloadClicked("test_method_application_packs", "atlas-application-readiness-baseline.csv");
+}
 
 export default function QualityLabMethodApplicationsPage() {
   useSEO({ title: "Test Method Application Packs | Atlas Quality Lab", description: "Inspect how Atlas develops test methods from educational content into evidence-linked, application-specific Method Graph nodes." });
@@ -17,6 +32,7 @@ export default function QualityLabMethodApplicationsPage() {
       <h1 className="mt-6 max-w-5xl font-display text-4xl font-bold leading-tight md:text-6xl">A test name becomes useful only when its application is explicit.</h1>
       <p className="mt-5 max-w-4xl text-base leading-8 text-slate-300 md:text-lg">Atlas separates educational coverage from executable Method Graph maturity. Each pack must connect intended use, matrix, method architecture, decision rules, resources and lifecycle evidence before it can drive a controlled Blueprint.</p>
       <div className="mt-6 flex gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4 text-xs leading-6 text-slate-400"><ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-slate-200">No generic method approval:</strong> these records expose current coverage and missing evidence. Site specifications, approved procedures, suitability/validation and qualified review remain authoritative.</p></div>
+      <button type="button" onClick={downloadReadinessBaseline} className="mt-5 inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-3 text-sm font-bold text-teal-200 hover:bg-teal-300/15"><Download className="h-4 w-4" /> Download readiness baseline CSV</button>
     </header>
     <section aria-label="Application portfolio readiness" className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       {[

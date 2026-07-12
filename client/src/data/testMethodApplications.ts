@@ -128,3 +128,32 @@ export function assessApplicationPortfolio(packs = testMethodApplicationPacks) {
     executableReadyCount: assessments.filter(({ assessment }) => assessment.readyForExecutableMethodGraph).length,
   };
 }
+
+export function applicationReadinessBaselineRows(packs = testMethodApplicationPacks) {
+  const header = ["readiness_id", "application_id", "application_pack", "dimension", "current_status", "claim_or_decision_supported", "required_evidence", "available_evidence_reference", "evidence_version_or_date", "applicability_scope", "evidence_owner", "reviewer_role", "review_status", "confidence", "blocking_gap", "gap_impact", "resolution_action", "due_date", "dependency", "method_graph_eligibility", "eligibility_rationale", "last_reviewed_at"];
+  const rows = packs.flatMap((pack) => pack.dimensions.map((dimension, index) => [
+    `RDY-${String(pack.sequence).padStart(2, "0")}-${String(index + 1).padStart(2, "0")}`,
+    pack.id,
+    pack.title,
+    dimension.id,
+    dimension.status,
+    pack.decision,
+    dimension.exitEvidence,
+    pack.evidenceHrefs.join(" | "),
+    "",
+    pack.domain,
+    "",
+    "QC / QA / Regulatory / Engineering / SME",
+    "open",
+    dimension.status === "structured" ? "medium" : "indicative",
+    dimension.status === "structured" ? "" : dimension.currentBasis,
+    dimension.status === "structured" ? "" : "Prevents executable Method Graph eligibility until controlled evidence is reviewed.",
+    dimension.status === "structured" ? "Confirm applicability and controlled source." : dimension.exitEvidence,
+    "",
+    "",
+    pack.methodGraphStatus,
+    assessApplicationPack(pack).readyForExecutableMethodGraph ? "Ready for controlled implementation review." : `${assessApplicationPack(pack).unresolved.length} dimensions remain unresolved.`,
+    "",
+  ]));
+  return [header, ...rows];
+}

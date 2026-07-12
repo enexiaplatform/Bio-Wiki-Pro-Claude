@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assessApplicationPack, assessApplicationPortfolio, testMethodApplicationPacks } from "../client/src/data/testMethodApplications";
+import { applicationReadinessBaselineRows, assessApplicationPack, assessApplicationPortfolio, testMethodApplicationPacks } from "../client/src/data/testMethodApplications";
 
 describe("Test Method Application Packs", () => {
   it("keeps the microbiology-first application sequence explicit and evidence gated", () => {
@@ -85,5 +85,15 @@ describe("Test Method Application Packs", () => {
       blockerCount: 6,
       executableReadyCount: 0,
     });
+  });
+
+  it("exports one readiness baseline row for every application dimension", () => {
+    const [header, ...rows] = applicationReadinessBaselineRows();
+    expect(rows).toHaveLength(36);
+    expect(new Set(rows.map((row) => row[0])).size).toBe(36);
+    expect(header).toEqual(expect.arrayContaining(["application_id", "dimension", "current_status", "required_evidence", "method_graph_eligibility", "eligibility_rationale"]));
+    expect(rows.every((row) => row.length === header.length)).toBe(true);
+    expect(rows.filter((row) => row[4] === "structured")).toHaveLength(6);
+    expect(rows.filter((row) => row[4] === "evidence-required")).toHaveLength(6);
   });
 });
