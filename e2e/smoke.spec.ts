@@ -144,16 +144,19 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
-    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(5);
+    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(6);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toBe("atlas-blueprint-project-intake.csv");
-    const validationDownload = page.waitForEvent("download");
+    const spaceDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(3).click();
+    expect((await spaceDownload).suggestedFilename()).toBe("atlas-space-flow-engineering-basis.csv");
+    const validationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(4).click();
     expect((await validationDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case.csv");
     const impactDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download CSV/i }).nth(4).click();
+    await page.getByRole("button", { name: /Download CSV/i }).nth(5).click();
     expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
   });
 
@@ -244,6 +247,17 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Target stock is not an order quantity/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Shelf life constrains usable coverage/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Quality Lab Planner/i })).toHaveAttribute("href", "/quality-lab/planner");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Space and flow guide connects capabilities to an engineering-ready basis", async ({ page }) => {
+    await page.goto("/blog/from-qc-capability-map-to-space-zoning-and-flow-basis");
+    await expect(page.getByRole("heading", { name: /From QC capability map to space, zoning and flow basis/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Model personnel, sample, material and waste flows separately/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build an adjacency matrix before drawing a layout/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Evidence package for qualified engineering/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Blueprint Discovery Pack/i })).toHaveAttribute("href", "/quality-lab/discovery-pack");
     const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
     await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
   });

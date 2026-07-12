@@ -112,6 +112,12 @@ const evidenceGuides = [
     body: "Separate net and gross demand, then expose reorder points, safety stock, expiry, storage and supplier-continuity evidence.",
     href: "/blog/from-method-bom-to-resilient-qc-consumable-supply",
   },
+  {
+    eyebrow: "Compiler Core deep dive",
+    title: "Create an engineering-ready space and flow basis",
+    body: "Translate activities into zones, adjacencies, segregation, personnel/sample/material/waste flows, equipment envelopes and utility evidence.",
+    href: "/blog/from-qc-capability-map-to-space-zoning-and-flow-basis",
+  },
 ];
 
 const fade = {

@@ -3888,6 +3888,17 @@
   },
   {
     "collection": "blog",
+    "slug": "from-qc-capability-map-to-space-zoning-and-flow-basis",
+    "lang": "en",
+    "title": "From QC capability map to space, zoning and flow basis",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate QC capabilities into room functions, adjacencies, zoning, personnel and material flows, utility loads and an engineering-ready basis without pretending to produce a detailed design.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "from-workload-to-usable-qc-equipment-capacity",
     "lang": "en",
     "title": "From workload to usable QC equipment capacity: peaks, downtime and redundancy",

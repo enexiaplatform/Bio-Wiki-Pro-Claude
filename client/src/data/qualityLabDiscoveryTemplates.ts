@@ -36,6 +36,15 @@ export const blueprintDiscoveryTemplates = [
     ],
   },
   {
+    filename: "atlas-space-flow-engineering-basis.csv",
+    title: "Space, flow and utility basis",
+    description: "Translate capabilities into activities, zones, adjacencies, segregations, flow paths, equipment envelopes and engineering evidence.",
+    rows: [
+      ["record_id", "capability_or_workflow", "activity", "functional_zone", "input_state", "output_state", "people_concurrent", "equipment_and_working_envelope", "storage_state_and_condition", "personnel_flow", "sample_flow", "material_flow", "waste_flow", "adjacency_requirement", "segregation_requirement_and_reason", "utility_classes", "peak_or_downtime_scenario", "evidence_reference", "owner", "status", "engineering_question"],
+      ["SPC-001", "", "", "", "", "", "", "", "", "", "", "", "", "direct / near / neutral / separate", "", "power / water / drain / steam / gas / exhaust / data", "", "", "QC / QA / Engineering / EHS", "concept / confirmed / blocked", ""],
+    ],
+  },
+  {
     filename: "atlas-domain-pack-validation-case.csv",
     title: "Domain Pack validation case",
     description: "Compare a frozen estimate with qualified actuals, classify variance and decide whether learning remains project-only or enters controlled review.",

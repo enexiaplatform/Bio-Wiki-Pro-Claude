@@ -65,4 +65,11 @@ describe("Atlas Evidence Graph", () => {
     expect(guidance.resources[0]?.href).toBe("/blog/from-method-bom-to-resilient-qc-consumable-supply");
     expect(guidance.decisionIds).toEqual(expect.arrayContaining(["method-architecture", "workload-capacity", "lifecycle-governance"]));
   });
+
+  it("routes space blockers to zoning, flow and engineering-basis guidance", () => {
+    const guidance = ruleGuidanceForIds(["core.space.concept"]);
+    expect(guidance.fallbackUsed).toBe(false);
+    expect(guidance.resources[0]?.href).toBe("/blog/from-qc-capability-map-to-space-zoning-and-flow-basis");
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["method-architecture", "equipment-utilities", "lifecycle-governance"]));
+  });
 });

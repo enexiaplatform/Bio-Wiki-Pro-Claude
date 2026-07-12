@@ -1,0 +1,303 @@
+---
+title: "From QC capability map to space, zoning and flow basis"
+slug: "from-qc-capability-map-to-space-zoning-and-flow-basis"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Translate QC capabilities into room functions, adjacencies, zoning, personnel and material flows, utility loads and an engineering-ready basis without pretending to produce a detailed design."
+updatedAt: "2026-07-12"
+---
+
+# From QC capability map to space, zoning and flow basis
+
+A square-metre allowance is not a laboratory design.
+
+The useful planning chain is:
+
+```text
+quality decision
+→ method and workflow
+→ activity, material and equipment state
+→ segregation and adjacency need
+→ room function
+→ usable area and utility load
+→ qualified engineering design
+```
+
+If this chain is skipped, a project can have enough total floor area and still be
+operationally impossible. Equipment may not fit with service clearance, dirty and
+clean flows may cross, samples may queue in uncontrolled staging, or utilities may
+be unavailable where the method needs them.
+
+Atlas should produce an **engineering-ready space and flow basis**. It should not
+claim to produce CAD layouts, classified-area design, HVAC calculations, fire-code
+approval or construction documents.
+
+## Start with activities, not room names
+
+Room lists inherited from another site are weak inputs. Begin with the activities
+required by the capability model:
+
+- sample receipt, verification and accessioning;
+- controlled sample staging and storage;
+- weighing, dilution and sample preparation;
+- media receipt, storage, preparation, sterilization and release;
+- membrane filtration, plating and aseptic manipulations;
+- incubation under defined conditions;
+- colony reading, identification and technical review;
+- environmental-monitoring kit preparation and return;
+- washing, decontamination and waste removal;
+- reagent, culture and consumable storage;
+- equipment cleaning, maintenance and calibration access;
+- records, data review and investigation work;
+- gowning, hand hygiene and personnel support.
+
+For every activity, record inputs, outputs, duration, frequency, people, equipment,
+materials, waste, environmental sensitivity and required utilities.
+
+## Convert activities into functional zones
+
+Activities may share a room only when their control needs are compatible. A useful
+early zoning model distinguishes:
+
+| Functional zone | Primary purpose | Key questions |
+| --- | --- | --- |
+| Receipt and staging | Control incoming samples and materials | Status segregation, temperature, queue time, chain of custody |
+| General preparation | Weighing, dilution and non-critical preparation | Dust, spills, cleaning, shared equipment, ergonomic capacity |
+| Protected microbiology work | Controlled manipulations and filtration | Biosafety, contamination protection, BSC access, cleaning |
+| Media operations | Prepare, sterilize, cool, hold and release media | Clean/dirty direction, heat, steam, water, load handling |
+| Incubation and controlled storage | Hold plates, cultures, reagents and samples | Temperature segregation, alarms, rack geometry, backup |
+| Reading and review | Observe, count, identify, interpret and review | Data capture, lighting, queue, reviewer access |
+| Wash and decontamination | Clean reusable items and manage biological waste | Dirty flow, drains, steam, heat rejection, waste exit |
+| Support and governance | Gowning, documentation, investigation and supervision | Access, confidentiality, handover and proximity |
+
+Zone names are planning abstractions. The engineering team determines final room
+boundaries, finishes, pressure relationships and code compliance.
+
+## Define segregation by hazard and control objective
+
+“Separate rooms” should never be a reflex. State the reason for separation:
+
+- protect the sample or method from contamination;
+- protect personnel from biological or chemical exposure;
+- prevent cross-contamination between organisms or products;
+- separate clean and dirty equipment states;
+- preserve quarantine, released and rejected material status;
+- control temperature, humidity, light or vibration;
+- protect data, records or controlled access;
+- avoid incompatible simultaneous activities;
+- meet approved biosafety, GMP, EHS or building-code requirements.
+
+Then test whether separation requires a dedicated room, time segregation, a
+qualified enclosure, controlled storage, procedural controls or a combination.
+Atlas can expose the decision. Qualified site functions must approve the control.
+
+## Model personnel, sample, material and waste flows separately
+
+A single arrow called “flow” hides conflicts. Create at least four paths.
+
+### Personnel flow
+
+Record entry, gowning, hand hygiene, work transitions, supervisory access, breaks,
+emergency egress and exit. Ask whether staff cross from dirty or organism-handling
+activities into protected work without an adequate transition.
+
+### Sample flow
+
+Trace receipt, status verification, staging, preparation, testing, incubation,
+reading, retain/disposition and investigation hold. Include time and storage
+conditions at every queue.
+
+### Material and equipment flow
+
+Trace media, reagents, cultures, consumables, clean glassware, instruments,
+maintenance parts and returned monitoring kits. Distinguish clean, used, quarantined
+and released states.
+
+### Waste flow
+
+Trace biological, sharps, chemical, general and packaging waste from generation to
+decontamination, temporary hold and facility exit. Define ownership and maximum hold
+conditions.
+
+Overlaying these paths reveals crossings and backtracking that a room-area table
+cannot show.
+
+## Build an adjacency matrix before drawing a layout
+
+Classify every functional pair:
+
+- **direct adjacency required** — frequent or time-critical transfer;
+- **nearby preferred** — useful operational relationship;
+- **neutral** — no meaningful relationship;
+- **separation preferred** — contamination, hazard or disturbance concern;
+- **separation required** — approved control or code basis.
+
+Attach the reason and source. For example, media preparation may need direct or
+near adjacency to sterilization and controlled cooling, while dirty waste staging
+may require a protected route away from sample receipt.
+
+The matrix gives engineering a testable basis. It also allows later layout options
+to be scored consistently.
+
+## Size usable activity envelopes
+
+Equipment footprint alone understates space. For every major item, include:
+
+```text
+equipment footprint
++ operator working envelope
++ door, drawer and load movement
++ maintenance and calibration clearance
++ utility connection and isolation access
++ material staging and mobile cart space
++ safe lifting or handling path
+```
+
+For benches and rooms, add capacity for peak concurrent work rather than average
+monthly demand. Incubators, refrigerators and stores need qualified usable rack or
+shelf geometry, not only external cabinet volume.
+
+## Translate workflow concurrency into area demand
+
+Monthly hours do not reveal how many activities occur simultaneously. Determine:
+
+- arrival pattern by day and shift;
+- sampling rounds and fixed-time events;
+- batch grouping and campaign peaks;
+- preparation, execution and reading windows;
+- number of analysts working concurrently;
+- equipment sharing and queue constraints;
+- investigation or repeat work during routine demand;
+- future equipment and expansion triggers.
+
+A small total workload can still require multiple protected work positions if tasks
+have narrow simultaneous windows. A high monthly workload may fit a smaller area if
+work is deliberately level-loaded and equipment cycles support it.
+
+## Build the utility load register
+
+For each room function and equipment class, capture:
+
+- electrical load, voltage, phase, UPS and emergency-power need;
+- purified water, potable water and drainage;
+- clean steam or plant steam;
+- compressed air, vacuum and gases;
+- exhaust, heat rejection and local ventilation;
+- network, data ports, monitoring and alarm integration;
+- temperature and humidity operating range;
+- acoustic, vibration or electromagnetic sensitivity;
+- floor loading and delivery/installation route;
+- maintenance isolation and safe shutdown requirement.
+
+Concept values may identify utility classes. Final loads must come from selected
+equipment, vendor data and qualified engineering calculations.
+
+## Account for storage by state and condition
+
+Storage demand comes from more than samples. Include:
+
+- incoming, quarantine, released, rejected and returned materials;
+- ambient, refrigerated, frozen, flammable and light-protected conditions;
+- media before and after preparation;
+- reference cultures and critical reagents;
+- clean and used equipment states;
+- monitoring kits before and after use;
+- target consumable inventory and safety stock;
+- investigation holds and retained samples;
+- records and controlled forms where physical.
+
+Connect the inventory model to physical pack dimensions and shelf occupancy. A
+supply target that does not fit qualified storage is not a viable resilience plan.
+
+## Treat support space as an operational requirement
+
+Circulation and support percentages are acceptable only at concept stage. Replace
+them progressively with explicit needs:
+
+- gowning and lockers;
+- handwash and hygiene transitions;
+- mobile-equipment parking;
+- cleaning-material storage;
+- staging and pass-throughs;
+- maintenance access;
+- waste hold;
+- documentation and review stations;
+- supervisor and investigation collaboration;
+- accessibility and emergency egress.
+
+Support space often determines whether the laboratory remains orderly during peak
+work, maintenance and deviations.
+
+## Use scenarios and design triggers
+
+Test at least:
+
+1. current routine demand;
+2. future approved demand;
+3. a peak campaign or sampling event;
+4. critical equipment downtime;
+5. investigation or contamination response;
+6. insourcing or new-method introduction;
+7. protected expansion without disrupting routine work.
+
+Create measurable triggers such as concurrent analysts, samples per peak day,
+incubator rack utilization, target inventory volume, additional equipment count or
+new segregation requirement.
+
+## Evidence package for qualified engineering
+
+Before design freeze, provide:
+
+- approved capability and product/test matrix;
+- workflow and method-step maps;
+- equipment list with usable envelopes and service access;
+- people, shift and concurrency assumptions;
+- sample, material, personnel and waste flow maps;
+- adjacency and segregation matrix with rationale;
+- storage inventory by state and condition;
+- utility load register and vendor data status;
+- cleaning, decontamination and waste strategy;
+- biosafety, EHS, fire, building and accessibility constraints;
+- future scenarios and expansion triggers;
+- open assumptions, owners and approval records.
+
+## What Atlas should block
+
+Atlas may report a concept allowance while clearly exposing limitations. It should
+block controlled design use when:
+
+- approved workflows and equipment are incomplete;
+- concurrency and peak events are unknown;
+- segregation decisions have no stated control objective;
+- personnel, sample, material or waste flows are missing;
+- utility classes or selected-equipment loads are unavailable;
+- storage conditions and physical inventory are not reconciled;
+- maintenance, calibration and installation access is excluded;
+- qualified engineering and EHS owners are unnamed.
+
+## Practical review checklist
+
+- Can every room function be traced to a required capability?
+- Are incompatible activities separated for an explicit reason?
+- Are all four flow types mapped?
+- Does the adjacency matrix state rationale and ownership?
+- Do equipment envelopes include operation and service access?
+- Is area based on concurrency and peaks, not only monthly averages?
+- Does target inventory fit condition-qualified storage?
+- Are utilities tied to equipment and operating states?
+- Can maintenance and downtime occur without unsafe improvisation?
+- Are future expansion triggers measurable?
+- Are engineering, EHS and QA approvals outside Atlas explicit?
+
+## Apply the reasoning in Atlas
+
+Use the [Quality Lab Planner](/quality-lab/planner) to compile the capability,
+equipment, workforce, consumable and concept-space basis. Use the
+[Blueprint Discovery Pack](/quality-lab/discovery-pack) to collect the activity,
+adjacency, segregation, flow and utility evidence required for qualified design.
+Follow the connected decisions in the [Evidence Graph](/quality-lab/evidence).
+
+Atlas outputs are planning and decision-support artifacts. They do not replace site
+risk assessment, biosafety review, EHS approval, qualified architectural/HVAC/MEP
+engineering, building-code review, equipment vendor data or construction design.

@@ -7,6 +7,7 @@ describe("Quality Lab Discovery Pack templates", () => {
       "atlas-blueprint-project-intake.csv",
       "atlas-requirement-capability-map.csv",
       "atlas-assumptions-evidence-decision-log.csv",
+      "atlas-space-flow-engineering-basis.csv",
       "atlas-domain-pack-validation-case.csv",
       "atlas-rule-change-impact-assessment.csv",
     ]);
