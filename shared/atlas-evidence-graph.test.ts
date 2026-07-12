@@ -59,11 +59,18 @@ describe("Atlas Evidence Graph", () => {
     expect(guidance.decisionIds).toEqual(expect.arrayContaining(["workload-capacity", "control-investigation", "lifecycle-governance"]));
   });
 
-  it("routes cost and supply blockers to consumable resilience guidance", () => {
-    const guidance = ruleGuidanceForIds(["core.cost.concept"]);
+  it("routes supply blockers to consumable resilience guidance", () => {
+    const guidance = ruleGuidanceForIds(["core.supply.consumables"]);
     expect(guidance.fallbackUsed).toBe(false);
     expect(guidance.resources[0]?.href).toBe("/blog/from-method-bom-to-resilient-qc-consumable-supply");
     expect(guidance.decisionIds).toEqual(expect.arrayContaining(["method-architecture", "workload-capacity", "lifecycle-governance"]));
+  });
+
+  it("routes concept-cost blockers to controlled cost-basis guidance", () => {
+    const guidance = ruleGuidanceForIds(["core.cost.concept"]);
+    expect(guidance.fallbackUsed).toBe(false);
+    expect(guidance.resources[0]?.href).toBe("/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis");
+    expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "equipment-utilities", "lifecycle-governance"]));
   });
 
   it("routes space blockers to zoning, flow and engineering-basis guidance", () => {

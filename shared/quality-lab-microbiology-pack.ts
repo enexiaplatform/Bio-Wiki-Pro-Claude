@@ -141,6 +141,18 @@ export const MICROBIOLOGY_SHARED_RULE_TRACE: RuleTrace[] = [
     reviewRequired: true,
   },
   {
+    ruleId: "core.supply.consumables",
+    ruleVersion: "v1.0",
+    name: "Consumable replenishment and resilience model",
+    domainPackId: MICROBIOLOGY_DOMAIN_PACK.id,
+    outputTypes: ["consumables", "opex", "risk"],
+    evidenceIds: ["project-inputs", "atlas-microbiology-benchmarks-v1", "site-approved-methods", "vendor-budget-evidence"],
+    applicability: "All compiled projects with positive in-house consumable demand",
+    confidence: "indicative",
+    limitations: "Uses class-level demand, a single waste allowance, average lead time and demand-day safety stock; pack size, MOQ, shelf life, storage capacity, supplier variability and qualified alternates require item-level evidence.",
+    reviewRequired: true,
+  },
+  {
     ruleId: "core.cost.concept",
     ruleVersion: "v1.0",
     name: "Concept CAPEX and OPEX bands",

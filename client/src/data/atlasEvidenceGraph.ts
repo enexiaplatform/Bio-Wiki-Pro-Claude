@@ -67,6 +67,7 @@ export const atlasEvidenceDomains: EvidenceDomain[] = [
       resource("guide", "Validate a Domain Pack without turning one project into a benchmark", "/blog/how-to-validate-a-quality-lab-domain-pack", "Govern estimate-to-actual observations, learning candidates, cross-case review and controlled rule changes.", ["control-investigation", "lifecycle-governance"]),
       resource("guide", "From method BOM to resilient QC consumable supply", "/blog/from-method-bom-to-resilient-qc-consumable-supply", "Convert method demand into gross use, reorder points, safety stock, expiry-aware storage and supplier continuity decisions.", ["method-architecture", "workload-capacity", "lifecycle-governance"]),
       resource("guide", "From QC capability map to space, zoning and flow basis", "/blog/from-qc-capability-map-to-space-zoning-and-flow-basis", "Translate activities into functional zones, adjacencies, segregation, four flow paths, usable envelopes and an engineering-ready evidence package.", ["method-architecture", "equipment-utilities", "lifecycle-governance"]),
+      resource("guide", "From concept cost band to a controlled QC laboratory cost basis", "/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis", "Separate purchase price, installed cost, implementation, recurring OPEX, lifecycle cost, escalation, contingency and estimate maturity.", ["scope-applicability", "equipment-utilities", "lifecycle-governance"]),
       resource("guide", "From workload to usable QC equipment capacity", "/blog/from-workload-to-usable-qc-equipment-capacity", "Convert method load into qualified usable capacity with peaks, downtime, queue risk, redundancy and procurement triggers.", ["workload-capacity", "equipment-utilities", "lifecycle-governance"]),
       resource("guide", "From hands-on hours to resilient QC staffing", "/blog/from-hands-on-hours-to-resilient-qc-staffing", "Convert method workload into analyst, reviewer and specialist capacity with productive hours, skills, shifts, peaks and resilience.", ["workload-capacity", "control-investigation", "lifecycle-governance"]),
     ],
@@ -167,7 +168,8 @@ export interface RuleEvidenceMapping {
 export const ruleEvidenceMappings: RuleEvidenceMapping[] = [
   { ruleId: "core.capacity.people", domainId: "compiler-core", decisions: ["workload-capacity", "control-investigation", "lifecycle-governance"] },
   { ruleId: "core.capacity.equipment", domainId: "compiler-core", decisions: ["workload-capacity", "equipment-utilities", "lifecycle-governance"] },
-  { ruleId: "core.cost.concept", domainId: "compiler-core", decisions: ["method-architecture", "workload-capacity", "lifecycle-governance"] },
+  { ruleId: "core.supply.consumables", domainId: "compiler-core", decisions: ["method-architecture", "workload-capacity", "lifecycle-governance"] },
+  { ruleId: "core.cost.concept", domainId: "compiler-core", decisions: ["scope-applicability", "equipment-utilities", "lifecycle-governance"] },
   { ruleId: "core.space.concept", domainId: "compiler-core", decisions: ["method-architecture", "equipment-utilities", "lifecycle-governance"] },
   { ruleId: "micro.workflow.raw-materials", domainId: "nonsterile-microbiology", decisions: ["scope-applicability", "method-architecture", "workload-capacity"] },
   { ruleId: "micro.workflow.finished-products", domainId: "nonsterile-microbiology", decisions: ["scope-applicability", "method-architecture", "workload-capacity"] },

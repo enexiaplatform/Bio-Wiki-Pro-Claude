@@ -118,6 +118,12 @@ const evidenceGuides = [
     body: "Translate activities into zones, adjacencies, segregation, personnel/sample/material/waste flows, equipment envelopes and utility evidence.",
     href: "/blog/from-qc-capability-map-to-space-zoning-and-flow-basis",
   },
+  {
+    eyebrow: "Compiler Core deep dive",
+    title: "Mature concept cost into a controlled cost basis",
+    body: "Separate equipment price, installed cost, validation, OPEX, lifecycle spend, escalation, contingency, exclusions and estimate maturity.",
+    href: "/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis",
+  },
 ];
 
 const fade = {

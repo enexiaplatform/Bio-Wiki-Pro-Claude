@@ -3866,6 +3866,17 @@
   },
   {
     "collection": "blog",
+    "slug": "from-concept-cost-band-to-controlled-qc-lab-cost-basis",
+    "lang": "en",
+    "title": "From concept cost band to a controlled QC laboratory cost basis",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Turn early QC laboratory CAPEX and OPEX allowances into a structured, traceable and maturity-labeled cost basis covering installed cost, validation, lifecycle spend, uncertainty and change control.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 8
+  },
+  {
+    "collection": "blog",
     "slug": "from-hands-on-hours-to-resilient-qc-staffing",
     "lang": "en",
     "title": "From hands-on hours to resilient QC staffing: skills, review capacity and shifts",

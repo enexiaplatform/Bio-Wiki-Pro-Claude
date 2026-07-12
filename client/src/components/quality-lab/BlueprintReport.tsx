@@ -346,7 +346,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
               </table>
             </div>
             <div className="mt-4 rounded-lg border border-amber-300/10 bg-amber-300/[0.025] p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-200">Required item-level evidence</p><p className="mt-2 text-xs leading-5 text-slate-400">{blueprint.consumableSupply.current[0]?.confirmationRequired.join(" · ")}</p></div>
-            <DecisionEvidenceLinks ruleIds={["core.cost.concept", "core.capacity.equipment"]} />
+            <DecisionEvidenceLinks ruleIds={["core.supply.consumables"]} />
           </Section>
         )}
 

@@ -45,6 +45,15 @@ export const blueprintDiscoveryTemplates = [
     ],
   },
   {
+    filename: "atlas-qc-lab-cost-basis.csv",
+    title: "QC laboratory cost basis",
+    description: "Reconcile each cost element to technical scope, evidence, timing, estimate maturity, uncertainty and approval ownership.",
+    rows: [
+      ["cost_id", "cost_breakdown_category", "technical_scope_reference", "description", "quantity", "unit", "unit_rate", "currency", "base_date", "source_or_quote_reference", "supplier_or_estimator", "inclusions", "exclusions", "freight_duty_tax_basis", "installation_basis", "qualification_validation_basis", "schedule_or_cashflow_period", "escalation_basis", "contingency_or_risk_basis", "low", "most_likely", "high", "capex_opex_or_lifecycle", "estimate_maturity", "confidence", "owner", "review_status", "variance_or_change_reference"],
+      ["CST-001", "equipment / facility / utility / installation / validation / staffing / supply / service / software / decommissioning", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "CAPEX / OPEX / lifecycle", "concept / budgetary / procurement / controlled-baseline", "high / medium / indicative", "", "open / reviewed / approved", ""],
+    ],
+  },
+  {
     filename: "atlas-domain-pack-validation-case.csv",
     title: "Domain Pack validation case",
     description: "Compare a frozen estimate with qualified actuals, classify variance and decide whether learning remains project-only or enters controlled review.",

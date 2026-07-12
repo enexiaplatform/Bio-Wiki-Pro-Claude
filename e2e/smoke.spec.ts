@@ -144,7 +144,7 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
-    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(6);
+    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(7);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
     const download = await downloadPromise;
@@ -152,11 +152,14 @@ test.describe("public smoke", () => {
     const spaceDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(3).click();
     expect((await spaceDownload).suggestedFilename()).toBe("atlas-space-flow-engineering-basis.csv");
-    const validationDownload = page.waitForEvent("download");
+    const costDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(4).click();
+    expect((await costDownload).suggestedFilename()).toBe("atlas-qc-lab-cost-basis.csv");
+    const validationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(5).click();
     expect((await validationDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case.csv");
     const impactDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download CSV/i }).nth(5).click();
+    await page.getByRole("button", { name: /Download CSV/i }).nth(6).click();
     expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
   });
 
@@ -257,6 +260,17 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Model personnel, sample, material and waste flows separately/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Build an adjacency matrix before drawing a layout/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Evidence package for qualified engineering/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Blueprint Discovery Pack/i })).toHaveAttribute("href", "/quality-lab/discovery-pack");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Controlled cost-basis guide separates estimate maturity and lifecycle cost", async ({ page }) => {
+    await page.goto("/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis");
+    await expect(page.getByRole("heading", { name: /From concept cost band to a controlled QC laboratory cost basis/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Label estimate maturity by scope definition/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Keep price, installed cost and total project cost separate/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Separate escalation from contingency/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Blueprint Discovery Pack/i })).toHaveAttribute("href", "/quality-lab/discovery-pack");
     const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
     await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
