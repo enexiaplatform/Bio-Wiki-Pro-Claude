@@ -63,6 +63,14 @@ describe("Atlas Evidence Graph", () => {
     expect(guidance.decisionIds).toEqual(expect.arrayContaining(["scope-applicability", "workload-capacity", "control-investigation", "lifecycle-governance"]));
   });
 
+  it("exposes microbial-identification application evidence without inventing a rule mapping", () => {
+    const contexts = evidenceContextForHref("/blog/pharmaceutical-microbial-identification-application-pack");
+    expect(contexts).toHaveLength(1);
+    expect(contexts[0]?.domain.id).toBe("nonsterile-microbiology");
+    expect(contexts[0]?.resource.decisions).toEqual(expect.arrayContaining(["method-architecture", "control-investigation", "lifecycle-governance"]));
+    expect(ruleEvidenceMappings.some((mapping) => mapping.ruleId.includes("identification"))).toBe(false);
+  });
+
   it("routes equipment-cycle blockers to usable-capacity guidance", () => {
     const guidance = ruleGuidanceForIds(["core.capacity.equipment"]);
     expect(guidance.fallbackUsed).toBe(false);

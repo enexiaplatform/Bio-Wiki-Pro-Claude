@@ -43,4 +43,16 @@ describe("Test Method Application Packs", () => {
     expect(environmentalMonitoring?.dimensions.find((dimension) => dimension.id === "matrix")?.status).toBe("partial");
     expect(assessApplicationPack(environmentalMonitoring!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
   });
+
+  it("deepens microbial identification while keeping the absent executable node explicit", () => {
+    const microbialIdentification = testMethodApplicationPacks.find((pack) => pack.id === "microbial-identification");
+    expect(microbialIdentification).toMatchObject({
+      stage: "application-development",
+      methodGraphStatus: "not-executable",
+      guideHref: "/blog/pharmaceutical-microbial-identification-application-pack",
+    });
+    expect(microbialIdentification?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
+    expect(assessApplicationPack(microbialIdentification!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
+    expect(assessApplicationPack(microbialIdentification!).readyForExecutableMethodGraph).toBe(false);
+  });
 });

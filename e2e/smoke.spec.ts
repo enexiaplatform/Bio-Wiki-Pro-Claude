@@ -342,6 +342,16 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
   });
 
+  test("Microbial identification application pack connects resolution to confidence and investigation decisions", async ({ page }) => {
+    await page.goto("/blog/pharmaceutical-microbial-identification-application-pack");
+    await expect(page.getByRole("heading", { level: 1, name: "Pharmaceutical microbial identification application pack" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the source–decision–resolution matrix" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Define confidence and discordance rules in advance" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Convert identification into resource demand" })).toBeVisible();
+    await expect(page.getByText(/remains non-executable in the Atlas Method Graph/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Test Method Application Packs/i })).toHaveAttribute("href", "/quality-lab/method-applications");
+  });
+
   test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {
     const surfaces = [
       ["/blog/how-to-scope-nonsterile-microbiology-qc-lab", /Non-sterile pharmaceutical microbiology/i],

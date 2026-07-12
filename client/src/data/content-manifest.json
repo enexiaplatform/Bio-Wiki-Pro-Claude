@@ -4207,6 +4207,17 @@
   },
   {
     "collection": "blog",
+    "slug": "pharmaceutical-microbial-identification-application-pack",
+    "lang": "en",
+    "title": "Pharmaceutical microbial identification application pack",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A decision framework for pharmaceutical microbial identification covering isolate source, required resolution, method selection, confidence, discordance, libraries, investigations and capacity.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 9
+  },
+  {
+    "collection": "blog",
     "slug": "pharmaceutical-water-microbiology-application-pack",
     "lang": "en",
     "title": "Pharmaceutical water microbiology application pack",
