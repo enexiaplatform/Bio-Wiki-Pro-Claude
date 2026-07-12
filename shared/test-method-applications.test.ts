@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { assessApplicationPack, testMethodApplicationPacks } from "../client/src/data/testMethodApplications";
+import { assessApplicationPack, assessApplicationPortfolio, testMethodApplicationPacks } from "../client/src/data/testMethodApplications";
 
 describe("Test Method Application Packs", () => {
   it("keeps the microbiology-first application sequence explicit and evidence gated", () => {
@@ -66,5 +66,24 @@ describe("Test Method Application Packs", () => {
     expect(bet?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
     expect(assessApplicationPack(bet!).blockers.map((item) => item.id)).toEqual(["lifecycle"]);
     expect(assessApplicationPack(bet!).readyForExecutableMethodGraph).toBe(false);
+  });
+
+  it("does not mistake partial dimensions for executable readiness", () => {
+    for (const pack of testMethodApplicationPacks) {
+      const assessment = assessApplicationPack(pack);
+      expect(assessment.unresolved.length).toBe(assessment.partial.length + assessment.blockers.length);
+      expect(assessment.unresolved.length).toBeGreaterThan(0);
+      expect(assessment.readyForExecutableMethodGraph).toBe(false);
+    }
+
+    const portfolio = assessApplicationPortfolio();
+    expect(portfolio).toEqual({
+      packCount: 6,
+      dimensionCount: 36,
+      structuredCount: 6,
+      partialCount: 24,
+      blockerCount: 6,
+      executableReadyCount: 0,
+    });
   });
 });

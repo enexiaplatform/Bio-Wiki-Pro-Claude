@@ -103,6 +103,28 @@ export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
 ];
 
 export function assessApplicationPack(pack: TestMethodApplicationPack) {
+  const structured = pack.dimensions.filter((dimension) => dimension.status === "structured");
+  const partial = pack.dimensions.filter((dimension) => dimension.status === "partial");
   const blockers = pack.dimensions.filter((dimension) => dimension.status === "evidence-required");
-  return { blockers, readyForExecutableMethodGraph: blockers.length === 0 && pack.methodGraphStatus !== "not-executable" };
+  const unresolved = pack.dimensions.filter((dimension) => dimension.status !== "structured");
+  return {
+    structured,
+    partial,
+    blockers,
+    unresolved,
+    readyForExecutableMethodGraph: unresolved.length === 0 && pack.methodGraphStatus !== "not-executable",
+  };
+}
+
+export function assessApplicationPortfolio(packs = testMethodApplicationPacks) {
+  const assessments = packs.map((pack) => ({ pack, assessment: assessApplicationPack(pack) }));
+  const dimensions = packs.flatMap((pack) => pack.dimensions);
+  return {
+    packCount: packs.length,
+    dimensionCount: dimensions.length,
+    structuredCount: dimensions.filter((dimension) => dimension.status === "structured").length,
+    partialCount: dimensions.filter((dimension) => dimension.status === "partial").length,
+    blockerCount: dimensions.filter((dimension) => dimension.status === "evidence-required").length,
+    executableReadyCount: assessments.filter(({ assessment }) => assessment.readyForExecutableMethodGraph).length,
+  };
 }
