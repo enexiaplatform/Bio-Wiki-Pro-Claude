@@ -9,12 +9,17 @@ import {
   nurtureSends,
   lifecycleSends,
   checkoutAttempts,
+  qualityLabReviewedProjects,
+  qualityLabReviewedProjectRevisions,
   type QuoteRequest,
   type InsertQuoteRequest,
   type Lead,
   type ContentEntryRow,
   type InsertContentEntry,
+  type QualityLabReviewedProjectRow,
+  type QualityLabReviewedProjectRevisionRow,
 } from "../shared/schema.js";
+import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import { and, eq, gt, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
@@ -51,6 +56,9 @@ export interface IStorage {
   getRecentCheckoutAttempts(minAgeHours: number, maxAgeHours: number): Promise<{ userId: string; productType: string }[]>;
   // Re-engagement: users whose most recent lesson read falls in [maxDays, minDays] ago.
   getReEngagementCandidates(minDays: number, maxDays: number): Promise<string[]>;
+  upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
+  getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
+  listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -295,6 +303,29 @@ export class DatabaseStorage implements IStorage {
         sql`max(${lessonReads.createdAt}) > ${oldest} and max(${lessonReads.createdAt}) < ${newest}`,
       );
     return rows.map((r) => r.userId);
+  }
+
+  async upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow> {
+    const existing = await this.getQualityLabReviewedProject(userId, snapshot.localProjectId);
+    if (existing && JSON.stringify(existing.snapshot) === JSON.stringify(snapshot)) return existing;
+    const [row] = existing
+      ? await db.update(qualityLabReviewedProjects).set({ projectName: snapshot.projectName, snapshot, updatedAt: new Date() }).where(eq(qualityLabReviewedProjects.id, existing.id)).returning()
+      : await db.insert(qualityLabReviewedProjects).values({ userId, localProjectId: snapshot.localProjectId, projectName: snapshot.projectName, snapshot }).returning();
+    const revisions = await db.select({ revisionNumber: qualityLabReviewedProjectRevisions.revisionNumber }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, row.id));
+    const revisionNumber = revisions.reduce((highest, revision) => Math.max(highest, revision.revisionNumber), 0) + 1;
+    await db.insert(qualityLabReviewedProjectRevisions).values({ reviewedProjectId: row.id, revisionNumber, snapshot });
+    return row;
+  }
+
+  async getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined> {
+    const [row] = await db.select().from(qualityLabReviewedProjects).where(and(eq(qualityLabReviewedProjects.userId, userId), eq(qualityLabReviewedProjects.localProjectId, localProjectId)));
+    return row;
+  }
+
+  async listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]> {
+    const project = await this.getQualityLabReviewedProject(userId, localProjectId);
+    if (!project) return [];
+    return db.select().from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id)).orderBy(qualityLabReviewedProjectRevisions.revisionNumber);
   }
 }
 

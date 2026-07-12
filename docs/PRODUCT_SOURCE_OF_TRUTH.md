@@ -217,19 +217,26 @@ Expansion is evidence-gated. A new pack requires a credible SME, source corpus, 
 
 ## 8. Current product reality
 
-The repository currently contains a mature English-only QC/QA knowledge PWA with content, auth, Stripe, downloads, progress, and a freemium subscription model. It also contains a concept edition of Quality Lab Blueprint on the `codex/quality-lab-blueprint` branch.
+The repository contains the mature English-only QC/QA knowledge PWA plus an active, concept-stage Quality Lab Compiler on `main`. The homepage and primary navigation now present Blueprint as the flagship journey.
 
-The concept edition is useful as an interaction and calculation prototype, but it is not yet the authoritative Compiler because:
+The current Compiler has a first executable non-sterile microbiology vertical slice:
 
-- projects are stored in browser localStorage;
-- calculations use broad planning assumptions rather than a versioned Method Graph;
-- evidence provenance is not yet represented at rule level;
-- inputs do not yet model a complete product and regulatory portfolio;
-- outputs have not been calibrated against paid real-world projects;
-- no formal SME review workflow or client delivery lifecycle exists;
-- the public homepage still presents the older knowledge-platform identity.
+- multi-product, market-aware intake with explicit in-house/outsource and cross-market physical-test allocation;
+- a versioned Method Graph concept linking product requirements to conventional method architecture, method BOM, verification boundaries, method-derived resource load, evidence and rule traces;
+- portfolio-versus-aggregate demand reconciliation, equipment-method links, capacity checks, CAPEX/OPEX, assumptions, risks and vendor-neutral URS basis;
+- a concept-only expert-review workspace with evidence matrix, correction and decision logs, structured estimate-to-actual calibration candidates, engagement/calibration exports, authenticated reviewed-project persistence and append-only snapshot revisions.
 
-Therefore, the next stage is a product transition, not a claim that the Compiler is finished.
+This is still not the authoritative production Compiler. Material limitations remain:
+
+- Method nodes are concept benchmarks, not site-approved methods, registered specifications, or complete regulatory applicability logic.
+- The graph covers a narrow non-sterile microbiology slice; raw materials, water, EM and adjacent scopes still retain broad workload rules.
+- Capacity is a resource-load check, not a full operational simulation of queues, schedules, cycle times, rack geometry, failures or investigations.
+- Projects are local-first; server persistence begins only after an authenticated review request and requires database schema deployment.
+- Review records are working artifacts, not an SME approval, document-control system or client governance system.
+- Calibration records require observed-period provenance, controlled evidence references, variance-driver review and an explicit learning disposition; even a review-ready record is project evidence, not an automatically approved Atlas benchmark or rule change.
+- No model has yet been calibrated against paid real-world projects or validated site data.
+
+The next stage is controlled service-assisted validation: use the slice in real discovery work, capture corrections and estimate-to-actual variance, then replace concept assumptions with reviewed Domain Pack rules.
 
 ## 9. Product experience direction
 

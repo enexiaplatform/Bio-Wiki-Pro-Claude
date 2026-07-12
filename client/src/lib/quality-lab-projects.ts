@@ -99,6 +99,45 @@ export function exportQualityLabEngagementPacket(project: QualityLabProject) {
   URL.revokeObjectURL(url);
 }
 
+export async function syncQualityLabReviewedProject(project: QualityLabProject, engagement = createQualityLabEngagementPacket(project)) {
+  if (!project.reviewRequestedAt) throw new Error("Only requested-review projects may be synced");
+  const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(project.id)}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      localProjectId: project.id,
+      projectName: project.name,
+      input: project.input,
+      blueprint: project.blueprint,
+      engagement,
+      reviewRequestedAt: project.reviewRequestedAt,
+    }),
+  });
+  if (!response.ok) throw new Error("Unable to securely save this review project");
+  return response.json() as Promise<{ localProjectId: string; projectName: string; updatedAt: string }>;
+}
+
+export async function fetchQualityLabReviewedProject(localProjectId: string) {
+  const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}`, { credentials: "include" });
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error("Unable to recover this reviewed project");
+  return response.json() as Promise<{
+    localProjectId: string;
+    projectName: string;
+    input: QualityLabProject["input"];
+    blueprint: QualityLabProject["blueprint"];
+    engagement: ReturnType<typeof createQualityLabEngagementPacket> | null;
+    reviewRequestedAt: string | null;
+  }>;
+}
+
+export async function fetchQualityLabReviewedProjectRevisions(localProjectId: string) {
+  const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}/revisions`, { credentials: "include" });
+  if (!response.ok) return [] as Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>;
+  return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>>;
+}
+
 export function subscribeToQualityLabProjects(listener: () => void) {
   const handler = (event: StorageEvent) => {
     if (event.key === STORAGE_KEY) listener();

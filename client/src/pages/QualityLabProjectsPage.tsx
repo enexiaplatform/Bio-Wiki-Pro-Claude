@@ -34,7 +34,7 @@ export default function QualityLabProjectsPage() {
       <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>
-          <Link href="/quality-lab/planner" className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200"><Plus className="h-4 w-4" /> New project</Link>
+          <div className="flex flex-wrap gap-2"><Link href="/quality-lab/calibration" className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200 transition hover:bg-sky-300/10"><BarChart3 className="h-4 w-4" /> Learning review queue</Link><Link href="/quality-lab/planner" className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200"><Plus className="h-4 w-4" /> New project</Link></div>
         </div>
 
         <header className="mb-6 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-6 md:p-8">

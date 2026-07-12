@@ -91,15 +91,44 @@ test.describe("public smoke", () => {
     }
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+    await expect(page.getByRole("heading", { name: /Workforce capacity and skill coverage/i })).toBeVisible();
+    await expect(page.getByText(/base execution/i).first()).toBeVisible();
+    await expect(page.getByText(/Technical review and release support/i).first()).toBeVisible();
+    await expect(page.getByText(/Loads not separately quantified/i)).toBeVisible();
+    await expect(page.getByText(/Deviations, OOS\/OOT and contamination investigations/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Consumable inventory planning basis/i })).toBeVisible();
+    await expect(page.getByText(/end-to-end lead time/i).first()).toBeVisible();
+    await expect(page.getByText(/Required item-level evidence/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /What must be resolved before controlled use/i })).toBeVisible();
+    await expect(page.getByText(/^Decision support$/i).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Scope a non-sterile microbiology QC lab/i }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
     await page.getByRole("link", { name: /Review workspace/i }).click();
     await page.waitForURL(/\/quality-lab\/engagements\/qlp_/);
-    await expect(page.getByRole("heading", { name: /Estimate-to-actual baseline/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Estimate-to-actual calibration/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Evidence and review checklist/i })).toBeVisible();
-    await page.getByLabel(/Monthly tests actual/i).fill("500");
+    await page.getByLabel(/^Monthly tests actual$/i).fill("500");
     await expect(page.getByText(/Variance:/i).first()).not.toHaveText(/open/i);
-    await page.goBack();
+    await page.getByLabel(/Monthly tests variance driver/i).selectOption("scope-change");
+    await page.getByLabel(/Monthly tests actual basis/i).fill("Approved quarterly QC workload report Q1-2026");
+    await page.getByLabel(/Observed period start/i).fill("2026-01-01");
+    await page.getByLabel(/Observed period end/i).fill("2026-03-31");
+    await page.getByLabel(/Calibration data owner/i).fill("QC Operations");
+    await page.getByLabel(/Calibration evidence references/i).fill("QC-WORKLOAD-Q1-2026");
+    await expect(page.getByText(/^Review ready$/i).first()).toBeVisible();
+    await page.getByLabel(/Learning disposition/i).selectOption("project-only");
+    const calibrationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export calibration CSV/i }).click();
+    expect((await calibrationDownload).suggestedFilename()).toMatch(/-calibration\.csv$/);
+    await page.getByRole("link", { name: /Open learning review queue/i }).click();
+    await page.waitForURL(/\/quality-lab\/calibration$/);
+    await expect(page.getByRole("heading", { name: /Calibration Learning Review Queue/i })).toBeVisible();
+    await expect(page.getByText(/^project only$/i).first()).toBeVisible();
+    const registryDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export review registry/i }).click();
+    expect((await registryDownload).suggestedFilename()).toBe("atlas-calibration-learning-candidates.json");
+    await page.getByRole("link", { name: /Open calibration/i }).click();
+    await page.getByRole("link", { name: /Back to blueprint/i }).click();
     await expect(page.getByText("quality-lab-blueprint/v1")).toBeVisible();
     await expect(page.getByRole("heading", { name: /Versioned calculation trace/i })).toBeVisible();
     await page.getByRole("link", { name: /Request expert review/i }).click();
@@ -109,6 +138,131 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/quality-lab-review-brief\/v1/i)).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a scope review/i })).toBeVisible();
+  });
+
+  test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {
+    await page.goto("/quality-lab/discovery-pack");
+    await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
+    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(5);
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).first().click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe("atlas-blueprint-project-intake.csv");
+    const validationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(3).click();
+    expect((await validationDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case.csv");
+    const impactDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(4).click();
+    expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
+  });
+
+  test("Blueprint casebook compiles scenarios and opens one as an editable local project", async ({ page }) => {
+    await page.goto("/quality-lab/casebook");
+    await expect(page.getByRole("heading", { name: /Atlas Blueprint Casebook/i })).toBeVisible();
+    await expect(page.getByText(/synthetic planning scenarios/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Open as editable project/i })).toHaveCount(3);
+    await expect(page.getByText(/reconciliation required|portfolio derived|aggregate input/i).first()).toBeVisible();
+    await page.getByRole("button", { name: /Open as editable project/i }).first().click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+    await expect(page.getByText(/Illustrative case — reconciled in-house portfolio/i).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Finished-product sizing basis/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open Evidence Graph/i })).toBeVisible();
+  });
+
+  test("Atlas Evidence Graph connects domains to Blueprint decisions", async ({ page }) => {
+    await page.goto("/quality-lab/evidence");
+    await expect(page.getByRole("heading", { name: /Follow the evidence behind every Blueprint decision/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Scope a non-sterile microbiology QC lab/i })).toHaveAttribute("href", "/blog/how-to-scope-nonsterile-microbiology-qc-lab");
+    await page.getByRole("button", { name: /Equipment & utilities/i }).click();
+    await expect(page.getByText(/What vendor-neutral resources, resilience and qualification basis must exist/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Equipment Qualification Readiness Planner/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Water & environmental monitoring/i })).not.toBeVisible();
+  });
+
+  test("Domain Pack readiness keeps expansion evidence-gated", async ({ page }) => {
+    await page.goto("/quality-lab/domain-readiness");
+    await expect(page.getByRole("heading", { name: /A domain becomes a Pack only after the evidence exists/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Food & beverage quality/i })).toBeVisible();
+    await expect(page.getByText(/Synthetic cases exercise reconciliation, outsourcing and unresolved allocation behavior/i)).toBeVisible();
+    await expect(page.getByText(/No public evidence area opened/i)).toBeVisible();
+    await expect(page.getByText(/No implied launch promise/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Read validation framework/i }).first()).toHaveAttribute("href", "/blog/how-to-validate-a-quality-lab-domain-pack");
+    await expect(page.getByRole("link", { name: /Discuss a real project/i })).toHaveAttribute("href", "/quality-lab/review");
+  });
+
+  test("Domain Pack validation guide connects calibration, readiness and evidence governance", async ({ page }) => {
+    await page.goto("/blog/how-to-validate-a-quality-lab-domain-pack");
+    await expect(page.getByRole("heading", { name: /How to validate a Quality Lab Domain Pack/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Three records that must not be confused/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Eligibility is not approval/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Calibration Learning Review Queue/i })).toHaveAttribute("href", "/quality-lab/calibration");
+    await expect(page.getByRole("link", { name: /Domain Pack Readiness/i })).toHaveAttribute("href", "/quality-lab/domain-readiness");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Method suitability guide connects recovery evidence to BOM and capacity", async ({ page }) => {
+    await page.goto("/blog/method-suitability-to-microbiology-lab-capacity");
+    await expect(page.getByRole("heading", { name: /From method suitability to microbiology lab capacity/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /How suitability changes the method bill of materials/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Convert method steps into capacity demand/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /What Atlas should block when suitability is unresolved/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Quality Lab Planner/i })).toHaveAttribute("href", "/quality-lab/planner");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
+  });
+
+  test("Usable equipment capacity guide connects natural demand units to redundancy decisions", async ({ page }) => {
+    await page.goto("/blog/from-workload-to-usable-qc-equipment-capacity");
+    await expect(page.getByRole("heading", { name: /From workload to usable QC equipment capacity/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Incubators: use condition-specific plate-days/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /When a queue or schedule simulation is required/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Redundancy is a business-continuity decision/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Quality Lab Planner/i })).toHaveAttribute("href", "/quality-lab/planner");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Resilient QC staffing guide connects productive hours to skill and review constraints", async ({ page }) => {
+    await page.goto("/blog/from-hands-on-hours-to-resilient-qc-staffing");
+    await expect(page.getByRole("heading", { name: /From hands-on hours to resilient QC staffing/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Reviewer capacity is an independent constraint/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Skill matrices reveal hidden bottlenecks/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Resilience is more than a percentage reserve/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Quality Lab Planner/i })).toHaveAttribute("href", "/quality-lab/planner");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Consumable supply guide connects method BOM to expiry-aware inventory decisions", async ({ page }) => {
+    await page.goto("/blog/from-method-bom-to-resilient-qc-consumable-supply");
+    await expect(page.getByRole("heading", { name: /From method BOM to resilient QC consumable supply/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Separate net, gross and purchased quantities/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Target stock is not an order quantity/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Shelf life constrains usable coverage/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Quality Lab Planner/i })).toHaveAttribute("href", "/quality-lab/planner");
+    const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+    await expect(context.getByRole("heading", { name: /Cross-domain capability architecture/i })).toBeVisible();
+  });
+
+  test("Evidence Graph provides two-way Blueprint context across content surfaces", async ({ page }) => {
+    const surfaces = [
+      ["/blog/how-to-scope-nonsterile-microbiology-qc-lab", /Non-sterile pharmaceutical microbiology/i],
+      ["/library/growth-promotion-testing", /Non-sterile pharmaceutical microbiology/i],
+      ["/workflows/culture-media-selection", /Non-sterile pharmaceutical microbiology/i],
+      ["/tools/microbial-count-calculator", /Non-sterile pharmaceutical microbiology/i],
+    ] as const;
+    for (const [href, domain] of surfaces) {
+      await page.goto(href);
+      const context = page.getByRole("complementary", { name: /Atlas Blueprint relevance/i });
+      await expect(context).toBeVisible();
+      await expect(context.getByRole("heading", { name: domain })).toBeVisible();
+      await expect(context.getByRole("link", { name: /Open Evidence Graph/i })).toHaveAttribute("href", "/quality-lab/evidence");
+      await expect(context.getByRole("link", { name: /Apply this reasoning in a Blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
+    }
   });
 
   test("workflow atlas lists workflows", async ({ page }) => {

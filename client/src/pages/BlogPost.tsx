@@ -10,6 +10,7 @@ import { FreeReadBanner, UpgradeInlineCTA } from "@/components/UpgradePrompts";
 import { ContentDisclaimer } from "@/components/ContentDisclaimer";
 import NotFound from "@/pages/not-found";
 import { SITE_URL as BASE_URL } from "@/lib/site";
+import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 
 export default function BlogPost() {
   const { slug = "" } = useParams();
@@ -116,6 +117,8 @@ export default function BlogPost() {
       <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
         {Body ? <Body /> : <p className="text-muted-foreground">Loading article...</p>}
       </article>
+
+      <AtlasBlueprintContext href={`/blog/${slug}`} />
 
       <UpgradeInlineCTA placement="blog_post_end" />
 

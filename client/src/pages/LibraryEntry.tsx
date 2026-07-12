@@ -14,6 +14,7 @@ import { LessonQuiz } from "@/components/LessonQuiz";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import NotFound from "@/pages/not-found";
+import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 
 export default function LibraryEntry() {
   const { slug = "" } = useParams();
@@ -101,6 +102,8 @@ export default function LibraryEntry() {
         slug={slug}
         footer={entry.quiz?.length ? <LessonQuiz quiz={entry.quiz} /> : null}
       />
+
+      <AtlasBlueprintContext href={`/library/${slug}`} />
 
       {pathCtx && (prevEntry || nextEntry) && (
         <div className="mt-10 border-t border-white/10 pt-6" data-print="hide">

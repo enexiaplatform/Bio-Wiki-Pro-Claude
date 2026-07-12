@@ -3514,6 +3514,17 @@
   },
   {
     "collection": "blog",
+    "slug": "analytical-chemistry-qc-capability-planning",
+    "lang": "en",
+    "title": "How to plan analytical chemistry QC capability from methods, sequences and decisions",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A method-level framework for converting pharmaceutical analytical requirements into sample preparation, instrument sequences, standards, analyst workload, review capacity, resilience and lifecycle governance.",
+    "updatedAt": "2026-07-11",
+    "readMinutes": 8
+  },
+  {
+    "collection": "blog",
     "slug": "analytical-method-validation-what-q2-asks",
     "lang": "en",
     "title": "Analytical method validation: what ICH Q2 actually asks",
@@ -3855,6 +3866,39 @@
   },
   {
     "collection": "blog",
+    "slug": "from-hands-on-hours-to-resilient-qc-staffing",
+    "lang": "en",
+    "title": "From hands-on hours to resilient QC staffing: skills, review capacity and shifts",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A practical framework for converting QC method workload into analyst, reviewer and specialist staffing with productive hours, skill coverage, shifts, peaks and resilience.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 10
+  },
+  {
+    "collection": "blog",
+    "slug": "from-method-bom-to-resilient-qc-consumable-supply",
+    "lang": "en",
+    "title": "From method BOM to resilient QC consumable supply",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Convert QC method demand into gross consumption, reorder points, safety stock, shelf-life controls, storage capacity and supplier-continuity decisions.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 8
+  },
+  {
+    "collection": "blog",
+    "slug": "from-workload-to-usable-qc-equipment-capacity",
+    "lang": "en",
+    "title": "From workload to usable QC equipment capacity: peaks, downtime and redundancy",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A cross-domain framework for converting QC workload into usable incubator, instrument, sterilizer and chamber capacity with peak demand, downtime and redundancy controls.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 11
+  },
+  {
+    "collection": "blog",
     "slug": "gmp-audit-30-day-plan",
     "lang": "en",
     "title": "How to Prepare for a GMP Audit in 30 Days",
@@ -3932,6 +3976,28 @@
   },
   {
     "collection": "blog",
+    "slug": "how-to-scope-nonsterile-microbiology-qc-lab",
+    "lang": "en",
+    "title": "How to scope a non-sterile pharmaceutical microbiology QC lab before design freeze",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A practical, evidence-aware framework for converting a non-sterile pharmaceutical portfolio into microbiology QC capabilities, workload, equipment, staffing, assumptions and review questions.",
+    "updatedAt": "2026-07-11",
+    "readMinutes": 12
+  },
+  {
+    "collection": "blog",
+    "slug": "how-to-validate-a-quality-lab-domain-pack",
+    "lang": "en",
+    "title": "How to validate a Quality Lab Domain Pack without turning one project into a benchmark",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A controlled framework for converting Blueprint estimates, project actuals and expert corrections into validation cases, reviewed rule changes and defensible benchmark ranges.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 10
+  },
+  {
+    "collection": "blog",
     "slug": "hvac-qualification-the-air-is-a-utility",
     "lang": "en",
     "title": "HVAC qualification: the air is a critical utility",
@@ -3984,6 +4050,17 @@
     "seoDescription": "A practical guide to aseptic process simulation: media-fill design, worst-case interventions, incubation, acceptance criteria, and failure investigation.",
     "updatedAt": "2026-07-03",
     "readMinutes": 6
+  },
+  {
+    "collection": "blog",
+    "slug": "method-suitability-to-microbiology-lab-capacity",
+    "lang": "en",
+    "title": "From method suitability to microbiology lab capacity: why recovery evidence changes the Blueprint",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Connect product-specific microbial method suitability, neutralization and recovery evidence to the method BOM, analyst workload, incubation demand and QC laboratory capacity plan.",
+    "updatedAt": "2026-07-12",
+    "readMinutes": 10
   },
   {
     "collection": "blog",
@@ -4108,6 +4185,17 @@
   },
   {
     "collection": "blog",
+    "slug": "product-portfolio-to-qc-capability-map",
+    "lang": "en",
+    "title": "From product portfolio to QC capability map: a cross-domain planning framework",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A cross-domain framework for converting products, markets and testing demand into a traceable QC capability map across microbiology, analytical chemistry, utilities, stability and outsourced testing.",
+    "updatedAt": "2026-07-11",
+    "readMinutes": 12
+  },
+  {
+    "collection": "blog",
     "slug": "protein-aggregation-the-impurity-that-grows",
     "lang": "en",
     "title": "Protein aggregation: the impurity that grows on its own",
@@ -4218,6 +4306,17 @@
   },
   {
     "collection": "blog",
+    "slug": "stability-sample-management-capability-planning",
+    "lang": "en",
+    "title": "How to plan stability and sample-management capability as a time-based operating system",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A framework for converting stability protocols, timepoints, sample inventory and analytical methods into chamber, storage, pull, testing, review, investigation and continuity capacity.",
+    "updatedAt": "2026-07-11",
+    "readMinutes": 8
+  },
+  {
+    "collection": "blog",
     "slug": "stability-the-assay-must-see-degradation",
     "lang": "en",
     "title": "Stability: your assay has to be able to see degradation",
@@ -4237,6 +4336,17 @@
     "seoDescription": "Moist-heat sterilization is validated by heat, load, and biology together. Learn what F0 means, why the cold spot controls the cycle, how heat penetration and biological indicators prove lethality, and what to review before release.",
     "updatedAt": "2026-07-05",
     "readMinutes": 10
+  },
+  {
+    "collection": "blog",
+    "slug": "sterile-biologics-qc-capability-planning",
+    "lang": "en",
+    "title": "How to plan sterile and biologics QC capability without reducing sterility assurance to testing",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A capability-planning framework for sterile products and biologics covering contamination control evidence, microbiology, potency, impurities, specialist methods, capacity, outsourcing and lifecycle risk.",
+    "updatedAt": "2026-07-11",
+    "readMinutes": 12
   },
   {
     "collection": "blog",
@@ -4303,6 +4413,17 @@
     "seoDescription": "Every injectable is inspected for visible particles and defects, but 100% inspection is still probabilistic. How FDA, USP 790/1790, AQL, inspector qualification, AVI, investigations, and trend review fit together.",
     "updatedAt": "2026-07-04",
     "readMinutes": 10
+  },
+  {
+    "collection": "blog",
+    "slug": "water-environmental-monitoring-capability-planning",
+    "lang": "en",
+    "title": "How to plan water and environmental monitoring capability for a quality laboratory",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A practical framework for converting pharmaceutical water and environmental monitoring programs into sample demand, method workload, incubation capacity, trending, investigation and resilience requirements.",
+    "updatedAt": "2026-07-11",
+    "readMinutes": 12
   },
   {
     "collection": "blog",

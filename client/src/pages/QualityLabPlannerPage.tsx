@@ -15,6 +15,8 @@ import {
   Save,
   ShieldCheck,
   Sparkles,
+  Plus,
+  X,
 } from "lucide-react";
 import {
   compileQualityLabBlueprint,
@@ -138,6 +140,27 @@ export default function QualityLabPlannerPage() {
     setError(null);
   };
 
+  const updateProduct = <K extends keyof QualityLabInput["productProfiles"][number]>(id: string, key: K, value: QualityLabInput["productProfiles"][number][K]) => {
+    setInput((current) => ({
+      ...current,
+      productProfiles: current.productProfiles.map((product) => product.id === id ? { ...product, [key]: value } : product),
+    }));
+    setError(null);
+  };
+
+  const addProduct = () => {
+    setInput((current) => ({ ...current, productProfiles: [...current.productProfiles, {
+      id: `product_${Date.now().toString(36)}`, name: "New non-sterile product family", dosageForm: "tablet-capsule", markets: current.markets.length > 0 ? current.markets : ["vietnam"], monthlyBatches: 0, samplesPerBatch: 1,
+      microbialLimitsRequired: true, specifiedOrganismsRequired: false, methodSuitability: "unknown", execution: "in-house", marketExecutionStrategy: "unknown", sampleQuantityGrams: 10, dilutionVolumeMl: 100, incubationProfile: "standard", preservativeOrNeutralizerNote: "",
+    }] }));
+    setError(null);
+  };
+
+  const removeProduct = (id: string) => {
+    setInput((current) => ({ ...current, productProfiles: current.productProfiles.filter((product) => product.id !== id) }));
+    setError(null);
+  };
+
   function validateStep(currentStep: number): string | null {
     if (currentStep === 0) {
       if (input.projectName.trim().length < 2) return "Give this project a clear name.";
@@ -255,6 +278,14 @@ export default function QualityLabPlannerPage() {
                   <NumberField label="Finished products" value={input.finishedProducts} onChange={(value) => update("finishedProducts", value)} suffix="SKUs" hint="Portfolio breadth; used as a review signal, not direct workload." />
                   <NumberField label="Raw materials" value={input.rawMaterials} onChange={(value) => update("rawMaterials", value)} suffix="items" hint="Distinct materials potentially requiring specifications and methods." />
                 </div>
+                {input.facilityType === "nonsterile-pharma" && (
+                  <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.045] p-4">
+                    <div className="flex items-start justify-between gap-4"><div><p className="text-sm font-bold text-teal-100">Method Graph product portfolio</p><p className="mt-1 text-xs leading-5 text-slate-400">Each product family compiles to its own market requirement, method architecture, BOM and in-house resource load. Reconcile every row with approved specifications before review.</p><label className="mt-3 flex items-start gap-2 text-xs leading-5 text-slate-300"><input type="checkbox" checked={input.portfolioIsComplete} onChange={(event) => update("portfolioIsComplete", event.target.checked)} className="mt-1" /><span>This portfolio covers all finished-product batch demand. Use its product-specific in-house/outsource decisions for finished-product sizing.</span></label></div><button type="button" onClick={addProduct} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-teal-300/30 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-100"><Plus className="h-3.5 w-3.5" /> Add product</button></div>
+                    <div className="mt-4 space-y-4">
+                      {input.productProfiles.map((product, index) => <div key={product.id} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><div className="mb-4 flex items-center justify-between gap-3"><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Product {index + 1}</p><button type="button" onClick={() => removeProduct(product.id)} disabled={input.productProfiles.length === 1} className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-40"><X className="h-3.5 w-3.5" /> Remove</button></div><div className="grid gap-4 md:grid-cols-2"><TextField label="Product / family" value={product.name} onChange={(value) => updateProduct(product.id, "name", value)} /><label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Dosage form</span><select value={product.dosageForm} onChange={(event) => updateProduct(product.id, "dosageForm", event.target.value as QualityLabInput["productProfiles"][number]["dosageForm"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="tablet-capsule">Tablet / capsule</option><option value="oral-liquid">Oral liquid</option><option value="topical">Topical</option><option value="powder">Powder</option><option value="other">Other</option></select></label><NumberField label="Monthly batches" value={product.monthlyBatches} onChange={(value) => updateProduct(product.id, "monthlyBatches", value)} suffix="/ month" /><NumberField label="Samples per batch" value={product.samplesPerBatch} onChange={(value) => updateProduct(product.id, "samplesPerBatch", value)} suffix="samples" min={1} /><label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Execution model</span><select value={product.execution} onChange={(event) => updateProduct(product.id, "execution", event.target.value as QualityLabInput["productProfiles"][number]["execution"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="in-house">In-house</option><option value="outsource">Outsource</option></select></label><label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Method suitability</span><select value={product.methodSuitability} onChange={(event) => updateProduct(product.id, "methodSuitability", event.target.value as QualityLabInput["productProfiles"][number]["methodSuitability"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="unknown">Unknown — evidence needed</option><option value="pending">Pending</option><option value="verified">Verified</option><option value="not-required">Not required</option></select></label></div><div className="mt-4"><p className="mb-2 text-xs font-semibold text-slate-300">Markets for this product</p><div className="flex flex-wrap gap-2">{input.markets.map((market) => <label key={market} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-xs text-slate-300"><input type="checkbox" checked={product.markets.includes(market)} onChange={(event) => updateProduct(product.id, "markets", event.target.checked ? [...product.markets, market] : product.markets.filter((item) => item !== market))} />{marketLabels[market]}</label>)}</div></div><label className="mt-4 block"><span className="mb-2 block text-xs font-semibold text-slate-300">Physical test allocation across markets</span><select value={product.marketExecutionStrategy} onChange={(event) => updateProduct(product.id, "marketExecutionStrategy", event.target.value as QualityLabInput["productProfiles"][number]["marketExecutionStrategy"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="unknown">Unknown — do not calculate BOM/capacity for multi-market scope</option><option value="shared-across-markets">One shared physical execution covers selected markets</option><option value="separate-by-market">Separate physical execution for each market</option></select><span className="mt-1.5 block text-[11px] leading-4 text-slate-500">This prevents regulatory traceability from automatically multiplying physical test demand.</span></label><div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-300">{([['microbialLimitsRequired', 'Microbial enumeration'], ['specifiedOrganismsRequired', 'Specified microorganisms']] as const).map(([key, label]) => <label key={key} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2"><input type="checkbox" checked={product[key]} onChange={(event) => updateProduct(product.id, key, event.target.checked)} />{label}</label>)}</div><div className="mt-4"><TextField label="Preservative / neutralizer note" value={product.preservativeOrNeutralizerNote} onChange={(value) => updateProduct(product.id, "preservativeOrNeutralizerNote", value)} placeholder="Optional — exact material must be confirmed by method suitability" /></div></div>)}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -321,6 +352,9 @@ export default function QualityLabPlannerPage() {
                     <NumberField label="Outsourced share" value={input.outsourcePercent} onChange={(value) => update("outsourcePercent", value)} suffix="%" max={95} />
                     <NumberField label="People capacity reserve" value={input.redundancyPercent} onChange={(value) => update("redundancyPercent", value)} suffix="%" max={100} />
                     <NumberField label="Equipment downtime" value={input.equipmentDowntimePercent} onChange={(value) => update("equipmentDowntimePercent", value)} suffix="%" max={50} />
+                    <NumberField label="Consumable waste allowance" value={input.consumableWastePercent} onChange={(value) => update("consumableWastePercent", value)} suffix="%" max={50} hint="Adds handling loss, expiry and non-routine use to the net run rate." />
+                    <NumberField label="Consumable lead time" value={input.consumableLeadTimeDays} onChange={(value) => update("consumableLeadTimeDays", value)} suffix="days" min={1} max={365} hint="End-to-end replenishment through quality release." />
+                    <NumberField label="Consumable safety stock" value={input.consumableSafetyStockDays} onChange={(value) => update("consumableSafetyStockDays", value)} suffix="demand days" min={0} max={365} />
                     <NumberField label="Loaded analyst cost" value={input.analystAnnualCostUsd} onChange={(value) => update("analystAnnualCostUsd", value)} suffix="USD / year" max={500000} hint="Used only for indicative OPEX planning." />
                   </div>
                 </div>

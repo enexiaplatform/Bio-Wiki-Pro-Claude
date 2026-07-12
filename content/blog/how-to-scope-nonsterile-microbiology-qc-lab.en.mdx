@@ -1,0 +1,345 @@
+---
+title: "How to scope a non-sterile pharmaceutical microbiology QC lab before design freeze"
+slug: "how-to-scope-nonsterile-microbiology-qc-lab"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "A practical, evidence-aware framework for converting a non-sterile pharmaceutical portfolio into microbiology QC capabilities, workload, equipment, staffing, assumptions and review questions."
+updatedAt: "2026-07-11"
+---
+
+# How to scope a non-sterile pharmaceutical microbiology QC lab before design freeze
+
+A microbiology laboratory is often scoped backwards. Someone starts with an
+available room, a vendor quotation, or a familiar equipment list. Only afterwards
+does the project ask which products, markets, specifications, sample volumes,
+methods and release targets the laboratory must actually support.
+
+That sequence is expensive because a laboratory is not a collection of
+instruments. It is an operating capability. The correct starting question is:
+
+> Given this product portfolio, these markets, this testing demand and these
+> release expectations, what microbiology capability must exist — and what must
+> still be verified before a design or procurement decision is made?
+
+This guide provides a discovery framework for **non-sterile pharmaceutical
+microbiology**. It is deliberately a planning framework, not a registered
+specification, approved method, GMP design qualification, or engineering design.
+The exact obligations remain determined by the approved product dossiers,
+applicable pharmacopoeias, local requirements and the site quality system.
+
+## The planning chain: product to operating model
+
+The useful unit of planning is not an incubator or an analyst. It is a traceable
+chain:
+
+```text
+Product and market
+→ applicable quality requirement
+→ test and method architecture
+→ sample, frequency and physical execution model
+→ analyst, equipment, media, consumables, space and utilities
+→ capacity, turnaround, redundancy and cost assumptions
+→ qualified review and controlled project outputs
+```
+
+If any link is missing, a number at the end of the chain is only a placeholder.
+For example, a count of “batches per month” does not reveal whether products have
+different dosage forms, whether a test is performed in-house, which markets share
+one physical test execution, whether a product is inhibitory, or whether media is
+prepared internally. Those facts change the required operating capability.
+
+## 1. Define the decision boundary first
+
+Before collecting data, write down the decision that this work is supposed to
+support. Common boundaries include:
+
+- a new laboratory for a product launch or site expansion;
+- a capacity and bottleneck review of an existing laboratory;
+- an in-house versus contract-testing decision;
+- a vendor-neutral equipment and URS basis;
+- a phased transition from outsourced to in-house testing;
+- a budget or investment-committee estimate; or
+- a technical input to a broader engineering project.
+
+This distinction matters. A discovery model can identify what should be checked
+before design freeze. It cannot certify a cleanroom classification, approve a
+method, replace a site risk assessment or sign off a facility.
+
+Set the boundary explicitly:
+
+| Include | Exclude unless separately commissioned |
+| --- | --- |
+| Product portfolio, markets and testing demand | Detailed architectural, HVAC or construction design |
+| Method and sample-preparation assumptions | Method validation or regulatory approval |
+| Equipment, analyst, media and consumables logic | Vendor selection or product equivalence claims |
+| Capacity, redundancy and turnaround scenarios | A LIMS replacement or production schedule |
+| Risks, evidence gaps and expert-review questions | A final GMP compliance conclusion |
+
+This protects the project from a familiar failure mode: a preliminary sizing
+worksheet quietly becoming a “validated laboratory design.”
+
+## 2. Build a product-to-requirement inventory
+
+Start with individual product families, not a total SKU count. One line per
+product family is a practical minimum. Record:
+
+- dosage form and route-relevant context;
+- markets supplied and the status of the applicable dossier/specification;
+- monthly batches, samples per batch and expected growth;
+- microbial examination and specified-organism requirements from the approved
+  specification;
+- product matrix features that may affect recovery, such as preservatives, low
+  pH, surfactants, solvents or high osmolarity;
+- method-suitability status and available evidence;
+- whether execution is in-house, outsourced or changing by phase; and
+- whether multiple markets can use a shared physical test execution.
+
+USP &lt;61&gt; describes microbial enumeration tests for non-sterile products, while
+USP &lt;62&gt; addresses tests for specified microorganisms. Neither title alone tells
+you the product-specific acceptance criteria, organism panel, sample preparation
+or number of executions needed for a real product. Those must be traced to the
+approved specification and method.
+
+### Do not multiply physical tests by market automatically
+
+When a product is supplied to more than one market, its requirements may need to
+be traced separately. That does **not** automatically mean the laboratory must
+perform a separate physical test for every market. The correct allocation depends
+on the approved method, specification, product registration strategy, sample and
+reporting arrangements.
+
+Use one of three explicit states:
+
+| Allocation state | What it means for a planning model |
+| --- | --- |
+| Shared physical execution | One justified test execution supports the selected markets. |
+| Separate execution by market | Each market requirement creates its own physical workload. |
+| Unresolved | Preserve the regulatory trace, but do not calculate method BOM or site capacity from it. |
+
+The last option is valuable. “Unresolved” is more honest than silently choosing
+the cheapest or most conservative interpretation without evidence.
+
+## 3. Turn requirements into a method architecture
+
+For each product/requirement pair, describe a **method architecture**, not an
+imagined approved procedure. An architecture may include:
+
+- microbial enumeration or specified-microorganism examination;
+- representative sample quantity and dilution scheme;
+- recovery and neutralization considerations;
+- media, diluent, plates, controls and reference strains to be confirmed;
+- incubation and read-out dependencies;
+- analyst hands-on steps, including preparation, dilution, plating and transfer;
+- equipment resources used; and
+- the verification boundary.
+
+The verification boundary should be prominent. An illustrative media requirement
+is not a purchasing specification. A proposed neutralizer is not evidence that a
+product’s antimicrobial effect has been neutralized. A method is not ready for
+controlled use simply because a benchmark workflow is familiar.
+
+Method suitability is especially important for non-sterile products. USP’s
+official material for &lt;61&gt; states that the method must be able to detect
+microorganisms in the presence of the product. In planning terms, any unknown or
+pending suitability status is a blocker to freezing the final method BOM,
+recovery assumptions and associated capacity.
+
+## 4. Separate workload from capacity
+
+Workload describes what must be done. Capacity describes whether the proposed
+operating model can absorb that work with the required reliability.
+
+For every in-house method, calculate transparent demand drivers such as:
+
+- executions per month = batches × samples per batch × allocated physical tests;
+- plates, media, diluent and controls per execution;
+- incubator plate-days by incubation profile;
+- analyst hands-on hours;
+- autoclave or prepared-media equivalent; and
+- quality-review and documentation effort where it has a material impact.
+
+Then assess the resource plan against a stated basis. A useful concept-level
+capacity check declares its own assumptions, for example:
+
+```text
+Available monthly resource capacity
+= planned units × operating days × usable capacity per day
+  × utilization allowance × uptime allowance
+```
+
+This is not a queue simulation. It does not capture every rack geometry,
+campaign pattern, media batch, changeover, investigation, maintenance event or
+concurrent activity. It is a deliberately limited decision check that can reveal
+where more operational modelling is necessary.
+
+### Include peak-week pressure and downtime
+
+Average monthly demand is rarely the true design condition. A laboratory can look
+comfortable on a monthly average and still fail when release samples arrive in a
+campaign, an incubator is unavailable, or media preparation collides with routine
+testing.
+
+At a minimum, model:
+
+- a declared peak-week allowance;
+- planned equipment downtime;
+- a redundancy policy for critical resources;
+- the effect of outsourced versus in-house execution; and
+- a growth or expansion scenario.
+
+Do not present a single utilization percentage as a promise of turnaround time.
+It is an input to a risk conversation. If it is near the project’s planning
+threshold, the next step is a schedule-level review, not a more precise-looking
+spreadsheet number.
+
+## 5. Size the operating system, not only equipment
+
+Equipment is a consequence of the method and workload model. A vendor-neutral
+capability plan should articulate the function needed, its demand basis and its
+qualification impact.
+
+| Capability | Planning questions |
+| --- | --- |
+| Controlled incubation | Which method loads, temperatures, hold times, rack geometry and redundancy requirements apply? |
+| Aseptic manipulation | Which sample-preparation and plating tasks need controlled protection, and what workflow segregation is required? |
+| Media strategy | Will media be prepared on site, purchased prepared, or use a hybrid model? What are the quality, storage and lead-time controls? |
+| Sterilization | Which loads are truly required on site, and what validated alternatives exist for prepared media or waste handling? |
+| Support equipment | Which refrigerators, balances, pH meters, water sources, colony counters or identification capabilities are needed by the actual method architecture? |
+| Data and review | How will raw data, calculations, deviations, trend review, method status and approval records be controlled? |
+
+For each capability, write a functional basis before discussing brands:
+
+> “Support the product-method load shown in the planning model, maintain the
+> approved conditions, allow defined downtime and redundancy, and provide the
+> records required for qualified site operation.”
+
+That statement can later become an input to a controlled URS. It is not yet an
+issued URS or an RFQ.
+
+## 6. Treat in-house versus outsource as an operating-model decision
+
+Outsourcing is not simply “zero equipment.” It changes risk, cost, lead time and
+evidence responsibilities.
+
+When evaluating an outsourced method, consider:
+
+- release and transport timelines, including sample stability;
+- method transfer, method suitability and specification alignment;
+- quality agreement responsibilities;
+- the contract laboratory’s actual method and capacity, not only its brochure;
+- investigation, OOS/OOT and deviation communication paths;
+- continuity, second-source and business-continuity requirements; and
+- the threshold at which in-house capability becomes economically or
+  operationally justified.
+
+Conversely, bringing work in-house creates requirements beyond the first
+instrument purchase: analyst qualification, media and culture controls, method
+verification, data governance, equipment lifecycle, backup capacity and ongoing
+quality oversight.
+
+Use scenarios rather than a binary decision. A credible first Blueprint might
+show a low-volume outsourced phase, an intermediate hybrid phase, and a future
+in-house case. Each should disclose what would trigger the transition.
+
+## 7. Make assumptions, evidence and open questions visible
+
+Good planning does not hide uncertainty in formulas. Every material output should
+state:
+
+- its source or evidence basis and version where known;
+- applicability conditions;
+- user-provided facts;
+- planning assumptions and confidence;
+- unresolved inputs;
+- the direction of impact if an assumption changes; and
+- whether qualified expert review is required.
+
+Examples of questions that should remain open until evidence resolves them:
+
+- Which approved specifications apply to each marketed product?
+- Does method suitability establish acceptable recovery and neutralization for
+  each product matrix?
+- Which market requirements share a physical execution?
+- Are sample volumes, batches and peak-release patterns representative?
+- Which water, media and culture-management strategy is approved for the site?
+- What turnaround is genuinely required, and which incubation or review steps
+  constrain it?
+- What happens if the primary incubator, autoclave or contract laboratory is
+  unavailable?
+
+The absence of an answer is not a defect in the model. It is a decision risk that
+the model has made visible.
+
+## A practical discovery packet
+
+Before a Blueprint workshop, request a concise packet rather than asking every
+team for everything:
+
+1. Product list, dosage forms, markets and forecast batch volumes.
+2. Current approved microbial specifications and methods, where shareable.
+3. Sample plans, samples per batch and release timeline expectations.
+4. Method-suitability, recovery and neutralization evidence status.
+5. Existing or proposed execution model: in-house, outsourced or hybrid.
+6. Existing equipment, usable capacity, downtime history and constraints.
+7. Media, water, culture and waste-handling strategy.
+8. Current floor plan or space constraints if they exist.
+9. Growth, launch, transfer or export scenarios that could change demand.
+10. The people who own QC, QA, production, engineering and procurement decisions.
+
+This packet is usually enough to build an initial evidence-aware model and, more
+importantly, to identify what cannot responsibly be sized yet.
+
+## What a first Atlas Quality Lab Blueprint provides
+
+Atlas Quality Lab Compiler is designed to convert this discovery input into an
+initial operating blueprint for the non-sterile microbiology wedge. The current
+output is concept-stage decision support, with explicit limits. It can provide:
+
+- a product-to-method requirement trace;
+- a method bill of materials and resource-load basis where execution allocation
+  is known;
+- in-house/outsource and growth scenarios;
+- indicative equipment, staffing, consumables, space, CAPEX and OPEX views;
+- assumption, evidence and unresolved-input registers; and
+- an expert-review workspace for corrections, decisions and estimate-to-actual
+  learning.
+
+It does **not** validate methods, approve a design, replace site risk assessment
+or establish regulatory compliance. Those boundaries are intentional: a useful
+decision package should make the handoff to qualified QC, QA and engineering
+teams clearer, not blur accountability.
+
+## Key takeaway
+
+The fastest way to make a weak laboratory plan is to start with equipment. The
+stronger sequence is:
+
+**portfolio → requirement → method architecture → physical execution → workload
+→ capacity → operating model → reviewed project output.**
+
+When the evidence is incomplete, preserve the uncertainty. It is better to show
+the decision that still needs owner input than to convert it into a confident but
+unsupported procurement number.
+
+## Start a Blueprint
+
+- Build an initial scenario in the [Atlas Quality Lab Compiler](/quality-lab/planner).
+- Review the product-to-method, BOM and capacity model in the resulting
+  Blueprint.
+- For a real project, [request expert Blueprint review](/quality-lab/review).
+- Learn the method context in [Bioburden & Microbial Limits (USP 61/62)](/library/bioburden-usp-61) and [Growth Promotion Testing](/library/growth-promotion-testing).
+- Explore related evidence: [What is bioburden testing?](/blog/what-is-bioburden-testing), [Pharmaceutical water systems](/blog/pharmaceutical-water-systems-keeping-it-clean), and [Quality Risk Management (ICH Q9)](/library/quality-risk-management-q9).
+
+## References
+
+- USP. [Microbial Enumeration Tests &lt;61&gt;](https://www.usp.org/harmonization-standards/pdg/general-methods/microbial-enumeration), notice of adoption of harmonized standard, official May 1, 2025.
+- USP. [&lt;61&gt; Microbiological Examination of Nonsterile Products: Microbial Enumeration Tests](https://doi.usp.org/USPNF/USPNF_M98800_02_01.html).
+- USP. [Microbiological quality control testing resources](https://www.usp.org/microbiology/).
+- ICH. [Q9(R1) Quality Risk Management](https://database.ich.org/sites/default/files/ICH_Q9-R1_Document_Step2_Guideline_2021_1118.pdf).
+- World Health Organization. [Good Manufacturing Practices](https://www.who.int/teams/health-product-policy-and-standards/standards-and-specifications/norms-and-standards/gmp).
+
+*General educational and planning content. Verify all decisions against current
+applicable requirements, approved dossiers and specifications, site procedures,
+qualified engineering and the client quality system. Atlas outputs are not
+validated designs, regulatory advice or QA approval.*

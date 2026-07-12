@@ -53,6 +53,11 @@ const QualityLabPlannerPage = lazy(() => import("@/pages/QualityLabPlannerPage")
 const QualityLabProjectsPage = lazy(() => import("@/pages/QualityLabProjectsPage"));
 const QualityLabReviewPage = lazy(() => import("@/pages/QualityLabReviewPage"));
 const QualityLabEngagementPage = lazy(() => import("@/pages/QualityLabEngagementPage"));
+const QualityLabDiscoveryPackPage = lazy(() => import("@/pages/QualityLabDiscoveryPackPage"));
+const QualityLabCasebookPage = lazy(() => import("@/pages/QualityLabCasebookPage"));
+const QualityLabEvidenceGraphPage = lazy(() => import("@/pages/QualityLabEvidenceGraphPage"));
+const QualityLabCalibrationQueuePage = lazy(() => import("@/pages/QualityLabCalibrationQueuePage"));
+const QualityLabDomainReadinessPage = lazy(() => import("@/pages/QualityLabDomainReadinessPage"));
 
 function PageFallback() {
   return (
@@ -88,6 +93,11 @@ function Layout() {
           <Route path="/quality-lab/projects" component={QualityLabProjectsPage} />
           <Route path="/quality-lab/projects/:id" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/review" component={QualityLabReviewPage} />
+          <Route path="/quality-lab/discovery-pack" component={QualityLabDiscoveryPackPage} />
+          <Route path="/quality-lab/casebook" component={QualityLabCasebookPage} />
+          <Route path="/quality-lab/evidence" component={QualityLabEvidenceGraphPage} />
+          <Route path="/quality-lab/calibration" component={QualityLabCalibrationQueuePage} />
+          <Route path="/quality-lab/domain-readiness" component={QualityLabDomainReadinessPage} />
           <Route path="/quality-lab/engagements/:id" component={QualityLabEngagementPage} />
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />

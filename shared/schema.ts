@@ -1,6 +1,7 @@
 import { pgTable, text, serial, boolean, timestamp, jsonb, integer, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import type { QualityLabReviewedProjectSnapshot } from "./quality-lab-persistence";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -116,6 +117,39 @@ export const quoteRequests = pgTable("quote_requests", {
   productOfInterest: text("product_of_interest"),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+// Server-side copies are reserved for authenticated projects entering expert
+// review. Concept projects remain browser-local by default.
+export const qualityLabReviewedProjects = pgTable(
+  "quality_lab_reviewed_projects",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    localProjectId: text("local_project_id").notNull(),
+    projectName: text("project_name").notNull(),
+    snapshot: jsonb("snapshot").$type<QualityLabReviewedProjectSnapshot>().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("quality_lab_reviewed_projects_user_local_idx").on(t.userId, t.localProjectId)],
+);
+export type QualityLabReviewedProjectRow = typeof qualityLabReviewedProjects.$inferSelect;
+
+// Append-only working snapshots for reviewed projects. These are not QA
+// approvals; they make the Atlas handoff and expert-review trail inspectable.
+export const qualityLabReviewedProjectRevisions = pgTable(
+  "quality_lab_reviewed_project_revisions",
+  {
+    id: serial("id").primaryKey(),
+    reviewedProjectId: integer("reviewed_project_id").notNull(),
+    revisionNumber: integer("revision_number").notNull(),
+    reason: text("reason").notNull().default("reviewed-project-sync"),
+    snapshot: jsonb("snapshot").$type<QualityLabReviewedProjectSnapshot>().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("quality_lab_reviewed_project_revisions_project_number_idx").on(t.reviewedProjectId, t.revisionNumber)],
+);
+export type QualityLabReviewedProjectRevisionRow = typeof qualityLabReviewedProjectRevisions.$inferSelect;
 
 // === SCHEMAS ===
 

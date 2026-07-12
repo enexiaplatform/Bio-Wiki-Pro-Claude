@@ -4,6 +4,28 @@ import type { QualityLabProject } from "./quality-lab.js";
 export const QUALITY_LAB_ENGAGEMENT_PACKET_VERSION = "quality-lab-engagement-packet/v1" as const;
 
 const checklistStatusSchema = z.enum(["open", "in-review", "resolved", "not-applicable"]);
+const commercialReviewStatusSchema = z.enum(["draft", "needs-site-evidence", "ready-for-qualified-review"]);
+export const calibrationMetricKeySchema = z.enum(["monthlyTests", "teamFte", "areaSqm", "capexLowUsd", "capexHighUsd"]);
+const calibrationMetricNoteSchema = z.object({
+  metric: calibrationMetricKeySchema,
+  actualBasis: z.string(),
+  varianceDriver: z.enum(["not-assessed", "input-quality", "scope-change", "rule-assumption", "site-performance", "market-price", "implementation-choice", "mixed"]),
+  reviewerNote: z.string(),
+});
+
+const emptyCalibration = () => ({
+  status: "draft" as const,
+  observedPeriodStart: "",
+  observedPeriodEnd: "",
+  dataOwner: "",
+  evidenceRefs: [] as string[],
+  metricNotes: calibrationMetricKeySchema.options.map((metric) => ({ metric, actualBasis: "", varianceDriver: "not-assessed" as const, reviewerNote: "" })),
+  learningDisposition: "hold" as const,
+  applicableRuleIds: [] as string[],
+  dispositionRationale: "",
+  reviewedByRole: "",
+  reviewedAt: null as string | null,
+});
 
 export const qualityLabEngagementPacketSchema = z.object({
   packetVersion: z.literal(QUALITY_LAB_ENGAGEMENT_PACKET_VERSION),
@@ -18,7 +40,22 @@ export const qualityLabEngagementPacketSchema = z.object({
     capexLowUsd: z.object({ estimate: z.number().nonnegative(), actual: z.number().nonnegative().nullable(), variancePercent: z.number().nullable() }),
     capexHighUsd: z.object({ estimate: z.number().nonnegative(), actual: z.number().nonnegative().nullable(), variancePercent: z.number().nullable() }),
   }),
+  calibration: z.object({
+    status: z.enum(["draft", "observed", "review-ready", "reviewed"]),
+    observedPeriodStart: z.string(),
+    observedPeriodEnd: z.string(),
+    dataOwner: z.string(),
+    evidenceRefs: z.array(z.string()),
+    metricNotes: z.array(calibrationMetricNoteSchema),
+    learningDisposition: z.enum(["hold", "project-only", "candidate-rule-update", "candidate-benchmark"]),
+    applicableRuleIds: z.array(z.string()),
+    dispositionRationale: z.string(),
+    reviewedByRole: z.string(),
+    reviewedAt: z.string().datetime().nullable(),
+  }).default(emptyCalibration),
   checklist: z.array(z.object({ id: z.string().min(1), ownerRole: z.string().min(1), status: checklistStatusSchema, question: z.string().min(1), requiredEvidence: z.string().min(1), relatedRuleIds: z.array(z.string()), reviewerNote: z.string() })),
+  methodEvidenceMatrix: z.array(z.object({ id: z.string(), productName: z.string(), market: z.string(), requirementType: z.string(), methodName: z.string(), evidenceIds: z.array(z.string()).min(1), verificationRequirement: z.string(), status: commercialReviewStatusSchema, reviewerNote: z.string() })).default([]),
+  ursBasis: z.array(z.object({ id: z.string(), equipmentName: z.string(), equipmentCategory: z.string(), relatedMethodRequirementIds: z.array(z.string()), evidenceIds: z.array(z.string()).default([]), functionalRequirement: z.string(), qualificationImpact: z.string(), status: commercialReviewStatusSchema })).default([]),
   corrections: z.array(z.object({ id: z.string(), recordedAt: z.string(), fieldOrRuleId: z.string(), previousValue: z.string(), correctedValue: z.string(), evidenceRef: z.string(), rationale: z.string(), reviewerRole: z.string() })),
   decisions: z.array(z.object({ id: z.string(), recordedAt: z.string(), decision: z.string(), optionsConsidered: z.array(z.string()), rationale: z.string(), owner: z.string(), downstreamImpact: z.string() })),
   controls: z.object({ expertApprovalInsideAtlas: z.literal(false), containsContactData: z.literal(false), usageNotice: z.string().min(1) }),
@@ -51,6 +88,7 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
       capexLowUsd: { estimate: blueprint.current.capexLowUsd, actual: null, variancePercent: null },
       capexHighUsd: { estimate: blueprint.current.capexHighUsd, actual: null, variancePercent: null },
     },
+    calibration: emptyCalibration(),
     checklist: blueprint.unresolvedInputs.map((item) => ({
       id: `review-${item.id}`,
       ownerRole: ownerByCategory[item.category] ?? "Project owner",
@@ -60,6 +98,33 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
       relatedRuleIds: item.relatedRuleIds,
       reviewerNote: "",
     })),
+    methodEvidenceMatrix: blueprint.methodRequirements.map((item) => ({
+      id: `method-evidence-${item.id}`,
+      productName: item.productName,
+      market: item.market,
+      requirementType: item.requirementType,
+      methodName: item.methodName,
+      evidenceIds: item.evidenceIds,
+      verificationRequirement: item.verificationRequirement,
+      status: item.evidenceIds.includes("site-approved-methods") ? "needs-site-evidence" as const : "draft" as const,
+      reviewerNote: "",
+    })),
+    ursBasis: blueprint.equipment.map((equipment) => {
+      const relatedMethodRequirementIds = equipment.methodRequirementIds ?? blueprint.methodCapacity.filter((item) => item.resourceId === equipment.id).map((item) => item.methodRequirementId);
+      const relatedMethods = blueprint.methodRequirements.filter((item) => relatedMethodRequirementIds.includes(item.id));
+      return {
+        id: `urs-basis-${equipment.id}`,
+        equipmentName: equipment.name,
+        equipmentCategory: equipment.category,
+        relatedMethodRequirementIds,
+        evidenceIds: equipment.evidenceIds ?? [],
+        functionalRequirement: equipment.specification,
+        qualificationImpact: relatedMethods.length > 0
+          ? `Confirm configuration, usable capacity and qualification strategy against: ${relatedMethods.map((item) => item.methodName).join("; ")}.`
+          : "Confirm configuration, utilities, qualification and workflow fit against approved site methods and the controlled capability model.",
+        status: relatedMethods.length > 0 ? "needs-site-evidence" as const : "draft" as const,
+      };
+    }),
     corrections: [],
     decisions: [],
     controls: {
@@ -74,4 +139,93 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
 export function calculateVariancePercent(estimate: number, actual: number): number | null {
   if (estimate === 0) return actual === 0 ? 0 : null;
   return Math.round(((actual - estimate) / estimate) * 1000) / 10;
+}
+
+export type CalibrationMetricKey = z.infer<typeof calibrationMetricKeySchema>;
+
+export function varianceMagnitude(variancePercent: number | null): "open" | "within-10" | "10-to-25" | "over-25" {
+  if (variancePercent === null) return "open";
+  const magnitude = Math.abs(variancePercent);
+  if (magnitude <= 10) return "within-10";
+  if (magnitude <= 25) return "10-to-25";
+  return "over-25";
+}
+
+export function summarizeCalibration(packet: QualityLabEngagementPacket) {
+  const entries = (Object.entries(packet.baseline) as Array<[CalibrationMetricKey, QualityLabEngagementPacket["baseline"][CalibrationMetricKey]]>);
+  const observed = entries.filter(([, item]) => item.actual !== null);
+  const ranked = observed
+    .filter(([, item]) => item.variancePercent !== null)
+    .sort((a, b) => Math.abs(b[1].variancePercent ?? 0) - Math.abs(a[1].variancePercent ?? 0));
+  const provenanceComplete = Boolean(
+    packet.calibration.observedPeriodStart
+    && packet.calibration.observedPeriodEnd
+    && packet.calibration.dataOwner.trim()
+    && packet.calibration.evidenceRefs.length,
+  );
+  const notesComplete = observed.every(([key]) => {
+    const note = packet.calibration.metricNotes.find((item) => item.metric === key);
+    return Boolean(note?.actualBasis.trim() && note.varianceDriver !== "not-assessed");
+  });
+  const reviewReady = observed.length > 0 && provenanceComplete && notesComplete;
+  return {
+    observedCount: observed.length,
+    totalCount: entries.length,
+    coveragePercent: Math.round((observed.length / entries.length) * 100),
+    provenanceComplete,
+    notesComplete,
+    reviewReady,
+    largestVariance: ranked[0] ? { metric: ranked[0][0], variancePercent: ranked[0][1].variancePercent! } : null,
+    materialVarianceCount: ranked.filter(([, item]) => Math.abs(item.variancePercent ?? 0) > 25).length,
+    notice: "A review-ready calibration is still project evidence, not an approved Atlas benchmark or automatic rule change.",
+  };
+}
+
+export type CalibrationEligibility = "hold" | "project-only" | "blocked" | "eligible-for-learning-review";
+
+export function assessCalibrationCandidate(packet: QualityLabEngagementPacket): {
+  eligibility: CalibrationEligibility;
+  blockers: string[];
+  observedMetrics: CalibrationMetricKey[];
+} {
+  const summary = summarizeCalibration(packet);
+  const disposition = packet.calibration.learningDisposition;
+  const observedMetrics = (Object.keys(packet.baseline) as CalibrationMetricKey[]).filter((key) => packet.baseline[key].actual !== null);
+  if (disposition === "hold") return { eligibility: "hold", blockers: ["Learning disposition remains on hold."], observedMetrics };
+  if (disposition === "project-only") return { eligibility: "project-only", blockers: [], observedMetrics };
+
+  const blockers: string[] = [];
+  if (!summary.reviewReady) blockers.push("Observation provenance and metric-level variance classification must be complete.");
+  if (packet.calibration.status !== "reviewed") blockers.push("Calibration must be reviewed for learning.");
+  if (!packet.calibration.reviewedByRole.trim() || !packet.calibration.reviewedAt) blockers.push("Reviewer role and review timestamp are required.");
+  if (!packet.calibration.dispositionRationale.trim()) blockers.push("A learning-disposition rationale is required.");
+  if (packet.calibration.applicableRuleIds.length === 0) blockers.push("At least one applicable rule ID is required.");
+  if (disposition === "candidate-benchmark" && observedMetrics.length < 2) blockers.push("A benchmark candidate requires at least two observed metrics in this project record.");
+  return { eligibility: blockers.length ? "blocked" : "eligible-for-learning-review", blockers, observedMetrics };
+}
+
+export function createCalibrationLearningCandidate(packet: QualityLabEngagementPacket) {
+  const assessment = assessCalibrationCandidate(packet);
+  return {
+    candidateVersion: "quality-lab-calibration-candidate/v1" as const,
+    project: packet.project,
+    sourceVersions: packet.sourceVersions,
+    calibrationStatus: packet.calibration.status,
+    learningDisposition: packet.calibration.learningDisposition,
+    eligibility: assessment.eligibility,
+    blockers: assessment.blockers,
+    observedPeriod: { start: packet.calibration.observedPeriodStart, end: packet.calibration.observedPeriodEnd },
+    dataOwner: packet.calibration.dataOwner,
+    evidenceRefs: packet.calibration.evidenceRefs,
+    applicableRuleIds: packet.calibration.applicableRuleIds,
+    dispositionRationale: packet.calibration.dispositionRationale,
+    reviewedByRole: packet.calibration.reviewedByRole,
+    reviewedAt: packet.calibration.reviewedAt,
+    metrics: assessment.observedMetrics.map((metric) => ({
+      metric,
+      ...packet.baseline[metric],
+      ...packet.calibration.metricNotes.find((item) => item.metric === metric),
+    })),
+    controlNotice: "Candidate for controlled learning review only. Eligibility does not approve a benchmark or change an Atlas rule.",
+  };
 }

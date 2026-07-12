@@ -1,0 +1,346 @@
+---
+title: "How to validate a Quality Lab Domain Pack without turning one project into a benchmark"
+slug: "how-to-validate-a-quality-lab-domain-pack"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "A controlled framework for converting Blueprint estimates, project actuals and expert corrections into validation cases, reviewed rule changes and defensible benchmark ranges."
+updatedAt: "2026-07-12"
+---
+
+# How to validate a Quality Lab Domain Pack without turning one project into a benchmark
+
+A planning model improves when it learns from real projects. It becomes dangerous
+when it treats every observed difference as proof that a rule is wrong.
+
+A laboratory project can differ from an estimate because the input scope changed,
+the site made a different implementation choice, the source data were incomplete,
+the local operating model is unusual, market prices moved, or the planning rule
+was genuinely weak. Those causes have different implications. A single variance
+percentage cannot distinguish them.
+
+Atlas therefore needs a controlled learning lifecycle:
+
+```text
+Versioned estimate
+-> qualified observation
+-> variance classification
+-> project review
+-> learning candidate
+-> cross-case evaluation
+-> controlled rule or benchmark decision
+-> new version with impact assessment
+```
+
+This article defines what each stage means, what evidence is required, and what
+must remain explicitly unclaimed.
+
+## Three records that must not be confused
+
+### 1. Synthetic case
+
+A synthetic case is designed to exercise model behavior. It can test whether the
+Compiler handles outsourcing, multi-market allocation, missing inputs, growth or
+capacity constraints consistently.
+
+It is useful for software and logic verification. It is not evidence that the
+numerical model predicts a real laboratory accurately.
+
+### 2. Project calibration record
+
+A calibration record compares a versioned estimate with an observed project
+value. It should include the observation period, data owner, controlled evidence
+references, actual-value basis, variance driver and reviewer interpretation.
+
+It is evidence about one project under one set of conditions. Even when complete,
+it does not automatically validate a Domain Pack.
+
+### 3. Domain Pack validation case
+
+A validation case is a reviewed project record that is suitable for evaluating
+specific rules or benchmark assumptions. It needs enough provenance and context
+to explain not only that the estimate differed, but why the difference is
+relevant to the rule being assessed.
+
+Several validation cases may be needed before changing a reusable rule. A case
+can also demonstrate that a rule should remain conditional rather than universal.
+
+## Freeze the estimate before observing the actual
+
+A meaningful comparison requires a frozen baseline. Record at least:
+
+- input-contract version;
+- Compiler Core version;
+- Domain Pack and rule versions;
+- project-input snapshot;
+- estimate generation time;
+- included and excluded scope;
+- scenario and planning horizon;
+- unresolved blocking inputs;
+- confidence and review status; and
+- the decision the estimate was intended to support.
+
+Do not silently recompile the historical baseline after actual data arrive. A new
+model version can be run as a separate comparison, but the original estimate must
+remain reproducible.
+
+This matters because otherwise the model can appear accurate by absorbing facts
+that were not available when the decision was made.
+
+## Define the actual before entering a number
+
+An observed value needs an operational definition.
+
+For monthly tests, clarify whether the value counts samples, methods, reportable
+results, physical executions, plates, injections or specification lines. For
+staffing, distinguish budgeted positions, available FTE, productive analyst FTE
+and total team FTE. For CAPEX, state whether the total includes freight,
+installation, qualification, taxes, utilities, construction and data systems.
+
+The observation record should contain:
+
+| Field | Why it matters |
+| --- | --- |
+| Observation period | Separates a representative period from launch, shutdown or peak demand |
+| Data owner | Identifies who can defend the source and definition |
+| Evidence reference | Points to the controlled report, time study, purchase record or approved analysis |
+| Calculation basis | Shows how the actual value was derived |
+| Scope alignment | Confirms whether estimate and actual describe the same work |
+| Exceptions | Records atypical campaigns, investigations, downtime or one-time costs |
+| Reviewer interpretation | Explains how the observation should and should not be used |
+
+If scope alignment cannot be established, the observation may still be useful
+for project learning, but it should not be used to calculate rule performance.
+
+## Calculate variance, then classify the driver
+
+A basic relative variance is:
+
+```text
+variance % = (actual - estimate) / estimate x 100
+```
+
+When the estimate is zero and the actual is positive, the percentage is
+undefined. Report the new observed scope instead of inventing an infinite or
+zero-percent variance.
+
+The next step is more important than the calculation. Classify the main driver:
+
+### Input quality
+
+The estimate used incomplete, inconsistent or incorrect project facts. The
+learning may belong in intake validation, not in the domain benchmark.
+
+### Scope change
+
+Products, markets, methods, volumes, rooms or deliverables changed after the
+baseline. Reconcile scope before evaluating model accuracy.
+
+### Rule assumption
+
+The input scope remained comparable, but a reusable time, throughput, cost,
+consumption or space assumption was not representative. This is a potential rule
+or benchmark learning candidate.
+
+### Site performance
+
+Observed performance reflects local training, scheduling, deviation burden,
+automation, shift design or operational maturity. The model may need an explicit
+site-performance factor rather than a new universal benchmark.
+
+### Market price
+
+Cost variance is driven by date, location, vendor, currency, freight, tax,
+commercial terms or supply conditions. Preserve this context in any cost range.
+
+### Implementation choice
+
+The customer selected a different operating model, redundancy level, technology,
+prepared-media strategy or outsource boundary. The learning may improve scenario
+logic rather than the original rule.
+
+### Mixed drivers
+
+Several causes materially contribute and cannot be isolated with available
+evidence. Do not force a single-cause conclusion.
+
+## Decide the learning disposition
+
+Every calibration record should end with an explicit disposition.
+
+### Hold
+
+Use when evidence, scope alignment or interpretation is incomplete. Holding a
+record is a valid control, not a failure.
+
+### Project only
+
+Use when the observation is defensible for the customer decision but is too
+site-specific, confidential or non-comparable for reusable model learning.
+
+### Candidate rule update
+
+Use when evidence suggests that named rule logic, applicability conditions or
+parameters should enter controlled review. Link the candidate to exact rule IDs.
+
+### Candidate benchmark
+
+Use when one or more measured values may contribute to a benchmark cohort. This
+does not create a benchmark. Cohort definition, comparability, sample size,
+confidentiality and statistical treatment remain open.
+
+The reviewer should record the rationale, qualified role, review date and next
+action. A dropdown selection without a defensible rationale is not governance.
+
+## Eligibility is not approval
+
+A learning candidate can enter review only when it has:
+
+- at least one observed metric;
+- complete observation provenance;
+- an actual-value basis for every observed metric;
+- a classified variance driver;
+- a reviewed status and reviewer identity;
+- a disposition rationale; and
+- at least one applicable rule ID for reusable learning.
+
+Benchmark candidates should include more than one observed dimension in the
+project record so reviewers can detect obvious scope inconsistencies. That is a
+minimum queue condition, not a statistical sufficiency claim.
+
+Passing these checks means only that the record is ready to be reviewed. It does
+not authorize a rule change.
+
+## Review candidates across comparable cases
+
+Before changing a reusable rule, reviewers should compare cases using a declared
+cohort definition. Relevant dimensions may include:
+
+- product and dosage-form family;
+- method architecture and lifecycle status;
+- sample and execution definition;
+- laboratory maturity and automation;
+- operating calendar and shift pattern;
+- in-house versus outsourced scope;
+- region, currency and cost date;
+- equipment configuration and redundancy policy;
+- utilization and downtime basis; and
+- investigation, repeat and review burden.
+
+Do not pool cases merely because they share a high-level label such as
+"microbiology lab" or "HPLC testing." Heterogeneous cases can produce a precise
+but meaningless average.
+
+For a small evidence base, report the individual cases and uncertainty rather
+than implying population accuracy. A range should state its cohort, effective
+date, exclusions and number of qualified observations.
+
+## Four possible review outcomes
+
+### Retain the current rule
+
+Evidence does not show a reusable problem, or variance is explained by project
+conditions already outside the rule scope.
+
+### Refine applicability
+
+The parameter may be reasonable only for a narrower method, product, operating
+model or maturity level. Update conditions before updating the number.
+
+### Create a scenario factor
+
+The difference is systematic but depends on a visible choice such as automation,
+prepared media, shifts, outsourcing or redundancy. Model the choice instead of
+replacing one universal assumption with another.
+
+### Revise the rule or benchmark range
+
+Comparable, reviewed evidence supports a change. The new value still requires a
+new version, rationale, reviewer approval and downstream impact assessment.
+
+## Change control for a Domain Pack rule
+
+A controlled rule change should record:
+
+- previous and proposed rule versions;
+- candidate records considered;
+- cohort inclusion and exclusion rationale;
+- calculation or expert-judgment method;
+- applicability changes;
+- confidence and limitations;
+- affected outputs and dependencies;
+- comparison against representative saved projects;
+- reviewer roles and decision record;
+- effective date and rollback approach; and
+- communication required for active engagements.
+
+The impact assessment should recompile representative cases and compare workload,
+equipment, staffing, consumables, space, CAPEX/OPEX and unresolved-input behavior.
+A numerically better fit is not acceptable if it breaks traceability or hides
+uncertainty.
+
+## Confidentiality and aggregation boundaries
+
+Project learning must not expose customer identity, formulations, registered
+specifications, vendor terms or site-sensitive information without authorization.
+
+Before any cross-project use:
+
+- confirm contractual and data-use rights;
+- minimize fields to the learning purpose;
+- separate identifiable project records from reusable parameters;
+- define access and retention controls;
+- prevent public case content from revealing confidential combinations; and
+- preserve the ability to trace an internal rule decision without publishing the
+  underlying customer evidence.
+
+An anonymized value can still be identifiable when combined with a rare product,
+country, capacity and technology profile. De-identification requires judgment,
+not just removal of a company name.
+
+## Domain Pack validation review checklist
+
+- Was the estimate frozen before actual data were reviewed?
+- Are estimate and actual definitions aligned?
+- Is the observation period representative?
+- Can the data owner defend every evidence reference?
+- Is each variance driver classified with rationale?
+- Are site-specific effects separated from reusable rule effects?
+- Is the exact rule or applicability condition named?
+- Is the learning disposition explicit?
+- Are candidate cases comparable under a declared cohort definition?
+- Are confidentiality and data-use rights resolved?
+- Has downstream impact been tested before version release?
+- Does the new version retain source, assumption, confidence and review traceability?
+
+If any material answer is no, keep the record on hold or project-only.
+
+## Use the Atlas workflow
+
+1. Build and freeze a [Quality Lab Blueprint](/quality-lab/planner).
+2. Download the validation-case and rule-impact templates from the [Blueprint Discovery Pack](/quality-lab/discovery-pack).
+3. Capture actuals and provenance in the project Review Workspace.
+4. Inspect candidates in the [Calibration Learning Review Queue](/quality-lab/calibration).
+5. Review domain-level gaps in [Domain Pack Readiness](/quality-lab/domain-readiness).
+6. Use the [Atlas Evidence Graph](/quality-lab/evidence) to trace decisions to supporting guides, workflows and tools.
+7. For a controlled real-world engagement, [request expert review](/quality-lab/review).
+
+## Related quality principles
+
+This Atlas governance framework is a planning and model-management approach. It
+is consistent with broader quality principles such as risk-based decision making,
+knowledge management, lifecycle review, change evaluation and documented
+responsibility. It is not a claim that an Atlas Domain Pack is a regulated method,
+validated computerized system or approved quality-system record.
+
+Useful external context includes:
+
+- ICH. [Q9 Quality Risk Management](https://www.ich.org/page/quality-guidelines).
+- ICH. [Q10 Pharmaceutical Quality System](https://www.ich.org/page/quality-guidelines).
+- FDA. [Contract Manufacturing Arrangements for Drugs: Quality Agreements](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/contract-manufacturing-arrangements-drugs-quality-agreements-guidance-industry).
+
+*General educational and planning content. A project calibration record, learning
+candidate or Domain Pack does not replace approved methods, qualified engineering,
+QA governance, regulatory review or controlled site validation. Verify every
+material decision against current applicable requirements and qualified expert
+review.*

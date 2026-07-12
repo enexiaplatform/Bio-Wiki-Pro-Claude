@@ -4,8 +4,9 @@ import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2,
 import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
-import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested } from "@/lib/quality-lab-projects";
+import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
 import { QUALITY_LAB_REVIEW_BRIEF_VERSION } from "@shared/quality-lab-review";
+import { useUser } from "@/context/UserContext";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -19,6 +20,7 @@ export default function QualityLabReviewPage() {
   const projectId = useMemo(() => new URLSearchParams(window.location.search).get("project"), []);
   const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
   const request = useCreateQualityLabReview();
+  const { isAuthenticated } = useUser();
   const [submitted, setSubmitted] = useState(false);
   const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
   const [form, setForm] = useState({
@@ -57,7 +59,10 @@ export default function QualityLabReviewPage() {
         } : null,
         confidentialityConfirmed: true,
       });
-      if (project) markQualityLabReviewRequested(project.id);
+      if (project) {
+        const reviewedProject = markQualityLabReviewRequested(project.id);
+        if (reviewedProject && isAuthenticated) syncQualityLabReviewedProject(reviewedProject).catch(() => undefined);
+      }
       analytics.expertReviewRequested(Boolean(project));
       setSubmitted(true);
     } catch {

@@ -5,6 +5,7 @@ import { getToolBySlug, TOOLS } from "@/features/tools/registry";
 import { useSEO } from "@/hooks/use-seo";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
+import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 
 export default function ToolDetailPage() {
   const [, params] = useRoute("/tools/:slug");
@@ -110,6 +111,8 @@ export default function ToolDetailPage() {
           </div>
         </div>
       </section>
+
+      <AtlasBlueprintContext href={`/tools/${tool.slug}`} />
 
       <Suspense
         fallback={

@@ -15,6 +15,7 @@ import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
 import { rateLimit } from "express-rate-limit";
+import { compareQualityLabReviewedSnapshots, qualityLabReviewedProjectSnapshotSchema } from "../shared/quality-lab-persistence.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -659,6 +660,42 @@ export async function registerRoutes(app: Express): Promise<void> {
       }
       throw err;
     }
+  });
+
+  // A full Blueprint snapshot is retained only for signed-in users who have
+  // deliberately entered the expert-review workflow. It is not a background
+  // sync channel for browser-local concept projects.
+  app.put("/api/quality-lab/reviewed-projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+    try {
+      const snapshot = qualityLabReviewedProjectSnapshotSchema.parse(req.body);
+      if (snapshot.localProjectId !== req.params.localProjectId) return res.status(400).json({ message: "Project identifier mismatch" });
+      if (!snapshot.reviewRequestedAt) return res.status(400).json({ message: "Only requested-review projects may be persisted" });
+      const row = await storage.upsertQualityLabReviewedProject(req.session.userId, snapshot);
+      res.status(201).json({ localProjectId: row.localProjectId, projectName: row.projectName, updatedAt: row.updatedAt });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
+      throw err;
+    }
+  });
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+    const row = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!row) return res.status(404).json({ message: "Reviewed project not found" });
+    res.json(row.snapshot);
+  });
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId/revisions", isAuthenticated, async (req: any, res) => {
+    const rows = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
+    res.json(rows.map((row) => ({ revisionNumber: row.revisionNumber, reason: row.reason, createdAt: row.createdAt, generatedAt: row.snapshot.blueprint.generatedAt, blockingOpenCount: row.snapshot.blueprint.dataQuality.blockingOpenCount })));
+  });
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId/revisions/:revisionNumber/compare-current", isAuthenticated, async (req: any, res) => {
+    const current = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!current) return res.status(404).json({ message: "Reviewed project not found" });
+    const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
+    const baseline = revisions.find((row) => row.revisionNumber === Number(req.params.revisionNumber));
+    if (!baseline) return res.status(404).json({ message: "Revision not found" });
+    res.json(compareQualityLabReviewedSnapshots(baseline.snapshot, current.snapshot));
   });
 
   // ── Lead capture ────────────────────────────────────────────────────────

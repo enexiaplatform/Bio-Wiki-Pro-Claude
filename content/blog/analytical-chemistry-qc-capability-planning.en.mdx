@@ -1,0 +1,303 @@
+---
+title: "How to plan analytical chemistry QC capability from methods, sequences and decisions"
+slug: "analytical-chemistry-qc-capability-planning"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "A method-level framework for converting pharmaceutical analytical requirements into sample preparation, instrument sequences, standards, analyst workload, review capacity, resilience and lifecycle governance."
+updatedAt: "2026-07-11"
+---
+
+# How to plan analytical chemistry QC capability from methods, sequences and decisions
+
+Analytical chemistry laboratories are often sized by instrument count: a number
+of HPLCs, dissolution baths, spectrophotometers and balances is copied from an
+existing site or assembled from vendor proposals. The method workload arrives
+later.
+
+That reverses the decision chain. Instrument demand is a consequence of product
+specifications, sample preparation, sequence design, method performance,
+turnaround and review—not a starting assumption.
+
+The useful planning question is:
+
+> Which quality decisions must be supported, which analytical procedures create
+> the evidence, and what operating capability is required to execute and review
+> those procedures reliably through their lifecycle?
+
+This guide covers capability planning. It does not establish specifications,
+validate procedures, approve instrument platforms or replace site-controlled
+methods and qualified review.
+
+## Map decisions before technologies
+
+Start with the decisions supported by analytical data:
+
+- release or rejection of materials, intermediates and finished products;
+- in-process adjustment or continuation;
+- confirmation of identity, strength, purity or performance;
+- stability and shelf-life assessment;
+- OOS/OOT and deviation impact;
+- cleaning or carryover evaluation;
+- method transfer and comparability;
+- supplier, process, scale or site change; and
+- regulatory commitment maintenance.
+
+For each decision, define the accountable owner, target decision time, required
+evidence, escalation path and consequence of delay. A release assay and a
+development characterization test may use the same HPLC but require different
+priority, redundancy and governance.
+
+## Build the product-to-method inventory
+
+One row per “HPLC method” is not enough. Preserve:
+
+- product/material and market;
+- attribute and specification role;
+- procedure identifier, version and lifecycle status;
+- sample type, quantity and preparation;
+- test frequency and physical execution allocation;
+- standards, controls and system suitability;
+- instrument platform and detector;
+- sequence structure and expected runtime;
+- data processing and review;
+- in-house/outsource decision; and
+- evidence, assumptions and unresolved inputs.
+
+ICH Q14 frames analytical procedure development around intended purpose,
+measurement requirements, technology selection, risk and procedure understanding.
+ICH Q2(R2) addresses demonstrating that a procedure is suitable for its intended
+purpose. A capability model should preserve that intended-purpose context rather
+than treating procedures as interchangeable because they use the same instrument.
+
+## Compile the full method architecture
+
+Each execution creates more work than the reported sample result. Model:
+
+```text
+sample receipt
+→ preparation/extraction/dilution
+→ standards, blanks and controls
+→ instrument setup and system suitability
+→ sample sequence
+→ integration/calculation
+→ technical review and approval
+→ lifecycle trending and exception handling
+```
+
+Capture the operational drivers:
+
+- preparations and replicates per sample;
+- standards, blanks, bracketing and controls;
+- injections or measurements per preparation;
+- runtime, equilibration, wash and shutdown time;
+- column, cell, lamp or accessory configuration;
+- solvent, reagent and consumable demand;
+- analyst hands-on hours;
+- instrument occupancy;
+- processing and review time;
+- invalid, repeat and investigation assumptions; and
+- sample/solution stability and hold-time constraints.
+
+Two methods producing the same number of results can consume radically different
+capacity.
+
+## Use sequences as the capacity unit
+
+For chromatography and other batch-oriented technologies, instrument capacity is
+best modelled through sequences or runs.
+
+```text
+sequence hours
+= setup + equilibration + injections × runtime + washes + shutdown
+```
+
+Then apply:
+
+- feasible batch size and sample arrival pattern;
+- instrument/method compatibility;
+- column and detector availability;
+- maintenance, calibration and qualification downtime;
+- expected invalid/repeat load;
+- data-system availability;
+- campaign and peak-week demand; and
+- priority rules across release, stability and investigations.
+
+Do not assume every HPLC is interchangeable. Detector, pressure range, solvent
+compatibility, column temperature, autosampler control, validated configuration,
+software and method transfer status can create separate capacity pools.
+
+## Separate analyst time, instrument time and review time
+
+Analytical capacity usually has at least three independent constraints:
+
+| Constraint | Typical drivers |
+| --- | --- |
+| Analyst | Weighing, extraction, dilution, reagent preparation, setup, troubleshooting |
+| Instrument | Equilibration, sequence runtime, washes, maintenance, qualification |
+| Review | Integration assessment, calculations, audit trail, exceptions, second-person approval |
+
+A night sequence can free analyst time but still create a morning review queue.
+An instrument can be available while the qualified analyst or reference standard
+is not. Report the binding constraint for each scenario.
+
+## Model non-chromatographic capability explicitly
+
+Analytical chemistry is broader than HPLC. Depending on the portfolio, include:
+
+- dissolution/disintegration and physical performance;
+- UV/Vis, IR, Raman or other spectroscopic methods;
+- water determination;
+- pH, osmolality, viscosity, density and appearance;
+- elemental impurities or trace analysis;
+- gas chromatography and residual solvents;
+- particle size and solid-state characterization;
+- titration and wet chemistry;
+- reference-standard characterization; and
+- specialist outsourced methods.
+
+Each has a different architecture. Dissolution capacity depends on apparatus,
+media preparation, vessel/bath turnaround, sampling and downstream analysis.
+Karl Fischer work depends on sample compatibility, reagent control and instrument
+readiness. A generic “chemistry test” factor hides these differences.
+
+## Treat reference standards and reagents as capacity dependencies
+
+A qualified instrument cannot run without suitable standards, columns, solvents,
+reagents and consumables. Track:
+
+- compendial, primary, secondary and working-standard roles;
+- qualification, potency correction and expiry;
+- storage and dispensing conditions;
+- lead time and protected inventory;
+- reagent/solvent grade and preparation;
+- column/accessory lifecycle;
+- hazardous-material handling and waste; and
+- alternate supply or business-continuity strategy.
+
+Long-lead or single-source materials should appear in the resilience model, not
+only the purchasing list.
+
+## Include data integrity and review architecture
+
+Analytical output is not complete when the instrument finishes. The operating
+model must include:
+
+- controlled acquisition and processing methods;
+- user roles and access;
+- audit-trail and metadata review;
+- integration and reintegration governance;
+- calculation verification;
+- exception and invalid-run handling;
+- result approval and transfer to downstream systems;
+- backup, retention and recovery; and
+- periodic review of method/instrument performance.
+
+Review capacity should be forecast independently, especially for peak release,
+stability pulls and investigations.
+
+## Separate workload classes
+
+| Work class | Demand behavior |
+| --- | --- |
+| Raw material and release | Batch/lot forecast with target turnaround |
+| In-process | Production-schedule driven, often time-critical |
+| Stability | Protocol calendar with clustered timepoints |
+| Investigation | Event-driven and urgent |
+| Method lifecycle | Transfer, validation, verification, changes and monitoring |
+| Cleaning/support | Campaign, equipment or change dependent |
+
+If these are combined into one monthly sample total, release capacity will be
+overstated because project and exception work consumes the same analysts and
+platforms.
+
+## Plan method lifecycle capacity
+
+Methods require work beyond routine execution:
+
+- development or adaptation;
+- validation/verification;
+- method transfer;
+- analyst qualification;
+- reference-standard or reagent-lot qualification;
+- changes and comparability;
+- ongoing performance monitoring; and
+- remediation after recurring invalid or atypical behavior.
+
+Reserve specialist time and instrument access for this lifecycle work. Otherwise,
+routine testing crowds out the very work needed to keep the methods reliable.
+
+## Test resilience scenarios
+
+- primary chromatography platform unavailable;
+- CDS or network outage;
+- critical standard, column or solvent unavailable;
+- sole qualified analyst/reviewer absent;
+- repeated system-suitability or invalid-sequence failure;
+- stability timepoint coincides with release peak;
+- external specialist laboratory misses turnaround; or
+- change requires urgent transfer or verification.
+
+For each, define time to impact, alternate qualified path, transfer constraints
+and residual risk. Adding instruments alone does not resolve single-standard,
+single-method-expert or single-data-system risk.
+
+## Capability outputs
+
+An Analytical Chemistry Domain Pack can support:
+
+- product/attribute/method trace;
+- sample preparation and method BOM;
+- sequence and instrument occupancy forecast;
+- analyst and reviewer capacity;
+- standards, reagents, columns and consumables forecast;
+- release/stability/investigation priority scenarios;
+- method lifecycle plan;
+- bottleneck and resilience analysis;
+- in-house/outsource recommendation;
+- functional space, utility and safety assumptions;
+- vendor-neutral URS basis; and
+- CAPEX/OPEX ranges with evidence and confidence.
+
+## Discovery checklist
+
+1. Product/material list, markets, batches/lots and growth forecast.
+2. Specifications and procedure inventory with lifecycle status.
+3. Preparations, replicates, controls, injections and runtimes.
+4. Historical sample arrivals, invalid runs, repeats and OOS/OOT volume.
+5. Instrument configurations, utilization, qualification and downtime.
+6. Analyst/reviewer skills and shift coverage.
+7. Standards, reagents, columns and critical supply risks.
+8. Stability calendar and method-development/transfer pipeline.
+9. Outsourced methods, lead times and quality agreements.
+10. Data-system, review and retention workflow.
+
+## Key takeaway
+
+Analytical chemistry capacity is not “number of instruments × available hours.”
+The defensible chain is:
+
+**quality decision → attribute → procedure → preparation/sequence → analyst,
+instrument and review constraints → controlled result.**
+
+Atlas should calculate only where the method architecture is known and should
+keep site approval, validation status and unresolved inputs visible.
+
+## Continue in Atlas
+
+- Start an [Atlas Quality Lab Blueprint](/quality-lab/planner).
+- Study [Analytical Procedure Lifecycle (ICH Q14)](/library/analytical-procedure-lifecycle-q14).
+- Review [Analytical method validation](/blog/analytical-method-validation-what-q2-asks), [HPLC System Suitability](/library/hplc-system-suitability), and [Reference standards](/blog/reference-standards-the-silent-anchor).
+- For a real laboratory project, [request expert Blueprint review](/quality-lab/review).
+
+## References
+
+- ICH. [Q14 Analytical Procedure Development](https://database.ich.org/sites/default/files/ICH_Q14_Guideline_2023_1116_1.pdf), 2023.
+- ICH. [Q2(R2) Validation of Analytical Procedures](https://database.ich.org/sites/default/files/ICH_Q2-R2_Document_Step2_Guideline_2022_0324.pdf).
+- World Health Organization. [WHO good practices for pharmaceutical quality control laboratories](https://www.who.int/publications/m/item/who-good-practices-for-pharmaceutical-quality-control-laboratories), TRS 1052 Annex 4, 2024.
+- World Health Organization. [Good chromatography practices](https://www.who.int/teams/health-product-policy-and-standards/standards-and-specifications/norms-and-standards-for-pharmaceuticals/guidelines/quality-control), TRS 1025 Annex 4, 2021.
+
+*General educational and planning content. Verify specifications, procedures,
+validation, configurations, calculations and release decisions against current
+applicable requirements, approved dossiers and controlled site procedures. Atlas
+outputs do not validate a method, qualify an instrument or approve a result.*

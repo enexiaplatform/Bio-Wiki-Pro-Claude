@@ -21,6 +21,7 @@ import type { QualityLabProject } from "@shared/quality-lab";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
+import { evidenceForRuleIds, ruleGuidanceForIds } from "@/data/atlasEvidenceGraph";
 
 interface Props {
   project: QualityLabProject;
@@ -57,10 +58,20 @@ function Section({ icon: Icon, eyebrow, title, children }: { icon: typeof Gauge;
   );
 }
 
+function DecisionEvidenceLinks({ ruleIds }: { ruleIds: string[] }) {
+  const guidance = ruleGuidanceForIds(ruleIds, 3);
+  return <div data-print="hide" className="mt-3 rounded-lg border border-sky-300/10 bg-sky-300/[0.035] p-3">
+    <div className="flex flex-wrap items-center justify-between gap-2"><p className="text-[9px] font-bold uppercase tracking-wider text-sky-300">Decision support</p><span className="text-[9px] text-slate-600">{guidance.fallbackUsed ? "Compiler Core fallback" : `${guidance.matchedRuleIds.length} rule${guidance.matchedRuleIds.length === 1 ? "" : "s"} mapped`}</span></div>
+    <div className="mt-2 flex flex-wrap gap-x-3 gap-y-2">{guidance.resources.map((resource)=><Link key={resource.href} href={resource.href} className="inline-flex items-center gap-1 text-[10px] font-semibold text-sky-200/80 hover:text-sky-100">{resource.title}<ArrowRight className="h-3 w-3" /></Link>)}</div>
+    {guidance.unmatchedRuleIds.length > 0 && <p className="mt-2 break-words font-mono text-[9px] leading-4 text-amber-200/60">Unmapped: {guidance.unmatchedRuleIds.join(" · ")}</p>}
+  </div>;
+}
+
 export function BlueprintReport({ project, onEdit }: Props) {
   const { blueprint } = project;
   const { input, current, future } = blueprint;
   const highRisks = blueprint.risks.filter((risk) => risk.severity === "high").length;
+  const supportingEvidence = evidenceForRuleIds(blueprint.ruleTrace.map((rule) => rule.ruleId));
 
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
@@ -172,6 +183,107 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </div>
         </Section>
 
+        {blueprint.workforceCapacity && (
+          <Section icon={Users} eyebrow="Compiler Core · people capacity" title="Workforce capacity and skill coverage">
+            <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400 print:text-slate-700">This separates execution, review and skill-continuity constraints without claiming that aggregate FTE proves a workable roster. Site time studies, qualification records and shift coverage remain required.</p>
+            <div className="grid gap-4 lg:grid-cols-2">
+              {[blueprint.workforceCapacity.current, blueprint.workforceCapacity.future].map((workforce) => (
+                <div key={workforce.label} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white">
+                  <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300 print:text-slate-600">{workforce.label}</p><p className="mt-1 text-sm font-semibold print:text-slate-950">{workforce.productiveHoursPerFte} productive h/FTE-month</p></div><p className="text-lg font-bold text-teal-200 print:text-slate-950">{workforce.totalTeamFte} FTE</p></div>
+                  <div className="mt-4 grid grid-cols-3 gap-2 text-center"><div><p className="font-bold print:text-slate-950">{workforce.baseExecutionFte}</p><p className="text-[9px] text-slate-500">base execution</p></div><div><p className="font-bold print:text-slate-950">+{workforce.resilienceReserveFte}</p><p className="text-[9px] text-slate-500">reserve</p></div><div><p className="font-bold print:text-slate-950">+{workforce.reviewerFte}</p><p className="text-[9px] text-slate-500">review</p></div></div>
+                  <div className="mt-4 space-y-2">{workforce.roles.map((role) => <div key={role.id} className="flex items-start justify-between gap-4 border-t border-white/5 pt-2 print:border-slate-200"><div><p className="text-xs font-semibold print:text-slate-950">{role.role}</p><p className="mt-1 text-[10px] leading-4 text-slate-500">{role.basis}</p></div><div className="shrink-0 text-right"><p className="text-xs font-bold text-sky-200 print:text-slate-950">{role.requiredFte} FTE</p><p className="text-[9px] text-slate-500">{role.monthlyHours ? `${role.monthlyHours} h` : "ratio basis"}</p></div></div>)}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              <div><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Minimum skill-continuity floor</p><div className="mt-2 space-y-2">{blueprint.workforceCapacity.skillCoverage.map((skill) => <div key={skill.id} className="rounded-lg border border-white/8 p-3 print:border-slate-300"><div className="flex items-start justify-between gap-3"><p className="text-xs font-semibold print:text-slate-950">{skill.skill}</p><span className="shrink-0 text-[10px] font-bold text-amber-200 print:text-slate-700">{skill.minimumQualifiedPeople} qualified</span></div><p className="mt-1 text-[10px] leading-4 text-slate-500">{skill.rationale}</p></div>)}</div></div>
+              <div><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Loads not separately quantified</p><div className="mt-2 space-y-2">{blueprint.workforceCapacity.excludedLoads.map((load) => <div key={load.id} className="rounded-lg border border-amber-300/10 bg-amber-300/[0.025] p-3 print:border-slate-300 print:bg-white"><p className="text-xs font-semibold text-amber-100 print:text-slate-950">{load.load}</p><p className="mt-1 text-[10px] leading-4 text-slate-400 print:text-slate-700">{load.impact}</p><p className="mt-1 text-[10px] leading-4 text-sky-200/70 print:text-slate-600">Evidence needed: {load.evidenceNeeded}</p></div>)}</div></div>
+            </div>
+            <DecisionEvidenceLinks ruleIds={["core.capacity.people"]} />
+          </Section>
+        )}
+
+        <Section icon={ClipboardCheck} eyebrow="Demand reconciliation" title="Finished-product sizing basis">
+          <div className="grid gap-4 md:grid-cols-4">
+            <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Sizing source</p><p className="mt-2 text-sm font-bold capitalize print:text-slate-950">{blueprint.finishedProductDemand.source.replaceAll("-", " ")}</p></div>
+            <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Aggregate batches</p><p className="mt-2 text-lg font-bold text-teal-200 print:text-slate-950">{number.format(blueprint.finishedProductDemand.aggregateMonthlyBatches)}<span className="ml-1 text-xs font-normal text-slate-500">/ month</span></p></div>
+            <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Portfolio batches</p><p className="mt-2 text-lg font-bold text-teal-200 print:text-slate-950">{number.format(blueprint.finishedProductDemand.portfolioMonthlyBatches)}<span className="ml-1 text-xs font-normal text-slate-500">/ month</span></p></div>
+            <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Portfolio in-house</p><p className="mt-2 text-lg font-bold text-teal-200 print:text-slate-950">{number.format(blueprint.finishedProductDemand.portfolioInHouseBatches)}<span className="ml-1 text-xs font-normal text-slate-500">/ month</span></p></div>
+          </div>
+          <p className="mt-4 text-xs leading-5 text-slate-400 print:text-slate-700">{blueprint.finishedProductDemand.message}</p>
+          {blueprint.finishedProductDemand.differencePercent !== null && <p className="mt-2 text-xs text-amber-200/80 print:text-slate-700">Portfolio versus aggregate difference: {number.format(blueprint.finishedProductDemand.differencePercent)}%. Reconcile material variance before design freeze.</p>}
+        </Section>
+
+        <Section icon={Network} eyebrow="Quality Method Graph" title="Product-to-method trace">
+          {blueprint.methodRequirements.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[980px] text-left text-sm">
+                <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
+                  <tr><th className="pb-3 pr-4">Product / market</th><th className="pb-3 pr-4">Requirement</th><th className="pb-3 pr-4">Method architecture</th><th className="pb-3 pr-4">Requirement / allocated executions</th><th className="pb-3">Verification boundary</th></tr>
+                </thead>
+                <tbody>
+                  {blueprint.methodRequirements.map((item) => (
+                    <tr key={item.id} className="align-top border-b border-white/5 print:border-slate-200">
+                      <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{item.productName}</p><p className="mt-1 text-[11px] text-slate-500">{item.market} · {item.execution}</p></td>
+                      <td className="py-3 pr-4 capitalize print:text-slate-800">{item.requirementType.replaceAll("-", " ")}</td>
+                      <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{item.methodName}</p><p className="mt-1 max-w-md text-[11px] leading-5 text-slate-500">{item.applicability}</p><p className="mt-1 max-w-md text-[11px] leading-5 text-slate-500">{item.acceptanceCriteria}</p></td>
+                      <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{number.format(item.monthlyExecutions)} / {number.format(item.allocatedMonthlyExecutions)}</p><p className={`mt-1 text-[10px] font-bold uppercase ${item.operationalDemandStatus === "unresolved" ? "text-amber-200" : "text-teal-200"}`}>{item.operationalDemandStatus === "unresolved" ? "allocation unresolved" : "physical load allocated"}</p></td>
+                      <td className="max-w-md py-3 text-xs leading-5 text-amber-200/80 print:text-slate-700">{item.verificationRequirement}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : <p className="text-sm leading-6 text-slate-400">No product profiles are available for this domain. Add product-level method inputs before using a method BOM for planning.</p>}
+        </Section>
+
+        {blueprint.methodBom.length > 0 && (
+          <Section icon={Boxes} eyebrow="Method bill of materials" title="Method-level consumables and controls">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[880px] text-left text-sm">
+                <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
+                  <tr><th className="pb-3 pr-4">Product / method</th><th className="pb-3 pr-4">Item</th><th className="pb-3 pr-4">Per execution</th><th className="pb-3 pr-4">Monthly</th><th className="pb-3">Control / condition</th></tr>
+                </thead>
+                <tbody>
+                  {blueprint.methodBom.map((item) => (
+                    <tr key={item.id} className="border-b border-white/5 print:border-slate-200">
+                      <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{item.productName}</p><p className="mt-1 text-[11px] text-slate-500">{item.methodName}</p></td>
+                      <td className="py-3 pr-4 capitalize print:text-slate-800">{item.item}<p className="mt-1 text-[10px] text-amber-200/80 print:text-slate-600">{item.status.replaceAll("-", " ")}</p></td>
+                      <td className="py-3 pr-4 print:text-slate-800">{number.format(item.quantityPerExecution)} {item.unit}</td>
+                      <td className="py-3 pr-4 font-semibold print:text-slate-950">{number.format(item.quantityPerMonth)} {item.unit}</td>
+                      <td className="max-w-md py-3 text-xs leading-5 text-slate-400 print:text-slate-700">{item.incubationOrControl}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Section>
+        )}
+
+        {blueprint.methodCapacitySummary.length > 0 && (
+          <Section icon={BarChart3} eyebrow="Method-derived operating load" title="Resource capacity check">
+            <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400">This checks the in-house product-method slice against the current equipment concept. It deliberately does not present itself as a complete operational simulation.</p>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[880px] text-left text-sm">
+                <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
+                  <tr><th className="pb-3 pr-4">Resource</th><th className="pb-3 pr-4">Method load / month</th><th className="pb-3 pr-4">Peak-week allowance</th><th className="pb-3 pr-4">Available capacity</th><th className="pb-3">Planning utilization</th></tr>
+                </thead>
+                <tbody>
+                  {blueprint.methodCapacitySummary.map((item) => (
+                    <tr key={item.resourceId} className="align-top border-b border-white/5 print:border-slate-200">
+                      <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{item.resourceName}</p><p className="mt-1 text-[11px] text-slate-500">{item.unit}</p></td>
+                      <td className="py-3 pr-4 print:text-slate-800">{number.format(item.monthlyDemand)}</td>
+                      <td className="py-3 pr-4 print:text-slate-800">{number.format(item.peakWeekDemand)}</td>
+                      <td className="py-3 pr-4 print:text-slate-800">{number.format(item.availableMonthlyCapacity)}</td>
+                      <td className="py-3"><p className={`font-bold ${item.utilizationPercent >= 85 ? "text-amber-200" : "text-teal-200"} print:text-slate-950`}>{number.format(item.utilizationPercent)}%</p><p className="mt-1 max-w-sm text-[10px] leading-4 text-slate-500">{item.limitations}</p></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Section>
+        )}
+
         <Section icon={Boxes} eyebrow="Capability architecture" title="Vendor-neutral equipment plan">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[940px] text-left text-sm">
@@ -186,7 +298,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
                     <td className="py-3 pr-4 text-lg font-bold text-teal-200 print:text-slate-950">{item.quantityFuture}</td>
                     <td className="py-3 pr-4 whitespace-nowrap print:text-slate-800">{money.format(item.unitCapexLowUsd)}–{money.format(item.unitCapexHighUsd)}</td>
                     <td className="py-3 pr-4"><span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${confidenceClass[item.confidence]} print:border-slate-300 print:bg-white print:text-slate-700`}>{item.confidence}</span></td>
-                    <td className="max-w-xl py-3 text-xs leading-5 text-slate-400 print:text-slate-700"><p>{item.rationale}</p><p className="mt-1 text-slate-500 print:text-slate-600"><strong>URS seed:</strong> {item.specification}</p></td>
+                    <td className="max-w-xl py-3 text-xs leading-5 text-slate-400 print:text-slate-700"><p>{item.rationale}</p><p className="mt-1 text-slate-500 print:text-slate-600"><strong>URS seed:</strong> {item.specification}</p>{item.methodLoadBasis && item.methodLoadBasis.length > 0 && <p className="mt-2 text-sky-200/80 print:text-slate-600"><strong>Method / demand basis:</strong> {item.methodLoadBasis.join(" · ")}</p>}{item.methodRequirementIds && item.methodRequirementIds.length > 0 && <p className="mt-2 break-words font-mono text-[10px] text-sky-200/70 print:text-slate-600">Method links: {item.methodRequirementIds.join(" · ")}</p>}</td>
                   </tr>
                 ))}
               </tbody>
@@ -219,6 +331,25 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </Section>
         </div>
 
+        {blueprint.consumableSupply && (
+          <Section icon={Boxes} eyebrow="Compiler Core · supply resilience" title="Consumable inventory planning basis">
+            <div className="mb-4 grid gap-2 sm:grid-cols-3">
+              <div className="rounded-lg border border-white/8 bg-slate-950/30 p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.consumableSupply.parameters.wastePercent}%</p><p className="text-[10px] text-slate-500">gross-use allowance</p></div>
+              <div className="rounded-lg border border-white/8 bg-slate-950/30 p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.consumableSupply.parameters.leadTimeDays} days</p><p className="text-[10px] text-slate-500">end-to-end lead time</p></div>
+              <div className="rounded-lg border border-white/8 bg-slate-950/30 p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.consumableSupply.parameters.safetyStockDays} days</p><p className="text-[10px] text-slate-500">protected demand</p></div>
+            </div>
+            <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400 print:text-slate-700">Reorder and target-stock values are concept planning quantities—not purchase instructions. Pack size, MOQ, shelf life, qualified storage, receipt release and supplier status remain unresolved.</p>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] text-left text-sm">
+                <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300"><tr><th className="pb-3 pr-4">Item</th><th className="pb-3 pr-4">Net / gross month</th><th className="pb-3 pr-4">Reorder point</th><th className="pb-3 pr-4">Safety stock</th><th className="pb-3 pr-4">Target stock</th><th className="pb-3">Annual spend range</th></tr></thead>
+                <tbody>{blueprint.consumableSupply.current.map((item) => <tr key={item.id} className="border-b border-white/5 print:border-slate-200"><td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{item.name}</p><p className="text-[10px] text-slate-500">{item.unit}</p></td><td className="py-3 pr-4 print:text-slate-800">{number.format(item.netMonthlyDemand)} / <strong>{number.format(item.grossMonthlyDemand)}</strong></td><td className="py-3 pr-4 print:text-slate-800">{number.format(item.reorderPoint)}</td><td className="py-3 pr-4 print:text-slate-800">{number.format(item.safetyStock)}</td><td className="py-3 pr-4 font-bold text-teal-200 print:text-slate-950">{number.format(item.targetStock)}</td><td className="py-3 print:text-slate-800">{money.format(item.annualSpendLowUsd)}–{money.format(item.annualSpendHighUsd)}</td></tr>)}</tbody>
+              </table>
+            </div>
+            <div className="mt-4 rounded-lg border border-amber-300/10 bg-amber-300/[0.025] p-3"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-200">Required item-level evidence</p><p className="mt-2 text-xs leading-5 text-slate-400">{blueprint.consumableSupply.current[0]?.confirmationRequired.join(" · ")}</p></div>
+            <DecisionEvidenceLinks ruleIds={["core.cost.concept", "core.capacity.equipment"]} />
+          </Section>
+        )}
+
         <Section icon={AlertTriangle} eyebrow="Decision risks" title="Review before investment approval">
           <div className="grid gap-3 md:grid-cols-2">
             {blueprint.risks.map((risk) => (
@@ -235,7 +366,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <Section icon={ClipboardCheck} eyebrow="Action plan" title="Recommended next decisions">
             <ol className="space-y-3">
               {blueprint.recommendations.map((recommendation, index) => (
-                <li key={recommendation.id} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span><div><div className="mb-1 flex flex-wrap items-center gap-2"><span>{recommendation.recommendation}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 print:border-slate-300">{recommendation.priority.replaceAll("-", " ")}</span></div><p className="text-xs leading-5 text-slate-500">{recommendation.rationale}</p></div></li>
+                <li key={recommendation.id} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span><div className="min-w-0 flex-1"><div className="mb-1 flex flex-wrap items-center gap-2"><span>{recommendation.recommendation}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 print:border-slate-300">{recommendation.priority.replaceAll("-", " ")}</span></div><p className="text-xs leading-5 text-slate-500">{recommendation.rationale}</p><DecisionEvidenceLinks ruleIds={recommendation.relatedRuleIds} /></div></li>
               ))}
             </ol>
           </Section>
@@ -275,6 +406,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
                 <h3 className="mt-2 text-sm font-bold print:text-slate-950">{item.question}</h3>
                 <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">{item.impact}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-300 print:text-slate-800"><strong>Resolve:</strong> {item.resolution}</p>
+                <DecisionEvidenceLinks ruleIds={item.relatedRuleIds} />
               </div>
             ))}
           </div>
@@ -286,6 +418,21 @@ export function BlueprintReport({ project, onEdit }: Props) {
 
         <div className="grid gap-5 lg:grid-cols-2">
           <Section icon={FileText} eyebrow="Evidence register" title="Sources and missing site evidence">
+            <div data-print="hide" className="mb-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.04] p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold text-sky-200">Supporting Atlas Evidence</p>
+                  <p className="mt-1 max-w-xl text-[11px] leading-5 text-slate-400">Use these resources to challenge the model logic. They are not controlled project evidence and do not resolve open inputs.</p>
+                </div>
+                <Link href="/quality-lab/evidence" className="inline-flex items-center gap-1.5 text-[11px] font-bold text-teal-300 hover:text-teal-200">Open Evidence Graph <ArrowRight className="h-3.5 w-3.5" /></Link>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {supportingEvidence.map((item) => <Link key={item.href} href={item.href} className="rounded-lg border border-white/8 bg-white/[0.03] p-3 transition hover:border-sky-300/25">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-sky-300">{item.kind}</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-200">{item.title}</p>
+                </Link>)}
+              </div>
+            </div>
             <div className="space-y-3">
               {blueprint.evidence.map((record) => (
                 <div key={record.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white">

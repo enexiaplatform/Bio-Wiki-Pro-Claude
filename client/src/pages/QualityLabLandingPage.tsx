@@ -16,6 +16,7 @@ import {
   Network,
   ShieldCheck,
   Users,
+  Download,
 } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { SITE_URL } from "@/lib/site";
@@ -42,6 +43,75 @@ const boundaries = [
   "Vendor-neutral equipment requirements — not a supplier quotation",
   "Regulatory mapping support — not registration or legal advice",
   "Human-reviewed decisions — not autonomous batch or compliance decisions",
+];
+
+const evidenceGuides = [
+  {
+    eyebrow: "Compiler Core",
+    title: "Build a cross-domain QC capability map",
+    body: "Connect quality decisions, requirements, methods, resources, partners and governance before selecting equipment.",
+    href: "/blog/product-portfolio-to-qc-capability-map",
+  },
+  {
+    eyebrow: "First Domain Pack",
+    title: "Scope non-sterile microbiology before design freeze",
+    body: "Turn product and market inputs into method architecture, physical workload, capacity and explicit review blockers.",
+    href: "/blog/how-to-scope-nonsterile-microbiology-qc-lab",
+  },
+  {
+    eyebrow: "Evidence-development area",
+    title: "Plan water and environmental monitoring capability",
+    body: "Translate points, frequencies and events into sampling, method, incubation, trending, investigation and resilience demand.",
+    href: "/blog/water-environmental-monitoring-capability-planning",
+  },
+  {
+    eyebrow: "Specialist-gated area",
+    title: "Plan sterile and biologics quality capability",
+    body: "Connect sterility-assurance evidence, product attributes, specialist methods, critical reagents, capacity and lifecycle decisions.",
+    href: "/blog/sterile-biologics-qc-capability-planning",
+  },
+  {
+    eyebrow: "SME-gated area",
+    title: "Plan analytical chemistry from method architecture",
+    body: "Translate preparations, sequences, standards and review into instrument, analyst, consumable and lifecycle capacity.",
+    href: "/blog/analytical-chemistry-qc-capability-planning",
+  },
+  {
+    eyebrow: "Evidence-development area",
+    title: "Plan stability and sample-management capability",
+    body: "Forecast protocol inventory, chamber geometry, pull calendars, method workload, trending and continuity across time.",
+    href: "/blog/stability-sample-management-capability-planning",
+  },
+  {
+    eyebrow: "Learning governance",
+    title: "Validate rules without turning one project into a benchmark",
+    body: "Separate synthetic cases, project calibration, learning candidates and controlled Domain Pack rule changes.",
+    href: "/blog/how-to-validate-a-quality-lab-domain-pack",
+  },
+  {
+    eyebrow: "Method Graph deep dive",
+    title: "Connect method suitability to BOM and laboratory capacity",
+    body: "See how product inhibition, neutralization, recovery and filtration choices change consumables, analyst work and incubation load.",
+    href: "/blog/method-suitability-to-microbiology-lab-capacity",
+  },
+  {
+    eyebrow: "Compiler Core deep dive",
+    title: "Turn workload into usable equipment capacity",
+    body: "Model natural occupancy units, qualified geometry, peaks, downtime, queue risk, redundancy and measurable procurement triggers.",
+    href: "/blog/from-workload-to-usable-qc-equipment-capacity",
+  },
+  {
+    eyebrow: "Compiler Core deep dive",
+    title: "Build resilient staffing beyond aggregate FTE",
+    body: "Convert hands-on work into analyst, reviewer and specialist capacity using productive hours, skill coverage, shifts, peaks and resilience triggers.",
+    href: "/blog/from-hands-on-hours-to-resilient-qc-staffing",
+  },
+  {
+    eyebrow: "Compiler Core deep dive",
+    title: "Turn method BOM into a resilient supply plan",
+    body: "Separate net and gross demand, then expose reorder points, safety stock, expiry, storage and supplier-continuity evidence.",
+    href: "/blog/from-method-bom-to-resilient-qc-consumable-supply",
+  },
 ];
 
 const fade = {
@@ -172,6 +242,45 @@ export default function QualityLabLandingPage() {
                 <h3 className="mt-5 text-lg font-bold">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-white/10 bg-slate-950/35 px-4 py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-300">Atlas Evidence</p>
+              <h2 className="mt-3 text-3xl font-bold">Understand the reasoning before using the estimate.</h2>
+              <p className="mt-3 leading-7 text-slate-400">These guides expose the decision chain behind the Compiler and show where product facts, evidence and qualified review still control the answer.</p>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row md:flex-col md:items-end">
+              <Link href="/quality-lab/discovery-pack" onClick={() => analytics.blueprintCtaClicked("quality_lab_evidence", "discovery_pack")} className="inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200 transition hover:bg-teal-300/15">
+                <Download className="h-4 w-4" /> Free discovery pack
+              </Link>
+              <Link href="/quality-lab/casebook" onClick={() => analytics.blueprintCtaClicked("quality_lab_evidence", "casebook")} className="inline-flex items-center gap-2 text-sm font-bold text-sky-300 transition hover:text-sky-200">
+                Explore engine-calculated cases <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/quality-lab/evidence" onClick={() => analytics.blueprintCtaClicked("quality_lab_evidence", "evidence_graph")} className="inline-flex items-center gap-2 text-sm font-bold text-sky-300 transition hover:text-sky-200">
+                Navigate the Evidence Graph <Network className="h-4 w-4" />
+              </Link>
+              <Link href="/quality-lab/domain-readiness" className="inline-flex items-center gap-2 text-sm font-bold text-amber-300 transition hover:text-amber-200">
+                Review expansion gates <ShieldCheck className="h-4 w-4" />
+              </Link>
+              <Link href="/blog?category=Quality+Lab+Planning" className="inline-flex items-center gap-2 text-sm font-bold text-teal-300 transition hover:text-teal-200">
+                Explore planning evidence <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {evidenceGuides.map((guide) => (
+              <Link key={guide.href} href={guide.href} className="group rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-1 hover:border-sky-300/30 hover:bg-white/[0.055]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">{guide.eyebrow}</p>
+                <h3 className="mt-3 text-lg font-bold transition group-hover:text-teal-200">{guide.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-slate-400">{guide.body}</p>
+                <span className="mt-5 inline-flex items-center gap-2 text-xs font-bold text-teal-300">Read the guide <ArrowRight className="h-3.5 w-3.5" /></span>
+              </Link>
             ))}
           </div>
         </div>

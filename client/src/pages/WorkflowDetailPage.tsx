@@ -26,6 +26,7 @@ import { getToolMeta } from "@/data/tools/catalog";
 import { getToolkit } from "@/data/toolkits";
 import { getWorkflow, getWorkflowCategory } from "@/data/workflows";
 import { listContent } from "@/lib/content";
+import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 
 const panelClass = "rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10";
 
@@ -175,6 +176,8 @@ export default function WorkflowDetailPage() {
           </div>
         )}
       </motion.section>
+
+      <AtlasBlueprintContext href={`/workflows/${workflow.slug}`} />
 
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
         <div>

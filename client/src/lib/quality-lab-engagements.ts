@@ -1,4 +1,4 @@
-import { calculateVariancePercent, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, type QualityLabEngagementPacket } from "@shared/quality-lab-engagement";
+import { calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, type QualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 import type { QualityLabProject } from "@shared/quality-lab";
 
 const STORAGE_KEY = "lsa:quality-lab-engagements:v1";
@@ -40,6 +40,50 @@ export function downloadEngagement(packet: QualityLabEngagementPacket) {
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = `${packet.project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "quality-lab"}-engagement-packet.json`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export function listEngagements() {
+  return read();
+}
+
+function csvCell(value: unknown) {
+  const text = value === null || value === undefined ? "" : String(value);
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+export function calibrationCsv(packet: QualityLabEngagementPacket) {
+  const headers = ["project_id", "project_name", "metric", "estimate", "actual", "variance_percent", "variance_driver", "actual_basis", "reviewer_note", "observed_period_start", "observed_period_end", "data_owner", "evidence_refs", "learning_disposition", "applicable_rule_ids", "disposition_rationale", "reviewed_by_role", "reviewed_at"];
+  const rows = Object.entries(packet.baseline).map(([metric, value]) => {
+    const note = packet.calibration.metricNotes.find((item) => item.metric === metric);
+    return [packet.project.id, packet.project.name, metric, value.estimate, value.actual, value.variancePercent, note?.varianceDriver, note?.actualBasis, note?.reviewerNote, packet.calibration.observedPeriodStart, packet.calibration.observedPeriodEnd, packet.calibration.dataOwner, packet.calibration.evidenceRefs.join(" | "), packet.calibration.learningDisposition, packet.calibration.applicableRuleIds.join(" | "), packet.calibration.dispositionRationale, packet.calibration.reviewedByRole, packet.calibration.reviewedAt];
+  });
+  return [headers, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+}
+
+export function downloadCalibration(packet: QualityLabEngagementPacket) {
+  const blob = new Blob([calibrationCsv(packet)], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${packet.project.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "quality-lab"}-calibration.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export function downloadLearningCandidateRegistry(packets: QualityLabEngagementPacket[]) {
+  const registry = {
+    registryVersion: "quality-lab-learning-candidate-registry/v1",
+    generatedAt: new Date().toISOString(),
+    candidates: packets.map(createCalibrationLearningCandidate),
+    controlNotice: "Working review queue export. No candidate in this file is an approved benchmark or rule change.",
+  };
+  const blob = new Blob([JSON.stringify(registry, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "atlas-calibration-learning-candidates.json";
   anchor.click();
   URL.revokeObjectURL(url);
 }

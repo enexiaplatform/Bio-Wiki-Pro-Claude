@@ -1,0 +1,374 @@
+---
+title: "From product portfolio to QC capability map: a cross-domain planning framework"
+slug: "product-portfolio-to-qc-capability-map"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "A cross-domain framework for converting products, markets and testing demand into a traceable QC capability map across microbiology, analytical chemistry, utilities, stability and outsourced testing."
+updatedAt: "2026-07-11"
+---
+
+# From product portfolio to QC capability map: a cross-domain planning framework
+
+The most expensive laboratory-planning mistake is to confuse a list of equipment
+with a definition of capability.
+
+A laboratory does not create value because it owns an HPLC, incubator, particle
+counter or stability chamber. It creates value when it can make the required
+quality decisions for the products and markets it supports — with appropriate
+methods, competent people, controlled data, sufficient capacity and resilient
+operating processes.
+
+That is why laboratory planning should begin with a **QC capability map**:
+
+> A traceable model connecting products and quality requirements to the tests,
+> methods, resources, evidence and governance needed to support real release,
+> stability, investigation and lifecycle decisions.
+
+This framework applies across regulated manufacturing. The detailed rules differ
+between pharmaceuticals, biologics, food and beverage, cosmetics and medical
+devices. A shared planning core is still possible, provided those domain-specific
+rules are never treated as interchangeable.
+
+## What a capability map is — and is not
+
+A capability map answers five linked questions:
+
+1. What decisions must the quality organization make?
+2. Which product, process, utility or environmental requirements support those
+   decisions?
+3. Which tests and method architectures produce the necessary evidence?
+4. Which people, equipment, materials, space, systems and partners execute them?
+5. What capacity, resilience and governance are required for dependable delivery?
+
+It is not:
+
+- a generic equipment catalogue;
+- a copy of another site’s laboratory;
+- a final room layout or HVAC design;
+- an automatically generated regulatory interpretation;
+- a claim that a method is approved or validated;
+- a LIMS, sample schedule or batch-release system; or
+- a substitute for qualified QC, QA, regulatory and engineering review.
+
+The capability map sits upstream of those activities. It gives each specialist a
+clearer and more defensible basis for their work.
+
+## The shared Compiler Core
+
+Across domains, the planning sequence remains stable:
+
+```text
+Product and market profile
+→ quality decision and requirement
+→ test and method architecture
+→ sample and workload demand
+→ resource and operating model
+→ capacity, turnaround and resilience
+→ cost, phasing and controlled outputs
+```
+
+The shared core should contain facts and calculations that are genuinely common:
+
+- products, dosage or presentation, markets and lifecycle stage;
+- batches, lots, sample points, test frequencies and growth scenarios;
+- target turnaround and release dependencies;
+- in-house, outsourced and hybrid execution choices;
+- analyst time, equipment utilization and consumable demand;
+- space and utility assumptions;
+- CAPEX, OPEX, maintenance and service assumptions;
+- downtime, redundancy and business-continuity scenarios;
+- evidence, confidence, unresolved inputs and review status; and
+- estimate-to-actual variance after implementation.
+
+The shared core must not contain hidden domain assumptions. For example, “one
+sample equals two analyst hours” is not a universal rule. Analyst effort depends
+on the method, preparation, instrument sequence, controls, review burden and site
+procedure.
+
+## Domain Packs: where specialized reasoning belongs
+
+A Domain Pack supplies the evidence and rules unique to a testing family or
+regulated context. It should declare its scope, sources, applicability,
+limitations, version and expert owner.
+
+| Domain Pack | Examples of specialized reasoning |
+| --- | --- |
+| Non-sterile microbiology | Product matrix, enumeration, specified microorganisms, method suitability, media, incubation and recovery controls |
+| Water and environmental microbiology | Sampling points, frequencies, alert/action frameworks, recovery conditions, trend review and response dependencies |
+| Sterile and biologics quality | Sterility assurance context, bioburden, endotoxin, environmental controls, rapid methods, cell-based or molecular capabilities |
+| Analytical chemistry | Product specifications, sample preparation, chromatographic/spectroscopic methods, reference standards, solvents, sequence design and instrument qualification |
+| Stability and sample management | Protocol pulls, chamber conditions, storage capacity, timepoint clustering, reserve samples and lifecycle commitments |
+| Food and beverage quality | Product- and hazard-specific microbiological, chemical, sensory and process-control requirements |
+
+A new pack should not be created simply because a market appears attractive. It
+needs a credible source corpus, qualified subject-matter ownership, representative
+cases and demand strong enough to justify maintenance.
+
+## Step 1: map the decisions, not only the tests
+
+Tests exist to support decisions. Start by naming those decisions:
+
+- Can this incoming material be used?
+- Can the batch proceed to the next manufacturing stage?
+- Can the finished batch be released to a specific market?
+- Is a water system, environment or process in a state of control?
+- Does a stability timepoint support the approved shelf life?
+- Is an unexpected result valid, assignable or product-impacting?
+- Can a method, supplier, site or process change be accepted?
+- Should a capability remain outsourced, move in-house or be duplicated?
+
+This prevents two problems. First, it exposes tests that have no clear decision
+purpose. Second, it reveals decisions that depend on evidence the planned
+laboratory cannot produce.
+
+For each decision, record:
+
+- accountable owner;
+- required evidence;
+- specification, procedure or regulatory basis;
+- target decision time;
+- escalation and exception path; and
+- consequence of delay or incorrect output.
+
+A release-critical method and a characterization method may use similar equipment
+but require different capacity, redundancy and governance.
+
+## Step 2: build the requirements inventory
+
+The requirements inventory should be granular enough to preserve applicability.
+A single row labelled “HPLC testing” is not useful. A better row identifies:
+
+- product or material family;
+- market and approved specification;
+- attribute or decision supported;
+- method identifier and lifecycle status;
+- sample type, quantity and preparation;
+- frequency or triggering event;
+- physical execution allocation;
+- in-house or outsourced owner;
+- turnaround target; and
+- evidence and open questions.
+
+Requirements from different markets should remain traceable even when one
+physical execution can satisfy them. Conversely, two requirements should not be
+merged merely because they use the same instrument platform.
+
+The map must distinguish at least four evidence states:
+
+| State | Meaning |
+| --- | --- |
+| Verified site fact | Supported by an approved, current site-controlled source |
+| External requirement | Supported by an applicable external source that still needs site interpretation |
+| Planning assumption | A transparent placeholder used for scenario modelling |
+| Unresolved | Insufficient information; dependent outputs must remain open or qualified |
+
+That distinction is more important than false numerical precision.
+
+## Step 3: describe method architecture
+
+A method architecture converts a requirement into operational demand without
+pretending to reproduce a controlled method. Depending on the domain, it can
+capture:
+
+- preparation and extraction steps;
+- instrument or incubation stages;
+- media, solvents, reagents, standards and controls;
+- sample, blank, standard and system-suitability injections;
+- hold times and stability constraints;
+- analyst hands-on time and elapsed cycle time;
+- equipment and utility dependencies;
+- data processing and review effort;
+- waste, cleaning and segregation needs; and
+- validation, verification or transfer boundaries.
+
+This is where a generic “tests per month” model becomes a defensible workload
+model. Two methods with the same monthly test count can create radically
+different instrument occupancy, analyst demand, consumable spend and turnaround.
+
+## Step 4: reconcile physical execution
+
+Regulatory traceability and physical workload are related but not identical.
+Before calculating capacity, decide what creates a distinct execution:
+
+- one execution shared across multiple market specifications;
+- separate executions due to method or reporting differences;
+- repeat or confirmatory work required by procedure;
+- pooled versus individual samples;
+- bracketed or matrixed stability testing where approved;
+- campaign-specific environmental or utility sampling; or
+- outsourced testing with an internal receipt/review workload.
+
+If the allocation is unknown, preserve the requirement but hold back dependent
+resource calculations. This avoids two common errors: multiplying demand by every
+regulatory trace, or collapsing genuinely separate work into one convenient test.
+
+## Step 5: compile the operating capability
+
+For every method architecture, map the required capability across seven resource
+classes:
+
+| Resource class | Planning output |
+| --- | --- |
+| People | Roles, qualifications, hands-on time, review time and shift coverage |
+| Equipment | Functional requirement, occupancy, usable capacity, qualification and backup strategy |
+| Materials | Reagents, media, standards, columns, cultures, consumables and expiry/lead-time risk |
+| Space and utilities | Functional zones, storage, flows, environmental needs and utility assumptions |
+| Data systems | Acquisition, calculations, audit trail, review, retention and integration needs |
+| External partners | Scope, quality agreement, lead time, capacity, method status and continuity |
+| Governance | SOPs, change control, deviations, OOS/OOT, trending, lifecycle review and approval |
+
+WHO’s 2024 good-practice guideline for pharmaceutical QC laboratories emphasizes
+the laboratory as a managed quality system, not merely a technical room. That is
+consistent with capability planning: instruments without competent personnel,
+controlled methods, traceable materials, reliable records and quality oversight
+do not constitute an operating laboratory.
+
+## Step 6: model capacity as several constraints
+
+Capacity is not one number. A method can be constrained by:
+
+- analyst hands-on time;
+- instrument or chamber occupancy;
+- incubation or hold duration;
+- preparation-room throughput;
+- media, reagent or standard availability;
+- sample receipt and storage;
+- data review and approval;
+- maintenance and qualification windows;
+- contract laboratory lead time; or
+- investigation and repeat-testing demand.
+
+The model should show which resource is binding in each scenario. It should also
+separate average demand from peak demand and state the uptime/utilization
+allowances applied.
+
+At concept stage, a load check can identify likely bottlenecks. A decision close
+to the utilization limit may require a queue or schedule simulation using actual
+arrival patterns, cycle times and concurrency rules. More decimal places do not
+replace a better model.
+
+## Step 7: treat outsourcing as part of the capability map
+
+An outsourced test remains a site capability dependency. The owner still needs a
+defined method and specification interface, sample logistics, data review,
+deviation communication, change notification, quality oversight and continuity
+plan.
+
+FDA guidance on quality agreements explains that written agreements can define
+which party performs specific CGMP activities, but they do not transfer away the
+parties’ regulatory responsibilities. In a capability map, therefore, “outsource”
+does not mean “remove the row.” It changes the resource and risk model.
+
+Model at least:
+
+- contract laboratory lead time and capacity;
+- sample shipping and stability;
+- method transfer/suitability status;
+- result and raw-data review responsibilities;
+- OOS, deviation and change-control interfaces;
+- business continuity and alternate-provider strategy; and
+- demand/cost threshold for future insourcing.
+
+## Step 8: create decision-ready scenarios
+
+A useful capability map supports choices, not only documentation. Typical
+scenarios include:
+
+- current demand versus launch/growth demand;
+- minimum viable capability versus resilient capability;
+- in-house versus outsource versus hybrid;
+- one shift versus multiple shifts;
+- prepared materials versus internal preparation;
+- single resource versus redundant critical capacity;
+- centralized testing versus site-local capability; and
+- phase 1 launch scope versus later domain expansion.
+
+For each scenario, report the same outputs:
+
+- capabilities included and excluded;
+- demand and capacity basis;
+- critical assumptions;
+- unresolved inputs;
+- turnaround and continuity risks;
+- indicative CAPEX/OPEX; and
+- decision triggers for moving to the next phase.
+
+Consistency makes trade-offs visible.
+
+## Step 9: produce controlled commercial outputs
+
+Once qualified reviewers have challenged the model, the capability map can become
+the basis for project outputs such as:
+
+- test portfolio and capability architecture;
+- method bill of materials;
+- equipment sizing and utilization;
+- staffing and shift scenarios;
+- consumables forecast;
+- space and utility assumptions;
+- CAPEX/OPEX ranges;
+- bottleneck and redundancy analysis;
+- outsource-versus-insource recommendation;
+- vendor-neutral URS basis;
+- RFQ technical compliance matrix; and
+- phased procurement or expansion plan.
+
+Each output should carry its source version, assumptions, exclusions, confidence,
+open questions and review state. A polished export does not transform a planning
+assumption into an approved requirement.
+
+## How Atlas should expand
+
+Atlas can serve a broad regulated-manufacturing boundary without building every
+domain at once. The coherent expansion path is:
+
+1. Prove the shared Compiler Core on a narrow, high-knowledge wedge.
+2. Capture corrections and estimate-to-actual variance from real projects.
+3. Convert repeated reasoning into versioned rules and evidence records.
+4. Add the next Domain Pack only with qualified ownership, source coverage and
+   validation cases.
+5. Keep cross-domain outputs consistent while allowing domain logic to differ.
+
+This is how breadth becomes trustworthy: not through a long menu, but through a
+common decision architecture backed by progressively verified specialist packs.
+
+## A capability-map review checklist
+
+- Are the quality decisions and accountable owners explicit?
+- Is every requirement linked to a product, market, process, utility or lifecycle
+  commitment?
+- Are approved site facts separated from external requirements and assumptions?
+- Does every material workload number trace to a method architecture?
+- Has physical execution been reconciled across markets and specifications?
+- Are analyst time, equipment occupancy and review effort modelled separately?
+- Are peak demand, downtime and critical-resource redundancy visible?
+- Are outsourced tests retained as governed dependencies?
+- Are unresolved inputs blocking the outputs they materially affect?
+- Can reviewers see what changes if a key assumption changes?
+- Are domain-specific rules versioned and owned by qualified reviewers?
+- Will actual project outcomes be captured to calibrate the next estimate?
+
+If several answers are “no,” the project is not yet ready for design freeze or a
+vendor-led equipment list.
+
+## Start with Atlas
+
+- Build an initial [Atlas Quality Lab Blueprint](/quality-lab/planner).
+- Read the first executable wedge: [How to scope a non-sterile pharmaceutical microbiology QC lab](/blog/how-to-scope-nonsterile-microbiology-qc-lab).
+- Explore supporting evidence in [Pharmaceutical water systems](/blog/pharmaceutical-water-systems-keeping-it-clean), [Analytical method validation](/blog/analytical-method-validation-what-q2-asks), and [Quality by Design](/blog/quality-by-design-building-quality-in).
+- For a real project, [request expert Blueprint review](/quality-lab/review).
+
+## References
+
+- World Health Organization. [WHO good practices for pharmaceutical quality control laboratories](https://www.who.int/publications/m/item/who-good-practices-for-pharmaceutical-quality-control-laboratories), TRS 1052 Annex 4, 2024.
+- World Health Organization. [Good Manufacturing Practices](https://www.who.int/teams/health-product-policy-and-standards/standards-and-specifications/norms-and-standards/gmp).
+- World Health Organization. [Quality assurance of pharmaceuticals, 10th edition, volume 1](https://www.who.int/publications/i/item/9789240099425), 2024.
+- FDA. [Contract Manufacturing Arrangements for Drugs: Quality Agreements](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/contract-manufacturing-arrangements-drugs-quality-agreements-guidance-industry).
+- ICH. [Q9(R1) Quality Risk Management](https://database.ich.org/sites/default/files/ICH_Q9-R1_Document_Step2_Guideline_2021_1118.pdf).
+
+*General educational and planning content. Requirements vary by product, market,
+facility and approved quality system. Verify decisions against current applicable
+law, standards, approved dossiers, site-controlled procedures and qualified
+subject-matter review. Atlas outputs do not constitute validation, regulatory
+approval, engineering sign-off or QA release authority.*
