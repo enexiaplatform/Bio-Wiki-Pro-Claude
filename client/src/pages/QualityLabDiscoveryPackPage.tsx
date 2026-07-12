@@ -84,7 +84,7 @@ export default function QualityLabDiscoveryPackPage() {
             <FileSpreadsheet className="mt-1 h-6 w-6 text-teal-300" />
             <div>
               <h2 className="text-2xl font-bold">Download the working templates</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Use the first three templates during discovery, then use the validation and impact templates only with frozen project baselines and controlled evidence. Do not place confidential client data in public or shared systems without authorization.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">Use the intake and mapping templates during discovery, the application readiness and observation templates during controlled evidence capture, then the validation and impact templates only with frozen project baselines. Do not place confidential client data in public or shared systems without authorization.</p>
             </div>
           </div>
           <div className="mt-7 grid gap-4 lg:grid-cols-3">

@@ -72,6 +72,24 @@ export const blueprintDiscoveryTemplates = [
     ],
   },
   {
+    filename: "atlas-application-evidence-readiness-register.csv",
+    title: "Application evidence readiness register",
+    description: "Assess each application dimension against controlled evidence, ownership and exit criteria without overstating executable Method Graph maturity.",
+    rows: [
+      ["readiness_id", "application_id", "application_pack", "dimension", "current_status", "claim_or_decision_supported", "required_evidence", "available_evidence_reference", "evidence_version_or_date", "applicability_scope", "evidence_owner", "reviewer_role", "review_status", "confidence", "blocking_gap", "gap_impact", "resolution_action", "due_date", "dependency", "method_graph_eligibility", "eligibility_rationale", "last_reviewed_at"],
+      ["RDY-001", "", "water-microbiology / growth-promotion-media-qc / bioburden-filtration / bet-lal / environmental-monitoring / microbial-identification", "intended-use / matrix / method / decision / resources / lifecycle", "structured / partial / evidence-required", "", "", "", "", "", "", "QC / QA / Regulatory / Engineering / SME", "open / in-review / accepted / rejected / superseded", "high / medium / indicative", "", "", "", "", "", "not-executable / workflow-only / eligible-for-controlled-review", "", ""],
+    ],
+  },
+  {
+    filename: "atlas-method-execution-observation.csv",
+    title: "Method execution observation",
+    description: "Capture observed method steps, BOM, equipment occupancy, queues, exceptions and review effort for estimate-to-actual calibration.",
+    rows: [
+      ["observation_id", "project_id", "application_id", "method_id_and_version", "sample_or_event_class", "matrix_or_location", "execution_date", "shift_or_calendar", "observer", "analyst_skill", "step", "step_sequence", "predecessor", "touch_minutes", "equipment_id_or_class", "equipment_occupancy_minutes", "hold_incubation_or_run_minutes", "queue_minutes", "material_or_consumable", "planned_quantity", "actual_quantity", "unit", "control_or_sample_use", "repeat_invalid_or_exception", "exception_reason", "review_minutes", "identification_or_investigation_minutes", "result_turnaround_minutes", "controlled_evidence_reference", "confidentiality_class", "scope_aligned_to_estimate", "variance_driver", "review_status", "reviewer_note"],
+      ["OBS-001", "", "", "", "routine / urgent / suitability / qualification / investigation", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "sample / control / waste / repeat", "no / repeat / invalid / investigation", "", "", "", "", "", "client-confidential / internal-anonymized / shareable", "yes / no / partial", "input-quality / scope-change / method-variation / site-performance / exception / mixed", "draft / reviewed / accepted-for-case", ""],
+    ],
+  },
+  {
     filename: "atlas-domain-pack-validation-case.csv",
     title: "Domain Pack validation case",
     description: "Compare a frozen estimate with qualified actuals, classify variance and decide whether learning remains project-only or enters controlled review.",

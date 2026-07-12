@@ -144,7 +144,7 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
-    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(9);
+    await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(11);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
     const download = await downloadPromise;
@@ -161,11 +161,17 @@ test.describe("public smoke", () => {
     const applicationDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(6).click();
     expect((await applicationDownload).suggestedFilename()).toBe("atlas-test-method-application-matrix.csv");
-    const validationDownload = page.waitForEvent("download");
+    const readinessDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(7).click();
+    expect((await readinessDownload).suggestedFilename()).toBe("atlas-application-evidence-readiness-register.csv");
+    const observationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(8).click();
+    expect((await observationDownload).suggestedFilename()).toBe("atlas-method-execution-observation.csv");
+    const validationDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download CSV/i }).nth(9).click();
     expect((await validationDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case.csv");
     const impactDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download CSV/i }).nth(8).click();
+    await page.getByRole("button", { name: /Download CSV/i }).nth(10).click();
     expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
   });
 
