@@ -27,6 +27,8 @@ import { getToolkit } from "@/data/toolkits";
 import { getWorkflow, getWorkflowCategory } from "@/data/workflows";
 import { listContent } from "@/lib/content";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
+import { EditorialImage } from "@/components/EditorialImage";
+import { getContentVisual } from "@/data/contentVisuals";
 
 const panelClass = "rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10";
 
@@ -69,6 +71,7 @@ export default function WorkflowDetailPage() {
   }
 
   const category = getWorkflowCategory(workflow.categorySlug);
+  const workflowVisual = getContentVisual(category?.title ?? "Laboratory Controls");
   const academy = listContent({ collection: "academy", lang: "en" });
   const lessonBySlug = new Map(academy.map((lesson) => [lesson.slug, lesson]));
   const relatedLessons = workflow.relatedLessonSlugs
@@ -117,7 +120,7 @@ export default function WorkflowDetailPage() {
         transition={{ duration: 0.35 }}
         className="mb-8 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8"
       >
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
               <Target className="h-3.5 w-3.5" />
@@ -137,7 +140,9 @@ export default function WorkflowDetailPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="relative min-h-56 overflow-hidden rounded-xl border border-white/10">
+            <EditorialImage src={workflowVisual.src} alt={workflowVisual.alt} creditName={workflowVisual.creditName} creditUrl={workflowVisual.creditUrl} eager className="absolute inset-0" imageClassName={`${workflowVisual.focalPoint} opacity-65 saturate-75`} />
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/80 p-3 backdrop-blur">
             <div className="rounded-lg border border-white/10 bg-background/35 p-4">
               <p className="text-2xl font-bold text-teal-200">{workflow.steps.length}</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Steps</p>
@@ -149,6 +154,7 @@ export default function WorkflowDetailPage() {
             <div className="rounded-lg border border-white/10 bg-background/35 p-4">
               <p className="text-2xl font-bold text-teal-200">{relatedTools.length + relatedToolkits.length}</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Resources</p>
+            </div>
             </div>
           </div>
         </div>

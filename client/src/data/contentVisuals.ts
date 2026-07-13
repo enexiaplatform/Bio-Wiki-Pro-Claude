@@ -37,15 +37,18 @@ const visualsByCategory: Record<string, ContentVisual> = {
   Validation: controlledPractice,
   "Quality Systems": controlledPractice,
   "Data Integrity": controlledPractice,
+  "Investigations & Data Integrity": controlledPractice,
   Investigations: controlledPractice,
   "Quality Investigation": controlledPractice,
-  "Regulatory Affairs": controlledPractice,
+  "Regulatory Affairs": benchWork,
   "Sterile Manufacturing": controlledPractice,
+  "Sterile & Aseptic Manufacturing": controlledPractice,
   "Aseptic Processing": controlledPractice,
   "Microbiology QC": analyticalObservation,
   Microbiology: analyticalObservation,
   "Biologics QC": analyticalObservation,
   Biologics: analyticalObservation,
+  "Career Skills": benchWork,
 };
 
 export function getContentVisual(category: string): ContentVisual {

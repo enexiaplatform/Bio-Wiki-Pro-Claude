@@ -18,6 +18,7 @@ import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { toolkits } from "@/data/toolkits";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const PLACEMENT = "toolkits_index";
 const all = "All";
@@ -76,7 +77,7 @@ export default function ToolkitsPage() {
         className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7"
       >
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.1),transparent_28%)]" />
-        <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-stretch">
           <div>
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300">
               <Package className="h-3.5 w-3.5" />
@@ -91,7 +92,9 @@ export default function ToolkitsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3">
+          <div className="relative min-h-44 overflow-hidden rounded-lg border border-white/10">
+            <EditorialImage src="/images/editorial/cleanroom-practice.jpg" alt="Controlled laboratory practice supported by checklists and templates" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/RkG7wp75b48" eager className="absolute inset-0" imageClassName="object-[center_48%] opacity-65 saturate-75" />
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/80 p-3 backdrop-blur">
             <div>
               <div className="text-xl font-bold text-teal-300">{toolkits.length}</div>
               <div className="text-[11px] text-muted-foreground">Toolkits</div>
@@ -103,6 +106,7 @@ export default function ToolkitsPage() {
             <div>
               <div className="text-xl font-bold text-teal-300">Pro</div>
               <div className="text-[11px] text-muted-foreground">Unlocks</div>
+            </div>
             </div>
           </div>
         </div>

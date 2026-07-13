@@ -17,8 +17,10 @@ export function EditorialImage({
   imageClassName = "",
   eager = false,
 }: EditorialImageProps) {
+  const positionClass = /(^|\s)absolute(\s|$)/.test(className) ? "" : "relative";
+
   return (
-    <figure data-source-url={creditUrl} className={`group relative overflow-hidden bg-slate-900 ${className}`}>
+    <figure data-source-url={creditUrl} className={`group ${positionClass} overflow-hidden bg-slate-900 ${className}`}>
       <img
         src={src}
         alt={alt}

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 
 import { useSEO } from "@/hooks/use-seo";
 import { TOOLS } from "./registry";
+import { EditorialImage } from "@/components/EditorialImage";
 
 /**
  * /tools - a scannable index of the free interactive QC/QA tools. Each card
@@ -51,7 +52,7 @@ export default function ToolsPage() {
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       <section className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%)]" />
-        <div className="grid gap-6 lg:grid-cols-[1fr_18rem] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-stretch">
           <div className="flex items-start gap-4">
             <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex">
               <Microscope className="h-6 w-6" />
@@ -68,7 +69,9 @@ export default function ToolsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3">
+          <div className="relative min-h-44 overflow-hidden rounded-lg border border-white/10">
+            <EditorialImage src="/images/editorial/pipette-laboratory.jpg" alt="Precision laboratory work supported by focused decision tools" creditName="Nathan Rimoux" creditUrl="https://unsplash.com/photos/AqVLU4cx8OI" eager className="absolute inset-0" imageClassName="object-[center_46%] opacity-65 saturate-75" />
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/80 p-3 backdrop-blur">
             <div>
               <div className="text-xl font-bold text-teal-300">{TOOLS.length}</div>
               <div className="text-[11px] text-muted-foreground">Free tools</div>
@@ -80,6 +83,7 @@ export default function ToolsPage() {
             <div>
               <div className="text-xl font-bold text-teal-300">1-click</div>
               <div className="text-[11px] text-muted-foreground">Launch</div>
+            </div>
             </div>
           </div>
         </div>

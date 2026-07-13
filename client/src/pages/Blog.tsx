@@ -8,6 +8,8 @@ import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
 import { listContent } from "@/lib/content";
 import { SITE_URL as BASE_URL } from "@/lib/site";
+import { EditorialImage } from "@/components/EditorialImage";
+import { getContentVisual } from "@/data/contentVisuals";
 
 const PAGE_SIZE = 6;
 const all = "All";
@@ -70,7 +72,7 @@ export default function Blog() {
 
       <section className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.1),transparent_28%)]" />
-        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-stretch">
           <div>
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300">
               <BookOpen className="h-3.5 w-3.5" />
@@ -82,7 +84,9 @@ export default function Blog() {
             </p>
           </div>
 
-          <div className="grid w-full grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 md:w-72">
+          <div className="relative min-h-44 overflow-hidden rounded-lg border border-white/10">
+            <EditorialImage src="/images/editorial/pipette-laboratory.jpg" alt="Laboratory bench work behind evidence-led quality guidance" creditName="Nathan Rimoux" creditUrl="https://unsplash.com/photos/AqVLU4cx8OI" eager className="absolute inset-0" imageClassName="object-[center_46%] opacity-65 saturate-75" />
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/80 p-3 backdrop-blur">
             <div>
               <div className="text-xl font-bold text-teal-300">{posts.length}</div>
               <div className="text-[11px] text-muted-foreground">Posts</div>
@@ -94,6 +98,7 @@ export default function Blog() {
             <div>
               <div className="text-xl font-bold text-teal-300">{PAGE_SIZE}</div>
               <div className="text-[11px] text-muted-foreground">Per page</div>
+            </div>
             </div>
           </div>
         </div>
@@ -166,12 +171,16 @@ export default function Blog() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {pageItems.map((post) => (
+          {pageItems.map((post) => {
+            const visual = getContentVisual(post.category);
+            return (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-primary/35 hover:bg-white/[0.07]"
+              className="group flex h-full flex-col overflow-hidden rounded-lg border border-white/10 bg-white/[0.045] shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-primary/35 hover:bg-white/[0.07]"
             >
+              <EditorialImage src={visual.src} alt={visual.alt} creditName={visual.creditName} creditUrl={visual.creditUrl} className="h-32 border-b border-white/10" imageClassName={`${visual.focalPoint} opacity-70 saturate-75`} />
+              <div className="flex flex-1 flex-col p-5">
               <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <span className="rounded-md bg-primary/10 px-2 py-0.5 text-primary">{post.category}</span>
                 {post.updatedAt && (
@@ -188,8 +197,9 @@ export default function Blog() {
               <span className="mt-4 inline-flex items-center gap-1 text-sm text-primary">
                 {t("actions.learnMore")} <ChevronRight className="h-4 w-4" />
               </span>
+              </div>
             </Link>
-          ))}
+          );})}
         </div>
       )}
 
