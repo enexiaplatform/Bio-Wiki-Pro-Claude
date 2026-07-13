@@ -1,6 +1,6 @@
 import { useEffect, useState, type ComponentType } from "react";
 import { Link, useParams } from "wouter";
-import { ChevronRight, Clock, Printer } from "lucide-react";
+import { ChevronRight, Printer } from "lucide-react";
 import { getContentBySlug, listContent, loadBlogComponent } from "@/lib/content";
 import { useLanguage } from "@/hooks/use-language";
 import { useSEO } from "@/hooks/use-seo";
@@ -11,6 +11,8 @@ import { ContentDisclaimer } from "@/components/ContentDisclaimer";
 import NotFound from "@/pages/not-found";
 import { SITE_URL as BASE_URL } from "@/lib/site";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
+import { ContentArticleHero } from "@/components/ContentArticleHero";
+import { ReadingProgress } from "@/components/ReadingProgress";
 
 export default function BlogPost() {
   const { slug = "" } = useParams();
@@ -62,6 +64,7 @@ export default function BlogPost() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
+      <ReadingProgress />
       <JsonLd
         id="blog-article"
         data={{
@@ -99,10 +102,7 @@ export default function BlogPost() {
         <span className="text-foreground">{entry.category}</span>
       </nav>
 
-      <div className="flex items-center justify-between gap-3 mb-6" data-print="hide">
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" /> {entry.readMinutes} min read
-        </p>
+      <div className="flex items-center justify-end gap-3 mb-4" data-print="hide">
         <button
           onClick={() => window.print()}
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -114,7 +114,9 @@ export default function BlogPost() {
 
       <FreeReadBanner count={count} />
 
-      <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary">
+      <ContentArticleHero title={entry.title} description={entry.seoDescription} category={entry.category} readMinutes={entry.readMinutes} label="Evidence guide" />
+
+      <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary [&>h1:first-child]:hidden">
         {Body ? <Body /> : <p className="text-muted-foreground">Loading article...</p>}
       </article>
 
@@ -128,15 +130,14 @@ export default function BlogPost() {
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground mb-3">
             {entry.category}
           </h2>
-          <ul className="space-y-2">
+          <div className="grid gap-3 sm:grid-cols-3">
             {related.map((r) => (
-              <li key={r.slug}>
-                <Link href={`/blog/${r.slug}`} className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-                  {r.title} <ChevronRight className="w-3.5 h-3.5" />
+              <Link key={r.slug} href={`/blog/${r.slug}`} className="group rounded-xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-teal-300/30 hover:bg-white/[0.055]">
+                  <span className="line-clamp-3 text-sm font-semibold leading-6 text-slate-200 group-hover:text-teal-200">{r.title}</span>
+                  <span className="mt-3 inline-flex items-center gap-1 text-xs text-primary">Read next <ChevronRight className="w-3.5 h-3.5" /></span>
                 </Link>
-              </li>
             ))}
-          </ul>
+          </div>
         </div>
       )}
 

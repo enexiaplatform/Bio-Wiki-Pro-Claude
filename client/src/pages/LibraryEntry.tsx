@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, ChevronLeft, Clock, Printer, Route } from "lucide-react";
+import { ChevronRight, ChevronLeft, Printer, Route } from "lucide-react";
 import { getContentBySlug, listContent } from "@/lib/content";
 import { getPathContext } from "@/data/learningPaths";
 import { useLanguage } from "@/hooks/use-language";
@@ -15,6 +15,8 @@ import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import NotFound from "@/pages/not-found";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
+import { ContentArticleHero } from "@/components/ContentArticleHero";
+import { ReadingProgress } from "@/components/ReadingProgress";
 
 export default function LibraryEntry() {
   const { slug = "" } = useParams();
@@ -47,6 +49,7 @@ export default function LibraryEntry() {
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
+      <ReadingProgress />
       <JsonLd
         id="library-article"
         data={{
@@ -82,10 +85,7 @@ export default function LibraryEntry() {
         <span className="text-foreground">{entry.category}</span>
       </nav>
 
-      <div className="flex items-center justify-between gap-3 mb-6" data-print="hide">
-        <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" /> {entry.readMinutes} min read
-        </p>
+      <div className="flex items-center justify-end gap-3 mb-4" data-print="hide">
         <button
           onClick={() => window.print()}
           className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -95,11 +95,14 @@ export default function LibraryEntry() {
         </button>
       </div>
 
+      <ContentArticleHero title={entry.title} description={entry.seoDescription} category={entry.category} readMinutes={entry.readMinutes} label="Structured lesson" />
+
       {/* Server-gated body (free → full, pro/paid → teaser + paywall).
           Quiz is rendered only when unlocked (passed as footer). */}
       <GatedContent
         collection="academy"
         slug={slug}
+        hideBodyTitle
         footer={entry.quiz?.length ? <LessonQuiz quiz={entry.quiz} /> : null}
       />
 

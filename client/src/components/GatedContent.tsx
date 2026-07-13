@@ -12,6 +12,7 @@ interface Props {
   slug: string;
   /** Rendered after the body, only when the content is unlocked (e.g. a quiz). */
   footer?: ReactNode;
+  hideBodyTitle?: boolean;
 }
 
 type State =
@@ -25,7 +26,7 @@ type State =
  * only ever returned by the server when the session is entitled — so a free
  * user inspecting the network response never sees pro/paid content.
  */
-export function GatedContent({ collection, slug, footer }: Props) {
+export function GatedContent({ collection, slug, footer, hideBodyTitle = false }: Props) {
   const { language } = useLanguage();
   const [state, setState] = useState<State>({ status: "loading" });
   const [activeId, setActiveId] = useState<string>("");
@@ -140,6 +141,7 @@ export function GatedContent({ collection, slug, footer }: Props) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
+          h1: ({ children }) => <h1 className={hideBodyTitle ? "hidden" : undefined} aria-hidden={hideBodyTitle || undefined}>{children}</h1>,
           h2: ({ children }) => <h2 id={slugify(childText(children))} className="scroll-mt-24">{children}</h2>,
         }}
       >
