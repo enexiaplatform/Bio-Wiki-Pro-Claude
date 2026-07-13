@@ -31,7 +31,7 @@ const proofPoints = [
 
 export function AuthShell({ eyebrow, title, description, children, footer }: AuthShellProps) {
   return (
-    <main className="mx-auto grid min-h-[calc(100vh-9rem)] w-full max-w-6xl items-center gap-6 px-4 py-8 md:grid-cols-[1.05fr_0.95fr] md:py-12">
+    <div className="mx-auto grid min-h-[calc(100vh-9rem)] w-full max-w-6xl items-center gap-6 px-4 py-8 md:grid-cols-[1.05fr_0.95fr] md:py-12">
       <section className="order-2 rounded-lg border border-white/10 bg-white/[0.04] p-5 shadow-xl shadow-black/10 md:order-1 md:p-7">
         <Link href="/" className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300 hover:text-teal-200">
           Life Science Atlas
@@ -53,7 +53,7 @@ export function AuthShell({ eyebrow, title, description, children, footer }: Aut
           eager
         />
 
-        <div className="grid gap-3">
+        <div className="hidden gap-3 md:grid">
           {proofPoints.map((point) => (
             <div key={point.title} className="flex gap-3 rounded-lg border border-white/10 bg-background/35 p-4">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
@@ -74,6 +74,6 @@ export function AuthShell({ eyebrow, title, description, children, footer }: Aut
         </div>
         {footer && <div className="mt-4 text-center text-sm text-muted-foreground">{footer}</div>}
       </section>
-    </main>
+    </div>
   );
 }

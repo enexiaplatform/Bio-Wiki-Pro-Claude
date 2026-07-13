@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
-import { KeyRound } from "lucide-react";
+import { AlertCircle, KeyRound } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { AuthShell } from "@/components/AuthShell";
 import { Button } from "@/components/ui/button";
@@ -21,18 +21,20 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [formError, setFormError] = useState("");
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     if (password.length < 8) {
-      toast({ title: "Password too short", description: "Use at least 8 characters.", variant: "destructive" });
+      setFormError("Use at least 8 characters for your new password.");
       return;
     }
     if (password !== confirm) {
-      toast({ title: "Passwords do not match", description: "Please re-enter them.", variant: "destructive" });
+      setFormError("The two passwords do not match. Re-enter the confirmation.");
       return;
     }
     setIsLoading(true);
@@ -40,13 +42,9 @@ export default function ResetPasswordPage() {
       await apiRequest("POST", "/api/auth/reset-password", { token, password });
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       toast({ title: "Password updated", description: "You are now signed in." });
-      setLocation("/academy");
+      setLocation("/quality-lab/projects");
     } catch (err: any) {
-      toast({
-        title: "Could not reset password",
-        description: err.message || "This link may be invalid or expired.",
-        variant: "destructive",
-      });
+      setFormError(err.message || "This link may be invalid or expired. Request a fresh reset link.");
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +56,7 @@ export default function ResetPasswordPage() {
       title={token ? "Create a new password" : "Request a fresh reset link"}
       description={
         token
-          ? "Choose a password you have not used before. After it updates, you will go back to your Academy workspace."
+          ? "Choose a password you have not used before. After it updates, you will return to your Blueprint projects."
           : "This reset link is missing its token. Request a new one and use the latest email from Life Science Atlas."
       }
       footer={
@@ -74,7 +72,7 @@ export default function ResetPasswordPage() {
         <div>
           <h2 className="text-2xl font-bold">{token ? "Set a new password" : "Invalid reset link"}</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {token ? "Use at least 8 characters." : "The link is incomplete or expired."}
+            {token ? "Use at least 8 characters." : "The link is incomplete."}
           </p>
         </div>
       </div>
@@ -91,23 +89,35 @@ export default function ResetPasswordPage() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 8 characters"
                 required
+                aria-describedby="password-help"
               />
+              <p id="password-help" className="text-xs leading-5 text-muted-foreground">
+                Use a unique password with 8 or more characters.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="confirm">Confirm password</Label>
               <Input
                 id="confirm"
                 type="password"
+                autoComplete="new-password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 required
               />
             </div>
           </div>
+          {formError && (
+            <div role="alert" className="flex gap-2 rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-sm leading-5 text-red-200">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{formError}</span>
+            </div>
+          )}
           <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
             {isLoading ? "Updating..." : "Update password"}
           </Button>

@@ -31,7 +31,7 @@ export default function ForgotPasswordPage() {
     <AuthShell
       eyebrow="Account recovery"
       title="Reset access without losing your workspace"
-      description="Use your account email and we will send a secure reset link. Your saved lessons, notes, and downloads stay attached to the same account."
+      description="Use your account email and we will send a secure reset link. Reviewed Blueprint records, learning progress, downloads, and plan access stay attached to the same account."
       footer={
         <>
           Remembered it?{" "}
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
         </>
       }
     >
-      <div className="mb-6 flex items-start gap-3">
+      <div className="mb-6 flex items-start gap-3" aria-live="polite">
         <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
           {sent ? <MailCheck className="h-5 w-5" /> : <RotateCcw className="h-5 w-5" />}
         </div>
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
       {sent ? (
         <div className="space-y-4">
           <p className="rounded-lg border border-white/10 bg-white/[0.04] p-4 text-sm leading-6 text-muted-foreground">
-            Did not get it? Check spam, or{" "}
+            Check spam and allow a few minutes for delivery. Did not get it?{" "}
             <button type="button" onClick={() => setSent(false)} className="font-semibold text-teal-300 hover:text-teal-200">
               try again
             </button>
@@ -75,6 +75,8 @@ export default function ForgotPasswordPage() {
             <Input
               id="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
               placeholder="m.curie@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}

@@ -21,6 +21,53 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/supporting evidence to your account/i)).toBeVisible();
   });
 
+  test("account recovery and verification return users to Blueprint work", async ({ page }) => {
+    await page.goto("/forgot-password");
+    await expect(page.getByRole("heading", { name: /Reset access without losing your workspace/i })).toBeVisible();
+    await expect(page.getByText(/Reviewed Blueprint records/i)).toBeVisible();
+
+    await page.goto("/reset-password");
+    await expect(page.getByRole("heading", { name: /Request a fresh reset link/i })).toBeVisible();
+    await expect(page.getByText(/link is incomplete/i).first()).toBeVisible();
+    await expect(page.getByText(/Academy workspace/i)).toHaveCount(0);
+
+    await page.goto("/verify-email");
+    await expect(page.getByRole("heading", { name: /Verification link incomplete/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign in to request a new link/i })).toHaveAttribute("href", "/login?returnTo=/settings");
+    await expect(page.getByText(/Go to the Academy/i)).toHaveCount(0);
+  });
+
+  test("settings explain guest and account-connected data boundaries", async ({ page }) => {
+    await page.goto("/settings");
+    await expect(page.getByRole("heading", { name: /Account & access/i })).toBeVisible();
+    await expect(page.getByText(/Draft Blueprint projects remain in this browser/i)).toBeVisible();
+    await expect(page.getByTestId("button-settings-login")).toHaveAttribute("href", "/login?returnTo=/settings");
+    await expect(page.getByRole("link", { name: /Create account/i })).toHaveAttribute("href", "/register?returnTo=/settings");
+  });
+
+  test("signed-in settings surface Blueprint records and email confirmation", async ({ page }) => {
+    await page.route("**/api/auth/me", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: "e2e-user",
+          email: "analyst@example.com",
+          firstName: "Atlas",
+          lastName: "Analyst",
+          profileImageUrl: null,
+          isPro: false,
+          verifiedEmail: false,
+          subscriptionStatus: "free",
+        }),
+      });
+    });
+    await page.goto("/settings");
+    await expect(page.getByText(/Confirm your email/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Blueprint projects/i })).toHaveAttribute("href", "/quality-lab/projects");
+    await expect(page.getByText(/draft Blueprint projects are stored in this browser/i)).toBeVisible();
+  });
+
   test("guest downloads explain account access without unsupported services", async ({ page }) => {
     await page.goto("/my-downloads");
     await expect(page.getByText(/Account access required/i)).toBeVisible();

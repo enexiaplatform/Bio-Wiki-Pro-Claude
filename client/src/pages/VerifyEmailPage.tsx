@@ -1,31 +1,33 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import { CheckCircle2, Loader2, XCircle } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { AuthShell } from "@/components/AuthShell";
 import { Button } from "@/components/ui/button";
 import { useSEO } from "@/hooks/use-seo";
 
-type State = "loading" | "ok" | "error";
+type State = "loading" | "ok" | "missing" | "error";
 
 export default function VerifyEmailPage() {
   useSEO({ title: "Verify email", description: "Confirm your Life Science Atlas email address." });
-  const [state, setState] = useState<State>("loading");
+  const [token] = useState(() => new URLSearchParams(window.location.search).get("token") ?? "");
+  const [state, setState] = useState<State>(token ? "loading" : "missing");
+  const queryClient = useQueryClient();
 
   useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get("token") ?? "";
-    if (!token) {
-      setState("error");
-      return;
-    }
+    if (!token) return;
     let active = true;
     apiRequest("POST", "/api/auth/verify-email", { token })
-      .then(() => active && setState("ok"))
+      .then(async () => {
+        await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+        if (active) setState("ok");
+      })
       .catch(() => active && setState("error"));
     return () => {
       active = false;
     };
-  }, []);
+  }, [queryClient, token]);
 
   const copy = {
     loading: {
@@ -35,8 +37,13 @@ export default function VerifyEmailPage() {
     },
     ok: {
       title: "Email verified",
-      description: "Thanks. Your email is confirmed and your workspace is ready.",
+      description: "Your account contact email is confirmed.",
       icon: <CheckCircle2 className="h-5 w-5" />,
+    },
+    missing: {
+      title: "Verification link incomplete",
+      description: "This link is missing its verification token. Sign in to request a fresh email.",
+      icon: <XCircle className="h-5 w-5" />,
     },
     error: {
       title: "Verification failed",
@@ -49,7 +56,7 @@ export default function VerifyEmailPage() {
     <AuthShell
       eyebrow="Email verification"
       title="Secure your professional workspace"
-      description="Verified email keeps your account recoverable and protects access to saved notes, downloads, and Pro content."
+      description="A confirmed contact email supports account recovery and helps keep account notices tied to the right person. Verification does not replace your organization's access or approval controls."
       footer={
         <Link href="/login" className="font-semibold text-teal-300 hover:text-teal-200">
           Back to sign in
@@ -68,7 +75,9 @@ export default function VerifyEmailPage() {
 
       {state !== "loading" && (
         <Button asChild className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300">
-          <Link href="/academy">Go to the Academy</Link>
+          <Link href={state === "ok" ? "/quality-lab/projects" : "/login?returnTo=/settings"}>
+            {state === "ok" ? "View Blueprint projects" : "Sign in to request a new link"}
+          </Link>
         </Button>
       )}
     </AuthShell>
