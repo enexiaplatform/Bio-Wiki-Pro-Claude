@@ -1,5 +1,6 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, CircleDashed, Download, FlaskConical, Layers3, ShieldAlert } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, CircleDashed, Download, FlaskConical, Layers3 } from "lucide-react";
 import { Link } from "wouter";
+import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { applicationReadinessBaselineRows, assessApplicationPack, assessApplicationPortfolio, testMethodApplicationPacks, type ApplicationDimensionStatus, type ApplicationPackStage } from "@/data/testMethodApplications";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
@@ -27,13 +28,16 @@ export default function QualityLabMethodApplicationsPage() {
   const portfolio = assessApplicationPortfolio();
   return <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14"><div className="mx-auto max-w-7xl">
     <Link href="/quality-lab/evidence" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Atlas Evidence Graph</Link>
-    <header className="mt-6 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-sky-300/[0.06] to-transparent p-6 md:p-10">
-      <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-4 w-4" /> Application intelligence</span>
-      <h1 className="mt-6 max-w-5xl font-display text-4xl font-bold leading-tight md:text-6xl">A test name becomes useful only when its application is explicit.</h1>
-      <p className="mt-5 max-w-4xl text-base leading-8 text-slate-300 md:text-lg">Atlas separates educational coverage from executable Method Graph maturity. Each pack must connect intended use, matrix, method architecture, decision rules, resources and lifecycle evidence before it can drive a controlled Blueprint.</p>
-      <div className="mt-6 flex gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4 text-xs leading-6 text-slate-400"><ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-slate-200">No generic method approval:</strong> these records expose current coverage and missing evidence. Site specifications, approved procedures, suitability/validation and qualified review remain authoritative.</p></div>
-      <button type="button" onClick={downloadReadinessBaseline} className="mt-5 inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-3 text-sm font-bold text-teal-200 hover:bg-teal-300/15"><Download className="h-4 w-4" /> Download readiness baseline CSV</button>
-    </header>
+    <div className="mt-6">
+      <QualityLabEditorialHero
+        eyebrow={<span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-4 w-4" /> Application intelligence</span>}
+        title="A method becomes useful when its application is explicit."
+        description="See which application records already connect intended use, matrix, method architecture, decision rules, resources and lifecycle evidence—and exactly what remains before they can drive a controlled Blueprint."
+        image={{ src: "/images/editorial/application-evidence-pipetting.jpg", alt: "Scientist pipetting samples while generating method-specific laboratory evidence", creditName: "Julia Koblitz", creditUrl: "https://unsplash.com/photos/RlOAwXt2fEA", className: "object-[center_44%]" }}
+        boundary={{ label: "No generic method approval", text: "These records expose current coverage and missing evidence. Site specifications, approved procedures, suitability or validation, and qualified review remain authoritative." }}
+        actions={<button type="button" onClick={downloadReadinessBaseline} className="inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-3 text-sm font-bold text-teal-200 hover:bg-teal-300/15"><Download className="h-4 w-4" /> Download readiness baseline</button>}
+      />
+    </div>
     <section aria-label="Application portfolio readiness" className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
       {[
         ["Application packs", portfolio.packCount, "Defined scope"],

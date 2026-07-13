@@ -1,5 +1,6 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, CircleDashed, FlaskConical, ShieldAlert, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, CircleDashed, FlaskConical, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
+import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { assessDomainPackReadiness, domainPackReadiness, type ReadinessGateStatus } from "@/data/domainPackReadiness";
 import { useSEO } from "@/hooks/use-seo";
 
@@ -17,12 +18,16 @@ export default function QualityLabDomainReadinessPage() {
   return <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
     <div className="mx-auto max-w-7xl">
       <Link href="/quality-lab/evidence" className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Atlas Evidence Graph</Link>
-      <header className="mt-6 overflow-hidden rounded-3xl border border-amber-300/20 bg-gradient-to-br from-amber-300/10 via-sky-300/[0.05] to-transparent p-6 md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><ShieldCheck className="h-4 w-4" /> Evidence-gated expansion</span>
-        <h1 className="mt-6 max-w-5xl font-display text-4xl font-bold leading-tight md:text-6xl">A domain becomes a Pack only after the evidence exists.</h1>
-        <p className="mt-5 max-w-4xl text-base leading-8 text-slate-300 md:text-lg">Public guidance can begin discovery, but Atlas will not present a domain as verified until expert ownership, a versioned source corpus, controlled validation cases and paying or strongly qualified demand are all evidenced.</p>
-        <div className="mt-6 flex gap-3 rounded-xl border border-red-300/15 bg-red-300/[0.04] p-4 text-xs leading-6 text-slate-400"><ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-200" /><p><strong className="text-slate-200">No implied launch promise:</strong> the sequence below is a strategic order and gating record. It is not a release schedule, regulatory claim or assertion that later packs already exist.</p></div>
-      </header>
+      <div className="mt-6">
+        <QualityLabEditorialHero
+          eyebrow={<span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><ShieldCheck className="h-4 w-4" /> Evidence-gated expansion</span>}
+          title="A domain becomes a Pack only after its evidence exists."
+          description="Compare every planned domain against the same release gates: accountable expertise, a versioned source corpus, controlled validation cases, and paying or strongly qualified demand."
+          image={{ src: "/images/editorial/test-tube-evidence-review.jpg", alt: "Gloved laboratory worker holding an organized tray of test tubes for evidence review", creditName: "Eka P. Amdela", creditUrl: "https://unsplash.com/photos/JcsYP0IJvnI", className: "object-[center_52%]" }}
+          tone="amber"
+          boundary={{ label: "No implied launch promise", text: "The sequence below is a strategic order and gating record. It is not a release schedule, regulatory claim, or assertion that later packs already exist.", tone: "red" }}
+        />
+      </div>
 
       <section className="mt-8 grid gap-5">
         {domainPackReadiness.map((domain) => { const assessment=assessDomainPackReadiness(domain); return <article key={domain.id} className="rounded-3xl border border-white/10 bg-slate-950/35 p-5 md:p-7">

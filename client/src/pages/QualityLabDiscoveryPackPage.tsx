@@ -1,5 +1,6 @@
 import { ArrowRight, CheckCircle2, ClipboardList, Download, FileSpreadsheet, Network, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
+import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { blueprintDiscoveryTemplates } from "@/data/qualityLabDiscoveryTemplates";
@@ -40,29 +41,18 @@ export default function QualityLabDiscoveryPackPage() {
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-6xl">
-        <section className="overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/15 via-sky-300/[0.06] to-transparent p-6 md:p-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-200">
-            <ClipboardList className="h-3.5 w-3.5" /> Free discovery asset
-          </span>
-          <h1 className="mt-6 max-w-4xl font-display text-4xl font-bold leading-tight md:text-6xl">Atlas Blueprint Discovery Pack</h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300 md:text-lg">
-            Collect the minimum structured evidence needed to turn a product portfolio and testing demand into a reviewable quality-laboratory capability model.
-          </p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">
-              Start a Blueprint <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="/quality-lab/review" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "expert_review")} className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">
-              Discuss a real project
-            </Link>
-            <Link href="/quality-lab/casebook" className="inline-flex items-center justify-center rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-5 py-3 text-sm font-semibold text-sky-200 hover:bg-sky-300/10">
-              Explore casebook
-            </Link>
-            <Link href="/quality-lab/evidence" className="inline-flex items-center justify-center rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-5 py-3 text-sm font-semibold text-sky-200 hover:bg-sky-300/10">
-              Navigate evidence
-            </Link>
-          </div>
-        </section>
+        <QualityLabEditorialHero
+          eyebrow={<span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardList className="h-3.5 w-3.5" /> Free discovery asset</span>}
+          title="Collect the facts a defensible Blueprint needs."
+          description="Use one structured pack to frame the decision, capture the product portfolio and testing demand, and make missing evidence visible before detailed modelling begins."
+          image={{ src: "/images/editorial/laboratory-glassware-planning.jpg", alt: "Laboratory glassware arranged for structured planning and evidence collection", creditName: "Hans Reniers", creditUrl: "https://unsplash.com/photos/lQGJCMY5qcM", className: "object-[center_54%]" }}
+          actions={<><Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">Start a Blueprint <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/review" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "expert_review")} className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">Discuss a real project</Link></>}
+        />
+
+        <nav aria-label="Related Blueprint resources" className="mt-4 flex flex-wrap gap-x-5 gap-y-2 px-2 text-xs font-bold text-sky-300">
+          <Link href="/quality-lab/casebook" className="inline-flex items-center gap-1.5 hover:text-sky-200">Explore worked cases <ArrowRight className="h-3.5 w-3.5" /></Link>
+          <Link href="/quality-lab/evidence" className="inline-flex items-center gap-1.5 hover:text-sky-200">Navigate the evidence graph <ArrowRight className="h-3.5 w-3.5" /></Link>
+        </nav>
 
         <section className="py-12">
           <div className="max-w-3xl">

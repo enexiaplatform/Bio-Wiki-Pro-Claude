@@ -10,5 +10,8 @@ These images are stored locally to keep the product fast and avoid third-party h
 | `lab-team-collaboration.jpg` | Toon Lambrechts | https://unsplash.com/photos/0q4ipgUIw5g |
 | `cleanroom-environmental-monitoring.jpg` | Toon Lambrechts | https://unsplash.com/photos/9e6o06Y4cN8 |
 | `researcher-sample-preparation.jpg` | National Cancer Institute / Daniel Sone | https://unsplash.com/photos/1fvqUP-xaYQ |
+| `application-evidence-pipetting.jpg` | Julia Koblitz | https://unsplash.com/photos/RlOAwXt2fEA |
+| `laboratory-glassware-planning.jpg` | Hans Reniers | https://unsplash.com/photos/lQGJCMY5qcM |
+| `test-tube-evidence-review.jpg` | Eka P. Amdela | https://unsplash.com/photos/JcsYP0IJvnI |
 
 License: https://unsplash.com/license

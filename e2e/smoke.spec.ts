@@ -147,7 +147,8 @@ test.describe("public smoke", () => {
 
   test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {
     await page.goto("/quality-lab/discovery-pack");
-    await expect(page.getByRole("heading", { name: /Atlas Blueprint Discovery Pack/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Collect the facts a defensible Blueprint needs/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /Laboratory glassware arranged for structured planning/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
     await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(11);
     const downloadPromise = page.waitForEvent("download");
@@ -182,8 +183,9 @@ test.describe("public smoke", () => {
 
   test("Blueprint casebook compiles scenarios and opens one as an editable local project", async ({ page }) => {
     await page.goto("/quality-lab/casebook");
-    await expect(page.getByRole("heading", { name: /Atlas Blueprint Casebook/i })).toBeVisible();
-    await expect(page.getByText(/synthetic planning scenarios/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /See how one decision changes a Blueprint/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /Laboratory team reviewing evidence/i })).toBeVisible();
+    await expect(page.getByText(/Synthetic scenarios only/i).last()).toBeVisible();
     await expect(page.getByRole("button", { name: /Open as editable project/i })).toHaveCount(3);
     await expect(page.getByText(/reconciliation required|portfolio derived|aggregate input/i).first()).toBeVisible();
     await page.getByRole("button", { name: /Open as editable project/i }).first().click();
@@ -207,7 +209,8 @@ test.describe("public smoke", () => {
 
   test("Test Method Application Packs expose maturity and evidence blockers", async ({ page }) => {
     await page.goto("/quality-lab/method-applications");
-    await expect(page.getByRole("heading", { name: /A test name becomes useful only when its application is explicit/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /A method becomes useful when its application is explicit/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /Scientist pipetting samples/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Pharmaceutical water microbiology/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Growth promotion and media QC/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Microbial identification/i })).toBeVisible();
@@ -217,7 +220,7 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel("Application portfolio readiness").getByText("32 / 8")).toBeVisible();
     await expect(page.getByText(/5 unresolved dimensions \(4 partial, 1 evidence blocker\)/).first()).toBeVisible();
     const readinessBaselineDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Download readiness baseline CSV/i }).click();
+    await page.getByRole("button", { name: /Download readiness baseline/i }).click();
     expect((await readinessBaselineDownload).suggestedFilename()).toBe("atlas-application-readiness-baseline.csv");
     await expect(page.getByText(/workflow only/i).first()).toBeVisible();
     await expect(page.getByText(/evidence blocker/i).first()).toBeVisible();
@@ -226,12 +229,13 @@ test.describe("public smoke", () => {
 
   test("Domain Pack readiness keeps expansion evidence-gated", async ({ page }) => {
     await page.goto("/quality-lab/domain-readiness");
-    await expect(page.getByRole("heading", { name: /A domain becomes a Pack only after the evidence exists/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /A domain becomes a Pack only after its evidence exists/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /Gloved laboratory worker holding an organized tray/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Food & beverage quality/i })).toBeVisible();
     await expect(page.getByText(/Synthetic cases exercise reconciliation, outsourcing and unresolved allocation behavior/i)).toBeVisible();
     await expect(page.getByText(/No public evidence area opened/i)).toBeVisible();
-    await expect(page.getByText(/No implied launch promise/i)).toBeVisible();
+    await expect(page.getByText(/No implied launch promise/i).last()).toBeVisible();
     await expect(page.getByRole("link", { name: /Read validation framework/i }).first()).toHaveAttribute("href", "/blog/how-to-validate-a-quality-lab-domain-pack");
     await expect(page.getByRole("link", { name: /Discuss a real project/i })).toHaveAttribute("href", "/quality-lab/review");
   });

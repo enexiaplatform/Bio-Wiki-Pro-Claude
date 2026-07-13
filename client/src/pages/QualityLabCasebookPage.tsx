@@ -1,5 +1,6 @@
-import { ArrowRight, BookOpenCheck, CheckCircle2, ChevronDown, CircleAlert, FlaskConical, GitCompareArrows, ShieldCheck } from "lucide-react";
+import { ArrowRight, BookOpenCheck, CheckCircle2, ChevronDown, CircleAlert, FlaskConical, GitCompareArrows } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { saveQualityLabProject } from "@/lib/quality-lab-projects";
@@ -83,18 +84,15 @@ export default function QualityLabCasebookPage() {
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-6xl">
-        <section className="rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/15 via-teal-300/[0.06] to-transparent p-6 md:p-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-200">
-            <BookOpenCheck className="h-3.5 w-3.5" /> Engine-calculated learning cases
-          </span>
-          <h1 className="mt-6 max-w-4xl font-display text-4xl font-bold leading-tight md:text-6xl">Atlas Blueprint Casebook</h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300 md:text-lg">
-            Explore how one decision changes requirements, physical workload, capacity and review blockers. Every metric below is compiled live from the same concept engine used by editable Blueprint projects.
-          </p>
-          <div className="mt-6 flex gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.05] p-4 text-sm leading-6 text-slate-300">
-            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /> These are synthetic planning scenarios, not customer cases, calibrated benchmarks, validated designs or claims of regulatory applicability.
-          </div>
-        </section>
+        <QualityLabEditorialHero
+          eyebrow={<span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-200"><BookOpenCheck className="h-3.5 w-3.5" /> Engine-calculated casebook</span>}
+          title="See how one decision changes a Blueprint."
+          description="Compare requirements, physical workload, capacity and review blockers across three live-compiled scenarios, then open the closest case as an editable project."
+          image={{ src: "/images/editorial/lab-team-collaboration.jpg", alt: "Laboratory team reviewing evidence and comparing planning scenarios", creditName: "Toon Lambrechts", creditUrl: "https://unsplash.com/photos/0q4ipgUIw5g", className: "object-[center_42%]" }}
+          tone="sky"
+          boundary={{ label: "Synthetic scenarios only", text: "These are not customer cases, calibrated benchmarks, validated designs, or claims of regulatory applicability." }}
+          actions={<><Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("casebook", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">Build from your inputs <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/discovery-pack" className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">Use discovery templates</Link></>}
+        />
 
         <section aria-labelledby="case-comparison-heading" className="mt-8 rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-7">
           <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
