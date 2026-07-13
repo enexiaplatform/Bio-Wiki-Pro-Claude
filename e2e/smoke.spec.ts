@@ -39,7 +39,10 @@ test.describe("public smoke", () => {
     await page.goto("/blog");
     await expect(page.getByRole("heading", { name: /^Blog$/i })).toBeVisible();
     await page.goto("/pricing");
-    await expect(page.getByText(/Pro/i).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Start with the decision you need to make/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /Two laboratory professionals working together/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Start a Blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
+    await expect(page.getByRole("link", { name: /Compare evidence plans/i })).toHaveAttribute("href", "#evidence-plans");
   });
 
   test("certificate is gated until a path is complete", async ({ page }) => {
@@ -51,7 +54,10 @@ test.describe("public smoke", () => {
   // drive Pro (route to /pricing) and NOT start a standalone one-time checkout.
   test("GMP kit page promotes Pro, not a standalone purchase", async ({ page }) => {
     await page.goto("/toolkits/gmp-audit-kit");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Prepare for a GMP audit/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /controlled cleanroom environment/i })).toBeVisible();
+    await expect(page.getByText(/5 working files \+ Start Here/i)).toBeVisible();
+    await expect(page.getByText(/30-min Consulting Call/i)).toHaveCount(0);
     // No standalone price anywhere on the page.
     await expect(page.getByText(/\$59/)).toHaveCount(0);
     // The lead-magnet capture (guest nurture toward Pro) is present.
@@ -443,7 +449,7 @@ test.describe("public smoke", () => {
   test("toolkit library lists toolkits with downloads available", async ({ page }) => {
     await page.goto("/toolkits");
     await expect(page.getByRole("heading", { name: /Checklists & toolkits/i })).toBeVisible();
-    await expect(page.getByText(/GMP Audit Survival Kit/i).first()).toBeVisible();
+    await expect(page.getByText(/GMP Audit Readiness Kit/i).first()).toBeVisible();
     // Toolkits are real, gated downloads — guests see a View/Open kit CTA.
     await expect(page.getByRole("link", { name: /View kit|Open kit/i }).first()).toBeVisible();
   });

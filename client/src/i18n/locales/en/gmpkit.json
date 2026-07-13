@@ -1,68 +1,68 @@
 {
-  "seoTitle": "GMP Audit Survival Kit — included with Life Science Atlas Pro",
-  "seoDesc": "A 6-in-1 toolkit to help QC/QA Pharma teams pass GMP & Annex 1 audits: checklist, tough Q&A, CAPA templates, mock interview. Included in Pro alongside the full academy.",
+  "seoTitle": "GMP Audit Readiness Kit — included with Life Science Atlas Pro",
+  "seoDesc": "A structured GMP audit-readiness toolkit for QC/QA teams: preparation guide, gap analysis, CAPA templates, interview prompts, and a mock audit walkthrough.",
   "hero": {
-    "badge": "GMP Audit Survival Kit",
-    "titleLead": "Survive your GMP audit —",
-    "titleHighlight": "without guessing",
-    "subtitle": "A complete toolkit for Senior QC/QA: SOP gap analysis, CAPA templates, audit interview scripts — included with Pro, ready to use from day 1.",
+    "badge": "GMP Audit Readiness Kit",
+    "titleLead": "Prepare for a GMP audit —",
+    "titleHighlight": "with a structured evidence plan",
+    "subtitle": "A practical QC/QA working pack for readiness triage, CAPA planning and interview rehearsal. Adapt every template to your site and current applicable requirements.",
     "buyNow": "Unlock with Pro",
     "redirecting": "Redirecting…"
   },
-  "trustBadges": ["Included in Pro", "All toolkits unlocked", "Instant access", "Cancel anytime", "Educational use only", "Built for QC/QA"],
+  "trustBadges": ["Included in Pro", "5 working files + Start Here", "Immediate access", "Educational planning aid", "Site adaptation required", "Built for QC/QA"],
   "pains": {
     "heading": "Sound familiar?",
     "items": [
-      { "emoji": "⏰", "title": "Audit in 2 weeks and no idea where to start?", "desc": "No concrete checklist, everyone interprets things differently, and the lead QC is stressed out." },
-      { "emoji": "📋", "title": "SOP gaps but unsure which are critical?", "desc": "No tool to gauge compliance level — you keep guessing what to prioritize." },
-      { "emoji": "😰", "title": "Auditor asks hard questions, team frozen?", "desc": "You have the knowledge but can't phrase it in proper GMP language — easy to get a finding." }
+      { "title": "A deadline is close, but the preparation basis is fragmented", "desc": "Turn scattered checklists, owners and evidence requests into one prioritized readiness plan." },
+      { "title": "Potential gaps exist, but their impact is unclear", "desc": "Triage observations by evidence, risk and required follow-up before deciding what needs formal action." },
+      { "title": "The team knows the work, but has not rehearsed the explanation", "desc": "Practice concise, evidence-linked answers without inventing certainty or memorizing a script." }
     ]
   },
   "includes": {
     "heading": "What's in the Kit?",
-    "subtitle": "6 resources — all included in your Pro subscription, alongside the full academy",
+    "subtitle": "5 working files plus a Start Here guide — all included in your Pro subscription",
     "items": [
-      { "title": "GMP Audit Survival Guide", "desc": "The full framework — from 30 days out to audit day to the written response, step by step." },
+      { "title": "Start Here", "desc": "An inventory and recommended sequence for using the files without treating them as site-approved procedures." },
+      { "title": "GMP Audit Readiness Guide", "desc": "A preparation framework from initial triage through audit day and written-response planning." },
       { "title": "SOP Gap Analysis (Excel/Sheets)", "desc": "Score 20 quality-system elements; the sheet computes your % readiness and surfaces your worst gaps." },
-      { "title": "10 CAPA Report Templates", "desc": "Ready-to-fill CAPA structures for the most common GMP audit nonconformances." },
-      { "title": "Audit Interview Q&A Scripts", "desc": "50+ questions auditors ask most — with model answers for QC/QA." },
-      { "title": "Mock Audit Walkthrough", "desc": "A full inspection narrated from the auditor's perspective, so nothing on the day surprises you." },
-      { "title": "Bonus: 30-min Consulting Call", "desc": "1-on-1 with Henry (QC/Pharma Sales Expert) — review your audit plan directly." }
+      { "title": "10 CAPA Planning Templates", "desc": "Draft structures for organizing problem statements, investigation logic, actions and effectiveness checks." },
+      { "title": "Audit Interview Q&A Prompts", "desc": "50+ rehearsal prompts with example answer structures that must be grounded in your controlled evidence." },
+      { "title": "Mock Audit Walkthrough", "desc": "A staged walkthrough that helps teams identify evidence, ownership and handoff gaps before an inspection." }
     ]
   },
   "testimonials": {
     "heading": "Why this kit works",
     "items": [
-      { "title": "Save days of prep", "text": "The CAPA templates and gap-analysis sheet replace the blank-page scramble — fill them in and you instantly see where to focus before an audit." },
-      { "title": "Walk in calm", "text": "The interview Q&A scripts and auditor's-perspective walkthrough mean the questions on the day are ones you've already rehearsed." },
-      { "title": "Built on real audit logic", "text": "Every template maps to the nonconformances inspectors actually raise — not generic checklists, but the patterns that drive 483s and findings." }
+      { "title": "Replace the blank page", "text": "Use a shared structure for readiness triage, evidence requests and response planning before site-specific review." },
+      { "title": "Rehearse the evidence path", "text": "Practice who owns each answer, which controlled record supports it and where an unresolved gap must be escalated." },
+      { "title": "Keep decisions qualified", "text": "Templates separate observations, assumptions and proposed actions so QA and authorized reviewers can make the controlled decision." }
     ]
   },
   "pricing": {
     "launchNote": "Included with Life Science Atlas Pro",
-    "priceNote": "Pro unlocks this kit + every toolkit and the full academy • Cancel anytime",
+    "priceNote": "Pro unlocks this kit, other available toolkits and the evidence library • Cancel anytime",
     "buyNow": "Get Pro",
-    "secure": "🔒 Stripe Secure Payment",
-    "standards": "📦 GMP WHO • Annex 1 EU • FSSC 22000 • ISO 15189"
+    "secure": "Stripe-secured checkout",
+    "standards": "Use current applicable requirements and site procedures"
   },
   "whoFor": {
     "heading": "Who is this for?",
     "items": [
-      "Senior QC/QA Engineers with 3–7 years in Pharma or F&B",
-      "QC Supervisors preparing for their first GMP audit as lead",
-      "QA Managers who need ready-to-use resources to train the team before an audit",
-      "Anyone at a plant with an audit deadline in the next 1–3 months"
+      "QC/QA professionals coordinating evidence and readiness actions",
+      "QC supervisors preparing a team for a GMP inspection",
+      "QA managers organizing gap triage and response planning",
+      "Cross-functional site teams aligning owners, records and escalation paths"
     ],
     "notForLabel": "Not a fit if:",
-    "notFor": "You're a QC with under 1 year of experience, or your plant has no basic QMS in place."
+    "notFor": "Sites seeking a substitute for current regulations, controlled procedures, qualified judgment or QA approval."
   },
   "faq": {
     "heading": "Frequently asked questions",
     "items": [
-      { "q": "Which GMP standards does it fit?", "a": "The Kit is designed for GMP WHO, Annex 1 EU GMP, FSSC 22000, and ISO 15189. Suitable for Pharma and F&B plants preparing for audits from regulators or international customers." },
+      { "q": "Which requirements does it cover?", "a": "The kit provides a general GMP-oriented preparation structure. Your site must map each prompt to the current regulations, licenses, market commitments and controlled procedures that actually apply." },
       { "q": "How do I get the files?", "a": "The kit is part of Life Science Atlas Pro. Once you subscribe, every file is available instantly from your dashboard downloads — no separate purchase, and you keep access for as long as your Pro subscription is active." },
-      { "q": "I'm a new QC — can I use it?", "a": "The Kit is designed for Senior QC/QA (3+ years). New QCs can still learn from the Interview Scripts and PDF Guide. The SOP Gap Analysis needs basic QMS knowledge to use effectively." },
-      { "q": "Does it apply to F&B?", "a": "Yes. The FSSC 22000 section of the PDF Guide and the CAPA templates apply directly to F&B plants. The SOP Gap Analysis can be adapted for ISO 22000." }
+      { "q": "I'm a new QC — can I use it?", "a": "Yes, as a learning and preparation aid under supervision. Gap classification, CAPA decisions and inspection responses still require qualified site review." },
+      { "q": "Does it guarantee inspection readiness?", "a": "No. It helps organize preparation and surface open evidence; it cannot verify site implementation, approve a CAPA or predict an inspector's conclusions." }
     ]
   },
   "finalCta": {

@@ -1,4 +1,4 @@
-# The GMP Audit Survival Guide
+# The GMP Audit Readiness Guide
 
 A practical framework for QC/QA professionals facing an FDA, EU GMP, or
 customer audit — from preparation to the closing meeting.

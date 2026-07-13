@@ -64,7 +64,7 @@ export async function sendWelcomeEmail(to: string, firstName?: string): Promise<
       <p><strong style="color:#10b981;">Where to start:</strong></p>
       <p>📚 Explore the free <strong>Academy lessons</strong> and learning paths<br>
       🔬 Use the <strong>QC Hub</strong> for fast reference<br>
-      🛡️ Grab the <strong>GMP Audit Survival Kit</strong> if you have an inspection coming up</p>
+      Use the <strong>GMP Audit Readiness Kit</strong> to organize evidence and preparation actions before qualified site review.</p>
     </div>
     <a href="${BASE_URL}/academy" class="cta">Open the Academy →</a>
     <p style="margin-top: 24px; font-size: 13px;">Questions or feedback? Just reply to this email — we read every one.</p>
@@ -143,9 +143,9 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
     <a href="${downloadUrl}" class="cta">Download the GMP Audit Checklist (PDF) →</a>
     <div class="box">
       <p><strong style="color:#10b981;">Need to go deeper?</strong></p>
-      <p>This checklist is just the start. The <strong>GMP Audit Survival Kit ($59)</strong> includes a full audit survival guide, 10 CAPA templates, and 50+ audit Q&A scripts.</p>
+      <p>This checklist is just the start. The <strong>GMP Audit Readiness Kit</strong> is included with Pro and adds a preparation guide, CAPA planning templates, a gap-analysis workbook, and 50+ audit Q&amp;A prompts.</p>
     </div>
-    <a href="${BASE_URL}/toolkits/gmp-audit-kit" style="display:inline-block; color:#10b981; font-size:14px; text-decoration:none; margin-top: 4px;">See the GMP Audit Survival Kit →</a>
+    <a href="${BASE_URL}/toolkits/gmp-audit-kit" style="display:inline-block; color:#10b981; font-size:14px; text-decoration:none; margin-top: 4px;">See the GMP Audit Readiness Kit →</a>
   `);
 
   try {
@@ -337,7 +337,7 @@ export async function sendTrialEndingEmail(
 const PRODUCT_LABELS: Record<string, string> = {
   pro_subscription: "Life Science Atlas Pro",
   pro_subscription_annual: "Life Science Atlas Pro (annual)",
-  gmp_audit_kit: "the GMP Audit Survival Kit",
+  gmp_audit_kit: "the GMP Audit Readiness Kit",
   starter_kit: "the Career Starter Kit",
   interview_prep: "the Interview Prep Pack",
   bundle: "the Career Accelerator Bundle",

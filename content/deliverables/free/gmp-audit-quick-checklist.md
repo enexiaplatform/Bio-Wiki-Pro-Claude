@@ -5,7 +5,7 @@ Yes / Partial / No. Anything not "Yes" is where to focus first.
 
 Want the full system — the 40-section survival guide, a scored gap-analysis sheet,
 10 CAPA templates, 50+ interview Q&A, and a mock-audit walkthrough? That's the
-**GMP Audit Survival Kit** in Life Science Atlas.
+**GMP Audit Readiness Kit** in Life Science Atlas.
 
 ---
 

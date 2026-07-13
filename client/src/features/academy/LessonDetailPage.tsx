@@ -124,8 +124,8 @@ export default function LessonDetailPage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <div className="flex-1">
               <p className="text-xs font-bold uppercase tracking-widest text-primary mb-1">Included in Pro</p>
-              <h3 className="text-lg font-bold mb-1">GMP Audit Survival Kit</h3>
-              <p className="text-sm text-muted-foreground">Full audit survival guide, 10 CAPA templates, 50+ audit Q&amp;A scripts, SOP Gap Analysis Excel — unlocked with your Pro subscription, ready for your next audit.</p>
+              <h3 className="text-lg font-bold mb-1">GMP Audit Readiness Kit</h3>
+              <p className="text-sm text-muted-foreground">Preparation guide, 10 CAPA planning templates, 50+ audit Q&amp;A prompts, and an SOP Gap Analysis workbook — included with Pro for site-adapted readiness work.</p>
             </div>
             <Link href="/toolkits/gmp-audit-kit" className="shrink-0 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors whitespace-nowrap">
               View details →

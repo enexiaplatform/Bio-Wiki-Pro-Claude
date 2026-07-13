@@ -153,7 +153,7 @@ export function AuditReadinessScorecard() {
           <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-br from-teal-500/10 to-transparent p-4">
             <p className="text-sm font-semibold mb-1">Close the gaps faster</p>
             <p className="text-xs text-muted-foreground mb-3">
-              The GMP Audit Survival Kit — checklist, CAPA templates, and a scored gap-analysis sheet — is included in Pro.
+              The GMP Audit Readiness Kit — checklist, CAPA planning templates, and a scored gap-analysis sheet — is included in Pro.
             </p>
             <button
               onClick={unlock}

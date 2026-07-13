@@ -31,7 +31,7 @@ describe("product catalog", () => {
   });
 
   it("name with fallback", () => {
-    expect(getProductName("gmp_audit_kit")).toBe("GMP Audit Survival Kit");
+    expect(getProductName("gmp_audit_kit")).toBe("GMP Audit Readiness Kit");
     expect(getProductName("unknown")).toBe("unknown");
   });
 

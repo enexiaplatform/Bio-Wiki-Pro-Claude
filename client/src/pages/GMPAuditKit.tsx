@@ -4,7 +4,7 @@ import {
   CheckCircle2, ShieldCheck, FileText, ClipboardList,
   MessageSquare, Video, Phone, ChevronDown, ChevronUp,
   ArrowRight, Package, BadgeCheck, Lock,
-  GraduationCap, Microscope,
+  GraduationCap, Microscope, CalendarClock, FileWarning, MessagesSquare,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -12,12 +12,14 @@ import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { JsonLd } from "@/components/JsonLd";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
+import { EditorialImage } from "@/components/EditorialImage";
 
 // Icons paired by index with includes.items / pricing trust badges.
 const INCLUDE_ICONS = [FileText, ClipboardList, ShieldCheck, MessageSquare, Video, Phone];
 const TRUST_ICONS = [BadgeCheck, BadgeCheck, BadgeCheck, Lock, GraduationCap, Microscope];
+const PAIN_ICONS = [CalendarClock, FileWarning, MessagesSquare];
 
-interface Pain { emoji: string; title: string; desc: string }
+interface Pain { title: string; desc: string }
 interface Include { title: string; desc: string }
 interface ValueCard { title: string; text: string }
 interface Faq { q: string; a: string }
@@ -67,38 +69,13 @@ export default function GMPAuditKit() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center mb-16"
+        className="mb-10 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-4 md:p-6"
       >
-        <span className="inline-block text-[11px] uppercase font-bold tracking-widest text-teal-400 bg-teal-400/10 px-3 py-1 rounded-full mb-5">
-          {t("hero.badge")}
-        </span>
-        <h1 className="text-3xl md:text-5xl font-bold mb-5 font-display leading-tight">
-          {t("hero.titleLead")}{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">
-            {t("hero.titleHighlight")}
-          </span>
-        </h1>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
-          {t("hero.subtitle")}
-        </p>
-
-        <button
-          onClick={handleUnlock}
-          className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold text-lg px-8 py-4 rounded-xl transition-all shadow-lg shadow-teal-500/25 mb-4"
-        >
-          <Package className="w-5 h-5" /> {t("hero.buyNow")}
-        </button>
-
-        <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground flex-wrap">
-          {trustBadges.map((b, i) => {
-            const Icon = TRUST_ICONS[i] ?? BadgeCheck;
-            return (
-              <span key={b} className="flex items-center gap-1">
-                <Icon className="w-3.5 h-3.5 text-teal-400" /> {b}
-              </span>
-            );
-          })}
+        <div className="grid gap-5 lg:grid-cols-[1.04fr_0.96fr] lg:items-stretch">
+          <div className="flex flex-col justify-center p-2 md:p-4"><span className="inline-block w-fit rounded-full bg-teal-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-teal-400">{t("hero.badge")}</span><h1 className="mt-5 font-display text-3xl font-bold leading-tight md:text-5xl">{t("hero.titleLead")} <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">{t("hero.titleHighlight")}</span></h1><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">{t("hero.subtitle")}</p><button onClick={handleUnlock} className="mt-6 inline-flex w-fit items-center gap-2 rounded-xl bg-teal-500 px-6 py-3 text-base font-bold text-teal-950 shadow-lg shadow-teal-500/25 transition-all hover:bg-teal-400"><Package className="h-5 w-5" /> {t("hero.buyNow")}</button></div>
+          <EditorialImage src="/images/editorial/cleanroom-practice.jpg" alt="Quality professional working in a controlled cleanroom environment" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/RkG7wp75b48" eager className="h-52 rounded-2xl border border-white/10 sm:h-64 lg:h-auto lg:min-h-80" imageClassName="object-center saturate-75" />
         </div>
+        <div className="mt-4 grid gap-2 rounded-xl border border-white/10 bg-slate-950/40 p-3 sm:grid-cols-2 lg:grid-cols-4">{trustBadges.slice(0, 4).map((b, i) => { const Icon = TRUST_ICONS[i] ?? BadgeCheck; return <span key={b} className="flex items-center gap-2 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5 shrink-0 text-teal-400" /> {b}</span>; })}</div>
       </motion.div>
 
       {/* ── LEAD CAPTURE (guests only; nurtures toward Pro) ── */}
@@ -110,13 +87,15 @@ export default function GMPAuditKit() {
           {t("pains.heading")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {pains.map((p) => (
+          {pains.map((p, index) => {
+            const Icon = PAIN_ICONS[index] ?? FileWarning;
+            return (
             <div key={p.title} className="bg-card border border-white/5 rounded-2xl p-6">
-              <div className="text-3xl mb-3">{p.emoji}</div>
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-teal-500/10 text-teal-300"><Icon className="h-5 w-5" /></div>
               <h3 className="font-bold text-sm mb-2">{p.title}</h3>
               <p className="text-xs text-muted-foreground leading-relaxed">{p.desc}</p>
             </div>
-          ))}
+          )})}
         </div>
       </div>
 

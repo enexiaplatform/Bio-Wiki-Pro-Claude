@@ -1,5 +1,5 @@
 // Toolkit library model — in-app workflow assets (checklists, templates,
-// guides), NOT lead magnets. Pro unlocks the toolkits; the GMP Audit Survival
+// guides), NOT lead magnets. Pro unlocks the toolkits; the GMP Audit Readiness
 // Kit is the one fully built today, the rest are honestly marked "Coming soon".
 // No fake downloads.
 
@@ -24,9 +24,9 @@ export interface Toolkit {
 export const toolkits: Toolkit[] = [
   {
     slug: "gmp-audit-kit",
-    title: "GMP Audit Survival Kit",
+    title: "GMP Audit Readiness Kit",
     audience: "Senior QC/QA preparing for a GMP or Annex 1 audit",
-    problemSolved: "Walk into the audit with a checklist, CAPA templates, a gap-analysis sheet, and rehearsed answers.",
+    problemSolved: "Organize readiness evidence, gap triage, CAPA planning, and interview rehearsal before qualified site review.",
     format: "Toolkit (PDF guide + Excel + templates)",
     accessTier: "pro",
     status: "available",

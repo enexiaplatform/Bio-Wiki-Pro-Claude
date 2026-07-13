@@ -120,7 +120,7 @@ export default function ToolkitsPage() {
               <div>
                 <p className="mb-0.5 text-sm font-semibold">Pro unlocks all {availableCount} downloadable toolkits</p>
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  The GMP Audit Survival Kit plus workflow checklists, templates, and guides - $8/mo, cancel anytime.
+                  The GMP Audit Readiness Kit plus available workflow checklists, templates, and guides - $8/mo, cancel anytime.
                 </p>
               </div>
             </div>

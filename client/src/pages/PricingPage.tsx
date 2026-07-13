@@ -8,6 +8,7 @@ import { TrustBadges } from "@/components/TrustBadges";
 import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { EditorialImage } from "@/components/EditorialImage";
 
 type ProductType = "pro_subscription" | "pro_subscription_annual" | "starter_kit" | "interview_prep" | "bundle";
 const ONE_TIME_PRODUCTS: { productType: "starter_kit" | "interview_prep" | "bundle"; price: string }[] = [
@@ -60,11 +61,17 @@ export default function PricingPage() {
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       {Array.isArray(faqs) && faqs.length > 0 && <JsonLd id="pricing-faq" data={{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }} />}
 
-      <section className="relative mb-8 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-6 text-center shadow-xl shadow-black/10 md:p-9">
-        <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300"><Zap className="h-3.5 w-3.5" /> Ways to work with Atlas</span>
-        <h1 className="mx-auto mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">Start with the decision you need to make.</h1>
-        <p className="mx-auto mt-4 max-w-3xl text-sm leading-7 text-muted-foreground md:text-base">Use the Blueprint engagement for a real quality-laboratory decision. Use Free or Pro when you need supporting evidence, lessons, and reusable tools.</p>
-        <div className="mx-auto mt-6 grid max-w-3xl gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 text-left sm:grid-cols-3">
+      <section className="relative mb-8 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-4 shadow-xl shadow-black/10 md:p-6">
+        <div className="grid gap-5 lg:grid-cols-[1.03fr_0.97fr] lg:items-stretch">
+          <div className="flex flex-col justify-center p-2 text-left md:p-4">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300"><Zap className="h-3.5 w-3.5" /> Ways to work with Atlas</span>
+            <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">Start with the decision you need to make.</h1>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Choose a project-specific Blueprint when a real laboratory decision is at stake. Choose Free or Pro for the evidence and working resources around it.</p>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row"><Link href="/quality-lab/planner" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Start a Blueprint <ArrowRight className="h-4 w-4" /></Link><a href="#evidence-plans" className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30">Compare evidence plans</a></div>
+          </div>
+          <EditorialImage src="/images/editorial/lab-team-collaboration.jpg" alt="Two laboratory professionals working together near analytical equipment" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/0q4ipgUIw5g" eager className="h-48 rounded-xl border border-white/10 sm:h-60 lg:h-auto lg:min-h-80" imageClassName="object-center saturate-75" />
+        </div>
+        <div className="mt-4 grid gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 sm:grid-cols-3">
           {["Scope the operating question", "Expose evidence and assumptions", "Review before implementation"].map((item) => <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" />{item}</div>)}
         </div>
       </section>
@@ -90,7 +97,7 @@ export default function PricingPage() {
 
       {error && <div className="mb-8 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-sm text-red-400">{error}</div>}
 
-      <div className="mb-5"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Supporting evidence access</p><h2 className="mt-2 text-2xl font-bold">Keep the reference layer separate from the engagement</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">Free and Pro help individuals learn and reuse evidence-backed tools. They do not replace a project-specific Blueprint review.</p></div>
+      <div id="evidence-plans" className="mb-5 scroll-mt-24"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Supporting evidence access</p><h2 className="mt-2 text-2xl font-bold">Keep the reference layer separate from the engagement</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">Free and Pro help individuals learn and reuse evidence-backed tools. They do not replace a project-specific Blueprint review.</p></div>
       <div className="mb-8 grid gap-4 md:grid-cols-2">
         <div className={`${cardClass} flex flex-col`}>
           <span className="mb-4 w-fit rounded bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t("free.badge")}</span>

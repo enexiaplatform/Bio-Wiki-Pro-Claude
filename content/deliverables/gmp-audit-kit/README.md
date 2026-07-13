@@ -1,15 +1,15 @@
-# GMP Audit Survival Kit
+# GMP Audit Readiness Kit
 
 Thank you for your purchase. This kit gives you everything you need to walk into a
 GMP inspection prepared and calm. Work through it in this order:
 
-1. **GMP Audit Survival Guide** (`gmp-audit-survival-guide.md`) — the full
+1. **GMP Audit Readiness Guide** (`gmp-audit-survival-guide.md`) — the full
    framework, from 30 days out to audit day to closeout. Read this first.
 2. **SOP Gap Analysis** (`sop-gap-analysis.csv`) — open in Excel/Google Sheets;
    score each element and the sheet shows your % readiness and your worst gaps.
 3. **CAPA Templates** (`capa-templates.md`) — 10 ready-to-fill CAPA structures for
    the nonconformances auditors raise most.
-4. **Audit Interview Q&A** (`audit-interview-qa.md`) — 50+ real auditor questions
+4. **Audit Interview Q&A** (`audit-interview-qa.md`) — 50+ rehearsal questions
    with model QC/QA answers. Rehearse these with your team.
 5. **Mock Audit Walkthrough** (`mock-audit-walkthrough.md`) — a full inspection
    narrated from the auditor's side, so nothing on the day is a surprise.

@@ -34,13 +34,13 @@
     "featuredBadge": "⭐ Flagship",
     "items": [
       { "badge": "Free to start", "title": "Academy", "desc": "70 in-depth lessons on GMP, sterility testing, OOS investigation, Annex 1, CAPA — dozens free, with advanced deep-dives on Pro.", "cta": "Start learning" },
-      { "badge": "Included in Pro", "title": "GMP Audit Survival Kit", "desc": "SOP gap analysis, CAPA templates, audit interview scripts, and a mock audit walkthrough — unlocked with your Pro subscription.", "cta": "View the kit" },
+      { "badge": "Included in Pro", "title": "GMP Audit Readiness Kit", "desc": "SOP gap analysis, CAPA planning templates, interview prompts, and a mock audit walkthrough — unlocked with your Pro subscription.", "cta": "View the kit" },
       { "badge": "Career Roadmap", "title": "Career Hub", "desc": "The path from QC Analyst to QA Director — real salaries, required skills, and target employers.", "cta": "View roadmap" }
     ]
   },
   "banner": {
     "eyebrow": "⭐ Included in Pro",
-    "title": "GMP Audit Survival Kit",
+    "title": "GMP Audit Readiness Kit",
     "desc": "The complete toolkit to prepare for a GMP audit: SOP gap analysis, 10 CAPA templates, 50+ interview Q&A scripts, and a mock audit walkthrough — included with every Pro plan.",
     "includedBadge": "In Pro",
     "priceNote": "Cancel anytime",

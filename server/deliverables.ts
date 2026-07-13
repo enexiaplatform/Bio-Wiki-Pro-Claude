@@ -53,14 +53,14 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
   gmp_audit_kit: {
     id: "gmp_audit_kit",
     dir: "gmp-audit-kit",
-    name: "GMP Audit Survival Kit",
+    name: "GMP Audit Readiness Kit",
     entitledBy: ["gmp_audit_kit"],
     files: [
       { filename: "README.md", label: "Start Here (README)", description: "What's inside and the order to use it.", contentType: MD },
-      { filename: "gmp-audit-survival-guide.pdf", label: "GMP Audit Survival Guide (PDF)", description: "The full framework — from 30 days out to audit-day to the written response.", contentType: PDF, generate: "pdf", source: "gmp-audit-survival-guide.md" },
+      { filename: "gmp-audit-survival-guide.pdf", label: "GMP Audit Readiness Guide (PDF)", description: "A preparation framework from initial triage through audit day and written-response planning.", contentType: PDF, generate: "pdf", source: "gmp-audit-survival-guide.md" },
       { filename: "sop-gap-analysis.xlsx", label: "SOP Gap Analysis (Excel)", description: "Score 20 quality-system elements; the workbook auto-computes your % readiness.", contentType: XLSX, generate: "gap-xlsx", source: "sop-gap-analysis.csv" },
       { filename: "capa-templates.pdf", label: "10 CAPA Report Templates (PDF)", description: "Ready-to-fill CAPA structures for the most common audit nonconformances.", contentType: PDF, generate: "pdf", source: "capa-templates.md" },
-      { filename: "audit-interview-qa.pdf", label: "Audit Interview Q&A Scripts (PDF)", description: "50+ real auditor questions with model QC/QA answers.", contentType: PDF, generate: "pdf", source: "audit-interview-qa.md" },
+      { filename: "audit-interview-qa.pdf", label: "Audit Interview Q&A Prompts (PDF)", description: "50+ rehearsal prompts with example answer structures for site adaptation.", contentType: PDF, generate: "pdf", source: "audit-interview-qa.md" },
       { filename: "mock-audit-walkthrough.pdf", label: "Mock Audit Walkthrough (PDF)", description: "A full inspection narrated from the auditor's side.", contentType: PDF, generate: "pdf", source: "mock-audit-walkthrough.md" },
     ],
   },

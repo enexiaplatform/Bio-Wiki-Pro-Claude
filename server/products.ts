@@ -26,7 +26,7 @@ export interface ProductConfig {
 export const PRODUCTS: Record<string, ProductConfig> = {
   gmp_audit_kit: {
     id: "gmp_audit_kit",
-    name: "GMP Audit Survival Kit",
+    name: "GMP Audit Readiness Kit",
     mode: "payment",
     priceEnv: "STRIPE_GMP_AUDIT_KIT_PRICE_ID",
     downloadEnv: "DOWNLOAD_GMP_AUDIT_KIT",
