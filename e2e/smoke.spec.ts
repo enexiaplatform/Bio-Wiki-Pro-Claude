@@ -66,7 +66,33 @@ test.describe("public smoke", () => {
 
   test("certificate is gated until a path is complete", async ({ page }) => {
     await page.goto("/certificate/validation-essentials");
-    await expect(page.getByText(/Certificate locked/i)).toBeVisible();
+    await expect(page.getByText(/Completion record locked/i)).toBeVisible();
+    await expect(page.getByText(/learning-path completion record/i)).toBeVisible();
+    await expect(page.getByText(/verified completion/i)).toHaveCount(0);
+  });
+
+  test("learning completion record states its non-accredited boundary", async ({ page }) => {
+    const completedSlugs = [
+      "equipment-qualification",
+      "calibration-metrology",
+      "analytical-instrument-qualification",
+      "hvac-qualification",
+      "process-validation-stages",
+      "cleaning-validation",
+      "analytical-method-validation",
+      "analytical-procedure-lifecycle-q14",
+      "analytical-method-transfer",
+      "technology-transfer",
+      "computer-system-validation",
+      "health-based-exposure-limits",
+    ];
+    await page.addInitScript((slugs) => localStorage.setItem("lsa_read_lessons", JSON.stringify(slugs)), completedSlugs);
+    await page.goto("/certificate/validation-essentials");
+    await expect(page.getByText(/Learning path opened in full/i)).toBeVisible();
+    await expect(page.getByText(/Atlas learning record/i)).toBeVisible();
+    await expect(page.getByText(/does not verify knowledge retention/i)).toBeVisible();
+    await expect(page.getByText(/not an accredited qualification/i).first()).toBeVisible();
+    await expect(page.getByText(/Verified completion/i)).toHaveCount(0);
   });
 
   // Subscription-first pivot: the GMP kit is folded into Pro — its page must

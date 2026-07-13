@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "wouter";
-import { Award, BadgeCheck, ChevronRight, Download, Lock, Printer, ShieldCheck } from "lucide-react";
+import { Award, BookOpenCheck, ChevronRight, Download, Lock, Printer, ShieldCheck } from "lucide-react";
 import { getContentBySlug } from "@/lib/content";
 import { getLearningPath } from "@/data/learningPaths";
 import { useReadLessons } from "@/hooks/use-read-lessons";
@@ -15,8 +15,8 @@ export default function CertificatePage() {
   const path = getLearningPath(slug);
 
   useSEO({
-    title: path ? `Certificate - ${path.title}` : "Certificate",
-    description: path ? `Certificate of completion for the ${path.title} learning path.` : undefined,
+    title: path ? `Learning completion record - ${path.title}` : "Learning completion record",
+    description: path ? `Learning-path completion record for ${path.title}. This is not an accredited qualification or competency assessment.` : undefined,
   });
 
   const defaultName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
@@ -97,12 +97,12 @@ export default function CertificatePage() {
     ctx.fillStyle = "#34d399";
     if ("letterSpacing" in ctx) (ctx as any).letterSpacing = "4px";
     ctx.font = "700 22px 'Space Grotesk', sans-serif";
-    ctx.fillText("CERTIFICATE OF COMPLETION", cx, 232);
+    ctx.fillText("LEARNING PATH COMPLETION", cx, 232);
     if ("letterSpacing" in ctx) (ctx as any).letterSpacing = "0px";
 
     ctx.fillStyle = "#94a3b8";
     ctx.font = "400 20px 'Inter', sans-serif";
-    ctx.fillText("This certifies that", cx, 300);
+    ctx.fillText("This records that", cx, 300);
 
     ctx.fillStyle = "#f8fafc";
     ctx.font = `700 ${fit(displayName, 54, "700")}px 'Space Grotesk', sans-serif`;
@@ -110,7 +110,7 @@ export default function CertificatePage() {
 
     ctx.fillStyle = "#94a3b8";
     ctx.font = "400 20px 'Inter', sans-serif";
-    ctx.fillText("has successfully completed the learning path", cx, 432);
+    ctx.fillText("has opened every lesson in the Atlas learning path", cx, 432);
 
     ctx.fillStyle = "#f8fafc";
     ctx.font = `600 ${fit(currentPath.title, 32, "600")}px 'Space Grotesk', sans-serif`;
@@ -122,18 +122,18 @@ export default function CertificatePage() {
 
     ctx.fillStyle = "#34d399";
     ctx.font = "600 15px 'Inter', sans-serif";
-    ctx.fillText("Verified completion | Life Science Atlas", cx, 662);
+    ctx.fillText("ATLAS LEARNING RECORD | NOT AN ACCREDITED QUALIFICATION", cx, 662);
 
     ctx.fillStyle = "#64748b";
     ctx.font = "400 14px 'Inter', sans-serif";
-    ctx.fillText(`Certificate ID: ${certId} | Life Science Atlas`, cx, 692);
+    ctx.fillText(`Learning record ID: ${certId} | Life Science Atlas`, cx, 692);
 
     canvas.toBlob((blob) => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `life-science-atlas-certificate-${currentPath.slug}.png`;
+      a.download = `life-science-atlas-learning-record-${currentPath.slug}.png`;
       a.click();
       URL.revokeObjectURL(url);
     }, "image/png");
@@ -146,11 +146,11 @@ export default function CertificatePage() {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
             <Lock className="h-6 w-6" />
           </div>
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Certificate locked</p>
-          <h1 className="text-3xl font-bold tracking-tight">Finish the path to unlock your certificate</h1>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Completion record locked</p>
+          <h1 className="text-3xl font-bold tracking-tight">Finish the path to unlock your learning record</h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-            You have completed {readCount} of {lessons.length} lessons in <strong className="text-foreground">{path.title}</strong>.
-            Finish {remaining} more {remaining === 1 ? "lesson" : "lessons"} to generate a verified completion certificate.
+            You have opened {readCount} of {lessons.length} lessons in <strong className="text-foreground">{path.title}</strong>.
+            Open {remaining} more {remaining === 1 ? "lesson" : "lessons"} to generate a learning-path completion record.
           </p>
           <div className="mx-auto mt-6 max-w-md rounded-lg border border-white/10 bg-background/45 p-4 text-left">
             <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
@@ -183,7 +183,7 @@ export default function CertificatePage() {
             onClick={downloadImage}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold transition-colors hover:border-white/30"
           >
-            <Download className="h-4 w-4" /> Download image
+            <Download className="h-4 w-4" /> Download record image
           </button>
           <button
             onClick={() => window.print()}
@@ -196,15 +196,15 @@ export default function CertificatePage() {
 
       <section className="mb-5 grid gap-4 rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 md:grid-cols-[1fr_auto] md:items-end" data-print="hide">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Verified completion</p>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Learning path opened in full</p>
           <h1 className="text-2xl font-bold md:text-3xl">{path.title}</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Personalize the certificate name, then download an image or save as PDF.
+            Personalize the learning record, then download an image or save as PDF.
           </p>
         </div>
         <label className="block min-w-0 md:w-72">
           <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Name on certificate
+            Name on learning record
           </span>
           <input
             value={name}
@@ -228,36 +228,44 @@ export default function CertificatePage() {
         </div>
 
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-teal-300 print:text-emerald-700">
-          Certificate of Completion
+          Learning Path Completion
         </p>
-        <p className="mb-2 text-sm text-muted-foreground print:text-gray-600">This certifies that</p>
+        <p className="mb-2 text-sm text-muted-foreground print:text-gray-600">This records that</p>
         <p className="mb-3 break-words text-3xl font-bold tracking-tight print:text-gray-900 md:text-4xl">{displayName}</p>
-        <p className="mb-2 text-sm text-muted-foreground print:text-gray-600">has successfully completed the learning path</p>
+        <p className="mb-2 text-sm text-muted-foreground print:text-gray-600">has opened every lesson in the Atlas learning path</p>
         <p className="mx-auto mb-8 max-w-2xl text-xl font-semibold print:text-gray-900 md:text-2xl">{path.title}</p>
 
         <div className="mx-auto grid max-w-xl grid-cols-3 gap-3 text-sm">
           <div className="rounded-lg border border-white/10 bg-background/45 p-3 print:border-gray-200 print:bg-white">
             <p className="font-bold print:text-gray-900">{lessons.length}</p>
-            <p className="text-xs text-muted-foreground print:text-gray-600">lessons</p>
+            <p className="text-xs text-muted-foreground print:text-gray-600">lessons opened</p>
           </div>
           <div className="rounded-lg border border-white/10 bg-background/45 p-3 print:border-gray-200 print:bg-white">
             <p className="font-bold print:text-gray-900">{today}</p>
-            <p className="text-xs text-muted-foreground print:text-gray-600">completed</p>
+            <p className="text-xs text-muted-foreground print:text-gray-600">recorded</p>
           </div>
           <div className="rounded-lg border border-white/10 bg-background/45 p-3 print:border-gray-200 print:bg-white">
             <p className="font-bold print:text-gray-900">{certId}</p>
-            <p className="text-xs text-muted-foreground print:text-gray-600">certificate ID</p>
+            <p className="text-xs text-muted-foreground print:text-gray-600">learning record ID</p>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-1">
           <p className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-teal-300 print:text-emerald-700">
-            <BadgeCheck className="h-4 w-4" /> Verified completion
+            <BookOpenCheck className="h-4 w-4" /> Atlas learning record
           </p>
           <p className="text-xs text-muted-foreground/80 print:text-gray-500">
-            Practical workflows and learning for QC/QA | Life Science Atlas
+            Supporting evidence learning | Not an accredited qualification
           </p>
         </div>
+      </section>
+
+      <section className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/[0.055] p-4 text-left" data-print="hide">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-200">What this record means</p>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          This record reflects lesson-open status in Atlas. It does not verify knowledge retention, practical competence,
+          GMP training authorization, employer approval, or an accredited qualification.
+        </p>
       </section>
 
       <p className="mt-4 text-center text-xs text-muted-foreground" data-print="hide">

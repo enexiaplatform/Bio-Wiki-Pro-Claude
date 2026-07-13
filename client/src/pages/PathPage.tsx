@@ -76,7 +76,7 @@ export default function PathPage() {
         <div className="h-1.5 flex-1 rounded-full bg-white/10 overflow-hidden max-w-xs">
           <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
         </div>
-        <span className="text-xs text-muted-foreground shrink-0">{readCount} / {lessons.length} done</span>
+        <span className="text-xs text-muted-foreground shrink-0">{readCount} / {lessons.length} opened</span>
       </div>
 
       {next ? (
@@ -89,13 +89,13 @@ export default function PathPage() {
       ) : (
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-8">
           <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-400">
-            <CheckCircle2 className="w-4 h-4" /> Path completed — nice work!
+            <CheckCircle2 className="w-4 h-4" /> Every lesson opened
           </div>
           <Link
             href={`/certificate/${path.slug}`}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
           >
-            <Award className="w-4 h-4" /> Get your certificate
+            <Award className="w-4 h-4" /> View learning record
           </Link>
         </div>
       )}

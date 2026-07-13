@@ -48,7 +48,7 @@ export default function PaymentSuccessPage() {
     : [
         "Open Academy and continue your learning path.",
         "Use Pro lessons, toolkits, and premium tools.",
-        "Track certificates from My learning.",
+        "Track learning-path completion records from My learning.",
       ];
 
   return (
