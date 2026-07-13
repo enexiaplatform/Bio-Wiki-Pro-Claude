@@ -10,6 +10,25 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Life Science Atlas/i }).first()).toBeVisible();
   });
 
+  test("account entry keeps the Blueprint workspace primary", async ({ page }) => {
+    await page.goto("/login?returnTo=/my-downloads");
+    await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
+    await expect(page.getByRole("img", { name: /researcher preparing biological samples/i })).toBeVisible();
+    await expect(page.getByText(/Blueprint-first workspace/i)).toBeVisible();
+
+    await page.goto("/register");
+    await expect(page.getByRole("heading", { name: /Create your Atlas workspace/i })).toBeVisible();
+    await expect(page.getByText(/supporting evidence to your account/i)).toBeVisible();
+  });
+
+  test("guest downloads explain account access without unsupported services", async ({ page }) => {
+    await page.goto("/my-downloads");
+    await expect(page.getByText(/Account access required/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /^Sign in$/i }).last()).toHaveAttribute("href", "/login?returnTo=/my-downloads");
+    await expect(page.getByText(/30-minute consulting call/i)).toHaveCount(0);
+    await expect(page.getByText(/^0$/)).toHaveCount(0);
+  });
+
   test("academy library lists lessons", async ({ page }) => {
     await page.goto("/academy");
     await expect(page.getByRole("link", { name: /Learning paths/i }).or(page.getByText(/Learning paths/i)).first()).toBeVisible();

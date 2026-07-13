@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Calendar, Download, FileText, Loader2, Lock, Package, ShoppingBag } from "lucide-react";
+import { Download, FileText, Loader2, Lock, Package, ShoppingBag } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
@@ -76,16 +76,32 @@ export default function MyDownloadsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
-              <p className="text-2xl font-bold text-teal-200">{products?.length ?? 0}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Products</p>
+          {isAuthenticated ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+                <p className="text-2xl font-bold text-teal-200">{products?.length ?? 0}</p>
+                <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Products</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+                <p className="text-2xl font-bold text-teal-200">{fileCount}</p>
+                <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Files</p>
+              </div>
             </div>
+          ) : (
             <div className="rounded-lg border border-white/10 bg-background/35 p-4">
-              <p className="text-2xl font-bold text-teal-200">{fileCount}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Files</p>
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-200">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-semibold">Account access required</p>
+                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                    Sign in to check which files are available to your account.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -100,8 +116,8 @@ export default function MyDownloadsPage() {
         <EmptyState
           icon={Lock}
           title="Sign in to see your downloads"
-          body="Your purchased kits appear here once you are signed in."
-          ctaHref="/login"
+          body="Available Pro toolkits and one-time purchases appear here when your account has access."
+          ctaHref="/login?returnTo=/my-downloads"
           ctaLabel="Sign in"
         />
       ) : products && products.length > 0 ? (
@@ -143,28 +159,16 @@ export default function MyDownloadsPage() {
                   </li>
                 ))}
               </ul>
-
-              {product.id === "gmp_audit_kit" && (
-                <div className="border-t border-teal-400/20 bg-teal-400/10 px-5 py-4">
-                  <div className="flex items-start gap-3">
-                    <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-teal-200" />
-                    <p className="text-xs leading-relaxed text-muted-foreground">
-                      <span className="font-semibold text-foreground">Your 30-minute consulting call:</span>{" "}
-                      reply to your purchase-confirmation email or contact support to book your 1-on-1 audit-plan review.
-                    </p>
-                  </div>
-                </div>
-              )}
             </section>
           ))}
         </div>
       ) : (
         <EmptyState
           icon={ShoppingBag}
-          title="No downloads yet"
-          body="When you purchase a toolkit, your files will appear here to download anytime."
-          ctaHref="/toolkits/gmp-audit-kit"
-          ctaLabel="Browse the GMP Audit Kit"
+          title="No available files yet"
+          body="Available Pro toolkits and one-time purchases appear here when your account has access."
+          ctaHref="/toolkits"
+          ctaLabel="Browse available toolkits"
         />
       )}
     </div>

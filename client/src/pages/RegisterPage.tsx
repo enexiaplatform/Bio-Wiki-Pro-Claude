@@ -75,8 +75,8 @@ export default function RegisterPage() {
   return (
     <AuthShell
       eyebrow="Free account"
-      title="Build a professional QC/QA learning record"
-      description="Create an account to save lessons, track progress, collect downloads, and unlock Pro workflows when you are ready."
+      title="Create your Atlas workspace"
+      description="Start with a laboratory Blueprint, then connect reviewed projects, learning progress, downloads, and supporting evidence to your account."
       footer={
         <>
           {t("register.haveAccount")}{" "}

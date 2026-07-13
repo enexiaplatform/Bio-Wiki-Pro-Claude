@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "wouter";
-import { ArrowRight, BookOpen, CheckCircle2, ShieldCheck } from "lucide-react";
+import { ArrowRight, Factory, FileSearch, ShieldCheck } from "lucide-react";
+import { EditorialImage } from "@/components/EditorialImage";
 
 type AuthShellProps = {
   eyebrow: string;
@@ -12,19 +13,19 @@ type AuthShellProps = {
 
 const proofPoints = [
   {
-    icon: BookOpen,
-    title: "Structured GMP learning",
-    text: "Jump back into Academy paths, workflow guides, and audit-ready references.",
+    icon: Factory,
+    title: "Blueprint-first workspace",
+    text: "Start with the laboratory planning decision, then open evidence when it helps challenge the model.",
   },
   {
     icon: ShieldCheck,
-    title: "Private professional workspace",
-    text: "Keep saved lessons, investigation notes, and downloads connected to your account.",
+    title: "Private account access",
+    text: "Keep Pro access, downloads, learning progress, and reviewed-project records connected to your account.",
   },
   {
-    icon: CheckCircle2,
-    title: "Built for QC/QA decisions",
-    text: "Use practical tools for OOS, CAPA, audit prep, validation, and microbiology QC.",
+    icon: FileSearch,
+    title: "Evidence-aware by design",
+    text: "Assumptions, unresolved inputs, and expert-review boundaries remain visible as you work.",
   },
 ];
 
@@ -41,6 +42,16 @@ export function AuthShell({ eyebrow, title, description, children, footer }: Aut
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">{description}</p>
         </div>
+
+        <EditorialImage
+          src="/images/editorial/researcher-sample-preparation.jpg"
+          alt="Laboratory researcher preparing biological samples at a controlled workbench"
+          creditName="National Cancer Institute / Daniel Sone"
+          creditUrl="https://unsplash.com/photos/1fvqUP-xaYQ"
+          className="mb-4 h-36 rounded-lg border border-white/10 sm:h-44"
+          imageClassName="object-[center_46%] saturate-75"
+          eager
+        />
 
         <div className="grid gap-3">
           {proofPoints.map((point) => (

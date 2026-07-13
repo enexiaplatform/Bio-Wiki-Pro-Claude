@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,6 +21,12 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const returnTo = useMemo(() => {
+    const candidate = new URLSearchParams(window.location.search).get("returnTo");
+    return candidate && candidate.startsWith("/") && !candidate.startsWith("//")
+      ? candidate
+      : "/quality-lab/projects";
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +35,7 @@ export default function LoginPage() {
     try {
       await apiRequest("POST", "/api/auth/login", { email, password });
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setLocation("/academy");
+      setLocation(returnTo);
     } catch (err: any) {
       toast({
         title: t("login.failTitle"),
@@ -44,8 +50,8 @@ export default function LoginPage() {
   return (
     <AuthShell
       eyebrow="Member access"
-      title="Continue your QC/QA workspace"
-      description="Sign in to resume your learning paths, saved references, Pro toolkits, and practical workflow notes."
+      title="Continue your Atlas workspace"
+      description="Return to your reviewed Blueprint projects, available downloads, learning progress, and supporting evidence."
       footer={
         <>
           {t("login.noAccount")}{" "}
@@ -97,7 +103,7 @@ export default function LoginPage() {
         <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
           {isLoading ? t("login.submitting") : t("login.submit")}
         </Button>
-        <GoogleSignInButton redirectTo="/academy" />
+        <GoogleSignInButton redirectTo={returnTo} />
       </form>
     </AuthShell>
   );
