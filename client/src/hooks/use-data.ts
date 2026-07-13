@@ -8,17 +8,16 @@ import { useToast } from "@/hooks/use-toast";
 // ============================================
 
 // Mock Data Loaders (Simulating API calls for static data)
-import { academyData, jobsData, sopsData, solutionsData, labToolsData, skillsData } from "@/data/mockData";
+import { jobsData, sopsData, solutionsData, labToolsData, skillsData } from "@/data/mockData";
+import { qualityGlossaryData } from "@/data/qualityGlossaryData";
 import { SOP, Job, Product, Term, LabTool, Skill } from "@shared/schema";
 
 export function useAcademyTerms() {
   return useQuery({
     queryKey: ["academy-terms"],
-    queryFn: async (): Promise<Term[]> => {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return academyData;
-    },
+    queryFn: async (): Promise<Term[]> => qualityGlossaryData,
+    initialData: qualityGlossaryData,
+    staleTime: Infinity,
   });
 }
 

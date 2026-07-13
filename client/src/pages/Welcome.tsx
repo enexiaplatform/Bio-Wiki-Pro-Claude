@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, BookOpen, Crown, Gift, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Factory, FileSearch, Sparkles } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { ContinueLearning } from "@/components/ContinueLearning";
+import { EditorialImage } from "@/components/EditorialImage";
 
-const FIRST_PATH = "/paths/microbiology-qc-fundamentals";
+const FIRST_PATH = "/quality-lab/planner";
 
 export default function Welcome() {
   const { t } = useTranslation("onboarding");
@@ -18,7 +19,7 @@ export default function Welcome() {
 
   const steps = [
     {
-      icon: BookOpen,
+      icon: Factory,
       title: t("step1.title"),
       desc: t("step1.desc"),
       cta: t("step1.cta"),
@@ -26,8 +27,8 @@ export default function Welcome() {
       primary: true,
       onClick: () => analytics.onboardingCompleted("first_path"),
     },
-    { icon: Gift, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/academy" },
-    { icon: Crown, title: t("step3.title"), desc: t("step3.desc"), cta: t("step3.cta"), href: "/pricing" },
+    { icon: FileSearch, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/quality-lab" },
+    { icon: BookOpen, title: t("step3.title"), desc: t("step3.desc"), cta: t("step3.cta"), href: "/academy" },
   ];
 
   const primaryStep = steps[0];
@@ -35,25 +36,27 @@ export default function Welcome() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 pb-20 pt-6 md:pt-10">
-      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
-        <div className="grid gap-6 md:grid-cols-[1.15fr_0.85fr] md:items-end">
-          <div>
+      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-4 shadow-xl shadow-black/15 md:p-6">
+        <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-stretch">
+          <div className="p-2 md:p-3">
             <div className="mb-4 inline-flex items-center gap-2 rounded-lg border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">
               <Sparkles className="h-3.5 w-3.5" />
-              Account ready
+              Workspace ready
             </div>
             <h1 className="text-3xl font-bold tracking-tight md:text-5xl">{t("welcomeTitle")}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">{t("welcomeSubtitle")}</p>
           </div>
-          <div className="rounded-lg border border-white/10 bg-background/55 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">Best first move</p>
-            <p className="mt-2 text-lg font-bold">{primaryStep.title}</p>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{primaryStep.desc}</p>
-          </div>
+          <EditorialImage
+            src="/images/editorial/cleanroom-practice.jpg"
+            alt="Laboratory professionals working in a controlled environment"
+            creditName="Toon Lambrechts"
+            creditUrl="https://unsplash.com/photos/RkG7wp75b48"
+            eager
+            className="h-56 rounded-lg border border-white/10 lg:h-auto lg:min-h-72"
+            imageClassName="object-[center_46%] saturate-75"
+          />
         </div>
       </section>
-
-      <ContinueLearning />
 
       <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
         <Link
@@ -103,8 +106,16 @@ export default function Welcome() {
         </div>
       </div>
 
+      <section className="mt-8 rounded-lg border border-white/10 bg-white/[0.025] p-4 md:p-5">
+        <div className="mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Supporting evidence</p>
+          <h2 className="mt-1 text-lg font-bold">Continue learning when it supports the decision.</h2>
+        </div>
+        <ContinueLearning />
+      </section>
+
       <div className="mt-8 text-center">
-        <Link href="/academy" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link href="/quality-lab" className="text-sm font-medium text-muted-foreground hover:text-foreground">
           {t("skip")}
         </Link>
       </div>

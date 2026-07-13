@@ -1,60 +1,71 @@
 import { useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ChevronDown, ChevronRight, HelpCircle, Search } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronRight, HelpCircle, Search } from "lucide-react";
 import clsx from "clsx";
 import { useSEO } from "@/hooks/use-seo";
 import { JsonLd } from "@/components/JsonLd";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const FAQS: { q: string; a: string; topic: string }[] = [
   {
     topic: "Product",
     q: "Who is Life Science Atlas for?",
-    a: "QC and QA professionals in pharma, biotech, and life sciences: from analysts and microbiologists to quality managers. The content assumes a working GMP context and focuses on topics that come up in real labs and inspections.",
+    a: "Atlas is built for teams planning, expanding, or changing quality laboratories in regulated manufacturing. Initial buyers include pharmaceutical manufacturers, engineering and turnkey firms, laboratory equipment distributors, contract testing laboratories, and quality leaders who need a shared operating model across QC, QA, engineering, and procurement.",
+  },
+  {
+    topic: "Blueprint",
+    q: "What is the Atlas Quality Lab Blueprint?",
+    a: "It is a scope-based, service-assisted decision package that connects products, markets, testing demand, methods, resources, capacity, assumptions, evidence, and open gaps. The intended output is a traceable laboratory capability and operating model that can support expert review, budgeting, URS development, RFQs, and phased project decisions.",
+  },
+  {
+    topic: "Blueprint",
+    q: "Why does the current model start with non-sterile pharmaceutical microbiology?",
+    a: "It is the first evidence-gated domain pack because it matches the strongest current expertise and can be validated deeply before Atlas expands. Microbiology is the first wedge, not the long-term boundary. Water, environmental monitoring, sterile and biologics quality, analytical chemistry with a qualified SME, stability, sample management, and other regulated manufacturing domains are planned only when evidence, expert ownership, validation cases, and demand are available.",
+  },
+  {
+    topic: "Blueprint",
+    q: "What does a Blueprint engagement include?",
+    a: "Scope depends on the project. Typical outputs can include the test portfolio and capability map, method bill of materials, workload and resource demand, equipment and analyst capacity scenarios, consumables forecasts, bottleneck and redundancy review, CAPEX/OPEX assumptions, outsource-versus-insource options, vendor-neutral URS/RFQ inputs, and a decision brief with assumptions, exclusions, and unresolved inputs.",
+  },
+  {
+    topic: "Trust",
+    q: "Is an Atlas output a validated design or regulatory approval?",
+    a: "No. Atlas outputs are planning and decision-support artifacts. They do not replace site risk assessment, qualified engineering, method verification or validation, QA approval, document control, or regulatory review. The app identifies where expert verification and site governance are still required.",
+  },
+  {
+    topic: "Trust",
+    q: "How does Atlas show the basis for a recommendation?",
+    a: "Material outputs are designed to distinguish source evidence, source version or date when available, applicability conditions, user-supplied facts, planning assumptions, confidence, unresolved information, and the effect of changing a dependency. Concept benchmarks and expert judgment should remain visibly different from approved site facts.",
+  },
+  {
+    topic: "Review",
+    q: "What does expert review mean?",
+    a: "Expert review is a documented challenge of the model's inputs, evidence, assumptions, exclusions, calculations, and intended use. A review request does not itself mean that a project, method, facility, or recommendation has been approved. Corrections, open decisions, and review boundaries remain part of the record.",
+  },
+  {
+    topic: "Process",
+    q: "Can I use Atlas before every project input is confirmed?",
+    a: "Yes. The initial model is designed for early discovery, provided provisional values are clearly labeled as assumptions. You can compare scenarios and see which missing inputs have the greatest decision impact, then replace assumptions with confirmed site data, quotations, approved specifications, and reviewed evidence as the project matures.",
   },
   {
     topic: "Pricing",
-    q: "What's the difference between Free and Pro?",
-    a: "Free gives you the core lessons, learning paths, quizzes, the glossary, and the blog. Pro unlocks in-depth lessons, decision trees, templates, worked examples, every new Pro lesson, and the full library across data integrity, validation, sterility, and quality systems.",
+    q: "How is a Blueprint priced?",
+    a: "Blueprint work is priced by scope because the number of products, markets, methods, scenarios, data gaps, workshops, and reviewed outputs varies by project. Start with the planner to frame the operating question, then request a scope review for a proposed engagement and delivery basis.",
   },
   {
-    topic: "Content",
-    q: "How current is the content?",
-    a: "Lessons reference current standards such as EU GMP Annex 1:2022, ICH Q-series, USP/EP chapters, and FDA guidance. We revise content as guidance changes, for example the shift from 10 ppm cleaning limits to health-based exposure limits.",
+    topic: "Access",
+    q: "What are Free and Pro for?",
+    a: "Free and Pro are supporting evidence-access options, not the primary commercial offer. Free provides public workflows, lessons, glossary entries, articles, and selected tools. Pro can unlock deeper supporting lessons, worked examples, templates, and tools. Neither access level turns an automated model into an expert-reviewed Blueprint.",
   },
   {
-    topic: "Pricing",
-    q: "Is there a free trial?",
-    a: "Yes. New Pro subscribers get a 7-day free trial. You will not be charged until the trial ends, and you can cancel anytime before then from the Stripe customer portal in Settings.",
+    topic: "Security",
+    q: "How should confidential project data be handled?",
+    a: "Only information necessary for the agreed project scope should be provided, and confidential client data should not be republished as public content. The current planner is local-first; authenticated reviewed-project persistence depends on the deployed database and project workflow. Confirm the applicable data-handling arrangement before sharing sensitive site information.",
   },
   {
-    topic: "Toolkits",
-    q: "What are the downloadable kits?",
-    a: "Alongside the subscription we sell one-time toolkits: the GMP Audit Survival Kit, Career Starter Kit, Interview Prep Pack, and bundle. Each is a set of ready-to-use deliverables delivered as PDF and Excel files you download from your account after purchase.",
-  },
-  {
-    topic: "Billing",
-    q: "How do payments work? Is it secure?",
-    a: "All payments are processed by Stripe; we never see or store your card details. Subscriptions are billed monthly and one-time kits are a single charge. You get an email receipt and, for kits, immediate access to downloads in your account.",
-  },
-  {
-    topic: "Billing",
-    q: "Can I cancel anytime?",
-    a: "Yes. Pro is a subscription you manage yourself through the Stripe customer portal in Settings. Cancel anytime; your access continues until the end of the period you have paid for.",
-  },
-  {
-    topic: "Learning",
-    q: "Do I get a certificate?",
-    a: "Yes. Completing any learning path unlocks a printable Certificate of Completion you can download as a PDF or image and share on LinkedIn.",
-  },
-  {
-    topic: "Content",
-    q: "Is this a substitute for official training or SOPs?",
-    a: "No. Life Science Atlas is an educational reference to build understanding and prepare for audits. It does not replace your site's validated procedures, official GMP training, or regulatory advice.",
-  },
-  {
-    topic: "Team",
-    q: "Do you offer team or enterprise plans?",
-    a: "Team access and volume pricing can be handled directly. Use the pricing page as the starting point, then contact support with your team size and use case.",
+    topic: "Partners",
+    q: "Can engineering firms, distributors, or specialist SMEs work with Atlas?",
+    a: "Yes. Atlas is designed to support partner-led projects where the partner brings site access, engineering, equipment, application, or domain expertise and the engagement strengthens the same evidence, rules, templates, and reviewed project workflow. It is not a generic lead marketplace or a substitute for accountable specialist work.",
   },
 ];
 
@@ -62,8 +73,8 @@ const all = "All";
 
 export default function FaqPage() {
   useSEO({
-    title: "FAQ",
-    description: "Frequently asked questions about Life Science Atlas: who it's for, Free vs Pro, content freshness, the free trial, cancellation, and certificates.",
+    title: "FAQ: Atlas Quality Lab Blueprint",
+    description: "Answers about the Atlas Quality Lab Blueprint, evidence, assumptions, expert review, scope, pricing, data handling, and domain expansion.",
   });
   const [open, setOpen] = useState<number | null>(0);
   const [query, setQuery] = useState("");
@@ -98,24 +109,33 @@ export default function FaqPage() {
         <span className="text-foreground">FAQ</span>
       </nav>
 
-      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
+      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-4 shadow-xl shadow-black/15 md:p-6">
+        <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-stretch">
+          <div className="p-2 md:p-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
               <HelpCircle className="h-3.5 w-3.5" />
               FAQ
             </span>
             <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">
-              Answers before you need to ask.
+              Decide what Atlas can—and cannot—do for your project.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              Pricing, content, certificates, downloads, and how Life Science Atlas fits alongside your site procedures.
+              Scope, evidence, assumptions, expert review, commercial outputs, and the boundaries that keep early planning defensible.
             </p>
+            <div className="mt-6 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground">
+              <span className="rounded-full border border-white/10 bg-background/35 px-3 py-1.5">{FAQS.length} answers</span>
+              <span className="rounded-full border border-white/10 bg-background/35 px-3 py-1.5">{new Set(FAQS.map((faq) => faq.topic)).size} decision topics</span>
+            </div>
           </div>
-          <div className="rounded-lg border border-white/10 bg-background/35 p-4">
-            <p className="text-2xl font-bold text-teal-200">{FAQS.length}</p>
-            <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Questions</p>
-          </div>
+          <EditorialImage
+            src="/images/editorial/lab-team-collaboration.jpg"
+            alt="Laboratory team reviewing work together"
+            creditName="Toon Lambrechts"
+            creditUrl="https://unsplash.com/photos/0q4ipgUIw5g"
+            eager
+            className="h-56 rounded-lg border border-white/10 lg:h-auto lg:min-h-72"
+            imageClassName="object-[center_42%] saturate-75"
+          />
         </div>
       </section>
 
@@ -196,14 +216,15 @@ export default function FaqPage() {
       <section className="mt-8 rounded-lg border border-teal-400/25 bg-teal-400/10 p-5 text-center shadow-lg shadow-black/10 md:p-6">
         <p className="font-bold">Still deciding?</p>
         <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted-foreground">
-          Compare the plan, then jump into the library to see how the workflow-first learning model feels.
+          Build an initial capability model, or ask for a scope review when the decision has real project consequences.
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-          <Link href="/pricing" className="inline-flex items-center gap-1.5 rounded-lg bg-teal-400 px-5 py-2.5 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300">
-            See pricing
+          <Link href="/quality-lab/planner" className="inline-flex items-center gap-1.5 rounded-lg bg-teal-400 px-5 py-2.5 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300">
+            Build an initial model
+            <ArrowRight className="h-4 w-4" />
           </Link>
-          <Link href="/academy" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-5 py-2.5 text-sm font-semibold transition-colors hover:border-white/30">
-            Browse Academy
+          <Link href="/quality-lab/review" className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-5 py-2.5 text-sm font-semibold transition-colors hover:border-white/30">
+            Request a scope review
           </Link>
         </div>
       </section>

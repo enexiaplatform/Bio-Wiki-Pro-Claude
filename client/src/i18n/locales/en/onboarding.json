@@ -1,20 +1,20 @@
 {
   "welcomeTitle": "Welcome to Life Science Atlas",
-  "welcomeSubtitle": "Your account is ready. Start with the best next step for your work today.",
+  "welcomeSubtitle": "Start with the site and product decision you need to make. Atlas will turn your inputs into an initial capability model with visible assumptions and gaps.",
   "step1": {
-    "title": "Start a learning path",
-    "desc": "Microbiology QC Fundamentals: sterility, bioburden, EM, endotoxin, and water in order.",
-    "cta": "Start the path"
+    "title": "Build your first capability model",
+    "desc": "Describe the site, products, markets, testing strategy, and demand so Atlas can compile a traceable starting model.",
+    "cta": "Open the planner"
   },
   "step2": {
-    "title": "Browse the full library",
-    "desc": "78 in-depth GMP / QC / QA lessons across 7 structured paths.",
-    "cta": "Open the library"
+    "title": "See how the Blueprint works",
+    "desc": "Review the path from product inputs to methods, resources, capacity scenarios, evidence, and expert-reviewed outputs.",
+    "cta": "Explore Blueprint"
   },
   "step3": {
-    "title": "Explore Pro",
-    "desc": "Unlock in-depth Pro lessons, tools, and the compliance library for $8/month.",
-    "cta": "See Pro plan"
+    "title": "Use the supporting evidence library",
+    "desc": "Open workflows, lessons, glossary terms, and focused tools when you need to understand or challenge a model decision.",
+    "cta": "Browse evidence"
   },
-  "skip": "Skip, go to Academy"
+  "skip": "View the Blueprint journey first"
 }

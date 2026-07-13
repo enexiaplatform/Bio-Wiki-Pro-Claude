@@ -5,13 +5,14 @@ import { useAcademyTerms } from "@/hooks/use-data";
 import { useSEO } from "@/hooks/use-seo";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const ALL = "All";
 
 export default function Glossary() {
   useSEO({
-    title: "Glossary: QC/QA & Life Science terms",
-    description: "A searchable glossary of QC/QA, microbiology, and life-science terms: definitions, why they matter, and common mistakes.",
+    title: "Glossary: Quality laboratory decision terms",
+    description: "A searchable glossary for quality-laboratory planning, evidence, methods, capacity, commercial outputs, and microbiology.",
   });
 
   const { data: terms, isLoading } = useAcademyTerms();
@@ -45,7 +46,7 @@ export default function Glossary() {
           data={{
             "@context": "https://schema.org",
             "@type": "DefinedTermSet",
-            name: "Life Science Atlas QC/QA Glossary",
+            name: "Life Science Atlas Quality Laboratory Glossary",
             url: `${SITE_URL}/glossary`,
             hasDefinedTerm: all.map((term) => ({
               "@type": "DefinedTerm",
@@ -57,22 +58,32 @@ export default function Glossary() {
         />
       )}
 
-      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-          <div>
+      <section className="mb-6 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-4 shadow-xl shadow-black/15 md:p-6">
+        <div className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr] lg:items-stretch">
+          <div className="p-2 md:p-3">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200">
               <BookMarked className="h-3.5 w-3.5" />
               Glossary
             </span>
             <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">
-              QC/QA terms without the fog.
+              The language behind a defensible lab decision.
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              Search definitions, why they matter, and common mistakes across microbiology, GMP, validation, and quality systems.
+              Search the concepts that connect evidence, methods, testing demand, capacity, commercial outputs, and the first microbiology domain pack.
             </p>
           </div>
+          <EditorialImage
+            src="/images/editorial/microscope-workbench.jpg"
+            alt="Laboratory microscope representing evidence-led technical definitions"
+            creditName="Mezidi Zineb"
+            creditUrl="https://unsplash.com/photos/dAHABqJ8Nlw"
+            eager
+            className="h-56 rounded-lg border border-white/10 lg:h-auto lg:min-h-72"
+            imageClassName="object-[center_58%] saturate-60"
+          />
+        </div>
 
-          <div className="grid grid-cols-3 gap-3">
+        <div className="mt-4 grid grid-cols-3 gap-3">
             <div className="rounded-lg border border-white/10 bg-background/35 p-4">
               <p className="text-2xl font-bold text-teal-200">{all.length}</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Terms</p>
@@ -85,7 +96,6 @@ export default function Glossary() {
               <p className="text-2xl font-bold text-teal-200">{difficultyCount}</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Levels</p>
             </div>
-          </div>
         </div>
       </section>
 
