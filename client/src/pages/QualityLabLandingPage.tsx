@@ -21,6 +21,7 @@ import {
 import { useSEO } from "@/hooks/use-seo";
 import { SITE_URL } from "@/lib/site";
 import { analytics } from "@/hooks/use-analytics";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const steps = [
   { icon: Boxes, label: "Product portfolio", detail: "Products, raw materials, batches and markets" },
@@ -184,6 +185,15 @@ export default function QualityLabLandingPage() {
           <motion.div variants={fade} initial="hidden" animate="show" custom={2} className="relative">
             <div className="absolute -inset-8 -z-10 rounded-full bg-teal-400/10 blur-3xl" />
             <div className="overflow-hidden rounded-2xl border border-white/12 bg-slate-950/75 p-5 shadow-2xl shadow-black/40 backdrop-blur md:p-6">
+              <EditorialImage
+                src="/images/editorial/cleanroom-practice.jpg"
+                alt="Laboratory technicians maintaining a controlled microbiology workspace"
+                creditName="Toon Lambrechts"
+                creditUrl="https://unsplash.com/photos/RkG7wp75b48"
+                eager
+                className="-mx-5 -mt-5 mb-5 h-32 border-b border-white/10 md:-mx-6 md:-mt-6"
+                imageClassName="object-[center_48%] opacity-70 saturate-75"
+              />
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Sample scenario</p>

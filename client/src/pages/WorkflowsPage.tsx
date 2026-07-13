@@ -21,6 +21,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { JsonLd } from "@/components/JsonLd";
 import { useReadLessons } from "@/hooks/use-read-lessons";
+import { EditorialImage } from "@/components/EditorialImage";
 import { useSEO } from "@/hooks/use-seo";
 import { getLearningPath } from "@/data/learningPaths";
 import {
@@ -131,7 +132,7 @@ export default function WorkflowsPage() {
         className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7"
       >
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_90%_20%,rgba(16,185,129,0.1),transparent_28%)]" />
-        <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-stretch">
           <div>
             <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300">
               <FlaskConical className="h-3.5 w-3.5" />
@@ -146,7 +147,9 @@ export default function WorkflowsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3">
+          <div className="relative min-h-44 overflow-hidden rounded-lg border border-white/10">
+            <EditorialImage src="/images/editorial/cleanroom-practice.jpg" alt="Controlled laboratory workflow in practice" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/RkG7wp75b48" eager className="absolute inset-0" imageClassName="opacity-65 saturate-75" />
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/80 p-3 backdrop-blur">
             <div>
               <div className="text-xl font-bold text-teal-300">{totalWorkflowCount}</div>
               <div className="text-[11px] text-muted-foreground">Workflows</div>
@@ -158,6 +161,7 @@ export default function WorkflowsPage() {
             <div>
               <div className="text-xl font-bold text-teal-300">Stepwise</div>
               <div className="text-[11px] text-muted-foreground">Guides</div>
+            </div>
             </div>
           </div>
         </div>

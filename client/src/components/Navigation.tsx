@@ -109,7 +109,7 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-2 pb-safe pt-2 z-50 md:hidden">
       <div className="flex justify-between items-center max-w-md mx-auto">
         {mobileTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/workflows");
+          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/quality-lab");
           return (
             <Link key={tab.name} href={tab.path} className="flex flex-col items-center gap-1 p-2 w-full" data-testid={`nav-mobile-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <div className={clsx(
@@ -193,7 +193,7 @@ export function DesktopNav() {
           at any width while the full tab set stays reachable (no clipped Sign In). */}
       <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {desktopTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/workflows");
+          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/quality-lab");
           return (
             <Link key={tab.name} href={tab.path} onMouseEnter={() => prefetchRoute(tab.path)} className={clsx(
               "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",

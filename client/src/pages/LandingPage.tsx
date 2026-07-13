@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -72,9 +73,9 @@ const layers = [
 ];
 
 const evidenceLinks = [
-  { href: "/workflows", icon: Workflow, title: "QC workflows", body: "See the process logic behind a capability." },
-  { href: "/academy", icon: BookOpen, title: "Evidence library", body: "Explore structured lessons and source context." },
-  { href: "/tools", icon: Calculator, title: "Decision tools", body: "Check focused calculations with visible formulas." },
+  { href: "/workflows", icon: Workflow, title: "QC workflows", body: "See the process logic behind a capability.", image: "/images/editorial/cleanroom-practice.jpg", alt: "Laboratory technicians applying controlled hygiene practices", credit: "Toon Lambrechts", creditUrl: "https://unsplash.com/photos/RkG7wp75b48" },
+  { href: "/academy", icon: BookOpen, title: "Evidence library", body: "Explore structured lessons and source context.", image: "/images/editorial/microscope-workbench.jpg", alt: "Laboratory microscope ready for analytical work", credit: "Mezidi Zineb", creditUrl: "https://unsplash.com/photos/dAHABqJ8Nlw" },
+  { href: "/tools", icon: Calculator, title: "Decision tools", body: "Check focused calculations with visible formulas.", image: "/images/editorial/pipette-laboratory.jpg", alt: "Scientist using a precision pipette at a laboratory workbench", credit: "Nathan Rimoux", creditUrl: "https://unsplash.com/photos/AqVLU4cx8OI" },
 ];
 
 const boundaries = [
@@ -138,6 +139,15 @@ export default function LandingPage() {
           <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2} className="relative">
             <div className="absolute -inset-8 -z-10 rounded-full bg-teal-400/10 blur-3xl" />
             <div className="overflow-hidden rounded-3xl border border-white/12 bg-slate-950/80 p-5 shadow-2xl shadow-black/40 backdrop-blur md:p-6">
+              <EditorialImage
+                src="/images/editorial/pipette-laboratory.jpg"
+                alt="Scientist translating a laboratory method into controlled bench work"
+                creditName="Nathan Rimoux"
+                creditUrl="https://unsplash.com/photos/AqVLU4cx8OI"
+                eager
+                className="-mx-5 -mt-5 mb-5 h-36 border-b border-white/10 md:-mx-6 md:-mt-6"
+                imageClassName="object-[center_44%] opacity-75 saturate-75"
+              />
               <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Compilation trace</p>
@@ -280,11 +290,14 @@ export default function LandingPage() {
           </div>
           <div className="grid gap-4 md:grid-cols-3">
             {evidenceLinks.map((item) => (
-              <Link key={item.href} href={item.href} className="group rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-1 hover:border-teal-300/30 hover:bg-white/[0.055]">
+              <Link key={item.href} href={item.href} className="group overflow-hidden rounded-2xl border border-white/10 bg-white/[0.035] transition hover:-translate-y-1 hover:border-teal-300/30 hover:bg-white/[0.055]">
+                <EditorialImage src={item.image} alt={item.alt} creditName={item.credit} creditUrl={item.creditUrl} className="h-36 border-b border-white/10" imageClassName="opacity-80 saturate-75" />
+                <div className="p-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/5 text-teal-200"><item.icon className="h-5 w-5" /></div>
                 <h3 className="mt-5 text-lg font-bold">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
                 <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300">Explore evidence <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+                </div>
               </Link>
             ))}
           </div>

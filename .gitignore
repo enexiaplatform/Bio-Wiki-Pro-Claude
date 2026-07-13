@@ -17,3 +17,6 @@ status.txt
 # Playwright
 test-results
 playwright-report
+
+# Local UX audits and browser captures
+artifacts/

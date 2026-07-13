@@ -14,6 +14,7 @@ import { ContinueLearning } from "@/components/ContinueLearning";
 import { learningPaths } from "@/data/learningPaths";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const all = "All";
 const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
@@ -93,7 +94,7 @@ export default function AcademyPage() {
       <LeadMagnetBanner />
       <section className="relative mb-6 overflow-hidden rounded-lg border border-white/10 bg-gradient-to-br from-teal-400/10 via-white/[0.04] to-transparent p-5 shadow-xl shadow-black/10 md:p-7">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_10%,rgba(20,184,166,0.18),transparent_30%),radial-gradient(circle_at_86%_18%,rgba(16,185,129,0.1),transparent_28%)]" />
-        <div className="grid gap-6 lg:grid-cols-[1fr_19rem] lg:items-end">
+        <div className="grid gap-6 lg:grid-cols-[1fr_20rem] lg:items-stretch">
           <div className="flex items-start gap-4">
             <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:flex">
               <ShieldCheck className="h-6 w-6" />
@@ -107,7 +108,9 @@ export default function AcademyPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3">
+          <div className="relative min-h-44 overflow-hidden rounded-lg border border-white/10">
+            <EditorialImage src="/images/editorial/microscope-workbench.jpg" alt="Microscope representing evidence-led laboratory learning" creditName="Mezidi Zineb" creditUrl="https://unsplash.com/photos/dAHABqJ8Nlw" eager className="absolute inset-0" imageClassName="object-[center_58%] opacity-70 saturate-50" />
+            <div className="absolute inset-x-3 bottom-3 grid grid-cols-3 gap-2 rounded-lg border border-white/10 bg-slate-950/80 p-3 backdrop-blur">
             <div>
               <div className="text-xl font-bold text-teal-300">{libraryEntries.length}</div>
               <div className="text-[11px] text-muted-foreground">Lessons</div>
@@ -119,6 +122,7 @@ export default function AcademyPage() {
             <div>
               <div className="text-xl font-bold text-teal-300">{readCount}</div>
               <div className="text-[11px] text-muted-foreground">Read</div>
+            </div>
             </div>
           </div>
         </div>
