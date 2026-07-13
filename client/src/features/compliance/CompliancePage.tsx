@@ -3,6 +3,7 @@ import { auditQuestionBank, complianceTopics } from "@/data/compliance/auditBank
 import { AuditQuestionBank } from "./AuditQuestionBank";
 import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const pillClass =
   "inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200";
@@ -14,7 +15,7 @@ export default function CompliancePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       <section className="mb-8 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
           <div>
             <span className={pillClass}>
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -28,18 +29,29 @@ export default function CompliancePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
-              <p className="text-2xl font-bold text-teal-200">{complianceTopics.length}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Focus areas</p>
-            </div>
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
-              <p className="text-2xl font-bold text-teal-200">{auditQuestionBank.length}</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Audit prompts</p>
-            </div>
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
-              <p className="text-2xl font-bold text-teal-200">GMP</p>
-              <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Evidence-led</p>
+          <div>
+            <EditorialImage
+              src="/images/editorial/cleanroom-environmental-monitoring.jpg"
+              alt="Cleanroom technician documenting environmental monitoring samples"
+              creditName="Toon Lambrechts"
+              creditUrl="https://unsplash.com/photos/9e6o06Y4cN8"
+              className="h-64 rounded-lg border border-white/10 lg:h-72"
+              imageClassName="object-center"
+              eager
+            />
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <div className="rounded-lg border border-white/10 bg-background/35 p-3">
+                <p className="text-xl font-bold text-teal-200">{complianceTopics.length}</p>
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">Focus areas</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-background/35 p-3">
+                <p className="text-xl font-bold text-teal-200">{auditQuestionBank.length}</p>
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">Audit prompts</p>
+              </div>
+              <div className="rounded-lg border border-white/10 bg-background/35 p-3">
+                <p className="text-xl font-bold text-teal-200">GMP</p>
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-muted-foreground">Evidence-led</p>
+              </div>
             </div>
           </div>
         </div>

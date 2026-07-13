@@ -5,10 +5,8 @@ import {
   ArrowRight,
   BookOpen,
   Briefcase,
-  Building,
   CheckCircle2,
   ChevronRight,
-  DollarSign,
   GraduationCap,
   Loader2,
   RotateCcw,
@@ -21,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
+import { EditorialImage } from "@/components/EditorialImage";
 
 type ProductType = "starter_kit" | "interview_prep" | "bundle";
 
@@ -184,7 +183,7 @@ export default function Career() {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
       <section className="mb-8 overflow-hidden rounded-lg border border-teal-400/20 bg-gradient-to-br from-teal-500/12 via-white/[0.045] to-emerald-500/10 p-6 shadow-xl shadow-black/15 md:p-8">
-        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
           <div>
             <span className={pillClass}>
               <Briefcase className="h-3.5 w-3.5" />
@@ -198,21 +197,35 @@ export default function Career() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+          <div>
+            <EditorialImage
+              src="/images/editorial/researcher-sample-preparation.jpg"
+              alt="Laboratory researcher preparing biological samples on ice"
+              creditName="National Cancer Institute / Daniel Sone"
+              creditUrl="https://unsplash.com/photos/1fvqUP-xaYQ"
+              className="h-64 rounded-lg border border-white/10 lg:h-72"
+              imageClassName="object-center"
+              eager
+            />
+            <div className="mt-3 grid grid-cols-3 gap-2">
+            <div className="rounded-lg border border-white/10 bg-background/35 p-3">
               <p className="text-2xl font-bold text-teal-200">{roles.length}</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Career tracks</p>
             </div>
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+            <div className="rounded-lg border border-white/10 bg-background/35 p-3">
               <p className="text-2xl font-bold text-teal-200">{activeData.stages.length}</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Growth stages</p>
             </div>
-            <div className="rounded-lg border border-white/10 bg-background/35 p-4">
+            <div className="rounded-lg border border-white/10 bg-background/35 p-3">
               <p className="text-2xl font-bold text-teal-200">{readinessPercent}%</p>
               <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">Readiness</p>
             </div>
+            </div>
           </div>
         </div>
+        <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-muted-foreground">
+          Illustrative pathway only. Titles, scope, timing, and qualification expectations vary by site, region, and authorized responsibilities.
+        </p>
       </section>
 
       <section className="mb-8 rounded-lg border border-white/10 bg-white/[0.035] p-3">
@@ -308,8 +321,8 @@ export default function Career() {
               <div className="grid gap-3 sm:grid-cols-2">
                 <StageDetail icon={CheckCircle2} label="Responsibilities" value={activeStageDetails.responsibilities} />
                 <StageDetail icon={BookOpen} label="Key skills" value={activeStageDetails.skills} />
-                <StageDetail icon={DollarSign} label="Estimated salary" value={activeStageDetails.salary} accent="text-green-300" />
-                <StageDetail icon={Building} label="Target employers" value={activeStageDetails.employers} />
+                <StageDetail icon={Target} label="Role context" value="Titles, scope, and timing vary by site, region, and authorization." />
+                <StageDetail icon={GraduationCap} label="Evidence to advance" value="Show task qualification, reviewed work, and role-relevant decisions—not tenure alone." />
               </div>
             </motion.div>
           </AnimatePresence>
