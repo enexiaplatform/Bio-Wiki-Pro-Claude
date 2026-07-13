@@ -92,6 +92,7 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByRole("heading", { name: /Workforce capacity and skill coverage/i })).toBeVisible();
+    await page.getByRole("button", { name: /Show Workforce capacity and skill coverage detail/i }).click();
     await expect(page.getByText(/base execution/i).first()).toBeVisible();
     await expect(page.getByText(/Technical review and release support/i).first()).toBeVisible();
     await expect(page.getByText(/Loads not separately quantified/i)).toBeVisible();
@@ -100,7 +101,9 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/end-to-end lead time/i).first()).toBeVisible();
     await expect(page.getByText(/Required item-level evidence/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /What must be resolved before controlled use/i })).toBeVisible();
+    await page.getByRole("button", { name: /Show What must be resolved before controlled use detail/i }).click();
     await expect(page.getByText(/^Decision support$/i).first()).toBeVisible();
+    await page.getByRole("button", { name: /Show Recommended next decisions detail/i }).click();
     await expect(page.getByRole("link", { name: /Scope a non-sterile microbiology QC lab/i }).first()).toBeVisible();
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
     await page.getByRole("link", { name: /Review workspace/i }).click();
@@ -185,6 +188,7 @@ test.describe("public smoke", () => {
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByText(/Illustrative case — reconciled in-house portfolio/i).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /Finished-product sizing basis/i })).toBeVisible();
+    await page.getByRole("button", { name: /Show Sources and missing site evidence detail/i }).click();
     await expect(page.getByRole("link", { name: /Open Evidence Graph/i })).toBeVisible();
   });
 

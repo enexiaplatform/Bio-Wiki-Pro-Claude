@@ -5,6 +5,7 @@ import {
   Boxes,
   Building2,
   CheckCircle2,
+  ChevronDown,
   ClipboardCheck,
   Download,
   FileText,
@@ -17,6 +18,7 @@ import {
   Users,
   ArrowRight,
 } from "lucide-react";
+import { useState } from "react";
 import type { QualityLabProject } from "@shared/quality-lab";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
@@ -43,17 +45,20 @@ const severityClass = {
   low: "border-sky-300/20 bg-sky-300/10 text-sky-100",
 };
 
-function Section({ icon: Icon, eyebrow, title, children }: { icon: typeof Gauge; eyebrow: string; title: string; children: React.ReactNode }) {
+function Section({ icon: Icon, eyebrow, title, children, id, collapsible = false, defaultOpen = true, collapsedSummary }: { icon: typeof Gauge; eyebrow: string; title: string; children: React.ReactNode; id?: string; collapsible?: boolean; defaultOpen?: boolean; collapsedSummary?: string }) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
-    <section className="min-w-0 break-inside-avoid rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-lg shadow-black/10 md:p-6 print:border-slate-300 print:bg-white print:shadow-none">
-      <div className="mb-5 flex items-start gap-3">
+    <section id={id} className="min-w-0 scroll-mt-32 break-inside-avoid rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-lg shadow-black/10 md:p-6 print:border-slate-300 print:bg-white print:shadow-none">
+      <div className={`${open || !collapsible ? "mb-5" : ""} flex items-start gap-3`}>
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200 print:border-slate-300 print:bg-slate-100 print:text-slate-800"><Icon className="h-5 w-5" /></div>
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300 print:text-slate-500">{eyebrow}</p>
           <h2 className="mt-1 text-xl font-bold print:text-slate-950">{title}</h2>
+          {collapsible && !open && collapsedSummary && <p className="mt-1 text-[11px] leading-5 text-slate-500 print:hidden">{collapsedSummary}</p>}
         </div>
+        {collapsible && <button type="button" aria-label={`${open ? "Hide" : "Show"} ${title} detail`} aria-expanded={open} onClick={() => setOpen((current) => !current)} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-[10px] font-bold text-slate-300 transition hover:border-white/20 print:hidden">{open ? "Hide detail" : "Show detail"}<ChevronDown className={`h-3.5 w-3.5 transition ${open ? "rotate-180" : ""}`} /></button>}
       </div>
-      {children}
+      <div className={`${open || !collapsible ? "block" : "hidden"} print:block`}>{children}</div>
     </section>
   );
 }
@@ -79,7 +84,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         <button onClick={onEdit} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white">
           <ArrowLeft className="h-4 w-4" /> Edit inputs
         </button>
-        <div className="flex flex-wrap gap-2">
+        <div className="hidden flex-wrap gap-2 sm:flex">
           <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <Download className="h-4 w-4" /> Export model
           </button>
@@ -96,11 +101,24 @@ export function BlueprintReport({ project, onEdit }: Props) {
             {project.reviewRequestedAt ? "Review brief submitted" : "Request expert review"} <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+        <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 sm:hidden">
+          {project.reviewRequestedAt ? "Review submitted" : "Expert review"} <ArrowRight className="h-4 w-4" />
+        </Link>
+        <details className="w-full rounded-xl border border-white/10 bg-white/[0.03] sm:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-xs font-bold text-slate-300">Exports and review tools <ChevronDown className="h-4 w-4" /></summary>
+          <div className="grid grid-cols-2 gap-2 border-t border-white/10 p-3">
+            <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><Download className="h-4 w-4" /> Export model</button>
+            <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Engagement packet</button>
+            <Link href={`/quality-lab/engagements/${project.id}`} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Review workspace</Link>
+            <button onClick={() => window.print()} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950"><Printer className="h-4 w-4" /> Print / PDF</button>
+          </div>
+        </details>
       </div>
 
       <header className="relative mb-5 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/12 via-slate-900 to-sky-300/5 p-6 shadow-2xl shadow-black/20 md:p-8 print:border-slate-400 print:bg-white print:shadow-none">
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] print:hidden" />
-        <div className="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+        <div className="grid gap-5">
+          <div className="grid gap-6 md:grid-cols-[1fr_18rem] md:items-start">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:border-slate-400 print:bg-white print:text-slate-700">
               <ShieldCheck className="h-3.5 w-3.5" /> {project.reviewRequestedAt ? "Review requested · triage pending" : "Concept blueprint · SME review required"}
@@ -111,7 +129,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
               {input.companyName || "Company not specified"} · {input.country} · {input.facilityType.replaceAll("-", " ")} · {blueprint.domainPack.version}
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-2 md:w-72">
+          <div className="grid grid-cols-2 gap-2">
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
               <p className="text-xl font-bold text-teal-200 print:text-slate-950">{current.monthlyTests}</p><p className="text-[11px] text-slate-400 print:text-slate-600">monthly test units</p>
             </div>
@@ -125,7 +143,8 @@ export function BlueprintReport({ project, onEdit }: Props) {
               <p className="text-xl font-bold text-amber-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high-priority risks</p>
             </div>
           </div>
-          <div className="mt-5 grid gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
+          </div>
+          <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">controlled-use readiness</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">blocking inputs open</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{blueprint.dataQuality.tracedRuleCount}</p><p className="text-[10px] text-slate-500">versioned rules traced</p></div>
@@ -133,6 +152,31 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </div>
         </div>
       </header>
+
+      <section id="decision-brief" className="mb-5 scroll-mt-32 rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
+        <div className="grid gap-5 lg:grid-cols-[1fr_1.25fr_auto] lg:items-start">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:text-slate-500">Decision brief</p>
+            <h2 className="mt-2 text-xl font-bold print:text-slate-950">Model compiled. Controlled use is not yet ready.</h2>
+            <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">The model is useful for discovery and scenario discussion. Resolve the blocking inputs and complete qualified review before using it for investment, URS or procurement decisions.</p>
+            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-teal-300" style={{ width: `${blueprint.dataQuality.completenessPercent}%` }} /></div>
+            <p className="mt-2 text-[10px] text-slate-500">{blueprint.dataQuality.completenessPercent}% controlled-use readiness · {blueprint.dataQuality.blockingOpenCount} blocking inputs</p>
+          </div>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Resolve first</p>
+            <div className="mt-3 space-y-2">
+              {blueprint.unresolvedInputs.filter((item) => item.severity === "blocking").slice(0, 3).map((item) => <div key={item.id} className="flex gap-2 text-xs leading-5 text-slate-300 print:text-slate-800"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-300 print:text-slate-600" /><span>{item.question}</span></div>)}
+            </div>
+          </div>
+          <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_brief", "expert_review")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 print:hidden">Prepare expert review <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </section>
+
+      <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
+        <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
+          {[["#decision-brief", "Decision brief"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
+        </div>
+      </nav>
 
       <div className="mb-5 grid gap-4 lg:grid-cols-2">
         {[current, future].map((scenario, index) => (
@@ -161,7 +205,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
       </div>
 
       <div className="grid gap-5">
-        <Section icon={FlaskConical} eyebrow="Demand model" title="Testing workload">
+        <Section id="demand-model" icon={FlaskConical} eyebrow="Demand model" title="Testing workload">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
               <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
@@ -184,7 +228,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </Section>
 
         {blueprint.workforceCapacity && (
-          <Section icon={Users} eyebrow="Compiler Core · people capacity" title="Workforce capacity and skill coverage">
+          <Section icon={Users} eyebrow="Compiler Core · people capacity" title="Workforce capacity and skill coverage" collapsible defaultOpen={false} collapsedSummary={`${current.totalTeamFte} current FTE · ${future.totalTeamFte} at year ${input.horizonYears} · skill continuity still requires site evidence.`}>
             <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400 print:text-slate-700">This separates execution, review and skill-continuity constraints without claiming that aggregate FTE proves a workable roster. Site time studies, qualification records and shift coverage remain required.</p>
             <div className="grid gap-4 lg:grid-cols-2">
               {[blueprint.workforceCapacity.current, blueprint.workforceCapacity.future].map((workforce) => (
@@ -214,7 +258,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           {blueprint.finishedProductDemand.differencePercent !== null && <p className="mt-2 text-xs text-amber-200/80 print:text-slate-700">Portfolio versus aggregate difference: {number.format(blueprint.finishedProductDemand.differencePercent)}%. Reconcile material variance before design freeze.</p>}
         </Section>
 
-        <Section icon={Network} eyebrow="Quality Method Graph" title="Product-to-method trace">
+        <Section icon={Network} eyebrow="Quality Method Graph" title="Product-to-method trace" collapsible defaultOpen={false}>
           {blueprint.methodRequirements.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[980px] text-left text-sm">
@@ -238,7 +282,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </Section>
 
         {blueprint.methodBom.length > 0 && (
-          <Section icon={Boxes} eyebrow="Method bill of materials" title="Method-level consumables and controls">
+          <Section icon={Boxes} eyebrow="Method bill of materials" title="Method-level consumables and controls" collapsible defaultOpen={false}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[880px] text-left text-sm">
                 <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
@@ -261,7 +305,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         )}
 
         {blueprint.methodCapacitySummary.length > 0 && (
-          <Section icon={BarChart3} eyebrow="Method-derived operating load" title="Resource capacity check">
+          <Section icon={BarChart3} eyebrow="Method-derived operating load" title="Resource capacity check" collapsible defaultOpen={false}>
             <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400">This checks the in-house product-method slice against the current equipment concept. It deliberately does not present itself as a complete operational simulation.</p>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[880px] text-left text-sm">
@@ -284,7 +328,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </Section>
         )}
 
-        <Section icon={Boxes} eyebrow="Capability architecture" title="Vendor-neutral equipment plan">
+        <Section id="capability-plan" icon={Boxes} eyebrow="Capability architecture" title="Vendor-neutral equipment plan" collapsible defaultOpen={false} collapsedSummary={`${blueprint.equipment.length} equipment classes · ${money.format(current.capexLowUsd)}–${money.format(current.capexHighUsd)} current CAPEX allowance.`}>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[940px] text-left text-sm">
               <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
@@ -350,7 +394,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </Section>
         )}
 
-        <Section icon={AlertTriangle} eyebrow="Decision risks" title="Review before investment approval">
+        <Section id="decision-risks" icon={AlertTriangle} eyebrow="Decision risks" title="Review before investment approval">
           <div className="grid gap-3 md:grid-cols-2">
             {blueprint.risks.map((risk) => (
               <div key={risk.id} className={`rounded-xl border p-4 ${severityClass[risk.severity]} print:border-slate-300 print:bg-white print:text-slate-900`}>
@@ -363,7 +407,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </Section>
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <Section icon={ClipboardCheck} eyebrow="Action plan" title="Recommended next decisions">
+          <Section icon={ClipboardCheck} eyebrow="Action plan" title="Recommended next decisions" collapsible defaultOpen={false} collapsedSummary={`${blueprint.recommendations.length} prioritized decisions are ready for review.`}>
             <ol className="space-y-3">
               {blueprint.recommendations.map((recommendation, index) => (
                 <li key={recommendation.id} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span><div className="min-w-0 flex-1"><div className="mb-1 flex flex-wrap items-center gap-2"><span>{recommendation.recommendation}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 print:border-slate-300">{recommendation.priority.replaceAll("-", " ")}</span></div><p className="text-xs leading-5 text-slate-500">{recommendation.rationale}</p><DecisionEvidenceLinks ruleIds={recommendation.relatedRuleIds} /></div></li>
@@ -382,7 +426,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </Section>
         </div>
 
-        <Section icon={Info} eyebrow="Assumption ledger" title="What this model believes">
+        <Section icon={Info} eyebrow="Assumption ledger" title="What this model believes" collapsible defaultOpen={false}>
           <div className="grid gap-3 md:grid-cols-2">
             {blueprint.assumptions.map((assumption) => (
               <div key={assumption.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white">
@@ -394,7 +438,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </div>
         </Section>
 
-        <Section icon={AlertTriangle} eyebrow="Open information" title="What must be resolved before controlled use">
+        <Section icon={AlertTriangle} eyebrow="Open information" title="What must be resolved before controlled use" collapsible defaultOpen={false} collapsedSummary={`${blueprint.dataQuality.blockingOpenCount} blocking and ${blueprint.dataQuality.importantOpenCount} important inputs remain open.`}>
           <div className="mb-4 flex flex-wrap gap-2 text-[10px] font-bold uppercase tracking-wider">
             <span className="rounded-full border border-red-300/20 bg-red-300/10 px-2.5 py-1 text-red-200 print:border-slate-300 print:bg-white print:text-slate-700">{blueprint.dataQuality.blockingOpenCount} blocking</span>
             <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-amber-200 print:border-slate-300 print:bg-white print:text-slate-700">{blueprint.dataQuality.importantOpenCount} important</span>
@@ -416,8 +460,8 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </div>
         </Section>
 
-        <div className="grid gap-5 lg:grid-cols-2">
-          <Section icon={FileText} eyebrow="Evidence register" title="Sources and missing site evidence">
+        <div id="evidence-trace" className="scroll-mt-32 grid gap-5 lg:grid-cols-2">
+          <Section icon={FileText} eyebrow="Evidence register" title="Sources and missing site evidence" collapsible defaultOpen={false}>
             <div data-print="hide" className="mb-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.04] p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -445,7 +489,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
               ))}
             </div>
           </Section>
-          <Section icon={Network} eyebrow="Rule registry" title="Versioned calculation trace">
+          <Section icon={Network} eyebrow="Rule registry" title="Versioned calculation trace" collapsible defaultOpen={false}>
             <div className="space-y-3">
               {blueprint.ruleTrace.map((rule) => (
                 <div key={rule.ruleId} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white">

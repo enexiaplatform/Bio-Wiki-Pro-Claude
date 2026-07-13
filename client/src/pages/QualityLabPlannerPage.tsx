@@ -7,6 +7,7 @@ import {
   Building2,
   Check,
   CheckCircle2,
+  ChevronDown,
   ClipboardList,
   FlaskConical,
   Gauge,
@@ -104,9 +105,11 @@ export default function QualityLabPlannerPage() {
   const [, setLocation] = useLocation();
   const [input, setInput] = useState<QualityLabInput>(defaultQualityLabInput);
   const [step, setStep] = useState(0);
+  const [furthestStep, setFurthestStep] = useState(0);
   const [project, setProject] = useState<QualityLabProject | null>(null);
   const [view, setView] = useState<"form" | "report">(params?.id ? "report" : "form");
   const [error, setError] = useState<string | null>(null);
+  const [portfolioExpanded, setPortfolioExpanded] = useState(false);
 
   useEffect(() => {
     if (!params?.id) analytics.blueprintStarted("planner");
@@ -179,7 +182,13 @@ export default function QualityLabPlannerPage() {
     const issue = validateStep(step);
     if (issue) return setError(issue);
     setError(null);
-    setStep((current) => Math.min(steps.length - 1, current + 1));
+    const nextStep = Math.min(steps.length - 1, step + 1);
+    setStep(nextStep);
+    setFurthestStep((current) => Math.max(current, nextStep));
+  }
+
+  function canNavigateToStep(targetStep: number) {
+    return targetStep <= furthestStep;
   }
 
   function generate() {
@@ -203,37 +212,42 @@ export default function QualityLabPlannerPage() {
   }
 
   if (view === "report" && project) {
-    return <BlueprintReport project={project} onEdit={() => { setView("form"); setStep(0); window.scrollTo({ top: 0 }); }} />;
+    return <BlueprintReport project={project} onEdit={() => { setView("form"); setStep(0); setFurthestStep(steps.length - 1); window.scrollTo({ top: 0 }); }} />;
   }
 
   return (
-    <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-5 text-slate-100 md:pt-10">
+    <div className="min-h-screen bg-[#08111f] px-4 pb-40 pt-5 text-slate-100 md:pb-24 md:pt-10">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>
           <div className="flex items-center gap-2">
-            <button onClick={() => { setInput(defaultQualityLabInput); setProject(null); setStep(0); setError(null); setLocation("/quality-lab/planner"); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/10"><RotateCcw className="h-3.5 w-3.5" /> Reset example</button>
+            <button onClick={() => { setInput(defaultQualityLabInput); setProject(null); setStep(0); setFurthestStep(0); setError(null); setLocation("/quality-lab/planner"); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/10"><RotateCcw className="h-3.5 w-3.5" /> Reset example</button>
             <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/10"><Save className="h-3.5 w-3.5" /> Saved projects</Link>
           </div>
         </div>
 
-        <header className="mb-6 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/5 p-6 md:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
+        <header className="mb-5 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/5 p-5 md:mb-6 md:p-8">
+          <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-6">
             <div>
               <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> {MICROBIOLOGY_DOMAIN_PACK.version} · concept</span>
-              <h1 className="mt-5 text-3xl font-bold md:text-5xl">Build the basis of design.</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400 md:text-base">Enter the operational facts you know. Atlas will expose the assumptions it adds and separate concept estimates from decisions that require site verification.</p>
+              <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">Build the basis of design.</h1>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400 md:text-base md:leading-7">Add the operational facts you know. Atlas separates your inputs, concept assumptions and decisions that still need site verification.</p>
             </div>
-            <div className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm"><ShieldCheck className="mb-2 h-4 w-4 text-amber-300" /> No product data leaves this browser in the current concept edition.</div>
+            <div className="flex items-start gap-2 rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /><span>No product data leaves this browser in the current concept edition.</span></div>
           </div>
         </header>
 
-        <div className="mb-5 grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+          <span>Blueprint intake</span><span>{step + 1} / {steps.length}</span>
+        </div>
+        <div className="mb-4 h-1 overflow-hidden rounded-full bg-white/5"><div className="h-full rounded-full bg-teal-300 transition-all" style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div>
+        <div className="mb-4 grid grid-cols-2 gap-2 lg:mb-5 lg:grid-cols-4">
           {steps.map((item, index) => {
             const active = index === step;
             const complete = index < step;
+            const reachable = canNavigateToStep(index);
             return (
-              <button key={item.title} onClick={() => { if (index <= step || !validateStep(step)) { setStep(index); setError(null); } }} className={`rounded-xl border p-3 text-left transition ${active ? "border-teal-300/40 bg-teal-300/10" : complete ? "border-emerald-300/20 bg-emerald-300/5" : "border-white/10 bg-white/[0.025]"}`}>
+              <button key={item.title} type="button" disabled={!reachable} aria-current={active ? "step" : undefined} onClick={() => { if (reachable) { setStep(index); setError(null); } }} className={`rounded-xl border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-45 ${active ? "border-teal-300/40 bg-teal-300/10" : complete ? "border-emerald-300/20 bg-emerald-300/5" : "border-white/10 bg-white/[0.025]"}`}>
                 <div className="flex items-start gap-3">
                   <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${active ? "bg-teal-300 text-slate-950" : complete ? "bg-emerald-300/15 text-emerald-200" : "bg-white/5 text-slate-500"}`}>{complete ? <Check className="h-4 w-4" /> : <item.icon className="h-4 w-4" />}</div>
                   <div><p className={`text-xs font-bold ${active ? "text-teal-100" : "text-slate-300"}`}>{item.title}</p><p className="mt-1 hidden text-[10px] text-slate-500 sm:block">{item.subtitle}</p></div>
@@ -242,6 +256,15 @@ export default function QualityLabPlannerPage() {
             );
           })}
         </div>
+
+        {preview && <div className="mb-4 grid grid-cols-4 gap-2 rounded-2xl border border-white/10 bg-slate-950/55 p-3 xl:hidden">
+          {[
+            [`${preview.dataQuality.completenessPercent}%`, "readiness", "text-teal-200"],
+            [String(preview.dataQuality.blockingOpenCount), "blockers", "text-red-200"],
+            [formatInt(preview.current.monthlyTests), "tests / mo", "text-slate-100"],
+            [String(preview.current.totalTeamFte), "team FTE", "text-slate-100"],
+          ].map(([value, label, tone]) => <div key={label} className="min-w-0 text-center"><p className={`truncate text-sm font-bold ${tone}`}>{value}</p><p className="mt-0.5 truncate text-[9px] text-slate-500">{label}</p></div>)}
+        </div>}
 
         <div className="grid gap-5 xl:grid-cols-[1fr_330px]">
           <main className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 shadow-2xl shadow-black/20 md:p-7">
@@ -280,10 +303,13 @@ export default function QualityLabPlannerPage() {
                 </div>
                 {input.facilityType === "nonsterile-pharma" && (
                   <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.045] p-4">
-                    <div className="flex items-start justify-between gap-4"><div><p className="text-sm font-bold text-teal-100">Method Graph product portfolio</p><p className="mt-1 text-xs leading-5 text-slate-400">Each product family compiles to its own market requirement, method architecture, BOM and in-house resource load. Reconcile every row with approved specifications before review.</p><label className="mt-3 flex items-start gap-2 text-xs leading-5 text-slate-300"><input type="checkbox" checked={input.portfolioIsComplete} onChange={(event) => update("portfolioIsComplete", event.target.checked)} className="mt-1" /><span>This portfolio covers all finished-product batch demand. Use its product-specific in-house/outsource decisions for finished-product sizing.</span></label></div><button type="button" onClick={addProduct} className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-teal-300/30 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-100"><Plus className="h-3.5 w-3.5" /> Add product</button></div>
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-sm font-bold text-teal-100">Detailed product-to-method inputs</p><p className="mt-1 text-xs leading-5 text-slate-400">{input.productProfiles.length} product {input.productProfiles.length === 1 ? "family" : "families"} · {formatInt(input.productProfiles.reduce((sum, item) => sum + item.monthlyBatches, 0))} batches/month · {input.productProfiles.filter((item) => item.methodSuitability === "unknown").length} suitability status open.</p></div><button type="button" aria-expanded={portfolioExpanded} onClick={() => setPortfolioExpanded((current) => !current)} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-teal-300/30 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-100">{portfolioExpanded ? "Hide details" : "Review details"}<ChevronDown className={`h-3.5 w-3.5 transition ${portfolioExpanded ? "rotate-180" : ""}`} /></button></div>
+                    {!portfolioExpanded && <p className="mt-3 rounded-lg border border-amber-300/15 bg-amber-300/[0.04] p-3 text-[11px] leading-5 text-amber-100/80">Atlas is using the summarized product portfolio above. Open these details before expert review to reconcile product, market, execution and method-suitability assumptions.</p>}
+                    {portfolioExpanded && <>
+                    <div className="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-start sm:justify-between"><label className="flex items-start gap-2 text-xs leading-5 text-slate-300"><input type="checkbox" checked={input.portfolioIsComplete} onChange={(event) => update("portfolioIsComplete", event.target.checked)} className="mt-1" /><span>This portfolio covers all finished-product batch demand. Use product-specific in-house/outsource decisions for sizing.</span></label><button type="button" onClick={addProduct} className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg border border-teal-300/30 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-100"><Plus className="h-3.5 w-3.5" /> Add product</button></div>
                     <div className="mt-4 space-y-4">
                       {input.productProfiles.map((product, index) => <div key={product.id} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><div className="mb-4 flex items-center justify-between gap-3"><p className="text-xs font-bold uppercase tracking-wider text-slate-400">Product {index + 1}</p><button type="button" onClick={() => removeProduct(product.id)} disabled={input.productProfiles.length === 1} className="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-40"><X className="h-3.5 w-3.5" /> Remove</button></div><div className="grid gap-4 md:grid-cols-2"><TextField label="Product / family" value={product.name} onChange={(value) => updateProduct(product.id, "name", value)} /><label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Dosage form</span><select value={product.dosageForm} onChange={(event) => updateProduct(product.id, "dosageForm", event.target.value as QualityLabInput["productProfiles"][number]["dosageForm"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="tablet-capsule">Tablet / capsule</option><option value="oral-liquid">Oral liquid</option><option value="topical">Topical</option><option value="powder">Powder</option><option value="other">Other</option></select></label><NumberField label="Monthly batches" value={product.monthlyBatches} onChange={(value) => updateProduct(product.id, "monthlyBatches", value)} suffix="/ month" /><NumberField label="Samples per batch" value={product.samplesPerBatch} onChange={(value) => updateProduct(product.id, "samplesPerBatch", value)} suffix="samples" min={1} /><label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Execution model</span><select value={product.execution} onChange={(event) => updateProduct(product.id, "execution", event.target.value as QualityLabInput["productProfiles"][number]["execution"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="in-house">In-house</option><option value="outsource">Outsource</option></select></label><label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Method suitability</span><select value={product.methodSuitability} onChange={(event) => updateProduct(product.id, "methodSuitability", event.target.value as QualityLabInput["productProfiles"][number]["methodSuitability"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="unknown">Unknown — evidence needed</option><option value="pending">Pending</option><option value="verified">Verified</option><option value="not-required">Not required</option></select></label></div><div className="mt-4"><p className="mb-2 text-xs font-semibold text-slate-300">Markets for this product</p><div className="flex flex-wrap gap-2">{input.markets.map((market) => <label key={market} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-xs text-slate-300"><input type="checkbox" checked={product.markets.includes(market)} onChange={(event) => updateProduct(product.id, "markets", event.target.checked ? [...product.markets, market] : product.markets.filter((item) => item !== market))} />{marketLabels[market]}</label>)}</div></div><label className="mt-4 block"><span className="mb-2 block text-xs font-semibold text-slate-300">Physical test allocation across markets</span><select value={product.marketExecutionStrategy} onChange={(event) => updateProduct(product.id, "marketExecutionStrategy", event.target.value as QualityLabInput["productProfiles"][number]["marketExecutionStrategy"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-teal-300/50"><option value="unknown">Unknown — do not calculate BOM/capacity for multi-market scope</option><option value="shared-across-markets">One shared physical execution covers selected markets</option><option value="separate-by-market">Separate physical execution for each market</option></select><span className="mt-1.5 block text-[11px] leading-4 text-slate-500">This prevents regulatory traceability from automatically multiplying physical test demand.</span></label><div className="mt-4 flex flex-wrap gap-3 text-xs text-slate-300">{([['microbialLimitsRequired', 'Microbial enumeration'], ['specifiedOrganismsRequired', 'Specified microorganisms']] as const).map(([key, label]) => <label key={key} className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2"><input type="checkbox" checked={product[key]} onChange={(event) => updateProduct(product.id, key, event.target.checked)} />{label}</label>)}</div><div className="mt-4"><TextField label="Preservative / neutralizer note" value={product.preservativeOrNeutralizerNote} onChange={(value) => updateProduct(product.id, "preservativeOrNeutralizerNote", value)} placeholder="Optional — exact material must be confirmed by method suitability" /></div></div>)}
-                    </div>
+                    </div></>}
                   </div>
                 )}
               </div>
@@ -364,7 +390,7 @@ export default function QualityLabPlannerPage() {
 
             {error && <div className="mt-6 flex items-start gap-2 rounded-xl border border-red-300/20 bg-red-300/10 p-3 text-sm text-red-100"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div>}
 
-            <div className="mt-8 flex items-center justify-between border-t border-white/10 pt-5">
+            <div className="mt-8 hidden items-center justify-between border-t border-white/10 pt-5 md:flex">
               <button onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(null); }} disabled={step === 0} className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-slate-400 transition hover:bg-white/5 hover:text-white disabled:invisible"><ArrowLeft className="h-4 w-4" /> Back</button>
               {step < steps.length - 1 ? (
                 <button onClick={next} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Continue <ArrowRight className="h-4 w-4" /></button>
@@ -374,7 +400,7 @@ export default function QualityLabPlannerPage() {
             </div>
           </main>
 
-          <aside className="h-fit space-y-4 xl:sticky xl:top-24">
+          <aside className="hidden h-fit space-y-4 xl:sticky xl:top-24 xl:block">
             <div className="rounded-2xl border border-white/10 bg-slate-950/65 p-5">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Live model preview</p>
               {preview ? (
@@ -407,6 +433,15 @@ export default function QualityLabPlannerPage() {
               </div>
             </div>
           </aside>
+        </div>
+      </div>
+      <div className="fixed inset-x-0 bottom-[4.45rem] z-40 border-t border-white/10 bg-[#08111f]/95 px-4 py-3 shadow-2xl shadow-black/40 backdrop-blur md:hidden">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          <button onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(null); }} disabled={step === 0} className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-400 disabled:invisible"><ArrowLeft className="h-4 w-4" /> Back</button>
+          <div className="text-right">
+            <p className="text-[9px] font-bold uppercase tracking-wider text-slate-500">Step {step + 1} of {steps.length}</p>
+            {step < steps.length - 1 ? <button onClick={next} className="mt-1 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950">Continue <ArrowRight className="h-4 w-4" /></button> : <button onClick={generate} className="mt-1 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950"><Sparkles className="h-4 w-4" /> Compile blueprint</button>}
+          </div>
         </div>
       </div>
     </div>
