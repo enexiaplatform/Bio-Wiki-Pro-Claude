@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpenCheck, CheckCircle2, CircleAlert, FlaskConical, GitCompareArrows, ShieldCheck } from "lucide-react";
+import { ArrowRight, BookOpenCheck, CheckCircle2, ChevronDown, CircleAlert, FlaskConical, GitCompareArrows, ShieldCheck } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
@@ -96,12 +96,45 @@ export default function QualityLabCasebookPage() {
           </div>
         </section>
 
+        <section aria-labelledby="case-comparison-heading" className="mt-8 rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-7">
+          <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Decision comparison</p>
+              <h2 id="case-comparison-heading" className="mt-2 text-2xl font-bold">See what the engine permits, holds back, or keeps traceable.</h2>
+            </div>
+            <p className="max-w-lg text-xs leading-5 text-slate-500">Compare the calculation behavior first, then open the case that matches the assumption you need to challenge.</p>
+          </div>
+          <div className="mt-5 overflow-x-auto rounded-xl border border-white/8">
+            <table className="min-w-[760px] w-full border-collapse text-left text-xs">
+              <thead className="bg-slate-950/55 text-slate-300">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Engine behavior</th>
+                  {compiledCases.map((item) => <th key={item.id} className="px-4 py-3 font-semibold"><a href={`#${item.id}`} className="text-teal-200 hover:text-teal-100">{item.label.replace(" · ", " — ")}</a></th>)}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/8 text-slate-400">
+                {[
+                  ["Sizing basis", ...compiledCases.map((item) => item.blueprint.finishedProductDemand.source.replaceAll("-", " "))],
+                  ["In-house batches / month", ...compiledCases.map((item) => item.blueprint.finishedProductDemand.effectiveInHouseBatches.toLocaleString())],
+                  ["Physical resource loads", ...compiledCases.map((item) => item.blueprint.methodCapacity.length.toLocaleString())],
+                  ["Blocking inputs", ...compiledCases.map((item) => item.blueprint.dataQuality.blockingOpenCount.toLocaleString())],
+                ].map(([label, ...values]) => (
+                  <tr key={label}>
+                    <th className="bg-black/10 px-4 py-3 font-semibold text-slate-300">{label}</th>
+                    {values.map((value, index) => <td key={`${label}-${compiledCases[index].id}`} className="px-4 py-3 capitalize">{value}</td>)}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <section className="mt-10 space-y-6">
           {compiledCases.map((item) => {
             const blueprint = item.blueprint;
             const inHouseRequirements = blueprint.methodRequirements.filter((requirement) => requirement.execution === "in-house").length;
             return (
-              <article key={item.id} className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035]">
+              <article id={item.id} key={item.id} className="scroll-mt-24 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.035]">
                 <div className="grid gap-7 p-6 lg:grid-cols-[1.05fr_0.95fr] lg:p-8">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">{item.label}</p>
@@ -133,11 +166,19 @@ export default function QualityLabCasebookPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-3 border-t border-white/10 bg-slate-950/30 p-5 md:grid-cols-3 lg:px-8">
+                <div className="hidden gap-3 border-t border-white/10 bg-slate-950/30 p-5 md:grid md:grid-cols-3 lg:px-8">
                   <div className="flex gap-3 text-xs leading-5 text-slate-400"><GitCompareArrows className="mt-0.5 h-4 w-4 shrink-0 text-sky-300" /><span><strong className="text-slate-200">Demand:</strong> {blueprint.finishedProductDemand.message}</span></div>
                   <div className="flex gap-3 text-xs leading-5 text-slate-400"><FlaskConical className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" /><span><strong className="text-slate-200">Method load:</strong> {blueprint.methodCapacity.length > 0 ? "Allocated only where physical execution is resolved and in-house." : "Held back because no eligible in-house physical execution is allocated."}</span></div>
                   <div className="flex gap-3 text-xs leading-5 text-slate-400">{blueprint.dataQuality.blockingOpenCount > 0 ? <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />}<span><strong className="text-slate-200">Review:</strong> {blueprint.dataQuality.blockingOpenCount} blocking and {blueprint.dataQuality.importantOpenCount} important inputs remain.</span></div>
                 </div>
+                <details className="group border-t border-white/10 bg-slate-950/30 md:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-4 text-xs font-bold text-sky-200 marker:content-none">Why the engine responded this way <ChevronDown className="h-4 w-4 transition group-open:rotate-180" /></summary>
+                  <div className="space-y-4 border-t border-white/8 p-5">
+                    <div className="flex gap-3 text-xs leading-5 text-slate-400"><GitCompareArrows className="mt-0.5 h-4 w-4 shrink-0 text-sky-300" /><span><strong className="text-slate-200">Demand:</strong> {blueprint.finishedProductDemand.message}</span></div>
+                    <div className="flex gap-3 text-xs leading-5 text-slate-400"><FlaskConical className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" /><span><strong className="text-slate-200">Method load:</strong> {blueprint.methodCapacity.length > 0 ? "Allocated only where physical execution is resolved and in-house." : "Held back because no eligible in-house physical execution is allocated."}</span></div>
+                    <div className="flex gap-3 text-xs leading-5 text-slate-400">{blueprint.dataQuality.blockingOpenCount > 0 ? <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /> : <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />}<span><strong className="text-slate-200">Review:</strong> {blueprint.dataQuality.blockingOpenCount} blocking and {blueprint.dataQuality.importantOpenCount} important inputs remain.</span></div>
+                  </div>
+                </details>
               </article>
             );
           })}

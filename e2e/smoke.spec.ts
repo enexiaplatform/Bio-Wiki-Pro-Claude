@@ -114,12 +114,14 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/Variance:/i).first()).not.toHaveText(/open/i);
     await page.getByLabel(/Monthly tests variance driver/i).selectOption("scope-change");
     await page.getByLabel(/Monthly tests actual basis/i).fill("Approved quarterly QC workload report Q1-2026");
+    await page.getByText(/Observation provenance and learning disposition/i).click();
     await page.getByLabel(/Observed period start/i).fill("2026-01-01");
     await page.getByLabel(/Observed period end/i).fill("2026-03-31");
     await page.getByLabel(/Calibration data owner/i).fill("QC Operations");
     await page.getByLabel(/Calibration evidence references/i).fill("QC-WORKLOAD-Q1-2026");
     await expect(page.getByText(/^Review ready$/i).first()).toBeVisible();
     await page.getByLabel(/Learning disposition/i).selectOption("project-only");
+    await page.getByText(/Exports and handoff/i).click();
     const calibrationDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Export calibration CSV/i }).click();
     expect((await calibrationDownload).suggestedFilename()).toMatch(/-calibration\.csv$/);
