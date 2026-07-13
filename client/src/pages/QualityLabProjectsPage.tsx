@@ -11,6 +11,10 @@ export default function QualityLabProjectsPage() {
   useSEO({ title: "Quality Lab Projects", description: "Saved Atlas Quality Lab Blueprint scenarios on this device." });
   const [, setLocation] = useLocation();
   const [projects, setProjects] = useState<QualityLabProject[]>([]);
+  const projectsWithBlockingInputs = projects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
+  const averageReadiness = projects.length
+    ? Math.round(projects.reduce((sum, project) => sum + project.blueprint.dataQuality.completenessPercent, 0) / projects.length)
+    : 0;
 
   const refresh = () => setProjects(listQualityLabProjects());
   useEffect(() => {
@@ -38,9 +42,10 @@ export default function QualityLabProjectsPage() {
         </div>
 
         <header className="mb-6 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-6 md:p-8">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-300/10 text-teal-200"><FlaskConical className="h-5 w-5" /></div>
-          <h1 className="mt-5 text-3xl font-bold md:text-5xl">Quality lab projects</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">Compare scenarios, revisit assumptions and export the underlying model. Projects in this concept edition stay in this browser.</p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-300/10 text-teal-200"><FlaskConical className="h-5 w-5" /></div><h1 className="mt-5 text-3xl font-bold md:text-5xl">Quality lab projects</h1><p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">Compare scenarios, resolve critical inputs and export the model basis. Projects in this concept edition stay in this browser.</p></div>
+            {projects.length > 0 && <div className="grid min-w-64 grid-cols-3 gap-2" aria-label="Project portfolio summary"><div className="rounded-xl border border-white/10 bg-black/15 p-3 text-center"><strong className="block text-lg text-white">{projects.length}</strong><span className="text-[10px] text-slate-500">projects</span></div><div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-center"><strong className="block text-lg text-amber-200">{projectsWithBlockingInputs}</strong><span className="text-[10px] text-slate-500">blocked</span></div><div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.04] p-3 text-center"><strong className="block text-lg text-teal-200">{averageReadiness}%</strong><span className="text-[10px] text-slate-500">avg readiness</span></div></div>}
+          </div>
         </header>
 
         {projects.length === 0 ? (
@@ -60,7 +65,12 @@ export default function QualityLabProjectsPage() {
                 </div>
                 <h2 className="mt-5 text-xl font-bold">{project.name}</h2>
                 <p className="mt-1 text-xs text-slate-500">{project.input.companyName || "Company not specified"} · {project.input.country} · Updated {new Date(project.updatedAt).toLocaleDateString()}</p>
-                <div className="mt-5 grid grid-cols-3 gap-2">
+                <div className="mt-5 rounded-xl border border-white/8 bg-slate-950/30 p-3">
+                  <div className="flex items-center justify-between gap-3 text-xs"><span className="font-semibold text-slate-300">Input readiness</span><span className="font-bold text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</span></div>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`${project.name} input readiness`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={project.blueprint.dataQuality.completenessPercent}><div className="h-full rounded-full bg-teal-300" style={{ width: `${project.blueprint.dataQuality.completenessPercent}%` }} /></div>
+                  <p className="mt-2 text-[10px] text-slate-500"><span className="font-bold text-red-200">{project.blueprint.dataQuality.blockingOpenCount} blocking</span> · <span className="font-bold text-amber-200">{project.blueprint.dataQuality.importantOpenCount} important</span> inputs remain</p>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-2">
                   <div className="rounded-xl border border-white/8 bg-slate-950/30 p-3"><p className="font-bold text-teal-200">{project.blueprint.current.monthlyTests}</p><p className="mt-1 text-[10px] text-slate-500">tests / month</p></div>
                   <div className="rounded-xl border border-white/8 bg-slate-950/30 p-3"><p className="font-bold text-teal-200">{project.blueprint.current.totalTeamFte}</p><p className="mt-1 text-[10px] text-slate-500">team FTE</p></div>
                   <div className="rounded-xl border border-white/8 bg-slate-950/30 p-3"><p className="font-bold text-teal-200">{money.format(project.blueprint.current.capexHighUsd)}</p><p className="mt-1 text-[10px] text-slate-500">CAPEX high</p></div>

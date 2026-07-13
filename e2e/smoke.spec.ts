@@ -198,7 +198,7 @@ test.describe("public smoke", () => {
 
   test("Atlas Evidence Graph connects domains to Blueprint decisions", async ({ page }) => {
     await page.goto("/quality-lab/evidence");
-    await expect(page.getByRole("heading", { name: /Follow the evidence behind every Blueprint decision/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Trace the evidence behind the decision/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Scope a non-sterile microbiology QC lab/i })).toHaveAttribute("href", "/blog/how-to-scope-nonsterile-microbiology-qc-lab");
     await page.getByRole("button", { name: /Equipment & utilities/i }).click();

@@ -7,6 +7,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
 import { QUALITY_LAB_REVIEW_BRIEF_VERSION } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
+import { EditorialImage } from "@/components/EditorialImage";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -105,9 +106,10 @@ export default function QualityLabReviewPage() {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Service-assisted review</span>
             <h1 className="mt-5 text-4xl font-bold leading-tight">Turn the concept model into a reviewable project basis.</h1>
-            <p className="mt-5 leading-7 text-slate-400">Atlas surfaces the assumptions. Expert review tests whether the inputs, capability scope, capacity logic, risks, and implementation sequence are fit for your actual site.</p>
-            <div className="mt-7 space-y-3">
-              {["Scope and critical-input check", "Assumption and gap review", "Scenario priorities and decision questions", "Recommended controlled deliverables"].map((item) => (
+            <p className="mt-4 leading-7 text-slate-400">Atlas surfaces the assumptions. Expert review tests the inputs, capability scope, capacity logic and implementation sequence against your actual site.</p>
+            <EditorialImage src="/images/editorial/laboratory-record-review.jpg" alt="Laboratory scientist documenting sample tube identifiers" creditName="Nathan Rimoux" creditUrl="https://unsplash.com/photos/iul3dSPs1G4" className="mt-6 h-40 rounded-2xl border border-white/10 md:h-48" imageClassName="object-center saturate-75" />
+            <div className="mt-6 space-y-3">
+              {["Critical-input and evidence check", "Assumption, gap and scenario review", "Controlled deliverables to prepare next"].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
               ))}
             </div>

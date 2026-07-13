@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { ArrowRight, BookOpen, Boxes, FlaskConical, Network, ShieldCheck, Wrench } from "lucide-react";
 import { Link } from "wouter";
+import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { atlasEvidenceDomains, blueprintDecisions, type BlueprintDecisionId, type EvidenceResourceKind } from "@/data/atlasEvidenceGraph";
 import { useSEO } from "@/hooks/use-seo";
 
@@ -32,19 +33,21 @@ export default function QualityLabEvidenceGraphPage() {
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-7xl">
-        <header className="overflow-hidden rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/15 via-teal-300/[0.06] to-transparent p-6 md:p-10">
-          <span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-200"><Network className="h-3.5 w-3.5" /> Atlas Evidence Graph</span>
-          <h1 className="mt-6 max-w-5xl font-display text-4xl font-bold leading-tight md:text-6xl">Follow the evidence behind every Blueprint decision.</h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300 md:text-lg">The graph connects each planning question to a domain guide, technical lesson, operational workflow and practical tool. It explains the reasoning; controlled site evidence still decides the answer.</p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+        <QualityLabEditorialHero
+          eyebrow={<span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-200"><Network className="h-3.5 w-3.5" /> Atlas Evidence Graph</span>}
+          title="Trace the evidence behind the decision."
+          description="Move from a planning question to the domain guide, technical lesson, workflow and tool that support it—then identify the controlled site evidence still needed."
+          image={{ src: "/images/editorial/evidence-data-review.jpg", alt: "Two laboratory scientists reviewing analytical results at a computer workstation", creditName: "Faustina Okeke", creditUrl: "https://unsplash.com/photos/XLQuTdktpa8", className: "object-center" }}
+          tone="sky"
+          boundary={{ label: "Planning evidence, not site approval", text: "These resources explain the reasoning. Current controlled sources and qualified review must still establish product-specific applicability, method suitability, equipment qualification and laboratory design decisions." }}
+          actions={<>
             <Link href="/quality-lab/planner" className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">Build a Blueprint <ArrowRight className="h-4 w-4" /></Link>
             <Link href="/quality-lab/discovery-pack" className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">Collect project evidence</Link>
-            <Link href="/quality-lab/domain-readiness" className="inline-flex items-center justify-center rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-5 py-3 text-sm font-semibold text-amber-200 hover:bg-amber-300/10">Review Domain Pack gates</Link>
-          </div>
-        </header>
+          </>}
+        />
 
         <section className="py-10">
-          <div className="flex items-center gap-3"><Boxes className="h-5 w-5 text-teal-300" /><h2 className="text-xl font-bold">Choose the decision you need to defend</h2></div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><Boxes className="h-5 w-5 text-teal-300" /><h2 className="text-xl font-bold">Choose the decision you need to defend</h2></div><Link href="/quality-lab/domain-readiness" className="inline-flex items-center gap-2 text-xs font-bold text-amber-200 hover:text-amber-100">Review Domain Pack gates <ArrowRight className="h-4 w-4" /></Link></div>
           <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Blueprint decision filter">
             <button type="button" onClick={() => setDecision("all")} className={`rounded-full border px-4 py-2 text-xs font-bold transition ${decision === "all" ? "border-teal-300 bg-teal-300 text-slate-950" : "border-white/10 bg-white/[0.035] text-slate-300 hover:border-white/25"}`}>All decisions</button>
             {blueprintDecisions.map((item) => <button key={item.id} type="button" onClick={() => setDecision(item.id)} title={item.question} className={`rounded-full border px-4 py-2 text-xs font-bold transition ${decision === item.id ? "border-teal-300 bg-teal-300 text-slate-950" : "border-white/10 bg-white/[0.035] text-slate-300 hover:border-white/25"}`}>{item.title}</button>)}
@@ -78,9 +81,6 @@ export default function QualityLabEvidenceGraphPage() {
           ))}
         </section>
 
-        <footer className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-sm leading-7 text-slate-400">
-          Evidence Graph links are educational and planning aids. They do not establish product-specific regulatory applicability, approve a method, qualify equipment or validate a laboratory design. Those decisions require current controlled sources and qualified review.
-        </footer>
       </div>
     </div>
   );

@@ -13,5 +13,7 @@ These images are stored locally to keep the product fast and avoid third-party h
 | `application-evidence-pipetting.jpg` | Julia Koblitz | https://unsplash.com/photos/RlOAwXt2fEA |
 | `laboratory-glassware-planning.jpg` | Hans Reniers | https://unsplash.com/photos/lQGJCMY5qcM |
 | `test-tube-evidence-review.jpg` | Eka P. Amdela | https://unsplash.com/photos/JcsYP0IJvnI |
+| `evidence-data-review.jpg` | Faustina Okeke | https://unsplash.com/photos/XLQuTdktpa8 |
+| `laboratory-record-review.jpg` | Nathan Rimoux | https://unsplash.com/photos/iul3dSPs1G4 |
 
 License: https://unsplash.com/license
