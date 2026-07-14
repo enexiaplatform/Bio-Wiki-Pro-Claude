@@ -384,6 +384,41 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/does not certify competence/i).last()).toBeVisible();
   });
 
+  test("Expert ownership working evidence persists and feeds Gate 2", async ({ page }) => {
+    await page.goto("/quality-lab/domain-ownership");
+    const appointment = {
+      reviewerName: "Controlled reviewer",
+      organization: "Qualified organization",
+      competenceBasis: "Documented pharmaceutical microbiology and controlled method lifecycle accountability.",
+      competenceEvidenceRefs: ["controlled-cv-001"],
+      conflictDeclaration: "No unmanaged conflict declared for the assigned scope.",
+      scopeAccepted: true,
+      appointmentStatus: "appointed-outside-atlas",
+      appointmentEvidenceRef: "appointment-record-001",
+      appointedAt: "2026-07-01T00:00:00.000Z",
+      appointmentExpiresAt: "2027-07-01T00:00:00.000Z",
+      changeControlResponsibility: "Reviews affected evidence and rules before any controlled version change.",
+    };
+    await page.evaluate((savedAppointment) => window.localStorage.setItem("lsa:quality-lab-expert-ownership:v1", JSON.stringify({
+      registerVersion: "expert-ownership-register/v1",
+      domainPackId: "nonsterile-pharma-microbiology",
+      domainPackVersion: "microbiology-pack/v1.1",
+      updatedAt: "2026-07-14T00:00:00.000Z",
+      appointments: {
+        "microbiology-domain-owner": savedAppointment,
+        "quality-governance-owner": savedAppointment,
+        "laboratory-operations-owner": savedAppointment,
+        "laboratory-engineering-owner": savedAppointment,
+      },
+    })), appointment);
+    await page.reload();
+    await expect(page.getByRole("heading", { name: /All accountable roles have complete working evidence/i })).toBeVisible();
+    await expect(page.getByText("4/4")).toBeVisible();
+    await page.goto("/quality-lab/gate-2-release");
+    await expect(page.getByRole("heading", { name: /1\/4 evidence controls complete/i })).toBeVisible();
+    await expect(page.getByRole("progressbar", { name: /Gate 2 evidence control progress/i })).toHaveAttribute("aria-valuenow", "1");
+  });
+
   test("Validation case registry separates synthetic, calibration and accepted evidence", async ({ page }) => {
     await page.goto("/quality-lab/validation-cases");
     await expect(page.getByRole("heading", { name: /A calibration record is not automatically a validation case/i })).toBeVisible();

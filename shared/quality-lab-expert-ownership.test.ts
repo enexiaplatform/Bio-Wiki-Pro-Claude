@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   assessExpertOwnership,
+  applyExpertOwnershipRegister,
+  createExpertOwnershipRegister,
   createExpertOwnershipCsv,
   createMicrobiologyExpertOwnerRoles,
   type ExpertOwnerRole,
@@ -89,5 +91,21 @@ describe("Quality Lab expert ownership controls", () => {
     expect(csv).toContain('"microbiology-domain-owner"');
     expect(csv).toContain('"not-appointed"');
     expect(csv).not.toContain("Qualified organization");
+  });
+
+  it("applies saved appointments only to the exact Domain Pack version", () => {
+    const register = createExpertOwnershipRegister({
+      domainPack: MICROBIOLOGY_DOMAIN_PACK,
+      roles,
+      updatedAt: generatedAt,
+    });
+    const applied = applyExpertOwnershipRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, roles, register });
+    expect(applied).toMatchObject({ applied: true, reason: null });
+    expect(applied.roles).toHaveLength(4);
+
+    const stale = applyExpertOwnershipRegister({ domainPack: { ...MICROBIOLOGY_DOMAIN_PACK, version: "microbiology-pack/v2.0" }, roles, register });
+    expect(stale.applied).toBe(false);
+    expect(stale.reason).toContain("not nonsterile-pharma-microbiology@microbiology-pack/v2.0");
+    expect(stale.roles).toEqual(roles);
   });
 });

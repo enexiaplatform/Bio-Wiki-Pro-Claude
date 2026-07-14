@@ -5,6 +5,7 @@ import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { listEngagements } from "@/lib/quality-lab-engagements";
+import { loadExpertOwnerRoles } from "@/lib/quality-lab-expert-ownership";
 import { fetchQualityLabReviewedProjects, getQualityLabProject } from "@/lib/quality-lab-projects";
 import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery";
 import { assessExpertOwnership, createMicrobiologyExpertOwnerRoles } from "@shared/quality-lab-expert-ownership";
@@ -17,7 +18,7 @@ import { assessValidationCaseRegistry } from "@shared/quality-lab-validation-cas
 const workflowKeys: MicrobiologyWorkflowKey[] = ["rawMaterials", "finishedProducts", "water", "environmentalMonitoring", "sterility", "endotoxin", "bioburden", "growthPromotion"];
 const rules = [...workflowRuleTrace(workflowKeys), ...MICROBIOLOGY_SHARED_RULE_TRACE];
 const sourceCoverage = assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: MICROBIOLOGY_EVIDENCE_CATALOG, rules });
-const expertOwnership = assessExpertOwnership({ domainPack: MICROBIOLOGY_DOMAIN_PACK, ruleTrace: rules, roles: createMicrobiologyExpertOwnerRoles(rules) });
+const baseExpertRoles = createMicrobiologyExpertOwnerRoles(rules);
 
 function downloadReleaseDossier(assessment: ReturnType<typeof assessGate2Release>) {
   const blob = new Blob([JSON.stringify(createGate2ReleaseDossier(assessment), null, 2)], { type: "application/json" });
@@ -33,6 +34,7 @@ export default function QualityLabGate2ReleasePage() {
   const { isAuthenticated } = useUser();
   const [serverSnapshots, setServerSnapshots] = useState<Awaited<ReturnType<typeof fetchQualityLabReviewedProjects>>>([]);
   const [loadNotice, setLoadNotice] = useState("");
+  const expertOwnership = useMemo(() => assessExpertOwnership({ domainPack: MICROBIOLOGY_DOMAIN_PACK, ruleTrace: rules, roles: loadExpertOwnerRoles(MICROBIOLOGY_DOMAIN_PACK, baseExpertRoles).roles }), []);
 
   useEffect(() => {
     if (!isAuthenticated) return;

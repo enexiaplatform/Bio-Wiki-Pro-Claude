@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { RuleTrace } from "./quality-lab-contract";
 
 export const QUALITY_LAB_EXPERT_OWNERSHIP_VERSION = "expert-ownership/v1.0" as const;
+export const QUALITY_LAB_EXPERT_OWNERSHIP_REGISTER_VERSION = "expert-ownership-register/v1" as const;
 
 export const expertOwnerAppointmentSchema = z.object({
   reviewerName: z.string().trim().nullable(),
@@ -18,6 +19,16 @@ export const expertOwnerAppointmentSchema = z.object({
 });
 
 export type ExpertOwnerAppointment = z.infer<typeof expertOwnerAppointmentSchema>;
+
+export const expertOwnershipRegisterSchema = z.object({
+  registerVersion: z.literal(QUALITY_LAB_EXPERT_OWNERSHIP_REGISTER_VERSION),
+  domainPackId: z.string().trim().min(1),
+  domainPackVersion: z.string().trim().min(1),
+  updatedAt: z.string().datetime(),
+  appointments: z.record(z.string(), expertOwnerAppointmentSchema),
+});
+
+export type ExpertOwnershipRegister = z.infer<typeof expertOwnershipRegisterSchema>;
 
 export interface ExpertOwnerRole {
   id: string;
@@ -107,6 +118,37 @@ export function createMicrobiologyExpertOwnerRoles(ruleTrace: RuleTrace[]): Expe
       appointment: emptyAppointment(),
     },
   ];
+}
+
+export function createExpertOwnershipRegister(args: {
+  domainPack: { id: string; version: string };
+  roles: ExpertOwnerRole[];
+  updatedAt?: string;
+}): ExpertOwnershipRegister {
+  return expertOwnershipRegisterSchema.parse({
+    registerVersion: QUALITY_LAB_EXPERT_OWNERSHIP_REGISTER_VERSION,
+    domainPackId: args.domainPack.id,
+    domainPackVersion: args.domainPack.version,
+    updatedAt: args.updatedAt ?? new Date().toISOString(),
+    appointments: Object.fromEntries(args.roles.map((role) => [role.id, role.appointment])),
+  });
+}
+
+export function applyExpertOwnershipRegister(args: {
+  domainPack: { id: string; version: string };
+  roles: ExpertOwnerRole[];
+  register: unknown;
+}) {
+  const parsed = expertOwnershipRegisterSchema.safeParse(args.register);
+  if (!parsed.success) return { roles: args.roles, applied: false as const, reason: "The saved ownership record is invalid." };
+  if (parsed.data.domainPackId !== args.domainPack.id || parsed.data.domainPackVersion !== args.domainPack.version) {
+    return { roles: args.roles, applied: false as const, reason: `The saved ownership record targets ${parsed.data.domainPackId}@${parsed.data.domainPackVersion}, not ${args.domainPack.id}@${args.domainPack.version}.` };
+  }
+  return {
+    roles: args.roles.map((role) => ({ ...role, appointment: parsed.data.appointments[role.id] ?? role.appointment })),
+    applied: true as const,
+    reason: null,
+  };
 }
 
 function assessRole(role: ExpertOwnerRole, generatedAt: string): ExpertOwnerRoleAssessment {
