@@ -5,15 +5,16 @@ import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { listEngagements } from "@/lib/quality-lab-engagements";
-import { loadExpertOwnerRoles } from "@/lib/quality-lab-expert-ownership";
-import { loadSourceClosures } from "@/lib/quality-lab-source-closures";
+import { loadExpertOwnershipRegister } from "@/lib/quality-lab-expert-ownership";
+import { fetchAccountGovernanceRecord } from "@/lib/quality-lab-governance";
+import { loadSourceClosureRegister } from "@/lib/quality-lab-source-closures";
 import { fetchQualityLabReviewedProjects, getQualityLabProject } from "@/lib/quality-lab-projects";
 import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery";
-import { assessExpertOwnership, createMicrobiologyExpertOwnerRoles } from "@shared/quality-lab-expert-ownership";
+import { applyExpertOwnershipRegister, assessExpertOwnership, createMicrobiologyExpertOwnerRoles, type ExpertOwnershipRegister } from "@shared/quality-lab-expert-ownership";
 import { assessGate2Release, createGate2ReleaseDossier } from "@shared/quality-lab-gate-2-release";
 import { MICROBIOLOGY_DOMAIN_PACK, MICROBIOLOGY_EVIDENCE_CATALOG, MICROBIOLOGY_SHARED_RULE_TRACE, workflowRuleTrace, type MicrobiologyWorkflowKey } from "@shared/quality-lab-microbiology-pack";
 import { assessPaidPilotPortfolio, type PilotPortfolioInput } from "@shared/quality-lab-pilot-portfolio";
-import { assessSourceCoverage } from "@shared/quality-lab-source-coverage";
+import { applySourceClosureRegister, assessSourceCoverage, type SourceClosureRegister } from "@shared/quality-lab-source-coverage";
 import { assessValidationCaseRegistry } from "@shared/quality-lab-validation-cases";
 
 const workflowKeys: MicrobiologyWorkflowKey[] = ["rawMaterials", "finishedProducts", "water", "environmentalMonitoring", "sterility", "endotoxin", "bioburden", "growthPromotion"];
@@ -34,12 +35,25 @@ export default function QualityLabGate2ReleasePage() {
   const { isAuthenticated } = useUser();
   const [serverSnapshots, setServerSnapshots] = useState<Awaited<ReturnType<typeof fetchQualityLabReviewedProjects>>>([]);
   const [loadNotice, setLoadNotice] = useState("");
-  const sourceCoverage = useMemo(() => assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: MICROBIOLOGY_EVIDENCE_CATALOG, rules, closures: loadSourceClosures(MICROBIOLOGY_DOMAIN_PACK).closures }), []);
-  const expertOwnership = useMemo(() => assessExpertOwnership({ domainPack: MICROBIOLOGY_DOMAIN_PACK, ruleTrace: rules, roles: loadExpertOwnerRoles(MICROBIOLOGY_DOMAIN_PACK, baseExpertRoles).roles }), []);
+  const [accountSourceRegister, setAccountSourceRegister] = useState<SourceClosureRegister | null>(null);
+  const [accountOwnershipRegister, setAccountOwnershipRegister] = useState<ExpertOwnershipRegister | null>(null);
+  const localSourceRegister = useMemo(loadSourceClosureRegister, []);
+  const localOwnershipRegister = useMemo(loadExpertOwnershipRegister, []);
+  const newestRegister = <T extends { updatedAt: string },>(local: T | null, account: T | null) => !account || (local && local.updatedAt >= account.updatedAt) ? { register: local, basis: local ? "browser" as const : "baseline" as const } : { register: account, basis: "account" as const };
+  const sourceSelection = newestRegister(localSourceRegister, accountSourceRegister);
+  const ownershipSelection = newestRegister(localOwnershipRegister, accountOwnershipRegister);
+  const sourceClosureBasis = sourceSelection.register ? applySourceClosureRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, register: sourceSelection.register }) : { closures: [], applied: false as const, reason: null };
+  const ownershipRoleBasis = ownershipSelection.register ? applyExpertOwnershipRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, roles: baseExpertRoles, register: ownershipSelection.register }) : { roles: baseExpertRoles, applied: false as const, reason: null };
+  const sourceCoverage = useMemo(() => assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: MICROBIOLOGY_EVIDENCE_CATALOG, rules, closures: sourceClosureBasis.closures }), [sourceClosureBasis.closures]);
+  const expertOwnership = useMemo(() => assessExpertOwnership({ domainPack: MICROBIOLOGY_DOMAIN_PACK, ruleTrace: rules, roles: ownershipRoleBasis.roles }), [ownershipRoleBasis.roles]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
-    fetchQualityLabReviewedProjects().then(setServerSnapshots).catch(() => setLoadNotice("Account-connected reviewed projects could not be loaded. The assessment below uses browser-local records only."));
+    Promise.all([
+      fetchQualityLabReviewedProjects().then(setServerSnapshots),
+      fetchAccountGovernanceRecord("source-closures").then((record) => setAccountSourceRegister(record?.registerVersion === "source-closure-register/v1" ? record : null)),
+      fetchAccountGovernanceRecord("expert-ownership").then((record) => setAccountOwnershipRegister(record?.registerVersion === "expert-ownership-register/v1" ? record : null)),
+    ]).catch(() => setLoadNotice("Some account-connected evidence could not be loaded. Available browser-local records remain in use."));
   }, [isAuthenticated]);
 
   const portfolioInputs = useMemo<PilotPortfolioInput[]>(() => {
@@ -78,7 +92,7 @@ export default function QualityLabGate2ReleasePage() {
 
       <section className="mt-8 rounded-3xl border border-rose-300/20 bg-rose-300/[0.04] p-5 md:p-7" aria-labelledby="gate-2-status-heading">
         {loadNotice && <p role="alert" className="mb-4 rounded-xl border border-amber-300/20 bg-amber-300/10 p-3 text-xs text-amber-100">{loadNotice}</p>}
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-200">Current release-review status</p><h2 id="gate-2-status-heading" className="mt-3 text-3xl font-bold">{assessment.evidenceCompleteCount}/{assessment.totalControlCount} evidence controls complete</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-400">Active basis: {assessment.domainPackId}@{assessment.domainPackVersion}. Current status remains <strong className="text-rose-200">{assessment.status.replaceAll("-", " ")}</strong>.</p></div><button type="button" onClick={() => downloadReleaseDossier(assessment, { sourceCoverage, expertOwnership })} className="inline-flex w-fit shrink-0 items-center gap-2 rounded-xl border border-rose-300/25 bg-rose-300/10 px-4 py-3 text-xs font-bold text-rose-100 hover:bg-rose-300/15"><Download className="h-4 w-4" /> Export release dossier</button></div>
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-200">Current release-review status</p><h2 id="gate-2-status-heading" className="mt-3 text-3xl font-bold">{assessment.evidenceCompleteCount}/{assessment.totalControlCount} evidence controls complete</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-400">Active basis: {assessment.domainPackId}@{assessment.domainPackVersion}. Current status remains <strong className="text-rose-200">{assessment.status.replaceAll("-", " ")}</strong>.</p><p className="mt-2 text-[10px] uppercase tracking-wider text-slate-500">Source basis: {sourceSelection.basis} · Ownership basis: {ownershipSelection.basis} · newest exact-version record wins</p></div><button type="button" onClick={() => downloadReleaseDossier(assessment, { sourceCoverage, expertOwnership })} className="inline-flex w-fit shrink-0 items-center gap-2 rounded-xl border border-rose-300/25 bg-rose-300/10 px-4 py-3 text-xs font-bold text-rose-100 hover:bg-rose-300/15"><Download className="h-4 w-4" /> Export release dossier</button></div>
         <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Gate 2 evidence control progress" aria-valuemin={0} aria-valuemax={4} aria-valuenow={assessment.evidenceCompleteCount}><div className="h-full rounded-full bg-teal-300" style={{ width: `${progress}%` }} /></div>
       </section>
 
@@ -91,7 +105,7 @@ export default function QualityLabGate2ReleasePage() {
         </article>)}
       </section>
 
-      <section className="mt-6 rounded-3xl border border-amber-300/15 bg-amber-300/[0.04] p-5 md:p-6"><div className="flex gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /><div><h2 className="font-bold">Decision boundary</h2><p className="mt-2 text-xs leading-6 text-slate-400">{assessment.notice}</p>{assessment.versionMismatches.length > 0 && <p className="mt-2 text-xs text-rose-200">{assessment.versionMismatches.length} current-version mismatch(es) must be reconciled.</p>}</div></div></section>
+      <section className="mt-6 rounded-3xl border border-amber-300/15 bg-amber-300/[0.04] p-5 md:p-6"><div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div className="flex gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /><div><h2 className="font-bold">Decision boundary</h2><p className="mt-2 text-xs leading-6 text-slate-400">{assessment.notice}</p>{assessment.versionMismatches.length > 0 && <p className="mt-2 text-xs text-rose-200">{assessment.versionMismatches.length} current-version mismatch(es) must be reconciled.</p>}</div></div><div className="flex flex-col items-start gap-2"><Link href="/quality-lab/governance-history" className="inline-flex shrink-0 items-center gap-2 text-xs font-bold text-violet-200">Inspect revision history <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/rule-changes" className="inline-flex shrink-0 items-center gap-2 text-xs font-bold text-teal-200">Open rule-change control <ArrowRight className="h-4 w-4" /></Link></div></div></section>
     </div>
   </div>;
 }

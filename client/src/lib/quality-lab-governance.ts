@@ -20,3 +20,9 @@ export async function fetchAccountGovernanceRevisions(recordKey: QualityLabGover
   if (!response.ok) return [] as Array<{ revisionNumber: number; createdAt: string }>;
   return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string }>>;
 }
+
+export async function fetchAccountGovernanceRevision(recordKey: QualityLabGovernanceKey, revisionNumber: number) {
+  const response = await fetch(`/api/quality-lab/governance/${recordKey}/revisions/${revisionNumber}`, { credentials: "include" });
+  if (!response.ok) throw new Error("Unable to load the governance revision");
+  return qualityLabGovernanceSnapshotSchema.parse(await response.json());
+}

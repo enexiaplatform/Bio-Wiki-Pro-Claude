@@ -685,7 +685,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       const recordKey = qualityLabGovernanceKeySchema.parse(req.params.recordKey);
       const snapshot = qualityLabGovernanceSnapshotSchema.parse(req.body);
-      const expectedVersion = recordKey === "expert-ownership" ? "expert-ownership-register/v1" : "source-closure-register/v1";
+      const expectedVersion = { "expert-ownership": "expert-ownership-register/v1", "source-closures": "source-closure-register/v1", "rule-changes": "rule-change-register/v1" }[recordKey];
       if (snapshot.registerVersion !== expectedVersion) return res.status(400).json({ message: "Governance record type mismatch" });
       const row = await storage.upsertQualityLabGovernanceRecord(req.session.userId, recordKey, snapshot);
       res.status(201).json({ recordKey: row.recordKey, updatedAt: row.updatedAt });
@@ -700,6 +700,15 @@ export async function registerRoutes(app: Express): Promise<void> {
     if (!recordKey.success) return res.status(404).json({ message: "Governance register not found" });
     const rows = await storage.listQualityLabGovernanceRevisions(req.session.userId, recordKey.data);
     res.json(rows.map((row) => ({ revisionNumber: row.revisionNumber, createdAt: row.createdAt })));
+  });
+
+  app.get("/api/quality-lab/governance/:recordKey/revisions/:revisionNumber", isAuthenticated, async (req: any, res) => {
+    const recordKey = qualityLabGovernanceKeySchema.safeParse(req.params.recordKey);
+    if (!recordKey.success) return res.status(404).json({ message: "Governance register not found" });
+    const rows = await storage.listQualityLabGovernanceRevisions(req.session.userId, recordKey.data);
+    const revision = rows.find((row) => row.revisionNumber === Number(req.params.revisionNumber));
+    if (!revision) return res.status(404).json({ message: "Governance revision not found" });
+    res.json(revision.snapshot);
   });
 
   app.put("/api/quality-lab/reviewed-projects/:localProjectId", isAuthenticated, async (req: any, res) => {

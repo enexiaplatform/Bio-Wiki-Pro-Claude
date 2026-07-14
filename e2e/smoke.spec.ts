@@ -490,6 +490,41 @@ test.describe("public smoke", () => {
     expect((await dossierDownload).suggestedFilename()).toBe("atlas-microbiology-gate-2-release-dossier.json");
     await expect(page.getByText(/Eligibility starts a qualified release review only/i)).toBeVisible();
     await expect(page.getByText(/They do not verify the Pack or authorize external use/i).last()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Inspect revision history/i })).toHaveAttribute("href", "/quality-lab/governance-history");
+  });
+
+  test("Governance history keeps account revisions separate from approval", async ({ page }) => {
+    await page.goto("/quality-lab/governance-history");
+    await expect(page.getByRole("heading", { name: /Working-record changes should be inspectable/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Sign in to inspect account revisions/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /^Sign in$/i }).last()).toHaveAttribute("href", "/login?returnTo=/quality-lab/governance-history");
+    await expect(page.getByText(/not an electronic signature, approval history, or document-control system/i)).toBeVisible();
+  });
+
+  test("Rule-change control cannot silently modify executable rules", async ({ page }) => {
+    await page.goto("/quality-lab/rule-changes");
+    await expect(page.getByRole("heading", { name: /A calibration insight is not a rule change/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Rule-change working register/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Add controlled candidate/i })).toBeVisible();
+    await expect(page.getByText(/never edits the current rule registry or publishes a new Domain Pack version/i)).toBeVisible();
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export/i }).click();
+    expect((await download).suggestedFilename()).toBe("atlas-microbiology-rule-change-register.json");
+  });
+
+  test("Gate 2 uses the newest exact-version account governance basis", async ({ page }) => {
+    await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "gate2-user", email: "gate2@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }) }));
+    await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/governance/expert-ownership", (route) => route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ message: "not found" }) }));
+    await page.route("**/api/quality-lab/governance/source-closures", (route) => {
+      const types: Record<string, string> = { "project-inputs": "controlled-project-revision", "atlas-microbiology-benchmarks-v1": "calibrated-benchmark-replacement", "usp-61-context": "confirmed-public-edition", "usp-62-context": "confirmed-public-edition", "site-approved-methods": "controlled-site-record", "vendor-budget-evidence": "controlled-site-record" };
+      const closures = Object.entries(types).map(([evidenceId, resolutionType]) => ({ evidenceId, domainPackId: "nonsterile-pharma-microbiology", domainPackVersion: "microbiology-pack/v1.1", resolutionType, sourceVersion: "Controlled source revision 2026-07", sourceLocator: `controlled-reference-${evidenceId}`, scopeSummary: "Controlled scope reviewed for the non-sterile microbiology Domain Pack boundary.", reviewStatus: "accepted-outside-atlas", reviewedByRole: "Microbiology Domain Pack owner", reviewedAt: "2026-07-01T00:00:00.000Z", reviewEvidenceRef: `external-review-${evidenceId}`, limitations: "This working record does not authorize site implementation or external release decisions." }));
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ registerVersion: "source-closure-register/v1", domainPackId: "nonsterile-pharma-microbiology", domainPackVersion: "microbiology-pack/v1.1", updatedAt: "2026-07-14T12:00:00.000Z", closures }) });
+    });
+    await page.goto("/quality-lab/gate-2-release");
+    await expect(page.getByRole("heading", { name: /1\/4 evidence controls complete/i })).toBeVisible();
+    await expect(page.getByText(/Source basis: account · Ownership basis: baseline/i)).toBeVisible();
+    await expect(page.getByText(/14\/14 rules evidence-closed; 0 evidence records open/i)).toBeVisible();
   });
 
   test("Domain Pack validation guide connects calibration, readiness and evidence governance", async ({ page }) => {
