@@ -1,6 +1,8 @@
+import { z } from "zod";
 import type { EvidenceRecord, RuleTrace } from "./quality-lab-contract";
 
 export const QUALITY_LAB_SOURCE_COVERAGE_VERSION = "source-coverage/v1.0" as const;
+export const QUALITY_LAB_SOURCE_CLOSURE_REGISTER_VERSION = "source-closure-register/v1" as const;
 
 export type EvidenceControlState =
   | "controlled-context"
@@ -8,6 +10,32 @@ export type EvidenceControlState =
   | "project-revision"
   | "concept-benchmark"
   | "site-evidence-required";
+
+export const evidenceClosureResolutionTypes = ["controlled-project-revision", "calibrated-benchmark-replacement", "confirmed-public-edition", "controlled-site-record"] as const;
+export const evidenceClosureRecordSchema = z.object({
+  evidenceId: z.string().trim().min(1),
+  domainPackId: z.string().trim().min(1),
+  domainPackVersion: z.string().trim().min(1),
+  resolutionType: z.enum(evidenceClosureResolutionTypes),
+  sourceVersion: z.string().trim().min(3),
+  sourceLocator: z.string().trim().min(3),
+  scopeSummary: z.string().trim().min(20),
+  reviewStatus: z.enum(["draft", "accepted-outside-atlas", "rejected"]),
+  reviewedByRole: z.string().trim().nullable(),
+  reviewedAt: z.string().datetime().nullable(),
+  reviewEvidenceRef: z.string().trim().nullable(),
+  limitations: z.string().trim().min(20),
+});
+export type EvidenceClosureRecord = z.infer<typeof evidenceClosureRecordSchema>;
+
+export const sourceClosureRegisterSchema = z.object({
+  registerVersion: z.literal(QUALITY_LAB_SOURCE_CLOSURE_REGISTER_VERSION),
+  domainPackId: z.string().trim().min(1),
+  domainPackVersion: z.string().trim().min(1),
+  updatedAt: z.string().datetime(),
+  closures: z.array(evidenceClosureRecordSchema),
+});
+export type SourceClosureRegister = z.infer<typeof sourceClosureRegisterSchema>;
 
 export interface ControlledEvidenceRecord extends EvidenceRecord {
   controlState: EvidenceControlState;
@@ -38,6 +66,7 @@ export interface SourceCoverageAssessment {
   domainPackVersion: string;
   domainPackStatus: string;
   evidence: ControlledEvidenceRecord[];
+  closures: EvidenceClosureRecord[];
   rules: RuleSourceCoverage[];
   metrics: {
     evidenceRecordCount: number;
@@ -46,6 +75,7 @@ export interface SourceCoverageAssessment {
     controlledReviewReadyRuleCount: number;
     controlledEvidenceCount: number;
     openEvidenceCount: number;
+    acceptedClosureCount: number;
     missingEvidenceLinkCount: number;
     duplicateEvidenceIdCount: number;
     duplicateRuleIdCount: number;
@@ -58,7 +88,38 @@ function hasUnconfirmedVersion(version: string) {
   return /must be confirmed|to be supplied|to be obtained/i.test(version);
 }
 
-export function classifyEvidenceControl(record: EvidenceRecord): ControlledEvidenceRecord {
+export function requiredEvidenceClosureResolution(record: EvidenceRecord): EvidenceClosureRecord["resolutionType"] | null {
+  if (record.status === "site-evidence-required") return "controlled-site-record";
+  if (record.status === "internal-concept") return "calibrated-benchmark-replacement";
+  if (record.status === "user-supplied") return "controlled-project-revision";
+  if (hasUnconfirmedVersion(record.version)) return "confirmed-public-edition";
+  return null;
+}
+
+export function isEvidenceClosureAccepted(args: {
+  record: EvidenceRecord;
+  closure: unknown;
+  domainPack: { id: string; version: string };
+  generatedAt: string;
+}) {
+  const closure = evidenceClosureRecordSchema.safeParse(args.closure);
+  if (!closure.success) return false;
+  const item = closure.data;
+  return item.evidenceId === args.record.id
+    && item.domainPackId === args.domainPack.id
+    && item.domainPackVersion === args.domainPack.version
+    && item.resolutionType === requiredEvidenceClosureResolution(args.record)
+    && item.reviewStatus === "accepted-outside-atlas"
+    && Boolean(item.reviewedByRole)
+    && Boolean(item.reviewEvidenceRef)
+    && Boolean(item.reviewedAt)
+    && Date.parse(item.reviewedAt ?? "") <= Date.parse(args.generatedAt);
+}
+
+export function classifyEvidenceControl(record: EvidenceRecord, closure?: unknown, domainPack?: { id: string; version: string }, generatedAt = new Date().toISOString()): ControlledEvidenceRecord {
+  if (closure && domainPack && isEvidenceClosureAccepted({ record, closure, domainPack, generatedAt })) {
+    return { ...record, controlState: "controlled-context", openForControlledRelease: false, controlReason: "A version-matched controlled closure record references externally accepted review evidence. Applicability and approval remain outside Atlas." };
+  }
   if (record.status === "site-evidence-required") {
     return {
       ...record,
@@ -103,10 +164,16 @@ export function assessSourceCoverage(args: {
   domainPack: { id: string; version: string; status: string };
   evidence: EvidenceRecord[];
   rules: RuleTrace[];
+  closures?: EvidenceClosureRecord[];
   generatedAt?: string;
 }): SourceCoverageAssessment {
   const generatedAt = args.generatedAt ?? new Date().toISOString();
-  const evidence = args.evidence.map(classifyEvidenceControl);
+  const closures = (args.closures ?? []).flatMap((closure) => {
+    const parsed = evidenceClosureRecordSchema.safeParse(closure);
+    return parsed.success ? [parsed.data] : [];
+  });
+  const closureByEvidenceId = new Map(closures.map((closure) => [closure.evidenceId, closure]));
+  const evidence = args.evidence.map((record) => classifyEvidenceControl(record, closureByEvidenceId.get(record.id), args.domainPack, generatedAt));
   const duplicateEvidenceIdCount = evidence.length - new Set(evidence.map((record) => record.id)).size;
   const duplicateRuleIdCount = args.rules.length - new Set(args.rules.map((rule) => rule.ruleId)).size;
   const evidenceById = new Map(evidence.map((record) => [record.id, record]));
@@ -138,6 +205,7 @@ export function assessSourceCoverage(args: {
   const catalogTraceableRuleCount = rules.filter((rule) => rule.catalogTraceable).length;
   const controlledReviewReadyRuleCount = rules.filter((rule) => rule.controlledReviewReady).length;
   const openEvidence = evidence.filter((record) => record.openForControlledRelease);
+  const acceptedClosureCount = evidence.filter((record) => !record.openForControlledRelease && requiredEvidenceClosureResolution(record) !== null).length;
   const blockers: string[] = [];
   if (duplicateEvidenceIdCount > 0) blockers.push(`${duplicateEvidenceIdCount} duplicate evidence catalog ID(s) must be resolved.`);
   if (duplicateRuleIdCount > 0) blockers.push(`${duplicateRuleIdCount} duplicate rule ID(s) must be resolved.`);
@@ -154,6 +222,7 @@ export function assessSourceCoverage(args: {
     domainPackVersion: args.domainPack.version,
     domainPackStatus: args.domainPack.status,
     evidence,
+    closures,
     rules,
     metrics: {
       evidenceRecordCount: evidence.length,
@@ -162,6 +231,7 @@ export function assessSourceCoverage(args: {
       controlledReviewReadyRuleCount,
       controlledEvidenceCount: evidence.length - openEvidence.length,
       openEvidenceCount: openEvidence.length,
+      acceptedClosureCount,
       missingEvidenceLinkCount,
       duplicateEvidenceIdCount,
       duplicateRuleIdCount,
@@ -169,6 +239,17 @@ export function assessSourceCoverage(args: {
     blockers,
     notice: "Coverage measures traceability and evidence closure only. It does not verify a method, validate a Domain Pack, or authorize design, procurement, or release decisions.",
   };
+}
+
+export function createSourceClosureRegister(args: { domainPack: { id: string; version: string }; closures: EvidenceClosureRecord[]; updatedAt?: string }): SourceClosureRegister {
+  return sourceClosureRegisterSchema.parse({ registerVersion: QUALITY_LAB_SOURCE_CLOSURE_REGISTER_VERSION, domainPackId: args.domainPack.id, domainPackVersion: args.domainPack.version, updatedAt: args.updatedAt ?? new Date().toISOString(), closures: args.closures });
+}
+
+export function applySourceClosureRegister(args: { domainPack: { id: string; version: string }; register: unknown }) {
+  const parsed = sourceClosureRegisterSchema.safeParse(args.register);
+  if (!parsed.success) return { closures: [] as EvidenceClosureRecord[], applied: false as const, reason: "The saved source-closure register is invalid." };
+  if (parsed.data.domainPackId !== args.domainPack.id || parsed.data.domainPackVersion !== args.domainPack.version) return { closures: [] as EvidenceClosureRecord[], applied: false as const, reason: `The saved source-closure register targets ${parsed.data.domainPackId}@${parsed.data.domainPackVersion}, not ${args.domainPack.id}@${args.domainPack.version}.` };
+  return { closures: parsed.data.closures, applied: true as const, reason: null };
 }
 
 export function createSourceCoverageRegistry(assessment: SourceCoverageAssessment) {
@@ -185,6 +266,7 @@ export function createSourceCoverageRegistry(assessment: SourceCoverageAssessmen
     metrics: assessment.metrics,
     blockers: assessment.blockers,
     evidence: assessment.evidence,
+    closures: assessment.closures,
     rules: assessment.rules,
     controlNotice: assessment.notice,
   };

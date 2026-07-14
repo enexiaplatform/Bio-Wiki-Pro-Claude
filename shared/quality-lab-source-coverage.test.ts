@@ -7,7 +7,9 @@ import {
 } from "./quality-lab-microbiology-pack";
 import {
   assessSourceCoverage,
+  applySourceClosureRegister,
   classifyEvidenceControl,
+  createSourceClosureRegister,
   createSourceCoverageRegistry,
 } from "./quality-lab-source-coverage";
 
@@ -89,5 +91,32 @@ describe("Quality Lab source coverage", () => {
   it("classifies an identified and versioned public reference as context only", () => {
     const annex = MICROBIOLOGY_EVIDENCE_CATALOG.find((record) => record.id === "eu-gmp-annex-1-2022")!;
     expect(classifyEvidenceControl(annex)).toMatchObject({ controlState: "controlled-context", openForControlledRelease: false });
+  });
+
+  it("closes evidence only with an exact-version, externally accepted controlled record", () => {
+    const open = MICROBIOLOGY_EVIDENCE_CATALOG.find((record) => record.id === "usp-61-context")!;
+    const closure = {
+      evidenceId: open.id,
+      domainPackId: MICROBIOLOGY_DOMAIN_PACK.id,
+      domainPackVersion: MICROBIOLOGY_DOMAIN_PACK.version,
+      resolutionType: "confirmed-public-edition" as const,
+      sourceVersion: "USP <61> 2026 edition",
+      sourceLocator: "Controlled reference file USP61-2026",
+      scopeSummary: "Confirmed applicability context for non-sterile microbial enumeration method dependencies.",
+      reviewStatus: "accepted-outside-atlas" as const,
+      reviewedByRole: "Microbiology Domain Pack owner",
+      reviewedAt: "2026-07-01T00:00:00.000Z",
+      reviewEvidenceRef: "review-record-061",
+      limitations: "This context confirmation does not approve site methods, specifications, or implementation decisions.",
+    };
+    const closed = assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: [open], rules: [{ ...MICROBIOLOGY_SHARED_RULE_TRACE[0], evidenceIds: [open.id] }], closures: [closure], generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(closed.metrics).toMatchObject({ controlledReviewReadyRuleCount: 1, acceptedClosureCount: 1, openEvidenceCount: 0 });
+
+    const wrongVersion = assessSourceCoverage({ domainPack: { ...MICROBIOLOGY_DOMAIN_PACK, version: "microbiology-pack/v2.0" }, evidence: [open], rules: [{ ...MICROBIOLOGY_SHARED_RULE_TRACE[0], evidenceIds: [open.id] }], closures: [closure], generatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(wrongVersion.metrics.openEvidenceCount).toBe(1);
+
+    const register = createSourceClosureRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, closures: [closure], updatedAt: "2026-07-14T00:00:00.000Z" });
+    expect(applySourceClosureRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, register })).toMatchObject({ applied: true, closures: [closure] });
+    expect(applySourceClosureRegister({ domainPack: { ...MICROBIOLOGY_DOMAIN_PACK, version: "microbiology-pack/v2.0" }, register })).toMatchObject({ applied: false, closures: [] });
   });
 });

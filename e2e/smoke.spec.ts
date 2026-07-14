@@ -370,6 +370,49 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Discuss a real project/i })).toHaveAttribute("href", "/quality-lab/review");
   });
 
+  test("Controlled source closures are version-bound and feed Gate 2", async ({ page }) => {
+    await page.goto("/quality-lab/domain-readiness");
+    const resolutionTypes: Record<string, string> = {
+      "project-inputs": "controlled-project-revision",
+      "atlas-microbiology-benchmarks-v1": "calibrated-benchmark-replacement",
+      "usp-61-context": "confirmed-public-edition",
+      "usp-62-context": "confirmed-public-edition",
+      "site-approved-methods": "controlled-site-record",
+      "vendor-budget-evidence": "controlled-site-record",
+    };
+    await page.evaluate((types) => {
+      const closure = (evidenceId: string) => ({
+        evidenceId,
+        domainPackId: "nonsterile-pharma-microbiology",
+        domainPackVersion: "microbiology-pack/v1.1",
+        resolutionType: types[evidenceId],
+        sourceVersion: "Controlled source revision 2026-07",
+        sourceLocator: `controlled-reference-${evidenceId}`,
+        scopeSummary: "Controlled scope has been reviewed for the stated non-sterile microbiology Domain Pack boundary.",
+        reviewStatus: "accepted-outside-atlas",
+        reviewedByRole: "Microbiology Domain Pack owner",
+        reviewedAt: "2026-07-01T00:00:00.000Z",
+        reviewEvidenceRef: `external-review-${evidenceId}`,
+        limitations: "The review record retains limitations and does not authorize site implementation or external release.",
+      });
+      window.localStorage.setItem("lsa:quality-lab-source-closures:v1", JSON.stringify({
+        registerVersion: "source-closure-register/v1",
+        domainPackId: "nonsterile-pharma-microbiology",
+        domainPackVersion: "microbiology-pack/v1.1",
+        updatedAt: "2026-07-14T00:00:00.000Z",
+        closures: Object.keys(types).map(closure),
+      }));
+    }, resolutionTypes);
+    await page.reload();
+    await expect(page.getByRole("heading", { name: /Record source closure without turning a form into an approval/i })).toBeVisible();
+    const closedRulesMetric = page.getByText("Rules evidence-closed").locator("..");
+    await expect(closedRulesMetric.getByText("14/14")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Save controlled closures/i })).toBeVisible();
+    await page.goto("/quality-lab/gate-2-release");
+    await expect(page.getByRole("heading", { name: /1\/4 evidence controls complete/i })).toBeVisible();
+    await expect(page.getByText(/14\/14 rules evidence-closed; 0 evidence records open/i)).toBeVisible();
+  });
+
   test("Expert ownership register keeps appointments evidence-controlled", async ({ page }) => {
     await page.goto("/quality-lab/domain-ownership");
     await expect(page.getByRole("heading", { name: /A reviewer name is not evidence of qualified ownership/i })).toBeVisible();

@@ -6,6 +6,7 @@ import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { listEngagements } from "@/lib/quality-lab-engagements";
 import { loadExpertOwnerRoles } from "@/lib/quality-lab-expert-ownership";
+import { loadSourceClosures } from "@/lib/quality-lab-source-closures";
 import { fetchQualityLabReviewedProjects, getQualityLabProject } from "@/lib/quality-lab-projects";
 import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery";
 import { assessExpertOwnership, createMicrobiologyExpertOwnerRoles } from "@shared/quality-lab-expert-ownership";
@@ -17,7 +18,6 @@ import { assessValidationCaseRegistry } from "@shared/quality-lab-validation-cas
 
 const workflowKeys: MicrobiologyWorkflowKey[] = ["rawMaterials", "finishedProducts", "water", "environmentalMonitoring", "sterility", "endotoxin", "bioburden", "growthPromotion"];
 const rules = [...workflowRuleTrace(workflowKeys), ...MICROBIOLOGY_SHARED_RULE_TRACE];
-const sourceCoverage = assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: MICROBIOLOGY_EVIDENCE_CATALOG, rules });
 const baseExpertRoles = createMicrobiologyExpertOwnerRoles(rules);
 
 function downloadReleaseDossier(assessment: ReturnType<typeof assessGate2Release>) {
@@ -34,6 +34,7 @@ export default function QualityLabGate2ReleasePage() {
   const { isAuthenticated } = useUser();
   const [serverSnapshots, setServerSnapshots] = useState<Awaited<ReturnType<typeof fetchQualityLabReviewedProjects>>>([]);
   const [loadNotice, setLoadNotice] = useState("");
+  const sourceCoverage = useMemo(() => assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: MICROBIOLOGY_EVIDENCE_CATALOG, rules, closures: loadSourceClosures(MICROBIOLOGY_DOMAIN_PACK).closures }), []);
   const expertOwnership = useMemo(() => assessExpertOwnership({ domainPack: MICROBIOLOGY_DOMAIN_PACK, ruleTrace: rules, roles: loadExpertOwnerRoles(MICROBIOLOGY_DOMAIN_PACK, baseExpertRoles).roles }), []);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function QualityLabGate2ReleasePage() {
 
   const validationRegistry = useMemo(() => assessValidationCaseRegistry(portfolioInputs.map((item) => item.packet)), [portfolioInputs]);
   const paidPilotPortfolio = useMemo(() => assessPaidPilotPortfolio(portfolioInputs), [portfolioInputs]);
-  const assessment = useMemo(() => assessGate2Release({ sourceCoverage, expertOwnership, validationRegistry, paidPilotPortfolio }), [validationRegistry, paidPilotPortfolio]);
+  const assessment = useMemo(() => assessGate2Release({ sourceCoverage, expertOwnership, validationRegistry, paidPilotPortfolio }), [sourceCoverage, expertOwnership, validationRegistry, paidPilotPortfolio]);
   const progress = Math.round((assessment.evidenceCompleteCount / assessment.totalControlCount) * 100);
   useSEO({ title: "Gate 2 Release Control | Atlas Quality Lab", description: "Consolidated evidence decision for Microbiology Domain Pack source closure, expert ownership, validation cases and qualified demand.", noIndex: true });
 
