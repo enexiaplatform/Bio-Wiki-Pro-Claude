@@ -132,10 +132,40 @@ export async function fetchQualityLabReviewedProject(localProjectId: string) {
   }>;
 }
 
+export async function fetchQualityLabReviewedProjects() {
+  const response = await fetch("/api/quality-lab/reviewed-projects", { credentials: "include" });
+  if (!response.ok) throw new Error("Unable to load the reviewed-project portfolio");
+  return response.json() as Promise<Array<{
+    localProjectId: string;
+    projectName: string;
+    input: QualityLabProject["input"];
+    blueprint: QualityLabProject["blueprint"];
+    engagement: ReturnType<typeof createQualityLabEngagementPacket> | null;
+    reviewRequestedAt: string | null;
+  }>>;
+}
+
 export async function fetchQualityLabReviewedProjectRevisions(localProjectId: string) {
   const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}/revisions`, { credentials: "include" });
   if (!response.ok) return [] as Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>;
   return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>>;
+}
+
+export async function downloadQualityLabDeliveryArtifact(localProjectId: string, artifact: "workbook" | "brief") {
+  const suffix = artifact === "workbook" ? "delivery-workbook" : "delivery-brief.pdf";
+  const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}/${suffix}`, { credentials: "include" });
+  if (!response.ok) {
+    const message = await response.json().then((value) => value?.message).catch(() => null);
+    throw new Error(message || "Unable to prepare the Blueprint delivery file");
+  }
+  const disposition = response.headers.get("content-disposition") ?? "";
+  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? (artifact === "workbook" ? "atlas-blueprint-delivery.xlsx" : "atlas-blueprint-decision-brief.pdf");
+  const url = URL.createObjectURL(await response.blob());
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 export function subscribeToQualityLabProjects(listener: () => void) {

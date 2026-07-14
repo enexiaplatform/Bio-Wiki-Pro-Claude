@@ -27,6 +27,30 @@ const emptyCalibration = () => ({
   reviewedAt: null as string | null,
 });
 
+const emptyDeliveryControl = () => ({
+  documentId: "",
+  revision: "D0",
+  intendedUse: "Concept planning and qualified review",
+  preparedByRole: "",
+  reviewedByRole: "",
+  externalApprovalReference: "",
+  recordedStatus: "working-draft" as const,
+});
+
+const emptyPilotControl = () => ({
+  engagementClass: "unclassified" as const,
+  commercialStatus: "not-recorded" as const,
+  commercialEvidenceReference: "",
+  serviceStartedAt: "",
+  scopeConfirmedAt: "",
+  firstControlledDeliveryAt: "",
+  deliveryEffortHours: null as number | null,
+  acceptanceStatus: "not-requested" as const,
+  clientAcceptanceAt: "",
+  acceptanceReference: "",
+  outcomeNote: "",
+});
+
 export const qualityLabEngagementPacketSchema = z.object({
   packetVersion: z.literal(QUALITY_LAB_ENGAGEMENT_PACKET_VERSION),
   generatedAt: z.string().datetime(),
@@ -53,6 +77,28 @@ export const qualityLabEngagementPacketSchema = z.object({
     reviewedByRole: z.string(),
     reviewedAt: z.string().datetime().nullable(),
   }).default(emptyCalibration),
+  deliveryControl: z.object({
+    documentId: z.string().max(160),
+    revision: z.string().min(1).max(40),
+    intendedUse: z.string().min(1).max(500),
+    preparedByRole: z.string().max(160),
+    reviewedByRole: z.string().max(160),
+    externalApprovalReference: z.string().max(240),
+    recordedStatus: z.enum(["working-draft", "ready-for-qualified-review", "recorded-external-release"]),
+  }).default(emptyDeliveryControl),
+  pilotControl: z.object({
+    engagementClass: z.enum(["unclassified", "discovery", "blueprint"]),
+    commercialStatus: z.enum(["not-recorded", "qualified-unpaid", "paid"]),
+    commercialEvidenceReference: z.string().max(240),
+    serviceStartedAt: z.string(),
+    scopeConfirmedAt: z.string(),
+    firstControlledDeliveryAt: z.string(),
+    deliveryEffortHours: z.number().nonnegative().max(10000).nullable(),
+    acceptanceStatus: z.enum(["not-requested", "pending", "accepted", "accepted-with-actions", "not-accepted"]),
+    clientAcceptanceAt: z.string(),
+    acceptanceReference: z.string().max(240),
+    outcomeNote: z.string().max(2000),
+  }).default(emptyPilotControl),
   checklist: z.array(z.object({ id: z.string().min(1), ownerRole: z.string().min(1), status: checklistStatusSchema, question: z.string().min(1), requiredEvidence: z.string().min(1), relatedRuleIds: z.array(z.string()), reviewerNote: z.string() })),
   methodEvidenceMatrix: z.array(z.object({ id: z.string(), productName: z.string(), market: z.string(), requirementType: z.string(), methodName: z.string(), evidenceIds: z.array(z.string()).min(1), verificationRequirement: z.string(), status: commercialReviewStatusSchema, reviewerNote: z.string() })).default([]),
   ursBasis: z.array(z.object({ id: z.string(), equipmentName: z.string(), equipmentCategory: z.string(), relatedMethodRequirementIds: z.array(z.string()), evidenceIds: z.array(z.string()).default([]), functionalRequirement: z.string(), qualificationImpact: z.string(), status: commercialReviewStatusSchema })).default([]),
@@ -89,6 +135,11 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
       capexHighUsd: { estimate: blueprint.current.capexHighUsd, actual: null, variancePercent: null },
     },
     calibration: emptyCalibration(),
+    deliveryControl: {
+      ...emptyDeliveryControl(),
+      documentId: `ATLAS-${project.id.toUpperCase()}`,
+    },
+    pilotControl: emptyPilotControl(),
     checklist: blueprint.unresolvedInputs.map((item) => ({
       id: `review-${item.id}`,
       ownerRole: ownerByCategory[item.category] ?? "Project owner",
@@ -139,6 +190,61 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
 export function calculateVariancePercent(estimate: number, actual: number): number | null {
   if (estimate === 0) return actual === 0 ? 0 : null;
   return Math.round(((actual - estimate) / estimate) * 1000) / 10;
+}
+
+export type PaidPilotEligibility = "not-a-gate-1-record" | "evidence-incomplete" | "eligible-gate-1-pilot-record";
+
+function parseRecordedTime(value: string): number | null {
+  if (!value) return null;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+export function assessPaidPilotEvidence(
+  packet: QualityLabEngagementPacket,
+  deliveryReadiness: { status: "working-draft" | "ready-for-qualified-review" | "recorded-external-release"; blockers: string[] },
+): {
+  eligibility: PaidPilotEligibility;
+  blockers: string[];
+  deliveryCalendarDays: number | null;
+  deliveryEffortHours: number | null;
+} {
+  const pilot = packet.pilotControl;
+  const startedAt = parseRecordedTime(pilot.serviceStartedAt);
+  const scopeAt = parseRecordedTime(pilot.scopeConfirmedAt);
+  const deliveredAt = parseRecordedTime(pilot.firstControlledDeliveryAt);
+  const acceptedAt = parseRecordedTime(pilot.clientAcceptanceAt);
+  const deliveryCalendarDays = startedAt !== null && deliveredAt !== null
+    ? Math.round(((deliveredAt - startedAt) / 86_400_000) * 10) / 10
+    : null;
+
+  if (pilot.engagementClass === "unclassified" && pilot.commercialStatus === "not-recorded") {
+    return { eligibility: "not-a-gate-1-record", blockers: ["Classify the engagement and record its commercial status."], deliveryCalendarDays, deliveryEffortHours: pilot.deliveryEffortHours };
+  }
+
+  const blockers: string[] = [];
+  if (pilot.engagementClass === "unclassified") blockers.push("Classify the engagement as discovery or Blueprint.");
+  if (pilot.commercialStatus !== "paid") blockers.push("Paid status is required for a paid-pilot record.");
+  if (!pilot.commercialEvidenceReference.trim()) blockers.push("A controlled commercial evidence reference is required; do not upload confidential payment data.");
+  if (startedAt === null) blockers.push("Record a valid service start timestamp.");
+  if (scopeAt === null) blockers.push("Record a valid scope-confirmation timestamp.");
+  if (deliveredAt === null) blockers.push("Record the first controlled-delivery timestamp.");
+  if (pilot.deliveryEffortHours === null || pilot.deliveryEffortHours <= 0) blockers.push("Record positive delivery effort hours.");
+  if (!(["accepted", "accepted-with-actions"] as const).includes(pilot.acceptanceStatus as "accepted" | "accepted-with-actions")) blockers.push("Record client acceptance or acceptance with actions.");
+  if (acceptedAt === null) blockers.push("Record a valid client-acceptance timestamp.");
+  if (!pilot.acceptanceReference.trim()) blockers.push("A controlled client-acceptance reference is required.");
+  if (deliveryReadiness.status !== "recorded-external-release") blockers.push("The computed delivery package must be eligible for recorded external release.");
+  if (packet.decisions.length === 0) blockers.push("Capture at least one actual buyer or project decision.");
+  if (startedAt !== null && scopeAt !== null && scopeAt < startedAt) blockers.push("Scope confirmation cannot precede service start.");
+  if (startedAt !== null && deliveredAt !== null && deliveredAt < startedAt) blockers.push("Controlled delivery cannot precede service start.");
+  if (deliveredAt !== null && acceptedAt !== null && acceptedAt < deliveredAt) blockers.push("Client acceptance cannot precede controlled delivery.");
+
+  return {
+    eligibility: blockers.length ? "evidence-incomplete" : "eligible-gate-1-pilot-record",
+    blockers,
+    deliveryCalendarDays,
+    deliveryEffortHours: pilot.deliveryEffortHours,
+  };
 }
 
 export type CalibrationMetricKey = z.infer<typeof calibrationMetricKeySchema>;

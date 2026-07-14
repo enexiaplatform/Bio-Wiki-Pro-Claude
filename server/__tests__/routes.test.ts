@@ -36,6 +36,9 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     recordCheckoutAttempt: vi.fn(() => Promise.resolve()),
     getRecentCheckoutAttempts: vi.fn(() => Promise.resolve([])),
     getReEngagementCandidates: vi.fn(() => Promise.resolve([])),
+    getQualityLabReviewedProject: vi.fn(),
+    listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
+    listQualityLabReviewedProjectRevisions: vi.fn(() => Promise.resolve([])),
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
@@ -200,6 +203,21 @@ describe("Quality Lab expert review", () => {
     });
     expect(res.status).toBe(400);
     expect(storageMock.createQuoteRequest).not.toHaveBeenCalled();
+  });
+
+  it("protects controlled Blueprint delivery files behind authentication", async () => {
+    const app = await buildApp();
+    const workbook = await request(app).get("/api/quality-lab/reviewed-projects/qlp_private/delivery-workbook");
+    const brief = await request(app).get("/api/quality-lab/reviewed-projects/qlp_private/delivery-brief.pdf");
+    expect(workbook.status).toBe(401);
+    expect(brief.status).toBe(401);
+    expect(storageMock.getQualityLabReviewedProject).not.toHaveBeenCalled();
+  });
+
+  it("protects the reviewed-project portfolio behind authentication", async () => {
+    const app = await buildApp();
+    await request(app).get("/api/quality-lab/reviewed-projects").expect(401);
+    expect(storageMock.listQualityLabReviewedProjects).not.toHaveBeenCalled();
   });
 });
 

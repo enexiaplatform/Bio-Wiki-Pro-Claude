@@ -178,6 +178,14 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /QC workflows/i })).toHaveAttribute("href", "/workflows");
   });
 
+  test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {
+    await page.goto("/quality-lab/pilots");
+    await expect(page.getByRole("heading", { name: "Paid Pilot Portfolio" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "0/3 evidence-complete engagements" })).toBeVisible();
+    await expect(page.getByRole("progressbar", { name: "Gate 1 paid pilot progress" })).toHaveAttribute("aria-valuenow", "0");
+    await expect(page.getByRole("heading", { name: "No real engagement records yet" })).toBeVisible();
+  });
+
   test("quality lab funnel reaches planner and expert review intake", async ({ page }) => {
     await page.goto("/quality-lab");
     await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
@@ -206,6 +214,16 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
     await page.getByRole("link", { name: /Review workspace/i }).click();
     await page.waitForURL(/\/quality-lab\/engagements\/qlp_/);
+    await expect(page.getByRole("heading", { name: /Paid-pilot record/i })).toBeVisible();
+    await expect(page.getByLabel("Pilot engagement class")).toHaveValue("unclassified");
+    await expect(page.getByText(/Classify the engagement and record its commercial status/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Controlled handoff readiness/i })).toBeVisible();
+    await expect(page.getByLabel("11 workbook sheets")).toBeVisible();
+    await expect(page.getByLabel(/Document ID/i)).toHaveValue(/ATLAS-QLP_/i);
+    await page.getByText(/Exports and handoff/i).click();
+    await page.getByRole("button", { name: /Blueprint delivery workbook/i }).click();
+    await expect(page.getByRole("alert")).toContainText(/Sign in and submit the expert-review brief/i);
+    await page.getByText(/Exports and handoff/i).click();
     await expect(page.getByRole("heading", { name: /Estimate-to-actual calibration/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Evidence and review checklist/i })).toBeVisible();
     await page.getByLabel(/^Monthly tests actual$/i).fill("500");

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createQualityLabProject, defaultQualityLabInput } from "./quality-lab";
-import { assessCalibrationCandidate, calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, summarizeCalibration, varianceMagnitude } from "./quality-lab-engagement";
+import { assessCalibrationCandidate, assessPaidPilotEvidence, calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, summarizeCalibration, varianceMagnitude } from "./quality-lab-engagement";
 
 describe("Quality Lab engagement packet", () => {
   it("creates a validated review checklist and empty learning logs", () => {
@@ -17,6 +17,7 @@ describe("Quality Lab engagement packet", () => {
     expect(packet.corrections).toEqual([]);
     expect(packet.decisions).toEqual([]);
     expect(packet.calibration).toMatchObject({ status: "draft", learningDisposition: "hold" });
+    expect(packet.pilotControl).toMatchObject({ engagementClass: "unclassified", commercialStatus: "not-recorded", acceptanceStatus: "not-requested" });
     expect(packet.calibration.metricNotes).toHaveLength(5);
     expect(packet.controls).toMatchObject({ expertApprovalInsideAtlas: false, containsContactData: false });
   });
@@ -26,6 +27,36 @@ describe("Quality Lab engagement packet", () => {
     expect(calculateVariancePercent(100, 85)).toBe(-15);
     expect(calculateVariancePercent(0, 0)).toBe(0);
     expect(calculateVariancePercent(0, 5)).toBeNull();
+  });
+
+  it("keeps legacy packets readable by adding empty paid-pilot controls", () => {
+    const packet = createQualityLabEngagementPacket(createQualityLabProject(defaultQualityLabInput, "qlp_legacy_pilot"));
+    const legacy = { ...packet } as Record<string, unknown>;
+    delete legacy.pilotControl;
+    expect(qualityLabEngagementPacketSchema.parse(legacy).pilotControl).toMatchObject({ engagementClass: "unclassified", commercialStatus: "not-recorded" });
+  });
+
+  it("requires commercial, timing, release, decision and acceptance evidence for a paid-pilot record", () => {
+    const packet = createQualityLabEngagementPacket(createQualityLabProject(defaultQualityLabInput, "qlp_paid_pilot"));
+    expect(assessPaidPilotEvidence(packet, { status: "working-draft", blockers: ["Open"] }).eligibility).toBe("not-a-gate-1-record");
+
+    Object.assign(packet.pilotControl, {
+      engagementClass: "blueprint",
+      commercialStatus: "paid",
+      commercialEvidenceReference: "CRM-OPP-104 / invoice status verified",
+      serviceStartedAt: "2026-07-01T09:00:00.000Z",
+      scopeConfirmedAt: "2026-07-02T09:00:00.000Z",
+      firstControlledDeliveryAt: "2026-07-08T09:00:00.000Z",
+      deliveryEffortHours: 26,
+      acceptanceStatus: "accepted-with-actions",
+      clientAcceptanceAt: "2026-07-10T09:00:00.000Z",
+      acceptanceReference: "CLIENT-MOM-2026-07-10",
+    });
+    expect(assessPaidPilotEvidence(packet, { status: "working-draft", blockers: ["Open"] })).toMatchObject({ eligibility: "evidence-incomplete", deliveryCalendarDays: 7 });
+
+    packet.deliveryControl.recordedStatus = "recorded-external-release";
+    packet.decisions.push({ id: "dec_1", recordedAt: "2026-07-10T09:00:00.000Z", decision: "Use phased incubator procurement", optionsConsidered: ["Buy all now", "Phase procurement"], rationale: "Demand ramp", owner: "Project sponsor", downstreamImpact: "Procurement plan" });
+    expect(assessPaidPilotEvidence(packet, { status: "recorded-external-release", blockers: [] })).toMatchObject({ eligibility: "eligible-gate-1-pilot-record", blockers: [], deliveryCalendarDays: 7, deliveryEffortHours: 26 });
   });
 
   it("keeps legacy v1 packets readable by adding an empty calibration record", () => {

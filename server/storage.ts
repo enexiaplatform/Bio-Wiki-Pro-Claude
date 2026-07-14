@@ -20,7 +20,7 @@ import {
   type QualityLabReviewedProjectRevisionRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
-import { and, eq, gt, lt, sql } from "drizzle-orm";
+import { and, desc, eq, gt, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -58,6 +58,7 @@ export interface IStorage {
   getReEngagementCandidates(minDays: number, maxDays: number): Promise<string[]>;
   upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
+  listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
   listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]>;
 }
 
@@ -320,6 +321,10 @@ export class DatabaseStorage implements IStorage {
   async getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined> {
     const [row] = await db.select().from(qualityLabReviewedProjects).where(and(eq(qualityLabReviewedProjects.userId, userId), eq(qualityLabReviewedProjects.localProjectId, localProjectId)));
     return row;
+  }
+
+  async listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]> {
+    return db.select().from(qualityLabReviewedProjects).where(eq(qualityLabReviewedProjects.userId, userId)).orderBy(desc(qualityLabReviewedProjects.updatedAt));
   }
 
   async listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]> {

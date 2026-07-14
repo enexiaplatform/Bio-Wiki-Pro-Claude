@@ -8,6 +8,8 @@ import {
   ClipboardCheck,
   Download,
   FileCheck2,
+  FileSpreadsheet,
+  FileText,
   Gauge,
   History,
   ListChecks,
@@ -19,6 +21,7 @@ import { analytics } from "@/hooks/use-analytics";
 import {
   fetchQualityLabReviewedProject,
   fetchQualityLabReviewedProjectRevisions,
+  downloadQualityLabDeliveryArtifact,
   getQualityLabProject,
   syncQualityLabReviewedProject,
 } from "@/lib/quality-lab-projects";
@@ -30,11 +33,13 @@ import {
   setEngagementActual,
 } from "@/lib/quality-lab-engagements";
 import {
+  assessPaidPilotEvidence,
   summarizeCalibration,
   varianceMagnitude,
   type CalibrationMetricKey,
   type QualityLabEngagementPacket,
 } from "@shared/quality-lab-engagement";
+import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery";
 import { useUser } from "@/context/UserContext";
 import type { QualityLabProject } from "@shared/quality-lab";
 
@@ -88,6 +93,8 @@ export default function QualityLabEngagementPage() {
   const [activeMetric, setActiveMetric] = useState<CalibrationMetricKey>("monthlyTests");
   const [correction, setCorrection] = useState({ fieldOrRuleId: "", previousValue: "", correctedValue: "", evidenceRef: "", rationale: "", reviewerRole: "" });
   const [decision, setDecision] = useState({ decision: "", rationale: "", owner: "", downstreamImpact: "", options: "" });
+  const [deliveryExport, setDeliveryExport] = useState<"workbook" | "brief" | null>(null);
+  const [deliveryError, setDeliveryError] = useState("");
 
   useSEO({
     title: "Blueprint Engagement Workspace",
@@ -183,6 +190,8 @@ export default function QualityLabEngagementPage() {
   const openChecklist = packet.checklist.filter((item) => item.status === "open" || item.status === "in-review");
   const nextChecklistItem = openChecklist[0];
   const calibrationSummary = summarizeCalibration(packet);
+  const deliveryReadiness = assessQualityLabDeliveryReadiness(project, packet);
+  const pilotEvidence = assessPaidPilotEvidence(packet, deliveryReadiness);
   const selectedBaseline = packet.baseline[activeMetric];
   const selectedMetricNote = packet.calibration.metricNotes.find((row) => row.metric === activeMetric)!;
   const selectedVarianceBand = varianceMagnitude(selectedBaseline.variancePercent);
@@ -197,6 +206,33 @@ export default function QualityLabEngagementPage() {
     });
   }
 
+  function updateDeliveryControl(patch: Partial<QualityLabEngagementPacket["deliveryControl"]>) {
+    persist({ ...packet!, deliveryControl: { ...packet!.deliveryControl, ...patch } });
+  }
+
+  function updatePilotControl(patch: Partial<QualityLabEngagementPacket["pilotControl"]>) {
+    persist({ ...packet!, pilotControl: { ...packet!.pilotControl, ...patch } });
+  }
+
+  async function exportDeliveryArtifact(artifact: "workbook" | "brief") {
+    setDeliveryError("");
+    const activeProject = project;
+    if (!isAuthenticated || !activeProject?.reviewRequestedAt) {
+      setDeliveryError("Sign in and submit the expert-review brief before generating controlled delivery files.");
+      return;
+    }
+    setDeliveryExport(artifact);
+    try {
+      await syncQualityLabReviewedProject(activeProject, packet!);
+      await downloadQualityLabDeliveryArtifact(activeProject.id, artifact);
+      analytics.engagementPacketDownloaded(artifact === "workbook" ? "delivery_workbook" : "delivery_brief_pdf", deliveryReadiness.blockers.length);
+    } catch (error) {
+      setDeliveryError(error instanceof Error ? error.message : "Unable to prepare the delivery file.");
+    } finally {
+      setDeliveryExport(null);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-6 text-slate-100 md:pt-8">
       <div className="mx-auto max-w-6xl">
@@ -204,7 +240,7 @@ export default function QualityLabEngagementPage() {
           <Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
             <ArrowLeft className="h-4 w-4" /> Back to blueprint
           </Link>
-          <Link href="/quality-lab/calibration" className="text-sm font-bold text-sky-300 hover:text-sky-200">Open learning review queue</Link>
+          <div className="flex flex-wrap gap-4"><Link href="/quality-lab/pilots" className="text-sm font-bold text-teal-300 hover:text-teal-200">Open paid pilot portfolio</Link><Link href="/quality-lab/calibration" className="text-sm font-bold text-sky-300 hover:text-sky-200">Open learning review queue</Link></div>
         </div>
 
         <header className="mt-5 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 to-slate-950 p-5 md:p-8">
@@ -220,12 +256,19 @@ export default function QualityLabEngagementPage() {
                 <ChevronDown className="h-4 w-4 text-slate-500 transition group-open:rotate-180" />
               </summary>
               <div className="space-y-2 border-t border-white/10 p-3">
+                <button type="button" disabled={deliveryExport !== null} onClick={() => exportDeliveryArtifact("workbook")} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2.5 text-xs font-bold text-slate-950 disabled:cursor-wait disabled:opacity-60">
+                  <FileSpreadsheet className="h-4 w-4" /> {deliveryExport === "workbook" ? "Preparing workbook…" : "Blueprint delivery workbook"}
+                </button>
+                <button type="button" disabled={deliveryExport !== null} onClick={() => exportDeliveryArtifact("brief")} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sky-300/25 bg-sky-300/10 px-3 py-2.5 text-xs font-bold text-sky-200 disabled:cursor-wait disabled:opacity-60">
+                  <FileText className="h-4 w-4" /> {deliveryExport === "brief" ? "Preparing brief…" : "Decision brief PDF"}
+                </button>
                 <button type="button" onClick={() => { downloadCalibration(packet); analytics.engagementPacketDownloaded("calibration_csv", packet.checklist.length - resolved); }} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2.5 text-xs font-bold text-teal-200">
                   <Download className="h-4 w-4" /> Export calibration CSV
                 </button>
-                <button type="button" onClick={() => { downloadEngagement(packet); analytics.engagementPacketDownloaded("engagement_workspace", packet.checklist.length - resolved); }} className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2.5 text-xs font-bold text-slate-950">
+                <button type="button" onClick={() => { downloadEngagement(packet); analytics.engagementPacketDownloaded("engagement_workspace", packet.checklist.length - resolved); }} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 text-xs font-bold text-slate-200">
                   <Download className="h-4 w-4" /> Export working packet
                 </button>
+                {deliveryError && <p role="alert" className="rounded-lg border border-red-300/20 bg-red-300/10 p-2 text-[11px] leading-4 text-red-200">{deliveryError}</p>}
               </div>
             </details>
           </div>
@@ -267,8 +310,68 @@ export default function QualityLabEngagementPage() {
           </div>
         </section>
 
+        <section id="pilot-evidence" aria-labelledby="pilot-evidence-heading" className="mt-5 scroll-mt-28 rounded-2xl border border-sky-300/15 bg-sky-300/[0.035] p-5 md:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Gate 1 evidence</p>
+              <h2 id="pilot-evidence-heading" className="mt-2 text-xl font-bold">Paid-pilot record</h2>
+              <p className="mt-2 max-w-3xl text-xs leading-5 text-slate-400">Record controlled references and delivery metrics only after they exist. Do not paste invoices, confidential payment details or client-controlled content into Atlas.</p>
+            </div>
+            <span className={`w-fit rounded-full border px-3 py-1 text-[10px] font-bold uppercase ${pilotEvidence.eligibility === "eligible-gate-1-pilot-record" ? "border-teal-300/25 bg-teal-300/10 text-teal-200" : "border-amber-300/20 bg-amber-300/10 text-amber-200"}`}>{pilotEvidence.eligibility.replaceAll("-", " ")}</span>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <label className="text-xs text-slate-400">Engagement class<select aria-label="Pilot engagement class" value={packet.pilotControl.engagementClass} onChange={(event) => updatePilotControl({ engagementClass: event.target.value as QualityLabEngagementPacket["pilotControl"]["engagementClass"] })} className={`${inputClass} mt-1`}><option value="unclassified">Not classified</option><option value="discovery">Discovery engagement</option><option value="blueprint">Blueprint engagement</option></select></label>
+            <label className="text-xs text-slate-400">Commercial status<select aria-label="Pilot commercial status" value={packet.pilotControl.commercialStatus} onChange={(event) => updatePilotControl({ commercialStatus: event.target.value as QualityLabEngagementPacket["pilotControl"]["commercialStatus"] })} className={`${inputClass} mt-1`}><option value="not-recorded">Not recorded</option><option value="qualified-unpaid">Qualified, unpaid</option><option value="paid">Paid — evidence referenced</option></select></label>
+            <label className="text-xs text-slate-400">Commercial evidence reference<input aria-label="Commercial evidence reference" value={packet.pilotControl.commercialEvidenceReference} onChange={(event) => updatePilotControl({ commercialEvidenceReference: event.target.value })} className={`${inputClass} mt-1`} placeholder="CRM opportunity or invoice-status reference" /></label>
+            <label className="text-xs text-slate-400">Service started<input aria-label="Pilot service started" type="datetime-local" value={packet.pilotControl.serviceStartedAt} onChange={(event) => updatePilotControl({ serviceStartedAt: event.target.value })} className={`${inputClass} mt-1`} /></label>
+            <label className="text-xs text-slate-400">Scope confirmed<input aria-label="Pilot scope confirmed" type="datetime-local" value={packet.pilotControl.scopeConfirmedAt} onChange={(event) => updatePilotControl({ scopeConfirmedAt: event.target.value })} className={`${inputClass} mt-1`} /></label>
+            <label className="text-xs text-slate-400">First controlled delivery<input aria-label="Pilot first controlled delivery" type="datetime-local" value={packet.pilotControl.firstControlledDeliveryAt} onChange={(event) => updatePilotControl({ firstControlledDeliveryAt: event.target.value })} className={`${inputClass} mt-1`} /></label>
+            <label className="text-xs text-slate-400">Delivery effort hours<input aria-label="Pilot delivery effort hours" type="number" min="0" step="0.5" value={packet.pilotControl.deliveryEffortHours ?? ""} onChange={(event) => updatePilotControl({ deliveryEffortHours: event.target.value === "" ? null : Number(event.target.value) })} className={`${inputClass} mt-1`} placeholder="Measured effort" /></label>
+            <label className="text-xs text-slate-400">Client acceptance status<select aria-label="Pilot client acceptance status" value={packet.pilotControl.acceptanceStatus} onChange={(event) => updatePilotControl({ acceptanceStatus: event.target.value as QualityLabEngagementPacket["pilotControl"]["acceptanceStatus"] })} className={`${inputClass} mt-1`}><option value="not-requested">Not requested</option><option value="pending">Pending</option><option value="accepted">Accepted</option><option value="accepted-with-actions">Accepted with actions</option><option value="not-accepted">Not accepted</option></select></label>
+            <label className="text-xs text-slate-400">Client acceptance time<input aria-label="Pilot client acceptance time" type="datetime-local" value={packet.pilotControl.clientAcceptanceAt} onChange={(event) => updatePilotControl({ clientAcceptanceAt: event.target.value })} className={`${inputClass} mt-1`} /></label>
+            <label className="text-xs text-slate-400 md:col-span-2">Acceptance reference<input aria-label="Pilot acceptance reference" value={packet.pilotControl.acceptanceReference} onChange={(event) => updatePilotControl({ acceptanceReference: event.target.value })} className={`${inputClass} mt-1`} placeholder="Controlled meeting minute, email or client document reference" /></label>
+            <label className="text-xs text-slate-400 md:col-span-2 lg:col-span-3">Outcome note<textarea aria-label="Pilot outcome note" value={packet.pilotControl.outcomeNote} onChange={(event) => updatePilotControl({ outcomeNote: event.target.value })} className={`${inputClass} mt-1`} rows={2} placeholder="Decision outcome and remaining client actions; no confidential content" /></label>
+          </div>
+          <div className="mt-5 grid gap-3 lg:grid-cols-[220px_1fr]">
+            <div className="rounded-xl border border-white/8 bg-black/15 p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Measured delivery</p><p className="mt-3 text-xl font-bold text-white">{pilotEvidence.deliveryCalendarDays === null ? "Open" : `${pilotEvidence.deliveryCalendarDays} days`}</p><p className="mt-1 text-xs text-slate-500">{pilotEvidence.deliveryEffortHours === null ? "Effort hours open" : `${pilotEvidence.deliveryEffortHours} effort hours`}</p></div>
+            <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-200">Pilot evidence blockers</p><div className="mt-3 grid gap-2 md:grid-cols-2">{pilotEvidence.blockers.length ? pilotEvidence.blockers.map((item) => <p key={item} className="flex gap-2 text-xs leading-5 text-slate-400"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" />{item}</p>) : <p className="text-xs text-teal-200">Evidence-complete paid-pilot record. Portfolio-level Gate 1 still requires three real engagements.</p>}</div></div>
+          </div>
+        </section>
+
+        <section id="delivery-control" aria-labelledby="delivery-control-heading" className="mt-5 scroll-mt-28 rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-6">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Blueprint Delivery v1</p>
+              <h2 id="delivery-control-heading" className="mt-2 text-xl font-bold">Controlled handoff readiness</h2>
+              <p className="mt-2 max-w-2xl text-xs leading-5 text-slate-400">The workbook and decision brief carry these identifiers, source versions, open items and release boundaries into the client handoff.</p>
+            </div>
+            <span className={`w-fit rounded-full border px-3 py-1 text-[10px] font-bold uppercase ${deliveryReadiness.status === "working-draft" ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-teal-300/25 bg-teal-300/10 text-teal-200"}`}>{deliveryReadiness.status.replaceAll("-", " ")}</span>
+          </div>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <label className="text-xs text-slate-400">Document ID<input value={packet.deliveryControl.documentId} onChange={(event) => updateDeliveryControl({ documentId: event.target.value })} className={`${inputClass} mt-1`} placeholder="CLIENT-QLB-001" /></label>
+            <label className="text-xs text-slate-400">Revision<input value={packet.deliveryControl.revision} onChange={(event) => updateDeliveryControl({ revision: event.target.value })} className={`${inputClass} mt-1`} placeholder="D0" /></label>
+            <label className="text-xs text-slate-400">Recorded status<select value={packet.deliveryControl.recordedStatus} onChange={(event) => updateDeliveryControl({ recordedStatus: event.target.value as QualityLabEngagementPacket["deliveryControl"]["recordedStatus"] })} className={`${inputClass} mt-1`}><option value="working-draft">Working draft</option><option value="ready-for-qualified-review">Ready for qualified review</option><option value="recorded-external-release">Record external release</option></select></label>
+            <label className="text-xs text-slate-400">Prepared by role<input value={packet.deliveryControl.preparedByRole} onChange={(event) => updateDeliveryControl({ preparedByRole: event.target.value })} className={`${inputClass} mt-1`} placeholder="Atlas project lead" /></label>
+            <label className="text-xs text-slate-400">Reviewed by role<input value={packet.deliveryControl.reviewedByRole} onChange={(event) => updateDeliveryControl({ reviewedByRole: event.target.value })} className={`${inputClass} mt-1`} placeholder="Qualified microbiology SME" /></label>
+            <label className="text-xs text-slate-400">External approval reference<input value={packet.deliveryControl.externalApprovalReference} onChange={(event) => updateDeliveryControl({ externalApprovalReference: event.target.value })} className={`${inputClass} mt-1`} placeholder="Client-controlled document reference" /></label>
+            <label className="text-xs text-slate-400 md:col-span-2 lg:col-span-3">Intended use<textarea value={packet.deliveryControl.intendedUse} onChange={(event) => updateDeliveryControl({ intendedUse: event.target.value })} className={`${inputClass} mt-1 min-h-20 py-2`} rows={2} /></label>
+          </div>
+          <div className="mt-5 grid gap-3 lg:grid-cols-2">
+            <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-amber-200">Release blockers</p>
+              <div className="mt-3 space-y-2">{deliveryReadiness.blockers.length ? deliveryReadiness.blockers.map((item) => <p key={item} className="flex gap-2 text-xs leading-5 text-slate-400"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" />{item}</p>) : <p className="text-xs text-teal-200">No readiness blockers recorded. Qualified review is still required.</p>}</div>
+            </div>
+            <div className="rounded-xl border border-white/8 bg-black/15 p-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Delivery contents</p>
+              <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[11px] text-slate-500"><span aria-label="11 workbook sheets"><strong className="block text-lg text-slate-100">11</strong>workbook sheets</span><span aria-label="1 decision brief"><strong className="block text-lg text-slate-100">1</strong>decision brief</span><span aria-label="version 1 package contract"><strong className="block text-lg text-slate-100">v1</strong>package contract</span></div>
+            </div>
+          </div>
+        </section>
+
         <nav aria-label="Review workspace sections" className="sticky top-2 z-20 mt-5 flex gap-2 overflow-x-auto rounded-xl border border-white/10 bg-[#0b1525]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
           {[
+            ["Pilot evidence", "#pilot-evidence"],
+            ["Delivery control", "#delivery-control"],
             ["Evidence review", "#evidence-review"],
             ["Calibration", "#calibration"],
             ["Method evidence", "#method-evidence"],

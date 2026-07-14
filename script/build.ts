@@ -29,6 +29,7 @@ const allowlist = [
   "uuid",
   "ws",
   "xlsx",
+  "xlsx-js-style",
   "zod",
   "zod-validation-error",
 ];

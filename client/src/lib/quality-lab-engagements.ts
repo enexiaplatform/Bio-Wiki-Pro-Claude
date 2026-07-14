@@ -1,5 +1,6 @@
 import { calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, type QualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 import type { QualityLabProject } from "@shared/quality-lab";
+import { createPaidPilotRegistry, type PilotPortfolioInput } from "@shared/quality-lab-pilot-portfolio";
 
 const STORAGE_KEY = "lsa:quality-lab-engagements:v1";
 
@@ -84,6 +85,16 @@ export function downloadLearningCandidateRegistry(packets: QualityLabEngagementP
   const anchor = document.createElement("a");
   anchor.href = url;
   anchor.download = "atlas-calibration-learning-candidates.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
+}
+
+export function downloadPaidPilotRegistry(records: PilotPortfolioInput[]) {
+  const blob = new Blob([JSON.stringify(createPaidPilotRegistry(records), null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "atlas-gate-1-paid-pilot-registry.json";
   anchor.click();
   URL.revokeObjectURL(url);
 }

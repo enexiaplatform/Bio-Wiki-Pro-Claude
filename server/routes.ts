@@ -665,6 +665,11 @@ export async function registerRoutes(app: Express): Promise<void> {
   // A full Blueprint snapshot is retained only for signed-in users who have
   // deliberately entered the expert-review workflow. It is not a background
   // sync channel for browser-local concept projects.
+  app.get("/api/quality-lab/reviewed-projects", isAuthenticated, async (req: any, res) => {
+    const rows = await storage.listQualityLabReviewedProjects(req.session.userId);
+    res.json(rows.map((row) => row.snapshot));
+  });
+
   app.put("/api/quality-lab/reviewed-projects/:localProjectId", isAuthenticated, async (req: any, res) => {
     try {
       const snapshot = qualityLabReviewedProjectSnapshotSchema.parse(req.body);
@@ -699,6 +704,29 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // ── Lead capture ────────────────────────────────────────────────────────
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId/delivery-workbook", isAuthenticated, async (req: any, res) => {
+    const row = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!row) return res.status(404).json({ message: "Reviewed project not found" });
+    if (!row.snapshot.engagement) return res.status(409).json({ message: "Complete the review engagement workspace before exporting a delivery workbook" });
+    const { qualityLabDeliveryWorkbook } = await import("./generate.js");
+    const filename = `${row.projectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atlas-quality-lab"}-blueprint-delivery.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(qualityLabDeliveryWorkbook(row.snapshot));
+  });
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId/delivery-brief.pdf", isAuthenticated, async (req: any, res) => {
+    const row = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!row) return res.status(404).json({ message: "Reviewed project not found" });
+    if (!row.snapshot.engagement) return res.status(409).json({ message: "Complete the review engagement workspace before exporting a decision brief" });
+    const { markdownToPdf, qualityLabDeliveryMarkdown } = await import("./generate.js");
+    const filename = `${row.projectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atlas-quality-lab"}-decision-brief.pdf`;
+    const pdf = await markdownToPdf(qualityLabDeliveryMarkdown(row.snapshot), `${row.projectName} - Atlas Quality Lab Blueprint`);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(pdf);
+  });
 
   app.post("/api/leads/capture", async (req, res) => {
     try {
