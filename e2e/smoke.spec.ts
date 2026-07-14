@@ -348,6 +348,13 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /A domain becomes a Pack only after its evidence exists/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Gloved laboratory worker holding an organized tray/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Catalog coverage is visible. Evidence closure is still open/i })).toBeVisible();
+    await expect(page.getByText("14/14")).toBeVisible();
+    await expect(page.getByText("0/14")).toBeVisible();
+    await expect(page.getByText(/Obtain and review the named site-approved methods/i)).toBeVisible();
+    const sourceRegistryDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export source registry/i }).click();
+    expect((await sourceRegistryDownload).suggestedFilename()).toBe("atlas-microbiology-source-coverage-microbiology-pack-v1-1.json");
     await expect(page.getByRole("heading", { name: /Food & beverage quality/i })).toBeVisible();
     await expect(page.getByText(/Synthetic cases exercise reconciliation, outsourcing and unresolved allocation behavior/i)).toBeVisible();
     await expect(page.getByText(/No public evidence area opened/i)).toBeVisible();

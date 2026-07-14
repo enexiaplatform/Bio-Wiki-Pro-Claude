@@ -226,6 +226,7 @@ The current Compiler has a first executable non-sterile microbiology vertical sl
 - portfolio-versus-aggregate demand reconciliation, equipment-method links, capacity checks, CAPEX/OPEX, assumptions, risks and vendor-neutral URS basis;
 - a concept-only expert-review workspace with evidence matrix, correction and decision logs, structured estimate-to-actual calibration candidates, engagement/calibration exports, authenticated reviewed-project persistence and append-only snapshot revisions.
 - a controlled Blueprint delivery package with a styled workbook, decision brief, document/release controls, and a Gate 1 paid-pilot portfolio that separates commercial references, delivery time, client acceptance and calibrated project evidence from concept work.
+- a computable Microbiology Source Coverage register that resolves current rules to named evidence records, separates catalog traceability from evidence closure, exposes source/version/site/calibration blockers, and exports a controlled working record without implying Domain Pack verification.
 
 This is still not the authoritative production Compiler. Material limitations remain:
 
@@ -236,6 +237,7 @@ This is still not the authoritative production Compiler. Material limitations re
 - Review records are working artifacts, not an SME approval, document-control system or client governance system.
 - Calibration records require observed-period provenance, controlled evidence references, variance-driver review and an explicit learning disposition; even a review-ready record is project evidence, not an automatically approved Atlas benchmark or rule change.
 - No model has yet been calibrated against paid real-world projects or validated site data.
+- Source coverage is now measurable, but the current register still shows open project-revision, source-version, site-evidence and concept-benchmark records; catalog linkage is not evidence closure.
 - The paid-pilot portfolio is an evidence-control mechanism, not proof that any engagement exists; Gate 1 remains incomplete until three real records satisfy the controlled release, acceptance and estimate-to-actual requirements.
 
 The next stage is controlled service-assisted validation: use the slice in real discovery work, capture corrections and estimate-to-actual variance, then replace concept assumptions with reviewed Domain Pack rules.
