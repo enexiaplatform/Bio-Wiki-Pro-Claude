@@ -15,7 +15,7 @@ describe("Domain Pack readiness gates", () => {
     for (const domain of domainPackReadiness) {
       expect(domain.gates.map((gate) => gate.id)).toEqual(["expert-owner", "source-corpus", "validation-cases", "qualified-demand"]);
       expect(assessDomainPackReadiness(domain).eligibleForVerifiedPack).toBe(false);
-      expect(domain.gates.find((gate) => gate.id === "validation-cases")?.supportingHref).toBe("/blog/how-to-validate-a-quality-lab-domain-pack");
+      expect(domain.gates.find((gate) => gate.id === "validation-cases")?.supportingHref).toBe(domain.id === "nonsterile-microbiology" ? "/quality-lab/validation-cases" : "/blog/how-to-validate-a-quality-lab-domain-pack");
     }
     const completed = { ...domainPackReadiness[0], gates: domainPackReadiness[0].gates.map((gate) => ({ ...gate, status: "gate-satisfied" as const })) };
     expect(assessDomainPackReadiness(completed)).toMatchObject({ satisfied: 4, total: 4, readinessPercent: 100, eligibleForVerifiedPack: true, blockers: [] });
@@ -34,6 +34,15 @@ describe("Domain Pack readiness gates", () => {
       status: "in-development",
       supportingHref: "/quality-lab/domain-ownership",
       supportingLabel: "Inspect ownership control",
+    });
+  });
+
+  it("connects microbiology validation evidence to its controlled registry", () => {
+    const microbiology = domainPackReadiness.find((domain) => domain.id === "nonsterile-microbiology")!;
+    expect(microbiology.gates.find((gate) => gate.id === "validation-cases")).toMatchObject({
+      status: "evidence-required",
+      supportingHref: "/quality-lab/validation-cases",
+      supportingLabel: "Inspect validation registry",
     });
   });
 });

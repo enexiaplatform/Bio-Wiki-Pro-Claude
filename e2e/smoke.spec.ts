@@ -237,6 +237,10 @@ test.describe("public smoke", () => {
     await page.getByLabel(/Calibration evidence references/i).fill("QC-WORKLOAD-Q1-2026");
     await expect(page.getByText(/^Review ready$/i).first()).toBeVisible();
     await page.getByLabel(/Learning disposition/i).selectOption("project-only");
+    await page.getByText(/Controlled validation-case acceptance/i).click();
+    await expect(page.getByLabel(/Validation case status/i)).toHaveValue("draft");
+    await expect(page.getByLabel(/Validation learning use permission/i)).toHaveValue("not-assessed");
+    await expect(page.getByText(/Validation-case acceptance has not started/i)).toBeVisible();
     await page.getByText(/Exports and handoff/i).click();
     const calibrationDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Export calibration CSV/i }).click();
@@ -357,7 +361,8 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Export source registry/i }).click();
     expect((await sourceRegistryDownload).suggestedFilename()).toBe("atlas-microbiology-source-coverage-microbiology-pack-v1-1.json");
     await expect(page.getByRole("heading", { name: /Food & beverage quality/i })).toBeVisible();
-    await expect(page.getByText(/Synthetic cases exercise reconciliation, outsourcing and unresolved allocation behavior/i)).toBeVisible();
+    await expect(page.getByText(/0 of the 3-case working evidence threshold/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Inspect validation registry/i })).toHaveAttribute("href", "/quality-lab/validation-cases");
     await expect(page.getByText(/No public evidence area opened/i)).toBeVisible();
     await expect(page.getByText(/No implied launch promise/i).last()).toBeVisible();
     await expect(page.getByRole("link", { name: /Read validation framework/i }).first()).toHaveAttribute("href", "/blog/how-to-validate-a-quality-lab-domain-pack");
@@ -376,6 +381,20 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Download ownership charter/i }).click();
     expect((await charterDownload).suggestedFilename()).toBe("atlas-microbiology-expert-ownership-charter.csv");
     await expect(page.getByText(/does not certify competence/i).last()).toBeVisible();
+  });
+
+  test("Validation case registry separates synthetic, calibration and accepted evidence", async ({ page }) => {
+    await page.goto("/quality-lab/validation-cases");
+    await expect(page.getByRole("heading", { name: /A calibration record is not automatically a validation case/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /0\/3 accepted validation cases/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Synthetic case" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Calibration candidate" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Accepted validation case", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /No validation-case acceptance has started/i })).toBeVisible();
+    const registryDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export validation registry/i }).click();
+    expect((await registryDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case-registry.json");
+    await expect(page.getByText(/not statistical validation/i).last()).toBeVisible();
   });
 
   test("Domain Pack validation guide connects calibration, readiness and evidence governance", async ({ page }) => {

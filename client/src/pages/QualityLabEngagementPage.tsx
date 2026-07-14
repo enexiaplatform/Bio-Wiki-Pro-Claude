@@ -40,6 +40,7 @@ import {
   type QualityLabEngagementPacket,
 } from "@shared/quality-lab-engagement";
 import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery";
+import { assessValidationCase } from "@shared/quality-lab-validation-cases";
 import { useUser } from "@/context/UserContext";
 import type { QualityLabProject } from "@shared/quality-lab";
 
@@ -192,6 +193,7 @@ export default function QualityLabEngagementPage() {
   const calibrationSummary = summarizeCalibration(packet);
   const deliveryReadiness = assessQualityLabDeliveryReadiness(project, packet);
   const pilotEvidence = assessPaidPilotEvidence(packet, deliveryReadiness);
+  const validationCase = assessValidationCase(packet);
   const selectedBaseline = packet.baseline[activeMetric];
   const selectedMetricNote = packet.calibration.metricNotes.find((row) => row.metric === activeMetric)!;
   const selectedVarianceBand = varianceMagnitude(selectedBaseline.variancePercent);
@@ -212,6 +214,10 @@ export default function QualityLabEngagementPage() {
 
   function updatePilotControl(patch: Partial<QualityLabEngagementPacket["pilotControl"]>) {
     persist({ ...packet!, pilotControl: { ...packet!.pilotControl, ...patch } });
+  }
+
+  function updateValidationControl(patch: Partial<QualityLabEngagementPacket["validationControl"]>) {
+    persist({ ...packet!, validationControl: { ...packet!.validationControl, ...patch } });
   }
 
   async function exportDeliveryArtifact(artifact: "workbook" | "brief") {
@@ -240,7 +246,7 @@ export default function QualityLabEngagementPage() {
           <Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
             <ArrowLeft className="h-4 w-4" /> Back to blueprint
           </Link>
-          <div className="flex flex-wrap gap-4"><Link href="/quality-lab/pilots" className="text-sm font-bold text-teal-300 hover:text-teal-200">Open paid pilot portfolio</Link><Link href="/quality-lab/calibration" className="text-sm font-bold text-sky-300 hover:text-sky-200">Open learning review queue</Link></div>
+          <div className="flex flex-wrap gap-4"><Link href="/quality-lab/pilots" className="text-sm font-bold text-teal-300 hover:text-teal-200">Open paid pilot portfolio</Link><Link href="/quality-lab/calibration" className="text-sm font-bold text-sky-300 hover:text-sky-200">Open learning review queue</Link><Link href="/quality-lab/validation-cases" className="text-sm font-bold text-violet-300 hover:text-violet-200">Open validation registry</Link></div>
         </div>
 
         <header className="mt-5 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 to-slate-950 p-5 md:p-8">
@@ -374,6 +380,7 @@ export default function QualityLabEngagementPage() {
             ["Delivery control", "#delivery-control"],
             ["Evidence review", "#evidence-review"],
             ["Calibration", "#calibration"],
+            ["Validation case", "#validation-case"],
             ["Method evidence", "#method-evidence"],
             ["Corrections & decisions", "#decision-records"],
           ].map(([label, href]) => <a key={href} href={href} className="shrink-0 rounded-lg px-3 py-2 text-xs font-bold text-slate-400 transition hover:bg-white/5 hover:text-white">{label}</a>)}
@@ -513,6 +520,22 @@ export default function QualityLabEngagementPage() {
             <Link href="/blog/how-to-validate-a-quality-lab-domain-pack" className="shrink-0 text-[11px] font-bold text-teal-300">Validation framework</Link>
           </div>
         </section>
+
+        <WorkspaceDisclosure id="validation-case" title="Controlled validation-case acceptance" description="Promote reviewed project evidence only after baseline, scope, permission, evidence quality and reviewer acceptance are controlled." meta={validationCase.eligibility.replaceAll("-", " ")}>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <label className="text-xs text-slate-400">Validation case ID<input aria-label="Validation case ID" value={packet.validationControl.caseId} onChange={(event) => updateValidationControl({ caseId: event.target.value })} className={`${inputClass} mt-1`} /></label>
+            <label className="text-xs text-slate-400">Case status<select aria-label="Validation case status" value={packet.validationControl.status} onChange={(event) => updateValidationControl({ status: event.target.value as QualityLabEngagementPacket["validationControl"]["status"], acceptedAt: event.target.value === "accepted" ? new Date().toISOString() : null })} className={`${inputClass} mt-1`}><option value="draft">Draft</option><option value="in-review">In review</option><option value="accepted">Accepted as validation case</option><option value="rejected">Rejected</option></select></label>
+            <label className="text-xs text-slate-400">Baseline frozen at<input aria-label="Validation baseline frozen at" type="datetime-local" value={packet.validationControl.baselineFrozenAt.slice(0, 16)} onChange={(event) => updateValidationControl({ baselineFrozenAt: event.target.value })} className={`${inputClass} mt-1`} /></label>
+            <label className="text-xs text-slate-400">Confidentiality class<select aria-label="Validation confidentiality class" value={packet.validationControl.confidentialityClass} onChange={(event) => updateValidationControl({ confidentialityClass: event.target.value as QualityLabEngagementPacket["validationControl"]["confidentialityClass"] })} className={`${inputClass} mt-1`}><option value="not-classified">Not classified</option><option value="client-confidential">Client confidential</option><option value="internal-anonymized">Internal anonymized</option><option value="shareable">Shareable</option></select></label>
+            <label className="text-xs text-slate-400">Learning-use permission<select aria-label="Validation learning use permission" value={packet.validationControl.learningUsePermission} onChange={(event) => updateValidationControl({ learningUsePermission: event.target.value as QualityLabEngagementPacket["validationControl"]["learningUsePermission"] })} className={`${inputClass} mt-1`}><option value="not-assessed">Not assessed</option><option value="project-validation-only">Project validation only</option><option value="internal-anonymized-learning">Internal anonymized learning permitted</option></select></label>
+            <label className="text-xs text-slate-400">Scope alignment<select aria-label="Validation scope alignment" value={packet.validationControl.scopeAlignment} onChange={(event) => updateValidationControl({ scopeAlignment: event.target.value as QualityLabEngagementPacket["validationControl"]["scopeAlignment"] })} className={`${inputClass} mt-1`}><option value="unknown">Unknown</option><option value="yes">Aligned to frozen estimate</option><option value="partial">Partially aligned</option><option value="no">Not aligned</option></select></label>
+            <label className="text-xs text-slate-400 md:col-span-2 lg:col-span-3">Validation question and intended learning<textarea aria-label="Validation case purpose" value={packet.validationControl.casePurpose} onChange={(event) => updateValidationControl({ casePurpose: event.target.value })} className={`${inputClass} mt-1`} rows={2} placeholder="What rule or estimate is being tested, for which scope, and why?" /></label>
+            <label className="text-xs text-slate-400 md:col-span-2">Qualification or source-quality evidence references (one per line)<textarea aria-label="Validation qualification evidence references" value={packet.validationControl.qualificationEvidenceRefs.join("\n")} onChange={(event) => updateValidationControl({ qualificationEvidenceRefs: event.target.value.split("\n").map((value) => value.trim()).filter(Boolean) })} className={`${inputClass} mt-1`} rows={3} placeholder="Controlled method, qualification, audit, or data-quality record ID" /></label>
+            <label className="text-xs text-slate-400">Accepted by qualified role<input aria-label="Validation accepted by role" value={packet.validationControl.acceptedByRole} onChange={(event) => updateValidationControl({ acceptedByRole: event.target.value })} className={`${inputClass} mt-1`} placeholder="Qualified reviewer role" /></label>
+            <label className="text-xs text-slate-400 md:col-span-2 lg:col-span-3">Acceptance rationale<textarea aria-label="Validation acceptance rationale" value={packet.validationControl.acceptanceRationale} onChange={(event) => updateValidationControl({ acceptanceRationale: event.target.value })} className={`${inputClass} mt-1`} rows={3} placeholder="Why the frozen baseline, observed scope, evidence provenance and variance interpretation support or reject this case" /></label>
+          </div>
+          <div className="mt-5 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-200">Validation-case blockers</p><div className="mt-3 grid gap-2 md:grid-cols-2">{validationCase.blockers.length ? validationCase.blockers.map((item) => <p key={item} className="flex gap-2 text-xs leading-5 text-slate-400"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" />{item}</p>) : <p className="text-xs text-teal-200">Eligible validation-case record. Portfolio release still requires distinct cross-case evidence and all other Domain Pack gates.</p>}</div></div>
+        </WorkspaceDisclosure>
 
         {revisions.length > 0 && (
           <WorkspaceDisclosure id="project-history" title="Reviewed-project history" description="Immutable server revisions; comparison is decision-support only." meta={`${revisions.length} revisions`}>

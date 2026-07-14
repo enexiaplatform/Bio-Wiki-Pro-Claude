@@ -51,6 +51,20 @@ const emptyPilotControl = () => ({
   outcomeNote: "",
 });
 
+const emptyValidationControl = () => ({
+  caseId: "",
+  status: "draft" as const,
+  confidentialityClass: "not-classified" as const,
+  learningUsePermission: "not-assessed" as const,
+  baselineFrozenAt: "",
+  casePurpose: "",
+  scopeAlignment: "unknown" as const,
+  qualificationEvidenceRefs: [] as string[],
+  acceptanceRationale: "",
+  acceptedByRole: "",
+  acceptedAt: null as string | null,
+});
+
 export const qualityLabEngagementPacketSchema = z.object({
   packetVersion: z.literal(QUALITY_LAB_ENGAGEMENT_PACKET_VERSION),
   generatedAt: z.string().datetime(),
@@ -99,6 +113,19 @@ export const qualityLabEngagementPacketSchema = z.object({
     acceptanceReference: z.string().max(240),
     outcomeNote: z.string().max(2000),
   }).default(emptyPilotControl),
+  validationControl: z.object({
+    caseId: z.string().max(160),
+    status: z.enum(["draft", "in-review", "accepted", "rejected"]),
+    confidentialityClass: z.enum(["not-classified", "client-confidential", "internal-anonymized", "shareable"]),
+    learningUsePermission: z.enum(["not-assessed", "project-validation-only", "internal-anonymized-learning"]),
+    baselineFrozenAt: z.string(),
+    casePurpose: z.string().max(2000),
+    scopeAlignment: z.enum(["unknown", "yes", "partial", "no"]),
+    qualificationEvidenceRefs: z.array(z.string().max(240)),
+    acceptanceRationale: z.string().max(2000),
+    acceptedByRole: z.string().max(160),
+    acceptedAt: z.string().datetime().nullable(),
+  }).default(emptyValidationControl),
   checklist: z.array(z.object({ id: z.string().min(1), ownerRole: z.string().min(1), status: checklistStatusSchema, question: z.string().min(1), requiredEvidence: z.string().min(1), relatedRuleIds: z.array(z.string()), reviewerNote: z.string() })),
   methodEvidenceMatrix: z.array(z.object({ id: z.string(), productName: z.string(), market: z.string(), requirementType: z.string(), methodName: z.string(), evidenceIds: z.array(z.string()).min(1), verificationRequirement: z.string(), status: commercialReviewStatusSchema, reviewerNote: z.string() })).default([]),
   ursBasis: z.array(z.object({ id: z.string(), equipmentName: z.string(), equipmentCategory: z.string(), relatedMethodRequirementIds: z.array(z.string()), evidenceIds: z.array(z.string()).default([]), functionalRequirement: z.string(), qualificationImpact: z.string(), status: commercialReviewStatusSchema })).default([]),
@@ -140,6 +167,11 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
       documentId: `ATLAS-${project.id.toUpperCase()}`,
     },
     pilotControl: emptyPilotControl(),
+    validationControl: {
+      ...emptyValidationControl(),
+      caseId: `VAL-${project.id.toUpperCase()}`,
+      baselineFrozenAt: generatedAt,
+    },
     checklist: blueprint.unresolvedInputs.map((item) => ({
       id: `review-${item.id}`,
       ownerRole: ownerByCategory[item.category] ?? "Project owner",

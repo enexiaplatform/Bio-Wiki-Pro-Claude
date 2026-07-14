@@ -65,6 +65,7 @@ describe("Quality Lab engagement packet", () => {
     delete legacy.calibration;
     const parsed = qualityLabEngagementPacketSchema.parse(legacy);
     expect(parsed.calibration.status).toBe("draft");
+    expect(parsed.validationControl).toMatchObject({ status: "draft", learningUsePermission: "not-assessed" });
     expect(parsed.calibration.metricNotes.map((item) => item.metric)).toEqual(["monthlyTests", "teamFte", "areaSqm", "capexLowUsd", "capexHighUsd"]);
   });
 

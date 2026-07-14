@@ -38,7 +38,7 @@ export const domainPackReadiness: DomainPackReadiness[] = [
     gates: [
       gate("expert-owner", "Qualified expert ownership", "in-development", "Four accountable review scopes cover the current rule registry; 0 roles have an evidence-backed external appointment in the product record.", "Name accountable microbiology SME reviewer(s), competence basis, review scope and change-control responsibilities.", "/quality-lab/domain-ownership", "Inspect ownership control"),
       gate("source-corpus", "Versioned source corpus", "in-development", "A public-reference catalog and versioned concept rule registry exist for the current slice.", "Complete applicability conditions, source versions, rule provenance and controlled review for every material method/resource rule."),
-      gate("validation-cases", "Validation cases", "evidence-required", "Synthetic cases exercise reconciliation, outsourcing and unresolved allocation behavior; they are not validation cases.", commonRequired.cases, "/blog/how-to-validate-a-quality-lab-domain-pack"),
+      gate("validation-cases", "Validation cases", "evidence-required", "Synthetic cases exercise engine behavior, but 0 of the 3-case working evidence threshold are accepted validation cases.", commonRequired.cases, "/quality-lab/validation-cases", "Inspect validation registry"),
       gate("qualified-demand", "Paying or qualified demand", "evidence-required", "The repository contains discovery and review workflows but no claim of a completed paid Blueprint engagement.", commonRequired.demand),
     ],
   },
