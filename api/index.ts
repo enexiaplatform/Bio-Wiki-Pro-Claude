@@ -61,9 +61,18 @@ export default async function handler(req: Request, res: Response) {
     return app(req, res);
   } catch (error) {
     const requestId = req.headers["x-vercel-id"] || req.headers["x-request-id"] || "unavailable";
+    const requestUrl = req.originalUrl || req.url || "/";
+    const requestPath = (() => {
+      try {
+        return new URL(requestUrl, "https://life-science-atlas.local").pathname;
+      } catch {
+        return "/";
+      }
+    })();
+
     console.error("[server startup failed]", {
       requestId,
-      path: req.originalUrl,
+      path: requestUrl,
       message: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     });
@@ -73,7 +82,7 @@ export default async function handler(req: Request, res: Response) {
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("Retry-After", "5");
 
-    if (req.path.startsWith("/api/")) {
+    if (requestPath.startsWith("/api/")) {
       return res.status(503).json({
         message: "Service temporarily unavailable. Please retry in a few seconds.",
       });
