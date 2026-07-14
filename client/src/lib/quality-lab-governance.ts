@@ -14,3 +14,9 @@ export async function fetchAccountGovernanceRecord(recordKey: QualityLabGovernan
   if (!parsed.success) throw new Error("The account governance record is invalid");
   return parsed.data;
 }
+
+export async function fetchAccountGovernanceRevisions(recordKey: QualityLabGovernanceKey) {
+  const response = await fetch(`/api/quality-lab/governance/${recordKey}/revisions`, { credentials: "include" });
+  if (!response.ok) return [] as Array<{ revisionNumber: number; createdAt: string }>;
+  return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string }>>;
+}

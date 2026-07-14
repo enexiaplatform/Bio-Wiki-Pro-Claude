@@ -5,8 +5,8 @@ import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { clearExpertOwnerRoles, loadExpertOwnerRoles, saveExpertOwnerRoles } from "@/lib/quality-lab-expert-ownership";
-import { saveAccountGovernanceRecord } from "@/lib/quality-lab-governance";
-import { assessExpertOwnership, createExpertOwnershipCsv, createExpertOwnershipRegister, createMicrobiologyExpertOwnerRoles, type ExpertOwnerAppointment, type ExpertOwnerRole, type ExpertOwnershipAssessment } from "@shared/quality-lab-expert-ownership";
+import { fetchAccountGovernanceRecord, fetchAccountGovernanceRevisions, saveAccountGovernanceRecord } from "@/lib/quality-lab-governance";
+import { applyExpertOwnershipRegister, assessExpertOwnership, createExpertOwnershipCsv, createExpertOwnershipRegister, createMicrobiologyExpertOwnerRoles, type ExpertOwnerAppointment, type ExpertOwnerRole, type ExpertOwnershipAssessment } from "@shared/quality-lab-expert-ownership";
 import { MICROBIOLOGY_DOMAIN_PACK, MICROBIOLOGY_SHARED_RULE_TRACE, workflowRuleTrace, type MicrobiologyWorkflowKey } from "@shared/quality-lab-microbiology-pack";
 
 const workflowKeys: MicrobiologyWorkflowKey[] = ["rawMaterials", "finishedProducts", "water", "environmentalMonitoring", "sterility", "endotoxin", "bioburden", "growthPromotion"];
@@ -28,6 +28,7 @@ export default function QualityLabExpertOwnershipPage() {
   const initial = useMemo(() => loadExpertOwnerRoles(MICROBIOLOGY_DOMAIN_PACK, baseRoles), []);
   const [roles, setRoles] = useState<ExpertOwnerRole[]>(initial.roles);
   const [saveNotice, setSaveNotice] = useState(initial.reason ?? "");
+  const [accountRevisionCount, setAccountRevisionCount] = useState<number | null>(null);
   const ownershipAssessment = useMemo(() => assessExpertOwnership({ domainPack: MICROBIOLOGY_DOMAIN_PACK, ruleTrace, roles }), [roles]);
   const updateAppointment = (roleId: string, patch: Partial<ExpertOwnerAppointment>) => setRoles((current) => current.map((role) => role.id === roleId ? { ...role, appointment: { ...role.appointment, ...patch } } : role));
   const saveRegister = () => {
@@ -44,7 +45,20 @@ export default function QualityLabExpertOwnershipPage() {
     try {
       const result = await saveAccountGovernanceRecord("expert-ownership", createExpertOwnershipRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, roles }));
       setSaveNotice(`Saved to your account at ${new Date(result.updatedAt).toLocaleString()}. This is a working record, not an external appointment or approval.`);
+      setAccountRevisionCount((await fetchAccountGovernanceRevisions("expert-ownership")).length);
     } catch { setSaveNotice("Account save could not be completed. Your browser-local working record was not changed."); }
+  };
+  const loadFromAccount = async () => {
+    if (!isAuthenticated) return setSaveNotice("Sign in to load an account-held working register.");
+    try {
+      const register = await fetchAccountGovernanceRecord("expert-ownership");
+      if (!register || register.registerVersion !== "expert-ownership-register/v1") return setSaveNotice("No compatible ownership working record is stored in this account yet.");
+      const applied = applyExpertOwnershipRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, roles: createMicrobiologyExpertOwnerRoles(ruleTrace), register });
+      if (!applied.applied) return setSaveNotice(applied.reason ?? "The account record could not be applied to this Domain Pack version.");
+      setRoles(applied.roles);
+      setAccountRevisionCount((await fetchAccountGovernanceRevisions("expert-ownership")).length);
+      setSaveNotice("Loaded the exact-version ownership working record from your account. It has replaced this page's browser workspace only.");
+    } catch { setSaveNotice("Account record could not be loaded. Your browser workspace was not changed."); }
   };
   useSEO({ title: "Expert Ownership Control | Atlas Quality Lab", description: "Inspect the expert roles, competence evidence and rule-review scope required before the Microbiology Domain Pack can be treated as expert-owned." });
   return <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
@@ -86,7 +100,7 @@ export default function QualityLabExpertOwnershipPage() {
       </section>
 
       <section className="mt-6 rounded-3xl border border-violet-300/20 bg-violet-300/[0.04] p-5 md:p-6" aria-label="Ownership register controls">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="font-bold">Browser-local working register</h2><p className="mt-1 max-w-3xl text-xs leading-6 text-slate-400">Save only controlled references you are authorized to record. This browser copy is not an appointment, competence certification, signature, or system of record.</p>{saveNotice && <p role="status" className="mt-2 text-xs text-violet-200">{saveNotice}</p>}</div><div className="flex flex-wrap gap-2"><button type="button" onClick={resetRegister} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-white/[0.04]"><RotateCcw className="h-4 w-4" /> Clear browser record</button><button type="button" onClick={saveRegister} className="inline-flex items-center gap-2 rounded-xl bg-violet-300 px-4 py-3 text-xs font-bold text-slate-950 hover:bg-violet-200"><Save className="h-4 w-4" /> Save browser record</button><button type="button" onClick={saveToAccount} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/30 px-4 py-3 text-xs font-bold text-violet-100 hover:bg-violet-300/10"><Save className="h-4 w-4" /> Save to account</button></div></div>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="font-bold">Browser-local working register</h2><p className="mt-1 max-w-3xl text-xs leading-6 text-slate-400">Save only controlled references you are authorized to record. This browser copy is not an appointment, competence certification, signature, or system of record.</p>{accountRevisionCount !== null && <p className="mt-1 text-[10px] text-slate-500">Account working-record revisions: {accountRevisionCount}</p>}{saveNotice && <p role="status" className="mt-2 text-xs text-violet-200">{saveNotice}</p>}</div><div className="flex flex-wrap gap-2"><button type="button" onClick={resetRegister} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-white/[0.04]"><RotateCcw className="h-4 w-4" /> Clear browser record</button><button type="button" onClick={saveRegister} className="inline-flex items-center gap-2 rounded-xl bg-violet-300 px-4 py-3 text-xs font-bold text-slate-950 hover:bg-violet-200"><Save className="h-4 w-4" /> Save browser record</button><button type="button" onClick={loadFromAccount} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-white/[0.04]">Load account record</button><button type="button" onClick={saveToAccount} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/30 px-4 py-3 text-xs font-bold text-violet-100 hover:bg-violet-300/10"><Save className="h-4 w-4" /> Save to account</button></div></div>
       </section>
 
       <section className="mt-6 rounded-3xl border border-teal-300/20 bg-teal-300/[0.05] p-6 md:p-8"><div className="flex gap-4"><ShieldCheck className="mt-1 h-6 w-6 shrink-0 text-teal-300" /><div><h2 className="text-xl font-bold">How this gate closes</h2><p className="mt-2 max-w-4xl text-sm leading-7 text-slate-400">Complete the charter using controlled records held by the appointing organization. Each role needs a named reviewer, competence basis and evidence references, conflict declaration, accepted rule scope, external appointment record, effective date, and explicit change-control responsibility. Atlas must then reconcile the completed record against the current rule version.</p><p className="mt-3 text-[10px] leading-5 text-slate-500">{ownershipAssessment.notice}</p></div></div></section>

@@ -5,7 +5,7 @@ import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { assessDomainPackReadiness, domainPackReadiness, type ReadinessGateStatus } from "@/data/domainPackReadiness";
 import { useSEO } from "@/hooks/use-seo";
 import { clearSourceClosures, loadSourceClosures, saveSourceClosures } from "@/lib/quality-lab-source-closures";
-import { saveAccountGovernanceRecord } from "@/lib/quality-lab-governance";
+import { fetchAccountGovernanceRecord, fetchAccountGovernanceRevisions, saveAccountGovernanceRecord } from "@/lib/quality-lab-governance";
 import { useUser } from "@/context/UserContext";
 import {
   MICROBIOLOGY_DOMAIN_PACK,
@@ -14,7 +14,7 @@ import {
   workflowRuleTrace,
   type MicrobiologyWorkflowKey,
 } from "@shared/quality-lab-microbiology-pack";
-import { assessSourceCoverage, createSourceClosureRegister, createSourceCoverageRegistry, evidenceClosureRecordSchema, requiredEvidenceClosureResolution, type EvidenceClosureRecord, type EvidenceControlState, type SourceCoverageAssessment } from "@shared/quality-lab-source-coverage";
+import { applySourceClosureRegister, assessSourceCoverage, createSourceClosureRegister, createSourceCoverageRegistry, evidenceClosureRecordSchema, requiredEvidenceClosureResolution, type EvidenceClosureRecord, type EvidenceControlState, type SourceCoverageAssessment } from "@shared/quality-lab-source-coverage";
 
 const stageLabel = { "executable-concept": "Executable concept", "evidence-development": "Evidence development", "specialist-gated": "Specialist gated", "future-gate": "Future gate only" };
 const statusLabel: Record<ReadinessGateStatus, string> = { "gate-satisfied": "Gate satisfied", "in-development": "In development", "evidence-required": "Evidence required", "not-started": "Not started" };
@@ -51,6 +51,7 @@ export default function QualityLabDomainReadinessPage() {
   const initialClosures = useMemo(() => loadSourceClosures(MICROBIOLOGY_DOMAIN_PACK), []);
   const [closures, setClosures] = useState<EvidenceClosureRecord[]>(initialClosures.closures);
   const [closureNotice, setClosureNotice] = useState(initialClosures.reason ?? "");
+  const [accountRevisionCount, setAccountRevisionCount] = useState<number | null>(null);
   const microbiologySourceCoverage = useMemo(() => assessSourceCoverage({ domainPack: MICROBIOLOGY_DOMAIN_PACK, evidence: MICROBIOLOGY_EVIDENCE_CATALOG, rules: microbiologyRules, closures }), [closures]);
   const closureFor = (evidenceId: string) => closures.find((item) => item.evidenceId === evidenceId);
   const updateClosure = (record: typeof MICROBIOLOGY_EVIDENCE_CATALOG[number], patch: Partial<EvidenceClosureRecord>) => {
@@ -72,7 +73,20 @@ export default function QualityLabDomainReadinessPage() {
     try {
       const result = await saveAccountGovernanceRecord("source-closures", createSourceClosureRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, closures }));
       setClosureNotice(`Saved to your account at ${new Date(result.updatedAt).toLocaleString()}. This remains a working record, not source verification or approval.`);
+      setAccountRevisionCount((await fetchAccountGovernanceRevisions("source-closures")).length);
     } catch { setClosureNotice("Account save could not be completed. Your browser-local closure register was not changed."); }
+  };
+  const loadClosuresFromAccount = async () => {
+    if (!isAuthenticated) return setClosureNotice("Sign in to load an account-held closure register.");
+    try {
+      const register = await fetchAccountGovernanceRecord("source-closures");
+      if (!register || register.registerVersion !== "source-closure-register/v1") return setClosureNotice("No compatible source-closure working record is stored in this account yet.");
+      const applied = applySourceClosureRegister({ domainPack: MICROBIOLOGY_DOMAIN_PACK, register });
+      if (!applied.applied) return setClosureNotice(applied.reason ?? "The account record could not be applied to this Domain Pack version.");
+      setClosures(applied.closures);
+      setAccountRevisionCount((await fetchAccountGovernanceRevisions("source-closures")).length);
+      setClosureNotice("Loaded the exact-version source closure working record from your account. It has replaced this page's browser workspace only.");
+    } catch { setClosureNotice("Account record could not be loaded. Your browser workspace was not changed."); }
   };
   useSEO({ title: "Domain Pack Readiness Gates | Atlas Quality Lab", description: "See the evidence, expert ownership, validation cases and qualified demand required before Atlas treats a quality domain as a verified Domain Pack." });
   return <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
@@ -131,7 +145,7 @@ export default function QualityLabDomainReadinessPage() {
       </section>
 
       <section className="mt-6 rounded-3xl border border-sky-300/20 bg-sky-300/[0.04] p-5 md:p-6" aria-labelledby="source-closure-title">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200">Controlled closure workspace</p><h2 id="source-closure-title" className="mt-2 text-xl font-bold">Record source closure without turning a form into an approval.</h2><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-400">Each open source needs an externally accepted review reference, exact source version and locator, scope and limitations. Atlas records the working evidence; it does not verify the source or grant approval.</p>{closureNotice && <p role="status" className="mt-2 text-xs text-sky-200">{closureNotice}</p>}</div><div className="flex flex-wrap gap-2"><button type="button" onClick={resetClosures} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-white/[0.04]"><RotateCcw className="h-4 w-4" /> Clear browser register</button><button type="button" onClick={saveClosures} className="inline-flex items-center gap-2 rounded-xl bg-sky-300 px-4 py-3 text-xs font-bold text-slate-950 hover:bg-sky-200"><Save className="h-4 w-4" /> Save browser record</button><button type="button" onClick={saveClosuresToAccount} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/30 px-4 py-3 text-xs font-bold text-sky-100 hover:bg-sky-300/10"><Save className="h-4 w-4" /> Save to account</button></div></div>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200">Controlled closure workspace</p><h2 id="source-closure-title" className="mt-2 text-xl font-bold">Record source closure without turning a form into an approval.</h2><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-400">Each open source needs an externally accepted review reference, exact source version and locator, scope and limitations. Atlas records the working evidence; it does not verify the source or grant approval.</p>{accountRevisionCount !== null && <p className="mt-1 text-[10px] text-slate-500">Account working-record revisions: {accountRevisionCount}</p>}{closureNotice && <p role="status" className="mt-2 text-xs text-sky-200">{closureNotice}</p>}</div><div className="flex flex-wrap gap-2"><button type="button" onClick={resetClosures} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-white/[0.04]"><RotateCcw className="h-4 w-4" /> Clear browser register</button><button type="button" onClick={saveClosures} className="inline-flex items-center gap-2 rounded-xl bg-sky-300 px-4 py-3 text-xs font-bold text-slate-950 hover:bg-sky-200"><Save className="h-4 w-4" /> Save browser record</button><button type="button" onClick={loadClosuresFromAccount} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-white/[0.04]">Load account record</button><button type="button" onClick={saveClosuresToAccount} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/30 px-4 py-3 text-xs font-bold text-sky-100 hover:bg-sky-300/10"><Save className="h-4 w-4" /> Save to account</button></div></div>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">{MICROBIOLOGY_EVIDENCE_CATALOG.filter((record) => requiredEvidenceClosureResolution(record)).map((record) => <SourceClosureEditor key={record.id} record={record} value={closureFor(record.id)} onChange={(patch) => updateClosure(record, patch)} />)}</div>
       </section>
 
