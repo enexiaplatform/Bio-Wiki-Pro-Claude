@@ -11,6 +11,7 @@ export interface DomainReadinessGate {
   currentEvidence: string;
   exitEvidence: string;
   supportingHref?: string;
+  supportingLabel?: string;
 }
 
 export interface DomainPackReadiness {
@@ -23,7 +24,7 @@ export interface DomainPackReadiness {
   gates: DomainReadinessGate[];
 }
 
-const gate = (id: ReadinessGateId, label: string, status: ReadinessGateStatus, currentEvidence: string, exitEvidence: string, supportingHref?: string): DomainReadinessGate => ({ id, label, status, currentEvidence, exitEvidence, supportingHref });
+const gate = (id: ReadinessGateId, label: string, status: ReadinessGateStatus, currentEvidence: string, exitEvidence: string, supportingHref?: string, supportingLabel?: string): DomainReadinessGate => ({ id, label, status, currentEvidence, exitEvidence, supportingHref, supportingLabel });
 
 const commonRequired = {
   cases: "Controlled validation cases must compare compiled estimates with qualified project evidence and record corrections and variance.",
@@ -35,7 +36,7 @@ export const domainPackReadiness: DomainPackReadiness[] = [
     id: "nonsterile-microbiology", sequence: 1, title: "Non-sterile pharmaceutical microbiology", currentStage: "executable-concept", publicEvidenceHref: "/quality-lab/evidence",
     scopeBoundary: "The current executable slice is a concept model. It is not yet a verified Microbiology Domain Pack or a source of site-approved methods.",
     gates: [
-      gate("expert-owner", "Qualified expert ownership", "in-development", "Founder domain experience supports discovery and model development; controlled reviewer ownership is not yet established in the product record.", "Name accountable microbiology SME reviewer(s), competence basis, review scope and change-control responsibilities."),
+      gate("expert-owner", "Qualified expert ownership", "in-development", "Four accountable review scopes cover the current rule registry; 0 roles have an evidence-backed external appointment in the product record.", "Name accountable microbiology SME reviewer(s), competence basis, review scope and change-control responsibilities.", "/quality-lab/domain-ownership", "Inspect ownership control"),
       gate("source-corpus", "Versioned source corpus", "in-development", "A public-reference catalog and versioned concept rule registry exist for the current slice.", "Complete applicability conditions, source versions, rule provenance and controlled review for every material method/resource rule."),
       gate("validation-cases", "Validation cases", "evidence-required", "Synthetic cases exercise reconciliation, outsourcing and unresolved allocation behavior; they are not validation cases.", commonRequired.cases, "/blog/how-to-validate-a-quality-lab-domain-pack"),
       gate("qualified-demand", "Paying or qualified demand", "evidence-required", "The repository contains discovery and review workflows but no claim of a completed paid Blueprint engagement.", commonRequired.demand),

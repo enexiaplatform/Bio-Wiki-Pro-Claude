@@ -27,4 +27,13 @@ describe("Domain Pack readiness gates", () => {
     expect(future.publicEvidenceHref).toBeUndefined();
     expect(future.gates.every((gate) => gate.status === "not-started")).toBe(true);
   });
+
+  it("connects microbiology expert ownership to its controlled register", () => {
+    const microbiology = domainPackReadiness.find((domain) => domain.id === "nonsterile-microbiology")!;
+    expect(microbiology.gates.find((gate) => gate.id === "expert-owner")).toMatchObject({
+      status: "in-development",
+      supportingHref: "/quality-lab/domain-ownership",
+      supportingLabel: "Inspect ownership control",
+    });
+  });
 });

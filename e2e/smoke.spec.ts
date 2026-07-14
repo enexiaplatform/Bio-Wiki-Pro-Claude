@@ -352,6 +352,7 @@ test.describe("public smoke", () => {
     await expect(page.getByText("14/14")).toBeVisible();
     await expect(page.getByText("0/14")).toBeVisible();
     await expect(page.getByText(/Obtain and review the named site-approved methods/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Inspect ownership control/i })).toHaveAttribute("href", "/quality-lab/domain-ownership");
     const sourceRegistryDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Export source registry/i }).click();
     expect((await sourceRegistryDownload).suggestedFilename()).toBe("atlas-microbiology-source-coverage-microbiology-pack-v1-1.json");
@@ -361,6 +362,20 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/No implied launch promise/i).last()).toBeVisible();
     await expect(page.getByRole("link", { name: /Read validation framework/i }).first()).toHaveAttribute("href", "/blog/how-to-validate-a-quality-lab-domain-pack");
     await expect(page.getByRole("link", { name: /Discuss a real project/i })).toHaveAttribute("href", "/quality-lab/review");
+  });
+
+  test("Expert ownership register keeps appointments evidence-controlled", async ({ page }) => {
+    await page.goto("/quality-lab/domain-ownership");
+    await expect(page.getByRole("heading", { name: /A reviewer name is not evidence of qualified ownership/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Review scopes exist. Qualified owners are not yet established/i })).toBeVisible();
+    await expect(page.getByText("0/4")).toBeVisible();
+    await expect(page.getByText("14/14")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Microbiology Domain Pack owner/i })).toBeVisible();
+    await expect(page.getByText(/External appointment status/i).first()).toBeVisible();
+    const charterDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Download ownership charter/i }).click();
+    expect((await charterDownload).suggestedFilename()).toBe("atlas-microbiology-expert-ownership-charter.csv");
+    await expect(page.getByText(/does not certify competence/i).last()).toBeVisible();
   });
 
   test("Domain Pack validation guide connects calibration, readiness and evidence governance", async ({ page }) => {

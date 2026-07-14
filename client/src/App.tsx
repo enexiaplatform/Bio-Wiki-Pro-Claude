@@ -59,6 +59,7 @@ const QualityLabEvidenceGraphPage = lazy(() => import("@/pages/QualityLabEvidenc
 const QualityLabCalibrationQueuePage = lazy(() => import("@/pages/QualityLabCalibrationQueuePage"));
 const QualityLabPilotPortfolioPage = lazy(() => import("@/pages/QualityLabPilotPortfolioPage"));
 const QualityLabDomainReadinessPage = lazy(() => import("@/pages/QualityLabDomainReadinessPage"));
+const QualityLabExpertOwnershipPage = lazy(() => import("@/pages/QualityLabExpertOwnershipPage"));
 const QualityLabMethodApplicationsPage = lazy(() => import("@/pages/QualityLabMethodApplicationsPage"));
 
 function PageFallback() {
@@ -101,6 +102,7 @@ function Layout() {
           <Route path="/quality-lab/calibration" component={QualityLabCalibrationQueuePage} />
           <Route path="/quality-lab/pilots" component={QualityLabPilotPortfolioPage} />
           <Route path="/quality-lab/domain-readiness" component={QualityLabDomainReadinessPage} />
+          <Route path="/quality-lab/domain-ownership" component={QualityLabExpertOwnershipPage} />
           <Route path="/quality-lab/method-applications" component={QualityLabMethodApplicationsPage} />
           <Route path="/quality-lab/engagements/:id" component={QualityLabEngagementPage} />
           <Route path="/academy" component={Academy} />
