@@ -20,8 +20,8 @@ const workflowKeys: MicrobiologyWorkflowKey[] = ["rawMaterials", "finishedProduc
 const rules = [...workflowRuleTrace(workflowKeys), ...MICROBIOLOGY_SHARED_RULE_TRACE];
 const baseExpertRoles = createMicrobiologyExpertOwnerRoles(rules);
 
-function downloadReleaseDossier(assessment: ReturnType<typeof assessGate2Release>) {
-  const blob = new Blob([JSON.stringify(createGate2ReleaseDossier(assessment), null, 2)], { type: "application/json" });
+function downloadReleaseDossier(assessment: ReturnType<typeof assessGate2Release>, evidenceBasis: { sourceCoverage: ReturnType<typeof assessSourceCoverage>; expertOwnership: ReturnType<typeof assessExpertOwnership> }) {
+  const blob = new Blob([JSON.stringify(createGate2ReleaseDossier(assessment, evidenceBasis), null, 2)], { type: "application/json" });
   const href = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = href;
@@ -78,7 +78,7 @@ export default function QualityLabGate2ReleasePage() {
 
       <section className="mt-8 rounded-3xl border border-rose-300/20 bg-rose-300/[0.04] p-5 md:p-7" aria-labelledby="gate-2-status-heading">
         {loadNotice && <p role="alert" className="mb-4 rounded-xl border border-amber-300/20 bg-amber-300/10 p-3 text-xs text-amber-100">{loadNotice}</p>}
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-200">Current release-review status</p><h2 id="gate-2-status-heading" className="mt-3 text-3xl font-bold">{assessment.evidenceCompleteCount}/{assessment.totalControlCount} evidence controls complete</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-400">Active basis: {assessment.domainPackId}@{assessment.domainPackVersion}. Current status remains <strong className="text-rose-200">{assessment.status.replaceAll("-", " ")}</strong>.</p></div><button type="button" onClick={() => downloadReleaseDossier(assessment)} className="inline-flex w-fit shrink-0 items-center gap-2 rounded-xl border border-rose-300/25 bg-rose-300/10 px-4 py-3 text-xs font-bold text-rose-100 hover:bg-rose-300/15"><Download className="h-4 w-4" /> Export release dossier</button></div>
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-rose-200">Current release-review status</p><h2 id="gate-2-status-heading" className="mt-3 text-3xl font-bold">{assessment.evidenceCompleteCount}/{assessment.totalControlCount} evidence controls complete</h2><p className="mt-2 max-w-3xl text-sm leading-7 text-slate-400">Active basis: {assessment.domainPackId}@{assessment.domainPackVersion}. Current status remains <strong className="text-rose-200">{assessment.status.replaceAll("-", " ")}</strong>.</p></div><button type="button" onClick={() => downloadReleaseDossier(assessment, { sourceCoverage, expertOwnership })} className="inline-flex w-fit shrink-0 items-center gap-2 rounded-xl border border-rose-300/25 bg-rose-300/10 px-4 py-3 text-xs font-bold text-rose-100 hover:bg-rose-300/15"><Download className="h-4 w-4" /> Export release dossier</button></div>
         <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Gate 2 evidence control progress" aria-valuemin={0} aria-valuemax={4} aria-valuenow={assessment.evidenceCompleteCount}><div className="h-full rounded-full bg-teal-300" style={{ width: `${progress}%` }} /></div>
       </section>
 

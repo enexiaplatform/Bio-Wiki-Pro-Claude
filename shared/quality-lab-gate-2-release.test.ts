@@ -43,8 +43,10 @@ describe("Quality Lab Gate 2 consolidated release control", () => {
 
   it("exports an evidence dossier without converting eligibility into approval", () => {
     const assessment = assessGate2Release({ sourceCoverage, expertOwnership, validationRegistry: emptyValidation, paidPilotPortfolio: emptyDemand, generatedAt: "2026-07-14T00:00:00.000Z" });
-    const dossier = createGate2ReleaseDossier(assessment);
+    const dossier = createGate2ReleaseDossier(assessment, { sourceCoverage, expertOwnership });
     expect(dossier).toMatchObject({ dossierVersion: "quality-lab-gate-2-release/v1", releaseReviewStatus: "blocked", totalControlCount: 4 });
     expect(dossier.controlNotice).toMatch(/does not verify/i);
+    expect(dossier.evidenceBasis?.sourceClosure.metrics.openEvidenceCount).toBe(sourceCoverage.metrics.openEvidenceCount);
+    expect(dossier.evidenceBasis?.expertOwnership.roles).toHaveLength(4);
   });
 });

@@ -141,7 +141,7 @@ export function assessGate2Release(args: {
   };
 }
 
-export function createGate2ReleaseDossier(assessment: Gate2ReleaseAssessment) {
+export function createGate2ReleaseDossier(assessment: Gate2ReleaseAssessment, evidenceBasis?: { sourceCoverage: SourceCoverageAssessment; expertOwnership: ExpertOwnershipAssessment }) {
   return {
     dossierType: "Atlas Quality Lab Gate 2 release evidence dossier",
     dossierVersion: assessment.assessmentVersion,
@@ -153,6 +153,20 @@ export function createGate2ReleaseDossier(assessment: Gate2ReleaseAssessment) {
     controls: assessment.controls,
     blockers: assessment.blockers,
     versionMismatches: assessment.versionMismatches,
+    evidenceBasis: evidenceBasis ? {
+      sourceClosure: {
+        domainPack: { id: evidenceBasis.sourceCoverage.domainPackId, version: evidenceBasis.sourceCoverage.domainPackVersion },
+        metrics: evidenceBasis.sourceCoverage.metrics,
+        acceptedClosureRecords: evidenceBasis.sourceCoverage.closures.filter((closure) => closure.reviewStatus === "accepted-outside-atlas"),
+        notice: evidenceBasis.sourceCoverage.notice,
+      },
+      expertOwnership: {
+        domainPack: { id: evidenceBasis.expertOwnership.domainPackId, version: evidenceBasis.expertOwnership.domainPackVersion },
+        metrics: evidenceBasis.expertOwnership.metrics,
+        roles: evidenceBasis.expertOwnership.roles.map((role) => ({ id: role.id, title: role.title, ruleIds: role.ruleIds, appointment: role.appointment, ownershipEstablished: role.ownershipEstablished, missingControls: role.missingControls })),
+        notice: evidenceBasis.expertOwnership.notice,
+      },
+    } : undefined,
     controlNotice: assessment.notice,
   };
 }
