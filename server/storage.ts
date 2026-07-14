@@ -11,6 +11,8 @@ import {
   checkoutAttempts,
   qualityLabReviewedProjects,
   qualityLabReviewedProjectRevisions,
+  qualityLabGovernanceRecords,
+  qualityLabGovernanceRevisions,
   type QuoteRequest,
   type InsertQuoteRequest,
   type Lead,
@@ -18,8 +20,11 @@ import {
   type InsertContentEntry,
   type QualityLabReviewedProjectRow,
   type QualityLabReviewedProjectRevisionRow,
+  type QualityLabGovernanceRecordRow,
+  type QualityLabGovernanceRevisionRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
+import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
 import { and, desc, eq, gt, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
@@ -60,6 +65,9 @@ export interface IStorage {
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
   listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
   listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]>;
+  upsertQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey, snapshot: QualityLabGovernanceSnapshot): Promise<QualityLabGovernanceRecordRow>;
+  getQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRecordRow | undefined>;
+  listQualityLabGovernanceRevisions(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRevisionRow[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -331,6 +339,29 @@ export class DatabaseStorage implements IStorage {
     const project = await this.getQualityLabReviewedProject(userId, localProjectId);
     if (!project) return [];
     return db.select().from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id)).orderBy(qualityLabReviewedProjectRevisions.revisionNumber);
+  }
+
+  async upsertQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey, snapshot: QualityLabGovernanceSnapshot): Promise<QualityLabGovernanceRecordRow> {
+    const existing = await this.getQualityLabGovernanceRecord(userId, recordKey);
+    if (existing && JSON.stringify(existing.snapshot) === JSON.stringify(snapshot)) return existing;
+    const [row] = existing
+      ? await db.update(qualityLabGovernanceRecords).set({ snapshot, updatedAt: new Date() }).where(eq(qualityLabGovernanceRecords.id, existing.id)).returning()
+      : await db.insert(qualityLabGovernanceRecords).values({ userId, recordKey, snapshot }).returning();
+    const revisions = await db.select({ revisionNumber: qualityLabGovernanceRevisions.revisionNumber }).from(qualityLabGovernanceRevisions).where(eq(qualityLabGovernanceRevisions.governanceRecordId, row.id));
+    const revisionNumber = revisions.reduce((highest, revision) => Math.max(highest, revision.revisionNumber), 0) + 1;
+    await db.insert(qualityLabGovernanceRevisions).values({ governanceRecordId: row.id, revisionNumber, snapshot });
+    return row;
+  }
+
+  async getQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRecordRow | undefined> {
+    const [row] = await db.select().from(qualityLabGovernanceRecords).where(and(eq(qualityLabGovernanceRecords.userId, userId), eq(qualityLabGovernanceRecords.recordKey, recordKey)));
+    return row;
+  }
+
+  async listQualityLabGovernanceRevisions(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRevisionRow[]> {
+    const record = await this.getQualityLabGovernanceRecord(userId, recordKey);
+    if (!record) return [];
+    return db.select().from(qualityLabGovernanceRevisions).where(eq(qualityLabGovernanceRevisions.governanceRecordId, record.id)).orderBy(qualityLabGovernanceRevisions.revisionNumber);
   }
 }
 

@@ -2,6 +2,7 @@ import { pgTable, text, serial, boolean, timestamp, jsonb, integer, uniqueIndex 
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import type { QualityLabReviewedProjectSnapshot } from "./quality-lab-persistence";
+import type { QualityLabGovernanceSnapshot } from "./quality-lab-governance";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -150,6 +151,27 @@ export const qualityLabReviewedProjectRevisions = pgTable(
   (t) => [uniqueIndex("quality_lab_reviewed_project_revisions_project_number_idx").on(t.reviewedProjectId, t.revisionNumber)],
 );
 export type QualityLabReviewedProjectRevisionRow = typeof qualityLabReviewedProjectRevisions.$inferSelect;
+
+// Account-held governance working records. They are versioned evidence registers,
+// never electronic signatures, appointments, or QA approvals.
+export const qualityLabGovernanceRecords = pgTable("quality_lab_governance_records", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").notNull(),
+  recordKey: text("record_key").notNull(),
+  snapshot: jsonb("snapshot").$type<QualityLabGovernanceSnapshot>().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (t) => [uniqueIndex("quality_lab_governance_records_user_key_idx").on(t.userId, t.recordKey)]);
+export type QualityLabGovernanceRecordRow = typeof qualityLabGovernanceRecords.$inferSelect;
+
+export const qualityLabGovernanceRevisions = pgTable("quality_lab_governance_revisions", {
+  id: serial("id").primaryKey(),
+  governanceRecordId: integer("governance_record_id").notNull(),
+  revisionNumber: integer("revision_number").notNull(),
+  snapshot: jsonb("snapshot").$type<QualityLabGovernanceSnapshot>().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (t) => [uniqueIndex("quality_lab_governance_revisions_record_number_idx").on(t.governanceRecordId, t.revisionNumber)]);
+export type QualityLabGovernanceRevisionRow = typeof qualityLabGovernanceRevisions.$inferSelect;
 
 // === SCHEMAS ===
 

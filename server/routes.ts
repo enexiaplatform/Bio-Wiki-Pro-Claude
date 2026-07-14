@@ -16,6 +16,7 @@ import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
 import { rateLimit } from "express-rate-limit";
 import { compareQualityLabReviewedSnapshots, qualityLabReviewedProjectSnapshotSchema } from "../shared/quality-lab-persistence.js";
+import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -668,6 +669,37 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/quality-lab/reviewed-projects", isAuthenticated, async (req: any, res) => {
     const rows = await storage.listQualityLabReviewedProjects(req.session.userId);
     res.json(rows.map((row) => row.snapshot));
+  });
+
+  // Governance registers are saved only when a signed-in user explicitly asks.
+  // They remain working records, not electronic signatures or external approval.
+  app.get("/api/quality-lab/governance/:recordKey", isAuthenticated, async (req: any, res) => {
+    const recordKey = qualityLabGovernanceKeySchema.safeParse(req.params.recordKey);
+    if (!recordKey.success) return res.status(404).json({ message: "Governance register not found" });
+    const row = await storage.getQualityLabGovernanceRecord(req.session.userId, recordKey.data);
+    if (!row) return res.status(404).json({ message: "Governance register not found" });
+    res.json(row.snapshot);
+  });
+
+  app.put("/api/quality-lab/governance/:recordKey", isAuthenticated, async (req: any, res) => {
+    try {
+      const recordKey = qualityLabGovernanceKeySchema.parse(req.params.recordKey);
+      const snapshot = qualityLabGovernanceSnapshotSchema.parse(req.body);
+      const expectedVersion = recordKey === "expert-ownership" ? "expert-ownership-register/v1" : "source-closure-register/v1";
+      if (snapshot.registerVersion !== expectedVersion) return res.status(400).json({ message: "Governance record type mismatch" });
+      const row = await storage.upsertQualityLabGovernanceRecord(req.session.userId, recordKey, snapshot);
+      res.status(201).json({ recordKey: row.recordKey, updatedAt: row.updatedAt });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
+      throw err;
+    }
+  });
+
+  app.get("/api/quality-lab/governance/:recordKey/revisions", isAuthenticated, async (req: any, res) => {
+    const recordKey = qualityLabGovernanceKeySchema.safeParse(req.params.recordKey);
+    if (!recordKey.success) return res.status(404).json({ message: "Governance register not found" });
+    const rows = await storage.listQualityLabGovernanceRevisions(req.session.userId, recordKey.data);
+    res.json(rows.map((row) => ({ revisionNumber: row.revisionNumber, createdAt: row.createdAt })));
   });
 
   app.put("/api/quality-lab/reviewed-projects/:localProjectId", isAuthenticated, async (req: any, res) => {
