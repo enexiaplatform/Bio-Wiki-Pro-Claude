@@ -234,7 +234,18 @@ export function serveStatic(app: Express) {
 
   const indexPath = path.resolve(distPath, "index.html");
 
-  app.use(express.static(distPath));
+  app.use(
+    express.static(distPath, {
+      setHeaders(res, filePath) {
+        // The HTML document references content-hashed assets. Never retain an
+        // old document across a deployment, otherwise it can request asset
+        // names that no longer exist and leave the React root blank.
+        if (path.basename(filePath) === "index.html") {
+          res.setHeader("Cache-Control", "no-store, max-age=0");
+        }
+      },
+    }),
+  );
 
   // Per-page social/SEO meta for content URLs. Title + seoDescription are
   // public teaser fields (the gated body is never touched), so this is safe
