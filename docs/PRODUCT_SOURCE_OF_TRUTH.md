@@ -229,6 +229,7 @@ The current Compiler has a first executable non-sterile microbiology vertical sl
 - a computable Microbiology Source Coverage register that resolves current rules to named evidence records, separates catalog traceability from evidence closure, exposes source/version/site/calibration blockers, and exports a controlled working record without implying Domain Pack verification.
 - a Microbiology Expert Ownership control that assigns every current rule to accountable review scopes, requires competence and external appointment evidence, and exports a fillable charter while keeping unappointed roles explicitly open.
 - a Controlled Validation Case Registry that separates synthetic scenarios, calibration candidates and accepted cases; records baseline freeze, scope alignment, reuse permission, evidence quality and qualified acceptance; and keeps the working three-case threshold at zero until real evidence exists.
+- a consolidated Gate 2 release control that evaluates source closure, qualified ownership, accepted validation cases and paid qualified demand against the same Domain Pack version, exports the evidence dossier, and treats a complete result only as eligibility for qualified release review.
 
 This is still not the authoritative production Compiler. Material limitations remain:
 
@@ -243,6 +244,7 @@ This is still not the authoritative production Compiler. Material limitations re
 - Expert review scopes are defined, but no role is represented as externally appointed or competence-evidenced in the product record; a role definition is not qualified ownership.
 - Validation-case acceptance is now controlled, but the current registry contains no accepted real case; the three-case working threshold is not statistical validation and cannot replace representative cross-case review.
 - The paid-pilot portfolio is an evidence-control mechanism, not proof that any engagement exists; Gate 1 remains incomplete until three real records satisfy the controlled release, acceptance and estimate-to-actual requirements.
+- The consolidated Gate 2 control currently remains at zero of four evidence-complete controls. Reaching four of four would start a qualified release review; it would not itself verify the Domain Pack, approve a rule change, or authorize client use.
 
 The next stage is controlled service-assisted validation: use the slice in real discovery work, capture corrections and estimate-to-actual variance, then replace concept assumptions with reviewed Domain Pack rules.
 

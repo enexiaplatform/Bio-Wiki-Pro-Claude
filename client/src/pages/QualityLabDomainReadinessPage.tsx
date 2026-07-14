@@ -59,6 +59,7 @@ export default function QualityLabDomainReadinessPage() {
           image={{ src: "/images/editorial/test-tube-evidence-review.jpg", alt: "Gloved laboratory worker holding an organized tray of test tubes for evidence review", creditName: "Eka P. Amdela", creditUrl: "https://unsplash.com/photos/JcsYP0IJvnI", className: "object-[center_52%]" }}
           tone="amber"
           boundary={{ label: "No implied launch promise", text: "The sequence below is a strategic order and gating record. It is not a release schedule, regulatory claim, or assertion that later packs already exist.", tone: "red" }}
+          actions={<Link href="/quality-lab/gate-2-release" className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950">Open Gate 2 release control <ArrowRight className="h-4 w-4" /></Link>}
         />
       </div>
 

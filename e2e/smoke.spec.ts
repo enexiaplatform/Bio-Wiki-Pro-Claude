@@ -357,6 +357,7 @@ test.describe("public smoke", () => {
     await expect(page.getByText("0/14")).toBeVisible();
     await expect(page.getByText(/Obtain and review the named site-approved methods/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Inspect ownership control/i })).toHaveAttribute("href", "/quality-lab/domain-ownership");
+    await expect(page.getByRole("link", { name: /Open Gate 2 release control/i })).toHaveAttribute("href", "/quality-lab/gate-2-release");
     const sourceRegistryDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Export source registry/i }).click();
     expect((await sourceRegistryDownload).suggestedFilename()).toBe("atlas-microbiology-source-coverage-microbiology-pack-v1-1.json");
@@ -395,6 +396,22 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Export validation registry/i }).click();
     expect((await registryDownload).suggestedFilename()).toBe("atlas-domain-pack-validation-case-registry.json");
     await expect(page.getByText(/not statistical validation/i).last()).toBeVisible();
+  });
+
+  test("Gate 2 release control consolidates all version-matched evidence gates", async ({ page }) => {
+    await page.goto("/quality-lab/gate-2-release");
+    await expect(page.getByRole("heading", { name: /A Domain Pack cannot release on one strong signal/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /0\/4 evidence controls complete/i })).toBeVisible();
+    await expect(page.getByRole("progressbar", { name: /Gate 2 evidence control progress/i })).toHaveAttribute("aria-valuenow", "0");
+    await expect(page.getByRole("heading", { name: "Controlled source corpus" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Qualified expert ownership" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Controlled validation cases" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Paid and accepted demand" })).toBeVisible();
+    const dossierDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export release dossier/i }).click();
+    expect((await dossierDownload).suggestedFilename()).toBe("atlas-microbiology-gate-2-release-dossier.json");
+    await expect(page.getByText(/Eligibility starts a qualified release review only/i)).toBeVisible();
+    await expect(page.getByText(/They do not verify the Pack or authorize external use/i).last()).toBeVisible();
   });
 
   test("Domain Pack validation guide connects calibration, readiness and evidence governance", async ({ page }) => {
