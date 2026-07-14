@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { expertOwnershipRegisterSchema } from "./quality-lab-expert-ownership";
-import { sourceClosureRegisterSchema } from "./quality-lab-source-coverage";
-import { ruleChangeRegisterSchema } from "./quality-lab-rule-changes";
+import { expertOwnershipRegisterSchema } from "./quality-lab-expert-ownership.js";
+import { sourceClosureRegisterSchema } from "./quality-lab-source-coverage.js";
+import { ruleChangeRegisterSchema } from "./quality-lab-rule-changes.js";
 
 export const qualityLabGovernanceKeySchema = z.enum(["expert-ownership", "source-closures", "rule-changes"]);
 export type QualityLabGovernanceKey = z.infer<typeof qualityLabGovernanceKeySchema>;
