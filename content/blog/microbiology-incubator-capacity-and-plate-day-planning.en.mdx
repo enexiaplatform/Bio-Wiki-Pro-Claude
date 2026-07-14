@@ -1,0 +1,242 @@
+---
+title: "Microbiology incubator capacity and plate-day planning"
+slug: "microbiology-incubator-capacity-and-plate-day-planning"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Convert microbiology methods into condition-specific incubator demand using plate-days, qualified rack geometry, arrival timing, reading windows, excursions and recovery scenarios."
+updatedAt: "2026-07-14"
+---
+
+# Microbiology incubator capacity and plate-day planning
+
+An incubator is not sized by chamber volume or total plate count. Microbiology
+work occupies qualified positions for different durations, at different conditions,
+with fixed reading windows and imperfect arrival patterns.
+
+The planning chain is:
+
+```text
+physical method executions
+→ containers by incubation condition
+→ occupied position-days
+→ arrival, reading and removal calendar
+→ qualified usable rack geometry
+→ peak utilization and excursion exposure
+→ quantity, backup and expansion decision
+```
+
+Atlas can structure this calculation and its evidence. It does not set incubation
+conditions, approve mixed loads, establish qualified loading patterns or determine
+the disposition of material exposed to an excursion.
+
+## Define the incubation application
+
+Create a separate demand stream for each method branch and approved condition.
+Capture:
+
+- product, water, environmental, media-QC, suitability or investigation use;
+- physical execution count and arrival pattern;
+- plate, tube, bottle, bag or other container format;
+- number of units per execution, including controls;
+- incubation temperature or other controlled condition;
+- minimum, target and maximum duration;
+- staged or sequential incubation and transfer rule;
+- reading, observation or subculture windows;
+- segregation, containment or dedicated-use requirement;
+- post-reading hold, quarantine and investigation rules;
+- method and evidence version, owner and review status.
+
+“Room temperature,” “warm” and “cold” are not usable planning conditions. Use the
+approved method's actual control band and lifecycle status.
+
+## Use position-days, not just plate counts
+
+For a simple demand stream:
+
+```text
+position-days
+= physical executions
+× containers per execution
+× occupied days
+× approved repeat or exception allowance
+```
+
+Calculate separately by condition and container format. Ten bottles can consume more
+rack height than many plates. Stacked plates may have a different qualified loading
+pattern from single plates. Tubes and bags require their actual holder geometry.
+
+Keep routine controls explicit. Growth-promotion units, negative controls,
+suitability challenges and investigation holds are method demand, not unexplained
+waste.
+
+## Convert internal dimensions into qualified usable positions
+
+Nominal shelf area is not usable capacity. Build a geometry record containing:
+
+- chamber and shelf internal dimensions;
+- number and adjustable range of shelves;
+- container footprint, height and holder footprint;
+- approved stacking and spacing;
+- airflow clearances and mapped restrictions;
+- door, fan, sensor and drain obstructions;
+- zones excluded by qualification or operating practice;
+- maximum and minimum qualified loading patterns;
+- separation between methods, materials or status;
+- safe handling and reading access;
+- evidence reference and configuration version.
+
+Use a physical fit check or controlled layout drawing. Do not derive capacity by
+dividing shelf area by a perfect container footprint and assuming every remainder is
+usable.
+
+## Preserve condition and program separation
+
+Different temperatures, atmospheres, light conditions or program requirements are
+not automatically interchangeable. Even at the same nominal temperature, the site
+may require separation for:
+
+- clean media versus test samples;
+- product versus environmental samples;
+- routine work versus investigations;
+- challenge cultures or positive controls;
+- released versus quarantined status;
+- organism or biosafety considerations;
+- compendial, registered or validated method versions;
+- different reading or staged-incubation practices.
+
+Record whether separation is physical, procedural, temporal or unnecessary under an
+approved risk basis.
+
+## Place demand on a calendar
+
+Monthly plate-days can conceal a daily collision. Build a daily or shift-level view
+when turnaround or utilization is material. Include:
+
+- routine batch release arrivals;
+- fixed water and environmental-monitoring rounds;
+- media preparation and growth-promotion cadence;
+- method-suitability campaigns;
+- stability pulls;
+- weekend and holiday readings;
+- launch, validation and qualification studies;
+- invalid, repeat and investigation loads;
+- post-incubation holds pending review or identification.
+
+Track the time containers enter, each required reading, any transfer between
+conditions and the earliest permitted removal. A five-day duration does not always
+mean five exact calendar days of occupancy if loading and reading windows differ.
+
+## Convert calendar capacity into usable capacity
+
+Keep each reduction visible:
+
+```text
+usable position-days
+= qualified positions
+× available calendar days
+× scheduled availability
+× packing/operating efficiency
+× approved planning-utilization limit
+```
+
+Scheduled availability accounts for mapping, calibration, maintenance, cleaning and
+planned shutdown. Packing efficiency reflects real geometry and arrival mismatch.
+Planning utilization preserves reviewed headroom for variability, urgent work and
+recovery.
+
+These factors are project assumptions until supported by observed data. Do not hide
+them in one generic utilization percentage.
+
+## Model door openings and reading practice
+
+The capacity model should state whether plates are read:
+
+- in situ through a viewing arrangement;
+- removed and returned;
+- removed permanently at the first reading;
+- transferred to another condition;
+- moved to a temporary staging area;
+- held pending confirmation or investigation.
+
+Door openings, large transfers and extended readings may affect temperature recovery,
+workflow time and contamination risk. The site must define operating and qualification
+evidence for its practice.
+
+## Plan excursion and failure scenarios
+
+For each incubator and demand stream, capture:
+
+- alarm points, delay and notification route;
+- independent monitoring and record access;
+- maximum tolerable interruption or excursion;
+- assessment owner and required data;
+- qualified alternate capacity and available free positions;
+- transfer time, route and container controls;
+- generator or utility dependency;
+- repair and service lead time;
+- backlog growth during downtime;
+- recovery rate after return to service;
+- common-cause failures across apparent backups.
+
+The backup must have the correct condition, geometry, qualification and available
+capacity. An empty chamber at another temperature is not automatically a backup.
+
+## Reconcile capacity with data and qualification
+
+The FDA's non-binding [Guide to Inspections of Microbiological Pharmaceutical
+Quality Control Laboratories](https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-guides/microbiological-pharmaceutical-quality-control-labs-793)
+emphasizes review of incubated plates and tubes against recorded analyses and the
+approved analytical procedure. EU GMP Annex 15 is available through the European
+Commission's official [EudraLex Volume 4](https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en)
+and provides the broader qualification lifecycle context.
+
+Relevant evidence may include mapping and qualification protocols, sensor
+calibration, alarm challenges, recovery studies, loading patterns, maintenance,
+temperature records, deviations, and method-specific incubation procedures.
+
+## Evidence package before quantity freeze
+
+Collect:
+
+1. physical executions by method and condition;
+2. container/control count per execution;
+3. approved duration, reading and transfer rules;
+4. container and holder geometry;
+5. qualified usable loading pattern;
+6. daily arrivals and peak scenarios;
+7. scheduled downtime and operating calendar;
+8. historical excursions, failures and repair times;
+9. alternate-capacity and transfer evidence;
+10. alarm, monitoring and assessment workflow;
+11. future demand and procurement triggers;
+12. estimate-to-actual position and utilization records.
+
+## What Atlas should block
+
+Atlas should not present incubator quantity as review-ready when:
+
+- total plates are used without duration and condition;
+- regulatory rows have not been reconciled to physical executions;
+- controls, suitability, GPT or investigations are omitted;
+- container and rack geometry are assumed;
+- nominal volume or shelf area is treated as qualified capacity;
+- arrival and reading collisions are hidden by monthly averages;
+- downtime, mapping and maintenance are ignored;
+- backup condition, qualification or free capacity is unverified;
+- excursion assessment and data ownership are unclear;
+- no future trigger or calibration plan exists.
+
+## Apply this in Atlas
+
+Build physical executions in the [Quality Lab Planner](/quality-lab/planner), capture
+condition, container and rack evidence with the [Blueprint Discovery
+Pack](/quality-lab/discovery-pack), and reconcile the result with [usable QC equipment
+capacity](/blog/from-workload-to-usable-qc-equipment-capacity) and [turnaround and
+queue feasibility](/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility).
+Trace unresolved assumptions through the [Evidence Graph](/quality-lab/evidence).
+
+This guide is decision support. It does not replace current compendial or registered
+methods, approved procedures, equipment qualification, temperature mapping, alarm
+governance, excursion assessment, biosafety review, engineering or QA approval.
+

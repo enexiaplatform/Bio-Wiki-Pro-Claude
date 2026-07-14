@@ -1,0 +1,221 @@
+---
+title: "Microbiology media and reagent readiness planning"
+slug: "microbiology-media-reagent-readiness-and-inventory-planning"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Convert microbiology schedules into lot-, status- and expiry-aware media and reagent readiness covering quarantine, preparation, QC, in-use dating, storage, allocation, stockout and continuity."
+updatedAt: "2026-07-14"
+---
+
+# Microbiology media and reagent readiness planning
+
+Inventory on hand is not inventory ready for use. A test can start only when the
+correct material, lot, status, quantity, storage condition and remaining use period
+are available for the approved method.
+
+```text
+scheduled physical executions
+→ method BOM and control demand
+→ purchase or preparation lot
+→ receipt, quarantine and release
+→ storage, allocation and in-use status
+→ consumption, reconciliation and replenishment
+```
+
+Atlas can compile readiness and supply demand. It does not release materials, assign
+expiry, approve supplier certificates, establish reduced testing or substitute one
+material for another.
+
+## Build the method-material contract
+
+For every material capture:
+
+- controlled name, code, grade and formulation;
+- method step and intended function;
+- supplier/manufacturer and catalog configuration;
+- purchased, prepared in-house or aliquoted status;
+- lot and sub-lot relationship;
+- quantity and unit per execution;
+- controls, qualification, repeat and investigation demand;
+- receipt, release, preparation and in-use lead time;
+- storage and transport condition;
+- expiry, retest, prepared or in-use dating rule;
+- minimum remaining life at test start or completion;
+- approved alternate and change-control status;
+- evidence owner and reviewer.
+
+Preserve method-specific roles. The same diluent or medium name may require different
+preparation, controls or release status in different applications.
+
+## Separate physical stock from usable stock
+
+Use explicit statuses:
+
+- ordered;
+- received awaiting inspection;
+- quarantined;
+- sampling or testing in progress;
+- released for defined use;
+- restricted or conditionally released;
+- allocated/reserved;
+- opened or prepared;
+- near expiry;
+- expired, rejected or under investigation;
+- consumed or disposed.
+
+Only material with the correct approved status and scope should satisfy a readiness
+check.
+
+## Model lot-release lead time
+
+Include:
+
+- supplier and shipment lead time;
+- receipt and condition review;
+- certificate and document review;
+- sampling or local testing;
+- media growth promotion or other performance checks;
+- reference-culture and inoculum readiness;
+- incubation and reading time;
+- technical review and release;
+- discrepancy, failed-control and replacement scenarios.
+
+USP's official [FAQs for microbial enumeration and specified-organism
+tests](https://www.usp.org/frequently-asked-questions/microbial-enumeration-nonsterile-products-tests-specified-microorganisms)
+state for the applications discussed that growth promotion is checked for each new
+batch of medium. The site's current method must define the exact property, organism,
+condition and release requirement.
+
+## Build a readiness calendar
+
+For each scheduled test or campaign, confirm:
+
+- required quantity including controls;
+- acceptable lots and material status;
+- release completion before test start;
+- remaining expiry/in-use window through completion;
+- storage and transfer capacity;
+- equipment and analyst availability for preparation/QC;
+- conflicts with other planned work;
+- reserve for invalid, investigation or urgent demand;
+- approved alternate availability.
+
+This calendar links inventory to execution. A monthly stock balance cannot reveal
+that a new media lot will still be incubating when a launch-suitability campaign is
+due to start.
+
+## Reconcile expiry with demand
+
+For each lot calculate:
+
+- quantity on hand and usable quantity;
+- committed/reserved quantity;
+- forecast consumption before expiry;
+- minimum pack or preparation batch;
+- remaining shelf life at receipt;
+- open-container or prepared-material use period;
+- FEFO sequence and exception;
+- likely excess, expiry or disposal;
+- stockout exposure if replenishment is delayed.
+
+Do not increase safety stock without checking whether it can be released, stored and
+consumed before expiry.
+
+## Control preparation and in-use states
+
+For prepared or aliquoted material record:
+
+- parent lot and genealogy;
+- preparation formula and actual quantity;
+- water, supplements and neutralizers;
+- equipment and container;
+- sterilization or filtration step;
+- preparation, release and expiry times;
+- storage and warming/conditioning;
+- number and identity of sub-units;
+- issued, returned and discarded quantities;
+- visual or performance observations;
+- affected methods and investigation link.
+
+The FDA's non-binding [microbiological laboratory inspection guide](https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/inspection-guides/microbiological-pharmaceutical-quality-control-labs-793)
+notes that media preparation, sterilization and storage can affect growth performance.
+
+## Plan storage by condition and status
+
+Calculate positions for:
+
+- ambient, refrigerated and frozen materials;
+- quarantine and released stock;
+- prepared media and in-use materials;
+- controlled cultures and supplements;
+- light-, humidity- or access-sensitive items;
+- investigation and retained lots;
+- rejected/expired material awaiting disposition;
+- temperature-monitoring devices and secondary containment.
+
+Include shelf/rack geometry, segregation, alarms, door-opening practices, backup and
+transfer route. Nominal refrigerator volume does not equal usable, status-controlled
+capacity.
+
+## Define stockout and shortage decisions
+
+When readiness is threatened, record:
+
+- affected methods, samples and due dates;
+- quantity and time gap;
+- approved alternate lot, material or supplier;
+- comparability, verification or change requirement;
+- outsourcing or rescheduling option;
+- sample hold and product-release impact;
+- allocation priority and decision owner;
+- client/QA/procurement communication;
+- recovery and CAPA evidence.
+
+Atlas must not silently substitute a material or assume a supplier certificate closes
+the gap.
+
+## Evidence package before inventory approval
+
+Collect:
+
+1. method-level material and control BOM;
+2. supplier, configuration and approved-alternate register;
+3. receipt, quarantine and release workflow;
+4. lot-QC and release lead time;
+5. expiry, in-use and minimum-life rules;
+6. test and material readiness calendar;
+7. storage geometry, segregation and monitoring;
+8. preparation and sub-lot genealogy;
+9. safety-stock, reorder and FEFO basis;
+10. stockout, shortage and change pathway;
+11. investigation and surge allowances;
+12. actual use, expiry, loss, delay and stockout history.
+
+## What Atlas should block
+
+Atlas should not label materials ready when:
+
+- on-hand stock is not separated by status;
+- method configuration or application is missing;
+- media/reagent release lead time is omitted;
+- expiry is checked only at receipt;
+- prepared and in-use dating are not controlled;
+- reserved and available quantities are merged;
+- storage status and geometry are assumed;
+- safety stock will expire before forecast use;
+- alternates lack controlled approval evidence;
+- actual use, waste and delay cannot be calibrated.
+
+## Apply this in Atlas
+
+Start with [resilient QC consumable supply](/blog/from-method-bom-to-resilient-qc-consumable-supply),
+then connect media release through the [Growth promotion and media QC application
+pack](/blog/growth-promotion-media-qc-application-pack). Capture lot, status, lead-time
+and storage evidence with the [Blueprint Discovery Pack](/quality-lab/discovery-pack)
+and trace blockers through the [Evidence Graph](/quality-lab/evidence).
+
+This guide is decision support. It does not replace supplier qualification, approved
+specifications and procedures, material sampling/testing, media QC, expiry assignment,
+change control, warehouse governance or QA/QC release.
+

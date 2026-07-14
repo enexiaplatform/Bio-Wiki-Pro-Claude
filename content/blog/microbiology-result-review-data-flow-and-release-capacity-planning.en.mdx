@@ -1,0 +1,245 @@
+---
+title: "Microbiology result review, data flow and release-capacity planning"
+slug: "microbiology-result-review-data-flow-and-release-capacity-planning"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Translate microbiology observations into a controlled review and decision flow covering raw data, calculations, controls, audit trails, exceptions, technical review, approval queues and release timing."
+updatedAt: "2026-07-14"
+---
+
+# Microbiology result review, data flow and release-capacity planning
+
+Testing is not complete when incubation ends or a colony count is entered. The
+decision package must preserve the original observations, method context, controls,
+calculations, exceptions, review and authorized approval.
+
+```text
+sample and method execution
+→ contemporaneous raw observations and metadata
+→ calculation and control assessment
+→ exception and investigation linkage
+→ independent technical review
+→ authorized result/report approval
+→ downstream release, trend or escalation decision
+```
+
+Atlas can map this flow and its capacity. It does not approve results, define the
+site's electronic-record controls, invalidate data or make batch disposition.
+
+## Define the decision package
+
+For each method/application identify the records needed to reconstruct:
+
+- sample identity, source, custody and preparation;
+- method, specification and version;
+- analyst, date, time and location;
+- media, reagents, cultures and consumable lots;
+- equipment, incubation and storage records;
+- controls and acceptance evidence;
+- original counts, observations, images or instrument files;
+- calculations, dilution and reporting unit;
+- atypical colonies, invalidity or deviations;
+- repeats, resamples or additional testing and authority;
+- result, interpretation and applicable limit;
+- executor, reviewer and approver actions;
+- links to trend, investigation and downstream decision.
+
+A summarized result without its context cannot support an effective technical review.
+
+## Map the data lifecycle
+
+Record where data are:
+
+- created;
+- temporarily held;
+- transcribed or transferred;
+- calculated or transformed;
+- corrected or annotated;
+- reviewed and approved;
+- reported or interfaced;
+- retained, retrieved and archived;
+- linked to investigations or changes.
+
+Include paper, spreadsheets, LIMS, instruments, images, counters, incubator records,
+identification systems and email/manual handoffs. The system boundary must not omit
+“temporary” or supporting data used to reach the conclusion.
+
+FDA's official [Data Integrity and Compliance With Drug CGMP Q&A](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/data-integrity-and-compliance-drug-cgmp-questions-and-answers)
+describes data integrity in terms of complete, consistent and accurate data across the
+data lifecycle. The site's current requirements determine the exact control set.
+
+## Separate review layers
+
+Possible layers include:
+
+### Execution self-check
+
+Confirm completion, legibility, traceability, calculations, controls and immediate
+exceptions before the record leaves the analyst.
+
+### Independent technical review
+
+Assess method adherence, sample preparation, material/equipment status, controls,
+raw observations, calculations, atypical findings, audit trails or relevant metadata,
+and consistency with the reported result.
+
+### Authorized approval
+
+Confirm the package is complete for its intended report or downstream decision and
+that open deviations/investigations are appropriately handled.
+
+### Downstream decision
+
+Product release, water-system action, EM escalation, media release or another quality
+decision may require evidence beyond the laboratory result. Do not merge laboratory
+approval with final disposition unless governance explicitly assigns both.
+
+## Build a review requirements matrix
+
+For each data source define:
+
+- original record and system;
+- metadata or audit trail required;
+- calculation or transcription check;
+- control and acceptance review;
+- reviewer role and qualification;
+- independence requirement;
+- review timing and due event;
+- exception escalation;
+- approval and signature meaning;
+- retention and retrieval requirement.
+
+FDA's [Laboratory Controls Q&A](https://www.fda.gov/drugs/guidances-drugs/questions-and-answers-current-good-manufacturing-practice-requirements-laboratory-controls)
+states that laboratory records should be complete and subject to adequate review,
+including failing, passing, suspect and obvious-error data in the context discussed.
+
+## Convert review into workload
+
+For each result package estimate:
+
+- analyst completion and self-check time;
+- data transcription or interface verification;
+- calculation review;
+- plate/image/observation review;
+- audit-trail or metadata review where applicable;
+- deviation and investigation cross-reference;
+- technical-review time;
+- query, correction and resubmission loops;
+- approval and report issuance;
+- trend entry or follow-up;
+- archive and retrieval checks.
+
+Use different times for routine negative results, countable enumeration, presumptive
+detections, identification packages, suitability studies and investigations.
+
+## Model reviewer queues and cutoffs
+
+Place packages on a calendar using:
+
+- incubation/read completion time;
+- analyst record-completion time;
+- reviewer shift and qualification;
+- batch-release or reporting deadline;
+- weekend and holiday coverage;
+- priority and escalation rules;
+- query turnaround;
+- dependency on identification or investigation;
+- external laboratory report receipt;
+- QA or client decision windows.
+
+A result may finish on time and still miss release because the only qualified reviewer
+is unavailable or the record reaches review after a daily cutoff.
+
+## Control corrections and queries
+
+Define:
+
+- how the original entry remains visible;
+- who may correct, annotate or reopen;
+- reason and timestamp;
+- supporting evidence;
+- whether calculation/result changes;
+- need for second review;
+- effect on issued reports or downstream decisions;
+- recurring-error trend and CAPA trigger.
+
+Do not optimize throughput by encouraging reviewers to correct analysts' records
+without traceable return, explanation and ownership.
+
+## Link exceptions without losing routine evidence
+
+The package should show:
+
+- failed or atypical control;
+- deviation, OOS/OOT or investigation identifier;
+- immediate action and material/sample status;
+- authorized additional testing;
+- all original and subsequent results;
+- scientific conclusion and scope;
+- approval and product/process impact;
+- report wording and unresolved limitation.
+
+An investigation system link should not remove the original observation from the
+laboratory record.
+
+## Design resilience and continuity
+
+Assess:
+
+- electronic-system or network downtime;
+- manual fallback and later reconciliation;
+- reviewer absence or workload spike;
+- external report or interface failure;
+- image/file storage loss;
+- audit-trail access delay;
+- urgent result and after-hours approval;
+- backlog recovery after outage;
+- common-cause failure across data and backup systems.
+
+Fallback records need controlled identifiers, completeness, review and reconciliation.
+Printing a blank form after the system fails is not a complete continuity process.
+
+## Evidence package before workflow approval
+
+Collect:
+
+1. method/application decision-package definition;
+2. data-source and lifecycle map;
+3. review requirements and roles matrix;
+4. calculation, metadata and audit-trail scope;
+5. executor/reviewer qualification coverage;
+6. result-completion and review calendar;
+7. exception, query and correction workflow;
+8. approval/signature meaning;
+9. downstream decision interfaces;
+10. retention, retrieval and archive evidence;
+11. downtime and fallback process;
+12. actual review time, query, correction and backlog history.
+
+## What Atlas should block
+
+Atlas should not label result flow complete when:
+
+- only the final reported value is defined;
+- raw observations and contextual metadata are omitted;
+- paper, spreadsheet and temporary handoffs are outside the map;
+- technical review and downstream disposition are conflated;
+- reviewer qualification and independence are unknown;
+- review workload and calendar are absent;
+- corrections can overwrite original data;
+- failing, suspect or invalid data disappear from the package;
+- downtime fallback and reconciliation are untested;
+- actual queue and correction performance cannot be calibrated.
+
+## Apply this in Atlas
+
+Model timing with [QC turnaround and queue feasibility](/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility)
+and reviewer coverage with [microbiology analyst qualification](/blog/microbiology-analyst-qualification-and-skill-coverage-planning).
+Capture systems, records, roles and exceptions with the [Blueprint Discovery
+Pack](/quality-lab/discovery-pack), then trace unresolved controls through the
+[Evidence Graph](/quality-lab/evidence).
+
+This guide is decision support. It does not replace current GMP requirements,
+approved laboratory and data-integrity procedures, validated computerized systems,
+technical review, investigation governance, quality-unit oversight or disposition.

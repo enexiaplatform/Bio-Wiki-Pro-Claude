@@ -1,0 +1,228 @@
+---
+title: "From equipment list to qualified QC utility demand"
+slug: "from-equipment-list-to-qualified-qc-utility-demand"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Translate QC equipment and workflows into a traceable utility-demand basis covering operating states, diversity, quality attributes, resilience, monitoring and qualification boundaries."
+updatedAt: "2026-07-14"
+---
+
+# From equipment list to qualified QC utility demand
+
+An equipment list does not define the utilities a laboratory needs. A nameplate can
+describe a maximum electrical load, but it does not explain operating schedules,
+simultaneous starts, heat rejection, water quality, drainage, gases, exhaust,
+networking or the consequence of an interruption.
+
+The useful decision chain is:
+
+```text
+method and workflow demand
+→ equipment operating states and schedule
+→ point-of-use utility attributes
+→ connected, coincident and peak demand
+→ distribution, monitoring and resilience basis
+→ engineering design and qualification evidence
+```
+
+Atlas can structure this basis and expose missing inputs. It does not size building
+services, design distribution systems, approve hazardous exhaust, calculate HVAC
+loads or qualify a utility.
+
+## Start with the quality decision, not the connection schedule
+
+For each equipment item or functional area, record what quality decision it supports
+and what happens when the utility is unavailable or outside its approved condition.
+
+| Supported activity | Utility question | Decision consequence |
+| --- | --- | --- |
+| Incubation or controlled storage | Which temperature, alarm, power and backup conditions preserve the qualified state? | Delayed result, invalidated exposure or sample/material impact |
+| Steam sterilization | What steam, water, drainage, power, ventilation and cycle-recovery basis applies? | Load cannot be processed or cycle evidence becomes unacceptable |
+| Biosafety cabinet operation | Which room, airflow, exhaust, power and alarm interfaces are required by the selected configuration? | Work may stop or lose its approved containment/protection basis |
+| Analytical instrument run | Which power quality, gases, cooling, vacuum, data and environmental conditions support a valid sequence? | Aborted sequence, sample stability risk or repeat demand |
+| Media and reagent preparation | Which water grade, temperature, drainage and environmental controls support preparation? | Material cannot be prepared or may require investigation |
+
+The same nominal connection can have a different criticality depending on the
+method step, sample stability, turnaround commitment and qualified backup.
+
+## Build a point-of-use utility register
+
+Create one record per equipment configuration and installation point. Capture:
+
+- equipment class, configuration, quantity and lifecycle stage;
+- room, zone and intended use;
+- utility type and point-of-use quality attributes;
+- vendor reference, document version and data confidence;
+- connected, normal, startup, standby, cleaning and shutdown demand;
+- operating cycle, duration, frequency and expected coincidence;
+- heat, moisture, vibration, noise and discharge released to the room or system;
+- pressure, flow, temperature, purity, stability and recovery requirements;
+- connection, isolation, backflow, drainage, exhaust and access assumptions;
+- alarm, monitoring, data retention and escalation needs;
+- maximum tolerable interruption and recovery requirement;
+- qualified alternate, emergency supply or shutdown strategy;
+- engineering owner, method owner, QA reviewer and unresolved evidence.
+
+Do not copy one vendor datasheet across several possible models. Configuration,
+accessories, local voltage, operating mode and installation option can materially
+change demand.
+
+## Separate utility identity from required quality
+
+Labels such as “water,” “air,” “steam” or “power” are incomplete. Define the
+attribute required at the point of use and why it matters.
+
+Possible attributes include:
+
+- electrical voltage, phase, frequency, power quality, earthing and ride-through;
+- water grade, microbial/chemical condition, temperature, pressure and flow;
+- steam quality and operating envelope;
+- gas identity, purity, pressure, flow and cylinder/bulk supply arrangement;
+- vacuum level, capacity and contamination protection;
+- exhaust type, capture requirement and discharge restriction;
+- drainage temperature, flow, chemistry, biological load and neutralization need;
+- network segmentation, bandwidth, time synchronization and data availability;
+- room temperature, humidity, pressure relationship and heat-removal capacity.
+
+The project must determine which attributes are product-, method-, equipment-, EHS-
+or facility-critical. Atlas should not infer a GMP classification from a utility name.
+
+## Model operating states and schedules
+
+For each resource, distinguish:
+
+1. idle or standby;
+2. startup, warm-up or pull-down;
+3. normal processing;
+4. peak or worst-case cycle;
+5. cleaning, regeneration or sanitization;
+6. maintenance and calibration;
+7. controlled shutdown and restart;
+8. failure recovery.
+
+Link these states to the workload calendar. Monthly average consumption cannot show
+whether two autoclaves start together, several chambers recover after door opening,
+or a morning analytical sequence creates a short gas or cooling peak.
+
+## Keep connected, coincident and consumed demand separate
+
+Use explicit definitions:
+
+```text
+connected demand = sum of installed maximum or design connections
+coincident demand = demand expected during the defined simultaneous scenario
+consumption = utility quantity used over a stated period
+```
+
+The engineering basis should document diversity assumptions rather than hide them
+inside a single factor. Test at least routine, peak production, cleaning/sanitization,
+restart-after-outage and future-expansion scenarios.
+
+An illustrative arithmetic total is not a design load until configuration, schedule,
+diversity, margins and engineering criteria are reviewed.
+
+## Reconcile room loads and interfaces
+
+Equipment can affect more than its direct connection. Record:
+
+- sensible and latent heat release;
+- exhaust and make-up air interaction;
+- door-opening and material-transfer patterns;
+- floor loading, vibration and anchoring;
+- service and removal clearances;
+- hot, chemical or biologically contaminated discharge;
+- cylinder storage and gas detection;
+- condensate, leak and overflow pathways;
+- alarms that must reach a monitored location;
+- dependencies shared with adjacent production or laboratory areas.
+
+This register gives qualified engineers an auditable starting point. It is not a room
+heat-load calculation or an HVAC design.
+
+## Design resilience around interruption consequence
+
+For every critical utility–equipment pair, ask:
+
+- How long can the activity tolerate an interruption?
+- Does the equipment fail safe, hold state or lose the run?
+- Which samples, media, cultures, standards or records are exposed?
+- How is an excursion detected, time-stamped and escalated?
+- Can work move to a qualified alternate?
+- Is backup power enough, or are cooling, gases, network and exhaust also required?
+- How long does recovery, cleaning, requalification or backlog clearance take?
+- Can two apparent backups fail through one common distribution path?
+
+Possible controls include local UPS, emergency power, independent alarms, stored
+utility capacity, dual feeds, qualified shared equipment, contract-laboratory backup,
+spares, service response and a controlled stop-work plan. Selection remains a
+site risk and engineering decision.
+
+## Connect utility evidence to qualification
+
+EU GMP Annex 15 describes the user requirements specification as a reference point
+through the validation lifecycle and expects qualification to consider equipment,
+facilities, utilities and systems. See the European Commission's official [EudraLex
+Volume 4 GMP guidelines](https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en).
+
+The evidence chain may include:
+
+- approved user and functional requirements;
+- vendor and engineering design data;
+- design review and risk assessment;
+- installation and connection verification;
+- calibration and monitoring configuration;
+- operating-range and alarm challenges;
+- utility quality sampling or testing where applicable;
+- performance under representative load and operating states;
+- failure, recovery and backup challenges;
+- preventive maintenance and periodic review.
+
+The project must define what is commissioned, qualified, calibrated, monitored or
+verified and which function owns each record.
+
+## Evidence package for engineering handoff
+
+Before utility design freeze, collect:
+
+1. approved capability, method and equipment scope;
+2. configuration-specific vendor data;
+3. point-of-use utility attribute register;
+4. operating-state and coincidence schedule;
+5. room, exhaust, drainage and data interfaces;
+6. routine, peak, cleaning and restart scenarios;
+7. current facility capacity and measurement evidence;
+8. expansion allowance and release triggers;
+9. interruption consequence and resilience decision;
+10. monitoring, alarm and record-retention requirements;
+11. commissioning and qualification responsibility matrix;
+12. assumptions, exclusions, owners and open decisions.
+
+## What Atlas should block
+
+Atlas should prevent a utility basis from appearing engineering-ready when:
+
+- equipment configuration or quantity is unresolved;
+- only nameplate maxima or generic allowances are available;
+- point-of-use quality attributes are undefined;
+- operating schedules and coincidence assumptions are missing;
+- heat, exhaust, drainage, gas or network interfaces are omitted;
+- current site capacity is asserted without measured evidence;
+- interruption consequence and backup are not reviewed;
+- utility monitoring and alarm ownership are unclear;
+- future loads have no space, connection or release trigger;
+- engineering and QA review boundaries are unnamed.
+
+## Apply this in Atlas
+
+Build method and equipment demand in the [Quality Lab Planner](/quality-lab/planner),
+collect configuration and utility evidence with the [Blueprint Discovery
+Pack](/quality-lab/discovery-pack), and reconcile equipment quantity through [From
+workload to usable QC equipment capacity](/blog/from-workload-to-usable-qc-equipment-capacity).
+Use the [Evidence Graph](/quality-lab/evidence) to trace unresolved dependencies and
+send design-critical assumptions through qualified Blueprint review.
+
+This guide is decision support. It does not replace current regulations, approved
+methods, vendor data, hazardous-area or biosafety assessment, EHS review, utility
+sampling, qualified engineering design, commissioning, qualification or QA approval.
+

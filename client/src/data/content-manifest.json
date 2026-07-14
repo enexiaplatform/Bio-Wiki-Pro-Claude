@@ -3756,6 +3756,17 @@
   },
   {
     "collection": "blog",
+    "slug": "controlled-quality-lab-blueprint-acceptance-and-handover",
+    "lang": "en",
+    "title": "Controlled Quality Lab Blueprint acceptance and handover",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Turn a Quality Lab Blueprint into a controlled decision package with frozen scope, assumptions, evidence, limitations, acceptance criteria, actions, ownership, revisions and handover.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
     "slug": "ctd-ectd-dossier-structure",
     "lang": "en",
     "title": "The CTD and eCTD: how a regulatory dossier is structured",
@@ -3888,6 +3899,17 @@
   },
   {
     "collection": "blog",
+    "slug": "from-capability-scope-to-vendor-neutral-urs-rfq",
+    "lang": "en",
+    "title": "From capability scope to a vendor-neutral URS and RFQ",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Convert QC capability, methods, workload and lifecycle needs into vendor-neutral user requirements, an auditable RFQ package and a traceable technical compliance matrix.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 7
+  },
+  {
+    "collection": "blog",
     "slug": "from-concept-cost-band-to-controlled-qc-lab-cost-basis",
     "lang": "en",
     "title": "From concept cost band to a controlled QC laboratory cost basis",
@@ -3896,6 +3918,17 @@
     "seoDescription": "Turn early QC laboratory CAPEX and OPEX allowances into a structured, traceable and maturity-labeled cost basis covering installed cost, validation, lifecycle spend, uncertainty and change control.",
     "updatedAt": "2026-07-12",
     "readMinutes": 8
+  },
+  {
+    "collection": "blog",
+    "slug": "from-equipment-list-to-qualified-qc-utility-demand",
+    "lang": "en",
+    "title": "From equipment list to qualified QC utility demand",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate QC equipment and workflows into a traceable utility-demand basis covering operating states, diversity, quality attributes, resilience, monitoring and qualification boundaries.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 7
   },
   {
     "collection": "blog",
@@ -4141,6 +4174,105 @@
   },
   {
     "collection": "blog",
+    "slug": "microbiology-analyst-qualification-and-skill-coverage-planning",
+    "lang": "en",
+    "title": "Microbiology analyst qualification and skill-coverage planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate microbiology methods and shifts into a controlled qualification matrix covering observed competency, authorization, reviewers, expiry, cross-training, absence and surge coverage.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 5
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-autoclave-load-and-cycle-capacity-planning",
+    "lang": "en",
+    "title": "Microbiology autoclave load and cycle capacity planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate microbiology media, reusable items and waste into qualified autoclave load families, cycle-hours, clean/dirty flow, release timing, resilience and expansion demand.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 7
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-incubator-capacity-and-plate-day-planning",
+    "lang": "en",
+    "title": "Microbiology incubator capacity and plate-day planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Convert microbiology methods into condition-specific incubator demand using plate-days, qualified rack geometry, arrival timing, reading windows, excursions and recovery scenarios.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-investigation-surge-capacity-planning",
+    "lang": "en",
+    "title": "Microbiology investigation surge-capacity planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate microbiology excursions, invalid tests and contamination investigations into scenario-based analyst, media, incubation, identification, review and continuity capacity.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-media-reagent-readiness-and-inventory-planning",
+    "lang": "en",
+    "title": "Microbiology media and reagent readiness planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Convert microbiology schedules into lot-, status- and expiry-aware media and reagent readiness covering quarantine, preparation, QC, in-use dating, storage, allocation, stockout and continuity.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 5
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-reference-culture-lifecycle-and-capacity-planning",
+    "lang": "en",
+    "title": "Microbiology reference-culture lifecycle and capacity planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate microbiology method requirements into a controlled reference-culture lifecycle covering source, identity, passage genealogy, working stocks, inoculum use, storage, inventory, workload and continuity.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-result-review-data-flow-and-release-capacity-planning",
+    "lang": "en",
+    "title": "Microbiology result review, data flow and release-capacity planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate microbiology observations into a controlled review and decision flow covering raw data, calculations, controls, audit trails, exceptions, technical review, approval queues and release timing.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-sample-receipt-hold-and-custody-planning",
+    "lang": "en",
+    "title": "Microbiology sample receipt, hold and custody planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Convert microbiology sampling demand into a controlled receipt, accession, storage, hold-time, custody, rejection and test-start capability with traceable workload and exceptions.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
+    "slug": "microbiology-waste-decontamination-and-flow-capability-planning",
+    "lang": "en",
+    "title": "Microbiology waste, decontamination and flow capability planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Turn microbiology workflows into a controlled waste and decontamination capability covering segregation, containment, hold, treatment, clean/dirty flow, capacity, evidence and continuity.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 7
+  },
+  {
+    "collection": "blog",
     "slug": "mycoplasma-the-contaminant-your-filter-wont-catch",
     "lang": "en",
     "title": "Mycoplasma: the contaminant your filter won't catch",
@@ -4262,6 +4394,17 @@
   },
   {
     "collection": "blog",
+    "slug": "phased-qc-laboratory-procurement-and-expansion-planning",
+    "lang": "en",
+    "title": "Phased QC laboratory procurement and expansion planning",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Translate a QC capability roadmap into phased procurement covering dependencies, long-lead items, utilities, qualification, cash flow, temporary capacity, expansion triggers and change control.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
     "slug": "post-approval-variations-explained",
     "lang": "en",
     "title": "Post-approval variations: changing an approved product",
@@ -4336,6 +4479,17 @@
     "seoDescription": "Quality by Design connects patient needs, CQAs, CPPs, material attributes, design space, control strategy, risk management, process validation, and lifecycle improvement.",
     "updatedAt": "2026-07-04",
     "readMinutes": 12
+  },
+  {
+    "collection": "blog",
+    "slug": "quality-lab-startup-commissioning-and-operational-readiness",
+    "lang": "en",
+    "title": "Quality laboratory startup, commissioning and operational readiness",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "Convert a completed laboratory project into controlled operating readiness across facilities, utilities, equipment, methods, people, materials, data, quality systems, continuity and go-live governance.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -4589,6 +4743,17 @@
     "seoDescription": "Sterility testing is a limited sample of a batch, not proof every unit is sterile. Learn what USP 71 and Ph. Eur. 2.6.1 can show, why sterility assurance is built into the process, and how positive results should be investigated.",
     "updatedAt": "2026-07-05",
     "readMinutes": 12
+  },
+  {
+    "collection": "blog",
+    "slug": "when-to-insource-or-outsource-qc-testing",
+    "lang": "en",
+    "title": "When to insource or outsource QC testing",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A controlled make-or-buy framework for QC testing that compares capability, turnaround, demand, evidence transfer, continuity, governance and lifecycle cost.",
+    "updatedAt": "2026-07-14",
+    "readMinutes": 7
   },
   {
     "collection": "blog",

@@ -1,0 +1,227 @@
+---
+title: "Microbiology sample receipt, hold and custody planning"
+slug: "microbiology-sample-receipt-hold-and-custody-planning"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Convert microbiology sampling demand into a controlled receipt, accession, storage, hold-time, custody, rejection and test-start capability with traceable workload and exceptions."
+updatedAt: "2026-07-14"
+---
+
+# Microbiology sample receipt, hold and custody planning
+
+A microbiology result begins before sample preparation. Collection time, container,
+transport, receipt status, storage and test-start delay can change whether the tested
+material represents the intended decision.
+
+```text
+sampling event and decision
+→ protected collection and transport
+→ receipt, identity and condition checks
+→ accession, status and custody
+→ controlled storage and test-start queue
+→ preparation and method execution
+→ exception, rejection or impact decision
+```
+
+Atlas can compile the workflow and workload. It does not approve sampling plans,
+establish universal hold times, accept a compromised sample or determine whether a
+result remains valid after an excursion.
+
+## Define the sample application
+
+Create a record for each product/matrix × sampling purpose × method combination:
+
+- product, material, water point, environmental location or process stage;
+- batch, lot, location, time and sampling event;
+- release, in-process, monitoring, stability, study or investigation decision;
+- approved sampling plan and quantity;
+- sample container, closure and headspace;
+- preservative or neutralizer where applicable;
+- required transport and storage condition;
+- time-zero event and maximum test-start condition;
+- mixing, subsampling or composite rule;
+- hazards and containment;
+- method, specification and market applicability;
+- final decision owner and escalation route.
+
+The same physical material may require separate records when the decision, sampling
+basis or hold condition changes.
+
+## Build the receipt acceptance contract
+
+At receipt, verify and record as applicable:
+
+- sample identifier and request match;
+- source batch, point or event;
+- collector and collection time;
+- container identity, integrity, closure and leakage;
+- quantity and fill condition;
+- transport temperature or monitor status;
+- elapsed time and route;
+- label legibility and tamper evidence;
+- requested method, priority and due time;
+- visible anomaly, damage or contamination;
+- accompanying documents and special instructions;
+- acceptance, quarantine, conditional acceptance or rejection status.
+
+Do not allow accession to silently convert a damaged or late sample into an accepted
+sample. Conditional acceptance needs a reason, decision authority and impact path.
+
+## Separate custody, status and location
+
+The record should answer:
+
+- Who currently controls the sample?
+- Where is it physically stored?
+- What is its status?
+- Which quantity remains?
+- Which preparation or transfer has occurred?
+- Which method version and request applies?
+- When is the next action due?
+
+Possible statuses include expected, received, quarantined, accepted, rejected,
+allocated, in preparation, in test, retained, under investigation, returned and
+disposed. The site must define its controlled vocabulary and permitted transitions.
+
+## Make hold-time logic explicit
+
+Define:
+
+- the event that starts the clock;
+- whether collection, manufacturing completion, receipt or preparation is time zero;
+- maximum time to refrigeration, incubation or test start;
+- permitted temperature and transport condition;
+- qualified container and sample quantity;
+- mixing or resuspension before use;
+- allowable intermediate holds after preparation;
+- excursion assessment and approval owner;
+- evidence reference and applicability scope.
+
+Microorganisms may grow, die, attach, clump or become less recoverable during a hold.
+One hold-time study should not be extended across matrices or containers without a
+controlled rationale.
+
+FDA's official [Laboratory Controls Q&A](https://www.fda.gov/drugs/guidances-drugs/questions-and-answers-current-good-manufacturing-practice-requirements-laboratory-controls)
+notes in another laboratory context that extended sample holding should be evaluated
+for its effect on analytical performance. Atlas applies the general planning lesson:
+hold conditions require application-specific evidence, not an assumed universal
+allowance.
+
+## Convert receipt into workload and space
+
+Forecast:
+
+- scheduled and unscheduled arrivals by hour/shift;
+- package opening, verification and accession time;
+- temperature-monitor review;
+- labeling and system entry;
+- aliquoting or protected subsampling;
+- controlled-room, refrigerator and freezer positions;
+- quarantine and rejected-sample positions;
+- retain and investigation storage;
+- handoff, courier and route time;
+- second-person or QA review;
+- exception, discrepancy and communication workload;
+- container, label, seal and monitoring-device demand.
+
+Average samples per month cannot size a receipt desk when water rounds, EM routes and
+batch samples arrive together near a shift cutoff.
+
+## Place samples on a test-start calendar
+
+For each stream, model:
+
+- expected arrival window;
+- maximum queue before preparation;
+- analyst and equipment availability;
+- method batching opportunity;
+- media/reagent readiness;
+- sample-stability deadline;
+- weekend and holiday coverage;
+- priority and conflict rule;
+- downstream incubation or instrument slot;
+- review and release due time.
+
+Batching can improve efficiency only when the approved hold and turnaround permit it.
+A low monthly workload can still fail if all samples require immediate start.
+
+## Control splitting, pooling and transfers
+
+Record every material-changing step:
+
+- original quantity and container;
+- aliquot, split or composite identifier;
+- quantity transferred and remaining;
+- receiving container and condition;
+- person, time and location;
+- method or destination;
+- contamination-control precautions;
+- reconciliation and disposal.
+
+Do not infer that one retained unit can support every repeat, confirmation and
+investigation scenario. Quantity planning should follow approved retest/resample and
+retention governance.
+
+## Design the exception pathway
+
+Define actions for:
+
+- late arrival;
+- missing or conflicting identity;
+- broken, leaking or open container;
+- insufficient quantity;
+- temperature or transport excursion;
+- wrong container or neutralizer;
+- unapproved sampler or location;
+- unavailable method or media;
+- duplicate or cancelled request;
+- lost custody or storage alarm;
+- suspected cross-contamination.
+
+The pathway should preserve the original observation, protect the sample, notify the
+decision owner, assess impact and prevent unauthorized testing or disposal.
+
+## Evidence package before workflow approval
+
+Collect:
+
+1. sampling-purpose and method matrix;
+2. approved containers, quantities and transport conditions;
+3. hold-time and intermediate-hold evidence;
+4. receipt acceptance and rejection criteria;
+5. custody, status and location transitions;
+6. splitting, pooling and retain rules;
+7. arrival and test-start calendar;
+8. storage geometry and alarm coverage;
+9. exception and impact workflow;
+10. external courier or contract-laboratory interfaces;
+11. roles, records and system configuration;
+12. actual receipt time, queue, rejection and excursion data.
+
+## What Atlas should block
+
+Atlas should not label sample management review-ready when:
+
+- time zero or maximum test-start condition is undefined;
+- container, quantity or transport basis is missing;
+- receipt checks cannot distinguish accepted from compromised samples;
+- status, location and custody are merged in free text;
+- storage and quarantine capacity are not modeled;
+- peak arrivals and shift cutoffs are hidden by monthly averages;
+- splitting and remaining quantity are not reconciled;
+- late, damaged or temperature-excursion decisions have no owner;
+- external handoffs and courier time are omitted;
+- actual queue and exception performance cannot be captured.
+
+## Apply this in Atlas
+
+Build sample demand in the [Quality Lab Planner](/quality-lab/planner), collect
+container, hold, arrival and custody evidence with the [Blueprint Discovery
+Pack](/quality-lab/discovery-pack), and reconcile timing through [QC turnaround and
+queue feasibility](/blog/from-monthly-workload-to-qc-turnaround-and-queue-feasibility).
+Trace unresolved evidence through the [Evidence Graph](/quality-lab/evidence).
+
+This guide is decision support. It does not replace approved sampling plans, method-
+specific hold studies, stability assessment, biosafety and transport controls,
+electronic-system validation, investigation procedures or QA/QC approval.

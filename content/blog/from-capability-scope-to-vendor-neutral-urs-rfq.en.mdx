@@ -1,0 +1,262 @@
+---
+title: "From capability scope to a vendor-neutral URS and RFQ"
+slug: "from-capability-scope-to-vendor-neutral-urs-rfq"
+lang: "en"
+tier: "free"
+category: "Quality Lab Planning"
+seoDescription: "Convert QC capability, methods, workload and lifecycle needs into vendor-neutral user requirements, an auditable RFQ package and a traceable technical compliance matrix."
+updatedAt: "2026-07-14"
+---
+
+# From capability scope to a vendor-neutral URS and RFQ
+
+A procurement list names things. A user requirements specification explains what a
+system must enable, under which conditions, with what evidence and across which
+lifecycle. An RFQ then asks suppliers to respond to that controlled need on a
+comparable basis.
+
+```text
+quality decision and intended use
+→ method and workload requirements
+→ functional, performance and lifecycle requirements
+→ vendor-neutral URS
+→ RFQ instructions and bid boundary
+→ compliance matrix, clarifications and technical recommendation
+```
+
+Atlas can compile and trace the planning basis. It does not approve a URS, select a
+supplier, perform detailed engineering or replace procurement, validation, IT, EHS
+and QA governance.
+
+## Define the intended use before writing requirements
+
+State:
+
+- quality decisions and methods supported;
+- products, matrices, markets and site boundaries;
+- sample volume, peaks, shifts and turnaround target;
+- users, skills and operating environment;
+- required configurations, accessories and interfaces;
+- data created, reviewed, transferred and retained;
+- cleaning, decontamination and waste expectations;
+- availability, redundancy and recovery objective;
+- qualification, verification or validation boundary;
+- forecast horizon and expansion trigger;
+- assumptions, exclusions and approval roles.
+
+If the intended use is broad, the URS will become generic. If it names a preferred
+product too early, alternatives may be excluded without a quality or operational
+rationale.
+
+## Write requirements that can be answered and verified
+
+Each requirement should carry:
+
+- unique identifier;
+- requirement statement;
+- source or rationale;
+- criticality and decision impact;
+- acceptance or verification approach;
+- responsible reviewer;
+- supplier response and evidence reference;
+- deviation, clarification or change status.
+
+A useful construction is:
+
+> The system shall [perform or provide a defined capability] under [stated operating
+> condition] to support [intended decision], verified by [evidence or test].
+
+Avoid unqualified words such as “robust,” “fast,” “future-proof,” “GMP compliant” or
+“21 CFR Part 11 compliant.” Ask for the specific function, control, record or service
+that the project needs and define how it will be assessed.
+
+## Build the URS in traceable sections
+
+### Scope and interfaces
+
+Define supplied system boundary, exclusions, responsibilities, installation location,
+adjacent systems, utilities, network, data systems and owner-furnished items.
+
+### Functional and method requirements
+
+Capture sample formats, method steps, controls, operating modes, workflows,
+calculations, result outputs and exception handling without prescribing a vendor's
+implementation unless the constraint is justified.
+
+### Performance and capacity
+
+State throughput unit, routine and peak load, cycle or run duration, usable geometry,
+concurrency, operating calendar, turnaround dependency and future expansion. Do not
+substitute nominal brochure capacity for the method-derived need.
+
+### Quality, data and records
+
+Define user access, audit trail, review, electronic signatures where applicable,
+time synchronization, metadata, backup, restore, retention, export, interfaces and
+data ownership. Requirements must follow the site's intended use and data-governance
+assessment.
+
+### Facility, utility and EHS
+
+State point-of-use conditions, environmental envelope, heat/exhaust/drainage,
+materials of construction, cleaning agents, contamination control, biosafety,
+ergonomics, noise, waste and service access.
+
+### Reliability and continuity
+
+Define availability target, critical failure modes, alarm and notification behavior,
+backup strategy, spares, service response, recovery, obsolescence and cybersecurity
+support expectations.
+
+### Delivery and lifecycle services
+
+Separate design documents, factory/site testing, delivery, installation,
+commissioning, calibration, qualification support, training, manuals, software,
+warranty, maintenance, change notification and end-of-life support.
+
+## Keep requirements solution-neutral where competition matters
+
+Specify the outcome and constraint unless a particular design is required by:
+
+- approved method or registered condition;
+- site standard or validated interface;
+- utility or facility limitation;
+- safety or contamination-control decision;
+- data architecture;
+- qualified installed base or continuity strategy;
+- controlled risk assessment.
+
+Record that rationale. “Same brand as before” is a preference until the compatibility,
+training, data, service, spare-parts or validation benefit is demonstrated.
+
+## Separate the URS from the RFQ commercial wrapper
+
+The RFQ should provide all bidders the same:
+
+- issued URS and revision;
+- quantity, options and delivery locations;
+- response format and deadline;
+- compliance-matrix template;
+- required technical documents and samples/demonstrations;
+- installation, qualification and training boundary;
+- pricing schedule and currency/tax/freight instructions;
+- warranty, service, consumables and lifecycle-cost schedule;
+- assumptions and exclusions template;
+- clarification process and contact governance;
+- evaluation criteria and decision timetable.
+
+Commercial terms, quality agreements and technical requirements are related but not
+interchangeable documents. FDA's official [Quality Agreements guidance](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/contract-manufacturing-arrangements-drugs-quality-agreements-guidance-industry)
+also distinguishes quality responsibilities from general commercial terms in the
+contract-manufacturing context.
+
+## Force bid comparability with a compliance matrix
+
+For every requirement, require one controlled response:
+
+- complies as offered;
+- complies with stated option;
+- partially complies;
+- does not comply;
+- clarification required.
+
+Each response should cite a proposal page, datasheet, drawing, test or written
+commitment. A blank cell is not compliance. Marketing text is not evidence of a
+critical function.
+
+Classify deviations by effect on:
+
+- method or result integrity;
+- capacity and turnaround;
+- contamination control or safety;
+- data integrity and cybersecurity;
+- qualification and validation;
+- utilities, space and installation;
+- continuity, service and lifecycle cost;
+- schedule and commercial boundary.
+
+## Evaluate total fit, not feature count
+
+A technical recommendation should reconcile:
+
+1. mandatory requirement compliance;
+2. critical deviations and proposed mitigations;
+3. method and sample demonstration evidence;
+4. usable capacity under the planned configuration;
+5. installation and utility fit;
+6. data and integration fit;
+7. qualification and training evidence;
+8. service, spares and recovery capability;
+9. implementation schedule and project dependencies;
+10. purchase, installed and lifecycle cost;
+11. supplier assumptions, exclusions and change exposure;
+12. reviewer conflicts, approvals and residual risks.
+
+Scoring can support review, but a weighted total must not allow a critical unmet
+requirement to disappear behind many low-value features.
+
+## Control clarification and change
+
+Use one question log with owner, issue date, bidder response, evidence, decision and
+affected requirement. Reissue changed requirements to all relevant bidders under the
+procurement process. Preserve the bid basis used for the recommendation.
+
+After selection, trace approved deviations and clarifications into design review,
+contract scope, acceptance testing, installation, qualification, procedures,
+training and change control. The final delivered configuration must not drift away
+from the evaluated offer.
+
+EU GMP Annex 15 treats approved user requirements as a reference throughout the
+validation lifecycle. The current official entry is available through the European
+Commission's [EudraLex Volume 4 GMP guidelines](https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en).
+
+## Evidence package before issue
+
+Before releasing an RFQ, collect:
+
+- approved intended use and scope;
+- method/application and workload basis;
+- capacity, turnaround and resilience scenarios;
+- facility, utility, data and EHS constraints;
+- requirement identifiers, rationales and criticality;
+- verification and acceptance strategy;
+- project schedule and interface responsibilities;
+- pricing and lifecycle-cost response structure;
+- compliance-matrix and clarification templates;
+- evaluation criteria, reviewers and approval route;
+- confidentiality and information-sharing controls;
+- assumptions, exclusions and unresolved decisions.
+
+## What Atlas should block
+
+Atlas should not label a package RFQ-ready when:
+
+- the intended use or method boundary is unresolved;
+- quantities are not linked to workload and resilience;
+- requirements name a supplier without a controlled rationale;
+- critical requirements have no verification approach;
+- data, utilities, installation or lifecycle services are omitted;
+- bidders can price different supply boundaries without reconciliation;
+- compliance claims need no evidence reference;
+- mandatory deviations can be hidden by weighted scoring;
+- clarifications and configuration changes are not controlled;
+- QA, users, engineering, IT/EHS, validation and procurement ownership is unclear.
+
+## Apply this in Atlas
+
+Compile the capability and resource basis in the [Quality Lab
+Planner](/quality-lab/planner), collect missing configuration evidence with the
+[Blueprint Discovery Pack](/quality-lab/discovery-pack), and review [usable equipment
+capacity](/blog/from-workload-to-usable-qc-equipment-capacity), [utility
+demand](/blog/from-equipment-list-to-qualified-qc-utility-demand), and the [controlled
+cost basis](/blog/from-concept-cost-band-to-controlled-qc-lab-cost-basis). Trace open
+requirements and decisions through the [Evidence Graph](/quality-lab/evidence).
+
+This guide is decision support. It does not replace approved procurement procedures,
+current GMP requirements, qualified engineering, EHS and cybersecurity assessment,
+validation planning, legal review, supplier due diligence or QA approval.
+
+## Continue into implementation
+
+- [Phased QC laboratory procurement and expansion planning](/blog/phased-qc-laboratory-procurement-and-expansion-planning).
+- [Quality laboratory startup, commissioning and operational readiness](/blog/quality-lab-startup-commissioning-and-operational-readiness).
