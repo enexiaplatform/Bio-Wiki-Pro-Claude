@@ -70,7 +70,7 @@ export default function QualityLabTurnaroundPage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality lab projects</Link>
-          {result && <button onClick={exportTrace} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export feasibility trace</button>}
+          <div className="flex flex-wrap gap-2">{result && <><Link href={`/quality-lab/non-routine-load?project=${result.project.id}`} className="inline-flex items-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-4 py-2.5 text-sm font-bold text-amber-200"><Users className="h-4 w-4" /> Model exception load</Link><button onClick={exportTrace} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export feasibility trace</button></>}</div>
         </div>
 
         <header className="rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/10 via-white/[0.035] to-teal-300/[0.05] p-6 md:p-8">

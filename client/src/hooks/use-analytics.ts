@@ -164,6 +164,12 @@ export const analytics = {
   equipmentResilienceExported: (status: string, nPlusOneGapUnits: number) =>
     capture("equipment_resilience_exported", { status, n_plus_one_gap_units: nPlusOneGapUnits }),
 
+  nonRoutineLoadEvaluated: (projectId: string, horizon: string, status: string, monthlyHours: number) =>
+    capture("non_routine_load_evaluated", { project_id: projectId, horizon, status, monthly_hours: monthlyHours }),
+
+  nonRoutineLoadExported: (status: string, observedEventTypes: number) =>
+    capture("non_routine_load_exported", { status, observed_event_types: observedEventTypes }),
+
   expertReviewStarted: (source: string) =>
     capture("expert_review_started", { source }),
 
