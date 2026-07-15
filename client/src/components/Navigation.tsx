@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, LayoutDashboard } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -103,7 +103,9 @@ const accountLinks = [
 export function BottomNav() {
   const [location] = useLocation();
   const { t } = useTranslation("nav");
+  const { isAdmin } = useUser();
   const [moreOpen, setMoreOpen] = useState(false);
+  const visibleMoreLinks = isAdmin ? [...moreLinks, { name: "Admin dashboard", icon: LayoutDashboard, path: "/admin" }] : moreLinks;
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-2 pb-safe pt-2 z-50 md:hidden">
@@ -148,7 +150,7 @@ export function BottomNav() {
             <DrawerTitle>Explore Life Science Atlas</DrawerTitle>
           </DrawerHeader>
           <div className="grid grid-cols-3 gap-3 px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
-            {moreLinks.map((l) => {
+            {visibleMoreLinks.map((l) => {
               const isActive = location.startsWith(l.path);
               return (
                 <DrawerClose asChild key={l.path}>
@@ -178,7 +180,7 @@ export function BottomNav() {
 export function DesktopNav() {
   const [location] = useLocation();
   const { t } = useTranslation("nav");
-  const { user, isAuthenticated, isPro, logout } = useUser();
+  const { user, isAuthenticated, isPro, isAdmin, logout } = useUser();
 
   return (
     <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-6">
@@ -252,6 +254,14 @@ export function DesktopNav() {
                     </Link>
                   </DropdownMenuItem>
                 ))}
+                {isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin" className="cursor-pointer" data-testid="account-admin-dashboard">
+                      <LayoutDashboard className="w-4 h-4 mr-2 text-teal-300" />
+                      Admin dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={logout} data-testid="button-logout" className="cursor-pointer">
                   <LogOut className="w-4 h-4 mr-2 text-muted-foreground" />

@@ -231,6 +231,7 @@ The current Compiler has a first executable non-sterile microbiology vertical sl
 - a Controlled Validation Case Registry that separates synthetic scenarios, calibration candidates and accepted cases; records baseline freeze, scope alignment, reuse permission, evidence quality and qualified acceptance; and keeps the working three-case threshold at zero until real evidence exists.
 - a consolidated Gate 2 release control that evaluates source closure, qualified ownership, accepted validation cases and paid qualified demand against the same Domain Pack version, exports the evidence dossier, and treats a complete result only as eligibility for qualified release review.
 - an account-connected governance revision trail plus a controlled rule-change candidate register that requires trigger projects, evidence, validation cases, impact assessment and external approval references while never editing executable rules directly.
+- a private, email-allowlisted Admin Control Center for user access, paid-document release QA, content publish/tier controls and visibility across leads, purchases, commercial requests and account-held reviewed Blueprint projects.
 
 This is still not the authoritative production Compiler. Material limitations remain:
 
@@ -247,6 +248,7 @@ This is still not the authoritative production Compiler. Material limitations re
 - The paid-pilot portfolio is an evidence-control mechanism, not proof that any engagement exists; Gate 1 remains incomplete until three real records satisfy the controlled release, acceptance and estimate-to-actual requirements.
 - The consolidated Gate 2 control currently remains at zero of four evidence-complete controls. Reaching four of four would start a qualified release review; it would not itself verify the Domain Pack, approve a rule change, or authorize client use.
 - Rule-change workflow infrastructure now exists, but the repository contains no approved real rule change. A candidate or external approval record still requires regression review and a separate controlled Domain Pack version release.
+- Admin v1 manages the existing database and repository-backed deliverable registry; it is not yet a general browser-upload CMS, immutable administrator audit log, CRM workflow, support desk or document-control system. New paid files still require a controlled repository release, and production access requires an explicit `ADMIN_EMAILS` allowlist.
 
 The next stage is controlled service-assisted validation: use the slice in real discovery work, capture corrections and estimate-to-actual variance, then replace concept assumptions with reviewed Domain Pack rules.
 

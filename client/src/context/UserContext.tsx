@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useRef, ReactNode } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth, type AuthUser } from "@/hooks/use-auth";
 import { identify } from "@/hooks/use-analytics";
-import type { User } from "@shared/models/auth";
 
 interface UserContextType {
-  user: User | null | undefined;
+  user: AuthUser | null | undefined;
   isLoading: boolean;
   isAuthenticated: boolean;
   isPro: boolean;
+  isAdmin: boolean;
   logout: () => void;
 }
 
@@ -38,6 +38,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         isLoading,
         isAuthenticated,
         isPro: user?.isPro ?? false,
+        isAdmin: user?.isAdmin ?? false,
         logout,
       }}
     >

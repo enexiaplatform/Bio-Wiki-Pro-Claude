@@ -17,6 +17,7 @@ import { OAuth2Client } from "google-auth-library";
 import { rateLimit } from "express-rate-limit";
 import { compareQualityLabReviewedSnapshots, qualityLabReviewedProjectSnapshotSchema } from "../shared/quality-lab-persistence.js";
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
+import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -537,13 +538,17 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user), verifiedEmail: user.verifiedEmail ?? false });
+      res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user), isAdmin: isAdminEmail(user.email), verifiedEmail: user.verifiedEmail ?? false });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
 
   // ── Stripe routes ────────────────────────────────────────────────────────
+
+  // Operational controls require both a signed-in account and an explicit
+  // ADMIN_EMAILS / ADMIN_EMAIL allowlist match.
+  registerAdminRoutes(app, isAuthenticated);
 
   app.post("/api/stripe/create-checkout-session", isAuthenticated, async (req: any, res) => {
     if (!stripe) {
@@ -993,7 +998,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/downloads", isAuthenticated, async (req: any, res) => {
     const userId: string = req.session.userId;
     const user = await storage.getUser(userId).catch(() => undefined);
-    const pro = isProActive(user);
+    const pro = isProActive(user) || isAdminEmail(user?.email);
 
     const owned = [];
     for (const product of Object.values(DELIVERABLES)) {
@@ -1033,7 +1038,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
     const userId: string = req.session.userId;
     const user = await storage.getUser(userId).catch(() => undefined);
-    let entitled = isProActive(user);
+    let entitled = isProActive(user) || isAdminEmail(user?.email);
     if (!entitled) {
       for (const pt of product.entitledBy) {
         if (await storage.hasCompletedPurchase(userId, pt).catch(() => false)) {

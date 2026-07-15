@@ -65,6 +65,7 @@ const QualityLabGate2ReleasePage = lazy(() => import("@/pages/QualityLabGate2Rel
 const QualityLabGovernanceHistoryPage = lazy(() => import("@/pages/QualityLabGovernanceHistoryPage"));
 const QualityLabRuleChangesPage = lazy(() => import("@/pages/QualityLabRuleChangesPage"));
 const QualityLabMethodApplicationsPage = lazy(() => import("@/pages/QualityLabMethodApplicationsPage"));
+const AdminDashboardPage = lazy(() => import("@/pages/AdminDashboardPage"));
 
 function PageFallback() {
   return (
@@ -134,6 +135,7 @@ function Layout() {
           <Route path="/vault" component={Vault} />
           <Route path="/career" component={Career} />
           <Route path="/settings" component={Settings} />
+          <Route path="/admin" component={AdminDashboardPage} />
           {/* Retired 2026-07 (off-strategy): Insights (Technical-Sales leftover)
               and Solutions (equipment quote-requests) → home. */}
           <Route path="/insights"><Redirect to="/" replace /></Route>

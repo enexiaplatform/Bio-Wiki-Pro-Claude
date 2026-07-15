@@ -221,6 +221,42 @@ describe("Quality Lab expert review", () => {
   });
 });
 
+describe("admin access", () => {
+  it("rejects admin APIs without an authenticated session", async () => {
+    const app = await buildApp();
+    await request(app).get("/api/admin/documents").expect(401);
+  });
+
+  it("rejects signed-in users outside the admin email allowlist", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u-member", email: "member@example.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "member@example.com", password: "pw123456" }).expect(201);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u-member", email: "member@example.com", isPro: false });
+    await agent.get("/api/admin/documents").expect(403);
+  });
+
+  it("lets an allowlisted admin inspect the paid document vault", async () => {
+    const previous = process.env.ADMIN_EMAILS;
+    process.env.ADMIN_EMAILS = "admin@example.com";
+    try {
+      const app = await buildApp();
+      const agent = request.agent(app);
+      storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+      storageMock.createUser.mockResolvedValueOnce({ id: "u-admin", email: "admin@example.com", isPro: false });
+      await agent.post("/api/auth/register").send({ email: "admin@example.com", password: "pw123456" }).expect(201);
+      storageMock.getUser.mockResolvedValueOnce({ id: "u-admin", email: "admin@example.com", isPro: false });
+      const response = await agent.get("/api/admin/documents").expect(200);
+      expect(response.body.products.length).toBe(Object.keys(DELIVERABLES).length);
+      expect(response.body.products[0]).toHaveProperty("files");
+    } finally {
+      if (previous === undefined) delete process.env.ADMIN_EMAILS;
+      else process.env.ADMIN_EMAILS = previous;
+    }
+  });
+});
+
 describe("content API", () => {
   it("rejects legacy non-English content language requests", async () => {
     const app = await buildApp();
