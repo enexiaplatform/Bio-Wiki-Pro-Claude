@@ -146,6 +146,12 @@ export const analytics = {
   scenarioComparisonExported: (signalCount: number) =>
     capture("blueprint_scenario_comparison_exported", { signal_count: signalCount }),
 
+  turnaroundFeasibilityEvaluated: (projectId: string, horizon: string, status: string, workflowCount: number) =>
+    capture("turnaround_feasibility_evaluated", { project_id: projectId, horizon, status, workflow_count: workflowCount }),
+
+  turnaroundFeasibilityExported: (status: string, signalCount: number) =>
+    capture("turnaround_feasibility_exported", { status, signal_count: signalCount }),
+
   expertReviewStarted: (source: string) =>
     capture("expert_review_started", { source }),
 
