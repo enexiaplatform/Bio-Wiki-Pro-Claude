@@ -52,15 +52,16 @@ export default function RegisterPage() {
     }
 
     try {
-      await apiRequest("POST", "/api/auth/register", {
+      const response = await apiRequest("POST", "/api/auth/register", {
         email, 
         password, 
         firstName, 
         lastName 
       });
+      const account = await response.json() as { isAdmin?: boolean };
       analytics.signupCompleted("email");
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setLocation("/welcome");
+      setLocation(account.isAdmin ? "/admin" : "/welcome");
     } catch (err: any) {
       toast({
         title: t("register.failTitle"),

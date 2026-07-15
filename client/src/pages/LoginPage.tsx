@@ -33,9 +33,10 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await apiRequest("POST", "/api/auth/login", { email, password });
+      const response = await apiRequest("POST", "/api/auth/login", { email, password });
+      const account = await response.json() as { isAdmin?: boolean };
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setLocation(returnTo);
+      setLocation(account.isAdmin && returnTo === "/quality-lab/projects" ? "/admin" : returnTo);
     } catch (err: any) {
       toast({
         title: t("login.failTitle"),

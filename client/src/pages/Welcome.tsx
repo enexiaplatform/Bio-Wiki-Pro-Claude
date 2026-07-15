@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, BookOpen, Factory, FileSearch, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Factory, FileSearch, LayoutDashboard, Sparkles } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { ContinueLearning } from "@/components/ContinueLearning";
 import { EditorialImage } from "@/components/EditorialImage";
+import { useUser } from "@/context/UserContext";
 
 const FIRST_PATH = "/quality-lab/planner";
 
 export default function Welcome() {
   const { t } = useTranslation("onboarding");
+  const { isAdmin } = useUser();
   useSEO({ title: t("welcomeTitle") });
 
   useEffect(() => {
@@ -57,6 +59,16 @@ export default function Welcome() {
           />
         </div>
       </section>
+
+      {isAdmin && (
+        <Link
+          href="/admin"
+          className="mb-6 flex items-center justify-between rounded-lg border border-teal-300/30 bg-teal-300/10 p-5 text-teal-100 transition hover:border-teal-300/60 hover:bg-teal-300/15"
+        >
+          <span className="flex items-center gap-3"><LayoutDashboard className="h-5 w-5 text-teal-300" /><span><strong className="block">Admin control center</strong><span className="text-sm text-slate-300">Manage registered users, paid documents, content and operational pipeline.</span></span></span>
+          <ArrowRight className="h-5 w-5 text-teal-300" />
+        </Link>
+      )}
 
       <div className="grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
         <Link

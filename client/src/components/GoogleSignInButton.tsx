@@ -55,9 +55,10 @@ export function GoogleSignInButton({ redirectTo = "/academy" }: { redirectTo?: s
           callback: async (resp: { credential?: string }) => {
             if (!resp?.credential) return;
             try {
-              await apiRequest("POST", "/api/auth/google", { credential: resp.credential });
+              const response = await apiRequest("POST", "/api/auth/google", { credential: resp.credential });
+              const account = await response.json() as { isAdmin?: boolean };
               await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-              setLocation(redirectTo);
+              setLocation(account.isAdmin && redirectTo === "/welcome" ? "/admin" : redirectTo);
             } catch (e: any) {
               toast({
                 title: "Google sign-in failed",
