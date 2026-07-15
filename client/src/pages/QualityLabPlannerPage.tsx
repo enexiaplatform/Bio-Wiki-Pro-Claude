@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useRoute } from "wouter";
 import {
+  Activity,
   AlertCircle,
   ArrowLeft,
   ArrowRight,
@@ -421,6 +422,7 @@ export default function QualityLabPlannerPage() {
                     <div className="flex justify-between gap-2"><span>Blocking inputs open</span><strong className="text-red-200">{preview.dataQuality.blockingOpenCount}</strong></div>
                     <div className="flex justify-between gap-2"><span>Versioned rules traced</span><strong className="text-sky-200">{preview.dataQuality.tracedRuleCount}</strong></div>
                   </div>
+                  {params?.id && <Link href={`/quality-lab/sensitivity?project=${params.id}`} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-xs font-bold text-violet-200 transition hover:bg-violet-300/10"><Activity className="h-4 w-4" /> Test assumption sensitivity</Link>}
                 </>
               ) : <p className="mt-4 text-xs leading-5 text-slate-500">Complete the required fields to preview the model.</p>}
             </div>

@@ -152,6 +152,12 @@ export const analytics = {
   turnaroundFeasibilityExported: (status: string, signalCount: number) =>
     capture("turnaround_feasibility_exported", { status, signal_count: signalCount }),
 
+  sensitivityAnalyzed: (projectId: string, driverCount: number, criticalCount: number) =>
+    capture("blueprint_sensitivity_analyzed", { project_id: projectId, driver_count: driverCount, decision_critical_count: criticalCount }),
+
+  sensitivityExported: (criticalCount: number, queueCount: number) =>
+    capture("blueprint_sensitivity_exported", { decision_critical_count: criticalCount, verification_queue_count: queueCount }),
+
   expertReviewStarted: (source: string) =>
     capture("expert_review_started", { source }),
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
-  AlertTriangle, ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Download,
+  Activity, AlertTriangle, ArrowLeft, ArrowRight, BarChart3, CheckCircle2, Download,
   CalendarClock, FlaskConical, Gauge, GitCompareArrows, Info, ShieldAlert, SlidersHorizontal,
 } from "lucide-react";
 import { compareQualityLabScenarios, type ComparisonSignalSeverity, type ScenarioComparisonMetric } from "@shared/quality-lab-comparison";
@@ -68,7 +68,7 @@ export default function QualityLabScenarioComparePage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality lab projects</Link>
-          <div className="flex flex-wrap gap-2">{baseline && <Link href={`/quality-lab/turnaround?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200"><CalendarClock className="h-4 w-4" /> Test queue feasibility</Link>}{comparison && <button onClick={exportComparison} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export decision trace</button>}</div>
+          <div className="flex flex-wrap gap-2">{baseline && <><Link href={`/quality-lab/sensitivity?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-sm font-bold text-violet-200"><Activity className="h-4 w-4" /> Test sensitivity</Link><Link href={`/quality-lab/turnaround?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200"><CalendarClock className="h-4 w-4" /> Test queue feasibility</Link></>}{comparison && <button onClick={exportComparison} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export decision trace</button>}</div>
         </div>
 
         <header className="rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/[0.04] p-6 md:p-8">
