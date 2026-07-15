@@ -176,6 +176,12 @@ export const analytics = {
   skillShiftCoverageExported: (status: string, controlledEvidenceCount: number) =>
     capture("skill_shift_coverage_exported", { status, controlled_evidence_count: controlledEvidenceCount }),
 
+  crossTrainingPriorityEvaluated: (projectId: string, actionCount: number, allocatedPeople: number, deferredPeople: number) =>
+    capture("cross_training_priority_evaluated", { project_id: projectId, action_count: actionCount, allocated_people: allocatedPeople, deferred_people: deferredPeople }),
+
+  crossTrainingPriorityExported: (allocatedPeople: number, deferredPeople: number) =>
+    capture("cross_training_priority_exported", { allocated_people: allocatedPeople, deferred_people: deferredPeople }),
+
   expertReviewStarted: (source: string) =>
     capture("expert_review_started", { source }),
 

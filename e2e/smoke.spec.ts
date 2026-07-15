@@ -327,6 +327,10 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Workflow qualification and shift map/i })).toBeVisible();
     await expect(page.getByText(/reviewer-person gap/i).first()).toBeVisible();
     await expect(page.getByRole("button", { name: /Export coverage trace/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Cross-training priority optimizer/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Export priority plan/i })).toBeVisible();
+    await page.getByLabel("Training budget").fill("0");
+    await expect(page.getByText(/remain unresolved because of candidate, horizon, slot, budget or trainer-hour constraints/i).first()).toBeVisible();
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.getByRole("heading", { name: /Skill Coverage & Shift Feasibility/i })).toBeVisible();
