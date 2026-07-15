@@ -70,6 +70,7 @@ const QualityLabTurnaroundPage = lazy(() => import("@/pages/QualityLabTurnaround
 const QualityLabSensitivityPage = lazy(() => import("@/pages/QualityLabSensitivityPage"));
 const QualityLabEquipmentResiliencePage = lazy(() => import("@/pages/QualityLabEquipmentResiliencePage"));
 const QualityLabNonRoutineLoadPage = lazy(() => import("@/pages/QualityLabNonRoutineLoadPage"));
+const QualityLabSkillShiftCoveragePage = lazy(() => import("@/pages/QualityLabSkillShiftCoveragePage"));
 const AdminDashboardPage = lazy(() => import("@/pages/AdminDashboardPage"));
 
 function PageFallback() {
@@ -109,6 +110,7 @@ function Layout() {
           <Route path="/quality-lab/sensitivity" component={QualityLabSensitivityPage} />
           <Route path="/quality-lab/equipment-resilience" component={QualityLabEquipmentResiliencePage} />
           <Route path="/quality-lab/non-routine-load" component={QualityLabNonRoutineLoadPage} />
+          <Route path="/quality-lab/skill-shift-coverage" component={QualityLabSkillShiftCoveragePage} />
           <Route path="/quality-lab/projects/:id" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/review" component={QualityLabReviewPage} />
           <Route path="/quality-lab/discovery-pack" component={QualityLabDiscoveryPackPage} />

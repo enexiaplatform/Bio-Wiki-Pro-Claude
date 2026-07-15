@@ -316,6 +316,24 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Open Evidence Graph/i })).toBeVisible();
   });
 
+  test("Skill Coverage & Shift Feasibility maps a Blueprint into shift-level gaps", async ({ page }) => {
+    await page.goto("/quality-lab/casebook");
+    await page.getByRole("button", { name: /Open as editable project/i }).first().click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+    const projectId = new URL(page.url()).pathname.split("/").at(-1);
+    await page.goto(`/quality-lab/skill-shift-coverage?project=${projectId}`);
+    await page.waitForURL(/\/quality-lab\/skill-shift-coverage\?project=qlp_/);
+    await expect(page.getByRole("heading", { name: /Skill Coverage & Shift Feasibility/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Workflow qualification and shift map/i })).toBeVisible();
+    await expect(page.getByText(/reviewer-person gap/i).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: /Export coverage trace/i })).toBeVisible();
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.getByRole("heading", { name: /Skill Coverage & Shift Feasibility/i })).toBeVisible();
+    const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+    expect(horizontalOverflow).toBe(false);
+  });
+
   test("Atlas Evidence Graph connects domains to Blueprint decisions", async ({ page }) => {
     await page.goto("/quality-lab/evidence");
     await expect(page.getByRole("heading", { name: /Trace the evidence behind the decision/i })).toBeVisible();
@@ -407,7 +425,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Record source closure without turning a form into an approval/i })).toBeVisible();
     const closedRulesMetric = page.getByText("Rules evidence-closed").locator("..");
     await expect(closedRulesMetric.getByText("14/14")).toBeVisible();
-    await expect(page.getByRole("button", { name: /Save controlled closures/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Save browser record/i })).toBeVisible();
     await page.goto("/quality-lab/gate-2-release");
     await expect(page.getByRole("heading", { name: /1\/4 evidence controls complete/i })).toBeVisible();
     await expect(page.getByText(/14\/14 rules evidence-closed; 0 evidence records open/i)).toBeVisible();
