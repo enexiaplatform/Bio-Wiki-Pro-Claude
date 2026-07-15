@@ -158,6 +158,12 @@ export const analytics = {
   sensitivityExported: (criticalCount: number, queueCount: number) =>
     capture("blueprint_sensitivity_exported", { decision_critical_count: criticalCount, verification_queue_count: queueCount }),
 
+  equipmentResilienceEvaluated: (projectId: string, horizon: string, status: string, nPlusOneGapUnits: number) =>
+    capture("equipment_resilience_evaluated", { project_id: projectId, horizon, status, n_plus_one_gap_units: nPlusOneGapUnits }),
+
+  equipmentResilienceExported: (status: string, nPlusOneGapUnits: number) =>
+    capture("equipment_resilience_exported", { status, n_plus_one_gap_units: nPlusOneGapUnits }),
+
   expertReviewStarted: (source: string) =>
     capture("expert_review_started", { source }),
 

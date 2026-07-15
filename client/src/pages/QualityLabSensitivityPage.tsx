@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { Activity, AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Download, FileSearch, FlaskConical, Gauge, Info, ShieldAlert, Target } from "lucide-react";
+import { Activity, AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, Download, FileSearch, FlaskConical, Gauge, Info, ShieldAlert, Target, Wrench } from "lucide-react";
 import { analyzeQualityLabSensitivity, type SensitivityDriver, type SensitivityMetric, type SensitivityMetricId } from "@shared/quality-lab-sensitivity";
 import type { QualityLabProject } from "@shared/quality-lab";
 import { listQualityLabProjects } from "@/lib/quality-lab-projects";
@@ -67,7 +67,7 @@ export default function QualityLabSensitivityPage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality lab projects</Link>
-          {analysis && <button onClick={exportAnalysis} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export evidence priority</button>}
+          <div className="flex flex-wrap gap-2">{analysis && <><Link href={`/quality-lab/equipment-resilience?project=${analysis.project.id}`} className="inline-flex items-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-2.5 text-sm font-bold text-emerald-200"><Wrench className="h-4 w-4" /> Test equipment resilience</Link><button onClick={exportAnalysis} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export evidence priority</button></>}</div>
         </div>
 
         <header className="rounded-3xl border border-violet-300/20 bg-gradient-to-br from-violet-300/10 via-white/[0.035] to-teal-300/[0.04] p-6 md:p-8">
