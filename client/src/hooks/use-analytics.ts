@@ -136,6 +136,16 @@ export const analytics = {
       scope_count: scopeCount,
     }),
 
+  scenarioCompared: (baselineId: string, alternativeId: string, changedInputs: number) =>
+    capture("blueprint_scenarios_compared", {
+      baseline_id: baselineId,
+      alternative_id: alternativeId,
+      changed_inputs: changedInputs,
+    }),
+
+  scenarioComparisonExported: (signalCount: number) =>
+    capture("blueprint_scenario_comparison_exported", { signal_count: signalCount }),
+
   expertReviewStarted: (source: string) =>
     capture("expert_review_started", { source }),
 

@@ -65,6 +65,7 @@ const QualityLabGate2ReleasePage = lazy(() => import("@/pages/QualityLabGate2Rel
 const QualityLabGovernanceHistoryPage = lazy(() => import("@/pages/QualityLabGovernanceHistoryPage"));
 const QualityLabRuleChangesPage = lazy(() => import("@/pages/QualityLabRuleChangesPage"));
 const QualityLabMethodApplicationsPage = lazy(() => import("@/pages/QualityLabMethodApplicationsPage"));
+const QualityLabScenarioComparePage = lazy(() => import("@/pages/QualityLabScenarioComparePage"));
 const AdminDashboardPage = lazy(() => import("@/pages/AdminDashboardPage"));
 
 function PageFallback() {
@@ -99,6 +100,7 @@ function Layout() {
           <Route path="/quality-lab" component={QualityLabLandingPage} />
           <Route path="/quality-lab/planner" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/projects" component={QualityLabProjectsPage} />
+          <Route path="/quality-lab/compare" component={QualityLabScenarioComparePage} />
           <Route path="/quality-lab/projects/:id" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/review" component={QualityLabReviewPage} />
           <Route path="/quality-lab/discovery-pack" component={QualityLabDiscoveryPackPage} />
