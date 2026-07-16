@@ -16,9 +16,10 @@ export default function PaymentSuccessPage() {
 
   const sessionId = new URLSearchParams(window.location.search).get("session_id");
   const productType = new URLSearchParams(window.location.search).get("product") ?? "unknown";
-  const isKit = productType !== "unknown" && !productType.startsWith("pro_subscription");
-  const destination = isKit ? "/my-downloads" : "/academy";
-  const destinationLabel = isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
+  const isDiagnostic = productType === "scope_diagnostic";
+  const isKit = productType !== "unknown" && !productType.startsWith("pro_subscription") && !isDiagnostic;
+  const destination = isDiagnostic ? "/quality-lab/review?offer=diagnostic" : isKit ? "/my-downloads" : "/academy";
+  const destinationLabel = isDiagnostic ? "Complete Diagnostic intake" : isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
 
   useSEO({
     title: "Payment successful",
@@ -39,13 +40,19 @@ export default function PaymentSuccessPage() {
     return () => clearTimeout(timer);
   }, [countdown, navigate, destination]);
 
-  const nextSteps = isKit
+  const nextSteps = isDiagnostic
     ? [
+        "Complete the Diagnostic intake with your decision and available evidence.",
+        "Atlas confirms fit and schedules one 60-minute stakeholder workshop.",
+        "Receive the written scope and decision memo within two business days after the workshop.",
+      ]
+    : isKit
+      ? [
         "Open the download library and save your files.",
         "Keep the templates with your site procedures.",
         "Return any time from My downloads.",
-      ]
-    : [
+        ]
+      : [
         "Open Academy and continue your learning path.",
         "Use Pro lessons, toolkits, and premium tools.",
         "Track learning-path completion records from My learning.",
@@ -60,7 +67,7 @@ export default function PaymentSuccessPage() {
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Payment confirmed</p>
         <h1 className="text-3xl font-bold tracking-tight md:text-5xl">{t("paymentSuccess.title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-          {isKit ? "Your files are ready in your download library." : t("paymentSuccess.subtitle")}
+          {isDiagnostic ? "Your $149 Paid Scope Diagnostic is reserved. Atlas will respond within two business days." : isKit ? "Your files are ready in your download library." : t("paymentSuccess.subtitle")}
         </p>
 
         <div className="mx-auto mt-7 grid max-w-3xl gap-3 text-left md:grid-cols-3">
@@ -91,7 +98,7 @@ export default function PaymentSuccessPage() {
         </div>
 
         <p className="mt-5 text-sm text-muted-foreground">
-          {t("paymentSuccess.redirecting", { count: countdown })}
+          {isDiagnostic ? `Opening the Diagnostic intake in ${countdown} seconds.` : t("paymentSuccess.redirecting", { count: countdown })}
         </p>
 
         {sessionId && (

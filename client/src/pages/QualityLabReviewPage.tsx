@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCreateQualityLabReview } from "@/hooks/use-data";
@@ -40,6 +40,9 @@ export default function QualityLabReviewPage() {
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
   const [snapshotError, setSnapshotError] = useState("");
   const [retryingSnapshot, setRetryingSnapshot] = useState(false);
+  const [diagnosticCheckoutAvailable, setDiagnosticCheckoutAvailable] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
   const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>({
     engagementIntent: requestedOffer,
     projectStage: "concept",
@@ -58,6 +61,33 @@ export default function QualityLabReviewPage() {
       ? `Expert review requested for Atlas project: ${project.name}. Key areas to review: assumptions, testing demand, capacity, risks and implementation priorities.`
       : "We are planning or expanding a regulated manufacturing quality laboratory and need help defining the project basis, capability scope and operating model.",
   });
+
+  useEffect(() => {
+    fetch("/api/billing/plans", { credentials: "include" })
+      .then((response) => response.json())
+      .then((plans) => setDiagnosticCheckoutAvailable(Boolean(plans?.scopeDiagnostic)))
+      .catch(() => setDiagnosticCheckoutAvailable(false));
+  }, []);
+
+  async function payForDiagnostic() {
+    setCheckoutLoading(true);
+    setCheckoutError("");
+    try {
+      const response = await fetch("/api/stripe/create-checkout-session", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productType: "scope_diagnostic" }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.url) throw new Error(result.message ?? "Unable to start secure checkout.");
+      analytics.checkoutStarted("scope_diagnostic");
+      window.location.href = result.url;
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "Unable to start secure checkout.");
+      setCheckoutLoading(false);
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -142,7 +172,23 @@ export default function QualityLabReviewPage() {
             <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Engagement request received</p>
             <h1 className="mt-3 text-3xl font-bold">Your {offerCopy[qualification.engagementIntent].label} request has been captured.</h1>
             <p className="mx-auto mt-3 text-sm font-semibold text-teal-200">{offerCopy[qualification.engagementIntent].price}</p>
-            <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">Next milestone: Atlas checks project fit, available inputs, decision deadline, budget readiness, reviewer coverage and proposed delivery basis. Timing, payment schedule and commercial terms are confirmed before work begins. No model output is approved by this request.</p>
+            <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">Atlas responds within two business days to confirm fit, available inputs, decision deadline, reviewer coverage and the delivery basis. No model output is approved by this request.</p>
+          {qualification.engagementIntent === "scope-diagnostic" && (
+            <div className="mt-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-5 text-left">
+              <p className="font-bold text-sky-100">Next: reserve the $149 Diagnostic</p>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Includes one 60-minute workshop and a written scope and decision memo within two business days after the workshop.</p>
+              {checkoutError && <p role="alert" className="mt-3 text-xs text-red-300">{checkoutError}</p>}
+              {isAuthenticated && diagnosticCheckoutAvailable ? (
+                <button type="button" onClick={payForDiagnostic} disabled={checkoutLoading} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 disabled:opacity-60">
+                  {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Pay $149 securely
+                </button>
+              ) : isAuthenticated ? (
+                <p className="mt-3 text-xs leading-5 text-sky-100/75">Atlas will send secure payment instructions after confirming fit.</p>
+              ) : (
+                <Link href="/register?next=/quality-lab/review?offer=diagnostic" className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Create an account to pay securely</Link>
+              )}
+            </div>
+          )}
           {project && (
             <div className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-4 text-left">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-300">Engagement handoff</p>
@@ -176,6 +222,7 @@ export default function QualityLabReviewPage() {
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-5xl">
         <Link href={project ? `/quality-lab/projects/${project.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {project ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
+        <Link href="/quality-lab/sample" className="ml-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">View illustrative sample <ArrowRight className="h-4 w-4" /></Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>

@@ -11,6 +11,7 @@ import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
 import { gapAnalysisWorkbook, markdownToPdf } from "./generate.js";
+import { QUALITY_LAB_SAMPLE_BLUEPRINT_MARKDOWN } from "../shared/quality-lab-commercial.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
@@ -277,9 +278,10 @@ export async function registerRoutes(app: Express): Promise<void> {
   // Which billing plans are sellable (have a configured Stripe price). Lets the
   // client show/hide the annual option without leaking price IDs.
   app.get("/api/billing/plans", (_req, res) => {
-    res.json({
-      monthly: isProductAvailable("pro_subscription"),
-      annual: isProductAvailable("pro_subscription_annual"),
+      res.json({
+        monthly: isProductAvailable("pro_subscription"),
+        annual: isProductAvailable("pro_subscription_annual"),
+        scopeDiagnostic: isProductAvailable("scope_diagnostic"),
       // Configured free-trial length for new Pro subscribers (0 = disabled).
       trialDays: parseInt(process.env.PRO_TRIAL_DAYS ?? "7", 10),
     });
@@ -576,7 +578,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Unauthorized" });
 
-      const { productType } = req.body;
+        const { productType } = req.body;
       const priceId = getPriceId(productType);
       if (!priceId) {
         return res.status(400).json({ message: "Invalid productType or missing price configuration" });
@@ -596,7 +598,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         line_items: [{ price: priceId, quantity: 1 }],
         customer_email: user.email ?? undefined,
         success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}&product=${productType}`,
-        cancel_url: `${baseUrl}/pricing`,
+          cancel_url: productType === "scope_diagnostic" ? `${baseUrl}/quality-lab/review?offer=diagnostic` : `${baseUrl}/pricing`,
         metadata: { userId: user.id, productType },
         // Propagate userId onto the subscription so subscription.*/invoice.*
         // webhook events can resolve the user even before the customer id is stored.
@@ -608,7 +610,7 @@ export async function registerRoutes(app: Express): Promise<void> {
               },
             }
           : {}),
-      });
+        });
 
       // Record the attempt for the abandoned-checkout reminder. Best-effort:
       // never let this break the checkout flow (table may be absent pre-migration).
@@ -621,6 +623,13 @@ export async function registerRoutes(app: Express): Promise<void> {
       console.error("Stripe checkout error:", err);
       res.status(500).json({ message: err.message ?? "Failed to create checkout session" });
     }
+  });
+
+  app.get("/api/quality-lab/sample-blueprint.pdf", async (_req, res) => {
+    const pdf = await markdownToPdf(QUALITY_LAB_SAMPLE_BLUEPRINT_MARKDOWN, "Atlas Quality Lab Blueprint — Illustrative sample");
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="atlas-quality-lab-blueprint-illustrative-sample.pdf"');
+    res.send(pdf);
   });
 
   app.get("/api/stripe/customer-portal", isAuthenticated, async (req: any, res) => {
@@ -1196,7 +1205,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
     const corePaths = [
       "", "/workflows", "/toolkits", "/academy",
-      "/glossary", "/about", "/tools", "/compliance", "/career", "/quality-lab",
+      "/glossary", "/about", "/tools", "/compliance", "/career", "/quality-lab", "/quality-lab/sample",
       "/pricing", "/toolkits/gmp-audit-kit",
       "/blog", "/upgrade", "/login", "/signup", "/faq", "/terms", "/privacy",
     ];

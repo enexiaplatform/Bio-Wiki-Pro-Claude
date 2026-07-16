@@ -335,6 +335,24 @@ export function serveStatic(app: Express) {
     }
   });
 
+  app.get("/quality-lab/sample", async (_req, res, next) => {
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(
+        injectMeta(html, {
+          title: "Illustrative Quality Lab Blueprint Sample",
+          description: "See the decision brief, evidence register, controlled deliverables and boundaries in an illustrative Atlas Quality Lab Blueprint.",
+          url: `${SITE_URL}/quality-lab/sample`,
+          type: "website",
+          image: `${SITE_URL}/quality-lab-og.png`,
+        }),
+      );
+    } catch {
+      return next();
+    }
+  });
+
   // SPA fallback for everything else.
   app.use("/{*path}", (_req, res) => {
     res.sendFile(indexPath);

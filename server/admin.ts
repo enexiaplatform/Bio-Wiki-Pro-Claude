@@ -30,6 +30,27 @@ const contentUpdateSchema = z.object({
 
 const userAccessSchema = z.object({ isPro: z.boolean() });
 
+export const commercialRequestStatusSchema = z.enum([
+  "new",
+  "qualified",
+  "diagnostic-paid",
+  "diagnostic-scheduled",
+  "blueprint-proposed",
+  "won",
+  "in-delivery",
+  "delivered",
+  "accepted",
+  "lost",
+]);
+
+const commercialRequestUpdateSchema = z.object({
+  status: commercialRequestStatusSchema.optional(),
+  owner: z.string().trim().max(160).nullable().optional(),
+  nextAction: z.string().trim().max(500).nullable().optional(),
+  nextActionAt: z.string().datetime().nullable().optional(),
+  notes: z.string().trim().max(4000).nullable().optional(),
+}).refine((value) => Object.keys(value).length > 0, "No changes supplied");
+
 export function registerAdminRoutes(app: Express, isAuthenticated: RequestHandler) {
   const requireAdmin: RequestHandler = async (req: any, res, next) => {
     try {
@@ -161,6 +182,26 @@ export function registerAdminRoutes(app: Express, isAuthenticated: RequestHandle
     } catch (error) {
       console.error("[Admin] pipeline error:", error);
       res.status(500).json({ message: "Failed to load operational pipeline" });
+    }
+  });
+
+  app.patch("/api/admin/pipeline/requests/:requestId", ...adminOnly, async (req, res) => {
+    try {
+      const body = commercialRequestUpdateSchema.parse(req.body);
+      const [updated] = await db.update(quoteRequests).set({
+        ...(body.status !== undefined ? { status: body.status } : {}),
+        ...(body.owner !== undefined ? { owner: body.owner || null } : {}),
+        ...(body.nextAction !== undefined ? { nextAction: body.nextAction || null } : {}),
+        ...(body.nextActionAt !== undefined ? { nextActionAt: body.nextActionAt ? new Date(body.nextActionAt) : null } : {}),
+        ...(body.notes !== undefined ? { notes: body.notes || null } : {}),
+        updatedAt: new Date(),
+      }).where(eq(quoteRequests.id, Number(req.params.requestId))).returning();
+      if (!updated) return res.status(404).json({ message: "Commercial request not found" });
+      res.json(updated);
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: error.issues[0]?.message ?? "Invalid pipeline update" });
+      console.error("[Admin] pipeline update error:", error);
+      res.status(500).json({ message: "Failed to update commercial request" });
     }
   });
 }

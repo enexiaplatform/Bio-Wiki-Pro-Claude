@@ -116,7 +116,13 @@ export const quoteRequests = pgTable("quote_requests", {
   company: text("company"),
   need: text("need").notNull(),
   productOfInterest: text("product_of_interest"),
+  status: text("status").notNull().default("new"),
+  owner: text("owner"),
+  nextAction: text("next_action"),
+  nextActionAt: timestamp("next_action_at"),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Server-side copies are reserved for authenticated projects entering expert
@@ -175,7 +181,16 @@ export type QualityLabGovernanceRevisionRow = typeof qualityLabGovernanceRevisio
 
 // === SCHEMAS ===
 
-export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({ id: true, createdAt: true });
+export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({
+  id: true,
+  status: true,
+  owner: true,
+  nextAction: true,
+  nextActionAt: true,
+  notes: true,
+  createdAt: true,
+  updatedAt: true,
+});
 
 // === TYPES ===
 

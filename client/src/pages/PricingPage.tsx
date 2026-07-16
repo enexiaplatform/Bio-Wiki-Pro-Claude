@@ -79,12 +79,13 @@ export default function PricingPage() {
             <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Start with a fixed-price diagnostic when the operating question still needs to be framed. Move to an expert-reviewed Blueprint when a real laboratory investment, capacity, or operating-model decision is ready to scope.</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link href="/quality-lab/review?offer=diagnostic" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Request a paid diagnostic <ArrowRight className="h-4 w-4" /></Link>
+              <Link href="/quality-lab/sample" className="inline-flex items-center justify-center rounded-lg border border-teal-300/20 bg-teal-300/[0.06] px-5 py-3 text-sm font-semibold text-teal-100 transition hover:bg-teal-300/10">View illustrative Blueprint</Link>
               <Link href="/quality-lab/planner" className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30 hover:bg-white/10">Build an initial model</Link>
             </div>
           </div>
           <div className="rounded-xl border border-white/10 bg-slate-950/40 p-5">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">Commercial guardrails</p>
-            <ul className="mt-4 space-y-3">{["Prices are in USD", "Scope and named deliverables are agreed before kickoff", "Travel, third-party specialists, taxes, and detailed engineering are excluded unless quoted", "Planning and decision support only; site and regulatory approvals remain with accountable experts"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{item}</li>)}</ul>
+            <ul className="mt-4 space-y-3">{["Atlas responds within 2 business days", "Blueprint target: 10 business days after complete inputs and kickoff", "Scope and named deliverables are agreed before kickoff", "Travel, third-party specialists, taxes, and detailed engineering are excluded unless quoted", "Planning and decision support only; site and regulatory approvals remain with accountable experts"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{item}</li>)}</ul>
           </div>
         </div>
         <div className="mt-7 grid gap-4 border-t border-white/10 pt-7 lg:grid-cols-2">

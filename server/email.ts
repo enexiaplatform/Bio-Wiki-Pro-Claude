@@ -100,11 +100,18 @@ export async function sendPurchaseConfirmation(
   // Kits/bundles unlock downloadable files served in-app at /my-downloads;
   // anything else (Pro subscription) unlocks content rather than a file.
   const hasDownloads = deliverablesForPurchase(productType).length > 0;
+  const isScopeDiagnostic = productType === "scope_diagnostic";
 
   const html = htmlWrapper(`
     <h1>Thank you, ${name}! Your order is confirmed ✅</h1>
     <p>Your payment for <strong style="color:#f8fafc;">${productName}</strong>${amountDisplay ? ` (${amountDisplay})` : ""} has been received.</p>
-    ${hasDownloads ? `
+      ${isScopeDiagnostic ? `
+      <div class="box">
+        <p><strong style="color:#10b981;">Your Diagnostic is reserved</strong></p>
+        <p>Atlas will respond within two business days to confirm fit, the 60-minute workshop, required inputs and the named participants.</p>
+      </div>
+      <a href="${BASE_URL}/quality-lab/review?offer=diagnostic" class="cta">Open Diagnostic intake â†’</a>
+      ` : hasDownloads ? `
     <div class="box">
       <p><strong style="color:#10b981;">Your files are ready</strong></p>
       <p>Everything is in your account — PDFs and Excel workbooks, available to download right now.</p>

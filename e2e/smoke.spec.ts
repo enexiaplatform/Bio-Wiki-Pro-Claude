@@ -575,6 +575,13 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
   });
 
+  test("illustrative Blueprint sample is public and explicitly bounded", async ({ page }) => {
+    await page.goto("/quality-lab/sample");
+    await expect(page.getByRole("heading", { name: /See what a controlled Blueprint looks like/i })).toBeVisible();
+    await expect(page.getByText(/not a customer result or an approved facility design/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Download sample PDF/i })).toHaveAttribute("href", "/api/quality-lab/sample-blueprint.pdf");
+  });
+
   test("Rule-change control cannot silently modify executable rules", async ({ page }) => {
     await mockAdmin(page);
     await page.goto("/quality-lab/rule-changes");

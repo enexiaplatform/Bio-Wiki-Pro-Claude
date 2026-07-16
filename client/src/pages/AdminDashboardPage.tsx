@@ -38,9 +38,17 @@ type DocumentProduct = {
   files: Array<{ filename: string; label: string; description: string; contentType: string; generated: string | null; available: boolean; previewUrl: string }>;
 };
 
+const commercialStatuses = ["new", "qualified", "diagnostic-paid", "diagnostic-scheduled", "blueprint-proposed", "won", "in-delivery", "delivered", "accepted", "lost"] as const;
+type CommercialStatus = typeof commercialStatuses[number];
+type CommercialRequest = {
+  id: number; name: string; email: string; company: string | null; productOfInterest: string | null;
+  need: string; status: CommercialStatus; owner: string | null; nextAction: string | null;
+  nextActionAt: string | null; notes: string | null; createdAt: string | null; updatedAt: string | null;
+};
+
 type Pipeline = {
   leads: Array<{ id: number; email: string; source: string | null; createdAt: string | null }>;
-  requests: Array<{ id: number; name: string; email: string; company: string | null; productOfInterest: string | null; need: string; createdAt: string | null }>;
+  requests: CommercialRequest[];
   purchases: Array<{ id: number; userId: string | null; productType: string; amount: number | null; status: string | null; createdAt: string | null }>;
   projects: Array<{ id: number; userId: string; localProjectId: string; projectName: string; inputCompletenessPercent: number | null; reviewRequestedAt: string | null; updatedAt: string | null }>;
 };
@@ -79,6 +87,14 @@ export default function AdminDashboardPage() {
     mutationFn: async ({ id, patch }: { id: number; patch: Partial<Pick<ContentControl, "tier" | "published" | "sort">> }) => (await apiRequest("PATCH", `/api/admin/content/${id}`, patch)).json(),
     onSuccess: () => Promise.all([
       queryClient.invalidateQueries({ queryKey: ["/api/admin/content"] }),
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/overview"] }),
+    ]),
+  });
+
+  const pipelineMutation = useMutation({
+    mutationFn: async ({ id, patch }: { id: number; patch: Partial<Pick<CommercialRequest, "status" | "owner" | "nextAction" | "nextActionAt" | "notes">> }) => (await apiRequest("PATCH", `/api/admin/pipeline/requests/${id}`, patch)).json(),
+    onSuccess: () => Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pipeline"] }),
       queryClient.invalidateQueries({ queryKey: ["/api/admin/overview"] }),
     ]),
   });
@@ -153,7 +169,7 @@ export default function AdminDashboardPage() {
           </TabsContent>
 
           <TabsContent value="pipeline" className="mt-5 space-y-5">
-            <Panel title="Blueprint and commercial requests" description="Newest first. The request context remains a commercial intake, not confidential project evidence."><div className="space-y-3">{(pipeline.data?.requests ?? []).map((request) => <article key={request.id} className="rounded-xl border border-white/8 bg-slate-950/35 p-4"><div className="flex flex-wrap justify-between gap-2"><div><p className="font-semibold text-white">{request.name} · {request.company || "Company not supplied"}</p><a href={`mailto:${request.email}`} className="mt-1 inline-flex items-center gap-1 text-xs text-teal-300"><Mail className="h-3 w-3" />{request.email}</a></div><span className="text-xs text-slate-500">{date(request.createdAt)}</span></div><p className="mt-3 line-clamp-3 text-xs leading-6 text-slate-400">{request.need}</p></article>)}</div></Panel>
+            <Panel title="Blueprint and commercial requests" description="Move every request to a clear owner, next action and outcome. Request context is commercial intake, not confidential project evidence."><div className="space-y-3">{(pipeline.data?.requests ?? []).map((request) => <CommercialRequestCard key={request.id} request={request} saving={pipelineMutation.isPending} onSave={(patch) => pipelineMutation.mutate({ id: request.id, patch })} />)}</div></Panel>
             <div className="grid gap-5 lg:grid-cols-2"><Panel title="Reviewed Blueprint projects" description="Account-held projects that entered expert review."><CompactRows rows={(pipeline.data?.projects ?? []).map((project) => ({ title: project.projectName, detail: `${project.inputCompletenessPercent ?? 0}% input completeness`, meta: date(project.updatedAt) }))} /></Panel><Panel title="Purchase records" description="Recent Stripe and manual purchase records."><CompactRows rows={(pipeline.data?.purchases ?? []).map((purchase) => ({ title: purchase.productType, detail: purchase.status || "pending", meta: purchase.amount ? money.format(purchase.amount / 100) : date(purchase.createdAt) }))} /></Panel></div>
           </TabsContent>
 
@@ -176,3 +192,20 @@ function Panel({ title, description, children }: { title: string; description: s
 function SearchField({ value, onChange, placeholder }: { value: string; onChange: (value: string) => void; placeholder: string }) { return <label className="relative block max-w-md"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-600" /><input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="h-10 w-full rounded-xl border border-white/10 bg-slate-950/60 pl-10 pr-3 text-sm text-white outline-none focus:border-teal-300/40" /></label>; }
 function State({ good = false, label }: { good?: boolean; label: string }) { return <span className={`inline-flex items-center gap-1 text-xs font-semibold ${good ? "text-teal-300" : "text-amber-300"}`}>{good ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}{label}</span>; }
 function CompactRows({ rows }: { rows: Array<{ title: string; detail: string; meta: string }> }) { return <div className="space-y-2">{rows.length ? rows.map((row, index) => <div key={`${row.title}-${index}`} className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-slate-950/35 p-3"><div><p className="text-sm font-semibold text-white">{row.title}</p><p className="mt-1 text-xs text-slate-500">{row.detail}</p></div><span className="text-xs text-slate-500">{row.meta}</span></div>) : <p className="py-6 text-center text-sm text-slate-600">No records yet.</p>}</div>; }
+
+function CommercialRequestCard({ request, saving, onSave }: { request: CommercialRequest; saving: boolean; onSave: (patch: Partial<Pick<CommercialRequest, "status" | "owner" | "nextAction" | "nextActionAt" | "notes">>) => void }) {
+  const [draft, setDraft] = useState({ status: request.status, owner: request.owner ?? "", nextAction: request.nextAction ?? "", nextActionAt: request.nextActionAt ? new Date(request.nextActionAt).toISOString().slice(0, 16) : "", notes: request.notes ?? "" });
+  useEffect(() => { setDraft({ status: request.status, owner: request.owner ?? "", nextAction: request.nextAction ?? "", nextActionAt: request.nextActionAt ? new Date(request.nextActionAt).toISOString().slice(0, 16) : "", notes: request.notes ?? "" }); }, [request]);
+  return <article className="rounded-xl border border-white/8 bg-slate-950/35 p-4">
+    <div className="flex flex-wrap justify-between gap-2"><div><p className="font-semibold text-white">{request.name} · {request.company || "Company not supplied"}</p><a href={`mailto:${request.email}`} className="mt-1 inline-flex items-center gap-1 text-xs text-teal-300"><Mail className="h-3 w-3" />{request.email}</a></div><span className="text-xs text-slate-500">{date(request.createdAt)}</span></div>
+    <p className="mt-3 text-xs leading-6 text-slate-400">{request.need}</p>
+    <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Stage<select value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as CommercialStatus })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-2 text-xs text-white">{commercialStatuses.map((status) => <option key={status} value={status}>{status}</option>)}</select></label>
+      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Owner<input value={draft.owner} onChange={(event) => setDraft({ ...draft, owner: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-3 text-xs text-white" placeholder="Name or email" /></label>
+      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 lg:col-span-2">Next action<input value={draft.nextAction} onChange={(event) => setDraft({ ...draft, nextAction: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-3 text-xs text-white" placeholder="Action that advances this request" /></label>
+      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Due<input type="datetime-local" value={draft.nextActionAt} onChange={(event) => setDraft({ ...draft, nextActionAt: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-2 text-xs text-white" /></label>
+      <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 lg:col-span-3">Private notes<input value={draft.notes} onChange={(event) => setDraft({ ...draft, notes: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-3 text-xs text-white" placeholder="Qualification, objections or delivery notes" /></label>
+    </div>
+    <div className="mt-3 flex justify-end"><button type="button" disabled={saving} onClick={() => onSave({ status: draft.status, owner: draft.owner || null, nextAction: draft.nextAction || null, nextActionAt: draft.nextActionAt ? new Date(draft.nextActionAt).toISOString() : null, notes: draft.notes || null })} className="rounded-lg bg-teal-300 px-4 py-2 text-xs font-bold text-slate-950 disabled:opacity-60">{saving ? "Saving…" : "Save pipeline update"}</button></div>
+  </article>;
+}

@@ -414,3 +414,14 @@ A feature is done only when:
 - **Moat:** Evidence-linked Method Graph, rules, benchmarks, templates, and project outcomes.
 - **Commercialization Studio:** A selective revenue and IP-acquisition motion that must compound the same Atlas intelligence.
 - **Not building:** Another content subscription, generic AI assistant, LIMS, CAD tool, procurement marketplace, or deeptech factory.
+
+## 17. Founding-pilot commercial operating terms
+
+- Atlas responds to commercial requests within two business days.
+- The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope/decision memo within two business days after the workshop.
+- Blueprint delivery targets ten business days after kickoff and receipt of complete agreed inputs.
+- The founding $990 scope covers one site, the first non-sterile microbiology wedge, a baseline plus one alternative scenario, one review workshop and one consolidated revision.
+- Controlled delivery consists of an XLSX workbook, executive PDF brief, and evidence/assumption/open-question register.
+- Acceptance is written acceptance or accepted-with-actions within five business days of controlled delivery.
+- Reviewer identity and qualification evidence are engagement-specific and must never be implied publicly before confirmation.
+- Concept models stay browser-local by default; a full snapshot is stored only through explicit authenticated attachment and remains deletable from Projects.

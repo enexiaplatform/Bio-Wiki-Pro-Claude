@@ -6,11 +6,13 @@ describe("product catalog", () => {
     process.env.STRIPE_GMP_AUDIT_KIT_PRICE_ID = "price_gmp";
     process.env.DOWNLOAD_GMP_AUDIT_KIT = "https://dl/gmp";
     process.env.STRIPE_PRO_PRICE_ID = "price_pro";
+    process.env.STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID = "price_diagnostic";
   });
 
   it("resolves price id lazily from env", () => {
     expect(getPriceId("gmp_audit_kit")).toBe("price_gmp");
     expect(getPriceId("pro_subscription")).toBe("price_pro");
+    expect(getPriceId("scope_diagnostic")).toBe("price_diagnostic");
   });
 
   it("returns '' for unknown product", () => {
@@ -28,6 +30,7 @@ describe("product catalog", () => {
   it("identifies subscription vs one-time", () => {
     expect(isSubscription("pro_subscription")).toBe(true);
     expect(isSubscription("gmp_audit_kit")).toBe(false);
+    expect(isSubscription("scope_diagnostic")).toBe(false);
   });
 
   it("name with fallback", () => {
@@ -37,6 +40,7 @@ describe("product catalog", () => {
 
   it("getProduct returns config or undefined", () => {
     expect(getProduct("bundle")?.mode).toBe("payment");
+    expect(getProductName("scope_diagnostic")).toBe("Atlas Paid Scope Diagnostic");
     expect(getProduct("nope")).toBeUndefined();
   });
 });

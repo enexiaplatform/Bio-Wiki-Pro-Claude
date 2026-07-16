@@ -24,6 +24,12 @@ export interface ProductConfig {
 }
 
 export const PRODUCTS: Record<string, ProductConfig> = {
+  scope_diagnostic: {
+    id: "scope_diagnostic",
+    name: "Atlas Paid Scope Diagnostic",
+    mode: "payment",
+    priceEnv: "STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID",
+  },
   gmp_audit_kit: {
     id: "gmp_audit_kit",
     name: "GMP Audit Readiness Kit",

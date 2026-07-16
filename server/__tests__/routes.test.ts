@@ -333,6 +333,7 @@ describe("create-checkout-session", () => {
   const PRICE_ENVS = [
     "STRIPE_PRO_PRICE_ID",
     "STRIPE_GMP_AUDIT_KIT_PRICE_ID",
+    "STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID",
   ] as const;
   const saved: Record<string, string | undefined> = {};
 
@@ -340,6 +341,7 @@ describe("create-checkout-session", () => {
     for (const k of PRICE_ENVS) saved[k] = process.env[k];
     process.env.STRIPE_PRO_PRICE_ID = "price_pro";
     process.env.STRIPE_GMP_AUDIT_KIT_PRICE_ID = "price_gmp";
+    process.env.STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID = "price_diagnostic";
   });
   afterAll(() => {
     for (const k of PRICE_ENVS) {
@@ -409,6 +411,22 @@ describe("create-checkout-session", () => {
     expect(arg.mode).toBe("payment");
     expect(arg.line_items[0].price).toBe("price_gmp");
     expect(arg.subscription_data).toBeUndefined();
+  });
+
+  it("creates a one-time Diagnostic session with the intake cancel route", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "a@b.com", isPro: false };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+    checkoutCreate.mockResolvedValueOnce({ url: "https://checkout.stripe.test/diagnostic" });
+
+    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "scope_diagnostic" });
+    expect(res.status).toBe(200);
+    const arg = checkoutCreate.mock.calls[0][0];
+    expect(arg.mode).toBe("payment");
+    expect(arg.line_items[0].price).toBe("price_diagnostic");
+    expect(arg.cancel_url).toContain("/quality-lab/review?offer=diagnostic");
+    expect(arg.metadata).toMatchObject({ userId: "u1", productType: "scope_diagnostic" });
   });
 
   it("does NOT grant a trial to a user who already has a subscription", async () => {
