@@ -12,8 +12,8 @@ import { EditorialImage } from "@/components/EditorialImage";
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
 const offerCopy = {
-  "scope-diagnostic": { label: "Paid Scope Diagnostic", price: "$750 fixed fee", cta: "Request the paid diagnostic" },
-  "blueprint-pilot": { label: "Expert-reviewed Blueprint Pilot", price: "From $3,500", cta: "Request a Blueprint scope" },
+  "scope-diagnostic": { label: "Paid Scope Diagnostic", price: "$149 fixed fee", cta: "Request the paid diagnostic" },
+  "blueprint-pilot": { label: "Expert-reviewed Blueprint Pilot", price: "From $990", cta: "Request a Blueprint scope" },
   unsure: { label: "Engagement fit review", price: "No commitment", cta: "Request a fit review" },
 } as const;
 
@@ -180,7 +180,7 @@ export default function QualityLabReviewPage() {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>
             <h1 className="mt-5 text-4xl font-bold leading-tight">Choose the smallest paid engagement that resolves the next decision.</h1>
-            <p className="mt-4 leading-7 text-slate-400">Use the $750 diagnostic to frame the operating question, evidence and gaps. Use a Blueprint Pilot, starting at $3,500, when a non-sterile pharmaceutical microbiology build, expansion, or operating-model change is ready for expert-reviewed planning.</p>
+            <p className="mt-4 leading-7 text-slate-400">Use the $149 diagnostic to frame the operating question, evidence and gaps. Use a Blueprint Pilot, starting at $990, when a non-sterile pharmaceutical microbiology build, expansion, or operating-model change is ready for expert-reviewed planning.</p>
             <EditorialImage src="/images/editorial/laboratory-record-review.jpg" alt="Laboratory scientist documenting sample tube identifiers" creditName="Nathan Rimoux" creditUrl="https://unsplash.com/photos/iul3dSPs1G4" className="mt-6 h-40 rounded-2xl border border-white/10 md:h-48" imageClassName="object-center saturate-75" />
             <div className="mt-6 space-y-3">
               {["Scope qualification and input check", "Reviewer coverage, assumptions and scenario challenge", "Controlled workbook, decision brief and acceptance basis agreed in scope"].map((item) => (

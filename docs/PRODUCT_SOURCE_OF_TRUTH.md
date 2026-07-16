@@ -124,14 +124,15 @@ Initial scope:
 
 The immediate commercial objective is not self-serve SaaS adoption. It is to complete paid, high-learning engagements and encode repeatable reasoning.
 
-Founding-pilot commercial architecture:
+Founding design-partner commercial architecture:
 
-- a **Paid Scope Diagnostic at USD 750 fixed fee** for one stakeholder workshop, input and decision-gap triage, and a written scope and decision memo;
+- a **Paid Scope Diagnostic at USD 149 fixed fee** for one 60-minute stakeholder workshop, input and decision-gap triage, and a written scope and decision memo;
 - the diagnostic fee is credited to a Blueprint engagement started within 30 days;
-- an **expert-reviewed Blueprint Pilot starts at USD 3,500 per project**;
-- most founding-pilot scopes are expected to fall between USD 3,500 and USD 12,000 depending on portfolio size, markets, scenarios, evidence gaps, workshops, and reviewer coverage;
+- an **expert-reviewed Blueprint Pilot starts at USD 990 per project**;
+- the USD 990 starting scope covers one site, the first non-sterile pharmaceutical microbiology wedge, a baseline plus one alternative scenario, one review workshop, and one revision;
+- typical founding design-partner scopes are expected to fall between USD 990 and USD 2,500; larger portfolios, extra scenarios, additional workshops, travel, and specialist coverage are quoted separately;
 - travel, taxes, third-party specialists, detailed engineering, supplier selection, validation, site approval, and regulatory approval are excluded unless explicitly quoted;
-- the pricing architecture is reviewed after the first three paid engagements using delivery time, gross margin, buyer response, correction burden, and project outcomes.
+- design-partner pricing is limited to the first three paid engagements and is then reviewed using delivery time, gross margin, buyer response, correction burden, and project outcomes.
 
 These are productized-service prices, not software subscription entitlements. Fit, deliverables, payment schedule, data handling, acceptance criteria, and exclusions are confirmed before kickoff.
 

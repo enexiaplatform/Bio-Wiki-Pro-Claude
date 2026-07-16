@@ -61,8 +61,8 @@ export type QualityLabReviewRequest = z.infer<typeof qualityLabReviewRequestSche
 
 const qualificationLabels = {
   engagementIntent: {
-    "scope-diagnostic": "Paid Scope Diagnostic ($750 fixed fee)",
-    "blueprint-pilot": "Expert-reviewed Blueprint Pilot (from $3,500)",
+    "scope-diagnostic": "Paid Scope Diagnostic ($149 fixed fee)",
+    "blueprint-pilot": "Expert-reviewed Blueprint Pilot (from $990)",
     unsure: "Engagement fit review",
   },
   projectStage: {

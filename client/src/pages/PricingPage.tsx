@@ -74,7 +74,7 @@ export default function PricingPage() {
       <section className="mb-8 overflow-hidden rounded-xl border border-teal-300/30 bg-gradient-to-br from-teal-300/[0.12] via-white/[0.05] to-sky-300/[0.06] p-6 shadow-xl shadow-teal-950/20 md:p-8">
         <div className="grid gap-7 lg:grid-cols-[1fr_0.8fr] lg:items-center">
           <div>
-            <span className="inline-flex rounded-full bg-teal-300 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-950">Founding pilot pricing</span>
+            <span className="inline-flex rounded-full bg-teal-300 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-950">Founding design-partner pricing</span>
             <h2 className="mt-4 font-display text-2xl font-bold md:text-3xl">Buy a defined decision outcome, not software access.</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Start with a fixed-price diagnostic when the operating question still needs to be framed. Move to an expert-reviewed Blueprint when a real laboratory investment, capacity, or operating-model decision is ready to scope.</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -90,20 +90,20 @@ export default function PricingPage() {
         <div className="mt-7 grid gap-4 border-t border-white/10 pt-7 lg:grid-cols-2">
           <article className="flex flex-col rounded-xl border border-white/10 bg-slate-950/45 p-5">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-200">Paid Scope Diagnostic</p>
-            <div className="mt-3"><span className="text-3xl font-bold">$750</span><span className="ml-2 text-sm text-muted-foreground">fixed fee</span></div>
+            <div className="mt-3"><span className="text-3xl font-bold">$149</span><span className="ml-2 text-sm text-muted-foreground">fixed fee</span></div>
             <p className="mt-3 text-sm leading-6 text-muted-foreground">For teams that need to define the decision, available evidence, critical gaps, and a defensible Blueprint scope before committing to the full engagement.</p>
-            <ul className="my-5 flex-1 space-y-2">{["One 90-minute stakeholder workshop", "Input and decision-gap triage", "Written scope and decision memo", "Fee credited to a Blueprint started within 30 days"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-sky-300" />{item}</li>)}</ul>
+            <ul className="my-5 flex-1 space-y-2">{["One 60-minute stakeholder workshop", "Input and decision-gap triage", "Written scope and decision memo", "Fee credited to a Blueprint started within 30 days"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-sky-300" />{item}</li>)}</ul>
             <Link href="/quality-lab/review?offer=diagnostic" className="inline-flex items-center justify-center gap-2 rounded-lg border border-sky-300/25 bg-sky-300/10 px-5 py-3 text-sm font-bold text-sky-100 transition hover:bg-sky-300/15">Request the diagnostic <ArrowRight className="h-4 w-4" /></Link>
           </article>
           <article className="flex flex-col rounded-xl border border-teal-300/25 bg-teal-300/[0.07] p-5">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-200">Expert-reviewed Blueprint Pilot</p>
-            <div className="mt-3"><span className="text-3xl font-bold">From $3,500</span><span className="ml-2 text-sm text-muted-foreground">per project</span></div>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">Most founding-pilot scopes are expected to fall between $3,500 and $12,000, depending on products, markets, scenarios, evidence gaps, workshops, and reviewer coverage.</p>
-            <ul className="my-5 flex-1 space-y-2">{["Capability and method model", "Demand and capacity scenarios", "Evidence, assumptions, and gap register", "Controlled workbook and decision brief", "Clarification and acceptance checkpoint agreed in scope"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{item}</li>)}</ul>
+            <div className="mt-3"><span className="text-3xl font-bold">From $990</span><span className="ml-2 text-sm text-muted-foreground">per project</span></div>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Typical founding design-partner scopes are $990–$2,500. The $990 starting scope covers one site, the first microbiology wedge, a baseline plus one alternative scenario, one review workshop, and one revision.</p>
+            <ul className="my-5 flex-1 space-y-2">{["Capability and method model", "Baseline and one alternative demand-capacity scenario", "Evidence, assumptions, and gap register", "Controlled workbook and decision brief", "One review workshop and one revision"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{item}</li>)}</ul>
             <Link href="/quality-lab/review?offer=blueprint" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Request a Blueprint scope <ArrowRight className="h-4 w-4" /></Link>
           </article>
         </div>
-        <p className="mt-5 text-xs leading-5 text-muted-foreground">Founding-pilot pricing is reviewed after the first three paid engagements. Atlas confirms fit, inputs, timing, reviewer coverage, payment schedule, data handling, and acceptance criteria before work begins.</p>
+        <p className="mt-5 text-xs leading-5 text-muted-foreground">Design-partner pricing is limited to the first three paid engagements and will then be reviewed using delivery time, correction burden, buyer response, and project outcomes. Larger portfolios, extra scenarios, additional workshops, travel, or specialist coverage are quoted separately.</p>
       </section>
 
       {error && <div className="mb-8 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-sm text-red-400">{error}</div>}

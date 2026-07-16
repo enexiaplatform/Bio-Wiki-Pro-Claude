@@ -38,7 +38,7 @@ describe("Quality Lab review brief", () => {
     });
     const brief = formatQualityLabReviewBrief(request);
     expect(brief).toContain("[quality-lab-review-brief/v2]");
-    expect(brief).toContain("Expert-reviewed Blueprint Pilot (from $3,500)");
+    expect(brief).toContain("Expert-reviewed Blueprint Pilot (from $990)");
     expect(brief).toContain("decision window=1–3 months");
     expect(brief).toContain("input completeness");
     expect(brief).toContain("controlled-use blockers");

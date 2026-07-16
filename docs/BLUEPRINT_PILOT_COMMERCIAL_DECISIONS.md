@@ -1,6 +1,6 @@
 # Blueprint Pilot commercial decisions
 
-> Status: founder decisions required before publishing commercial claims  
+> Status: pricing approved; remaining commercial decisions still require founder approval
 > Product basis: `docs/PRODUCT_SOURCE_OF_TRUTH.md`  
 > Current offer: expert-reviewed, service-assisted Quality Lab Blueprint pilot
 
@@ -13,7 +13,7 @@ Close the commercial facts a buyer needs before Atlas can present the Blueprint 
 | Decision | Founder-approved value | Minimum acceptance test | Status |
 |---|---|---|---|
 | Eligible pilot scope |  | Names the included project type, first-wedge microbiology scope, and exclusions | Open |
-| Starting price, range, or qualification threshold |  | A qualified buyer can estimate budget fit before submitting a request | Open |
+| Starting price, range, or qualification threshold | $149 Scope Diagnostic; Blueprint starts at $990; typical founding scope $990–$2,500; larger scopes quoted separately | A qualified buyer can estimate budget fit before submitting a request | Approved 2026-07-16 |
 | Response SLA and target delivery timeline |  | Confirmation can state a real response window and delivery stages | Open |
 | Reviewer identity/role and public qualification basis |  | Every public reviewer claim is evidenced and approved for display | Open |
 | Deliverables, file formats, review rounds, and acceptance event |  | Proposal, delivery package, and client acceptance use the same definition | Open |

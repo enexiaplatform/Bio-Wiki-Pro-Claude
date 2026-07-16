@@ -195,7 +195,7 @@ describe("Quality Lab expert review", () => {
     expect(res.status).toBe(201);
     expect(storageMock.createQuoteRequest).toHaveBeenCalledWith(expect.objectContaining({
       email: "quality@example.com",
-      productOfInterest: "Expert-reviewed Blueprint Pilot (from $3,500)",
+      productOfInterest: "Expert-reviewed Blueprint Pilot (from $990)",
       need: expect.stringContaining("[quality-lab-review-brief/v2]"),
     }));
   });

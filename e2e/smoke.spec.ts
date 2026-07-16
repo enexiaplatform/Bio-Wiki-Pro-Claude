@@ -177,8 +177,8 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("img", { name: /Two laboratory professionals working together/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Start a Blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
     await expect(page.getByRole("link", { name: /Compare evidence plans/i })).toHaveAttribute("href", "#evidence-plans");
-    await expect(page.getByText("$750", { exact: true })).toBeVisible();
-    await expect(page.getByText("From $3,500", { exact: true })).toBeVisible();
+    await expect(page.getByText("$149", { exact: true })).toBeVisible();
+    await expect(page.getByText("From $990", { exact: true })).toBeVisible();
     await expect(page.getByText(/One-time interview and career downloads/i)).toHaveCount(0);
   });
 
