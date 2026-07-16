@@ -41,6 +41,23 @@ export const qualityLabActionPlanSchema = z.object({
 
 export type QualityLabActionPlan = z.infer<typeof qualityLabActionPlanSchema>;
 
+export type QualityLabActionTiming = "overdue" | "due-soon" | "scheduled" | "unscheduled";
+
+export interface QualityLabPortfolioActionSource {
+  id: string;
+  name: string;
+  input: { scenarioLabel: string };
+  actionPlan: QualityLabActionPlan;
+}
+
+export interface QualityLabPortfolioActionItem {
+  projectId: string;
+  projectName: string;
+  scenarioLabel: string;
+  action: QualityLabProjectAction;
+  timing: QualityLabActionTiming;
+}
+
 const ownerByCategory: Record<QualityLabProjectAction["category"], string> = {
   portfolio: "QC project lead",
   method: "QC method owner",
@@ -156,4 +173,55 @@ export function qualityLabProjectStage(plan: QualityLabActionPlan, reviewRequest
   const metrics = qualityLabActionPlanMetrics(plan);
   if (metrics.blockingCount > 0) return "awaiting-inputs" as const;
   return "ready-for-review" as const;
+}
+
+export function qualityLabActionTiming(action: QualityLabProjectAction, today: string, dueSoonDays = 7): QualityLabActionTiming {
+  if (!action.dueDate) return "unscheduled";
+  const dueAt = Date.parse(`${action.dueDate}T00:00:00Z`);
+  const todayAt = Date.parse(`${today}T00:00:00Z`);
+  if (!Number.isFinite(dueAt) || !Number.isFinite(todayAt)) return "unscheduled";
+  const daysUntilDue = Math.round((dueAt - todayAt) / 86_400_000);
+  if (daysUntilDue < 0) return "overdue";
+  if (daysUntilDue <= dueSoonDays) return "due-soon";
+  return "scheduled";
+}
+
+const timingRank: Record<QualityLabActionTiming, number> = { overdue: 0, "due-soon": 1, unscheduled: 4, scheduled: 5 };
+
+function portfolioQueueRank(item: QualityLabPortfolioActionItem) {
+  if (item.timing === "overdue" || item.timing === "due-soon") return timingRank[item.timing];
+  if (item.action.status === "ready-for-review") return 2;
+  if (item.action.status === "in-progress") return 3;
+  return timingRank[item.timing];
+}
+
+export function qualityLabPortfolioWorkQueue(projects: QualityLabPortfolioActionSource[], today: string): QualityLabPortfolioActionItem[] {
+  return projects
+    .flatMap((project) => project.actionPlan.actions
+      .filter((action) => action.status !== "resolved")
+      .map((action) => ({
+        projectId: project.id,
+        projectName: project.name,
+        scenarioLabel: project.input.scenarioLabel,
+        action,
+        timing: qualityLabActionTiming(action, today),
+      })))
+    .sort((a, b) => {
+      const aRank = portfolioQueueRank(a);
+      const bRank = portfolioQueueRank(b);
+      if (aRank !== bRank) return aRank - bRank;
+      const severityDelta = severityRank[a.action.severity] - severityRank[b.action.severity];
+      if (severityDelta !== 0) return severityDelta;
+      if (a.action.dueDate !== b.action.dueDate) return a.action.dueDate.localeCompare(b.action.dueDate);
+      return a.action.updatedAt.localeCompare(b.action.updatedAt);
+    });
+}
+
+export function qualityLabPortfolioQueueMetrics(queue: QualityLabPortfolioActionItem[]) {
+  return {
+    overdueCount: queue.filter((item) => item.timing === "overdue").length,
+    dueSoonCount: queue.filter((item) => item.timing === "due-soon").length,
+    unscheduledBlockingCount: queue.filter((item) => item.timing === "unscheduled" && item.action.severity === "blocking").length,
+    readyForReviewCount: queue.filter((item) => item.action.status === "ready-for-review").length,
+  };
 }

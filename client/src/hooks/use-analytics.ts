@@ -209,6 +209,12 @@ export const analytics = {
   projectActionUpdated: (projectId: string, actionId: string, field: string, status: string) =>
     capture("blueprint_action_updated", { project_id: projectId, action_id: actionId, field, status }),
 
+  projectWorkQueueViewed: (projectCount: number, activeActions: number, overdueActions: number) =>
+    capture("blueprint_work_queue_viewed", { project_count: projectCount, active_actions: activeActions, overdue_actions: overdueActions }),
+
+  projectWorkQueueActionOpened: (projectId: string, actionId: string, timing: string) =>
+    capture("blueprint_work_queue_action_opened", { project_id: projectId, action_id: actionId, timing }),
+
   engagementPacketDownloaded: (placement: string, openItems: number) =>
     capture("engagement_packet_downloaded", { placement, open_items: openItems }),
 };

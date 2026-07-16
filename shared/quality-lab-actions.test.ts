@@ -4,6 +4,8 @@ import {
   defaultQualityLabInput,
   priorityQualityLabActions,
   qualityLabActionPlanMetrics,
+  qualityLabPortfolioQueueMetrics,
+  qualityLabPortfolioWorkQueue,
   reconcileQualityLabActionPlan,
 } from "./quality-lab.js";
 
@@ -44,5 +46,30 @@ describe("Quality Lab project action plan", () => {
     expect(prioritized.length).toBeGreaterThan(0);
     expect(prioritized[0].severity).toBe("blocking");
     expect(prioritized.every((action) => action.status !== "resolved")).toBe(true);
+  });
+
+  it("builds a portfolio queue with overdue and due-soon work first", () => {
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_portfolio_queue");
+    const [overdue, dueSoon, ready, inProgress] = project.actionPlan.actions;
+    const queuedProject = {
+      ...project,
+      actionPlan: {
+        ...project.actionPlan,
+        actions: project.actionPlan.actions.map((action) => {
+          if (action.id === overdue.id) return { ...action, dueDate: "2026-07-15" };
+          if (action.id === dueSoon.id) return { ...action, dueDate: "2026-07-20" };
+          if (action.id === ready.id) return { ...action, status: "ready-for-review" as const };
+          if (action.id === inProgress.id) return { ...action, status: "in-progress" as const };
+          return action;
+        }),
+      },
+    };
+    const queue = qualityLabPortfolioWorkQueue([queuedProject], "2026-07-16");
+    expect(queue.slice(0, 4).map((item) => item.action.id)).toEqual([overdue.id, dueSoon.id, ready.id, inProgress.id]);
+    expect(qualityLabPortfolioQueueMetrics(queue)).toMatchObject({
+      overdueCount: 1,
+      dueSoonCount: 1,
+      readyForReviewCount: 1,
+    });
   });
 });

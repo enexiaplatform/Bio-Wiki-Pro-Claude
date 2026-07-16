@@ -26,6 +26,18 @@ The next customer-return slice is now implemented:
 
 Commercial facts remain gated by `docs/BLUEPRINT_PILOT_COMMERCIAL_DECISIONS.md`; no price, SLA, reviewer identity, or sample claim has been invented.
 
+## Execution update — Portfolio daily work queue
+
+The Projects workspace now gives returning users one prioritized queue across every local Blueprint:
+
+- overdue and due-within-seven-days actions lead the queue;
+- ready-for-review and in-progress actions stay ahead of unscheduled open work;
+- blocking actions without a due date are counted explicitly instead of disappearing inside project cards;
+- every queue item links directly to the originating Project Action Center;
+- analytics distinguish queue views from action opens, and desktop/mobile layouts have been verified.
+
+This improves return cadence without introducing email claims, automatic cloud storage, or unsupported collaboration behavior.
+
 ## What the audit changes
 
 The audit validates the core value moment: a small operational intake can produce a useful cross-functional laboratory planning model. The immediate problem is not missing model breadth. It is trust, commercial clarity, role separation, and a broken handoff between the browser-local model and expert review.

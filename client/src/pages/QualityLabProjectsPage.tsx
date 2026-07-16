@@ -8,6 +8,8 @@ import {
   BarChart3,
   Building2,
   CalendarClock,
+  CheckCircle2,
+  ClipboardList,
   CloudDownload,
   Copy,
   FileText,
@@ -18,7 +20,15 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import { priorityQualityLabActions, qualityLabActionPlanMetrics, qualityLabProjectStage, type QualityLabProject } from "@shared/quality-lab";
+import {
+  priorityQualityLabActions,
+  qualityLabActionPlanMetrics,
+  qualityLabPortfolioQueueMetrics,
+  qualityLabPortfolioWorkQueue,
+  qualityLabProjectStage,
+  type QualityLabActionTiming,
+  type QualityLabProject,
+} from "@shared/quality-lab";
 import {
   deleteQualityLabProject,
   deleteQualityLabReviewedProjectSnapshot,
@@ -41,6 +51,23 @@ const projectStageLabels = {
   "ready-for-review": "Ready for review",
   "review-requested": "Review requested",
 };
+const timingDetails: Record<QualityLabActionTiming, { label: string; className: string }> = {
+  overdue: { label: "Overdue", className: "border-red-300/20 bg-red-300/10 text-red-100" },
+  "due-soon": { label: "Due within 7 days", className: "border-amber-300/20 bg-amber-300/10 text-amber-100" },
+  scheduled: { label: "Scheduled", className: "border-sky-300/20 bg-sky-300/10 text-sky-100" },
+  unscheduled: { label: "Needs a due date", className: "border-white/10 bg-white/[0.04] text-slate-300" },
+};
+
+function localDateKey(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function displayDueDate(value: string) {
+  return new Date(`${value}T00:00:00`).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+}
 
 export default function QualityLabProjectsPage() {
   useSEO({ title: "Quality Lab Projects", description: "Saved Atlas Quality Lab Blueprint scenarios on this device." });
@@ -56,6 +83,9 @@ export default function QualityLabProjectsPage() {
     ? Math.round(projects.reduce((sum, project) => sum + project.blueprint.dataQuality.completenessPercent, 0) / projects.length)
     : 0;
   const activeProjectActions = projects.reduce((sum, project) => sum + qualityLabActionPlanMetrics(project.actionPlan).activeCount, 0);
+  const workQueue = qualityLabPortfolioWorkQueue(projects, localDateKey());
+  const workQueueMetrics = qualityLabPortfolioQueueMetrics(workQueue);
+  const visibleWorkQueue = workQueue.slice(0, 5);
 
   const refresh = () => setProjects(listQualityLabProjects());
   useEffect(() => {
@@ -88,6 +118,11 @@ export default function QualityLabProjectsPage() {
       });
     return () => { active = false; };
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (projects.length === 0) return;
+    analytics.projectWorkQueueViewed(projects.length, activeProjectActions, workQueueMetrics.overdueCount);
+  }, [projects.length, activeProjectActions, workQueueMetrics.overdueCount]);
 
   function duplicate(id: string) {
     const source = projects.find((project) => project.id === id);
@@ -171,14 +206,14 @@ export default function QualityLabProjectsPage() {
           </div>
         </div>
 
-        <header className="mb-6 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-6 md:p-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <header className="mb-6 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-5 md:p-8">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between md:gap-6">
             <div>
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-300/10 text-teal-200">
                 <FlaskConical className="h-5 w-5" />
               </div>
-              <h1 className="mt-5 text-3xl font-bold md:text-5xl">Quality lab projects</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-400">
+              <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">Quality lab projects</h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 md:leading-7">
                 Compare scenarios, resolve critical inputs and export the model basis. Projects stay local unless you explicitly attach a full Blueprint for review; signed-in users can recover an attached snapshot on another device.
               </p>
             </div>
@@ -211,6 +246,48 @@ export default function QualityLabProjectsPage() {
           <section className="mb-6 rounded-3xl border border-sky-300/20 bg-sky-300/[0.055] p-5 md:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Account recovery</p><h2 className="mt-1 text-xl font-bold">Securely saved review projects</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-slate-400">These review snapshots are attached to your account but are not yet available in this browser. Recovering creates a local copy; it does not change the account-held revision history.</p></div><span className="inline-flex items-center gap-2 self-start rounded-full border border-sky-300/20 px-3 py-1 text-xs font-bold text-sky-200"><CloudDownload className="h-3.5 w-3.5" /> {recoverableProjects.length} available</span></div>
             <div className="mt-4 grid gap-3 md:grid-cols-2">{recoverableProjects.map((snapshot) => <article key={snapshot.localProjectId} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><p className="font-bold">{snapshot.projectName}</p><p className="mt-1 text-xs text-slate-500">{snapshot.input.scenarioLabel} · {snapshot.input.country} · {reviewedProjectStatuses[snapshot.localProjectId]?.revisionCount ?? 0} account revisions{reviewedProjectStatuses[snapshot.localProjectId]?.lastSyncedAt ? ` · last saved ${new Date(reviewedProjectStatuses[snapshot.localProjectId].lastSyncedAt!).toLocaleDateString()}` : ""}</p><div className="mt-3 flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase text-amber-200">Review requested</span><button type="button" onClick={() => recover(snapshot)} className="inline-flex items-center gap-2 rounded-lg bg-sky-300 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-sky-200"><CloudDownload className="h-3.5 w-3.5" /> Recover here</button></div></article>)}</div>
+          </section>
+        )}
+
+        {projects.length > 0 && (
+          <section className="mb-6 rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/[0.07] via-white/[0.03] to-transparent p-5 md:p-6" aria-labelledby="portfolio-work-queue-title">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-sky-200"><ClipboardList className="h-5 w-5" /><p className="text-[10px] font-bold uppercase tracking-[0.18em]">Daily project pulse</p></div>
+                <h2 id="portfolio-work-queue-title" className="mt-2 text-2xl font-bold">Today&apos;s work queue</h2>
+                <p className="mt-2 text-xs leading-5 text-slate-400">One prioritized view across every local Blueprint. Due dates create the cadence; ready-for-review and in-progress work stay ahead of unscheduled inputs.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Portfolio work queue summary">
+                <div className="min-w-24 rounded-xl border border-red-300/15 bg-red-300/[0.04] p-3 text-center"><strong className="block text-lg text-red-200">{workQueueMetrics.overdueCount}</strong><span className="text-[10px] text-slate-500">overdue</span></div>
+                <div className="min-w-24 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-center"><strong className="block text-lg text-amber-200">{workQueueMetrics.dueSoonCount}</strong><span className="text-[10px] text-slate-500">due in 7 days</span></div>
+                <div className="min-w-24 rounded-xl border border-white/10 bg-white/[0.025] p-3 text-center"><strong className="block text-lg text-white">{workQueueMetrics.unscheduledBlockingCount}</strong><span className="text-[10px] text-slate-500">blocking unscheduled</span></div>
+                <div className="min-w-24 rounded-xl border border-teal-300/15 bg-teal-300/[0.04] p-3 text-center"><strong className="block text-lg text-teal-200">{workQueueMetrics.readyForReviewCount}</strong><span className="text-[10px] text-slate-500">ready for review</span></div>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-2">
+              {visibleWorkQueue.map((item) => {
+                const timing = timingDetails[item.timing];
+                return (
+                  <article key={`${item.projectId}:${item.action.id}`} className="flex flex-col gap-3 rounded-xl border border-white/10 bg-slate-950/35 p-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className={`rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${timing.className}`}>{timing.label}</span>
+                        <span className="text-[10px] font-semibold text-slate-500">{item.projectName} · {item.scenarioLabel}</span>
+                      </div>
+                      <h3 className="mt-2 text-sm font-bold leading-5 text-slate-100">{item.action.question}</h3>
+                      <p className="mt-1 text-[11px] text-slate-500">Owner: {item.action.ownerRole || "Unassigned"}{item.action.dueDate ? ` · due ${displayDueDate(item.action.dueDate)}` : " · due date not set"} · {item.action.status.replaceAll("-", " ")}</p>
+                    </div>
+                    <Link href={`/quality-lab/projects/${item.projectId}#project-action-center`} onClick={() => analytics.projectWorkQueueActionOpened(item.projectId, item.action.id, item.timing)} className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-sky-300/20 bg-sky-300/10 px-3 py-2 text-xs font-bold text-sky-100 transition hover:bg-sky-300/15 sm:self-auto">
+                      Open action <ArrowRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </article>
+                );
+              })}
+            </div>
+
+            {workQueue.length > visibleWorkQueue.length && <p className="mt-3 text-[11px] text-slate-500">Showing the 5 highest-priority actions from {workQueue.length} active items. Open a project action to update its owner, evidence, status or due date.</p>}
+            {workQueue.length === 0 && <div className="mt-5 flex items-start gap-3 rounded-xl border border-teal-300/20 bg-teal-300/[0.055] p-4"><CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-300" /><div><h3 className="text-sm font-bold">No active compiled-input actions.</h3><p className="mt-1 text-xs leading-5 text-slate-400">Qualified review is still required before controlled use.</p></div></div>}
           </section>
         )}
 

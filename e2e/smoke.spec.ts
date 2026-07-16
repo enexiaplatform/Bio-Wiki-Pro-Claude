@@ -237,6 +237,15 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await expect(page.getByLabel(/Status for/i).first()).toHaveValue("in-progress");
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
+    await page.goto("/quality-lab/projects");
+    const workQueue = page.locator('[aria-labelledby="portfolio-work-queue-title"]');
+    await expect(workQueue.getByRole("heading", { name: "Today's work queue" })).toBeVisible();
+    await expect(workQueue.getByLabel("Portfolio work queue summary")).toBeVisible();
+    const assignedQueueItem = workQueue.locator("article").filter({ hasText: "Owner: Site QC lead" });
+    await expect(assignedQueueItem).toHaveCount(1);
+    await assignedQueueItem.getByRole("link", { name: /Open action/i }).click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_.*#project-action-center/);
+    await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await page.getByRole("link", { name: /Request expert review/i }).click();
     await page.waitForURL(/\/quality-lab\/review\?project=/);
     await expect(page.getByRole("heading", { name: /scoped, expert-reviewed project basis/i })).toBeVisible();
