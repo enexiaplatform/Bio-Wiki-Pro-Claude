@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { createQualityLabProject, defaultQualityLabInput } from "../shared/quality-lab";
 
 async function mockAdmin(page: Page) {
   await page.route("**/api/auth/me", (route) => route.fulfill({
@@ -95,12 +96,43 @@ test.describe("public smoke", () => {
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence, updatedAt: new Date().toISOString() }) });
     });
 
-    await page.goto("/quality-lab/projects");
+    await page.goto("/quality-lab/projects?source=work-queue-email");
     await expect(page.getByRole("heading", { name: /Bring priority Blueprint work back to your inbox/i })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.sessionStorage.getItem("atlas:quality-lab-reminder-attribution"))).toContain("work-queue-email");
     await expect(page.getByRole("button", { name: "Daily" })).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("button", { name: "Weekdays" }).click();
     await expect(page.getByRole("button", { name: "Weekdays" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("status")).toContainText("Reminder cadence saved");
+  });
+
+  test("reminder attribution reaches queue open, action open and action update", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Reminder attribution" }, "qlp_reminder_attribution");
+    project.actionPlan.actions[0].dueDate = "2000-01-01";
+    await page.addInitScript((savedProject) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+      (window as any).__atlasEvents = [];
+      (window as any).posthog = {
+        capture: (event: string, properties?: Record<string, unknown>) => (window as any).__atlasEvents.push({ event, properties }),
+        init: () => undefined,
+        identify: () => undefined,
+        reset: () => undefined,
+      };
+    }, project);
+    await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "e2e-user", email: "analyst@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }) }));
+    await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/reminder-preference", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence: "off", updatedAt: null }) }));
+
+    await page.goto("/quality-lab/projects?source=work-queue-email");
+    await page.getByRole("link", { name: /Open action/i }).first().click();
+    await page.locator('select[aria-label^="Status for"]').first().selectOption("in-progress");
+
+    const events = await page.evaluate(() => (window as any).__atlasEvents as Array<{ event: string; properties?: Record<string, unknown> }>);
+    expect(events.map((item) => item.event)).toEqual(expect.arrayContaining([
+      "blueprint_reminder_queue_opened",
+      "blueprint_work_queue_action_opened",
+      "blueprint_action_updated",
+    ]));
+    expect(events.find((item) => item.event === "blueprint_action_updated")?.properties?.reminder_source).toBe("work-queue-email");
   });
 
   test("guest downloads explain account access without unsupported services", async ({ page }) => {

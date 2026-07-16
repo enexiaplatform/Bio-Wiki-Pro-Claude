@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import {
   Activity,
@@ -47,6 +47,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
 import type { QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-persistence";
+import { getQualityLabReminderAttribution, markQualityLabReminderAttribution, QUALITY_LAB_REMINDER_SOURCE } from "@/lib/quality-lab-reminder-attribution";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
 type ReviewedProjectStatus = { revisionCount: number; lastSyncedAt: string | null };
@@ -78,13 +79,16 @@ export default function QualityLabProjectsPage() {
   const [, setLocation] = useLocation();
   const { isAuthenticated } = useUser();
   const [projects, setProjects] = useState<QualityLabProject[]>([]);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [reviewedProjects, setReviewedProjects] = useState<QualityLabReviewedProjectSnapshot[]>([]);
+  const [reviewedProjectsLoaded, setReviewedProjectsLoaded] = useState(false);
   const [reviewedProjectStatuses, setReviewedProjectStatuses] = useState<Record<string, ReviewedProjectStatus>>({});
   const [deletingSnapshotId, setDeletingSnapshotId] = useState<string | null>(null);
   const [snapshotActionError, setSnapshotActionError] = useState("");
   const [reminderCadence, setReminderCadence] = useState<QualityLabReminderCadence>("off");
   const [reminderSaving, setReminderSaving] = useState(false);
   const [reminderStatus, setReminderStatus] = useState("");
+  const reminderAttributionCaptured = useRef(false);
   const projectsWithBlockingInputs = projects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
   const averageCompleteness = projects.length
     ? Math.round(projects.reduce((sum, project) => sum + project.blueprint.dataQuality.completenessPercent, 0) / projects.length)
@@ -94,7 +98,10 @@ export default function QualityLabProjectsPage() {
   const workQueueMetrics = qualityLabPortfolioQueueMetrics(workQueue);
   const visibleWorkQueue = workQueue.slice(0, 5);
 
-  const refresh = () => setProjects(listQualityLabProjects());
+  const refresh = () => {
+    setProjects(listQualityLabProjects());
+    setProjectsLoaded(true);
+  };
   useEffect(() => {
     refresh();
     return subscribeToQualityLabProjects(refresh);
@@ -104,8 +111,10 @@ export default function QualityLabProjectsPage() {
     if (!isAuthenticated) {
       setReviewedProjects([]);
       setReviewedProjectStatuses({});
+      setReviewedProjectsLoaded(true);
       return;
     }
+    setReviewedProjectsLoaded(false);
     let active = true;
     fetchQualityLabReviewedProjects()
       .then(async (snapshots) => {
@@ -116,15 +125,25 @@ export default function QualityLabProjectsPage() {
         if (!active) return;
         setReviewedProjects(snapshots);
         setReviewedProjectStatuses(Object.fromEntries(statuses));
+        setReviewedProjectsLoaded(true);
       })
       .catch(() => {
         if (active) {
           setReviewedProjects([]);
           setReviewedProjectStatuses({});
+          setReviewedProjectsLoaded(true);
         }
       });
     return () => { active = false; };
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (reminderAttributionCaptured.current || !projectsLoaded || !reviewedProjectsLoaded) return;
+    if (new URLSearchParams(window.location.search).get("source") !== QUALITY_LAB_REMINDER_SOURCE) return;
+    reminderAttributionCaptured.current = true;
+    markQualityLabReminderAttribution();
+    analytics.projectReminderQueueOpened(reviewedProjects.length, workQueue.length);
+  }, [projectsLoaded, reviewedProjectsLoaded, reviewedProjects.length, workQueue.length]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -202,6 +221,11 @@ export default function QualityLabProjectsPage() {
     } finally {
       setReminderSaving(false);
     }
+  }
+
+  function trackWorkQueueActionOpen(projectId: string, actionId: string, timing: QualityLabActionTiming) {
+    const attribution = getQualityLabReminderAttribution();
+    analytics.projectWorkQueueActionOpened(projectId, actionId, timing, attribution?.source, attribution?.attributionAgeMinutes);
   }
 
   const firstProject = projects[0];
@@ -350,7 +374,7 @@ export default function QualityLabProjectsPage() {
                       <h3 className="mt-2 text-sm font-bold leading-5 text-slate-100">{item.action.question}</h3>
                       <p className="mt-1 text-[11px] text-slate-500">Owner: {item.action.ownerRole || "Unassigned"}{item.action.dueDate ? ` · due ${displayDueDate(item.action.dueDate)}` : " · due date not set"} · {item.action.status.replaceAll("-", " ")}</p>
                     </div>
-                    <Link href={`/quality-lab/projects/${item.projectId}#project-action-center`} onClick={() => analytics.projectWorkQueueActionOpened(item.projectId, item.action.id, item.timing)} className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-sky-300/20 bg-sky-300/10 px-3 py-2 text-xs font-bold text-sky-100 transition hover:bg-sky-300/15 sm:self-auto">
+                    <Link href={`/quality-lab/projects/${item.projectId}#project-action-center`} onClick={() => trackWorkQueueActionOpen(item.projectId, item.action.id, item.timing)} className="inline-flex shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-sky-300/20 bg-sky-300/10 px-3 py-2 text-xs font-bold text-sky-100 transition hover:bg-sky-300/15 sm:self-auto">
                       Open action <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </article>

@@ -4,6 +4,7 @@ import type { QualityLabProject, QualityLabProjectAction } from "@shared/quality
 import { priorityQualityLabActions, qualityLabActionPlanMetrics, qualityLabProjectStage } from "@shared/quality-lab";
 import { updateQualityLabProjectAction, type QualityLabProjectActionPatch } from "@/lib/quality-lab-projects";
 import { analytics } from "@/hooks/use-analytics";
+import { getQualityLabReminderAttribution } from "@/lib/quality-lab-reminder-attribution";
 
 const statusOptions: Array<{ value: Exclude<QualityLabProjectAction["status"], "resolved">; label: string }> = [
   { value: "open", label: "Open" },
@@ -28,7 +29,8 @@ function ActionEditor({ action, projectId, onUpdated, prominent = false }: { act
     const updated = updateQualityLabProjectAction(projectId, action.id, patch);
     if (!updated) return;
     const updatedAction = updated.actionPlan.actions.find((item) => item.id === action.id);
-    analytics.projectActionUpdated(projectId, action.id, field, updatedAction?.status ?? action.status);
+    const attribution = getQualityLabReminderAttribution();
+    analytics.projectActionUpdated(projectId, action.id, field, updatedAction?.status ?? action.status, attribution?.source, attribution?.attributionAgeMinutes);
     onUpdated(updated);
   }
 

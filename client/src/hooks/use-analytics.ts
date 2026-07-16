@@ -206,14 +206,17 @@ export const analytics = {
   projectActionCenterViewed: (projectId: string, activeActions: number, blockingActions: number) =>
     capture("blueprint_action_center_viewed", { project_id: projectId, active_actions: activeActions, blocking_actions: blockingActions }),
 
-  projectActionUpdated: (projectId: string, actionId: string, field: string, status: string) =>
-    capture("blueprint_action_updated", { project_id: projectId, action_id: actionId, field, status }),
+  projectActionUpdated: (projectId: string, actionId: string, field: string, status: string, reminderSource?: string, attributionAgeMinutes?: number) =>
+    capture("blueprint_action_updated", { project_id: projectId, action_id: actionId, field, status, reminder_source: reminderSource, attribution_age_minutes: attributionAgeMinutes }),
 
   projectWorkQueueViewed: (projectCount: number, activeActions: number, overdueActions: number) =>
     capture("blueprint_work_queue_viewed", { project_count: projectCount, active_actions: activeActions, overdue_actions: overdueActions }),
 
-  projectWorkQueueActionOpened: (projectId: string, actionId: string, timing: string) =>
-    capture("blueprint_work_queue_action_opened", { project_id: projectId, action_id: actionId, timing }),
+  projectWorkQueueActionOpened: (projectId: string, actionId: string, timing: string, reminderSource?: string, attributionAgeMinutes?: number) =>
+    capture("blueprint_work_queue_action_opened", { project_id: projectId, action_id: actionId, timing, reminder_source: reminderSource, attribution_age_minutes: attributionAgeMinutes }),
+
+  projectReminderQueueOpened: (accountProjectCount: number, localActionCount: number) =>
+    capture("blueprint_reminder_queue_opened", { reminder_source: "work-queue-email", account_project_count: accountProjectCount, local_action_count: localActionCount }),
 
   projectReminderCadenceChanged: (cadence: "off" | "daily" | "weekdays", accountProjectCount: number) =>
     capture("blueprint_reminder_cadence_changed", { cadence, account_project_count: accountProjectCount }),

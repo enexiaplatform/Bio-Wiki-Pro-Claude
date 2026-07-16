@@ -455,7 +455,7 @@ export async function sendQualityLabWorkQueueEmail(
     <div class="box"><p><strong>${metrics.overdueCount}</strong> overdue · <strong>${metrics.dueSoonCount}</strong> due within 7 days · <strong>${metrics.unscheduledBlockingCount}</strong> blocking without a date · <strong>${metrics.readyForReviewCount}</strong> ready for review</p></div>
     ${rows}
     ${remaining ? `<p style="font-size:13px;margin-top:16px;">Plus ${remaining} more active action${remaining === 1 ? "" : "s"} in your portfolio.</p>` : ""}
-    <a href="${BASE_URL}/quality-lab/projects" class="cta">Open today&apos;s work queue →</a>
+    <a href="${BASE_URL}/quality-lab/projects?source=work-queue-email" class="cta">Open today&apos;s work queue →</a>
     <p style="font-size:13px;color:#64748b;">Change or turn off this reminder from the Projects page at any time.</p>
   `);
   try {
