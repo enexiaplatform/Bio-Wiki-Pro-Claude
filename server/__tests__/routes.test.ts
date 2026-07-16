@@ -36,6 +36,9 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     recordCheckoutAttempt: vi.fn(() => Promise.resolve()),
     getRecentCheckoutAttempts: vi.fn(() => Promise.resolve([])),
     getReEngagementCandidates: vi.fn(() => Promise.resolve([])),
+    getQualityLabReminderPreference: vi.fn(() => Promise.resolve(undefined)),
+    upsertQualityLabReminderPreference: vi.fn(),
+    getQualityLabReminderCandidates: vi.fn(() => Promise.resolve([])),
     getQualityLabReviewedProject: vi.fn(),
     listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
     listQualityLabReviewedProjectRevisions: vi.fn(() => Promise.resolve([])),
@@ -77,11 +80,13 @@ vi.mock("../email.js", () => ({
   sendTrialEndingEmail: vi.fn(() => Promise.resolve()),
   sendAbandonedCheckoutEmail: vi.fn(() => Promise.resolve()),
   sendReEngagementEmail: vi.fn(() => Promise.resolve()),
+  sendQualityLabWorkQueueEmail: vi.fn(() => Promise.resolve(true)),
 }));
 
 import { registerRoutes } from "../routes.js";
 import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
+import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
 
 async function buildApp() {
   const app = express();
@@ -816,6 +821,69 @@ describe("lifecycle cron (/api/cron/nurture)", () => {
     expect(res.status).toBe(200);
     expect(email.sendReEngagementEmail).toHaveBeenCalledTimes(1);
     expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "re_engagement");
+  });
+
+  it("sends one opt-in Blueprint work-queue digest for a priority account snapshot", async () => {
+    const app = await buildApp();
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_digest");
+    project.actionPlan.actions[0].dueDate = "2000-01-01";
+    storageMock.getQualityLabReminderCandidates.mockResolvedValueOnce([
+      { id: "u1", email: "owner@example.com", firstName: "Owner", cadence: "daily" },
+    ]);
+    storageMock.listQualityLabReviewedProjects.mockResolvedValueOnce([{
+      snapshot: {
+        localProjectId: project.id,
+        projectName: project.name,
+        input: project.input,
+        blueprint: project.blueprint,
+        actionPlan: project.actionPlan,
+        engagement: null,
+        reviewRequestedAt: new Date().toISOString(),
+      },
+    }]);
+    storageMock.wasLifecycleSent.mockResolvedValueOnce(false);
+    const res = await auth(request(app).get("/api/cron/nurture"));
+    expect(res.status).toBe(200);
+    expect(email.sendQualityLabWorkQueueEmail).toHaveBeenCalledTimes(1);
+    expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", `quality_lab_work_queue_${new Date().toISOString().slice(0, 10)}`);
+    expect(res.body.qualityLabWorkQueue.sent).toBe(1);
+  });
+});
+
+describe("Blueprint reminder preference", () => {
+  async function authedAgent(app: express.Express) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
+    return agent;
+  }
+
+  it("requires authentication", async () => {
+    const app = await buildApp();
+    await request(app).get("/api/quality-lab/reminder-preference").expect(401);
+    await request(app).put("/api/quality-lab/reminder-preference").send({ cadence: "daily" }).expect(401);
+  });
+
+  it("defaults to off and saves an explicit cadence", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    const current = await agent.get("/api/quality-lab/reminder-preference");
+    expect(current.status).toBe(200);
+    expect(current.body.cadence).toBe("off");
+
+    storageMock.upsertQualityLabReminderPreference.mockResolvedValueOnce({ userId: "u1", cadence: "weekdays", updatedAt: new Date() });
+    const saved = await agent.put("/api/quality-lab/reminder-preference").send({ cadence: "weekdays" });
+    expect(saved.status).toBe(200);
+    expect(saved.body.cadence).toBe("weekdays");
+    expect(storageMock.upsertQualityLabReminderPreference).toHaveBeenCalledWith("u1", "weekdays");
+  });
+
+  it("rejects an unsupported cadence", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    const res = await agent.put("/api/quality-lab/reminder-preference").send({ cadence: "hourly" });
+    expect(res.status).toBe(400);
   });
 });
 

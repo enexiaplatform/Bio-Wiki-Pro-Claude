@@ -25,7 +25,15 @@ import {
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
-import { and, desc, eq, gt, lt, sql } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
+
+export type QualityLabReminderPreference = {
+  userId: string;
+  cadence: "off" | "daily" | "weekdays";
+  updatedAt: Date | null;
+};
+
+const QUALITY_LAB_REMINDER_KINDS = ["quality_lab_reminder_daily", "quality_lab_reminder_weekdays"] as const;
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -61,6 +69,9 @@ export interface IStorage {
   getRecentCheckoutAttempts(minAgeHours: number, maxAgeHours: number): Promise<{ userId: string; productType: string }[]>;
   // Re-engagement: users whose most recent lesson read falls in [maxDays, minDays] ago.
   getReEngagementCandidates(minDays: number, maxDays: number): Promise<string[]>;
+  getQualityLabReminderPreference(userId: string): Promise<QualityLabReminderPreference | undefined>;
+  upsertQualityLabReminderPreference(userId: string, cadence: "off" | "daily" | "weekdays"): Promise<QualityLabReminderPreference>;
+  getQualityLabReminderCandidates(): Promise<{ id: string; email: string | null; firstName: string | null; cadence: string }[]>;
   upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
   listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
@@ -313,6 +324,55 @@ export class DatabaseStorage implements IStorage {
         sql`max(${lessonReads.createdAt}) > ${oldest} and max(${lessonReads.createdAt}) < ${newest}`,
       );
     return rows.map((r) => r.userId);
+  }
+
+  async getQualityLabReminderPreference(userId: string): Promise<QualityLabReminderPreference | undefined> {
+    const [row] = await db
+      .select({ kind: lifecycleSends.kind, sentAt: lifecycleSends.sentAt })
+      .from(lifecycleSends)
+      .where(and(eq(lifecycleSends.userId, userId), inArray(lifecycleSends.kind, [...QUALITY_LAB_REMINDER_KINDS])))
+      .orderBy(desc(lifecycleSends.sentAt));
+    if (!row) return undefined;
+    return {
+      userId,
+      cadence: row.kind === "quality_lab_reminder_daily" ? "daily" : "weekdays",
+      updatedAt: row.sentAt,
+    };
+  }
+
+  async upsertQualityLabReminderPreference(
+    userId: string,
+    cadence: "off" | "daily" | "weekdays",
+  ): Promise<QualityLabReminderPreference> {
+    const updatedAt = new Date();
+    await db.transaction(async (tx) => {
+      await tx
+        .delete(lifecycleSends)
+        .where(and(eq(lifecycleSends.userId, userId), inArray(lifecycleSends.kind, [...QUALITY_LAB_REMINDER_KINDS])));
+      if (cadence !== "off") {
+        await tx.insert(lifecycleSends).values({ userId, kind: `quality_lab_reminder_${cadence}`, sentAt: updatedAt });
+      }
+    });
+    return { userId, cadence, updatedAt };
+  }
+
+  async getQualityLabReminderCandidates() {
+    const rows = await db
+      .select({
+        id: users.id,
+        email: users.email,
+        firstName: users.firstName,
+        kind: lifecycleSends.kind,
+      })
+      .from(lifecycleSends)
+      .innerJoin(users, eq(users.id, lifecycleSends.userId))
+      .where(inArray(lifecycleSends.kind, [...QUALITY_LAB_REMINDER_KINDS]));
+    return rows.map((row) => ({
+      id: row.id,
+      email: row.email,
+      firstName: row.firstName,
+      cadence: row.kind === "quality_lab_reminder_daily" ? "daily" : "weekdays",
+    }));
   }
 
   async upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow> {

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  BellRing,
   Building2,
   CalendarClock,
   CheckCircle2,
@@ -35,9 +36,12 @@ import {
   duplicateQualityLabProject,
   fetchQualityLabReviewedProjectRevisions,
   fetchQualityLabReviewedProjects,
+  fetchQualityLabReminderPreference,
   listQualityLabProjects,
   restoreQualityLabReviewedProject,
+  saveQualityLabReminderPreference,
   subscribeToQualityLabProjects,
+  type QualityLabReminderCadence,
 } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
@@ -78,6 +82,9 @@ export default function QualityLabProjectsPage() {
   const [reviewedProjectStatuses, setReviewedProjectStatuses] = useState<Record<string, ReviewedProjectStatus>>({});
   const [deletingSnapshotId, setDeletingSnapshotId] = useState<string | null>(null);
   const [snapshotActionError, setSnapshotActionError] = useState("");
+  const [reminderCadence, setReminderCadence] = useState<QualityLabReminderCadence>("off");
+  const [reminderSaving, setReminderSaving] = useState(false);
+  const [reminderStatus, setReminderStatus] = useState("");
   const projectsWithBlockingInputs = projects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
   const averageCompleteness = projects.length
     ? Math.round(projects.reduce((sum, project) => sum + project.blueprint.dataQuality.completenessPercent, 0) / projects.length)
@@ -115,6 +122,23 @@ export default function QualityLabProjectsPage() {
           setReviewedProjects([]);
           setReviewedProjectStatuses({});
         }
+      });
+    return () => { active = false; };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setReminderCadence("off");
+      setReminderStatus("");
+      return;
+    }
+    let active = true;
+    fetchQualityLabReminderPreference()
+      .then((preference) => {
+        if (active) setReminderCadence(preference.cadence);
+      })
+      .catch(() => {
+        if (active) setReminderStatus("Reminder settings are temporarily unavailable.");
       });
     return () => { active = false; };
   }, [isAuthenticated]);
@@ -162,6 +186,21 @@ export default function QualityLabProjectsPage() {
       setSnapshotActionError(error instanceof Error ? error.message : "Unable to remove the account-held review snapshot.");
     } finally {
       setDeletingSnapshotId(null);
+    }
+  }
+
+  async function changeReminderCadence(cadence: QualityLabReminderCadence) {
+    setReminderSaving(true);
+    setReminderStatus("");
+    try {
+      const preference = await saveQualityLabReminderPreference(cadence);
+      setReminderCadence(preference.cadence);
+      setReminderStatus(preference.cadence === "off" ? "Email reminders are off." : "Reminder cadence saved.");
+      analytics.projectReminderCadenceChanged(preference.cadence, reviewedProjects.length);
+    } catch (error) {
+      setReminderStatus(error instanceof Error ? error.message : "Unable to save the reminder preference.");
+    } finally {
+      setReminderSaving(false);
     }
   }
 
@@ -246,6 +285,39 @@ export default function QualityLabProjectsPage() {
           <section className="mb-6 rounded-3xl border border-sky-300/20 bg-sky-300/[0.055] p-5 md:p-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Account recovery</p><h2 className="mt-1 text-xl font-bold">Securely saved review projects</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-slate-400">These review snapshots are attached to your account but are not yet available in this browser. Recovering creates a local copy; it does not change the account-held revision history.</p></div><span className="inline-flex items-center gap-2 self-start rounded-full border border-sky-300/20 px-3 py-1 text-xs font-bold text-sky-200"><CloudDownload className="h-3.5 w-3.5" /> {recoverableProjects.length} available</span></div>
             <div className="mt-4 grid gap-3 md:grid-cols-2">{recoverableProjects.map((snapshot) => <article key={snapshot.localProjectId} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><p className="font-bold">{snapshot.projectName}</p><p className="mt-1 text-xs text-slate-500">{snapshot.input.scenarioLabel} · {snapshot.input.country} · {reviewedProjectStatuses[snapshot.localProjectId]?.revisionCount ?? 0} account revisions{reviewedProjectStatuses[snapshot.localProjectId]?.lastSyncedAt ? ` · last saved ${new Date(reviewedProjectStatuses[snapshot.localProjectId].lastSyncedAt!).toLocaleDateString()}` : ""}</p><div className="mt-3 flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase text-amber-200">Review requested</span><button type="button" onClick={() => recover(snapshot)} className="inline-flex items-center gap-2 rounded-lg bg-sky-300 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-sky-200"><CloudDownload className="h-3.5 w-3.5" /> Recover here</button></div></article>)}</div>
+          </section>
+        )}
+
+        {isAuthenticated && (
+          <section className="mb-6 rounded-3xl border border-violet-300/20 bg-violet-300/[0.045] p-5 md:p-6" aria-labelledby="blueprint-reminder-title">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-violet-200"><BellRing className="h-5 w-5" /><p className="text-[10px] font-bold uppercase tracking-[0.18em]">Account reminder</p></div>
+                <h2 id="blueprint-reminder-title" className="mt-2 text-xl font-bold">Bring priority Blueprint work back to your inbox</h2>
+                <p className="mt-2 text-xs leading-5 text-slate-400">Opt in to a concise work-queue email when an account-held review project has overdue, due-soon, in-progress, ready-for-review or blocking unscheduled work.</p>
+              </div>
+              <div className="shrink-0">
+                <div className="inline-flex rounded-xl border border-white/10 bg-slate-950/45 p-1" aria-label="Blueprint reminder cadence">
+                  {(["off", "weekdays", "daily"] as const).map((cadence) => (
+                    <button
+                      key={cadence}
+                      type="button"
+                      disabled={reminderSaving}
+                      aria-pressed={reminderCadence === cadence}
+                      onClick={() => void changeReminderCadence(cadence)}
+                      className={`rounded-lg px-3 py-2 text-xs font-bold capitalize transition disabled:cursor-wait disabled:opacity-60 ${reminderCadence === cadence ? "bg-violet-300 text-slate-950" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}
+                    >
+                      {cadence}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-2 border-t border-white/8 pt-4 text-[11px] leading-5 text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <p>Only the {reviewedProjects.length} review snapshot{reviewedProjects.length === 1 ? "" : "s"} explicitly saved to your account can be included. Browser-local projects stay on this device.</p>
+              <p className="shrink-0">Daily scan: 09:00 UTC</p>
+            </div>
+            {reminderStatus && <p role="status" className="mt-2 text-[11px] text-violet-200">{reminderStatus}</p>}
           </section>
         )}
 

@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { getProductName } from "./products.js";
 import { deliverablesForPurchase } from "./deliverables.js";
+import type { QualityLabPortfolioActionItem } from "../shared/quality-lab-actions.js";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -403,6 +404,77 @@ export async function sendReEngagementEmail(to: string, firstName?: string): Pro
     });
   } catch (err) {
     console.error("[Email] Failed to send re-engagement email:", err);
+  }
+}
+
+function escapeEmailText(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  })[character] ?? character);
+}
+
+const WORK_QUEUE_TIMING_LABELS: Record<QualityLabPortfolioActionItem["timing"], string> = {
+  overdue: "Overdue",
+  "due-soon": "Due within 7 days",
+  scheduled: "Scheduled",
+  unscheduled: "Needs a due date",
+};
+
+/**
+ * Opt-in digest for account-held Blueprint review snapshots. Returns true only
+ * when Resend accepted the send so the cron does not consume its daily guard
+ * while email delivery is unconfigured or has failed.
+ */
+export async function sendQualityLabWorkQueueEmail(
+  to: string,
+  firstName: string | undefined,
+  items: QualityLabPortfolioActionItem[],
+  metrics: { overdueCount: number; dueSoonCount: number; unscheduledBlockingCount: number; readyForReviewCount: number },
+): Promise<boolean> {
+  if (!resend) {
+    console.log(`[Email] Would send Blueprint work queue to ${to} (Resend not configured)`);
+    return false;
+  }
+  const name = escapeEmailText(firstName ?? "there");
+  const rows = items.slice(0, 5).map((item) => {
+    const due = item.action.dueDate ? ` · due ${escapeEmailText(item.action.dueDate)}` : "";
+    return `<div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <p style="margin:0 0 4px;color:#5eead4;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">${WORK_QUEUE_TIMING_LABELS[item.timing]}${due}</p>
+      <p style="margin:0 0 4px;color:#f8fafc;font-weight:700;">${escapeEmailText(item.action.question)}</p>
+      <p style="margin:0;font-size:13px;">${escapeEmailText(item.projectName)} · Owner: ${escapeEmailText(item.action.ownerRole || "Unassigned")}</p>
+    </div>`;
+  }).join("");
+  const remaining = Math.max(0, items.length - 5);
+  const html = htmlWrapper(`
+    <h1>Your Blueprint work queue, ${name}</h1>
+    <p>This reminder covers only Blueprint review snapshots you explicitly saved to your account. Browser-local concept projects are never included.</p>
+    <div class="box"><p><strong>${metrics.overdueCount}</strong> overdue · <strong>${metrics.dueSoonCount}</strong> due within 7 days · <strong>${metrics.unscheduledBlockingCount}</strong> blocking without a date · <strong>${metrics.readyForReviewCount}</strong> ready for review</p></div>
+    ${rows}
+    ${remaining ? `<p style="font-size:13px;margin-top:16px;">Plus ${remaining} more active action${remaining === 1 ? "" : "s"} in your portfolio.</p>` : ""}
+    <a href="${BASE_URL}/quality-lab/projects" class="cta">Open today&apos;s work queue →</a>
+    <p style="font-size:13px;color:#64748b;">Change or turn off this reminder from the Projects page at any time.</p>
+  `);
+  try {
+    const response = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: metrics.overdueCount > 0
+        ? `${metrics.overdueCount} overdue Blueprint action${metrics.overdueCount === 1 ? "" : "s"}`
+        : "Your Blueprint work queue — Life Science Atlas",
+      html,
+    });
+    if (response.error) {
+      console.error("[Email] Blueprint work queue rejected:", response.error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[Email] Failed to send Blueprint work queue:", err);
+    return false;
   }
 }
 

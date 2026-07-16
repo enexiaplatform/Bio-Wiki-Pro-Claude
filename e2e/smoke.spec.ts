@@ -83,6 +83,26 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/draft Blueprint projects are stored in this browser/i)).toBeVisible();
   });
 
+  test("signed-in Blueprint projects expose an explicit reminder cadence", async ({ page }) => {
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ id: "e2e-user", email: "analyst@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }),
+    }));
+    await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/reminder-preference", async (route) => {
+      const cadence = route.request().method() === "PUT" ? "weekdays" : "daily";
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence, updatedAt: new Date().toISOString() }) });
+    });
+
+    await page.goto("/quality-lab/projects");
+    await expect(page.getByRole("heading", { name: /Bring priority Blueprint work back to your inbox/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Daily" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Weekdays" }).click();
+    await expect(page.getByRole("button", { name: "Weekdays" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("status")).toContainText("Reminder cadence saved");
+  });
+
   test("guest downloads explain account access without unsupported services", async ({ page }) => {
     await page.goto("/my-downloads");
     await expect(page.getByText(/Account access required/i)).toBeVisible();

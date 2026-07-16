@@ -227,3 +227,22 @@ export function subscribeToQualityLabProjects(listener: () => void) {
     window.removeEventListener(PROJECTS_CHANGED_EVENT, listener);
   };
 }
+
+export type QualityLabReminderCadence = "off" | "daily" | "weekdays";
+
+export async function fetchQualityLabReminderPreference() {
+  const response = await fetch("/api/quality-lab/reminder-preference", { credentials: "include" });
+  if (!response.ok) throw new Error("Unable to load the reminder preference");
+  return response.json() as Promise<{ cadence: QualityLabReminderCadence; updatedAt: string | null }>;
+}
+
+export async function saveQualityLabReminderPreference(cadence: QualityLabReminderCadence) {
+  const response = await fetch("/api/quality-lab/reminder-preference", {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ cadence }),
+  });
+  if (!response.ok) throw new Error("Unable to save the reminder preference");
+  return response.json() as Promise<{ cadence: QualityLabReminderCadence; updatedAt: string | null }>;
+}

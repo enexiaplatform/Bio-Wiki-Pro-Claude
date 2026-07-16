@@ -215,6 +215,9 @@ export const analytics = {
   projectWorkQueueActionOpened: (projectId: string, actionId: string, timing: string) =>
     capture("blueprint_work_queue_action_opened", { project_id: projectId, action_id: actionId, timing }),
 
+  projectReminderCadenceChanged: (cadence: "off" | "daily" | "weekdays", accountProjectCount: number) =>
+    capture("blueprint_reminder_cadence_changed", { cadence, account_project_count: accountProjectCount }),
+
   engagementPacketDownloaded: (placement: string, openItems: number) =>
     capture("engagement_packet_downloaded", { placement, open_items: openItems }),
 };
