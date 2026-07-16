@@ -50,7 +50,7 @@ const FAQS: { q: string; a: string; topic: string }[] = [
   {
     topic: "Pricing",
     q: "How is a Blueprint priced?",
-    a: "Blueprint work is priced by scope because the number of products, markets, methods, scenarios, data gaps, workshops, and reviewed outputs varies by project. Start with the planner to frame the operating question, then request a scope review for a proposed engagement and delivery basis.",
+    a: "Founding-pilot Blueprint engagements start at $3,500 USD. Most early scopes are expected to fall between $3,500 and $12,000 depending on products, markets, scenarios, evidence gaps, workshops, and reviewer coverage. A $750 fixed-fee Scope Diagnostic is available when the operating question still needs to be framed; that fee is credited to a Blueprint started within 30 days. Final scope, payment schedule, exclusions, and acceptance criteria are confirmed before work begins.",
   },
   {
     topic: "Access",

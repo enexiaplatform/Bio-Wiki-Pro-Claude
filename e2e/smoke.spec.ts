@@ -177,6 +177,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("img", { name: /Two laboratory professionals working together/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Start a Blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
     await expect(page.getByRole("link", { name: /Compare evidence plans/i })).toHaveAttribute("href", "#evidence-plans");
+    await expect(page.getByText("$750", { exact: true })).toBeVisible();
+    await expect(page.getByText("From $3,500", { exact: true })).toBeVisible();
+    await expect(page.getByText(/One-time interview and career downloads/i)).toHaveCount(0);
   });
 
   test("certificate is gated until a path is complete", async ({ page }) => {
@@ -301,11 +304,12 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await page.getByRole("link", { name: /Request expert review/i }).click();
     await page.waitForURL(/\/quality-lab\/review\?project=/);
-    await expect(page.getByRole("heading", { name: /scoped, expert-reviewed project basis/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /smallest paid engagement/i })).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
-    await expect(page.getByText(/quality-lab-review-brief\/v1/i)).toBeVisible();
+    await expect(page.getByText(/quality-lab-review-brief\/v2/i)).toBeVisible();
+    await expect(page.getByText("2. Commercial fit", { exact: true })).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Request a scope review/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Request a Blueprint scope/i })).toBeVisible();
   });
 
   test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {

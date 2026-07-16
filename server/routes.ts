@@ -668,13 +668,13 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.post(api.qualityLabReviews.create.path, async (req, res) => {
     try {
       const input = api.qualityLabReviews.create.input.parse(req.body);
-      const { formatQualityLabReviewBrief } = await import("../shared/quality-lab-review.js");
+      const { formatQualityLabReviewBrief, qualityLabReviewOfferLabel } = await import("../shared/quality-lab-review.js");
       const quote = await storage.createQuoteRequest({
         name: input.contact.name,
         email: input.contact.email.toLowerCase(),
         company: input.contact.company,
         need: formatQualityLabReviewBrief(input),
-        productOfInterest: "Atlas Quality Lab Blueprint expert review",
+        productOfInterest: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
       });
       res.status(201).json(quote);
     } catch (err) {

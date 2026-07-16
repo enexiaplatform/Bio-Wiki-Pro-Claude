@@ -8,6 +8,15 @@ describe("Quality Lab review brief", () => {
     const request = qualityLabReviewRequestSchema.parse({
       briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
       contact: { name: "Quality Lead", email: "quality@example.com", company: "Example Pharma", role: "QC Manager" },
+      qualification: {
+        engagementIntent: "blueprint-pilot",
+        projectStage: "budget-planning",
+        decisionWindow: "1-3-months",
+        budgetStatus: "range-defined",
+        decisionRole: "technical-lead",
+        dataReadiness: "substantial",
+        portfolioScale: "4-10-products",
+      },
       projectContext: "We need a review before the capital planning workshop next month.",
       project: {
         localProjectId: "qlp_test",
@@ -28,7 +37,9 @@ describe("Quality Lab review brief", () => {
       confidentialityConfirmed: true,
     });
     const brief = formatQualityLabReviewBrief(request);
-    expect(brief).toContain("[quality-lab-review-brief/v1]");
+    expect(brief).toContain("[quality-lab-review-brief/v2]");
+    expect(brief).toContain("Expert-reviewed Blueprint Pilot (from $3,500)");
+    expect(brief).toContain("decision window=1–3 months");
     expect(brief).toContain("input completeness");
     expect(brief).toContain("controlled-use blockers");
     expect(brief).toContain("Open-input checklist:");
@@ -40,6 +51,15 @@ describe("Quality Lab review brief", () => {
     const parsed = qualityLabReviewRequestSchema.safeParse({
       briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
       contact: { name: "Quality Lead", email: "quality@example.com", company: null, role: null },
+      qualification: {
+        engagementIntent: "scope-diagnostic",
+        projectStage: "concept",
+        decisionWindow: "not-set",
+        budgetStatus: "exploring",
+        decisionRole: "influencer",
+        dataReadiness: "initial",
+        portfolioScale: "not-set",
+      },
       projectContext: "A sufficiently detailed non-confidential project context.",
       project: null,
       confidentialityConfirmed: false,

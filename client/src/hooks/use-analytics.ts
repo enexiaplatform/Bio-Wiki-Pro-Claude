@@ -188,11 +188,11 @@ export const analytics = {
   crossTrainingPriorityExported: (allocatedPeople: number, deferredPeople: number) =>
     capture("cross_training_priority_exported", { allocated_people: allocatedPeople, deferred_people: deferredPeople }),
 
-  expertReviewStarted: (source: string) =>
-    capture("expert_review_started", { source }),
+  expertReviewStarted: (source: string, engagementIntent?: string) =>
+    capture("expert_review_started", { source, engagement_intent: engagementIntent }),
 
-  expertReviewRequested: (hasProject: boolean) =>
-    capture("expert_review_requested", { has_project: hasProject }),
+  expertReviewRequested: (hasProject: boolean, engagementIntent?: string) =>
+    capture("expert_review_requested", { has_project: hasProject, engagement_intent: engagementIntent }),
 
   reviewedProjectSync: (outcome: "success" | "failed" | "retry", projectId: string) =>
     capture("reviewed_project_sync", { outcome, project_id: projectId }),

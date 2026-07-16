@@ -185,8 +185,9 @@ describe("Quality Lab expert review", () => {
     const app = await buildApp();
     storageMock.createQuoteRequest.mockImplementationOnce(async (value: any) => ({ id: 12, ...value }));
     const res = await request(app).post("/api/quality-lab/reviews").send({
-      briefVersion: "quality-lab-review-brief/v1",
+      briefVersion: "quality-lab-review-brief/v2",
       contact: { name: "Quality Lead", email: "QUALITY@EXAMPLE.COM", company: "Example Pharma", role: "QC Manager" },
+      qualification: { engagementIntent: "blueprint-pilot", projectStage: "budget-planning", decisionWindow: "1-3-months", budgetStatus: "range-defined", decisionRole: "technical-lead", dataReadiness: "substantial", portfolioScale: "4-10-products" },
       projectContext: "We need a scoped review before the capital planning workshop.",
       project: null,
       confidentialityConfirmed: true,
@@ -194,16 +195,17 @@ describe("Quality Lab expert review", () => {
     expect(res.status).toBe(201);
     expect(storageMock.createQuoteRequest).toHaveBeenCalledWith(expect.objectContaining({
       email: "quality@example.com",
-      productOfInterest: "Atlas Quality Lab Blueprint expert review",
-      need: expect.stringContaining("[quality-lab-review-brief/v1]"),
+      productOfInterest: "Expert-reviewed Blueprint Pilot (from $3,500)",
+      need: expect.stringContaining("[quality-lab-review-brief/v2]"),
     }));
   });
 
   it("rejects review context that is not confirmed non-confidential", async () => {
     const app = await buildApp();
     const res = await request(app).post("/api/quality-lab/reviews").send({
-      briefVersion: "quality-lab-review-brief/v1",
+      briefVersion: "quality-lab-review-brief/v2",
       contact: { name: "Quality Lead", email: "quality@example.com", company: null, role: null },
+      qualification: { engagementIntent: "scope-diagnostic", projectStage: "concept", decisionWindow: "not-set", budgetStatus: "exploring", decisionRole: "influencer", dataReadiness: "initial", portfolioScale: "not-set" },
       projectContext: "We need a scoped review before the capital planning workshop.",
       project: null,
       confidentialityConfirmed: false,

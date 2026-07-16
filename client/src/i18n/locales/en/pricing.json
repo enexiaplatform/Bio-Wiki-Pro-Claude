@@ -1,8 +1,8 @@
 {
   "seoTitle": "Pricing — Life Science Atlas Pro",
   "seoDesc": "Choose a service-assisted Quality Lab Blueprint or use Pro for the supporting evidence library, available toolkits, workflows, and decision-support tools.",
-  "title": "Simple Pricing",
-  "subtitle": "Start free. Upgrade when you need advanced content and tools.",
+  "title": "Ways to work with Atlas",
+  "subtitle": "Choose a paid project outcome or supporting evidence access.",
   "perMonth": "/month",
   "genericError": "Something went wrong. Please try again.",
   "free": {
@@ -43,7 +43,7 @@
   },
   "faq": [
     { "q": "Is my payment secure?", "a": "Yes — all payments processed by Stripe. We never store card details." },
-    { "q": "When does Pro activate?", "a": "Instantly after payment. Your Academy content unlocks immediately." },
-    { "q": "Can I cancel anytime?", "a": "Yes. Cancel your Pro subscription anytime from Settings." }
+    { "q": "When does Pro activate?", "a": "Instantly after payment. Supporting Academy content and available resources unlock immediately." },
+    { "q": "Does Pro include Blueprint review?", "a": "No. Pro is supporting evidence access. A diagnostic or Blueprint is separately scoped, reviewed, and delivered." }
   ]
 }
