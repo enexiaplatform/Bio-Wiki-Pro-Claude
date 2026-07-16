@@ -23,7 +23,8 @@ export const qualityLabReviewRequestSchema = z.object({
     domainPackId: z.string().min(1).max(160),
     domainPackVersion: z.string().min(1).max(120),
     monthlyTests: z.number().int().nonnegative(),
-    readinessPercent: z.number().min(0).max(100),
+    inputCompletenessPercent: z.number().min(0).max(100).optional(),
+    readinessPercent: z.number().min(0).max(100).optional(),
     blockingOpenCount: z.number().int().nonnegative(),
     importantOpenCount: z.number().int().nonnegative(),
     unresolvedInputs: z.array(z.object({
@@ -32,7 +33,10 @@ export const qualityLabReviewRequestSchema = z.object({
       question: z.string().min(1).max(500),
       resolution: z.string().min(1).max(500),
     })).max(30),
-  }).nullable(),
+  }).transform((project) => ({
+    ...project,
+    inputCompletenessPercent: project.inputCompletenessPercent ?? project.readinessPercent ?? 0,
+  })).nullable(),
   confidentialityConfirmed: z.literal(true),
 });
 
@@ -50,7 +54,7 @@ export function formatQualityLabReviewBrief(request: QualityLabReviewRequest): s
       `Project: ${project.projectName} (${project.localProjectId})`,
       `Basis: ${project.country}; ${project.facilityType}; ${project.monthlyTests} modeled monthly test units`,
       `Contracts: ${project.inputContractVersion}; ${project.outputContractVersion}; ${project.compilerCoreVersion}; ${project.domainPackId}@${project.domainPackVersion}`,
-      `Triage: ${project.readinessPercent}% controlled-use readiness; ${project.blockingOpenCount} blocking and ${project.importantOpenCount} important inputs open`,
+      `Triage: ${project.inputCompletenessPercent}% input completeness; ${project.blockingOpenCount} controlled-use blockers and ${project.importantOpenCount} important inputs open`,
       "Open-input checklist:",
       ...project.unresolvedInputs.map((item) => `- [${item.severity}] ${item.id}: ${item.question} Resolve: ${item.resolution}`),
     );

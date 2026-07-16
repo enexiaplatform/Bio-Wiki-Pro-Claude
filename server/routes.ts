@@ -750,6 +750,12 @@ export async function registerRoutes(app: Express): Promise<void> {
     res.json(row.snapshot);
   });
 
+  app.delete("/api/quality-lab/reviewed-projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+    const deleted = await storage.deleteQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!deleted) return res.status(404).json({ message: "Reviewed project not found" });
+    res.status(204).end();
+  });
+
   app.get("/api/quality-lab/reviewed-projects/:localProjectId/revisions", isAuthenticated, async (req: any, res) => {
     const rows = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
     res.json(rows.map((row) => ({ revisionNumber: row.revisionNumber, reason: row.reason, createdAt: row.createdAt, generatedAt: row.snapshot.blueprint.generatedAt, blockingOpenCount: row.snapshot.blueprint.dataQuality.blockingOpenCount })));

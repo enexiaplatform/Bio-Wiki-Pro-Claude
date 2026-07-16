@@ -129,6 +129,12 @@ export const analytics = {
   blueprintStarted: (source = "planner") =>
     capture("blueprint_started", { source }),
 
+  blueprintStartModeSelected: (mode: "example" | "blank" | "import") =>
+    capture("blueprint_start_mode_selected", { mode }),
+
+  blueprintImported: (source: "input" | "project") =>
+    capture("blueprint_imported", { source }),
+
   blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number) =>
     capture("blueprint_compiled", {
       project_id: projectId,
@@ -187,6 +193,15 @@ export const analytics = {
 
   expertReviewRequested: (hasProject: boolean) =>
     capture("expert_review_requested", { has_project: hasProject }),
+
+  reviewedProjectSync: (outcome: "success" | "failed" | "retry", projectId: string) =>
+    capture("reviewed_project_sync", { outcome, project_id: projectId }),
+
+  reviewedProjectRecovered: (projectId: string) =>
+    capture("reviewed_project_recovered", { project_id: projectId }),
+
+  reviewedProjectSnapshotDeleted: (projectId: string) =>
+    capture("reviewed_project_snapshot_deleted", { project_id: projectId }),
 
   engagementPacketDownloaded: (placement: string, openItems: number) =>
     capture("engagement_packet_downloaded", { placement, open_items: openItems }),

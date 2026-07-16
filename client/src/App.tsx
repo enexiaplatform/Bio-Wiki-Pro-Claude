@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -11,6 +11,7 @@ import { LazyCommandPalette } from "@/components/LazyCommandPalette";
 import { ExitIntentLeadModal } from "@/components/ExitIntentLeadModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePageTracking } from "@/hooks/use-analytics";
+import { useUser } from "@/context/UserContext";
 
 // Route components are code-split: each becomes its own chunk, loaded on demand.
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -81,6 +82,14 @@ function PageFallback() {
   );
 }
 
+function AdminOnlyRoute({ component: Component }: { component: ComponentType }) {
+  const { isAdmin, isAuthenticated, isLoading } = useUser();
+  if (isLoading) return <PageFallback />;
+  if (!isAuthenticated) return <Redirect to="/login?next=/admin" replace />;
+  if (!isAdmin) return <Redirect to="/quality-lab/projects" replace />;
+  return <Component />;
+}
+
 function Layout() {
   usePageTracking();
   return (
@@ -116,16 +125,16 @@ function Layout() {
           <Route path="/quality-lab/discovery-pack" component={QualityLabDiscoveryPackPage} />
           <Route path="/quality-lab/casebook" component={QualityLabCasebookPage} />
           <Route path="/quality-lab/evidence" component={QualityLabEvidenceGraphPage} />
-          <Route path="/quality-lab/calibration" component={QualityLabCalibrationQueuePage} />
-          <Route path="/quality-lab/pilots" component={QualityLabPilotPortfolioPage} />
-          <Route path="/quality-lab/domain-readiness" component={QualityLabDomainReadinessPage} />
-          <Route path="/quality-lab/domain-ownership" component={QualityLabExpertOwnershipPage} />
-          <Route path="/quality-lab/validation-cases" component={QualityLabValidationCasesPage} />
-          <Route path="/quality-lab/gate-2-release" component={QualityLabGate2ReleasePage} />
-          <Route path="/quality-lab/governance-history" component={QualityLabGovernanceHistoryPage} />
-          <Route path="/quality-lab/rule-changes" component={QualityLabRuleChangesPage} />
-          <Route path="/quality-lab/method-applications" component={QualityLabMethodApplicationsPage} />
-          <Route path="/quality-lab/engagements/:id" component={QualityLabEngagementPage} />
+          <Route path="/quality-lab/calibration">{() => <AdminOnlyRoute component={QualityLabCalibrationQueuePage} />}</Route>
+          <Route path="/quality-lab/pilots">{() => <AdminOnlyRoute component={QualityLabPilotPortfolioPage} />}</Route>
+          <Route path="/quality-lab/domain-readiness">{() => <AdminOnlyRoute component={QualityLabDomainReadinessPage} />}</Route>
+          <Route path="/quality-lab/domain-ownership">{() => <AdminOnlyRoute component={QualityLabExpertOwnershipPage} />}</Route>
+          <Route path="/quality-lab/validation-cases">{() => <AdminOnlyRoute component={QualityLabValidationCasesPage} />}</Route>
+          <Route path="/quality-lab/gate-2-release">{() => <AdminOnlyRoute component={QualityLabGate2ReleasePage} />}</Route>
+          <Route path="/quality-lab/governance-history">{() => <AdminOnlyRoute component={QualityLabGovernanceHistoryPage} />}</Route>
+          <Route path="/quality-lab/rule-changes">{() => <AdminOnlyRoute component={QualityLabRuleChangesPage} />}</Route>
+          <Route path="/quality-lab/method-applications">{() => <AdminOnlyRoute component={QualityLabMethodApplicationsPage} />}</Route>
+          <Route path="/quality-lab/engagements/:id">{() => <AdminOnlyRoute component={QualityLabEngagementPage} />}</Route>
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />
           <Route path="/library/:slug" component={LibraryEntry} />

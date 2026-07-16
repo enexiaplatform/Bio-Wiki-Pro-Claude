@@ -43,7 +43,7 @@ export default function QualityLabScenarioComparePage() {
   const comparison = useMemo(() => baseline && alternative && baseline.id !== alternative.id ? compareQualityLabScenarios(baseline, alternative) : null, [baseline, alternative]);
 
   useEffect(() => {
-    if (!comparison) return;
+    if (!comparison || !comparison.comparisonIntegrity.exportAllowed) return;
     const url = new URL(window.location.href);
     url.searchParams.set("baseline", comparison.baseline.id);
     url.searchParams.set("alternative", comparison.alternative.id);
@@ -68,7 +68,7 @@ export default function QualityLabScenarioComparePage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality lab projects</Link>
-          <div className="flex flex-wrap gap-2">{baseline && <><Link href={`/quality-lab/sensitivity?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-sm font-bold text-violet-200"><Activity className="h-4 w-4" /> Test sensitivity</Link><Link href={`/quality-lab/turnaround?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200"><CalendarClock className="h-4 w-4" /> Test queue feasibility</Link></>}{comparison && <button onClick={exportComparison} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white"><Download className="h-4 w-4" /> Export decision trace</button>}</div>
+          <div className="flex flex-wrap gap-2">{baseline && <><Link href={`/quality-lab/sensitivity?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-sm font-bold text-violet-200"><Activity className="h-4 w-4" /> Test sensitivity</Link><Link href={`/quality-lab/turnaround?project=${baseline.id}`} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200"><CalendarClock className="h-4 w-4" /> Test queue feasibility</Link></>}{comparison && <button onClick={exportComparison} disabled={!comparison.comparisonIntegrity.exportAllowed} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 hover:border-teal-300/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"><Download className="h-4 w-4" /> Export decision trace</button>}</div>
         </div>
 
         <header className="rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/[0.04] p-6 md:p-8">
@@ -98,6 +98,7 @@ export default function QualityLabScenarioComparePage() {
             ) : (
               <div className="mt-6 space-y-6">
                 {!comparison.engineVersions.comparable && <div className="rounded-2xl border border-red-300/20 bg-red-300/[0.06] p-5 text-sm text-red-100"><ShieldAlert className="mr-2 inline h-4 w-4" />These scenarios use different engine versions. Recompile both before relying on their deltas.</div>}
+                {comparison.comparisonIntegrity.status !== "valid" && <div className="rounded-2xl border border-red-300/20 bg-red-300/[0.06] p-5 text-sm text-red-100"><ShieldAlert className="mr-2 inline h-4 w-4" />{comparison.comparisonIntegrity.message}</div>}
                 <section>
                   <SectionHeading icon={BarChart3} title="Decision deltas" description={`Planning-horizon comparison: ${comparison.baseline.horizonYears} years versus ${comparison.alternative.horizonYears} years.`} />
                   <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{comparison.metrics.map((item) => <MetricDelta key={item.id} metric={item} />)}</div>
@@ -105,8 +106,12 @@ export default function QualityLabScenarioComparePage() {
 
                 <section className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
-                    <SectionHeading icon={SlidersHorizontal} title="Changed assumptions" description="Only tracked numeric inputs that differ between the two projects." />
-                    <div className="mt-4 space-y-2">{comparison.inputChanges.length ? comparison.inputChanges.map((item) => <div key={item.id} className="grid grid-cols-[1fr_auto] gap-4 rounded-xl border border-white/8 bg-slate-950/30 p-3"><div><p className="text-sm font-semibold text-slate-200">{item.label}</p><p className="mt-1 text-xs text-slate-500">{number.format(item.baseline)} → {number.format(item.alternative)} {item.unit}</p></div><span className={`self-center text-sm font-bold ${item.delta > 0 ? "text-amber-200" : "text-teal-200"}`}>{item.delta > 0 ? "+" : ""}{number.format(item.delta)}</span></div>) : <Empty text="No tracked numeric assumption changed." />}</div>
+                    <SectionHeading icon={SlidersHorizontal} title="Changed assumptions" description="Controlled numeric, scope, market, portfolio, evidence and version differences." />
+                    <div className="mt-4 space-y-2">
+                      {comparison.inputChanges.map((item) => <div key={item.id} className="grid grid-cols-[1fr_auto] gap-4 rounded-xl border border-white/8 bg-slate-950/30 p-3"><div><p className="text-sm font-semibold text-slate-200">{item.label}</p><p className="mt-1 text-xs text-slate-500">{number.format(item.baseline)} to {number.format(item.alternative)} {item.unit}</p></div><span className={`self-center text-sm font-bold ${item.delta > 0 ? "text-amber-200" : "text-teal-200"}`}>{item.delta > 0 ? "+" : ""}{number.format(item.delta)}</span></div>)}
+                      {comparison.normalizedInputChanges.map((item) => <div key={item.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-3"><div className="flex flex-wrap items-center justify-between gap-2"><p className="text-sm font-semibold text-slate-200">{item.label}</p><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase text-slate-500">{item.category}</span></div><p className="mt-1 line-clamp-2 text-xs text-slate-500">{item.baseline} to {item.alternative}</p>{item.relatedRuleIds.length > 0 && <p className="mt-2 font-mono text-[10px] text-sky-200/50">{item.relatedRuleIds.join(" · ")}</p>}</div>)}
+                      {comparison.inputChanges.length === 0 && comparison.normalizedInputChanges.length === 0 && <Empty text="No controlled input or version difference found." />}
+                    </div>
                   </div>
 
                   <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
@@ -131,7 +136,7 @@ export default function QualityLabScenarioComparePage() {
 }
 
 function ScenarioSelector({ label, value, projects, onChange }: { label: string; value: string; projects: QualityLabProject[]; onChange: (value: string) => void }) {
-  return <label><span className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} className="mt-2 h-12 w-full rounded-xl border border-white/10 bg-slate-950 px-4 text-sm font-semibold text-white outline-none focus:border-teal-300/40">{projects.map((project) => <option key={project.id} value={project.id}>{project.name}</option>)}</select></label>;
+  return <label><span className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">{label}</span><select value={value} onChange={(event) => onChange(event.target.value)} className="mt-2 h-12 w-full rounded-xl border border-white/10 bg-slate-950 px-4 text-sm font-semibold text-white outline-none focus:border-teal-300/40">{projects.map((project) => <option key={project.id} value={project.id}>{project.input.scenarioLabel} - {project.name}</option>)}</select></label>;
 }
 
 function SectionHeading({ icon: Icon, title, description }: { icon: typeof Gauge; title: string; description: string }) {

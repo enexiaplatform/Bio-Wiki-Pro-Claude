@@ -21,6 +21,15 @@ export interface ScenarioInputChange {
   unit: string;
 }
 
+export interface ScenarioNormalizedInputChange {
+  id: string;
+  category: "scenario" | "scope" | "market" | "portfolio" | "evidence" | "version";
+  label: string;
+  baseline: string;
+  alternative: string;
+  relatedRuleIds: string[];
+}
+
 export interface ScenarioEquipmentChange {
   id: string;
   name: string;
@@ -49,15 +58,17 @@ export interface ScenarioComparisonSignal {
 export interface QualityLabScenarioComparison {
   generatedAt: string;
   engineVersions: { baseline: string; alternative: string; comparable: boolean };
-  baseline: { id: string; name: string; horizonYears: number };
-  alternative: { id: string; name: string; horizonYears: number };
+  baseline: { id: string; name: string; scenarioLabel: string; horizonYears: number };
+  alternative: { id: string; name: string; scenarioLabel: string; horizonYears: number };
   metrics: ScenarioComparisonMetric[];
   inputChanges: ScenarioInputChange[];
+  normalizedInputChanges: ScenarioNormalizedInputChange[];
   equipmentChanges: ScenarioEquipmentChange[];
   capacityChanges: ScenarioCapacityChange[];
   resolvedBlockingInputs: string[];
   addedBlockingInputs: string[];
   signals: ScenarioComparisonSignal[];
+  comparisonIntegrity: { status: "valid" | "same-project" | "no-controlled-difference" | "unexplained-output-delta"; message: string; exportAllowed: boolean };
   boundary: string;
 }
 
@@ -79,6 +90,39 @@ const trackedInputs: Array<{ id: keyof QualityLabInput; label: string; unit: str
   { id: "redundancyPercent", label: "People capacity reserve", unit: "%" },
   { id: "equipmentDowntimePercent", label: "Equipment downtime", unit: "%" },
 ];
+
+const normalizedInputs: Array<{
+  id: string;
+  category: ScenarioNormalizedInputChange["category"];
+  label: string;
+  relatedRuleIds: string[];
+  value: (project: QualityLabProject) => unknown;
+}> = [
+  { id: "scenario-label", category: "scenario", label: "Scenario label", relatedRuleIds: [], value: (project) => project.input.scenarioLabel },
+  { id: "facility-type", category: "scope", label: "Facility type", relatedRuleIds: ["core.space.concept"], value: (project) => project.input.facilityType },
+  { id: "markets", category: "market", label: "Target markets", relatedRuleIds: ["micro.workflow.finished-products"], value: (project) => [...project.input.markets].sort() },
+  { id: "scope", category: "scope", label: "In-house capability scope", relatedRuleIds: ["core.capacity.equipment", "core.capacity.people"], value: (project) => project.input.scope },
+  { id: "product-profiles", category: "portfolio", label: "Product and method portfolio", relatedRuleIds: ["micro.workflow.finished-products"], value: (project) => project.input.productProfiles },
+  { id: "portfolio-completeness", category: "portfolio", label: "Portfolio completeness claim", relatedRuleIds: ["micro.workflow.finished-products"], value: (project) => project.input.portfolioIsComplete },
+  { id: "input-contract", category: "version", label: "Input contract version", relatedRuleIds: [], value: (project) => project.input.contractVersion },
+  { id: "engine-version", category: "version", label: "Compiler engine version", relatedRuleIds: [], value: (project) => project.blueprint.engineVersion },
+  { id: "domain-pack", category: "version", label: "Domain Pack version", relatedRuleIds: [], value: (project) => `${project.blueprint.domainPack.id}@${project.blueprint.domainPack.version}` },
+  { id: "blocking-inputs", category: "evidence", label: "Open controlled-use blockers", relatedRuleIds: [], value: (project) => project.blueprint.unresolvedInputs.filter((item) => item.severity === "blocking").map((item) => item.id).sort() },
+];
+
+function stableStringify(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stableStringify).join(",")}]`;
+  if (value && typeof value === "object") {
+    return `{${Object.entries(value as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)).map(([key, nested]) => `${key}:${stableStringify(nested)}`).join(",")}}`;
+  }
+  return String(value);
+}
+
+function displayValue(value: unknown): string {
+  if (Array.isArray(value)) return value.length ? value.map((item) => typeof item === "object" ? stableStringify(item) : String(item)).join("; ") : "none";
+  if (value && typeof value === "object") return stableStringify(value);
+  return String(value);
+}
 
 function round(value: number, digits = 1): number {
   const factor = 10 ** digits;
@@ -108,7 +152,7 @@ export function compareQualityLabScenarios(baseline: QualityLabProject, alternat
     metric("area", "Concept area allowance", "sqm", baselineFuture.estimatedAreaSqm, alternativeFuture.estimatedAreaSqm),
     metric("capex-high", "CAPEX planning high", "usd", baselineFuture.capexHighUsd, alternativeFuture.capexHighUsd),
     metric("opex-high", "Annual OPEX planning high", "usd", baselineFuture.annualOpexHighUsd, alternativeFuture.annualOpexHighUsd),
-    metric("readiness", "Input readiness", "percent", baseline.blueprint.dataQuality.completenessPercent, alternative.blueprint.dataQuality.completenessPercent),
+    metric("input-completeness", "Input completeness", "percent", baseline.blueprint.dataQuality.completenessPercent, alternative.blueprint.dataQuality.completenessPercent),
   ];
 
   const inputChanges = trackedInputs.flatMap(({ id, label, unit }) => {
@@ -116,6 +160,13 @@ export function compareQualityLabScenarios(baseline: QualityLabProject, alternat
     const after = alternative.input[id];
     if (typeof before !== "number" || typeof after !== "number" || before === after) return [];
     return [{ id, label, unit, baseline: before, alternative: after, delta: round(after - before) }];
+  });
+
+  const normalizedInputChanges = normalizedInputs.flatMap(({ id, category, label, relatedRuleIds, value }) => {
+    const before = value(baseline);
+    const after = value(alternative);
+    if (stableStringify(before) === stableStringify(after)) return [];
+    return [{ id, category, label, relatedRuleIds, baseline: displayValue(before), alternative: displayValue(after) }];
   });
 
   const baselineEquipment = new Map(baseline.blueprint.equipment.map((item) => [item.id, item]));
@@ -192,18 +243,34 @@ export function compareQualityLabScenarios(baseline: QualityLabProject, alternat
   if (addedBlockingInputs.length > 0) signals.push({ id: "blocking-added", severity: "critical", title: `${addedBlockingInputs.length} new blocking input${addedBlockingInputs.length === 1 ? "" : "s"}`, description: "Do not select the alternative for controlled use until these inputs are resolved or explicitly accepted through project governance.", relatedRuleIds: [] });
   if (signals.length === 0) signals.push({ id: "no-material-trigger", severity: "information", title: "No material planning trigger detected", description: "The compiled outputs are close on the tracked decision dimensions. Review method applicability and site evidence before concluding that the scenarios are equivalent.", relatedRuleIds: [] });
 
+  const materialOutputDelta = metrics.some((item) => Math.abs(item.delta) > 0);
+  const controlledDifferenceCount = inputChanges.length + normalizedInputChanges.length;
+  const comparisonIntegrity: QualityLabScenarioComparison["comparisonIntegrity"] = baseline.id === alternative.id
+    ? { status: "same-project", message: "Select two different project records or revisions before comparing scenarios.", exportAllowed: false }
+    : controlledDifferenceCount === 0
+      ? {
+          status: materialOutputDelta ? "unexplained-output-delta" : "no-controlled-difference",
+          message: materialOutputDelta
+            ? "Outputs differ without a normalized input or version change. Recompile both scenarios before relying on this comparison."
+            : "No controlled input or version difference was found. Create a distinct scenario before exporting a decision trace.",
+          exportAllowed: false,
+        }
+      : { status: "valid", message: "Every material comparison is backed by at least one normalized input or version difference.", exportAllowed: true };
+
   return {
     generatedAt: new Date().toISOString(),
     engineVersions: { baseline: baseline.blueprint.engineVersion, alternative: alternative.blueprint.engineVersion, comparable: baseline.blueprint.engineVersion === alternative.blueprint.engineVersion },
-    baseline: { id: baseline.id, name: baseline.name, horizonYears: baseline.input.horizonYears },
-    alternative: { id: alternative.id, name: alternative.name, horizonYears: alternative.input.horizonYears },
+    baseline: { id: baseline.id, name: baseline.name, scenarioLabel: baseline.input.scenarioLabel, horizonYears: baseline.input.horizonYears },
+    alternative: { id: alternative.id, name: alternative.name, scenarioLabel: alternative.input.scenarioLabel, horizonYears: alternative.input.horizonYears },
     metrics,
     inputChanges,
+    normalizedInputChanges,
     equipmentChanges,
     capacityChanges,
     resolvedBlockingInputs,
     addedBlockingInputs,
     signals,
+    comparisonIntegrity,
     boundary: "This comparison ranks concept planning consequences. It does not validate methods, prove schedule feasibility, approve equipment quantities, or replace site, SME, QA, engineering and regulatory review.",
   };
 }

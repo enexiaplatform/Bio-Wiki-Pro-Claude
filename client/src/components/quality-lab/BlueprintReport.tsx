@@ -30,6 +30,15 @@ interface Props {
   onEdit?: () => void;
 }
 
+type RoleLens = "qc" | "qa" | "engineering" | "procurement";
+
+const roleLensCopy: Record<RoleLens, { label: string; focus: string; detail: string }> = {
+  qc: { label: "QC", focus: "workload, method coverage and capacity", detail: "Use the workload model to challenge in-house capability, analyst demand, equipment loading and the inputs still needed from the laboratory." },
+  qa: { label: "QA", focus: "evidence, review boundaries and unresolved controls", detail: "Use the evidence trace, assumptions and controlled-use blockers to define what must be confirmed before formal quality decisions." },
+  engineering: { label: "Engineering", focus: "space, equipment and phased implementation", detail: "Use the capability, space and equipment allowance as a planning basis before detailed engineering, utilities or layout design." },
+  procurement: { label: "Procurement", focus: "vendor-neutral requirements and cost basis", detail: "Use the equipment rationale, method BOM and phased sequence to prepare a comparable request basis; supplier quotations remain required." },
+};
+
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 
@@ -76,7 +85,10 @@ export function BlueprintReport({ project, onEdit }: Props) {
   const { blueprint } = project;
   const { input, current, future } = blueprint;
   const highRisks = blueprint.risks.filter((risk) => risk.severity === "high").length;
+  const controlledUseBlocked = blueprint.dataQuality.blockingOpenCount > 0 || (blueprint.review.status as string) !== "expert-reviewed";
+  const reviewStatusLabel = project.reviewRequestedAt ? "review requested" : blueprint.review.status.replaceAll("-", " ");
   const supportingEvidence = evidenceForRuleIds(blueprint.ruleTrace.map((rule) => rule.ruleId));
+  const [roleLens, setRoleLens] = useState<RoleLens>("qc");
 
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
@@ -91,9 +103,6 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <ClipboardCheck className="h-4 w-4" /> Engagement packet
           </button>
-          <Link href={`/quality-lab/engagements/${project.id}`} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
-            <ClipboardCheck className="h-4 w-4" /> Review workspace
-          </Link>
           <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-teal-200">
             <Printer className="h-4 w-4" /> Print / save PDF
           </button>
@@ -109,7 +118,6 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 p-3">
             <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><Download className="h-4 w-4" /> Export model</button>
             <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Engagement packet</button>
-            <Link href={`/quality-lab/engagements/${project.id}`} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Review workspace</Link>
             <button onClick={() => window.print()} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950"><Printer className="h-4 w-4" /> Print / PDF</button>
           </div>
         </details>
@@ -140,15 +148,15 @@ export function BlueprintReport({ project, onEdit }: Props) {
               <p className="text-xl font-bold text-teal-200 print:text-slate-950">{current.estimatedAreaSqm} m²</p><p className="text-[11px] text-slate-400 print:text-slate-600">concept allowance</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
-              <p className="text-xl font-bold text-amber-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high-priority risks</p>
+              <p className="text-xl font-bold text-amber-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high modeled operational risks</p>
             </div>
           </div>
           </div>
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">controlled-use readiness</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">blocking inputs open</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">input completeness</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">controlled-use blockers</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{blueprint.dataQuality.tracedRuleCount}</p><p className="text-[10px] text-slate-500">versioned rules traced</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="truncate text-xs font-bold text-amber-200 print:text-slate-950">{blueprint.contractVersion}</p><p className="mt-1 text-[10px] text-slate-500">output contract</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="truncate text-xs font-bold text-amber-200 print:text-slate-950">{reviewStatusLabel}</p><p className="mt-1 text-[10px] text-slate-500">review status</p></div>
           </div>
         </div>
       </header>
@@ -157,10 +165,10 @@ export function BlueprintReport({ project, onEdit }: Props) {
         <div className="grid gap-5 lg:grid-cols-[1fr_1.25fr_auto] lg:items-start">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:text-slate-500">Decision brief</p>
-            <h2 className="mt-2 text-xl font-bold print:text-slate-950">Model compiled. Controlled use is not yet ready.</h2>
+            <h2 className="mt-2 text-xl font-bold print:text-slate-950">{controlledUseBlocked ? "Not ready for controlled use." : "No controlled-use blocker is open."}</h2>
             <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">The model is useful for discovery and scenario discussion. Resolve the blocking inputs and complete qualified review before using it for investment, URS or procurement decisions.</p>
             <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-teal-300" style={{ width: `${blueprint.dataQuality.completenessPercent}%` }} /></div>
-            <p className="mt-2 text-[10px] text-slate-500">{blueprint.dataQuality.completenessPercent}% controlled-use readiness · {blueprint.dataQuality.blockingOpenCount} blocking inputs</p>
+            <p className="mt-2 text-[10px] text-slate-500">{blueprint.dataQuality.completenessPercent}% input completeness · {blueprint.dataQuality.blockingOpenCount} controlled-use blockers · {reviewStatusLabel}</p>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Resolve first</p>
@@ -169,6 +177,19 @@ export function BlueprintReport({ project, onEdit }: Props) {
             </div>
           </div>
           <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_brief", "expert_review")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 print:hidden">Prepare expert review <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+        <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 print:border-slate-300 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-teal-300">Role lens</p>
+            <div className="mt-2 flex flex-wrap gap-2 print:hidden">
+              {(Object.keys(roleLensCopy) as RoleLens[]).map((lens) => <button key={lens} type="button" aria-pressed={roleLens === lens} onClick={() => setRoleLens(lens)} className={`rounded-lg border px-3 py-2 text-xs font-bold transition ${roleLens === lens ? "border-teal-300/40 bg-teal-300/15 text-teal-100" : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/25"}`}>{roleLensCopy[lens].label}</button>)}
+            </div>
+            <p className="mt-3 text-xs leading-5 text-slate-400 print:text-slate-700"><strong className="text-slate-200 print:text-slate-950">{roleLensCopy[roleLens].label} focus:</strong> {roleLensCopy[roleLens].focus}. {roleLensCopy[roleLens].detail}</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-200 print:text-slate-600">Decisions possible now</p><ol className="mt-3 space-y-2">{blueprint.recommendations.slice(0, 3).map((item, index) => <li key={item.id} className="flex gap-2 text-xs leading-5 text-slate-300 print:text-slate-800"><span className="font-bold text-teal-200 print:text-slate-700">{index + 1}.</span><span>{item.recommendation}</span></li>)}</ol></div>
+            <div className="rounded-xl border border-red-300/15 bg-red-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-red-200 print:text-slate-600">Decisions blocked</p><ul className="mt-3 space-y-2">{blueprint.unresolvedInputs.filter((item) => item.severity === "blocking").slice(0, 3).map((item) => <li key={item.id} className="text-xs leading-5 text-slate-300 print:text-slate-800"><strong className="text-red-200 print:text-slate-700">Needed:</strong> {item.resolution}</li>)}{blueprint.dataQuality.blockingOpenCount === 0 && <li className="text-xs leading-5 text-slate-400 print:text-slate-700">Qualified review is still required before controlled use.</li>}</ul></div>
+          </div>
         </div>
       </section>
 

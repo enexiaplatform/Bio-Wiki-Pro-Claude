@@ -39,6 +39,7 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     getQualityLabReviewedProject: vi.fn(),
     listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
     listQualityLabReviewedProjectRevisions: vi.fn(() => Promise.resolve([])),
+    deleteQualityLabReviewedProject: vi.fn(() => Promise.resolve(false)),
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
@@ -217,7 +218,9 @@ describe("Quality Lab expert review", () => {
   it("protects the reviewed-project portfolio behind authentication", async () => {
     const app = await buildApp();
     await request(app).get("/api/quality-lab/reviewed-projects").expect(401);
+    await request(app).delete("/api/quality-lab/reviewed-projects/qlp_private").expect(401);
     expect(storageMock.listQualityLabReviewedProjects).not.toHaveBeenCalled();
+    expect(storageMock.deleteQualityLabReviewedProject).not.toHaveBeenCalled();
   });
 });
 

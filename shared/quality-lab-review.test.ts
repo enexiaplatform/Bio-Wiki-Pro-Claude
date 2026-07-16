@@ -20,7 +20,7 @@ describe("Quality Lab review brief", () => {
         domainPackId: blueprint.domainPack.id,
         domainPackVersion: blueprint.domainPack.version,
         monthlyTests: blueprint.current.monthlyTests,
-        readinessPercent: blueprint.dataQuality.completenessPercent,
+        inputCompletenessPercent: blueprint.dataQuality.completenessPercent,
         blockingOpenCount: blueprint.dataQuality.blockingOpenCount,
         importantOpenCount: blueprint.dataQuality.importantOpenCount,
         unresolvedInputs: blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
@@ -29,6 +29,8 @@ describe("Quality Lab review brief", () => {
     });
     const brief = formatQualityLabReviewBrief(request);
     expect(brief).toContain("[quality-lab-review-brief/v1]");
+    expect(brief).toContain("input completeness");
+    expect(brief).toContain("controlled-use blockers");
     expect(brief).toContain("Open-input checklist:");
     expect(brief).toContain("quality-lab-blueprint/v1");
     expect(brief).not.toContain(request.contact.email);

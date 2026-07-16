@@ -80,18 +80,26 @@ export default function PricingPage() {
         <div className="grid gap-7 lg:grid-cols-[1fr_0.8fr] lg:items-center">
           <div>
             <span className="inline-flex rounded-full bg-teal-300 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-950">Primary offer</span>
-            <h2 className="mt-4 font-display text-2xl font-bold md:text-3xl">Atlas Quality Lab Blueprint</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">A scope-based, service-assisted engagement that turns product and testing demand into a traceable laboratory capability and operating model.</p>
+            <h2 className="mt-4 font-display text-2xl font-bold md:text-3xl">Expert-reviewed Quality Lab Blueprint pilot</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">A fixed-scope, service-assisted engagement for a real laboratory planning decision. The first pilot wedge is non-sterile pharmaceutical microbiology; commercial terms are qualified against the project scope rather than sold as recurring software access.</p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link href="/quality-lab/planner" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Build an initial model <ArrowRight className="h-4 w-4" /></Link>
               <Link href="/quality-lab/review" className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30 hover:bg-white/10">Request a scope review</Link>
             </div>
           </div>
           <div className="rounded-xl border border-white/10 bg-slate-950/40 p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">Expert-reviewed delivery</p>
-            <ul className="mt-4 space-y-3">{["Capability and method model", "Demand and capacity scenarios", "Evidence, assumptions, and gaps", "Decision brief prepared for expert review"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{item}</li>)}</ul>
-            <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-muted-foreground">Planning and decision support only. Final design, qualification, and regulatory decisions remain with authorized experts and the site quality system.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-200">Pilot delivery basis</p>
+            <ul className="mt-4 space-y-3">{["Capability and method model", "Demand and capacity scenarios", "Evidence, assumptions, and gap register", "Controlled workbook and decision brief", "Clarification and acceptance checkpoint agreed in scope"].map((item) => <li key={item} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />{item}</li>)}</ul>
+            <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-muted-foreground">Commercial basis: Atlas confirms fit, inputs, workshops, deliverables, acceptance and proposal range after a scope review. Planning and decision support only; final design, qualification and regulatory decisions remain with authorized experts and the site quality system.</p>
           </div>
+        </div>
+        <div className="mt-6 grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ["Eligible first pilot", "Non-sterile pharmaceutical microbiology lab build, expansion, or material operating-model change."],
+            ["Client contribution", "Project basis, product and market facts, demand data, site constraints, and working sessions with accountable stakeholders."],
+            ["Outside the pilot", "Detailed CAD, HVAC or utility design, supplier selection, site approval, method validation, and regulatory approval."],
+            ["How to proceed", "Submit a scope request. Atlas checks fit and confirms the proposed timeline, reviewer coverage, data handling and commercial terms."],
+          ].map(([title, body]) => <div key={title} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><p className="text-xs font-bold text-teal-200">{title}</p><p className="mt-2 text-xs leading-5 text-muted-foreground">{body}</p></div>)}
         </div>
       </section>
 

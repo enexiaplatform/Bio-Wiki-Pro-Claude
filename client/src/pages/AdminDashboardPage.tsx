@@ -42,7 +42,7 @@ type Pipeline = {
   leads: Array<{ id: number; email: string; source: string | null; createdAt: string | null }>;
   requests: Array<{ id: number; name: string; email: string; company: string | null; productOfInterest: string | null; need: string; createdAt: string | null }>;
   purchases: Array<{ id: number; userId: string | null; productType: string; amount: number | null; status: string | null; createdAt: string | null }>;
-  projects: Array<{ id: number; userId: string; localProjectId: string; projectName: string; readinessPercent: number | null; reviewRequestedAt: string | null; updatedAt: string | null }>;
+  projects: Array<{ id: number; userId: string; localProjectId: string; projectName: string; inputCompletenessPercent: number | null; reviewRequestedAt: string | null; updatedAt: string | null }>;
 };
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -154,7 +154,7 @@ export default function AdminDashboardPage() {
 
           <TabsContent value="pipeline" className="mt-5 space-y-5">
             <Panel title="Blueprint and commercial requests" description="Newest first. The request context remains a commercial intake, not confidential project evidence."><div className="space-y-3">{(pipeline.data?.requests ?? []).map((request) => <article key={request.id} className="rounded-xl border border-white/8 bg-slate-950/35 p-4"><div className="flex flex-wrap justify-between gap-2"><div><p className="font-semibold text-white">{request.name} · {request.company || "Company not supplied"}</p><a href={`mailto:${request.email}`} className="mt-1 inline-flex items-center gap-1 text-xs text-teal-300"><Mail className="h-3 w-3" />{request.email}</a></div><span className="text-xs text-slate-500">{date(request.createdAt)}</span></div><p className="mt-3 line-clamp-3 text-xs leading-6 text-slate-400">{request.need}</p></article>)}</div></Panel>
-            <div className="grid gap-5 lg:grid-cols-2"><Panel title="Reviewed Blueprint projects" description="Account-held projects that entered expert review."><CompactRows rows={(pipeline.data?.projects ?? []).map((project) => ({ title: project.projectName, detail: `${project.readinessPercent ?? 0}% input readiness`, meta: date(project.updatedAt) }))} /></Panel><Panel title="Purchase records" description="Recent Stripe and manual purchase records."><CompactRows rows={(pipeline.data?.purchases ?? []).map((purchase) => ({ title: purchase.productType, detail: purchase.status || "pending", meta: purchase.amount ? money.format(purchase.amount / 100) : date(purchase.createdAt) }))} /></Panel></div>
+            <div className="grid gap-5 lg:grid-cols-2"><Panel title="Reviewed Blueprint projects" description="Account-held projects that entered expert review."><CompactRows rows={(pipeline.data?.projects ?? []).map((project) => ({ title: project.projectName, detail: `${project.inputCompletenessPercent ?? 0}% input completeness`, meta: date(project.updatedAt) }))} /></Panel><Panel title="Purchase records" description="Recent Stripe and manual purchase records."><CompactRows rows={(pipeline.data?.purchases ?? []).map((purchase) => ({ title: purchase.productType, detail: purchase.status || "pending", meta: purchase.amount ? money.format(purchase.amount / 100) : date(purchase.createdAt) }))} /></Panel></div>
           </TabsContent>
 
           <TabsContent value="content" className="mt-5">

@@ -1,6 +1,7 @@
 import type { QualityLabInput, QualityLabProject } from "@shared/quality-lab";
 import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema } from "@shared/quality-lab";
 import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
+import type { QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-persistence";
 
 const STORAGE_KEY = "lsa:quality-lab-projects:v1";
 
@@ -55,13 +56,31 @@ export function saveQualityLabProject(input: QualityLabInput, id?: string): Qual
   return project;
 }
 
-export function duplicateQualityLabProject(id: string): QualityLabProject | undefined {
+export function duplicateQualityLabProject(id: string, scenarioLabel?: string): QualityLabProject | undefined {
   const source = getQualityLabProject(id);
   if (!source) return undefined;
+  const label = scenarioLabel?.trim() || `${source.input.scenarioLabel} - alternative`;
   return saveQualityLabProject({
     ...source.input,
-    projectName: `${source.input.projectName} — copy`,
+    scenarioLabel: label,
   });
+}
+
+/** Restores an account-held review snapshot into this browser without re-syncing it. */
+export function restoreQualityLabReviewedProject(snapshot: QualityLabReviewedProjectSnapshot): QualityLabProject {
+  const input = qualityLabInputSchema.parse(snapshot.input);
+  const project: QualityLabProject = {
+    id: snapshot.localProjectId,
+    name: input.projectName,
+    input,
+    blueprint: snapshot.blueprint,
+    createdAt: snapshot.blueprint.generatedAt,
+    updatedAt: snapshot.blueprint.generatedAt,
+    reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
+  };
+  const projects = listQualityLabProjects();
+  write([project, ...projects.filter((item) => item.id !== project.id)]);
+  return project;
 }
 
 export function deleteQualityLabProject(id: string) {
@@ -122,27 +141,21 @@ export async function fetchQualityLabReviewedProject(localProjectId: string) {
   const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}`, { credentials: "include" });
   if (response.status === 404) return null;
   if (!response.ok) throw new Error("Unable to recover this reviewed project");
-  return response.json() as Promise<{
-    localProjectId: string;
-    projectName: string;
-    input: QualityLabProject["input"];
-    blueprint: QualityLabProject["blueprint"];
-    engagement: ReturnType<typeof createQualityLabEngagementPacket> | null;
-    reviewRequestedAt: string | null;
-  }>;
+  return response.json() as Promise<QualityLabReviewedProjectSnapshot>;
 }
 
 export async function fetchQualityLabReviewedProjects() {
   const response = await fetch("/api/quality-lab/reviewed-projects", { credentials: "include" });
   if (!response.ok) throw new Error("Unable to load the reviewed-project portfolio");
-  return response.json() as Promise<Array<{
-    localProjectId: string;
-    projectName: string;
-    input: QualityLabProject["input"];
-    blueprint: QualityLabProject["blueprint"];
-    engagement: ReturnType<typeof createQualityLabEngagementPacket> | null;
-    reviewRequestedAt: string | null;
-  }>>;
+  return response.json() as Promise<QualityLabReviewedProjectSnapshot[]>;
+}
+
+export async function deleteQualityLabReviewedProjectSnapshot(localProjectId: string) {
+  const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Unable to remove the account-held review snapshot");
 }
 
 export async function fetchQualityLabReviewedProjectRevisions(localProjectId: string) {

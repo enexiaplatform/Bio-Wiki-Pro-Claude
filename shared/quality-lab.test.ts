@@ -4,6 +4,7 @@ import {
   QUALITY_LAB_COMPILER_CORE_VERSION,
   QUALITY_LAB_INPUT_CONTRACT_VERSION,
   compileQualityLabBlueprint,
+  createBlankQualityLabInput,
   defaultQualityLabInput,
   qualityLabBlueprintSchema,
   qualityLabInputSchema,
@@ -72,6 +73,16 @@ describe("quality lab compiler", () => {
     for (const rule of result.ruleTrace) {
       for (const evidenceId of rule.evidenceIds) expect(evidenceIds.has(evidenceId)).toBe(true);
     }
+  });
+
+  it("creates a blank intake without example-site facts", () => {
+    const blank = createBlankQualityLabInput();
+    expect(blank.projectName).toBe("");
+    expect(blank.country).toBe("");
+    expect(blank.markets).toEqual([]);
+    expect(blank.productProfiles).toEqual([]);
+    expect(Object.values(blank.scope).some(Boolean)).toBe(false);
+    expect(blank.finishedBatchesPerMonth).toBe(0);
   });
 
   it("turns net consumable demand into an explicit replenishment and protected-stock basis", () => {
@@ -192,5 +203,21 @@ describe("quality lab compiler", () => {
       result.unresolvedInputs.filter((item) => item.severity === "blocking").map((item) => item.id),
     );
     expect(result.evidence.some((record) => record.status === "site-evidence-required")).toBe(true);
+  });
+
+  it("keeps controlled-use blockers separate from modeled operational risks", () => {
+    const result = compileQualityLabBlueprint({
+      ...defaultQualityLabInput,
+      targetTurnaroundDays: 7,
+      growthRatePercent: 10,
+      outsourcePercent: 0,
+      equipmentDowntimePercent: 15,
+      markets: ["vietnam"],
+    });
+
+    expect(result.risks.filter((risk) => risk.severity === "high")).toHaveLength(0);
+    expect(result.dataQuality.blockingOpenCount).toBeGreaterThan(0);
+    expect(result.review.blockingInputIds).toHaveLength(result.dataQuality.blockingOpenCount);
+    expect(result.review.status).toBe("concept-only");
   });
 });

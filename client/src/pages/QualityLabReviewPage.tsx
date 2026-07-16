@@ -1,6 +1,6 @@
 import { FormEvent, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
@@ -10,6 +10,8 @@ import { useUser } from "@/context/UserContext";
 import { EditorialImage } from "@/components/EditorialImage";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
+
+type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-required";
 
 export default function QualityLabReviewPage() {
   useSEO({
@@ -24,6 +26,10 @@ export default function QualityLabReviewPage() {
   const { isAuthenticated } = useUser();
   const [submitted, setSubmitted] = useState(false);
   const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
+  const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">("brief-only");
+  const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
+  const [snapshotError, setSnapshotError] = useState("");
+  const [retryingSnapshot, setRetryingSnapshot] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -53,7 +59,7 @@ export default function QualityLabReviewPage() {
           domainPackId: project.blueprint.domainPack.id,
           domainPackVersion: project.blueprint.domainPack.version,
           monthlyTests: project.blueprint.current.monthlyTests,
-          readinessPercent: project.blueprint.dataQuality.completenessPercent,
+          inputCompletenessPercent: project.blueprint.dataQuality.completenessPercent,
           blockingOpenCount: project.blueprint.dataQuality.blockingOpenCount,
           importantOpenCount: project.blueprint.dataQuality.importantOpenCount,
           unresolvedInputs: project.blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
@@ -62,7 +68,24 @@ export default function QualityLabReviewPage() {
       });
       if (project) {
         const reviewedProject = markQualityLabReviewRequested(project.id);
-        if (reviewedProject && isAuthenticated) syncQualityLabReviewedProject(reviewedProject).catch(() => undefined);
+        if (attachMode === "full-snapshot") {
+          if (!isAuthenticated) {
+            setSnapshotStatus("login-required");
+          } else if (reviewedProject) {
+            try {
+              await syncQualityLabReviewedProject(reviewedProject);
+              setSnapshotStatus("saved");
+              setSnapshotError("");
+              analytics.reviewedProjectSync("success", reviewedProject.id);
+            } catch (error) {
+              setSnapshotStatus("failed");
+              setSnapshotError(error instanceof Error ? error.message : "Unable to securely save the full Blueprint snapshot.");
+              analytics.reviewedProjectSync("failed", reviewedProject.id);
+            }
+          }
+        } else {
+          setSnapshotStatus("not-requested");
+        }
       }
       analytics.expertReviewRequested(Boolean(project));
       setSubmitted(true);
@@ -71,22 +94,52 @@ export default function QualityLabReviewPage() {
     }
   }
 
+  async function retrySnapshotSync() {
+    if (!project || !isAuthenticated) return;
+    setRetryingSnapshot(true);
+    setSnapshotError("");
+    analytics.reviewedProjectSync("retry", project.id);
+    try {
+      const reviewedProject = markQualityLabReviewRequested(project.id);
+      if (!reviewedProject) throw new Error("Project not found in this browser.");
+      await syncQualityLabReviewedProject(reviewedProject);
+      setSnapshotStatus("saved");
+      analytics.reviewedProjectSync("success", reviewedProject.id);
+    } catch (error) {
+      setSnapshotStatus("failed");
+      setSnapshotError(error instanceof Error ? error.message : "Unable to securely save the full Blueprint snapshot.");
+      analytics.reviewedProjectSync("failed", project.id);
+    } finally {
+      setRetryingSnapshot(false);
+    }
+  }
+
   if (submitted) {
     return (
       <div className="min-h-[75vh] bg-[#08111f] px-4 py-16 text-slate-100">
         <div className="mx-auto max-w-2xl rounded-3xl border border-teal-300/25 bg-gradient-to-br from-teal-300/12 to-slate-950 p-7 text-center shadow-2xl shadow-black/25 md:p-10">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-300 text-slate-950"><CheckCircle2 className="h-7 w-7" /></div>
-          <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Request received</p>
-          <h1 className="mt-3 text-3xl font-bold">Your review request has been captured.</h1>
-          <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">The next step is a scope check: project basis, available inputs, decision deadline, and which assumptions need qualified review. No model output will be treated as approved until that review is complete.</p>
+            <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Scope request received</p>
+            <h1 className="mt-3 text-3xl font-bold">Your Blueprint pilot request has been captured.</h1>
+            <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">Next milestone: an Atlas engagement lead checks project fit, available inputs, decision deadline, reviewer coverage and proposed delivery basis. The response timing and commercial terms are confirmed during that qualification step. No model output is approved by this request.</p>
           {project && (
             <div className="mt-6 rounded-2xl border border-white/10 bg-black/15 p-4 text-left">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-300">Engagement handoff</p>
-              <p className="mt-2 text-sm leading-6 text-slate-400">Download a contact-free working packet with the triage checklist, estimate baselines, correction log and decision log. Complete it with qualified reviewers outside Atlas.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-400">Scope brief received. Full Blueprint snapshot: {snapshotStatus === "saved" ? "securely saved for review" : snapshotStatus === "failed" ? "not saved yet" : snapshotStatus === "login-required" ? "requires sign-in" : "not requested"}.</p>
+              {snapshotStatus === "failed" && (
+                <div role="alert" className="mt-3 rounded-xl border border-red-300/20 bg-red-300/10 p-3 text-xs leading-5 text-red-100">
+                  <AlertTriangle className="mr-1 inline h-3.5 w-3.5" />
+                  {snapshotError || "The brief was received, but the full Blueprint snapshot did not save. Retry or use the engagement packet fallback."}
+                </div>
+              )}
               <button type="button" onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("review_success", project.blueprint.unresolvedInputs.length); }} className="mt-4 inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200 transition hover:bg-teal-300/15">
                 <FileDown className="h-4 w-4" /> Download engagement packet
               </button>
-              <Link href={`/quality-lab/engagements/${project.id}`} className="ml-0 mt-3 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 sm:ml-2">Open review workspace</Link>
+              {snapshotStatus === "failed" && isAuthenticated && (
+                <button type="button" disabled={retryingSnapshot} onClick={retrySnapshotSync} className="ml-0 mt-3 inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-bold text-slate-200 disabled:cursor-wait disabled:opacity-60 sm:ml-2">
+                  {retryingSnapshot ? <Loader2 className="h-4 w-4 animate-spin" /> : <RotateCcw className="h-4 w-4" />} Retry secure save
+                </button>
+              )}
             </div>
           )}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
@@ -104,30 +157,42 @@ export default function QualityLabReviewPage() {
         <Link href={project ? `/quality-lab/projects/${project.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {project ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Service-assisted review</span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight">Turn the concept model into a reviewable project basis.</h1>
-            <p className="mt-4 leading-7 text-slate-400">Atlas surfaces the assumptions. Expert review tests the inputs, capability scope, capacity logic and implementation sequence against your actual site.</p>
+            <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Blueprint pilot scope request</span>
+            <h1 className="mt-5 text-4xl font-bold leading-tight">Turn a concept model into a scoped, expert-reviewed project basis.</h1>
+            <p className="mt-4 leading-7 text-slate-400">The first pilot is designed for non-sterile pharmaceutical microbiology laboratory builds, expansions, or material operating-model changes. Atlas surfaces assumptions; qualified reviewers challenge the inputs, capability scope, capacity logic and implementation sequence against your actual site.</p>
             <EditorialImage src="/images/editorial/laboratory-record-review.jpg" alt="Laboratory scientist documenting sample tube identifiers" creditName="Nathan Rimoux" creditUrl="https://unsplash.com/photos/iul3dSPs1G4" className="mt-6 h-40 rounded-2xl border border-white/10 md:h-48" imageClassName="object-center saturate-75" />
             <div className="mt-6 space-y-3">
-              {["Critical-input and evidence check", "Assumption, gap and scenario review", "Controlled deliverables to prepare next"].map((item) => (
+              {["Scope qualification and input check", "Reviewer coverage, assumptions and scenario challenge", "Controlled workbook, decision brief and acceptance basis agreed in scope"].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
               ))}
             </div>
             <div className="mt-8 flex gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.06] p-4 text-sm leading-6 text-slate-400">
               <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /> A review request does not create an approved design, regulatory opinion, supplier specification, or investment recommendation.
             </div>
+            <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><p className="font-bold text-slate-200">What Atlas confirms after qualification</p><p className="mt-1">Fit, project inputs and workshops, named delivery files, reviewer role coverage, timeline, clarification/revision policy, acceptance event, commercial basis and the applicable data-handling arrangement. Detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside the pilot.</p></div>
           </div>
 
           <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7">
             {project && (
               <div className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Attached browser-local model</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Review handoff choice</p>
                 <p className="mt-1 font-semibold">{project.name}</p>
-                <p className="mt-1 text-xs text-slate-500">The model itself remains in this browser. Only the written context below is submitted.</p>
+                <p className="mt-1 text-xs text-slate-500">Choose whether Atlas receives only the scope brief or also a full Blueprint snapshot for expert review.</p>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] text-slate-400">
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-red-200">{project.blueprint.dataQuality.blockingOpenCount}</strong>blocking</span>
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.importantOpenCount}</strong>important</span>
-                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</strong>readiness</span>
+                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</strong>input complete</span>
+                </div>
+                <div className="mt-4 grid gap-2">
+                  <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-xs leading-5 ${attachMode === "brief-only" ? "border-teal-300/30 bg-teal-300/10 text-teal-50" : "border-white/10 bg-black/15 text-slate-400"}`}>
+                    <input type="radio" name="handoff" checked={attachMode === "brief-only"} onChange={() => setAttachMode("brief-only")} className="mt-1 accent-teal-300" />
+                    <span><strong className="block text-slate-100">Submit scope brief only</strong>The complete Blueprint remains in this browser. The brief includes summary metrics, contract versions and open-input checklist.</span>
+                  </label>
+                  <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-xs leading-5 ${attachMode === "full-snapshot" ? "border-teal-300/30 bg-teal-300/10 text-teal-50" : "border-white/10 bg-black/15 text-slate-400"} ${!isAuthenticated ? "opacity-60" : ""}`}>
+                    <input type="radio" name="handoff" checked={attachMode === "full-snapshot"} disabled={!isAuthenticated} onChange={() => setAttachMode("full-snapshot")} className="mt-1 accent-teal-300" />
+                    <span><strong className="block text-slate-100">Attach full Blueprint snapshot</strong>Stores inputs, compiled output, evidence gaps and engagement packet for Atlas review. Access is limited to authenticated Atlas review/admin operations; deletion and retention are handled through the agreed project workflow.</span>
+                  </label>
+                  {!isAuthenticated && <p className="text-[11px] leading-5 text-amber-200">Sign in before submission if you want to attach the full Blueprint snapshot.</p>}
                 </div>
               </div>
             )}
@@ -147,7 +212,7 @@ export default function QualityLabReviewPage() {
             <button type="submit" disabled={request.isPending || !confidentialityConfirmed} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60">
               {request.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending request</> : <>Request a scope review <ArrowRight className="h-4 w-4" /></>}
             </button>
-            <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. It includes contract versions, model summary, and open-input checklist—not the complete browser-local model.</p>
+            <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. Full Blueprint storage occurs only when you choose the full-snapshot handoff and secure save succeeds.</p>
           </form>
         </div>
       </div>

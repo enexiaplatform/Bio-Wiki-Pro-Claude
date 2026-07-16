@@ -49,6 +49,7 @@ export const marketValues = ["vietnam", "asean", "eu", "us", "who"] as const;
 export const qualityLabInputSchema = z.object({
   contractVersion: z.literal(QUALITY_LAB_INPUT_CONTRACT_VERSION).default(QUALITY_LAB_INPUT_CONTRACT_VERSION),
   projectName: z.string().trim().min(2).max(120),
+  scenarioLabel: z.string().trim().min(2).max(80).default("Baseline - current operating model"),
   companyName: z.string().trim().max(120).default(""),
   country: z.string().trim().min(2).max(80),
   facilityType: z.enum(facilityTypeValues),
@@ -333,6 +334,7 @@ export interface QualityLabProject {
 export const defaultQualityLabInput: QualityLabInput = {
   contractVersion: QUALITY_LAB_INPUT_CONTRACT_VERSION,
   projectName: "Vietnam non-sterile QC expansion",
+  scenarioLabel: "Baseline - 1 shift",
   companyName: "",
   country: "Vietnam",
   facilityType: "nonsterile-pharma",
@@ -379,6 +381,39 @@ export const defaultQualityLabInput: QualityLabInput = {
     marketExecutionStrategy: "unknown",
   }],
 };
+
+/** Creates an intentionally unpopulated intake without carrying over example-site facts. */
+export function createBlankQualityLabInput(): QualityLabInput {
+  return {
+    ...defaultQualityLabInput,
+    projectName: "",
+    scenarioLabel: "Baseline - current operating model",
+    companyName: "",
+    country: "",
+    markets: [],
+    finishedProducts: 0,
+    rawMaterials: 0,
+    finishedBatchesPerMonth: 0,
+    rawMaterialLotsPerMonth: 0,
+    waterPoints: 0,
+    waterRoundsPerWeek: 0,
+    emLocations: 0,
+    emRoundsPerWeek: 0,
+    mediaLotsPerMonth: 0,
+    scope: {
+      rawMaterials: false,
+      finishedProducts: false,
+      water: false,
+      environmentalMonitoring: false,
+      sterility: false,
+      endotoxin: false,
+      bioburden: false,
+      growthPromotion: false,
+    },
+    portfolioIsComplete: false,
+    productProfiles: [],
+  };
+}
 
 function ceil(value: number, minimum = 0): number {
   return Math.max(minimum, Math.ceil(value - 1e-9));

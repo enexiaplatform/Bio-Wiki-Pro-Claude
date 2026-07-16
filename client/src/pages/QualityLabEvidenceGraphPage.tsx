@@ -47,7 +47,7 @@ export default function QualityLabEvidenceGraphPage() {
         />
 
         <section className="py-10">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-3"><Boxes className="h-5 w-5 text-teal-300" /><h2 className="text-xl font-bold">Choose the decision you need to defend</h2></div><Link href="/quality-lab/domain-readiness" className="inline-flex items-center gap-2 text-xs font-bold text-amber-200 hover:text-amber-100">Review Domain Pack gates <ArrowRight className="h-4 w-4" /></Link></div>
+          <div className="flex items-center gap-3"><Boxes className="h-5 w-5 text-teal-300" /><h2 className="text-xl font-bold">Choose the decision you need to defend</h2></div>
           <div className="mt-5 flex flex-wrap gap-2" role="group" aria-label="Blueprint decision filter">
             <button type="button" onClick={() => setDecision("all")} className={`rounded-full border px-4 py-2 text-xs font-bold transition ${decision === "all" ? "border-teal-300 bg-teal-300 text-slate-950" : "border-white/10 bg-white/[0.035] text-slate-300 hover:border-white/25"}`}>All decisions</button>
             {blueprintDecisions.map((item) => <button key={item.id} type="button" onClick={() => setDecision(item.id)} title={item.question} className={`rounded-full border px-4 py-2 text-xs font-bold transition ${decision === item.id ? "border-teal-300 bg-teal-300 text-slate-950" : "border-white/10 bg-white/[0.035] text-slate-300 hover:border-white/25"}`}>{item.title}</button>)}

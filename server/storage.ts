@@ -65,6 +65,7 @@ export interface IStorage {
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
   listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
   listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]>;
+  deleteQualityLabReviewedProject(userId: string, localProjectId: string): Promise<boolean>;
   upsertQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey, snapshot: QualityLabGovernanceSnapshot): Promise<QualityLabGovernanceRecordRow>;
   getQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRecordRow | undefined>;
   listQualityLabGovernanceRevisions(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRevisionRow[]>;
@@ -339,6 +340,14 @@ export class DatabaseStorage implements IStorage {
     const project = await this.getQualityLabReviewedProject(userId, localProjectId);
     if (!project) return [];
     return db.select().from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id)).orderBy(qualityLabReviewedProjectRevisions.revisionNumber);
+  }
+
+  async deleteQualityLabReviewedProject(userId: string, localProjectId: string): Promise<boolean> {
+    const project = await this.getQualityLabReviewedProject(userId, localProjectId);
+    if (!project) return false;
+    await db.delete(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id));
+    await db.delete(qualityLabReviewedProjects).where(eq(qualityLabReviewedProjects.id, project.id));
+    return true;
   }
 
   async upsertQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey, snapshot: QualityLabGovernanceSnapshot): Promise<QualityLabGovernanceRecordRow> {
