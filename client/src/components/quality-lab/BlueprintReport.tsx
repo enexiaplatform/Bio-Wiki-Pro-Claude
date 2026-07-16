@@ -24,6 +24,7 @@ import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib
 import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
 import { evidenceForRuleIds, ruleGuidanceForIds } from "@/data/atlasEvidenceGraph";
+import { ProjectActionCenter } from "@/components/quality-lab/ProjectActionCenter";
 
 interface Props {
   project: QualityLabProject;
@@ -161,6 +162,10 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </div>
       </header>
 
+      <div className="mb-5">
+        <ProjectActionCenter project={project} />
+      </div>
+
       <section id="decision-brief" className="mb-5 scroll-mt-32 rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
         <div className="grid gap-5 lg:grid-cols-[1fr_1.25fr_auto] lg:items-start">
           <div>
@@ -195,7 +200,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
 
       <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
         <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
-          {[["#decision-brief", "Decision brief"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
+          {[["#project-action-center", "Action center"], ["#decision-brief", "Decision brief"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
         </div>
       </nav>
 

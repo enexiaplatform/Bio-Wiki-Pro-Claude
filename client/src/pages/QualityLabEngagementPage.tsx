@@ -43,6 +43,7 @@ import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery"
 import { assessValidationCase } from "@shared/quality-lab-validation-cases";
 import { useUser } from "@/context/UserContext";
 import type { QualityLabProject } from "@shared/quality-lab";
+import { qualityLabProjectFromReviewedSnapshot } from "@shared/quality-lab-persistence";
 
 const inputClass = "w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 const baselineLabels: Record<keyof QualityLabEngagementPacket["baseline"], string> = {
@@ -114,15 +115,7 @@ export default function QualityLabEngagementPage() {
     fetchQualityLabReviewedProject(params.id)
       .then((snapshot) => {
         if (!active || !snapshot) return;
-        const recovered: QualityLabProject = {
-          id: snapshot.localProjectId,
-          name: snapshot.projectName,
-          input: snapshot.input,
-          blueprint: snapshot.blueprint,
-          createdAt: snapshot.blueprint.generatedAt,
-          updatedAt: snapshot.blueprint.generatedAt,
-          reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
-        };
+        const recovered: QualityLabProject = qualityLabProjectFromReviewedSnapshot(snapshot);
         setRecoveredProject(recovered);
         setPacket(snapshot.engagement ?? getOrCreateEngagement(recovered));
       })

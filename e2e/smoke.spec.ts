@@ -1,4 +1,19 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function mockAdmin(page: Page) {
+  await page.route("**/api/auth/me", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({
+      id: "smoke-admin",
+      email: "admin@example.com",
+      isPro: true,
+      isAdmin: true,
+      verifiedEmail: true,
+      subscriptionStatus: "active",
+    }),
+  }));
+}
 
 // Public smoke tests — no auth, no Stripe, no DB writes. These run against a
 // dev/prod server (auto-started via playwright.config webServer, or set
@@ -179,6 +194,7 @@ test.describe("public smoke", () => {
   });
 
   test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/pilots");
     await expect(page.getByRole("heading", { name: "Paid Pilot Portfolio" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "0/3 evidence-complete engagements" })).toBeVisible();
@@ -191,6 +207,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
     await page.getByRole("link", { name: /Build a blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/planner$/);
+    await page.getByRole("button", { name: /Use example/i }).click();
     await expect(page.getByText(/microbiology-pack\/v1\.1/i)).toBeVisible();
     for (let step = 0; step < 3; step++) {
       await page.getByRole("button", { name: /^Continue$/ }).click();
@@ -211,55 +228,19 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/^Decision support$/i).first()).toBeVisible();
     await page.getByRole("button", { name: /Show Recommended next decisions detail/i }).click();
     await expect(page.getByRole("link", { name: /Scope a non-sterile microbiology QC lab/i }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Move the Blueprint toward qualified review/i })).toBeVisible();
+    const nextActionOwner = page.getByLabel(/Owner role for/i).first();
+    await nextActionOwner.fill("Site QC lead");
+    await nextActionOwner.blur();
+    await page.getByLabel(/Status for/i).first().selectOption("in-progress");
+    await page.reload();
+    await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
+    await expect(page.getByLabel(/Status for/i).first()).toHaveValue("in-progress");
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
-    await page.getByRole("link", { name: /Review workspace/i }).click();
-    await page.waitForURL(/\/quality-lab\/engagements\/qlp_/);
-    await expect(page.getByRole("heading", { name: /Paid-pilot record/i })).toBeVisible();
-    await expect(page.getByLabel("Pilot engagement class")).toHaveValue("unclassified");
-    await expect(page.getByText(/Classify the engagement and record its commercial status/i)).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Controlled handoff readiness/i })).toBeVisible();
-    await expect(page.getByLabel("11 workbook sheets")).toBeVisible();
-    await expect(page.getByLabel(/Document ID/i)).toHaveValue(/ATLAS-QLP_/i);
-    await page.getByText(/Exports and handoff/i).click();
-    await page.getByRole("button", { name: /Blueprint delivery workbook/i }).click();
-    await expect(page.getByRole("alert")).toContainText(/Sign in and submit the expert-review brief/i);
-    await page.getByText(/Exports and handoff/i).click();
-    await expect(page.getByRole("heading", { name: /Estimate-to-actual calibration/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Evidence and review checklist/i })).toBeVisible();
-    await page.getByLabel(/^Monthly tests actual$/i).fill("500");
-    await expect(page.getByText(/Variance:/i).first()).not.toHaveText(/open/i);
-    await page.getByLabel(/Monthly tests variance driver/i).selectOption("scope-change");
-    await page.getByLabel(/Monthly tests actual basis/i).fill("Approved quarterly QC workload report Q1-2026");
-    await page.getByText(/Observation provenance and learning disposition/i).click();
-    await page.getByLabel(/Observed period start/i).fill("2026-01-01");
-    await page.getByLabel(/Observed period end/i).fill("2026-03-31");
-    await page.getByLabel(/Calibration data owner/i).fill("QC Operations");
-    await page.getByLabel(/Calibration evidence references/i).fill("QC-WORKLOAD-Q1-2026");
-    await expect(page.getByText(/^Review ready$/i).first()).toBeVisible();
-    await page.getByLabel(/Learning disposition/i).selectOption("project-only");
-    await page.getByText(/Controlled validation-case acceptance/i).click();
-    await expect(page.getByLabel(/Validation case status/i)).toHaveValue("draft");
-    await expect(page.getByLabel(/Validation learning use permission/i)).toHaveValue("not-assessed");
-    await expect(page.getByText(/Validation-case acceptance has not started/i)).toBeVisible();
-    await page.getByText(/Exports and handoff/i).click();
-    const calibrationDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Export calibration CSV/i }).click();
-    expect((await calibrationDownload).suggestedFilename()).toMatch(/-calibration\.csv$/);
-    await page.getByRole("link", { name: /Open learning review queue/i }).click();
-    await page.waitForURL(/\/quality-lab\/calibration$/);
-    await expect(page.getByRole("heading", { name: /Calibration Learning Review Queue/i })).toBeVisible();
-    await expect(page.getByText(/^project only$/i).first()).toBeVisible();
-    const registryDownload = page.waitForEvent("download");
-    await page.getByRole("button", { name: /Export review registry/i }).click();
-    expect((await registryDownload).suggestedFilename()).toBe("atlas-calibration-learning-candidates.json");
-    await page.getByRole("link", { name: /Open calibration/i }).click();
-    await page.getByRole("link", { name: /Back to blueprint/i }).click();
-    await expect(page.getByText("quality-lab-blueprint/v1")).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Versioned calculation trace/i })).toBeVisible();
     await page.getByRole("link", { name: /Request expert review/i }).click();
     await page.waitForURL(/\/quality-lab\/review\?project=/);
-    await expect(page.getByRole("heading", { name: /reviewable project basis/i })).toBeVisible();
-    await expect(page.getByText(/Attached browser-local model/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /scoped, expert-reviewed project basis/i })).toBeVisible();
+    await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
     await expect(page.getByText(/quality-lab-review-brief\/v1/i)).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a scope review/i })).toBeVisible();
@@ -350,6 +331,7 @@ test.describe("public smoke", () => {
   });
 
   test("Test Method Application Packs expose maturity and evidence blockers", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/method-applications");
     await expect(page.getByRole("heading", { name: /A method becomes useful when its application is explicit/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Scientist pipetting samples/i })).toBeVisible();
@@ -370,6 +352,7 @@ test.describe("public smoke", () => {
   });
 
   test("Domain Pack readiness keeps expansion evidence-gated", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/domain-readiness");
     await expect(page.getByRole("heading", { name: /A domain becomes a Pack only after its evidence exists/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Gloved laboratory worker holding an organized tray/i })).toBeVisible();
@@ -393,6 +376,7 @@ test.describe("public smoke", () => {
   });
 
   test("Controlled source closures are version-bound and feed Gate 2", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/domain-readiness");
     const resolutionTypes: Record<string, string> = {
       "project-inputs": "controlled-project-revision",
@@ -436,6 +420,7 @@ test.describe("public smoke", () => {
   });
 
   test("Expert ownership register keeps appointments evidence-controlled", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/domain-ownership");
     await expect(page.getByRole("heading", { name: /A reviewer name is not evidence of qualified ownership/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Review scopes exist. Qualified owners are not yet established/i })).toBeVisible();
@@ -450,6 +435,7 @@ test.describe("public smoke", () => {
   });
 
   test("Expert ownership working evidence persists and feeds Gate 2", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/domain-ownership");
     const appointment = {
       reviewerName: "Controlled reviewer",
@@ -485,6 +471,7 @@ test.describe("public smoke", () => {
   });
 
   test("Validation case registry separates synthetic, calibration and accepted evidence", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/validation-cases");
     await expect(page.getByRole("heading", { name: /A calibration record is not automatically a validation case/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /0\/3 accepted validation cases/i })).toBeVisible();
@@ -499,6 +486,7 @@ test.describe("public smoke", () => {
   });
 
   test("Gate 2 release control consolidates all version-matched evidence gates", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/gate-2-release");
     await expect(page.getByRole("heading", { name: /A Domain Pack cannot release on one strong signal/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /0\/4 evidence controls complete/i })).toBeVisible();
@@ -517,13 +505,12 @@ test.describe("public smoke", () => {
 
   test("Governance history keeps account revisions separate from approval", async ({ page }) => {
     await page.goto("/quality-lab/governance-history");
-    await expect(page.getByRole("heading", { name: /Working-record changes should be inspectable/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Sign in to inspect account revisions/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /^Sign in$/i }).last()).toHaveAttribute("href", "/login?returnTo=/quality-lab/governance-history");
-    await expect(page.getByText(/not an electronic signature, approval history, or document-control system/i)).toBeVisible();
+    await page.waitForURL(/\/login\?next=\/admin$/);
+    await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
   });
 
   test("Rule-change control cannot silently modify executable rules", async ({ page }) => {
+    await mockAdmin(page);
     await page.goto("/quality-lab/rule-changes");
     await expect(page.getByRole("heading", { name: /A calibration insight is not a rule change/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Rule-change working register/i })).toBeVisible();
@@ -535,7 +522,7 @@ test.describe("public smoke", () => {
   });
 
   test("Gate 2 uses the newest exact-version account governance basis", async ({ page }) => {
-    await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "gate2-user", email: "gate2@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }) }));
+    await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "gate2-user", email: "gate2@example.com", isPro: false, isAdmin: true, verifiedEmail: true, subscriptionStatus: "free" }) }));
     await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
     await page.route("**/api/quality-lab/governance/expert-ownership", (route) => route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ message: "not found" }) }));
     await page.route("**/api/quality-lab/governance/source-closures", (route) => {

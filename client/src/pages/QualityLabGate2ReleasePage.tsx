@@ -16,6 +16,7 @@ import { MICROBIOLOGY_DOMAIN_PACK, MICROBIOLOGY_EVIDENCE_CATALOG, MICROBIOLOGY_S
 import { assessPaidPilotPortfolio, type PilotPortfolioInput } from "@shared/quality-lab-pilot-portfolio";
 import { applySourceClosureRegister, assessSourceCoverage, type SourceClosureRegister } from "@shared/quality-lab-source-coverage";
 import { assessValidationCaseRegistry } from "@shared/quality-lab-validation-cases";
+import { qualityLabProjectFromReviewedSnapshot } from "@shared/quality-lab-persistence";
 
 const workflowKeys: MicrobiologyWorkflowKey[] = ["rawMaterials", "finishedProducts", "water", "environmentalMonitoring", "sterility", "endotoxin", "bioburden", "growthPromotion"];
 const rules = [...workflowRuleTrace(workflowKeys), ...MICROBIOLOGY_SHARED_RULE_TRACE];
@@ -60,7 +61,7 @@ export default function QualityLabGate2ReleasePage() {
     const byProject = new Map<string, PilotPortfolioInput>();
     serverSnapshots.forEach((snapshot) => {
       if (!snapshot.engagement) return;
-      const project = { id: snapshot.localProjectId, name: snapshot.projectName, input: snapshot.input, blueprint: snapshot.blueprint, createdAt: snapshot.blueprint.generatedAt, updatedAt: snapshot.blueprint.generatedAt, reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined };
+      const project = qualityLabProjectFromReviewedSnapshot(snapshot);
       byProject.set(snapshot.localProjectId, { packet: snapshot.engagement, deliveryReadiness: assessQualityLabDeliveryReadiness(project, snapshot.engagement) });
     });
     listEngagements().forEach((packet) => {

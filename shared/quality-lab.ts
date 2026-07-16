@@ -28,10 +28,12 @@ import {
   methodCapacityDemandSchema,
   type ProductProfile,
 } from "./quality-lab-method-graph.js";
+import { reconcileQualityLabActionPlan, type QualityLabActionPlan } from "./quality-lab-actions.js";
 
 export * from "./quality-lab-contract.js";
 export * from "./quality-lab-microbiology-pack.js";
 export * from "./quality-lab-method-graph.js";
+export * from "./quality-lab-actions.js";
 
 export const QUALITY_LAB_ENGINE_VERSION = `${QUALITY_LAB_COMPILER_CORE_VERSION}+${MICROBIOLOGY_DOMAIN_PACK.version}`;
 
@@ -328,6 +330,7 @@ export interface QualityLabProject {
   updatedAt: string;
   input: QualityLabInput;
   blueprint: QualityLabBlueprint;
+  actionPlan: QualityLabActionPlan;
   reviewRequestedAt?: string;
 }
 
@@ -1018,12 +1021,15 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
 
 export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date.now().toString(36)}`): QualityLabProject {
   const now = new Date().toISOString();
+  const parsedInput = qualityLabInputSchema.parse(input);
+  const blueprint = compileQualityLabBlueprint(parsedInput);
   return {
     id,
-    name: input.projectName,
+    name: parsedInput.projectName,
     createdAt: now,
     updatedAt: now,
-    input: qualityLabInputSchema.parse(input),
-    blueprint: compileQualityLabBlueprint(input),
+    input: parsedInput,
+    blueprint,
+    actionPlan: reconcileQualityLabActionPlan(blueprint, undefined, now),
   };
 }

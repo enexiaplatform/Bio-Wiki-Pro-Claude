@@ -7,6 +7,7 @@ import { downloadPaidPilotRegistry, listEngagements } from "@/lib/quality-lab-en
 import { fetchQualityLabReviewedProjects, getQualityLabProject } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
+import { qualityLabProjectFromReviewedSnapshot } from "@shared/quality-lab-persistence";
 
 const statusStyle = {
   "not-started": "border-slate-300/15 bg-white/5 text-slate-300",
@@ -28,7 +29,7 @@ export default function QualityLabPilotPortfolioPage() {
     const byProject = new Map<string, PilotPortfolioInput>();
     serverSnapshots.forEach((snapshot) => {
       if (!snapshot.engagement) return;
-      const project = { id: snapshot.localProjectId, name: snapshot.projectName, input: snapshot.input, blueprint: snapshot.blueprint, createdAt: snapshot.blueprint.generatedAt, updatedAt: snapshot.blueprint.generatedAt, reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined };
+      const project = qualityLabProjectFromReviewedSnapshot(snapshot);
       byProject.set(snapshot.localProjectId, { packet: snapshot.engagement, deliveryReadiness: assessQualityLabDeliveryReadiness(project, snapshot.engagement) });
     });
     listEngagements().forEach((packet) => {

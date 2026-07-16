@@ -203,6 +203,12 @@ export const analytics = {
   reviewedProjectSnapshotDeleted: (projectId: string) =>
     capture("reviewed_project_snapshot_deleted", { project_id: projectId }),
 
+  projectActionCenterViewed: (projectId: string, activeActions: number, blockingActions: number) =>
+    capture("blueprint_action_center_viewed", { project_id: projectId, active_actions: activeActions, blocking_actions: blockingActions }),
+
+  projectActionUpdated: (projectId: string, actionId: string, field: string, status: string) =>
+    capture("blueprint_action_updated", { project_id: projectId, action_id: actionId, field, status }),
+
   engagementPacketDownloaded: (placement: string, openItems: number) =>
     capture("engagement_packet_downloaded", { placement, open_items: openItems }),
 };

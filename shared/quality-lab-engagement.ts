@@ -172,14 +172,14 @@ export function createQualityLabEngagementPacket(project: QualityLabProject, gen
       caseId: `VAL-${project.id.toUpperCase()}`,
       baselineFrozenAt: generatedAt,
     },
-    checklist: blueprint.unresolvedInputs.map((item) => ({
-      id: `review-${item.id}`,
-      ownerRole: ownerByCategory[item.category] ?? "Project owner",
-      status: "open" as const,
-      question: item.question,
-      requiredEvidence: item.resolution,
-      relatedRuleIds: item.relatedRuleIds,
-      reviewerNote: "",
+    checklist: project.actionPlan.actions.filter((action) => action.status !== "resolved").map((action) => ({
+      id: `review-${action.sourceInputId}`,
+      ownerRole: action.ownerRole || ownerByCategory[action.category] || "Project owner",
+      status: action.status === "open" ? "open" as const : "in-review" as const,
+      question: action.question,
+      requiredEvidence: action.requiredEvidence,
+      relatedRuleIds: action.relatedRuleIds,
+      reviewerNote: action.evidenceNote,
     })),
     methodEvidenceMatrix: blueprint.methodRequirements.map((item) => ({
       id: `method-evidence-${item.id}`,

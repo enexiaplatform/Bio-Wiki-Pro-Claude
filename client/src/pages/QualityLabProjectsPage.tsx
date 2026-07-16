@@ -18,7 +18,7 @@ import {
   Users,
   Wrench,
 } from "lucide-react";
-import type { QualityLabProject } from "@shared/quality-lab";
+import { priorityQualityLabActions, qualityLabActionPlanMetrics, qualityLabProjectStage, type QualityLabProject } from "@shared/quality-lab";
 import {
   deleteQualityLabProject,
   deleteQualityLabReviewedProjectSnapshot,
@@ -36,6 +36,11 @@ import type { QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-pers
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
 type ReviewedProjectStatus = { revisionCount: number; lastSyncedAt: string | null };
+const projectStageLabels = {
+  "awaiting-inputs": "Awaiting inputs",
+  "ready-for-review": "Ready for review",
+  "review-requested": "Review requested",
+};
 
 export default function QualityLabProjectsPage() {
   useSEO({ title: "Quality Lab Projects", description: "Saved Atlas Quality Lab Blueprint scenarios on this device." });
@@ -50,6 +55,7 @@ export default function QualityLabProjectsPage() {
   const averageCompleteness = projects.length
     ? Math.round(projects.reduce((sum, project) => sum + project.blueprint.dataQuality.completenessPercent, 0) / projects.length)
     : 0;
+  const activeProjectActions = projects.reduce((sum, project) => sum + qualityLabActionPlanMetrics(project.actionPlan).activeCount, 0);
 
   const refresh = () => setProjects(listQualityLabProjects());
   useEffect(() => {
@@ -177,7 +183,7 @@ export default function QualityLabProjectsPage() {
               </p>
             </div>
             {projects.length > 0 && (
-              <div className="grid min-w-64 grid-cols-3 gap-2" aria-label="Project portfolio summary">
+              <div className="grid min-w-64 grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Project portfolio summary">
                 <div className="rounded-xl border border-white/10 bg-black/15 p-3 text-center">
                   <strong className="block text-lg text-white">{projects.length}</strong>
                   <span className="text-[10px] text-slate-500">projects</span>
@@ -189,6 +195,10 @@ export default function QualityLabProjectsPage() {
                 <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.04] p-3 text-center">
                   <strong className="block text-lg text-teal-200">{averageCompleteness}%</strong>
                   <span className="text-[10px] text-slate-500">avg input completeness</span>
+                </div>
+                <div className="rounded-xl border border-sky-300/15 bg-sky-300/[0.04] p-3 text-center">
+                  <strong className="block text-lg text-sky-200">{activeProjectActions}</strong>
+                  <span className="text-[10px] text-slate-500">active actions</span>
                 </div>
               </div>
             )}
@@ -217,8 +227,12 @@ export default function QualityLabProjectsPage() {
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
-            {projects.map((project) => (
-              <article key={project.id} className="group rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/30 hover:bg-white/[0.05]">
+            {projects.map((project) => {
+              const actionMetrics = qualityLabActionPlanMetrics(project.actionPlan);
+              const nextAction = priorityQualityLabActions(project.actionPlan)[0];
+              const stage = qualityLabProjectStage(project.actionPlan, project.reviewRequestedAt);
+              return (
+                <article key={project.id} className="group rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/30 hover:bg-white/[0.05]">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-300/10 text-teal-200">
                     <Building2 className="h-5 w-5" />
@@ -231,7 +245,13 @@ export default function QualityLabProjectsPage() {
                 <p className="mt-1 text-sm font-semibold text-teal-200">{project.input.scenarioLabel}</p>
                 <p className="mt-1 text-xs text-slate-500">{project.input.companyName || "Company not specified"} - {project.input.country} - Updated {new Date(project.updatedAt).toLocaleDateString()}</p>
                 {project.reviewRequestedAt && <div className="mt-2 rounded-lg border border-sky-300/15 bg-sky-300/[0.04] px-3 py-2 text-[11px] leading-5 text-sky-100"><p>Account-held review snapshot {reviewedProjects.some((snapshot) => snapshot.localProjectId === project.id) ? `saved · ${reviewedProjectStatuses[project.id]?.revisionCount ?? 0} immutable revision${(reviewedProjectStatuses[project.id]?.revisionCount ?? 0) === 1 ? "" : "s"}${reviewedProjectStatuses[project.id]?.lastSyncedAt ? ` · last saved ${new Date(reviewedProjectStatuses[project.id].lastSyncedAt!).toLocaleDateString()}` : ""}` : "not confirmed in this session"}. Review request: {new Date(project.reviewRequestedAt).toLocaleDateString()}.</p>{reviewedProjects.some((snapshot) => snapshot.localProjectId === project.id) && <button type="button" disabled={deletingSnapshotId === project.id} onClick={() => void removeAccountSnapshot(project)} className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-200 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><Trash2 className="h-3 w-3" /> {deletingSnapshotId === project.id ? "Removing secure copy…" : "Remove account-held snapshot"}</button>}</div>}
-                <div className="mt-5 rounded-xl border border-white/8 bg-slate-950/30 p-3">
+                <div className="mt-4 rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-3">
+                  <div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-wider text-teal-200">{projectStageLabels[stage]}</span><span className="text-[10px] text-slate-500">{actionMetrics.activeCount} active</span></div>
+                  <p className="mt-2 line-clamp-2 text-xs font-semibold leading-5 text-slate-200">{nextAction?.question ?? "No compiled input action remains open."}</p>
+                  {nextAction && <p className="mt-1 text-[10px] text-slate-500">Owner: {nextAction.ownerRole || "Unassigned"}{nextAction.dueDate ? ` · due ${new Date(`${nextAction.dueDate}T00:00:00`).toLocaleDateString()}` : " · no due date"}</p>}
+                  <Link href={`/quality-lab/projects/${project.id}#project-action-center`} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-teal-200 hover:text-white">Manage actions <ArrowRight className="h-3.5 w-3.5" /></Link>
+                </div>
+                <div className="mt-3 rounded-xl border border-white/8 bg-slate-950/30 p-3">
                   <div className="flex items-center justify-between gap-3 text-xs">
                     <span className="font-semibold text-slate-300">Input completeness</span>
                     <span className="font-bold text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</span>
@@ -270,8 +290,9 @@ export default function QualityLabProjectsPage() {
                     Open blueprint <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-              </article>
-            ))}
+                </article>
+              );
+            })}
           </div>
         )}
 

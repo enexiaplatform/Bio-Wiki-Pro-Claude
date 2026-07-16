@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { qualityLabBlueprintSchema, qualityLabInputSchema } from "./quality-lab.js";
+import { qualityLabBlueprintSchema, qualityLabInputSchema, type QualityLabProject } from "./quality-lab.js";
 import { qualityLabEngagementPacketSchema } from "./quality-lab-engagement.js";
+import { qualityLabActionPlanSchema, reconcileQualityLabActionPlan } from "./quality-lab-actions.js";
 
 /**
  * A deliberately narrow server-side record. It is created only for an
@@ -11,11 +12,25 @@ export const qualityLabReviewedProjectSnapshotSchema = z.object({
   projectName: z.string().min(1).max(200),
   input: qualityLabInputSchema,
   blueprint: qualityLabBlueprintSchema,
+  actionPlan: qualityLabActionPlanSchema.optional(),
   engagement: qualityLabEngagementPacketSchema.nullable(),
   reviewRequestedAt: z.string().datetime().nullable(),
 });
 
 export type QualityLabReviewedProjectSnapshot = z.infer<typeof qualityLabReviewedProjectSnapshotSchema>;
+
+export function qualityLabProjectFromReviewedSnapshot(snapshot: QualityLabReviewedProjectSnapshot): QualityLabProject {
+  return {
+    id: snapshot.localProjectId,
+    name: snapshot.projectName,
+    input: snapshot.input,
+    blueprint: snapshot.blueprint,
+    actionPlan: reconcileQualityLabActionPlan(snapshot.blueprint, snapshot.actionPlan, snapshot.blueprint.generatedAt),
+    createdAt: snapshot.blueprint.generatedAt,
+    updatedAt: snapshot.blueprint.generatedAt,
+    reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
+  };
+}
 
 export function compareQualityLabReviewedSnapshots(
   baseline: QualityLabReviewedProjectSnapshot,

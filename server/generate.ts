@@ -3,7 +3,7 @@
 // Keeps the repo source as MD/CSV but ships customers real Office/PDF files.
 import XLSX from "xlsx-js-style";
 import PDFDocument from "pdfkit";
-import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
+import { qualityLabProjectFromReviewedSnapshot, type QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import { createQualityLabDeliveryPackage } from "../shared/quality-lab-delivery.js";
 import { assessPaidPilotEvidence } from "../shared/quality-lab-engagement.js";
 
@@ -107,15 +107,7 @@ function addDeliverySheet(wb: XLSX.WorkBook, name: string, rows: unknown[][], wi
 /** Build a controlled working workbook for an authenticated reviewed Blueprint. */
 export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSnapshot): Buffer {
   if (!snapshot.engagement) throw new Error("A review engagement packet is required before delivery export");
-  const project = {
-    id: snapshot.localProjectId,
-    name: snapshot.projectName,
-    input: snapshot.input,
-    blueprint: snapshot.blueprint,
-    createdAt: snapshot.blueprint.generatedAt,
-    updatedAt: snapshot.blueprint.generatedAt,
-    reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
-  };
+  const project = qualityLabProjectFromReviewedSnapshot(snapshot);
   const packet = snapshot.engagement;
   const delivery = createQualityLabDeliveryPackage(project, packet);
   const pilot = assessPaidPilotEvidence(packet, delivery.readiness);
@@ -192,6 +184,8 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
 
   addDeliverySheet(wb, "Open Inputs", [["Input ID", "Severity", "Category", "Question", "Decision impact", "Resolution", "Related rule IDs"], ...blueprint.unresolvedInputs.map((item) => [item.id, item.severity, item.category, item.question, item.impact, item.resolution, item.relatedRuleIds.join(" | ")])], [24, 14, 16, 62, 58, 58, 36]);
 
+  addDeliverySheet(wb, "Action Register", [["Action ID", "Source input", "Severity", "Status", "Owner role", "Due date", "Question", "Required evidence", "Evidence note", "Last updated"], ...project.actionPlan.actions.map((item) => [item.id, item.sourceInputId, item.severity, item.status, item.ownerRole, item.dueDate, item.question, item.requiredEvidence, item.evidenceNote, item.updatedAt])], [26, 24, 14, 20, 26, 16, 62, 62, 62, 24]);
+
   addDeliverySheet(wb, "Evidence Register", [["Evidence ID", "Title", "Kind", "Status", "Publisher", "Version", "Locator", "Scope", "Limitations"], ...blueprint.evidence.map((item) => [item.id, item.title, item.kind, item.status, item.publisher, item.version, item.locator, item.scope, item.limitations])], [28, 42, 24, 24, 28, 18, 52, 65, 65]);
 
   addDeliverySheet(wb, "Rule Trace", [["Rule ID", "Rule version", "Domain Pack", "Output types", "Applicability", "Confidence", "Review required", "Evidence IDs", "Limitations"], ...blueprint.ruleTrace.map((item) => [item.ruleId, item.ruleVersion, item.domainPackId, item.outputTypes.join(" | "), item.applicability, item.confidence, item.reviewRequired ? "Yes" : "No", item.evidenceIds.join(" | "), item.limitations])], [30, 18, 28, 28, 65, 16, 18, 38, 65]);
@@ -211,7 +205,7 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
 
 export function qualityLabDeliveryMarkdown(snapshot: QualityLabReviewedProjectSnapshot): string {
   if (!snapshot.engagement) throw new Error("A review engagement packet is required before delivery export");
-  const project = { id: snapshot.localProjectId, name: snapshot.projectName, input: snapshot.input, blueprint: snapshot.blueprint, createdAt: snapshot.blueprint.generatedAt, updatedAt: snapshot.blueprint.generatedAt, reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined };
+  const project = qualityLabProjectFromReviewedSnapshot(snapshot);
   const delivery = createQualityLabDeliveryPackage(project, snapshot.engagement);
   const pilot = assessPaidPilotEvidence(snapshot.engagement, delivery.readiness);
   const blueprint = snapshot.blueprint;
@@ -224,7 +218,9 @@ export function qualityLabDeliveryMarkdown(snapshot: QualityLabReviewedProjectSn
     `- Current team basis: ${blueprint.current.totalTeamFte} FTE`, `- Current area basis: ${blueprint.current.estimatedAreaSqm} m2`,
     `- Current CAPEX allowance: USD ${blueprint.current.capexLowUsd.toLocaleString("en-US")} to ${blueprint.current.capexHighUsd.toLocaleString("en-US")}`,
     `- Input completeness: ${blueprint.dataQuality.completenessPercent}%`,
-    `- Controlled-use blockers: ${blueprint.dataQuality.blockingOpenCount}`, "", "## Paid-pilot evidence",
+    `- Controlled-use blockers: ${blueprint.dataQuality.blockingOpenCount}`, "", "## Project action register",
+    ...project.actionPlan.actions.map((item) => `- [${item.status}] ${item.question} | Owner: ${item.ownerRole || "Unassigned"} | Due: ${item.dueDate || "Open"} | Evidence: ${item.evidenceNote || item.requiredEvidence}`),
+    "", "## Paid-pilot evidence",
     `- Eligibility: ${pilot.eligibility}`, `- Engagement class: ${snapshot.engagement.pilotControl.engagementClass}`,
     `- Commercial status: ${snapshot.engagement.pilotControl.commercialStatus}`, `- Commercial evidence reference: ${snapshot.engagement.pilotControl.commercialEvidenceReference || "Open"}`,
     `- Delivery time: ${pilot.deliveryCalendarDays === null ? "Open" : `${pilot.deliveryCalendarDays} calendar days`}`,

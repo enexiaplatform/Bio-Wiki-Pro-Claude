@@ -1,9 +1,10 @@
-import type { QualityLabInput, QualityLabProject } from "@shared/quality-lab";
-import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema } from "@shared/quality-lab";
+import type { QualityLabInput, QualityLabProject, QualityLabProjectAction } from "@shared/quality-lab";
+import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema, reconcileQualityLabActionPlan } from "@shared/quality-lab";
 import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
-import type { QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-persistence";
+import { qualityLabProjectFromReviewedSnapshot, type QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-persistence";
 
 const STORAGE_KEY = "lsa:quality-lab-projects:v1";
+const PROJECTS_CHANGED_EVENT = "atlas:quality-lab-projects-changed";
 
 function safeParse(raw: string | null): QualityLabProject[] {
   if (!raw) return [];
@@ -13,11 +14,13 @@ function safeParse(raw: string | null): QualityLabProject[] {
     return values.flatMap((project) => {
       const parsed = qualityLabInputSchema.safeParse(project?.input);
       if (!project?.id || !parsed.success) return [];
+      const blueprint = compileQualityLabBlueprint(parsed.data);
       return [{
         ...project,
         name: parsed.data.projectName,
         input: parsed.data,
-        blueprint: compileQualityLabBlueprint(parsed.data),
+        blueprint,
+        actionPlan: reconcileQualityLabActionPlan(blueprint, project.actionPlan, project.updatedAt),
       }];
     });
   } catch {
@@ -34,6 +37,7 @@ export function listQualityLabProjects(): QualityLabProject[] {
 function write(projects: QualityLabProject[]) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  window.dispatchEvent(new Event(PROJECTS_CHANGED_EVENT));
 }
 
 export function getQualityLabProject(id: string): QualityLabProject | undefined {
@@ -44,13 +48,19 @@ export function saveQualityLabProject(input: QualityLabInput, id?: string): Qual
   const projects = listQualityLabProjects();
   const existing = id ? projects.find((project) => project.id === id) : undefined;
   const project = existing
-    ? {
-        ...existing,
-        name: input.projectName,
-        input: qualityLabInputSchema.parse(input),
-        blueprint: compileQualityLabBlueprint(input),
-        updatedAt: new Date().toISOString(),
-      }
+    ? (() => {
+        const parsedInput = qualityLabInputSchema.parse(input);
+        const blueprint = compileQualityLabBlueprint(parsedInput);
+        const updatedAt = new Date().toISOString();
+        return {
+          ...existing,
+          name: parsedInput.projectName,
+          input: parsedInput,
+          blueprint,
+          actionPlan: reconcileQualityLabActionPlan(blueprint, existing.actionPlan, updatedAt),
+          updatedAt,
+        };
+      })()
     : createQualityLabProject(input);
   write([project, ...projects.filter((item) => item.id !== project.id)]);
   return project;
@@ -68,19 +78,43 @@ export function duplicateQualityLabProject(id: string, scenarioLabel?: string): 
 
 /** Restores an account-held review snapshot into this browser without re-syncing it. */
 export function restoreQualityLabReviewedProject(snapshot: QualityLabReviewedProjectSnapshot): QualityLabProject {
-  const input = qualityLabInputSchema.parse(snapshot.input);
-  const project: QualityLabProject = {
-    id: snapshot.localProjectId,
-    name: input.projectName,
-    input,
-    blueprint: snapshot.blueprint,
-    createdAt: snapshot.blueprint.generatedAt,
-    updatedAt: snapshot.blueprint.generatedAt,
-    reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
-  };
+  const project = qualityLabProjectFromReviewedSnapshot(snapshot);
   const projects = listQualityLabProjects();
   write([project, ...projects.filter((item) => item.id !== project.id)]);
   return project;
+}
+
+export type QualityLabProjectActionPatch = Partial<Pick<QualityLabProjectAction, "ownerRole" | "dueDate" | "evidenceNote" | "status">>;
+
+export function updateQualityLabProjectAction(projectId: string, actionId: string, patch: QualityLabProjectActionPatch): QualityLabProject | undefined {
+  const projects = listQualityLabProjects();
+  const project = projects.find((item) => item.id === projectId);
+  const action = project?.actionPlan.actions.find((item) => item.id === actionId);
+  if (!project || !action) return undefined;
+  const now = new Date().toISOString();
+  const changedFields = (Object.keys(patch) as Array<keyof QualityLabProjectActionPatch>)
+    .filter((key) => patch[key] !== undefined && patch[key] !== action[key]);
+  if (changedFields.length === 0) return project;
+  const summary = changedFields.includes("status")
+    ? `Action status changed to ${(patch.status ?? action.status).replaceAll("-", " ")}.`
+    : `Action ${changedFields.join(", ")} updated.`;
+  const updatedAction: QualityLabProjectAction = {
+    ...action,
+    ...patch,
+    updatedAt: now,
+    activity: [...action.activity, { id: `${action.id}:updated:${now}`, recordedAt: now, type: "updated", summary }],
+  };
+  const updated: QualityLabProject = {
+    ...project,
+    updatedAt: now,
+    actionPlan: {
+      ...project.actionPlan,
+      updatedAt: now,
+      actions: project.actionPlan.actions.map((item) => item.id === actionId ? updatedAction : item),
+    },
+  };
+  write([updated, ...projects.filter((item) => item.id !== projectId)]);
+  return updated;
 }
 
 export function deleteQualityLabProject(id: string) {
@@ -129,6 +163,7 @@ export async function syncQualityLabReviewedProject(project: QualityLabProject, 
       projectName: project.name,
       input: project.input,
       blueprint: project.blueprint,
+      actionPlan: project.actionPlan,
       engagement,
       reviewRequestedAt: project.reviewRequestedAt,
     }),
@@ -186,5 +221,9 @@ export function subscribeToQualityLabProjects(listener: () => void) {
     if (event.key === STORAGE_KEY) listener();
   };
   window.addEventListener("storage", handler);
-  return () => window.removeEventListener("storage", handler);
+  window.addEventListener(PROJECTS_CHANGED_EVENT, listener);
+  return () => {
+    window.removeEventListener("storage", handler);
+    window.removeEventListener(PROJECTS_CHANGED_EVENT, listener);
+  };
 }

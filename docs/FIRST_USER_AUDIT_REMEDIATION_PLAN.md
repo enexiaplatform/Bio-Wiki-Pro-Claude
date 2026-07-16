@@ -11,6 +11,21 @@ Make Atlas credible and purchasable as a **fixed-scope, service-assisted Bluepri
 
 The plan optimizes for the first 3 paid engagements. It does not attempt to build a complete enterprise collaboration platform before real pilot evidence justifies it.
 
+## Execution update — Project Action Center
+
+The next customer-return slice is now implemented:
+
+- every compiled unresolved input creates a traceable project action;
+- the customer can record owner role, due date, evidence note, and action status;
+- actions close automatically only when recompilation removes the source input and reopen if the input returns;
+- project cards expose stage, next action, owner, due date, and portfolio action totals;
+- action history persists locally and is included in an explicitly saved reviewed-project snapshot;
+- engagement checklists inherit customer action ownership/evidence context;
+- controlled workbooks and decision briefs include the action register;
+- analytics cover action-center views and action updates.
+
+Commercial facts remain gated by `docs/BLUEPRINT_PILOT_COMMERCIAL_DECISIONS.md`; no price, SLA, reviewer identity, or sample claim has been invented.
+
 ## What the audit changes
 
 The audit validates the core value moment: a small operational intake can produce a useful cross-functional laboratory planning model. The immediate problem is not missing model breadth. It is trust, commercial clarity, role separation, and a broken handoff between the browser-local model and expert review.
