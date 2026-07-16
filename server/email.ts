@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 import { getProductName } from "./products.js";
 import { deliverablesForPurchase } from "./deliverables.js";
-import type { QualityLabPortfolioActionItem } from "../shared/quality-lab-actions.js";
+import type { QualityLabPortfolioActionItem, QualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -474,6 +474,59 @@ export async function sendQualityLabWorkQueueEmail(
     return true;
   } catch (err) {
     console.error("[Email] Failed to send Blueprint work queue:", err);
+    return false;
+  }
+}
+
+const WEEKLY_EVENT_LABELS: Record<QualityLabWeeklyPortfolioReview["recentEvents"][number]["type"], string> = {
+  created: "New action",
+  reopened: "Reopened",
+  updated: "Updated",
+  "auto-resolved": "Closed",
+};
+
+/** Weekly opt-in review built only from account-held Blueprint snapshots. */
+export async function sendQualityLabWeeklyReviewEmail(
+  to: string,
+  firstName: string | undefined,
+  review: QualityLabWeeklyPortfolioReview,
+): Promise<boolean> {
+  if (!resend) {
+    console.log(`[Email] Would send weekly Blueprint review to ${to} (Resend not configured)`);
+    return false;
+  }
+  const name = escapeEmailText(firstName ?? "there");
+  const events = review.recentEvents.slice(0, 5).map((event) => `<div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <p style="margin:0 0 4px;color:#5eead4;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">${WEEKLY_EVENT_LABELS[event.type]} · ${escapeEmailText(event.recordedAt.slice(0, 10))}</p>
+    <p style="margin:0 0 4px;color:#f8fafc;font-weight:700;">${escapeEmailText(event.actionQuestion)}</p>
+    <p style="margin:0;font-size:13px;">${escapeEmailText(event.projectName)} · ${escapeEmailText(event.summary)}</p>
+  </div>`).join("");
+  const priorities = review.priorityItems.slice(0, 3).map((item) => `<li style="margin:8px 0;"><strong>${escapeEmailText(item.projectName)}:</strong> ${escapeEmailText(item.action.question)}</li>`).join("");
+  const html = htmlWrapper(`
+    <h1>Your weekly Blueprint review, ${name}</h1>
+    <p>${escapeEmailText(review.windowStart)} through ${escapeEmailText(review.windowEnd)} · only review snapshots you explicitly saved to your account are included. Browser-local projects never leave the device.</p>
+    <div class="box"><p><strong>${review.newCount}</strong> new or reopened · <strong>${review.resolvedCount}</strong> closed · <strong>${review.updatedCount}</strong> updated · <strong>${review.activeBlockingCount}</strong> active blockers</p></div>
+    ${events || "<p>No action-history changes were recorded this week.</p>"}
+    ${priorities ? `<h2 style="font-size:17px;margin-top:24px;">Priority work still open</h2><ul style="padding-left:20px;">${priorities}</ul>` : ""}
+    <a href="${BASE_URL}/quality-lab/projects?source=weekly-review-email" class="cta">Open portfolio review →</a>
+    <p style="font-size:13px;color:#64748b;">This coordination summary is not QA approval, change control or an audit trail. Change or turn off the reminder from Projects at any time.</p>
+  `);
+  try {
+    const response = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: review.activeBlockingCount > 0
+        ? `Weekly Blueprint review: ${review.activeBlockingCount} active blocker${review.activeBlockingCount === 1 ? "" : "s"}`
+        : "Your weekly Blueprint portfolio review",
+      html,
+    });
+    if (response.error) {
+      console.error("[Email] Weekly Blueprint review rejected:", response.error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[Email] Failed to send weekly Blueprint review:", err);
     return false;
   }
 }

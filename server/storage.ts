@@ -29,11 +29,18 @@ import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
 
 export type QualityLabReminderPreference = {
   userId: string;
-  cadence: "off" | "daily" | "weekdays";
+  cadence: "off" | "weekly" | "daily" | "weekdays";
   updatedAt: Date | null;
 };
 
-const QUALITY_LAB_REMINDER_KINDS = ["quality_lab_reminder_daily", "quality_lab_reminder_weekdays"] as const;
+const QUALITY_LAB_REMINDER_KINDS = ["quality_lab_reminder_daily", "quality_lab_reminder_weekdays", "quality_lab_reminder_weekly"] as const;
+
+function qualityLabReminderCadenceFromKind(kind: string): QualityLabReminderPreference["cadence"] {
+  if (kind === "quality_lab_reminder_daily") return "daily";
+  if (kind === "quality_lab_reminder_weekdays") return "weekdays";
+  if (kind === "quality_lab_reminder_weekly") return "weekly";
+  return "off";
+}
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -70,7 +77,7 @@ export interface IStorage {
   // Re-engagement: users whose most recent lesson read falls in [maxDays, minDays] ago.
   getReEngagementCandidates(minDays: number, maxDays: number): Promise<string[]>;
   getQualityLabReminderPreference(userId: string): Promise<QualityLabReminderPreference | undefined>;
-  upsertQualityLabReminderPreference(userId: string, cadence: "off" | "daily" | "weekdays"): Promise<QualityLabReminderPreference>;
+  upsertQualityLabReminderPreference(userId: string, cadence: QualityLabReminderPreference["cadence"]): Promise<QualityLabReminderPreference>;
   getQualityLabReminderCandidates(): Promise<{ id: string; email: string | null; firstName: string | null; cadence: string }[]>;
   upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
@@ -335,14 +342,14 @@ export class DatabaseStorage implements IStorage {
     if (!row) return undefined;
     return {
       userId,
-      cadence: row.kind === "quality_lab_reminder_daily" ? "daily" : "weekdays",
+      cadence: qualityLabReminderCadenceFromKind(row.kind),
       updatedAt: row.sentAt,
     };
   }
 
   async upsertQualityLabReminderPreference(
     userId: string,
-    cadence: "off" | "daily" | "weekdays",
+    cadence: QualityLabReminderPreference["cadence"],
   ): Promise<QualityLabReminderPreference> {
     const updatedAt = new Date();
     await db.transaction(async (tx) => {
@@ -371,7 +378,7 @@ export class DatabaseStorage implements IStorage {
       id: row.id,
       email: row.email,
       firstName: row.firstName,
-      cadence: row.kind === "quality_lab_reminder_daily" ? "daily" : "weekdays",
+      cadence: qualityLabReminderCadenceFromKind(row.kind),
     }));
   }
 

@@ -6,7 +6,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail, sendReEngagementEmail, sendQualityLabWorkQueueEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail, sendReEngagementEmail, sendQualityLabWorkQueueEmail, sendQualityLabWeeklyReviewEmail } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
@@ -16,7 +16,7 @@ import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
 import { rateLimit } from "express-rate-limit";
 import { compareQualityLabReviewedSnapshots, qualityLabProjectFromReviewedSnapshot, qualityLabReviewedProjectSnapshotSchema } from "../shared/quality-lab-persistence.js";
-import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue } from "../shared/quality-lab-actions.js";
+import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue, qualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 
@@ -45,7 +45,7 @@ const authLimiter = rateLimit({
 });
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const qualityLabReminderCadenceSchema = z.enum(["off", "daily", "weekdays"]);
+const qualityLabReminderCadenceSchema = z.enum(["off", "weekly", "daily", "weekdays"]);
 function isValidEmail(email: unknown): email is string {
   return typeof email === "string" && email.length <= 254 && EMAIL_RE.test(email);
 }
@@ -704,7 +704,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       const preference = await storage.upsertQualityLabReminderPreference(req.session.userId, cadence);
       res.json({ cadence: preference.cadence, updatedAt: preference.updatedAt });
     } catch (err) {
-      if (err instanceof z.ZodError) return res.status(400).json({ message: "Reminder cadence must be off, daily, or weekdays" });
+      if (err instanceof z.ZodError) return res.status(400).json({ message: "Reminder cadence must be off, weekly, weekdays, or daily" });
       throw err;
     }
   });
@@ -1015,21 +1015,36 @@ export async function registerRoutes(app: Express): Promise<void> {
       result.reEngagement = { error: "lesson_reads/lifecycle_sends table may be absent — run db:push" };
     }
 
-    // 5. Opt-in Blueprint work queue. Only explicitly saved review snapshots
-    // are available to the server; local concept projects remain device-only.
+    // 5. Opt-in Blueprint work queue and weekly review. Only explicitly saved
+    // review snapshots are available to the server; local projects stay device-only.
     try {
       let scanned = 0, sent = 0, skippedNoPriority = 0;
+      let weeklyScanned = 0, weeklySent = 0, weeklySkippedNoChange = 0;
       const today = new Date().toISOString().slice(0, 10);
       const utcDay = new Date().getUTCDay();
       for (const candidate of await storage.getQualityLabReminderCandidates()) {
         if (!candidate.email || candidate.cadence === "off") continue;
+        if (candidate.cadence === "weekly" && utcDay !== 1) continue;
         if (candidate.cadence === "weekdays" && (utcDay === 0 || utcDay === 6)) continue;
-        scanned++;
         const rows = await storage.listQualityLabReviewedProjects(candidate.id);
-        const queue = qualityLabPortfolioWorkQueue(
-          rows.map((row) => qualityLabProjectFromReviewedSnapshot(row.snapshot)),
-          today,
-        );
+        const projects = rows.map((row) => qualityLabProjectFromReviewedSnapshot(row.snapshot));
+        const queue = qualityLabPortfolioWorkQueue(projects, today);
+        if (candidate.cadence === "weekly") {
+          weeklyScanned++;
+          const review = qualityLabWeeklyPortfolioReview(projects, today);
+          if (!review.recentEvents.length && !review.priorityItems.length) {
+            weeklySkippedNoChange++;
+            continue;
+          }
+          const kind = `quality_lab_weekly_review_${today}`;
+          if (await storage.wasLifecycleSent(candidate.id, kind)) continue;
+          const accepted = await sendQualityLabWeeklyReviewEmail(candidate.email, candidate.firstName ?? undefined, review);
+          if (!accepted) continue;
+          await storage.recordLifecycleSend(candidate.id, kind);
+          weeklySent++;
+          continue;
+        }
+        scanned++;
         const priority = queue.filter((item) =>
           item.timing === "overdue"
           || item.timing === "due-soon"
@@ -1054,9 +1069,12 @@ export async function registerRoutes(app: Express): Promise<void> {
         sent++;
       }
       result.qualityLabWorkQueue = { scanned, sent, skippedNoPriority };
+      result.qualityLabWeeklyReview = { scanned: weeklyScanned, sent: weeklySent, skippedNoChange: weeklySkippedNoChange };
     } catch (err) {
-      console.error("[Cron] Blueprint work-queue error:", err);
-      result.qualityLabWorkQueue = { error: "reminder preferences or reviewed-project tables may be absent — run db:push" };
+      console.error("[Cron] Blueprint reminder error:", err);
+      const error = "reminder preferences or reviewed-project tables may be absent — run db:push";
+      result.qualityLabWorkQueue = { error };
+      result.qualityLabWeeklyReview = { error };
     }
 
     return res.json(result);

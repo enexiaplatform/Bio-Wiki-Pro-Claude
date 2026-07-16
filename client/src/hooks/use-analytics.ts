@@ -215,10 +215,13 @@ export const analytics = {
   projectWorkQueueActionOpened: (projectId: string, actionId: string, timing: string, reminderSource?: string, attributionAgeMinutes?: number) =>
     capture("blueprint_work_queue_action_opened", { project_id: projectId, action_id: actionId, timing, reminder_source: reminderSource, attribution_age_minutes: attributionAgeMinutes }),
 
-  projectReminderQueueOpened: (accountProjectCount: number, localActionCount: number) =>
-    capture("blueprint_reminder_queue_opened", { reminder_source: "work-queue-email", account_project_count: accountProjectCount, local_action_count: localActionCount }),
+  projectReminderQueueOpened: (source: string, accountProjectCount: number, localActionCount: number) =>
+    capture("blueprint_reminder_queue_opened", { reminder_source: source, account_project_count: accountProjectCount, local_action_count: localActionCount }),
 
-  projectReminderCadenceChanged: (cadence: "off" | "daily" | "weekdays", accountProjectCount: number) =>
+  projectWeeklyReviewViewed: (projectCount: number, recentChanges: number, activeBlockers: number) =>
+    capture("blueprint_weekly_review_viewed", { project_count: projectCount, recent_changes: recentChanges, active_blockers: activeBlockers }),
+
+  projectReminderCadenceChanged: (cadence: "off" | "weekly" | "daily" | "weekdays", accountProjectCount: number) =>
     capture("blueprint_reminder_cadence_changed", { cadence, account_project_count: accountProjectCount }),
 
   engagementPacketDownloaded: (placement: string, openItems: number) =>

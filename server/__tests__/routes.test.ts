@@ -81,6 +81,7 @@ vi.mock("../email.js", () => ({
   sendAbandonedCheckoutEmail: vi.fn(() => Promise.resolve()),
   sendReEngagementEmail: vi.fn(() => Promise.resolve()),
   sendQualityLabWorkQueueEmail: vi.fn(() => Promise.resolve(true)),
+  sendQualityLabWeeklyReviewEmail: vi.fn(() => Promise.resolve(true)),
 }));
 
 import { registerRoutes } from "../routes.js";
@@ -848,6 +849,38 @@ describe("lifecycle cron (/api/cron/nurture)", () => {
     expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", `quality_lab_work_queue_${new Date().toISOString().slice(0, 10)}`);
     expect(res.body.qualityLabWorkQueue.sent).toBe(1);
   });
+
+  it("sends an opted-in weekly Blueprint review on Monday", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-07-20T09:00:00.000Z"));
+    try {
+      const app = await buildApp();
+      const project = createQualityLabProject(defaultQualityLabInput, "qlp_weekly_digest");
+      storageMock.getQualityLabReminderCandidates.mockResolvedValueOnce([
+        { id: "u1", email: "owner@example.com", firstName: "Owner", cadence: "weekly" },
+      ]);
+      storageMock.listQualityLabReviewedProjects.mockResolvedValueOnce([{
+        snapshot: {
+          localProjectId: project.id,
+          projectName: project.name,
+          input: project.input,
+          blueprint: project.blueprint,
+          actionPlan: project.actionPlan,
+          engagement: null,
+          reviewRequestedAt: new Date().toISOString(),
+        },
+      }]);
+      storageMock.wasLifecycleSent.mockResolvedValueOnce(false);
+      const res = await auth(request(app).get("/api/cron/nurture"));
+      expect(res.status).toBe(200);
+      expect(email.sendQualityLabWeeklyReviewEmail).toHaveBeenCalledTimes(1);
+      expect(storageMock.recordLifecycleSend).toHaveBeenCalledWith("u1", "quality_lab_weekly_review_2026-07-20");
+      expect(res.body.qualityLabWeeklyReview.sent).toBe(1);
+      expect(email.sendQualityLabWorkQueueEmail).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe("Blueprint reminder preference", () => {
@@ -872,11 +905,11 @@ describe("Blueprint reminder preference", () => {
     expect(current.status).toBe(200);
     expect(current.body.cadence).toBe("off");
 
-    storageMock.upsertQualityLabReminderPreference.mockResolvedValueOnce({ userId: "u1", cadence: "weekdays", updatedAt: new Date() });
-    const saved = await agent.put("/api/quality-lab/reminder-preference").send({ cadence: "weekdays" });
+    storageMock.upsertQualityLabReminderPreference.mockResolvedValueOnce({ userId: "u1", cadence: "weekly", updatedAt: new Date() });
+    const saved = await agent.put("/api/quality-lab/reminder-preference").send({ cadence: "weekly" });
     expect(saved.status).toBe(200);
-    expect(saved.body.cadence).toBe("weekdays");
-    expect(storageMock.upsertQualityLabReminderPreference).toHaveBeenCalledWith("u1", "weekdays");
+    expect(saved.body.cadence).toBe("weekly");
+    expect(storageMock.upsertQualityLabReminderPreference).toHaveBeenCalledWith("u1", "weekly");
   });
 
   it("rejects an unsupported cadence", async () => {

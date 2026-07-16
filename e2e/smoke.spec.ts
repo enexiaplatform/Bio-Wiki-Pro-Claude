@@ -92,16 +92,16 @@ test.describe("public smoke", () => {
     }));
     await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
     await page.route("**/api/quality-lab/reminder-preference", async (route) => {
-      const cadence = route.request().method() === "PUT" ? "weekdays" : "daily";
+      const cadence = route.request().method() === "PUT" ? "weekly" : "daily";
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence, updatedAt: new Date().toISOString() }) });
     });
 
     await page.goto("/quality-lab/projects?source=work-queue-email");
-    await expect(page.getByRole("heading", { name: /Bring priority Blueprint work back to your inbox/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Bring Blueprint progress back to your inbox/i })).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.sessionStorage.getItem("atlas:quality-lab-reminder-attribution"))).toContain("work-queue-email");
     await expect(page.getByRole("button", { name: "Daily" })).toHaveAttribute("aria-pressed", "true");
-    await page.getByRole("button", { name: "Weekdays" }).click();
-    await expect(page.getByRole("button", { name: "Weekdays" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Weekly" }).click();
+    await expect(page.getByRole("button", { name: "Weekly" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("status")).toContainText("Reminder cadence saved");
   });
 
@@ -123,6 +123,7 @@ test.describe("public smoke", () => {
     await page.route("**/api/quality-lab/reminder-preference", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence: "off", updatedAt: null }) }));
 
     await page.goto("/quality-lab/projects?source=work-queue-email");
+    await expect(page.getByRole("heading", { name: /What changed in the last 7 days/i })).toBeVisible();
     await page.getByRole("link", { name: /Open action/i }).first().click();
     await page.locator('select[aria-label^="Status for"]').first().selectOption("in-progress");
 

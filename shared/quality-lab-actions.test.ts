@@ -6,6 +6,7 @@ import {
   qualityLabActionPlanMetrics,
   qualityLabPortfolioQueueMetrics,
   qualityLabPortfolioWorkQueue,
+  qualityLabWeeklyPortfolioReview,
   reconcileQualityLabActionPlan,
 } from "./quality-lab.js";
 
@@ -71,5 +72,34 @@ describe("Quality Lab project action plan", () => {
       dueSoonCount: 1,
       readyForReviewCount: 1,
     });
+  });
+
+  it("summarizes only action activity inside the seven-day portfolio window", () => {
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_weekly_review");
+    const [created, resolved, updated, old] = project.actionPlan.actions;
+    const reviewedProject = {
+      ...project,
+      actionPlan: {
+        ...project.actionPlan,
+        actions: project.actionPlan.actions.map((action) => {
+          if (action.id === created.id) return { ...action, activity: [{ ...action.activity[0], recordedAt: "2026-07-16T08:00:00.000Z" }] };
+          if (action.id === resolved.id) return { ...action, status: "resolved" as const, activity: [{ id: "resolved", recordedAt: "2026-07-15T08:00:00.000Z", type: "auto-resolved" as const, summary: "Resolved this week." }] };
+          if (action.id === updated.id) return { ...action, activity: [{ id: "updated", recordedAt: "2026-07-14T08:00:00.000Z", type: "updated" as const, summary: "Owner and evidence updated." }] };
+          if (action.id === old.id) return { ...action, activity: [{ ...action.activity[0], recordedAt: "2026-07-09T23:59:59.999Z" }] };
+          return { ...action, activity: [] };
+        }),
+      },
+    };
+
+    const review = qualityLabWeeklyPortfolioReview([reviewedProject], "2026-07-16");
+    expect(review).toMatchObject({
+      windowStart: "2026-07-10",
+      windowEnd: "2026-07-16",
+      newCount: 1,
+      resolvedCount: 1,
+      updatedCount: 1,
+    });
+    expect(review.recentEvents.map((event) => event.type)).toEqual(["created", "auto-resolved", "updated"]);
+    expect(review.recentEvents.some((event) => event.actionId === old.id)).toBe(false);
   });
 });

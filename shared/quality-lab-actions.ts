@@ -58,6 +58,29 @@ export interface QualityLabPortfolioActionItem {
   timing: QualityLabActionTiming;
 }
 
+export interface QualityLabWeeklyPortfolioEvent {
+  projectId: string;
+  projectName: string;
+  actionId: string;
+  actionQuestion: string;
+  type: QualityLabProjectAction["activity"][number]["type"];
+  summary: string;
+  recordedAt: string;
+}
+
+export interface QualityLabWeeklyPortfolioReview {
+  windowStart: string;
+  windowEnd: string;
+  newCount: number;
+  resolvedCount: number;
+  updatedCount: number;
+  activeBlockingCount: number;
+  overdueCount: number;
+  dueSoonCount: number;
+  recentEvents: QualityLabWeeklyPortfolioEvent[];
+  priorityItems: QualityLabPortfolioActionItem[];
+}
+
 const ownerByCategory: Record<QualityLabProjectAction["category"], string> = {
   portfolio: "QC project lead",
   method: "QC method owner",
@@ -223,5 +246,55 @@ export function qualityLabPortfolioQueueMetrics(queue: QualityLabPortfolioAction
     dueSoonCount: queue.filter((item) => item.timing === "due-soon").length,
     unscheduledBlockingCount: queue.filter((item) => item.timing === "unscheduled" && item.action.severity === "blocking").length,
     readyForReviewCount: queue.filter((item) => item.action.status === "ready-for-review").length,
+  };
+}
+
+export function qualityLabWeeklyPortfolioReview(
+  projects: QualityLabPortfolioActionSource[],
+  today: string,
+  windowDays = 7,
+): QualityLabWeeklyPortfolioReview {
+  const safeWindowDays = Math.max(1, Math.floor(windowDays));
+  const endAt = Date.parse(`${today}T23:59:59.999Z`);
+  const validEndAt = Number.isFinite(endAt) ? endAt : Date.now();
+  const startAt = validEndAt - (safeWindowDays * 86_400_000) + 1;
+  const windowStart = new Date(startAt).toISOString().slice(0, 10);
+  const windowEnd = new Date(validEndAt).toISOString().slice(0, 10);
+  const queue = qualityLabPortfolioWorkQueue(projects, windowEnd);
+  const queueMetrics = qualityLabPortfolioQueueMetrics(queue);
+  const recentEvents = projects
+    .flatMap((project) => project.actionPlan.actions.flatMap((action) => action.activity
+      .filter((event) => {
+        const recordedAt = Date.parse(event.recordedAt);
+        return Number.isFinite(recordedAt) && recordedAt >= startAt && recordedAt <= validEndAt;
+      })
+      .map((event) => ({
+        projectId: project.id,
+        projectName: project.name,
+        actionId: action.id,
+        actionQuestion: action.question,
+        type: event.type,
+        summary: event.summary,
+        recordedAt: event.recordedAt,
+      }))))
+    .sort((a, b) => b.recordedAt.localeCompare(a.recordedAt));
+
+  return {
+    windowStart,
+    windowEnd,
+    newCount: recentEvents.filter((event) => event.type === "created" || event.type === "reopened").length,
+    resolvedCount: recentEvents.filter((event) => event.type === "auto-resolved").length,
+    updatedCount: recentEvents.filter((event) => event.type === "updated").length,
+    activeBlockingCount: queue.filter((item) => item.action.severity === "blocking").length,
+    overdueCount: queueMetrics.overdueCount,
+    dueSoonCount: queueMetrics.dueSoonCount,
+    recentEvents,
+    priorityItems: queue.filter((item) =>
+      item.timing === "overdue"
+      || item.timing === "due-soon"
+      || item.action.status === "ready-for-review"
+      || item.action.status === "in-progress"
+      || (item.timing === "unscheduled" && item.action.severity === "blocking"),
+    ),
   };
 }

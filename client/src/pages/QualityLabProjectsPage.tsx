@@ -26,6 +26,7 @@ import {
   qualityLabActionPlanMetrics,
   qualityLabPortfolioQueueMetrics,
   qualityLabPortfolioWorkQueue,
+  qualityLabWeeklyPortfolioReview,
   qualityLabProjectStage,
   type QualityLabActionTiming,
   type QualityLabProject,
@@ -47,7 +48,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
 import type { QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-persistence";
-import { getQualityLabReminderAttribution, markQualityLabReminderAttribution, QUALITY_LAB_REMINDER_SOURCE } from "@/lib/quality-lab-reminder-attribution";
+import { getQualityLabReminderAttribution, isQualityLabReminderSource, markQualityLabReminderAttribution } from "@/lib/quality-lab-reminder-attribution";
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 1 });
 type ReviewedProjectStatus = { revisionCount: number; lastSyncedAt: string | null };
@@ -61,6 +62,12 @@ const timingDetails: Record<QualityLabActionTiming, { label: string; className: 
   "due-soon": { label: "Due within 7 days", className: "border-amber-300/20 bg-amber-300/10 text-amber-100" },
   scheduled: { label: "Scheduled", className: "border-sky-300/20 bg-sky-300/10 text-sky-100" },
   unscheduled: { label: "Needs a due date", className: "border-white/10 bg-white/[0.04] text-slate-300" },
+};
+const weeklyEventLabels = {
+  created: "New action",
+  reopened: "Reopened",
+  updated: "Updated",
+  "auto-resolved": "Closed",
 };
 
 function localDateKey(date = new Date()) {
@@ -97,6 +104,8 @@ export default function QualityLabProjectsPage() {
   const workQueue = qualityLabPortfolioWorkQueue(projects, localDateKey());
   const workQueueMetrics = qualityLabPortfolioQueueMetrics(workQueue);
   const visibleWorkQueue = workQueue.slice(0, 5);
+  const weeklyReview = qualityLabWeeklyPortfolioReview(projects, localDateKey());
+  const visibleWeeklyEvents = weeklyReview.recentEvents.slice(0, 5);
 
   const refresh = () => {
     setProjects(listQualityLabProjects());
@@ -139,10 +148,11 @@ export default function QualityLabProjectsPage() {
 
   useEffect(() => {
     if (reminderAttributionCaptured.current || !projectsLoaded || !reviewedProjectsLoaded) return;
-    if (new URLSearchParams(window.location.search).get("source") !== QUALITY_LAB_REMINDER_SOURCE) return;
+    const source = new URLSearchParams(window.location.search).get("source");
+    if (!isQualityLabReminderSource(source)) return;
     reminderAttributionCaptured.current = true;
-    markQualityLabReminderAttribution();
-    analytics.projectReminderQueueOpened(reviewedProjects.length, workQueue.length);
+    markQualityLabReminderAttribution(source);
+    analytics.projectReminderQueueOpened(source, reviewedProjects.length, workQueue.length);
   }, [projectsLoaded, reviewedProjectsLoaded, reviewedProjects.length, workQueue.length]);
 
   useEffect(() => {
@@ -166,6 +176,11 @@ export default function QualityLabProjectsPage() {
     if (projects.length === 0) return;
     analytics.projectWorkQueueViewed(projects.length, activeProjectActions, workQueueMetrics.overdueCount);
   }, [projects.length, activeProjectActions, workQueueMetrics.overdueCount]);
+
+  useEffect(() => {
+    if (projects.length === 0) return;
+    analytics.projectWeeklyReviewViewed(projects.length, weeklyReview.recentEvents.length, weeklyReview.activeBlockingCount);
+  }, [projects.length, weeklyReview.recentEvents.length, weeklyReview.activeBlockingCount]);
 
   function duplicate(id: string) {
     const source = projects.find((project) => project.id === id);
@@ -317,12 +332,12 @@ export default function QualityLabProjectsPage() {
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-2xl">
                 <div className="flex items-center gap-2 text-violet-200"><BellRing className="h-5 w-5" /><p className="text-[10px] font-bold uppercase tracking-[0.18em]">Account reminder</p></div>
-                <h2 id="blueprint-reminder-title" className="mt-2 text-xl font-bold">Bring priority Blueprint work back to your inbox</h2>
-                <p className="mt-2 text-xs leading-5 text-slate-400">Opt in to a concise work-queue email when an account-held review project has overdue, due-soon, in-progress, ready-for-review or blocking unscheduled work.</p>
+                <h2 id="blueprint-reminder-title" className="mt-2 text-xl font-bold">Bring Blueprint progress back to your inbox</h2>
+                <p className="mt-2 text-xs leading-5 text-slate-400">Choose a weekly portfolio review, or a priority work-queue email on weekdays or every day. Weekly review arrives Monday when account-held projects have activity or priority work.</p>
               </div>
               <div className="shrink-0">
                 <div className="inline-flex rounded-xl border border-white/10 bg-slate-950/45 p-1" aria-label="Blueprint reminder cadence">
-                  {(["off", "weekdays", "daily"] as const).map((cadence) => (
+                  {(["off", "weekly", "weekdays", "daily"] as const).map((cadence) => (
                     <button
                       key={cadence}
                       type="button"
@@ -339,9 +354,48 @@ export default function QualityLabProjectsPage() {
             </div>
             <div className="mt-4 flex flex-col gap-2 border-t border-white/8 pt-4 text-[11px] leading-5 text-slate-500 sm:flex-row sm:items-center sm:justify-between">
               <p>Only the {reviewedProjects.length} review snapshot{reviewedProjects.length === 1 ? "" : "s"} explicitly saved to your account can be included. Browser-local projects stay on this device.</p>
-              <p className="shrink-0">Daily scan: 09:00 UTC</p>
+              <p className="shrink-0">Scan: 09:00 UTC · weekly sends Monday</p>
             </div>
             {reminderStatus && <p role="status" className="mt-2 text-[11px] text-violet-200">{reminderStatus}</p>}
+          </section>
+        )}
+
+        {projects.length > 0 && (
+          <section className="mb-6 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/[0.07] via-white/[0.03] to-transparent p-5 md:p-6" aria-labelledby="weekly-portfolio-review-title">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="flex items-center gap-2 text-teal-200"><BarChart3 className="h-5 w-5" /><p className="text-[10px] font-bold uppercase tracking-[0.18em]">Weekly portfolio review</p></div>
+                <h2 id="weekly-portfolio-review-title" className="mt-2 text-2xl font-bold">What changed in the last 7 days</h2>
+                <p className="mt-2 text-xs leading-5 text-slate-400">A factual roll-up of action history across local Blueprints, from {displayDueDate(weeklyReview.windowStart)} through {displayDueDate(weeklyReview.windowEnd)}.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Weekly portfolio review summary">
+                <div className="min-w-24 rounded-xl border border-sky-300/15 bg-sky-300/[0.04] p-3 text-center"><strong className="block text-lg text-sky-200">{weeklyReview.newCount}</strong><span className="text-[10px] text-slate-500">new or reopened</span></div>
+                <div className="min-w-24 rounded-xl border border-teal-300/15 bg-teal-300/[0.04] p-3 text-center"><strong className="block text-lg text-teal-200">{weeklyReview.resolvedCount}</strong><span className="text-[10px] text-slate-500">closed</span></div>
+                <div className="min-w-24 rounded-xl border border-violet-300/15 bg-violet-300/[0.04] p-3 text-center"><strong className="block text-lg text-violet-200">{weeklyReview.updatedCount}</strong><span className="text-[10px] text-slate-500">updated</span></div>
+                <div className="min-w-24 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-center"><strong className="block text-lg text-amber-200">{weeklyReview.activeBlockingCount}</strong><span className="text-[10px] text-slate-500">active blockers</span></div>
+              </div>
+            </div>
+
+            {visibleWeeklyEvents.length > 0 ? (
+              <div className="mt-5 grid gap-2 md:grid-cols-2">
+                {visibleWeeklyEvents.map((event) => (
+                  <article key={`${event.projectId}:${event.actionId}:${event.recordedAt}:${event.type}`} className="rounded-xl border border-white/10 bg-slate-950/35 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="rounded-full border border-teal-300/20 bg-teal-300/[0.07] px-2 py-1 text-[9px] font-bold uppercase tracking-wider text-teal-100">{weeklyEventLabels[event.type]}</span>
+                      <span className="text-[10px] text-slate-500">{new Date(event.recordedAt).toLocaleDateString()}</span>
+                    </div>
+                    <h3 className="mt-2 text-sm font-bold leading-5 text-slate-100">{event.actionQuestion}</h3>
+                    <p className="mt-1 text-[11px] leading-5 text-slate-400">{event.projectName} · {event.summary}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-5 rounded-xl border border-white/10 bg-slate-950/25 p-4 text-xs leading-5 text-slate-400">No action-history changes were recorded in this browser during the last 7 days. Priority work still appears in the daily queue below.</div>
+            )}
+            <div className="mt-4 flex flex-col gap-1 border-t border-white/8 pt-4 text-[11px] leading-5 text-slate-500 sm:flex-row sm:justify-between">
+              <p>Activity history supports coordination; it is not QA approval, change control or an audit trail.</p>
+              <p>{weeklyReview.overdueCount} overdue · {weeklyReview.dueSoonCount} due within 7 days</p>
+            </div>
           </section>
         )}
 

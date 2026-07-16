@@ -228,7 +228,7 @@ export function subscribeToQualityLabProjects(listener: () => void) {
   };
 }
 
-export type QualityLabReminderCadence = "off" | "daily" | "weekdays";
+export type QualityLabReminderCadence = "off" | "weekly" | "daily" | "weekdays";
 
 export async function fetchQualityLabReminderPreference() {
   const response = await fetch("/api/quality-lab/reminder-preference", { credentials: "include" });
