@@ -988,7 +988,7 @@ describe("career blueprint fulfillment", () => {
   it("keeps access and generation behind authentication", async () => {
     const app = await buildApp();
     await request(app).get("/api/career-blueprint/access").expect(401);
-    await request(app).post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Mai Nguyen" }).expect(401);
+    await request(app).post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
   });
 
   it("reports purchase access and generates the named 38-page PDF", async () => {
@@ -1001,10 +1001,10 @@ describe("career blueprint fulfillment", () => {
     expect(access.status).toBe(200);
     expect(access.body.entitled).toBe(true);
 
-    const download = await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Mai Nguyen" });
+    const download = await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" });
     expect(download.status).toBe(200);
     expect(download.headers["content-type"]).toContain("application/pdf");
-    expect(download.headers["content-disposition"]).toContain("mai-nguyen-career-blueprint.pdf");
+    expect(download.headers["content-disposition"]).toContain("alex-morgan-career-blueprint.pdf");
     expect(download.body.subarray(0, 4).toString()).toBe("%PDF");
   });
 
@@ -1013,7 +1013,7 @@ describe("career blueprint fulfillment", () => {
     const agent = await authedAgent(app);
     storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
     storageMock.hasCompletedPurchase.mockResolvedValue(false);
-    await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Mai Nguyen" }).expect(403);
+    await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(403);
   });
 });
 

@@ -49,7 +49,6 @@ export default function Career() {
         const parsed = careerProfileSchema.safeParse(JSON.parse(raw));
         if (parsed.success) {
           setProfile(parsed.data);
-          setPhase("results");
         }
       }
     } catch {

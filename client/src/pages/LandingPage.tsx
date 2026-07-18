@@ -5,10 +5,12 @@ import {
   BarChart3,
   BookOpen,
   Boxes,
+  BriefcaseBusiness,
   Building2,
   Calculator,
   CheckCircle2,
   ClipboardCheck,
+  Crown,
   FileOutput,
   FlaskConical,
   Gauge,
@@ -78,6 +80,42 @@ const evidenceLinks = [
   { href: "/tools", icon: Calculator, title: "Decision tools", body: "Check focused calculations with visible formulas.", image: "/images/editorial/pipette-laboratory.jpg", alt: "Scientist using a precision pipette at a laboratory workbench", credit: "Nathan Rimoux", creditUrl: "https://unsplash.com/photos/AqVLU4cx8OI" },
 ];
 
+const atlasOffers = [
+  {
+    audience: "For quality teams",
+    title: "Plan a quality laboratory",
+    body: "Turn products, markets, tests, and workload into a vendor-neutral capability and operating model.",
+    price: "Free model · $149 diagnostic · from $990",
+    cta: "Explore Quality Lab",
+    href: "/quality-lab",
+    icon: Building2,
+    tone: "border-teal-300/35 bg-teal-300/[0.075]",
+    iconTone: "bg-teal-300 text-slate-950",
+  },
+  {
+    audience: "For working professionals",
+    title: "Use deeper evidence and tools",
+    body: "Access premium lessons, practical toolkits, compliance templates, and reusable decision resources.",
+    price: "Free access · Pro from $8/month",
+    cta: "Compare Free and Pro",
+    href: "/pricing#evidence-plans",
+    icon: Crown,
+    tone: "border-sky-300/20 bg-sky-300/[0.045]",
+    iconTone: "bg-sky-300/12 text-sky-200",
+  },
+  {
+    audience: "For your next career move",
+    title: "Build a personal career plan",
+    body: "Compare credible routes, see your evidence gaps, and turn the strongest route into a detailed execution plan.",
+    price: "Free snapshot · $20 one-time Blueprint",
+    cta: "Start Career Snapshot",
+    href: "/career",
+    icon: BriefcaseBusiness,
+    tone: "border-amber-300/25 bg-amber-300/[0.045]",
+    iconTone: "bg-amber-300/12 text-amber-200",
+  },
+];
+
 const boundaries = [
   "Planning intelligence — not detailed architectural, HVAC, or construction design",
   "Vendor-neutral requirements — not supplier quotations or product placement",
@@ -124,15 +162,22 @@ export default function LandingPage() {
               <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_hero", "planner")}>
                 Compile an initial blueprint <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/quality-lab" className={secondaryCta} onClick={trackCta("home_hero", "product_overview")}>
-                See how Atlas works
-              </Link>
+              <a href="#atlas-products" className={secondaryCta}>
+                Explore all Atlas products
+              </a>
             </motion.div>
 
             <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4} className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-300">
               {["Vendor-neutral", "Scenario-based", "Expert-review-ready"].map((item) => (
                 <span key={item} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-300" /> {item}</span>
               ))}
+            </motion.div>
+
+            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={5} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-white/10 pt-4 text-xs text-slate-400">
+              <span className="font-semibold text-slate-200">Also in Atlas:</span>
+              <Link href="/pricing#evidence-plans" className="transition hover:text-teal-200">Pro resources from $8/month</Link>
+              <span className="text-slate-600">·</span>
+              <Link href="/career" className="transition hover:text-amber-200">Personal Career Blueprint · $20 one time</Link>
             </motion.div>
           </div>
 
@@ -179,6 +224,38 @@ export default function LandingPage() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      <section id="atlas-products" className="scroll-mt-20 border-b border-white/10 bg-slate-950/45 px-4 py-12 md:py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Choose your outcome</p>
+              <h2 className="mt-3 text-3xl font-bold md:text-4xl">One Atlas. Three clear ways to create value.</h2>
+              <p className="mt-4 max-w-2xl leading-7 text-slate-400">Start free in every path. Pay only when you need a deeper resource, a personalized deliverable, or expert-reviewed project work.</p>
+            </div>
+            <Link href="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">
+              See every price and deliverable <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {atlasOffers.map((offer) => (
+              <Link key={offer.title} href={offer.href} className={`group flex min-h-[310px] flex-col rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-teal-200/45 ${offer.tone}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${offer.iconTone}`}><offer.icon className="h-5 w-5" /></div>
+                  <span className="rounded-full border border-white/10 bg-slate-950/45 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300">{offer.audience}</span>
+                </div>
+                <h3 className="mt-7 text-2xl font-bold leading-tight">{offer.title}</h3>
+                <p className="mt-3 flex-1 text-sm leading-6 text-slate-400">{offer.body}</p>
+                <div className="mt-6 border-t border-white/10 pt-4">
+                  <p className="text-xs font-semibold text-slate-200">{offer.price}</p>
+                  <span className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-300">{offer.cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

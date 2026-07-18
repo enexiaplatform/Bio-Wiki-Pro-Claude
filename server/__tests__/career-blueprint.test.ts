@@ -3,7 +3,7 @@ import { buildCareerAnalysis, careerProfileFilename, defaultCareerProfile } from
 import { careerBlueprintPdf } from "../career-blueprint";
 
 describe("Personal Career Blueprint", () => {
-  const profile = { ...defaultCareerProfile, fullName: "Mai Nguyen" };
+  const profile = { ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" };
 
   it("turns profile evidence into ranked routes and explicit gaps", () => {
     const analysis = buildCareerAnalysis(profile);
@@ -33,7 +33,7 @@ describe("Personal Career Blueprint", () => {
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
     expect(pdf.length).toBeGreaterThan(20_000);
     expect(pdf.toString("latin1")).toContain("/Count 38");
-    expect(careerProfileFilename(profile)).toBe("mai-nguyen-career-blueprint.pdf");
+    expect(careerProfileFilename(profile)).toBe("alex-morgan-career-blueprint.pdf");
   });
 
   it("generates the full role playbook across every supported career track", async () => {

@@ -1200,12 +1200,12 @@ test.describe("public smoke", () => {
     await page.goto("/career");
     await expect(page.getByRole("heading", { name: /Stop following a generic career ladder/i })).toBeVisible();
     await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
-    await page.getByRole("textbox", { name: /^Your name$/i }).fill("Mai Nguyen");
+    await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
     await page.getByRole("button", { name: /^Continue$/i }).click();
     await page.getByRole("button", { name: /^Continue$/i }).click();
     await page.getByRole("button", { name: /^Continue$/i }).click();
     await page.getByRole("button", { name: /Create my free Career Snapshot/i }).click();
-    await expect(page.getByRole("heading", { name: /Mai, your strongest next move is Senior QC Microbiologist/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Alex, your strongest next move is Senior QC Microbiologist/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Adjacent QA Investigation Specialist/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
   });

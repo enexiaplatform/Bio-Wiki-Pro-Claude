@@ -138,7 +138,7 @@ export function CareerAssessment({ initialProfile, onCancel, onComplete, onStepC
             {step === 0 && (
               <Step title="Your current professional context" body="Start with facts a hiring manager or mentor would need before giving advice.">
                 <div className="grid gap-5 md:grid-cols-2">
-                  <Field label="Your name"><input aria-label="Your name" value={profile.fullName} onChange={(event) => update("fullName", event.target.value)} className={inputClass} placeholder="Mai Nguyen" /></Field>
+                  <Field label="Your name"><input aria-label="Your name" value={profile.fullName} onChange={(event) => update("fullName", event.target.value)} className={inputClass} placeholder="e.g. Alex Morgan" /></Field>
                   <Field label="Current role"><input aria-label="Current role" value={profile.currentRole} onChange={(event) => update("currentRole", event.target.value)} className={inputClass} /></Field>
                   <Field label="Career area">
                     <select aria-label="Career area" value={profile.careerTrack} onChange={(event) => update("careerTrack", event.target.value as CareerProfile["careerTrack"])} className={inputClass}>
@@ -147,7 +147,7 @@ export function CareerAssessment({ initialProfile, onCancel, onComplete, onStepC
                   </Field>
                   <Field label="Years of relevant experience"><input aria-label="Years of relevant experience" type="number" min="0" max="45" step="0.5" value={profile.yearsExperience} onChange={(event) => update("yearsExperience", Number(event.target.value))} className={inputClass} /></Field>
                   <Field label="Sector"><input aria-label="Sector" value={profile.sector} onChange={(event) => update("sector", event.target.value)} className={inputClass} /></Field>
-                  <Field label="Location"><input aria-label="Location" value={profile.location} onChange={(event) => update("location", event.target.value)} className={inputClass} /></Field>
+                  <Field label="Location"><input aria-label="Location" value={profile.location} onChange={(event) => update("location", event.target.value)} className={inputClass} placeholder="City, country" /></Field>
                 </div>
               </Step>
             )}

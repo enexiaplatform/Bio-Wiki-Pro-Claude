@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, LayoutDashboard } from "lucide-react";
+import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, LayoutDashboard, ChevronDown, Home } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -52,33 +52,36 @@ function AtlasMark({ className }: { className?: string }) {
   );
 }
 
-// `key` maps to nav.json translation keys; `name` is the fallback label.
-// Blueprint is the flagship front door. Workflows, Learn and Tools are the
-// supporting Atlas Evidence surfaces; QC Hub and Library were folded into Learn.
+// The main navigation is organized by customer outcome. Supporting evidence
+// surfaces stay grouped so the header does not read like a feature inventory.
 const mobileTabs = [
-  { key: "qualityLab", name: "Blueprint", icon: Building2, path: "/quality-lab" },
-  { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
+  { key: "home", name: "Home", icon: Home, path: "/" },
+  { key: "qualityLab", name: "Quality Lab", icon: Building2, path: "/quality-lab" },
+  { key: "career", name: "Career", icon: Briefcase, path: "/career" },
   { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
-  { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
 ];
 
-const desktopTabs = [
-  { key: "qualityLab", name: "Blueprint", icon: Building2, path: "/quality-lab" },
-  { key: "workflows", name: "Workflows", icon: Workflow, path: "/workflows" },
-  { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
-  { key: "tools", name: "Tools", icon: Calculator, path: "/tools" },
-  { key: "toolkits", name: "Toolkits", icon: Package, path: "/toolkits" },
-  { key: "compliance", name: "Compliance", icon: ShieldCheck, path: "/compliance" },
+const desktopPrimaryTabs = [
+  { key: "qualityLab", name: "Quality Lab", icon: Building2, path: "/quality-lab" },
   { key: "career", name: "Career", icon: Briefcase, path: "/career" },
+];
+
+const resourceLinks = [
+  { name: "Workflows", description: "Step-by-step quality processes", icon: Workflow, path: "/workflows" },
+  { name: "Academy", description: "Evidence-backed learning", icon: BookOpen, path: "/academy" },
+  { name: "Tools", description: "Focused calculators and models", icon: Calculator, path: "/tools" },
+  { name: "Toolkits", description: "Reusable working files", icon: Package, path: "/toolkits" },
+  { name: "Compliance", description: "Audit and GMP readiness", icon: ShieldCheck, path: "/compliance" },
 ];
 
 // Secondary destinations for the mobile "More" drawer — everything not on the
 // 4-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
 const moreLinks = [
   { name: "Request Blueprint Review", icon: ClipboardCheck, path: "/quality-lab/review" },
+  { name: "Workflows", icon: Workflow, path: "/workflows" },
+  { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Toolkits", icon: Package, path: "/toolkits" },
   { name: "Compliance", icon: ShieldCheck, path: "/compliance" },
-  { name: "Career", icon: Briefcase, path: "/career" },
   { name: "Blog", icon: TrendingUp, path: "/blog" },
   { name: "Glossary", icon: BookA, path: "/glossary" },
   { name: "GMP Audit Kit", icon: Package, path: "/toolkits/gmp-audit-kit" },
@@ -111,7 +114,7 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-white/10 px-2 pb-safe pt-2 z-50 md:hidden">
       <div className="flex justify-between items-center max-w-md mx-auto">
         {mobileTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/quality-lab");
+          const isActive = tab.path === "/" ? location === "/" : location.startsWith(tab.path);
           return (
             <Link key={tab.name} href={tab.path} className="flex flex-col items-center gap-1 p-2 w-full" data-testid={`nav-mobile-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
               <div className={clsx(
@@ -194,8 +197,8 @@ export function DesktopNav() {
       {/* Scrollable tab strip — keeps the brand + right controls pinned and visible
           at any width while the full tab set stays reachable (no clipped Sign In). */}
       <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {desktopTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path) || (location === "/" && tab.path === "/quality-lab");
+        {desktopPrimaryTabs.map((tab) => {
+          const isActive = location.startsWith(tab.path);
           return (
             <Link key={tab.name} href={tab.path} onMouseEnter={() => prefetchRoute(tab.path)} className={clsx(
               "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",
@@ -206,6 +209,46 @@ export function DesktopNav() {
             </Link>
           );
         })}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className={clsx(
+                "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                resourceLinks.some((item) => location.startsWith(item.path))
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              )}
+              data-testid="nav-desktop-resources"
+            >
+              <BookOpen className="h-4 w-4" />
+              Resources
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-72 p-2">
+            <DropdownMenuLabel className="px-2 pb-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Knowledge and working tools</DropdownMenuLabel>
+            {resourceLinks.map((item) => (
+              <DropdownMenuItem key={item.path} asChild className="p-0">
+                <Link href={item.path} onMouseEnter={() => prefetchRoute(item.path)} className="flex cursor-pointer items-start gap-3 rounded-md px-2 py-2.5">
+                  <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
+                  <span>
+                    <span className="block text-sm font-semibold">{item.name}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{item.description}</span>
+                  </span>
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Link href="/pricing" onMouseEnter={() => prefetchRoute("/pricing")} className={clsx(
+          "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+          location.startsWith("/pricing") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+        )} data-testid="nav-desktop-pricing">
+          <Tag className="h-4 w-4" /> Pricing
+        </Link>
       </nav>
 
       <div className="ml-auto shrink-0 flex items-center gap-3 pl-4">

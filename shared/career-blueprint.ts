@@ -114,7 +114,7 @@ export const defaultCareerProfile: CareerProfile = {
   careerTrack: "qc-microbiology",
   yearsExperience: 3,
   sector: "Pharmaceutical manufacturing",
-  location: "Ho Chi Minh City, Vietnam",
+  location: "",
   education: "Bachelor's degree in Biotechnology or a related life-science field",
   targetOutcome: "Broader responsibility and stronger compensation without leaving regulated manufacturing quality",
   targetHorizonMonths: 12,

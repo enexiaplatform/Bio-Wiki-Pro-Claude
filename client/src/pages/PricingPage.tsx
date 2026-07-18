@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, CheckCircle2, Lock, ShieldCheck, Zap } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, CheckCircle2, FileText, Lock, ShieldCheck, Target, Zap } from "lucide-react";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import { JsonLd } from "@/components/JsonLd";
@@ -22,7 +22,7 @@ async function createCheckoutSession(productType: ProductType): Promise<string> 
 
 export default function PricingPage() {
   const { t } = useTranslation("pricing");
-  useSEO({ title: "Ways to work with Life Science Atlas", description: "Start a quality-laboratory blueprint engagement or choose supporting evidence access for regulated manufacturing quality work." });
+  useSEO({ title: "Ways to work with Life Science Atlas", description: "Compare Quality Lab project work, Pro evidence access, and the one-time Personal Career Blueprint." });
   const freeFeatures = t("free.features", { returnObjects: true }) as string[];
   const proFeatures = t("pro.features", { returnObjects: true }) as string[];
   const faqs = t("faq", { returnObjects: true }) as { q: string; a: string }[];
@@ -62,10 +62,11 @@ export default function PricingPage() {
           <div className="flex flex-col justify-center p-2 text-left md:p-4">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300"><Zap className="h-3.5 w-3.5" /> Ways to work with Atlas</span>
             <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">Start with the decision you need to make.</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Choose a project-specific Blueprint when a real laboratory decision is at stake. Choose Free or Pro for the evidence and working resources around it.</p>
-            <div className="mt-5 grid grid-cols-2 gap-2 lg:hidden">
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Choose project work for a real laboratory decision, Pro for reusable professional resources, or a one-time Career Blueprint for your next move.</p>
+            <div className="mt-5 grid grid-cols-3 gap-2 lg:hidden">
               <Link href="/quality-lab/review?offer=diagnostic" className="rounded-xl border border-sky-300/25 bg-sky-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-sky-200">Paid diagnostic</span><strong className="mt-1 block text-xl">$149</strong><span className="text-[11px] text-muted-foreground">Fixed fee</span></Link>
               <Link href="/quality-lab/review?offer=blueprint" className="rounded-xl border border-teal-300/25 bg-teal-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-teal-200">Blueprint pilot</span><strong className="mt-1 block text-xl">From $990</strong><span className="text-[11px] text-muted-foreground">Per project</span></Link>
+              <Link href="/career" className="rounded-xl border border-amber-300/25 bg-amber-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-amber-200">Career Blueprint</span><strong className="mt-1 block text-xl">$20</strong><span className="text-[11px] text-muted-foreground">One time</span></Link>
             </div>
             <div className="mt-5 flex flex-col gap-3 sm:flex-row"><Link href="/quality-lab/review?offer=diagnostic" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Start with the $149 diagnostic <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/planner" className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30">Build an initial model</Link></div>
           </div>
@@ -74,6 +75,27 @@ export default function PricingPage() {
         <div className="mt-4 grid gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 sm:grid-cols-3">
           {["Scope the operating question", "Expose evidence and assumptions", "Review before implementation"].map((item) => <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" />{item}</div>)}
         </div>
+      </section>
+
+      <section className="mb-8 grid gap-3 md:grid-cols-3" aria-label="Atlas product paths">
+        <Link href="/quality-lab" className="group rounded-xl border border-teal-300/25 bg-teal-300/[0.065] p-5 transition hover:-translate-y-0.5 hover:border-teal-200/45">
+          <div className="flex items-center justify-between gap-4"><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">For organizations</span><span className="text-sm font-bold">$149 → $990+</span></div>
+          <h2 className="mt-3 text-lg font-bold">Quality Lab decisions</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Scope, model, and expert-review a real laboratory operating question.</p>
+          <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-teal-300">Explore project offers <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+        </Link>
+        <a href="#evidence-plans" className="group rounded-xl border border-sky-300/20 bg-sky-300/[0.04] p-5 transition hover:-translate-y-0.5 hover:border-sky-200/40">
+          <div className="flex items-center justify-between gap-4"><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">For daily practice</span><span className="text-sm font-bold">From $8/mo</span></div>
+          <h2 className="mt-3 text-lg font-bold">Atlas Pro resources</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Unlock deeper lessons, working files, compliance templates, and premium tools.</p>
+          <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-sky-200">Compare access <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+        </a>
+        <Link href="/career" className="group rounded-xl border border-amber-300/25 bg-amber-300/[0.045] p-5 transition hover:-translate-y-0.5 hover:border-amber-200/45">
+          <div className="flex items-center justify-between gap-4"><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">For your career</span><span className="text-sm font-bold">$20 once</span></div>
+          <h2 className="mt-3 text-lg font-bold">Personal Career Blueprint</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Turn your profile, evidence, constraints, and target role into a 38-page plan.</p>
+          <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-amber-200">Start free first <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
+        </Link>
       </section>
 
       <section className="mb-8 overflow-hidden rounded-xl border border-teal-300/30 bg-gradient-to-br from-teal-300/[0.12] via-white/[0.05] to-sky-300/[0.06] p-6 shadow-xl shadow-teal-950/20 md:p-8">
@@ -112,6 +134,21 @@ export default function PricingPage() {
         <p className="mt-5 text-xs leading-5 text-muted-foreground">Design-partner pricing is limited to the first three paid engagements and will then be reviewed using delivery time, correction burden, buyer response, and project outcomes. Larger portfolios, extra scenarios, additional workshops, travel, or specialist coverage are quoted separately.</p>
       </section>
 
+      <section className="mb-8 overflow-hidden rounded-xl border border-amber-300/25 bg-gradient-to-br from-amber-300/[0.08] via-white/[0.035] to-teal-300/[0.04] p-6 md:p-8">
+        <div className="grid gap-7 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
+          <img src="/images/career/personal-career-blueprint-preview.png" alt="Personalized Career Blueprint product preview" className="aspect-[9/7] w-full rounded-xl border border-white/10 object-cover shadow-2xl shadow-black/20" />
+          <div>
+            <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Personal decision product</span><span className="text-2xl font-bold text-amber-200">$20 one time</span></div>
+            <h2 className="mt-4 font-display text-2xl font-bold md:text-3xl">A personalized career operating plan you can actually use.</h2>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Complete the free Career Snapshot first. If the recommended route feels credible, unlock a named 38-page PDF built from your role, sector, experience, evidence, constraints, target horizon, and selected route.</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {[{ icon: Target, text: "Route and readiness logic" }, { icon: FileText, text: "CV, proof, and interview prompts" }, { icon: CheckCircle2, text: "13-week execution system" }].map((item) => <div key={item.text} className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-950/35 p-3 text-xs font-semibold"><item.icon className="h-4 w-4 shrink-0 text-amber-200" />{item.text}</div>)}
+            </div>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row"><Link href="/career" className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200">Build my free Career Snapshot <ArrowRight className="h-4 w-4" /></Link><span className="inline-flex items-center justify-center text-xs text-muted-foreground">No card required for the snapshot</span></div>
+          </div>
+        </div>
+      </section>
+
       {error && <div className="mb-8 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-sm text-red-400">{error}</div>}
 
       <div id="evidence-plans" className="mb-5 scroll-mt-24"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Supporting evidence access</p><h2 className="mt-2 text-2xl font-bold">Keep the reference layer separate from the engagement</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">Free and Pro help individuals learn and reuse evidence-backed tools. They do not replace a project-specific Blueprint review.</p></div>
@@ -134,7 +171,7 @@ export default function PricingPage() {
       </div>
 
       <TrustBadges className="mb-8" />
-      <div className="mb-8 flex items-start gap-3 rounded-lg border border-amber-300/20 bg-amber-300/[0.055] p-4 text-sm leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-foreground">Choose by outcome:</strong> Blueprint for a project-specific laboratory decision; Pro for deeper evidence and reusable resources; Free for orientation and public tools.</p></div>
+      <div className="mb-8 flex items-start gap-3 rounded-lg border border-amber-300/20 bg-amber-300/[0.055] p-4 text-sm leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-foreground">Choose by outcome:</strong> Quality Lab for a project-specific operating decision; Career Blueprint for a personal one-time plan; Pro for deeper evidence and reusable resources; Free for orientation and public tools.</p></div>
       <div className="grid gap-4 text-center sm:grid-cols-3">{faqs.map((item, index) => <div key={item.q} className={cardClass}>{[<Lock key="lock" className="mx-auto mb-2 h-5 w-5 text-teal-400" />, <Zap key="zap" className="mx-auto mb-2 h-5 w-5 text-teal-400" />, <ShieldCheck key="shield" className="mx-auto mb-2 h-5 w-5 text-teal-400" />][index]}<p className="mb-1 text-sm font-semibold">{item.q}</p><p className="text-xs text-muted-foreground">{item.a}</p></div>)}</div>
     </div>
   );
