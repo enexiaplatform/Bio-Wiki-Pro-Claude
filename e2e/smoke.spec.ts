@@ -282,8 +282,8 @@ test.describe("public smoke", () => {
   // remain reachable as the supporting Atlas Evidence layer.
   test("homepage leads with the Quality Lab Blueprint funnel", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: /defensible quality lab blueprint/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Compile an initial blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
+    await expect(page.getByRole("heading", { name: /quality lab plan your whole project team can challenge/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Build the free model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
     await expect(page.getByText(/Atlas Evidence/i).first()).toBeVisible();
     await expect(page.getByRole("link", { name: /QC workflows/i })).toHaveAttribute("href", "/workflows");
   });
@@ -1201,6 +1201,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Stop following a generic career ladder/i })).toBeVisible();
     await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
     await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
+    await page.getByRole("textbox", { name: /^Location$/i }).fill("Singapore");
     await page.getByRole("button", { name: /^Continue$/i }).click();
     await page.getByRole("button", { name: /^Continue$/i }).click();
     await page.getByRole("button", { name: /^Continue$/i }).click();

@@ -52,8 +52,7 @@ function AtlasMark({ className }: { className?: string }) {
   );
 }
 
-// The main navigation is organized by customer outcome. Supporting evidence
-// surfaces stay grouped so the header does not read like a feature inventory.
+// Mobile keeps the highest-frequency destinations directly reachable.
 const mobileTabs = [
   { key: "home", name: "Home", icon: Home, path: "/" },
   { key: "qualityLab", name: "Quality Lab", icon: Building2, path: "/quality-lab" },
@@ -61,9 +60,12 @@ const mobileTabs = [
   { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
 ];
 
-const desktopPrimaryTabs = [
-  { key: "qualityLab", name: "Quality Lab", icon: Building2, path: "/quality-lab" },
-  { key: "career", name: "Career", icon: Briefcase, path: "/career" },
+// Desktop groups every commercial path under Product so the flagship remains
+// focused without hiding Pro or the one-time Career Blueprint.
+const productLinks = [
+  { name: "Quality Lab Blueprint", description: "Free model · $149 diagnostic · from $990", icon: Building2, path: "/quality-lab" },
+  { name: "Atlas Pro", description: "Evidence, tools and working files from $8/month", icon: Crown, path: "/pricing#evidence-plans" },
+  { name: "Career Blueprint", description: "Free snapshot · personalized PDF for $20", icon: Briefcase, path: "/career" },
 ];
 
 const resourceLinks = [
@@ -196,19 +198,41 @@ export function DesktopNav() {
 
       {/* Scrollable tab strip — keeps the brand + right controls pinned and visible
           at any width while the full tab set stays reachable (no clipped Sign In). */}
-      <nav className="flex items-center gap-1 flex-1 min-w-0 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        {desktopPrimaryTabs.map((tab) => {
-          const isActive = location.startsWith(tab.path);
-          return (
-            <Link key={tab.name} href={tab.path} onMouseEnter={() => prefetchRoute(tab.path)} className={clsx(
-              "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 whitespace-nowrap",
-              isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
-            )} data-testid={`nav-desktop-${tab.name.toLowerCase().replace(/\s+/g, '-')}`}>
-              <tab.icon className="w-4 h-4" />
-              {t(tab.key)}
-            </Link>
-          );
-        })}
+      <nav className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden" aria-label="Primary navigation">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className={clsx(
+                "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                productLinks.some((item) => location.startsWith(item.path.split("#")[0]))
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+              )}
+              data-testid="nav-desktop-product"
+            >
+              Product
+              <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-80 p-2">
+            <DropdownMenuLabel className="px-2 pb-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Products and ways to buy</DropdownMenuLabel>
+            {productLinks.map((item) => (
+              <DropdownMenuItem key={item.path} asChild className="p-0">
+                <Link href={item.path} onMouseEnter={() => prefetchRoute(item.path.split("#")[0])} className="flex cursor-pointer items-start gap-3 rounded-md px-2 py-3">
+                  <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
+                  <span>
+                    <span className="block text-sm font-semibold">{item.name}</span>
+                    <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{item.description}</span>
+                  </span>
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <a href="/#how-it-works" className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground">How it works</a>
+        <a href="/#deliverables" className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground">Deliverables</a>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -223,7 +247,7 @@ export function DesktopNav() {
               data-testid="nav-desktop-resources"
             >
               <BookOpen className="h-4 w-4" />
-              Resources
+              Evidence
               <ChevronDown className="h-3.5 w-3.5 opacity-60" />
             </button>
           </DropdownMenuTrigger>
@@ -251,10 +275,10 @@ export function DesktopNav() {
         </Link>
       </nav>
 
-      <div className="ml-auto shrink-0 flex items-center gap-3 pl-4">
+      <div className="ml-auto flex shrink-0 items-center gap-2 pl-4">
         <button
           onClick={openSearch}
-          className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-white/20 transition-colors"
+          className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground xl:inline-flex"
           aria-label="Search"
         >
           <Search className="w-3.5 h-3.5" /> Search
@@ -314,13 +338,13 @@ export function DesktopNav() {
             </DropdownMenu>
           </>
         ) : (
-          <Button size="sm" asChild data-testid="button-login">
-            <Link href="/login">
-              <LogIn className="w-4 h-4 mr-1.5" />
-              {t("signIn")}
-            </Link>
-          </Button>
+          <Link href="/login" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white" data-testid="button-login">
+            <LogIn className="h-4 w-4" /> {t("signIn")}
+          </Link>
         )}
+        <Link href="/quality-lab/planner" className="inline-flex min-h-10 items-center justify-center rounded-lg bg-teal-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-teal-200" data-testid="nav-desktop-start-free">
+          Start free
+        </Link>
       </div>
     </header>
   );
