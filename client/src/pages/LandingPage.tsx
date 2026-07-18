@@ -8,7 +8,6 @@ import {
   BriefcaseBusiness,
   Building2,
   Calculator,
-  CheckCircle2,
   ClipboardCheck,
   Crown,
   FileOutput,
@@ -84,7 +83,7 @@ const atlasOffers = [
   {
     audience: "For quality teams",
     title: "Plan a quality laboratory",
-    body: "Turn products, markets, tests, and workload into a vendor-neutral capability and operating model.",
+    body: "Turn testing demand into a practical lab operating plan.",
     price: "Free model · $149 diagnostic · from $990",
     cta: "Explore Quality Lab",
     href: "/quality-lab",
@@ -95,7 +94,7 @@ const atlasOffers = [
   {
     audience: "For working professionals",
     title: "Use deeper evidence and tools",
-    body: "Access premium lessons, practical toolkits, compliance templates, and reusable decision resources.",
+    body: "Get practical lessons, tools, templates, and working files.",
     price: "Free access · Pro from $8/month",
     cta: "Compare Free and Pro",
     href: "/pricing#evidence-plans",
@@ -106,7 +105,7 @@ const atlasOffers = [
   {
     audience: "For your next career move",
     title: "Build a personal career plan",
-    body: "Compare credible routes, see your evidence gaps, and turn the strongest route into a detailed execution plan.",
+    body: "See your strongest route, skill gaps, and next 13 weeks.",
     price: "Free snapshot · $20 one-time Blueprint",
     cta: "Start Career Snapshot",
     href: "/career",
@@ -138,50 +137,43 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-[#08111f] text-slate-100">
-      <section className="relative isolate border-b border-white/10 px-4 pb-16 pt-14 md:pb-24 md:pt-24">
+      <section className="relative isolate border-b border-white/10 px-4 pb-12 pt-10 md:pb-16 md:pt-16">
         <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_16%_8%,rgba(45,212,191,0.2),transparent_28%),radial-gradient(circle_at_84%_16%,rgba(56,189,248,0.13),transparent_28%)]" />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.05)_1px,transparent_1px)] bg-[size:52px_52px] [mask-image:linear-gradient(to_bottom,black,transparent_88%)]" />
 
-        <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.03fr_0.97fr] lg:items-center">
+        <div className="mx-auto grid max-w-6xl gap-9 lg:grid-cols-[1.04fr_0.96fr] lg:items-center">
           <div>
             <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
-              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-teal-200">
-                <FlaskConical className="h-3.5 w-3.5" /> Decision intelligence for regulated manufacturing quality
+              <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-teal-200">
+                <FlaskConical className="h-3.5 w-3.5" /> Quality lab decision intelligence
               </span>
             </motion.div>
 
-            <motion.h1 variants={fadeUp} initial="hidden" animate="show" custom={1} className="mt-6 max-w-3xl font-display text-4xl font-bold leading-[1.03] md:text-6xl">
-              From products and regulations to a <span className="text-teal-300">defensible quality lab blueprint.</span>
+            <motion.h1 variants={fadeUp} initial="hidden" animate="show" custom={1} className="mt-5 max-w-3xl font-display text-4xl font-bold leading-[1.05] md:text-5xl lg:text-[3.35rem]">
+              Plan the right quality lab <span className="text-teal-300">before you spend.</span>
             </motion.h1>
 
-            <motion.p variants={fadeUp} initial="hidden" animate="show" custom={2} className="mt-6 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-              Atlas compiles testing demand into the capabilities, equipment, people, space, cost, and procurement basis your QC laboratory needs — with assumptions and uncertainty kept visible.
+            <motion.p variants={fadeUp} initial="hidden" animate="show" custom={2} className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg">
+              Turn products and testing demand into a clear plan for capability, capacity, people, equipment, and cost.
             </motion.p>
 
-            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={3} className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={3} className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_hero", "planner")}>
-                Compile an initial blueprint <ArrowRight className="h-4 w-4" />
+                Build a free lab model <ArrowRight className="h-4 w-4" />
               </Link>
               <a href="#atlas-products" className={secondaryCta}>
-                Explore all Atlas products
+                See all products
               </a>
             </motion.div>
 
-            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4} className="mt-8 flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-300">
-              {["Vendor-neutral", "Scenario-based", "Expert-review-ready"].map((item) => (
-                <span key={item} className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-teal-300" /> {item}</span>
-              ))}
-            </motion.div>
-
-            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={5} className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-white/10 pt-4 text-xs text-slate-400">
-              <span className="font-semibold text-slate-200">Also in Atlas:</span>
-              <Link href="/pricing#evidence-plans" className="transition hover:text-teal-200">Pro resources from $8/month</Link>
-              <span className="text-slate-600">·</span>
-              <Link href="/career" className="transition hover:text-amber-200">Personal Career Blueprint · $20 one time</Link>
+            <motion.div variants={fadeUp} initial="hidden" animate="show" custom={4} className="mt-6 hidden flex-wrap gap-x-4 gap-y-2 text-xs font-medium text-slate-400 sm:flex">
+              <span>Vendor-neutral</span><span className="text-slate-600">•</span>
+              <span>Assumptions visible</span><span className="text-slate-600">•</span>
+              <span>Expert review available</span>
             </motion.div>
           </div>
 
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2} className="relative">
+          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2} className="relative hidden lg:block">
             <div className="absolute -inset-8 -z-10 rounded-full bg-teal-400/10 blur-3xl" />
             <div className="overflow-hidden rounded-3xl border border-white/12 bg-slate-950/80 p-5 shadow-2xl shadow-black/40 backdrop-blur md:p-6">
               <EditorialImage
@@ -190,68 +182,59 @@ export default function LandingPage() {
                 creditName="Nathan Rimoux"
                 creditUrl="https://unsplash.com/photos/AqVLU4cx8OI"
                 eager
-                className="-mx-5 -mt-5 mb-5 h-36 border-b border-white/10 md:-mx-6 md:-mt-6"
+                className="-mx-5 -mt-5 mb-5 h-28 border-b border-white/10 md:-mx-6 md:-mt-6"
                 imageClassName="object-[center_44%] opacity-75 saturate-75"
               />
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
+              <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Compilation trace</p>
-                  <p className="mt-1 font-display text-lg font-bold">Non-sterile pharma expansion</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Example planning output</p>
+                  <p className="mt-1 font-display text-xl font-bold">One model your whole team can challenge</p>
                 </div>
                 <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-200">Concept</span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 py-5">
-                {[["40", "finished products"], ["30/mo", "production batches"], ["70%", "three-year growth"], ["EU + ASEAN", "target markets"]].map(([value, label]) => (
-                  <div key={label} className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5">
-                    <p className="text-xl font-bold text-teal-200">{value}</p>
-                    <p className="mt-1 text-[11px] text-slate-400">{label}</p>
+              <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {compilationSteps.map((step, index) => (
+                  <div key={step.label} className="relative rounded-xl border border-white/8 bg-white/[0.025] p-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-300/10 text-teal-200"><step.icon className="h-4 w-4" /></div>
+                    <p className="mt-3 text-xs font-semibold leading-4">{step.label}</p>
+                    {index < compilationSteps.length - 1 && <ArrowRight className="absolute -right-3 top-5 z-10 hidden h-3.5 w-3.5 text-teal-300/60 sm:block" />}
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-2.5">
-                {compilationSteps.map((step, index) => (
-                  <div key={step.label} className="flex items-center gap-3 rounded-xl border border-white/8 bg-white/[0.025] px-3 py-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-teal-200"><step.icon className="h-4 w-4" /></div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold">{step.label}</p>
-                      <p className="truncate text-xs text-slate-500">{step.detail}</p>
-                    </div>
-                    <span className="text-[10px] font-bold text-slate-600">0{index + 1}</span>
-                  </div>
-                ))}
+              <div className="mt-4 grid grid-cols-3 divide-x divide-white/10 rounded-xl border border-white/10 bg-white/[0.035] py-3 text-center">
+                {["Capability", "Capacity", "Cost & risk"].map((item) => <span key={item} className="px-2 text-[11px] font-semibold text-slate-300">{item}</span>)}
               </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section id="atlas-products" className="scroll-mt-20 border-b border-white/10 bg-slate-950/45 px-4 py-12 md:py-16">
+      <section id="atlas-products" className="scroll-mt-20 border-b border-white/10 bg-slate-950/45 px-4 py-8 md:py-12">
         <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Choose your outcome</p>
-              <h2 className="mt-3 text-3xl font-bold md:text-4xl">One Atlas. Three clear ways to create value.</h2>
-              <p className="mt-4 max-w-2xl leading-7 text-slate-400">Start free in every path. Pay only when you need a deeper resource, a personalized deliverable, or expert-reviewed project work.</p>
+              <p className="hidden text-xs font-bold uppercase tracking-[0.18em] text-teal-300 sm:block">Choose your outcome</p>
+              <h2 className="text-3xl font-bold sm:mt-2 md:text-4xl">Choose your path</h2>
             </div>
             <Link href="/pricing" className="inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">
-              See every price and deliverable <ArrowRight className="h-4 w-4" />
+              Compare plans <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+          <div className="mt-5 grid gap-4 md:mt-7 lg:grid-cols-3">
             {atlasOffers.map((offer) => (
-              <Link key={offer.title} href={offer.href} className={`group flex min-h-[310px] flex-col rounded-2xl border p-6 transition hover:-translate-y-1 hover:border-teal-200/45 ${offer.tone}`}>
+              <Link key={offer.title} href={offer.href} className={`group flex min-h-[250px] flex-col rounded-2xl border p-5 transition hover:-translate-y-1 hover:border-teal-200/45 ${offer.tone}`}>
                 <div className="flex items-start justify-between gap-4">
                   <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${offer.iconTone}`}><offer.icon className="h-5 w-5" /></div>
-                  <span className="rounded-full border border-white/10 bg-slate-950/45 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-300">{offer.audience}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{offer.audience}</span>
                 </div>
-                <h3 className="mt-7 text-2xl font-bold leading-tight">{offer.title}</h3>
-                <p className="mt-3 flex-1 text-sm leading-6 text-slate-400">{offer.body}</p>
-                <div className="mt-6 border-t border-white/10 pt-4">
-                  <p className="text-xs font-semibold text-slate-200">{offer.price}</p>
-                  <span className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-300">{offer.cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+                <h3 className="mt-5 text-xl font-bold leading-tight">{offer.title}</h3>
+                <p className="mt-2 flex-1 text-sm leading-6 text-slate-400">{offer.body}</p>
+                <div className="mt-5 border-t border-white/10 pt-4">
+                  <p className="text-sm font-semibold text-slate-100">{offer.price}</p>
+                  <span className="mt-2 inline-flex items-center gap-2 text-sm font-bold text-teal-300">{offer.cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
                 </div>
               </Link>
             ))}
