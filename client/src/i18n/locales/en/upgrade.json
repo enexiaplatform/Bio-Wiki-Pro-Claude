@@ -19,7 +19,7 @@
   "features": {
     "academyFree": "Academy core lessons (free)",
     "academyPro": "In-depth Pro lessons",
-    "sops": "Full SOP & compliance library",
+    "sops": "Available compliance templates, guides and worked examples",
     "toolkits": "Every downloadable toolkit — checklists, templates & the GMP Audit Kit",
     "tools": "Advanced lab tools",
     "insights": "Insights & market analysis",
@@ -45,7 +45,7 @@
     "title": "Upgrade to Pro",
     "subtitle": "Unlock the full scientific potential with premium access.",
     "features": [
-      "Unlimited access to all SOPs",
+      "Access to every currently published Pro template and guide",
       "Advanced calculators & tools",
       "Detailed job insights & salary data",
       "Priority support"

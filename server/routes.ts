@@ -6,12 +6,11 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import Stripe from "stripe";
-import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail, sendReEngagementEmail, sendQualityLabWorkQueueEmail, sendQualityLabWeeklyReviewEmail } from "./email.js";
+import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail, sendReEngagementEmail, sendQualityLabWorkQueueEmail, sendQualityLabWeeklyReviewEmail, sendCommercialRequestEmails } from "./email.js";
 import crypto from "crypto";
 import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
-import { gapAnalysisWorkbook, markdownToPdf } from "./generate.js";
-import { QUALITY_LAB_SAMPLE_BLUEPRINT_MARKDOWN } from "../shared/quality-lab-commercial.js";
+import { gapAnalysisWorkbook, markdownToPdf, qualityLabSampleBlueprintPdf } from "./generate.js";
 import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
@@ -20,6 +19,7 @@ import { compareQualityLabReviewedSnapshots, qualityLabProjectFromReviewedSnapsh
 import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue, qualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
+import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -275,6 +275,23 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   setupSession(app);
 
+  app.get("/api/health", (_req, res) => {
+    const readiness = runtimeReadiness();
+    const operational = readiness.database && readiness.sessions;
+    const commerceReady = readiness.stripe
+      && readiness.scopeDiagnostic
+      && readiness.email
+      && readiness.commercialNotifications
+      && readiness.publicOriginConfigured;
+    res.status(operational ? 200 : 503).json({
+      status: operational ? "ok" : "degraded",
+      commerceReady,
+      service: "life-science-atlas",
+      timestamp: new Date().toISOString(),
+      readiness,
+    });
+  });
+
   // Which billing plans are sellable (have a configured Stripe price). Lets the
   // client show/hide the annual option without leaking price IDs.
   app.get("/api/billing/plans", (_req, res) => {
@@ -457,7 +474,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       const token = crypto.randomBytes(32).toString("hex");
       const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
       await storage.setVerificationToken(user.id, token, expiry);
-      const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+      const baseUrl = getPublicOrigin();
       if (user.email) {
         sendVerificationEmail(user.email, `${baseUrl}/verify-email?token=${token}`, user.firstName ?? undefined).catch((err) =>
           console.error("[ResendVerify] email error:", err)
@@ -584,7 +601,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ message: "Invalid productType or missing price configuration" });
       }
 
-      const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+      const baseUrl = getPublicOrigin();
 
       const subscription = isSubscription(productType);
       // Free trial for NEW Pro subscribers only (never subscribed, not currently
@@ -626,7 +643,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   app.get("/api/quality-lab/sample-blueprint.pdf", async (_req, res) => {
-    const pdf = await markdownToPdf(QUALITY_LAB_SAMPLE_BLUEPRINT_MARKDOWN, "Atlas Quality Lab Blueprint — Illustrative sample");
+    const pdf = await qualityLabSampleBlueprintPdf();
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="atlas-quality-lab-blueprint-illustrative-sample.pdf"');
     res.send(pdf);
@@ -662,6 +679,14 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       const input = api.quoteRequests.create.input.parse(req.body);
       const quote = await storage.createQuoteRequest(input);
+      sendCommercialRequestEmails({
+        requestId: String(quote?.id ?? "pending"),
+        name: input.name,
+        email: input.email.toLowerCase(),
+        company: input.company ?? undefined,
+        offer: input.productOfInterest ?? "Commercial inquiry",
+        summary: input.need,
+      }).catch((error) => console.error("[Commercial request] Email notification failed:", error));
       res.status(201).json(quote);
     } catch (err) {
       if (err instanceof z.ZodError) {
@@ -685,6 +710,14 @@ export async function registerRoutes(app: Express): Promise<void> {
         need: formatQualityLabReviewBrief(input),
         productOfInterest: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
       });
+      sendCommercialRequestEmails({
+        requestId: String(quote?.id ?? "pending"),
+        name: input.contact.name,
+        email: input.contact.email.toLowerCase(),
+        company: input.contact.company ?? undefined,
+        offer: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
+        summary: formatQualityLabReviewBrief(input),
+      }).catch((error) => console.error("[Quality Lab review] Email notification failed:", error));
       res.status(201).json(quote);
     } catch (err) {
       if (err instanceof z.ZodError) {

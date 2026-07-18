@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { ArrowRight, CheckCircle2, Download, FileCheck2, ShieldCheck } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { QUALITY_LAB_COMMERCIAL_TERMS } from "@shared/quality-lab-commercial";
+import { analytics } from "@/hooks/use-analytics";
 
 const evidenceRows = [
   ["Monthly demand", "Planning estimate", "Low", "Replace with 12-month history"],
@@ -23,9 +24,9 @@ export default function QualityLabSamplePage() {
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Public illustrative sample</p>
               <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">See what a controlled Blueprint looks like before you buy.</h1>
-              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 md:text-base">This synthetic, redacted example shows the decision brief, scenario comparison, evidence register, scope boundaries and acceptance controls. It is not a customer result or an approved facility design.</p>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 md:text-base">This synthetic illustrative example shows the decision brief, scenario comparison, evidence register, scope boundaries and acceptance controls. It is not a customer result or an approved facility design.</p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <a href="/api/quality-lab/sample-blueprint.pdf" className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200"><Download className="h-4 w-4" /> Download sample PDF</a>
+                <a href="/api/quality-lab/sample-blueprint.pdf" onClick={() => analytics.sampleBlueprintDownloaded()} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200"><Download className="h-4 w-4" /> Download sample PDF</a>
                 <Link href="/quality-lab/review?offer=diagnostic" className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold hover:border-white/30">Start with the $149 Diagnostic <ArrowRight className="h-4 w-4" /></Link>
               </div>
             </div>
@@ -41,7 +42,8 @@ export default function QualityLabSamplePage() {
         <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-7">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-300">Evidence and assumption register</p>
           <h2 className="mt-2 text-2xl font-bold">Every important number carries a basis and a next action.</h2>
-          <div className="mt-5 overflow-x-auto"><table className="w-full min-w-[700px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-500"><tr><th className="p-3">Item</th><th className="p-3">Current basis</th><th className="p-3">Confidence</th><th className="p-3">Required action</th></tr></thead><tbody className="divide-y divide-white/8">{evidenceRows.map((row) => <tr key={row[0]}>{row.map((cell) => <td key={cell} className="p-3 text-slate-300">{cell}</td>)}</tr>)}</tbody></table></div>
+          <p className="mt-3 text-xs text-slate-500 md:hidden">Swipe horizontally to inspect the complete register →</p>
+          <div className="mt-3 overflow-x-auto rounded-xl border border-white/5"><table className="w-full min-w-[700px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-400"><tr><th className="p-3">Item</th><th className="p-3">Current basis</th><th className="p-3">Confidence</th><th className="p-3">Required action</th></tr></thead><tbody className="divide-y divide-white/8">{evidenceRows.map((row) => <tr key={row[0]}>{row.map((cell) => <td key={cell} className="p-3 text-slate-300">{cell}</td>)}</tr>)}</tbody></table></div>
         </section>
 
         <section className="mt-6 grid gap-4 lg:grid-cols-[1fr_.9fr]">

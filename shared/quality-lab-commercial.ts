@@ -16,7 +16,7 @@ export const QUALITY_LAB_COMMERCIAL_TERMS = {
 
 export const QUALITY_LAB_SAMPLE_BLUEPRINT_MARKDOWN = `# Atlas Quality Lab Blueprint — Illustrative sample
 
-> Synthetic, redacted demonstration. This is not a customer result, validated design, regulatory approval, engineering specification, or supplier quotation.
+> Synthetic illustrative demonstration. This is not a customer result, validated design, regulatory approval, engineering specification, or supplier quotation.
 
 ## 1. Decision brief
 

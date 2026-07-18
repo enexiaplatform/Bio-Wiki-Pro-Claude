@@ -7,7 +7,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
 import { QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
-import { EditorialImage } from "@/components/EditorialImage";
+import { authPath } from "@shared/auth-return";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -18,6 +18,21 @@ const offerCopy = {
 } as const;
 
 type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-required";
+
+const COMMERCIAL_HANDOFF_KEY = "atlas:commercial-request-handoff:v1";
+const DIAGNOSTIC_RETURN_TO = "/quality-lab/review?offer=diagnostic";
+
+function hasRecentDiagnosticHandoff(): boolean {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(COMMERCIAL_HANDOFF_KEY) ?? "null") as { offer?: string; recordedAt?: number } | null;
+    const recent = value?.offer === "scope-diagnostic" && typeof value.recordedAt === "number" && Date.now() - value.recordedAt < 24 * 60 * 60 * 1000;
+    if (!recent) sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
+    return recent;
+  } catch {
+    sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
+    return false;
+  }
+}
 
 export default function QualityLabReviewPage() {
   useSEO({
@@ -34,7 +49,7 @@ export default function QualityLabReviewPage() {
   const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
   const request = useCreateQualityLabReview();
   const { isAuthenticated } = useUser();
-  const [submitted, setSubmitted] = useState(false);
+  const [submitted, setSubmitted] = useState(() => requestedOffer === "scope-diagnostic" && hasRecentDiagnosticHandoff());
   const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
   const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">("brief-only");
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
@@ -63,11 +78,12 @@ export default function QualityLabReviewPage() {
   });
 
   useEffect(() => {
+    analytics.commercialIntakeViewed(requestedOffer);
     fetch("/api/billing/plans", { credentials: "include" })
       .then((response) => response.json())
       .then((plans) => setDiagnosticCheckoutAvailable(Boolean(plans?.scopeDiagnostic)))
       .catch(() => setDiagnosticCheckoutAvailable(false));
-  }, []);
+  }, [requestedOffer]);
 
   async function payForDiagnostic() {
     setCheckoutLoading(true);
@@ -82,6 +98,7 @@ export default function QualityLabReviewPage() {
       const result = await response.json();
       if (!response.ok || !result.url) throw new Error(result.message ?? "Unable to start secure checkout.");
       analytics.checkoutStarted("scope_diagnostic");
+      sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
       window.location.href = result.url;
     } catch (error) {
       setCheckoutError(error instanceof Error ? error.message : "Unable to start secure checkout.");
@@ -138,6 +155,9 @@ export default function QualityLabReviewPage() {
         }
       }
       analytics.expertReviewRequested(Boolean(project), qualification.engagementIntent);
+      if (qualification.engagementIntent === "scope-diagnostic") {
+        sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify({ offer: "scope-diagnostic", recordedAt: Date.now() }));
+      }
       setSubmitted(true);
     } catch {
       // The shared mutation displays the actionable error toast.
@@ -185,7 +205,10 @@ export default function QualityLabReviewPage() {
               ) : isAuthenticated ? (
                 <p className="mt-3 text-xs leading-5 text-sky-100/75">Atlas will send secure payment instructions after confirming fit.</p>
               ) : (
-                <Link href="/register?next=/quality-lab/review?offer=diagnostic" className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Create an account to pay securely</Link>
+                <div className="mt-4 grid gap-2">
+                  <Link href={authPath("/register", DIAGNOSTIC_RETURN_TO)} className="inline-flex w-full items-center justify-center rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Create an account to pay securely</Link>
+                  <Link href={authPath("/login", DIAGNOSTIC_RETURN_TO)} className="inline-flex w-full items-center justify-center rounded-xl border border-sky-300/20 px-5 py-2.5 text-xs font-bold text-sky-100">Already have an account? Sign in</Link>
+                </div>
               )}
             </div>
           )}
@@ -224,11 +247,14 @@ export default function QualityLabReviewPage() {
         <Link href={project ? `/quality-lab/projects/${project.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {project ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
         <Link href="/quality-lab/sample" className="ml-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">View illustrative sample <ArrowRight className="h-4 w-4" /></Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
-          <div>
+          <div className="order-2 lg:order-1">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>
             <h1 className="mt-5 text-4xl font-bold leading-tight">Choose the smallest paid engagement that resolves the next decision.</h1>
-            <p className="mt-4 leading-7 text-slate-400">Use the $149 diagnostic to frame the operating question, evidence and gaps. Use a Blueprint Pilot, starting at $990, when a non-sterile pharmaceutical microbiology build, expansion, or operating-model change is ready for expert-reviewed planning.</p>
-            <EditorialImage src="/images/editorial/laboratory-record-review.jpg" alt="Laboratory scientist documenting sample tube identifiers" creditName="Nathan Rimoux" creditUrl="https://unsplash.com/photos/iul3dSPs1G4" className="mt-6 h-40 rounded-2xl border border-white/10 md:h-48" imageClassName="object-center saturate-75" />
+            <p className="mt-4 leading-7 text-slate-400">Use the $149 diagnostic to frame the operating question, evidence and gaps. Use a Blueprint Pilot, starting at $990, when a non-sterile pharmaceutical microbiology build, expansion, or operating-model change is ready for qualified, project-specific review.</p>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-sky-200">Diagnostic</p><p className="mt-1 text-2xl font-bold">$149</p><p className="mt-1 text-xs text-slate-400">60-minute workshop + written scope memo</p></div>
+              <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-teal-200">Blueprint</p><p className="mt-1 text-2xl font-bold">From $990</p><p className="mt-1 text-xs text-slate-400">Controlled workbook + decision brief</p></div>
+            </div>
             <div className="mt-6 space-y-3">
               {["Scope qualification and input check", "Reviewer coverage, assumptions and scenario challenge", "Controlled workbook, decision brief and acceptance basis agreed in scope"].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
@@ -240,7 +266,8 @@ export default function QualityLabReviewPage() {
             <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><p className="font-bold text-slate-200">What Atlas confirms after qualification</p><p className="mt-1">Fit, project inputs and workshops, named delivery files, reviewer role coverage, timeline, payment schedule, clarification/revision policy, acceptance event and the applicable data-handling arrangement. Travel, third-party specialists, detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside the quoted scope unless stated otherwise.</p></div>
           </div>
 
-          <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7">
+          <form onSubmit={submit} className="order-1 rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7 lg:order-2">
+            <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Start here</p><p className="mt-1 text-sm font-semibold">About 4–6 minutes · no confidential data</p></div><span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">3 short sections</span></div>
             <section className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">1. Choose an engagement</p>
               <div className="mt-3 grid gap-2">

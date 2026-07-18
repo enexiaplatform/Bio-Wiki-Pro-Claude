@@ -299,3 +299,140 @@ export function markdownToPdf(md: string, title: string): Promise<Buffer> {
     doc.end();
   });
 }
+
+/** Branded public sample that demonstrates the structure of a paid decision brief. */
+export function qualityLabSampleBlueprintPdf(): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({
+      size: "A4",
+      margin: 48,
+      bufferPages: true,
+      info: { Title: "Atlas Quality Lab Blueprint - Illustrative sample", Author: "Life Science Atlas" },
+    });
+    const chunks: Buffer[] = [];
+    doc.on("data", (chunk) => chunks.push(chunk as Buffer));
+    doc.on("end", () => resolve(Buffer.concat(chunks)));
+    doc.on("error", reject);
+
+    const teal = "#14b8a6";
+    const navy = "#08111f";
+    const slate = "#334155";
+    const contentWidth = doc.page.width - 96;
+    const whitePixel = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4//8/AAX+Av4N70a4AAAAAElFTkSuQmCC", "base64");
+
+    const section = (eyebrow: string, title: string, summary?: string) => {
+      doc.font("Helvetica-Bold").fontSize(8.5).fillColor("#0f766e").text(eyebrow.toUpperCase(), { characterSpacing: 1.1 });
+      doc.moveDown(0.45).font("Helvetica-Bold").fontSize(20).fillColor(navy).text(title);
+      if (summary) doc.moveDown(0.35).font("Helvetica").fontSize(10.5).fillColor("#64748b").text(summary, { lineGap: 3 });
+      doc.moveDown(0.8);
+    };
+
+    const callout = (title: string, body: string, tone: "teal" | "amber" = "teal") => {
+      const fill = tone === "teal" ? "#f0fdfa" : "#fffbeb";
+      const border = tone === "teal" ? "#5eead4" : "#fcd34d";
+      const height = doc.heightOfString(body, { width: contentWidth - 32, lineGap: 3 }) + 48;
+      const y = doc.y;
+      doc.roundedRect(48, y, contentWidth, height, 9).fillAndStroke(fill, border);
+      doc.font("Helvetica-Bold").fontSize(9.5).fillColor(navy).text(title, 64, y + 13, { width: contentWidth - 32 });
+      doc.font("Helvetica").fontSize(9.2).fillColor(slate).text(body, 64, y + 31, { width: contentWidth - 32, lineGap: 3 });
+      doc.y = y + height + 13;
+    };
+
+    const bullets = (items: string[]) => {
+      items.forEach((item) => {
+        doc.font("Helvetica-Bold").fontSize(10).fillColor(teal).text("-", 52, doc.y, { continued: true });
+        doc.font("Helvetica").fillColor(slate).text(`  ${item}`, { width: contentWidth - 16, lineGap: 2 });
+        doc.moveDown(0.25);
+      });
+    };
+
+    const table = (headers: string[], rows: string[][], widths: number[]) => {
+      [headers, ...rows].forEach((row, rowIndex) => {
+        const padding = 7;
+        const rowHeight = Math.max(31, ...row.map((cell, index) => doc.heightOfString(cell, { width: widths[index] - padding * 2, lineGap: 1 }) + padding * 2));
+        const y = doc.y;
+        let x = 48;
+        row.forEach((cell, index) => {
+          doc.rect(x, y, widths[index], rowHeight).fillAndStroke(rowIndex === 0 ? "#0f766e" : rowIndex % 2 ? "#f8fafc" : "#f1f5f9", rowIndex === 0 ? "#0f766e" : "#cbd5e1");
+          doc.font(rowIndex === 0 ? "Helvetica-Bold" : "Helvetica").fontSize(rowIndex === 0 ? 8.5 : 8.2).fillColor(rowIndex === 0 ? "#ffffff" : "#1e293b").text(cell, x + padding, y + padding, { width: widths[index] - padding * 2, lineGap: 1 });
+          x += widths[index];
+        });
+        doc.y = y + rowHeight;
+      });
+      doc.moveDown(0.7);
+    };
+
+    const newContentPage = () => {
+      doc.addPage();
+      doc.image(whitePixel, 0, 0, { width: 596, height: 842 });
+      doc.x = 48;
+      doc.y = 48;
+    };
+
+    // Cover
+    doc.rect(0, 0, doc.page.width, doc.page.height).fill(navy);
+    doc.roundedRect(48, 58, 188, 28, 14).fill("#11333a");
+    doc.font("Helvetica-Bold").fontSize(9.5).fillColor("#99f6e4").text("ILLUSTRATIVE PUBLIC SAMPLE", 62, 67, { characterSpacing: 1.1 });
+    doc.font("Helvetica-Bold").fontSize(30).fillColor("#f8fafc").text("Atlas Quality Lab\nBlueprint", 48, 132, { lineGap: 4 });
+    doc.font("Helvetica").fontSize(14).fillColor("#94a3b8").text("Decision brief for a synthetic non-sterile pharmaceutical microbiology scenario", 48, 230, { width: 430, lineGap: 5 });
+    doc.roundedRect(48, 338, contentWidth, 118, 12).fill("#0f2032").strokeColor("#1e3a4f").stroke();
+    doc.font("Helvetica-Bold").fontSize(9).fillColor("#5eead4").text("DOCUMENT CONTROL", 66, 356, { characterSpacing: 1 });
+    doc.font("Helvetica").fontSize(10.5).fillColor("#e2e8f0").text("Document ID", 66, 384).text("LSA-SAMPLE-BP-001", 235, 384);
+    doc.text("Revision", 66, 406).text("1.0 / Public sample", 235, 406);
+    doc.text("Issue date", 66, 428).text("16 July 2026", 235, 428);
+    doc.font("Helvetica").fontSize(9.5).fillColor("#94a3b8").text("Synthetic illustrative scenario. Not a customer result, validated design, regulatory approval, engineering specification or supplier quotation.", 48, 526, { width: contentWidth, lineGap: 4 });
+    doc.font("Helvetica-Bold").fontSize(11).fillColor(teal).text("LIFE SCIENCE ATLAS", 48, 740);
+
+    // Executive decision page
+    newContentPage();
+    section("01 / Decision brief", "What decision is being framed?", "One ASEAN non-sterile oral solid-dose site is evaluating whether its microbiology operating model can support assumed release demand with one staffed shift.");
+    callout("Illustrative decision", "Compare a one-shift baseline with a two-shift alternative, identify the assumptions driving utilization, and define the evidence required before detailed planning.");
+    doc.font("Helvetica-Bold").fontSize(11).fillColor(navy).text("This concept can support");
+    doc.moveDown(0.45);
+    bullets(["Directional workload and staffing comparison.", "Identification of capacity-sensitive assumptions.", "Prioritization of evidence needed before design or procurement."]);
+    doc.moveDown(0.5).font("Helvetica-Bold").fontSize(11).fillColor(navy).text("This concept cannot support");
+    doc.moveDown(0.45);
+    bullets(["Final room sizing or equipment procurement.", "Validated method transfer, biosafety classification or regulatory approval.", "A claim that an expert, engineer, supplier or authority approved the concept."]);
+    callout("Review boundary", "A paid proposal names the reviewer role, required competence evidence, scope exclusions, schedule and acceptance basis. Reviewer appointment is never implied before confirmation.", "amber");
+
+    // Scenario page
+    newContentPage();
+    section("02 / Scenario comparison", "Demand-capacity view", "The values below are synthetic planning inputs and concept calculations. They demonstrate presentation and decision logic, not a customer result.");
+    table(
+      ["Measure", "Baseline", "Alternative", "Control status"],
+      [
+        ["Monthly test demand", "1,200", "1,200", "Illustrative input"],
+        ["Operating shifts", "1", "2", "Scenario assumption"],
+        ["Directional utilization", "92%", "61%", "Concept calculation"],
+        ["Peak-demand resilience", "Low", "Moderate", "Requires verification"],
+      ],
+      [145, 105, 105, 144],
+    );
+    callout("Decision signal", "The alternative reduces directional utilization but creates shift-handover, supervision, training and sample-chain-of-custody questions. Atlas would not recommend a scenario until these inputs are resolved.");
+    doc.moveDown(0.25).font("Helvetica-Bold").fontSize(8.5).fillColor("#0f766e").text("EVIDENCE CONTROL", { characterSpacing: 1.1 });
+    doc.moveDown(0.25).font("Helvetica-Bold").fontSize(13).fillColor(navy).text("Assumption and verification register");
+    doc.moveDown(0.35);
+    table(
+      ["Item", "Current basis", "Confidence", "Required action"],
+      [
+        ["Monthly demand", "Planning estimate", "Low", "Replace with 12-month sample/test history"],
+        ["Method cycle time", "Generic planning range", "Low", "Confirm site methods and incubation rules"],
+        ["Analyst availability", "Headcount assumption", "Medium", "Confirm leave, training and non-routine load"],
+      ],
+      [113, 123, 76, 187],
+    );
+    callout("Controlled delivery and next step", "Paid delivery carries a document ID, version, input freeze, revision record and acceptance status. Use the $149 Paid Scope Diagnostic to frame the evidence and Blueprint scope; the fee is credited when a Blueprint begins within 30 days.");
+
+    const range = doc.bufferedPageRange();
+    for (let pageIndex = range.start; pageIndex < range.start + range.count; pageIndex += 1) {
+      doc.switchToPage(pageIndex);
+      if (pageIndex === 0) continue;
+      doc.page.margins.bottom = 0;
+      const footerY = doc.page.height - 30;
+      doc.moveTo(48, footerY - 8).lineTo(doc.page.width - 48, footerY - 8).lineWidth(0.5).strokeColor("#cbd5e1").stroke();
+      doc.font("Helvetica").fontSize(8).fillColor("#64748b").text("Life Science Atlas | Illustrative sample | Not for implementation", 48, footerY, { width: contentWidth - 70, lineBreak: false });
+      doc.text(`${pageIndex + 1} / ${range.count}`, doc.page.width - 92, footerY, { width: 44, align: "right", lineBreak: false });
+    }
+    doc.end();
+  });
+}

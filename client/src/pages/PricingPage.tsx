@@ -36,6 +36,7 @@ export default function PricingPage() {
   const proProductType: ProductType = proPlan === "annual" ? "pro_subscription_annual" : "pro_subscription";
 
   useEffect(() => {
+    analytics.commercialPricingViewed();
     let active = true;
     fetch("/api/billing/plans", { credentials: "include" }).then((r) => r.json()).then((data) => {
       if (!active) return;
@@ -62,9 +63,13 @@ export default function PricingPage() {
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300"><Zap className="h-3.5 w-3.5" /> Ways to work with Atlas</span>
             <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">Start with the decision you need to make.</h1>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Choose a project-specific Blueprint when a real laboratory decision is at stake. Choose Free or Pro for the evidence and working resources around it.</p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row"><Link href="/quality-lab/planner" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Start a Blueprint <ArrowRight className="h-4 w-4" /></Link><a href="#evidence-plans" className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30">Compare evidence plans</a></div>
+            <div className="mt-5 grid grid-cols-2 gap-2 lg:hidden">
+              <Link href="/quality-lab/review?offer=diagnostic" className="rounded-xl border border-sky-300/25 bg-sky-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-sky-200">Paid diagnostic</span><strong className="mt-1 block text-xl">$149</strong><span className="text-[11px] text-muted-foreground">Fixed fee</span></Link>
+              <Link href="/quality-lab/review?offer=blueprint" className="rounded-xl border border-teal-300/25 bg-teal-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-teal-200">Blueprint pilot</span><strong className="mt-1 block text-xl">From $990</strong><span className="text-[11px] text-muted-foreground">Per project</span></Link>
+            </div>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row"><Link href="/quality-lab/review?offer=diagnostic" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Start with the $149 diagnostic <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/planner" className="inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold transition hover:border-white/30">Build an initial model</Link></div>
           </div>
-          <EditorialImage src="/images/editorial/lab-team-collaboration.jpg" alt="Two laboratory professionals working together near analytical equipment" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/0q4ipgUIw5g" eager className="h-48 rounded-xl border border-white/10 sm:h-60 lg:h-auto lg:min-h-80" imageClassName="object-center saturate-75" />
+          <EditorialImage src="/images/editorial/lab-team-collaboration.jpg" alt="Two laboratory professionals working together near analytical equipment" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/0q4ipgUIw5g" eager className="hidden rounded-xl border border-white/10 lg:block lg:h-auto lg:min-h-80" imageClassName="object-center saturate-75" />
         </div>
         <div className="mt-4 grid gap-2 rounded-lg border border-white/10 bg-slate-950/45 p-3 sm:grid-cols-3">
           {["Scope the operating question", "Expose evidence and assumptions", "Review before implementation"].map((item) => <div key={item} className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" />{item}</div>)}

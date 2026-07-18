@@ -1,5 +1,7 @@
 # Go-Live Runbook
 
+> **Strategic status (2026-07-18):** this document is retained for the secondary Pro subscription and legacy digital-goods operations. It is not the launch authority for the current flagship offer. Gate 1 commercial launch is governed by `PRODUCT_SOURCE_OF_TRUTH.md` and `COMMERCIAL_LAUNCH_RUNBOOK.md`; `npm run preflight` now validates the Paid Scope Diagnostic path rather than requiring Pro as the primary revenue product.
+
 The single, ordered checklist to take Life Science Atlas from staging to a revenue-ready
 production deployment on Vercel. Sibling docs cover slices in depth:
 

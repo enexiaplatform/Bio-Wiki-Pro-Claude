@@ -31,10 +31,48 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /researcher preparing biological samples/i })).toBeVisible();
     await expect(page.getByText(/Blueprint-first workspace/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign up/i })).toHaveAttribute("href", "/register?returnTo=%2Fmy-downloads");
 
-    await page.goto("/register");
+    await page.goto("/register?returnTo=/quality-lab/review%3Foffer%3Ddiagnostic");
     await expect(page.getByRole("heading", { name: /Create your Atlas workspace/i })).toBeVisible();
     await expect(page.getByText(/supporting evidence to your account/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute("href", "/login?returnTo=%2Fquality-lab%2Freview%3Foffer%3Ddiagnostic");
+  });
+
+  test("guest Diagnostic request survives account creation and returns to payment", async ({ page }) => {
+    let signedIn = false;
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: signedIn
+        ? JSON.stringify({ id: "diagnostic-user", email: "lead@example.com", isPro: false, isAdmin: false, verifiedEmail: false, subscriptionStatus: "free" })
+        : JSON.stringify({ message: "Unauthorized" }),
+    }));
+    await page.route("**/api/billing/plans", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ scopeDiagnostic: true }) }));
+    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 42 }) }));
+    await page.route("**/api/auth/register", async (route) => {
+      signedIn = true;
+      await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: "diagnostic-user", email: "lead@example.com", isAdmin: false }) });
+    });
+
+    await page.goto("/quality-lab/review?offer=diagnostic");
+    await page.getByLabel("Name *").fill("Diagnostic Lead");
+    await page.getByLabel("Work email *").fill("lead@example.com");
+    await page.getByLabel(/I confirm this submission contains no confidential/i).check();
+    await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
+    await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await page.getByRole("link", { name: /Create an account to pay securely/i }).click();
+
+    await page.getByLabel(/First name/i).fill("Diagnostic");
+    await page.getByLabel(/Last name/i).fill("Lead");
+    await page.getByLabel(/^Email/i).fill("lead@example.com");
+    await page.getByLabel(/^Password/i).fill("strong-password-123");
+    await page.getByLabel(/Confirm password/i).fill("strong-password-123");
+    await page.getByRole("button", { name: /^Sign up$/i }).click();
+
+    await page.waitForURL(/\/quality-lab\/review\?offer=diagnostic$/);
+    await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Pay \$149 securely/i })).toBeVisible();
   });
 
   test("account recovery and verification return users to Blueprint work", async ({ page }) => {
@@ -175,10 +213,11 @@ test.describe("public smoke", () => {
     await page.goto("/pricing");
     await expect(page.getByRole("heading", { name: /Start with the decision you need to make/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Two laboratory professionals working together/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Start a Blueprint/i })).toHaveAttribute("href", "/quality-lab/planner");
-    await expect(page.getByRole("link", { name: /Compare evidence plans/i })).toHaveAttribute("href", "#evidence-plans");
-    await expect(page.getByText("$149", { exact: true })).toBeVisible();
-    await expect(page.getByText("From $990", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Start with the \$149 diagnostic/i })).toHaveAttribute("href", "/quality-lab/review?offer=diagnostic");
+    await expect(page.getByRole("link", { name: /Build an initial model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+    await expect(page.getByRole("link", { name: /View illustrative Blueprint/i })).toHaveAttribute("href", "/quality-lab/sample");
+    await expect(page.getByText("$149", { exact: true }).last()).toBeVisible();
+    await expect(page.getByText("From $990", { exact: true }).last()).toBeVisible();
     await expect(page.getByText(/One-time interview and career downloads/i)).toHaveCount(0);
   });
 

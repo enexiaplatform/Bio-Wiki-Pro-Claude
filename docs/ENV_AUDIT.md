@@ -1,5 +1,7 @@
 # Life Science Atlas — Environment Variable Audit
 
+> **Strategic status (2026-07-18):** the inventory below contains useful legacy Pro and digital-goods references, but the Gate 1 launch baseline is `COMMERCIAL_LAUNCH_RUNBOOK.md`. The current commercial path additionally requires `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, a monitored `COMMERCIAL_NOTIFICATION_EMAILS` or `ADMIN_EMAILS` recipient, and `CRON_SECRET`; `npm run preflight` is the executable readiness check.
+
 > **Mục đích:** Checklist kiểm kê toàn bộ biến môi trường app cần, để đối chiếu giá trị thật trên Vercel (real vs placeholder).
 > **Ngày:** 2026-05-29 · **Phương pháp:** quét mọi `process.env.*` trong `server/` và `import.meta.env.*` trong `client/`, đối chiếu `.env.example`.
 

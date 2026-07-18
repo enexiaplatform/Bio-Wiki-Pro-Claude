@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { AuthShell } from "@/components/AuthShell";
+import { authPath, safeAuthReturnTo } from "@shared/auth-return";
 
 export default function LoginPage() {
   const { t } = useTranslation("auth");
@@ -21,12 +22,7 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const returnTo = useMemo(() => {
-    const candidate = new URLSearchParams(window.location.search).get("returnTo");
-    return candidate && candidate.startsWith("/") && !candidate.startsWith("//")
-      ? candidate
-      : "/quality-lab/projects";
-  }, []);
+  const returnTo = useMemo(() => safeAuthReturnTo(window.location.search, "/quality-lab/projects"), []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +52,7 @@ export default function LoginPage() {
       footer={
         <>
           {t("login.noAccount")}{" "}
-          <Link href="/signup" className="font-semibold text-teal-300 hover:text-teal-200">
+          <Link href={authPath("/register", returnTo)} className="font-semibold text-teal-300 hover:text-teal-200">
             {t("login.signUp")}
           </Link>
         </>

@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { getProductName } from "./products.js";
 import { deliverablesForPurchase } from "./deliverables.js";
+import { commercialNotificationRecipients, getPublicOrigin } from "./runtime-config.js";
 import type { QualityLabPortfolioActionItem, QualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 
 const resend = process.env.RESEND_API_KEY
@@ -8,7 +9,17 @@ const resend = process.env.RESEND_API_KEY
   : null;
 
 const FROM_EMAIL = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
-const BASE_URL = process.env.BASE_URL ?? "https://lifescienceatlas.com";
+const BASE_URL = getPublicOrigin();
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    '"': "&quot;",
+  })[character] ?? character);
+}
 
 function htmlWrapper(content: string): string {
   return `<!DOCTYPE html>
@@ -43,7 +54,7 @@ function htmlWrapper(content: string): string {
       ${content}
     </div>
     <div class="footer">
-      <p>© 2026 Life Science Atlas — QC/QA knowledge for Pharma & Life Sciences</p>
+      <p>© 2026 Life Science Atlas — decision intelligence for regulated manufacturing quality</p>
       <p style="margin-top: 6px;"><a href="${BASE_URL}/terms">Terms</a> · <a href="${BASE_URL}/privacy">Privacy</a></p>
     </div>
   </div>
@@ -60,14 +71,14 @@ export async function sendWelcomeEmail(to: string, firstName?: string): Promise<
   const name = firstName ?? "there";
   const html = htmlWrapper(`
     <h1>Welcome to Life Science Atlas, ${name}! 🎉</h1>
-    <p>Your account is ready. Start building real QC/QA expertise — from sterility testing to audit readiness.</p>
+    <p>Your account is ready. Start with a real quality-laboratory decision, then inspect the evidence, assumptions and open inputs behind the model.</p>
     <div class="box">
       <p><strong style="color:#10b981;">Where to start:</strong></p>
-      <p>📚 Explore the free <strong>Academy lessons</strong> and learning paths<br>
-      🔬 Use the <strong>QC Hub</strong> for fast reference<br>
-      Use the <strong>GMP Audit Readiness Kit</strong> to organize evidence and preparation actions before qualified site review.</p>
+      <p>Build an initial <strong>Quality Lab Blueprint</strong><br>
+      Inspect the public <strong>illustrative deliverable</strong><br>
+      Use Academy and compliance resources as the supporting evidence layer.</p>
     </div>
-    <a href="${BASE_URL}/academy" class="cta">Open the Academy →</a>
+    <a href="${BASE_URL}/quality-lab/planner" class="cta">Build an initial model →</a>
     <p style="margin-top: 24px; font-size: 13px;">Questions or feedback? Just reply to this email — we read every one.</p>
   `);
 
@@ -110,7 +121,7 @@ export async function sendPurchaseConfirmation(
         <p><strong style="color:#10b981;">Your Diagnostic is reserved</strong></p>
         <p>Atlas will respond within two business days to confirm fit, the 60-minute workshop, required inputs and the named participants.</p>
       </div>
-      <a href="${BASE_URL}/quality-lab/review?offer=diagnostic" class="cta">Open Diagnostic intake â†’</a>
+      <a href="${BASE_URL}/quality-lab/review?offer=diagnostic" class="cta">Open Diagnostic intake →</a>
       ` : hasDownloads ? `
     <div class="box">
       <p><strong style="color:#10b981;">Your files are ready</strong></p>
@@ -120,7 +131,7 @@ export async function sendPurchaseConfirmation(
     ` : `
     <div class="box">
       <p><strong style="color:#10b981;">Pro is now active 🎉</strong></p>
-      <p>Every in-depth lesson, template, and tool is unlocked. Jump back in any time.</p>
+      <p>Every currently published Pro lesson, template and premium tool is unlocked. Pro supports evidence work; project-specific Blueprint review is scoped separately.</p>
     </div>
     <a href="${BASE_URL}/academy" class="cta">Open the Academy →</a>
     `}
@@ -268,40 +279,32 @@ export async function sendDunningEmail(
 // picks the step from how many days since signup and what's already been sent.
 const NURTURE_CONTENT: Record<number, { subject: string; body: (name: string) => string }> = {
   1: {
-    subject: "Getting started with your free QC/QA lessons",
+    subject: "Start with a real quality-laboratory decision",
     body: (name) => `
       <h1>Welcome aboard, ${name} 👋</h1>
-      <p>You've got dozens of in-depth GMP lessons free — the fastest way to start
-      is to pick one learning path and work through it end to end.</p>
-      <div class="box"><p>Most popular starting point: <strong>Microbiology QC
-      Fundamentals</strong> — sterility, bioburden, EM, endotoxin and water, in order.</p></div>
-      <a href="${BASE_URL}/library" class="cta">Browse the library →</a>
-      <p style="font-size:13px;color:#64748b;">Reply any time if you're not sure where to start — we read every email.</p>
+      <p>Atlas is most useful when you start with a real site, product portfolio and testing-demand question.</p>
+      <div class="box"><p>Build a browser-local concept model, inspect the assumptions and identify the evidence that blocks a defensible decision.</p></div>
+      <a href="${BASE_URL}/quality-lab/planner" class="cta">Build an initial model →</a>
+      <p style="font-size:13px;color:#64748b;">No confidential project data is required to explore the illustrative workflow.</p>
     `,
   },
   2: {
-    subject: "The deep-dives most QC/QA teams get wrong",
+    subject: "See what a controlled Blueprint deliverable contains",
     body: (name) => `
-      <h1>Where the real findings hide, ${name}</h1>
-      <p>The free lessons cover the fundamentals. The <strong>Pro</strong> deep-dives
-      cover what actually trips teams up in an inspection:</p>
-      <div class="box"><p>Audit-trail review programs · cleaning validation with MACO
-      worked examples · OOS/OOT investigation · GAMP 5 CSV · contamination control
-      strategy · SPC & Gauge R&R — each with templates and checklists.</p></div>
-      <a href="${BASE_URL}/upgrade" class="cta">See what Pro unlocks →</a>
-      <p style="font-size:13px;color:#64748b;">Every Pro lesson ends with a quiz so you can check you've actually got it.</p>
+      <h1>Move from a model to a decision package, ${name}</h1>
+      <p>A Blueprint is more than a calculation. It exposes the scenario basis, evidence status, unresolved inputs, reviewer boundary and controlled acceptance record.</p>
+      <div class="box"><p>The public sample shows how Atlas separates illustrative inputs, concept calculations and project facts that still require verification.</p></div>
+      <a href="${BASE_URL}/quality-lab/sample" class="cta">View the illustrative sample →</a>
+      <p style="font-size:13px;color:#64748b;">No customer result, reviewer appointment or validation claim is implied by the sample.</p>
     `,
   },
   3: {
-    subject: "Your 7-day Pro trial is waiting",
+    subject: "Frame your next decision with a paid scope diagnostic",
     body: (name) => `
-      <h1>Try Pro free for 7 days, ${name}</h1>
-      <p>You've been learning on the free tier — here's an easy way to see the rest.
-      Start a <strong>7-day free trial</strong> of Pro: full access to every advanced
-      lesson, template, and checklist. Cancel any time before it ends and you won't be
-      charged.</p>
-      <a href="${BASE_URL}/upgrade" class="cta">Start your free trial →</a>
-      <p style="font-size:13px;color:#64748b;">$8/mo after the trial · cancel in two clicks · no hard sell.</p>
+      <h1>Need a defensible Blueprint scope, ${name}?</h1>
+      <p>The <strong>$149 Paid Scope Diagnostic</strong> includes one 60-minute stakeholder workshop, input and decision-gap triage, and a written scope memo.</p>
+      <a href="${BASE_URL}/quality-lab/review?offer=diagnostic" class="cta">Request the diagnostic →</a>
+      <p style="font-size:13px;color:#64748b;">The fee is credited to a Blueprint engagement started within 30 days. Atlas confirms fit before delivery begins.</p>
     `,
   },
 };
@@ -556,4 +559,65 @@ export async function sendNurtureEmail(to: string, step: number, firstName?: str
   } catch (err) {
     console.error(`[Email] Failed to send nurture step ${step}:`, err);
   }
+}
+
+export interface CommercialRequestEmailInput {
+  requestId: string;
+  name: string;
+  email: string;
+  company?: string;
+  offer: string;
+  summary: string;
+}
+
+/** Sends the buyer acknowledgement and the internal work-queue alert together. */
+export async function sendCommercialRequestEmails(input: CommercialRequestEmailInput): Promise<void> {
+  if (!resend) {
+    console.log(`[Email] Would acknowledge commercial request ${input.requestId} to ${input.email} (Resend not configured)`);
+    return;
+  }
+
+  const safe = {
+    id: escapeHtml(input.requestId),
+    name: escapeHtml(input.name),
+    email: escapeHtml(input.email),
+    company: escapeHtml(input.company || "Not provided"),
+    offer: escapeHtml(input.offer),
+    summary: escapeHtml(input.summary).replace(/\n/g, "<br>"),
+  };
+  const ownerRecipients = commercialNotificationRecipients();
+  const messages = [
+    resend.emails.send({
+      from: FROM_EMAIL,
+      to: input.email,
+      subject: `Request received: ${input.offer} — Life Science Atlas`,
+      html: htmlWrapper(`
+        <h1>We received your request, ${safe.name}.</h1>
+        <p>Reference <strong style="color:#f8fafc;">${safe.id}</strong> · ${safe.offer}</p>
+        <div class="box"><p>Atlas will respond within two business days to confirm fit, required inputs, the next workshop or call, delivery basis and commercial terms.</p></div>
+        <p>Please do not email confidential formulations, credentials, proprietary methods or personal data about other people before a data-handling basis is agreed.</p>
+        <a href="${BASE_URL}/quality-lab/sample" class="cta">Review the illustrative deliverable →</a>
+      `),
+    }),
+  ];
+
+  if (ownerRecipients.length > 0) {
+    messages.push(resend.emails.send({
+      from: FROM_EMAIL,
+      to: ownerRecipients,
+      replyTo: input.email,
+      subject: `[Commercial request ${safe.id}] ${input.offer} — ${input.company || input.name}`,
+      html: htmlWrapper(`
+        <h1>New commercial request</h1>
+        <div class="box"><p><strong>Offer:</strong> ${safe.offer}<br><strong>Contact:</strong> ${safe.name} &lt;${safe.email}&gt;<br><strong>Company:</strong> ${safe.company}<br><strong>Response due:</strong> within two business days</p></div>
+        <p>${safe.summary}</p>
+        <a href="${BASE_URL}/admin" class="cta">Open Admin Control Center →</a>
+      `),
+    }));
+  }
+
+  const results = await Promise.allSettled(messages);
+  results.forEach((result) => {
+    if (result.status === "rejected") console.error("[Email] Commercial request notification failed:", result.reason);
+  });
 }

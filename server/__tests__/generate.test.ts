@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab";
 import { createQualityLabEngagementPacket } from "../../shared/quality-lab-engagement";
 import type { QualityLabReviewedProjectSnapshot } from "../../shared/quality-lab-persistence";
-import { markdownToPdf, qualityLabDeliveryMarkdown, qualityLabDeliveryWorkbook } from "../generate";
+import { markdownToPdf, qualityLabDeliveryMarkdown, qualityLabDeliveryWorkbook, qualityLabSampleBlueprintPdf } from "../generate";
 
 function reviewedSnapshot(): QualityLabReviewedProjectSnapshot {
   const project = createQualityLabProject(defaultQualityLabInput, "qlp_delivery_test");
@@ -43,5 +43,12 @@ describe("Quality Lab controlled delivery files", () => {
     const pdf = await markdownToPdf(markdown, "Atlas Blueprint Decision Brief");
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
     expect(pdf.length).toBeGreaterThan(1000);
+  });
+
+  it("generates the branded public Blueprint sample", async () => {
+    const pdf = await qualityLabSampleBlueprintPdf();
+    expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
+    expect(pdf.length).toBeGreaterThan(5000);
+    expect(pdf.toString("latin1")).toContain("/Count 3");
   });
 });

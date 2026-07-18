@@ -20,3 +20,5 @@ playwright-report
 
 # Local UX audits and browser captures
 artifacts/
+output/
+tmp/

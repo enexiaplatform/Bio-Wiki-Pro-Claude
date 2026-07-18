@@ -126,6 +126,12 @@ export const analytics = {
   blueprintCtaClicked: (placement: string, destination: string) =>
     capture("blueprint_cta_clicked", { placement, destination }),
 
+  commercialPricingViewed: () => capture("commercial_pricing_viewed"),
+
+  sampleBlueprintDownloaded: () => capture("sample_blueprint_downloaded", { format: "pdf" }),
+
+  commercialIntakeViewed: (offer: string) => capture("commercial_intake_viewed", { offer }),
+
   blueprintStarted: (source = "planner") =>
     capture("blueprint_started", { source }),
 

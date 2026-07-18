@@ -82,6 +82,7 @@ vi.mock("../email.js", () => ({
   sendReEngagementEmail: vi.fn(() => Promise.resolve()),
   sendQualityLabWorkQueueEmail: vi.fn(() => Promise.resolve(true)),
   sendQualityLabWeeklyReviewEmail: vi.fn(() => Promise.resolve(true)),
+  sendCommercialRequestEmails: vi.fn(() => Promise.resolve()),
 }));
 
 import { registerRoutes } from "../routes.js";
@@ -198,6 +199,21 @@ describe("Quality Lab expert review", () => {
       productOfInterest: "Expert-reviewed Blueprint Pilot (from $990)",
       need: expect.stringContaining("[quality-lab-review-brief/v2]"),
     }));
+    expect(email.sendCommercialRequestEmails).toHaveBeenCalledWith(expect.objectContaining({
+      requestId: "12",
+      email: "quality@example.com",
+      offer: "Expert-reviewed Blueprint Pilot (from $990)",
+      summary: expect.stringContaining("[quality-lab-review-brief/v2]"),
+    }));
+  });
+
+  it("serves the clearly labelled illustrative Blueprint PDF without authentication", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/api/quality-lab/sample-blueprint.pdf");
+    expect(res.status).toBe(200);
+    expect(res.headers["content-type"]).toContain("application/pdf");
+    expect(res.headers["content-disposition"]).toContain("illustrative-sample.pdf");
+    expect(Buffer.from(res.body).subarray(0, 4).toString()).toBe("%PDF");
   });
 
   it("rejects review context that is not confirmed non-confidential", async () => {

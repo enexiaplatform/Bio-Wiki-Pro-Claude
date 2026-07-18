@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { analytics } from "@/hooks/use-analytics";
 import { AuthShell } from "@/components/AuthShell";
+import { authPath, safeAuthReturnTo } from "@shared/auth-return";
 
 export default function RegisterPage() {
   const { t } = useTranslation("auth");
@@ -25,6 +26,7 @@ export default function RegisterPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const returnTo = useMemo(() => safeAuthReturnTo(window.location.search, "/welcome"), []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +63,7 @@ export default function RegisterPage() {
       const account = await response.json() as { isAdmin?: boolean };
       analytics.signupCompleted("email");
       await queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setLocation(account.isAdmin ? "/admin" : "/welcome");
+      setLocation(account.isAdmin && returnTo === "/welcome" ? "/admin" : returnTo);
     } catch (err: any) {
       toast({
         title: t("register.failTitle"),
@@ -81,7 +83,7 @@ export default function RegisterPage() {
       footer={
         <>
           {t("register.haveAccount")}{" "}
-          <Link href="/login" className="font-semibold text-teal-300 hover:text-teal-200">
+          <Link href={authPath("/login", returnTo)} className="font-semibold text-teal-300 hover:text-teal-200">
             {t("register.signIn")}
           </Link>
         </>
@@ -159,7 +161,7 @@ export default function RegisterPage() {
         <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
           {isLoading ? t("register.submitting") : t("register.submit")}
         </Button>
-        <GoogleSignInButton redirectTo="/welcome" />
+        <GoogleSignInButton redirectTo={returnTo} />
       </form>
     </AuthShell>
   );
