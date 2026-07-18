@@ -2155,6 +2155,49 @@
   },
   {
     "collection": "academy",
+    "slug": "method-suitability-nonsterile-products",
+    "lang": "en",
+    "title": "Method suitability for non-sterile products",
+    "tier": "free",
+    "category": "Microbiology QC",
+    "seoDescription": "Learn how method suitability demonstrates recovery in non-sterile product matrices, how neutralization and controls work, and why suitability status changes microbiology QC planning.",
+    "updatedAt": "2026-07-18",
+    "quiz": [
+      {
+        "q": "What is the primary purpose of method suitability in non-sterile microbiology testing?",
+        "options": [
+          "To select the lowest-cost medium",
+          "To show the method can recover microorganisms in the presence of the product",
+          "To establish a universal microbial limit",
+          "To replace product specifications"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "If a product inhibits recovery and no justified mitigation has been demonstrated, what should happen?",
+        "options": [
+          "Report the lowest possible count",
+          "Treat the method as suitable because controls grew",
+          "Keep the suitability question open and investigate an appropriate method approach",
+          "Remove the product from routine testing"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "Which planning output should remain qualified while method suitability is unresolved?",
+        "options": [
+          "The product name",
+          "The final method BOM and dependent capacity estimate",
+          "The analyst's job title",
+          "The calendar month"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 6
+  },
+  {
+    "collection": "academy",
     "slug": "microbial-excursion-investigation",
     "lang": "en",
     "title": "Investigating Microbial Excursions (EM Data)",

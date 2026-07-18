@@ -91,6 +91,20 @@ export const analytics = {
   checkoutStarted: (productType: string, priceUsd?: number) =>
     capture("checkout_started", { product_type: productType, price_usd: priceUsd }),
 
+  careerAssessmentStarted: () => capture("career_assessment_started"),
+
+  careerAssessmentStepCompleted: (step: number, track: string) =>
+    capture("career_assessment_step_completed", { step, track }),
+
+  careerSnapshotViewed: (track: string, route: string) =>
+    capture("career_snapshot_viewed", { track, route }),
+
+  careerRouteCompared: (route: string, label: string) =>
+    capture("career_route_compared", { route, label }),
+
+  careerBlueprintDownloaded: (route: string) =>
+    capture("career_blueprint_downloaded", { route }),
+
   subscriptionStarted: (plan = "pro_subscription") =>
     capture("subscription_started", { plan }),
 

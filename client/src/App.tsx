@@ -8,7 +8,6 @@ import { UserProvider } from "@/context/UserContext";
 import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { LazyCommandPalette } from "@/components/LazyCommandPalette";
-import { ExitIntentLeadModal } from "@/components/ExitIntentLeadModal";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePageTracking } from "@/hooks/use-analytics";
 import { useUser } from "@/context/UserContext";
@@ -187,7 +186,6 @@ function Layout() {
       <BottomNav />
       <Footer />
       <LazyCommandPalette />
-      <ExitIntentLeadModal />
     </div>
   );
 }

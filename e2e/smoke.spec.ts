@@ -1196,13 +1196,18 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/CAPA Effectiveness Check Planner/i).first()).toBeVisible();
   });
 
-  test("career skill-gap builds a personalised learning roadmap", async ({ page }) => {
+  test("career assessment builds a personalised route comparison", async ({ page }) => {
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /Build a practical learning roadmap/i })).toBeVisible();
-    await page.getByRole("button", { name: /^Need it$/ }).first().click();
-    await page.getByRole("button", { name: /^Build roadmap$/i }).click();
-    await expect(page.getByRole("heading", { name: /^Your .* roadmap$/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Start with/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Stop following a generic career ladder/i })).toBeVisible();
+    await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
+    await page.getByRole("textbox", { name: /^Your name$/i }).fill("Mai Nguyen");
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /Create my free Career Snapshot/i }).click();
+    await expect(page.getByRole("heading", { name: /Mai, your strongest next move is Senior QC Microbiologist/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Adjacent QA Investigation Specialist/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
   });
 
   test("the legacy /qc-hub redirects into the unified Learn hub", async ({ page }) => {

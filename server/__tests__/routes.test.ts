@@ -89,6 +89,7 @@ import { registerRoutes } from "../routes.js";
 import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
+import { defaultCareerProfile } from "../../shared/career-blueprint.js";
 
 async function buildApp() {
   const app = express();
@@ -350,6 +351,7 @@ describe("create-checkout-session", () => {
     "STRIPE_PRO_PRICE_ID",
     "STRIPE_GMP_AUDIT_KIT_PRICE_ID",
     "STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID",
+    "STRIPE_CAREER_BLUEPRINT_PRICE_ID",
   ] as const;
   const saved: Record<string, string | undefined> = {};
 
@@ -358,6 +360,7 @@ describe("create-checkout-session", () => {
     process.env.STRIPE_PRO_PRICE_ID = "price_pro";
     process.env.STRIPE_GMP_AUDIT_KIT_PRICE_ID = "price_gmp";
     process.env.STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID = "price_diagnostic";
+    process.env.STRIPE_CAREER_BLUEPRINT_PRICE_ID = "price_career";
   });
   afterAll(() => {
     for (const k of PRICE_ENVS) {
@@ -443,6 +446,22 @@ describe("create-checkout-session", () => {
     expect(arg.line_items[0].price).toBe("price_diagnostic");
     expect(arg.cancel_url).toContain("/quality-lab/review?offer=diagnostic");
     expect(arg.metadata).toMatchObject({ userId: "u1", productType: "scope_diagnostic" });
+  });
+
+  it("creates the $20 Career Blueprint checkout with a Career cancel route", async () => {
+    const app = await buildApp();
+    const user = { id: "u1", email: "a@b.com", isPro: false };
+    const agent = await authedAgent(app, user);
+    storageMock.getUser.mockResolvedValueOnce(user);
+    checkoutCreate.mockResolvedValueOnce({ url: "https://checkout.stripe.test/career" });
+
+    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "career_blueprint" });
+    expect(res.status).toBe(200);
+    const arg = checkoutCreate.mock.calls[0][0];
+    expect(arg.mode).toBe("payment");
+    expect(arg.line_items[0].price).toBe("price_career");
+    expect(arg.cancel_url).toContain("/career");
+    expect(arg.metadata).toMatchObject({ userId: "u1", productType: "career_blueprint" });
   });
 
   it("does NOT grant a trial to a user who already has a subscription", async () => {
@@ -953,6 +972,48 @@ describe("Blueprint reminder preference", () => {
     const agent = await authedAgent(app);
     const res = await agent.put("/api/quality-lab/reminder-preference").send({ cadence: "hourly" });
     expect(res.status).toBe(400);
+  });
+});
+
+describe("career blueprint fulfillment", () => {
+  async function authedAgent(app: express.Express) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    const response = await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
+    expect(response.status).toBe(201);
+    return agent;
+  }
+
+  it("keeps access and generation behind authentication", async () => {
+    const app = await buildApp();
+    await request(app).get("/api/career-blueprint/access").expect(401);
+    await request(app).post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Mai Nguyen" }).expect(401);
+  });
+
+  it("reports purchase access and generates the named 38-page PDF", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValue(true);
+
+    const access = await agent.get("/api/career-blueprint/access");
+    expect(access.status).toBe(200);
+    expect(access.body.entitled).toBe(true);
+
+    const download = await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Mai Nguyen" });
+    expect(download.status).toBe(200);
+    expect(download.headers["content-type"]).toContain("application/pdf");
+    expect(download.headers["content-disposition"]).toContain("mai-nguyen-career-blueprint.pdf");
+    expect(download.body.subarray(0, 4).toString()).toBe("%PDF");
+  });
+
+  it("rejects generation without a completed purchase", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValue(false);
+    await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Mai Nguyen" }).expect(403);
   });
 });
 

@@ -7,6 +7,7 @@
 | productType (metadata) | Tên | Giá | Mode | Price ID env | Download env |
 |---|---|---|---|---|---|
 | `gmp_audit_kit` | GMP Audit Survival Kit | $59 | payment | `STRIPE_GMP_AUDIT_KIT_PRICE_ID` | `DOWNLOAD_GMP_AUDIT_KIT` |
+| `career_blueprint` | Personal Career Blueprint | $20 | payment | `STRIPE_CAREER_BLUEPRINT_PRICE_ID` | _(generated securely from the user's saved assessment)_ |
 | `starter_kit` | Career Starter Kit | $15 | payment | `STRIPE_STARTER_KIT_PRICE_ID` | `DOWNLOAD_STARTER_KIT` |
 | `interview_prep` | Interview Prep Package | $20 | payment | `STRIPE_INTERVIEW_PREP_PRICE_ID` | `DOWNLOAD_INTERVIEW_PREP` |
 | `bundle` | Career Accelerator Bundle | $30 | payment | `STRIPE_BUNDLE_PRICE_ID` | `DOWNLOAD_BUNDLE` |
@@ -23,13 +24,14 @@ Thêm/sửa sản phẩm → chỉ sửa `server/products.ts`. `routes.ts` (pric
    stripe login   # đăng nhập tài khoản (test mode)
    ```
 2. **Tạo Products + Prices ở Test Mode** (Stripe Dashboard → Test mode → Products), mỗi sản phẩm 1 price one-time:
-   - GMP Audit Survival Kit — $59.00 · Career Starter Kit — $15.00 · Interview Prep Package — $20.00 · Career Accelerator Bundle — $30.00
+   - GMP Audit Survival Kit — $59.00 · Personal Career Blueprint — $20.00 · Career Starter Kit — $15.00 · Interview Prep Package — $20.00 · Career Accelerator Bundle — $30.00
    - Copy mỗi **Price ID** (`price_...`) vào `.env` đúng biến ở bảng trên.
 3. **`.env`** cần (test mode):
    ```
    STRIPE_SECRET_KEY=sk_test_...
    STRIPE_WEBHOOK_SECRET=whsec_...        # lấy ở bước 3 bên dưới
    STRIPE_GMP_AUDIT_KIT_PRICE_ID=price_...
+   STRIPE_CAREER_BLUEPRINT_PRICE_ID=price_...
    STRIPE_STARTER_KIT_PRICE_ID=price_...
    STRIPE_INTERVIEW_PREP_PRICE_ID=price_...
    STRIPE_BUNDLE_PRICE_ID=price_...

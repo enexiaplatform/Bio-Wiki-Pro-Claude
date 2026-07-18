@@ -18,6 +18,7 @@ export const learningPaths: LearningPath[] = [
     lessonSlugs: [
       "sterility-testing-basics",
       "bioburden-usp-61",
+      "method-suitability-nonsterile-products",
       "environmental-monitoring-basics",
       "growth-promotion-testing",
       "endotoxin-lal-testing",

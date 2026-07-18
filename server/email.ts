@@ -112,6 +112,7 @@ export async function sendPurchaseConfirmation(
   // anything else (Pro subscription) unlocks content rather than a file.
   const hasDownloads = deliverablesForPurchase(productType).length > 0;
   const isScopeDiagnostic = productType === "scope_diagnostic";
+  const isCareerBlueprint = productType === "career_blueprint";
 
   const html = htmlWrapper(`
     <h1>Thank you, ${name}! Your order is confirmed ✅</h1>
@@ -122,6 +123,12 @@ export async function sendPurchaseConfirmation(
         <p>Atlas will respond within two business days to confirm fit, the 60-minute workshop, required inputs and the named participants.</p>
       </div>
       <a href="${BASE_URL}/quality-lab/review?offer=diagnostic" class="cta">Open Diagnostic intake →</a>
+      ` : isCareerBlueprint ? `
+      <div class="box">
+        <p><strong style="color:#10b981;">Your Personal Career Blueprint is unlocked</strong></p>
+        <p>Return to your browser-local Career Snapshot to generate the named 38-page Career Operating Blueprint. Atlas receives your profile only when you explicitly request the download.</p>
+      </div>
+      <a href="${BASE_URL}/career?purchase=success" class="cta">Generate my Career Blueprint â†’</a>
       ` : hasDownloads ? `
     <div class="box">
       <p><strong style="color:#10b981;">Your files are ready</strong></p>
@@ -352,6 +359,7 @@ const PRODUCT_LABELS: Record<string, string> = {
   starter_kit: "the Career Starter Kit",
   interview_prep: "the Interview Prep Pack",
   bundle: "the Career Accelerator Bundle",
+  career_blueprint: "the Personal Career Blueprint",
 };
 
 // Abandoned-checkout reminder (sent once, ~a day after starting checkout without
@@ -368,7 +376,7 @@ export async function sendAbandonedCheckoutEmail(
   const name = firstName ?? "there";
   const label = PRODUCT_LABELS[productType] ?? "your Life Science Atlas order";
   const isSub = productType.startsWith("pro_subscription");
-  const href = isSub ? `${BASE_URL}/upgrade` : `${BASE_URL}/pricing`;
+  const href = isSub ? `${BASE_URL}/upgrade` : productType === "career_blueprint" ? `${BASE_URL}/career` : `${BASE_URL}/pricing`;
   const html = htmlWrapper(`
     <h1>Still thinking it over, ${name}?</h1>
     <p>You started checking out for <strong>${label}</strong> but didn't finish.

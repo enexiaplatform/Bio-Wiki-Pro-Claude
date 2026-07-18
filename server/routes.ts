@@ -20,6 +20,8 @@ import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue, qualityL
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
+import { careerProfileSchema } from "../shared/career-blueprint.js";
+import { careerBlueprintPdf, careerProfileFilename } from "./career-blueprint.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -299,6 +301,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         monthly: isProductAvailable("pro_subscription"),
         annual: isProductAvailable("pro_subscription_annual"),
         scopeDiagnostic: isProductAvailable("scope_diagnostic"),
+        careerBlueprint: isProductAvailable("career_blueprint"),
       // Configured free-trial length for new Pro subscribers (0 = disabled).
       trialDays: parseInt(process.env.PRO_TRIAL_DAYS ?? "7", 10),
     });
@@ -615,7 +618,12 @@ export async function registerRoutes(app: Express): Promise<void> {
         line_items: [{ price: priceId, quantity: 1 }],
         customer_email: user.email ?? undefined,
         success_url: `${baseUrl}/payment/success?session_id={CHECKOUT_SESSION_ID}&product=${productType}`,
-          cancel_url: productType === "scope_diagnostic" ? `${baseUrl}/quality-lab/review?offer=diagnostic` : `${baseUrl}/pricing`,
+          cancel_url:
+            productType === "scope_diagnostic"
+              ? `${baseUrl}/quality-lab/review?offer=diagnostic`
+              : productType === "career_blueprint"
+                ? `${baseUrl}/career`
+                : `${baseUrl}/pricing`,
         metadata: { userId: user.id, productType },
         // Propagate userId onto the subscription so subscription.*/invoice.*
         // webhook events can resolve the user even before the customer id is stored.
@@ -647,6 +655,38 @@ export async function registerRoutes(app: Express): Promise<void> {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="atlas-quality-lab-blueprint-illustrative-sample.pdf"');
     res.send(pdf);
+  });
+
+  // Career profiles remain browser-local. The server receives a profile only
+  // when an entitled user explicitly asks to generate their personalized PDF.
+  app.get("/api/career-blueprint/access", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
+    res.json({ entitled });
+  });
+
+  app.post("/api/career-blueprint/download", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
+    if (!entitled) return res.status(403).json({ message: "Personal Career Blueprint purchase required" });
+
+    const parsed = careerProfileSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Complete the career assessment before generating your Blueprint" });
+    }
+
+    try {
+      const pdf = await careerBlueprintPdf(parsed.data);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="${careerProfileFilename(parsed.data)}"`);
+      res.setHeader("Cache-Control", "private, no-store");
+      return res.send(pdf);
+    } catch (error) {
+      console.error("[Career Blueprint] generation error:", error);
+      return res.status(500).json({ message: "Unable to generate the Personal Career Blueprint" });
+    }
   });
 
   app.get("/api/stripe/customer-portal", isAuthenticated, async (req: any, res) => {

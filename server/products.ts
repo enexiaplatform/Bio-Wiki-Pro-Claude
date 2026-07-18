@@ -30,6 +30,12 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     mode: "payment",
     priceEnv: "STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID",
   },
+  career_blueprint: {
+    id: "career_blueprint",
+    name: "Personal Career Blueprint",
+    mode: "payment",
+    priceEnv: "STRIPE_CAREER_BLUEPRINT_PRICE_ID",
+  },
   gmp_audit_kit: {
     id: "gmp_audit_kit",
     name: "GMP Audit Readiness Kit",

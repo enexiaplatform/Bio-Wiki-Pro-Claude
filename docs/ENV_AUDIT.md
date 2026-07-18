@@ -44,9 +44,10 @@
 | `STRIPE_INTERVIEW_PREP_PRICE_ID` | `server/routes.ts:20` (`interview_prep`) | Checkout Interview Prep | Runtime | — |
 | `STRIPE_BUNDLE_PRICE_ID` | `server/routes.ts:21` (`bundle`) | Checkout Career Bundle | Runtime | — |
 | `STRIPE_GMP_AUDIT_KIT_PRICE_ID` | `server/routes.ts:22` (`gmp_audit_kit`) | Checkout GMP Audit Kit ($59) | Runtime | — |
+| `STRIPE_CAREER_BLUEPRINT_PRICE_ID` | `server/products.ts` (`career_blueprint`) | Checkout Personal Career Blueprint ($20) | Runtime | PDF được tạo theo assessment đã lưu sau khi server xác minh quyền mua. |
 | `VITE_STRIPE_PUBLISHABLE_KEY` | _(khai báo trong `.env.example:6` nhưng **KHÔNG dùng** trong client code)_ | — | **Build-time** | ⚠️ **Hiện không được tham chiếu ở đâu.** Checkout là redirect-based (server tạo session → client redirect tới `session.url`), không cần publishable key ở client. Set nếu sau này dùng Stripe.js/Elements; còn không thì là dead config. |
 
-> 5 price IDs: thiếu cái nào → `productType` tương ứng trả `400 Invalid productType` ở `create-checkout-session`.
+> Thiếu price ID nào → `productType` tương ứng trả `400 Invalid productType` ở `create-checkout-session`.
 
 ---
 

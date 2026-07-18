@@ -289,18 +289,18 @@ export function MobileHeader() {
 
   return (
     <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 px-4 py-3 md:hidden flex items-center justify-between">
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 flex-1 items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1 shadow-lg shadow-primary/20">
           <AtlasMark className="w-full h-full" />
         </div>
-        <span className="max-w-[12rem] truncate font-display text-base font-bold tracking-tight">Life Science <span className="text-primary">Atlas</span></span>
+        <span className="min-w-0 truncate font-display text-sm font-bold tracking-tight sm:text-base">Life Science <span className="text-primary">Atlas</span></span>
         {isPro && (
           <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px]" data-testid="badge-pro-mobile">
             <Crown className="w-2.5 h-2.5 mr-0.5" /> Pro
           </Badge>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="ml-2 flex shrink-0 items-center gap-2">
         <button onClick={openSearch} className="text-muted-foreground hover:text-foreground p-1.5" aria-label="Search">
           <Search className="w-5 h-5" />
         </button>
