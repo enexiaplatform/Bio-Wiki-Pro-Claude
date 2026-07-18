@@ -188,7 +188,7 @@ export function DesktopNav() {
   const { user, isAuthenticated, isPro, isAdmin, logout } = useUser();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 h-16 bg-background/80 backdrop-blur-md border-b border-white/5 hidden md:flex items-center px-6">
+    <header className="fixed top-0 inset-x-0 z-50 h-16 border-b border-white/10 bg-[#07182b]/95 px-6 shadow-[0_12px_30px_rgba(2,8,23,0.2)] backdrop-blur-md hidden md:flex items-center">
       <Link href="/" className="flex items-center gap-2 mr-6 shrink-0 hover:opacity-80 transition-opacity">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1">
           <AtlasMark className="w-full h-full" />
@@ -355,7 +355,7 @@ export function MobileHeader() {
   const { user, isAuthenticated, isPro, logout } = useUser();
 
   return (
-    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-white/5 px-4 py-3 md:hidden flex items-center justify-between">
+    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-white/10 bg-[#07182b]/95 px-4 py-3 shadow-[0_10px_24px_rgba(2,8,23,0.18)] backdrop-blur-md md:hidden">
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#11283a] to-[#0B1120] border border-white/10 flex items-center justify-center p-1 shadow-lg shadow-primary/20">
           <AtlasMark className="w-full h-full" />

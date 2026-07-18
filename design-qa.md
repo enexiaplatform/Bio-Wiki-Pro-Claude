@@ -1,58 +1,81 @@
-# Homepage dark Blueprint redesign — design QA
+# Homepage light/dark hierarchy — Design QA
 
-- Source visual truth: `tmp/design-audit/homepage-reference-research-2026-07-18/11-concept-2-dark-revision.png`
-- Final desktop implementation: `tmp/design-qa/homepage-dark-blueprint/15-desktop-stable.png`
-- Final mobile implementation: `tmp/design-qa/homepage-dark-blueprint/14-mobile-stable.png`
-- Full-view comparison: `tmp/design-qa/homepage-dark-blueprint/16-source-vs-stable.png`
-- Focused product-path evidence: `tmp/design-qa/homepage-dark-blueprint/08-desktop-products.png`
-- Focused Product-menu evidence: `tmp/design-qa/homepage-dark-blueprint/04-desktop-product-menu.png`
-- Viewports: desktop 1440 × 1024; mobile 390 × 844
-- State: public homepage, signed out, animations settled
+## Source visual truth
+
+- Supplied desktop screenshot: `tmp/design-audit/homepage-depth-2026-07-18/01-homepage-current.png`
+- Approved design direction: preserve the dark navy flagship hero, add white/off-white explanatory and deliverable surfaces, retain dark monetization and evidence surfaces, and finish on a light CTA.
+- Full-view comparison: `tmp/design-qa/homepage-light-dark/13-source-vs-implementation.png`
+
+## Implementation evidence
+
+- Matched desktop viewport: `tmp/design-qa/homepage-light-dark/12-desktop-1900x900.png`
+- Stable desktop first fold: `tmp/design-qa/homepage-light-dark/03-desktop-stable.png`
+- Desktop monetized products: `tmp/design-qa/homepage-light-dark/08-desktop-products.png`
+- Desktop deliverables transition: `tmp/design-qa/homepage-light-dark/09-desktop-deliverables.png`
+- Desktop final CTA: `tmp/design-qa/homepage-light-dark/10-desktop-final-cta.png`
+- Mobile first fold: `tmp/design-qa/homepage-light-dark/05-mobile.png`
+- Mobile light process section: `tmp/design-qa/homepage-light-dark/06-mobile-how-it-works.png`
+
+## Viewports and state
+
+- Desktop comparison: supplied 1900 × 909 source normalized beside a browser-rendered 1892 × 896 implementation.
+- Desktop inspection: 1432 × 1024 and 1272 × 720, public homepage, signed-out state.
+- Mobile inspection: 382 × 844 content viewport, public homepage, signed-out state.
+- Primary conversion paths remained present: free Quality Lab model, $149 diagnostic, Blueprint from $990, Atlas Pro, and $20 Career Blueprint.
+- Console errors on a clean browser tab: none.
+- Horizontal overflow: none on inspected desktop and mobile viewports.
 
 ## Findings
 
-- No actionable P0, P1, or P2 issues remain.
-- [P3] The implementation's document stack is slightly smaller than the visual concept and its internal microcopy is optimized for legibility instead of matching every generated pixel. The hierarchy, document types, white-paper contrast, and illustrative-output label remain faithful.
-- [P3] The implementation adds a tertiary `See every Atlas product` link in the hero. This is an intentional product requirement so Pro and Career remain discoverable without competing with the Quality Lab primary action.
+No actionable P0, P1, or P2 findings remain.
 
-## Required fidelity surfaces
+- Typography: Inter/Space Grotesk hierarchy, headline wrapping, weights, and line heights remain consistent with the source. Light-surface headings now use explicit slate-950 tokens so global heading styles cannot reduce contrast.
+- Spacing and layout rhythm: hero proportions and CTA order remain intact. The white trust band, off-white process section, dark product section, white deliverables section, dark evidence section, and off-white final CTA create the approved visual rhythm without changing information architecture.
+- Colors and visual tokens: dark canvas `#061426`, raised dark surface `#081A2D`, white, and off-white `#F4F7F5` are used intentionally. Light-surface copy uses slate-600 and dark teal instead of bright teal to preserve contrast.
+- Image quality: the existing real raster Blueprint delivery asset remains sharp, correctly scaled, and is now anchored by a raised navy panel. No placeholder, CSS art, or handcrafted SVG substitute was introduced.
+- Copy and content: all commercial copy, prices, trust boundaries, and product distinctions remain unchanged.
+- Icons: existing Lucide icons remain aligned and legible on both light and dark surfaces.
+- Responsiveness: mobile preserves the original conversion-first first fold; light surfaces reflow into a single-column sequence with no clipping or horizontal scroll.
 
-- Fonts and typography: Space Grotesk remains the display face and Inter the body face. The final headline uses the same three-line desktop composition, strong optical weight, teal emphasis, and readable mobile reflow as the selected visual.
-- Spacing and layout rhythm: the asymmetric hero, document stack, delivery notes, trust strip, and three-step section preserve the source grouping and vertical rhythm. Desktop and mobile have no horizontal overflow.
-- Colors and visual tokens: the implementation uses the selected deep navy surface (`#061426`), off-white type, Atlas teal actions, muted steel-blue supporting text, and restrained dividers. Small text was checked for visible contrast on navy.
-- Image quality and asset fidelity: the visible Blueprint document stack is a dedicated, inspected raster asset at `client/public/images/blueprint/quality-lab-blueprint-deliverables.png`; it is not CSS art or a placeholder. Existing editorial images and the Atlas icon system are preserved for supporting surfaces.
-- Copy and content: the flagship offer, $149 diagnostic, $990 starting Blueprint scope, ten-business-day target, first microbiology wedge, trust boundaries, and illustrative-output language remain aligned with the Product Source of Truth. The monetization section explicitly covers Quality Lab, Pro, and the $20 Career Blueprint.
-- Icons: existing Lucide icons were retained to match the repository design system, with consistent sizing and stroke treatment.
-- Interaction and accessibility: Product dropdown, primary CTAs, anchor navigation, pricing links, and responsive reflow were browser-tested. Semantic links/buttons, focus-visible styles, descriptive image alt text, and practical mobile tap sizes are present. Browser console reported no errors.
+## Focused region comparison
+
+Focused captures were required because the first-fold comparison cannot show the full color rhythm. Product cards, deliverables, final CTA, and mobile process states were inspected separately in the implementation evidence listed above.
 
 ## Comparison history
 
-1. Initial comparison
-   - Evidence: `05-desktop-final.png` and `06-source-vs-implementation.png`.
-   - [P2] The headline wrapped to four lines and pushed the trust strip lower than the reference. The document group also read as too low in the composition.
-   - Fix: widened the left hero track, reduced the desktop display size slightly, tightened top spacing, moved the asset group upward, and changed the first-wedge row so mobile text wraps as one unit.
-2. Post-fix comparison
-   - Evidence: `15-desktop-stable.png` and `16-source-vs-stable.png`.
-   - Result: the headline returns to the intended three-line hierarchy, the document stack and trust strip align with the reference proportions, and no P0/P1/P2 mismatch remains.
-3. Responsive and commercial-path pass
-   - Evidence: `14-mobile-stable.png`, `08-desktop-products.png`, and `04-desktop-product-menu.png`.
-   - Result: no horizontal overflow at 390 px or 1440 px; all three public paid paths and their pricing are visible; the desktop Product menu exposes the same paths; no console errors were present.
+### Iteration 1
 
-## Open questions
+- [P2] Light-section headings inherited the global white heading color, making the process and deliverable titles unreadable on white/off-white backgrounds.
+- Fix: added explicit `text-slate-950` classes to every heading in light sections.
+- Post-fix evidence: `02-desktop-fixed.png`, `03-desktop-stable.png`, `06-mobile-how-it-works.png`, and `09-desktop-deliverables.png` show dark, readable headings.
 
-- None blocking. The generated mock does not define tablet-specific composition, so tablet uses the responsive desktop/mobile rules already established in the product.
+### Iteration 2
 
-## Implementation checklist
-
-- [x] Match the selected dark document-focused hero.
-- [x] Use a real Blueprint deliverable asset.
-- [x] Keep every public monetization path discoverable.
-- [x] Verify Product-menu interaction.
-- [x] Verify desktop and mobile reflow with no horizontal overflow.
-- [x] Check console errors.
+- No new P0/P1/P2 findings.
+- Clean-tab browser verification reported no console errors and no horizontal overflow.
 
 ## Follow-up polish
 
-- P3 only: the document stack could be enlarged slightly on very wide screens after live traffic confirms it does not reduce primary-CTA attention.
+- [P3] The raised panel around the Blueprint documents is a deliberate departure from the flatter source screenshot. It improves asset anchoring and section depth, matching the user's approved direction.
+- Full-page stitched screenshots from the in-app browser repeated fixed content, so QA relies on stable viewport and focused section captures instead of that unreliable artifact.
+
+## Implementation checklist
+
+- [x] Preserve the dark flagship hero and all conversion CTAs.
+- [x] Add white/off-white trust, process, deliverables, and final CTA surfaces.
+- [x] Keep all monetized products together on a dark commercial surface.
+- [x] Keep Atlas Evidence on a supporting dark surface.
+- [x] Verify desktop and mobile contrast, overflow, asset quality, and clean console state.
+
+## Initial-model visualization enhancement
+
+- Reference: the user-supplied model-preview screenshot showing capability coverage, analyst workload, equipment fit, and open questions.
+- Design decision: adopt the reference's analytical structure, but place it inside the existing off-white process section rather than duplicating the commercial ladder already represented elsewhere on the homepage.
+- Desktop: verified at a 1432 px content viewport. The preview reads as one controlled output panel with four clearly divided analytical jobs and no horizontal overflow.
+- Mobile: verified at a 382 px content viewport. The intro and four outputs stack into a linear reading path; chart values and labels remain visible without hover.
+- Data integrity: every value is explicitly labeled as an illustrative initial concept that changes with user inputs and requires site verification. The display makes no customer-result or benchmark claim.
+- Accessibility: charts have descriptive image labels, direct visible values, text legends, and non-color status labels. Recharts owns geometry while React owns copy and layout; animations are disabled.
+- Visual comparison: the implementation preserves the reference's white analytical surface, teal/amber/coral semantic palette, donut composition chart, workload comparison, gap summary, and prioritized questions while matching the Atlas light/dark hierarchy.
+- Browser inspection: no horizontal overflow at desktop or mobile widths; the model preview, all paid product paths, and adjacent section transitions remain intact.
 
 final result: passed

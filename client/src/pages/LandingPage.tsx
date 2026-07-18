@@ -19,6 +19,17 @@ import {
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { EditorialImage } from "@/components/EditorialImage";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Pie,
+  PieChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 18 },
@@ -160,10 +171,30 @@ const evidenceLinks = [
   },
 ];
 
+const capabilityCoverage = [
+  { name: "Covered", value: 62, color: "#0f8f83" },
+  { name: "Partial", value: 23, color: "#f1b84b" },
+  { name: "Gap", value: 15, color: "#e86d5a" },
+];
+
+const workloadScenarios = [
+  { name: "Current", value: 58 },
+  { name: "Expected", value: 72 },
+  { name: "Peak", value: 84 },
+];
+
+const openQuestions = [
+  "Incubator capacity at peak demand",
+  "Environmental monitoring scope",
+  "Media preparation cadence",
+];
+
 const primaryCta =
   "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-teal-950/25 transition hover:-translate-y-0.5 hover:bg-teal-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-100 focus-visible:ring-offset-2 focus-visible:ring-offset-[#061426]";
 const secondaryCta =
   "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/25 bg-white/[0.035] px-5 py-3 text-sm font-semibold text-slate-100 transition hover:-translate-y-0.5 hover:border-white/45 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-100 focus-visible:ring-offset-2 focus-visible:ring-offset-[#061426]";
+const lightSecondaryCta =
+  "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:border-teal-700 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4f7f5]";
 
 export default function LandingPage() {
   useSEO({
@@ -178,7 +209,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-[#061426] text-slate-100">
-      <section className="relative border-b border-white/10 px-4 pb-12 pt-10 md:pt-12">
+      <section className="relative px-4 pb-12 pt-10 md:pt-12">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.94fr_1.06fr] lg:items-center xl:gap-14">
           <div>
             <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}>
@@ -247,7 +278,7 @@ export default function LandingPage() {
             </motion.div>
           </div>
 
-          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2} className="relative lg:-mt-3">
+          <motion.div variants={fadeUp} initial="hidden" animate="show" custom={2} className="relative rounded-[1.75rem] border border-white/10 bg-[#091b30] p-4 shadow-2xl shadow-slate-950/25 sm:p-6 lg:-mt-3">
             <img
               src="/images/blueprint/quality-lab-blueprint-deliverables.png"
               alt="Illustrative Atlas Quality Lab Blueprint delivery package with an executive brief, capability and capacity model, cost scenario, and evidence register"
@@ -268,39 +299,121 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-b border-white/10 bg-[#081a2d] px-4 py-5" aria-label="Atlas trust principles">
-        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3 md:divide-x md:divide-white/10">
+      <section className="border-b border-slate-200 bg-white px-4 py-6 text-[#0b1b2c]" aria-label="Atlas trust principles">
+        <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-3 md:divide-x md:divide-slate-200">
           {trustPoints.map((point) => (
             <div key={point.title} className="flex items-start gap-3 md:px-6 first:md:pl-0 last:md:pr-0">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-teal-300/20 bg-teal-300/[0.06] text-teal-200">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-teal-700/15 bg-teal-50 text-teal-800">
                 <point.icon className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-slate-100">{point.title}</p>
-                <p className="mt-1 text-xs leading-5 text-slate-400">{point.body}</p>
+                <p className="text-sm font-semibold text-slate-950">{point.title}</p>
+                <p className="mt-1 text-xs leading-5 text-slate-600">{point.body}</p>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      <section id="how-it-works" className="scroll-mt-20 border-b border-white/10 px-4 py-14 md:py-16">
+      <section id="how-it-works" className="scroll-mt-20 border-b border-slate-200 bg-[#f4f7f5] px-4 py-14 text-[#0b1b2c] md:py-16">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">From uncertainty to a controlled package</p>
-            <h2 className="mt-3 text-3xl font-bold md:text-4xl">One decision path your whole project team can follow.</h2>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">From uncertainty to a controlled package</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-950 md:text-4xl">One decision path your whole project team can follow.</h2>
           </div>
           <div className="mt-9 grid gap-6 lg:grid-cols-3 lg:gap-0">
             {journeySteps.map((step, index) => (
               <div key={step.number} className="relative flex gap-4 lg:pr-12">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-300 text-sm font-bold text-slate-950">{step.number}</span>
                 <div>
-                  <h3 className="text-lg font-bold">{step.title}</h3>
-                  <p className="mt-2 max-w-sm text-sm leading-6 text-slate-400">{step.body}</p>
+                  <h3 className="text-lg font-bold text-slate-950">{step.title}</h3>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-slate-600">{step.body}</p>
                 </div>
-                {index < journeySteps.length - 1 && <div className="absolute right-6 top-5 hidden h-px w-16 border-t border-dashed border-slate-500 lg:block" />}
+                {index < journeySteps.length - 1 && <div className="absolute right-6 top-5 hidden h-px w-16 border-t border-dashed border-slate-400 lg:block" />}
               </div>
             ))}
+          </div>
+
+          <div className="mt-12 grid overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-[0_24px_70px_rgba(15,35,50,0.09)] lg:grid-cols-[0.64fr_1.36fr]">
+            <div className="border-b border-slate-200 bg-[#ecf5f2] p-6 sm:p-8 lg:border-b-0 lg:border-r lg:p-10">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">Inside your initial model</p>
+              <h3 className="mt-3 text-2xl font-bold leading-tight text-slate-950 sm:text-3xl">Reveal what you know—and what still needs a decision.</h3>
+              <p className="mt-4 text-sm leading-7 text-slate-600">Atlas turns your inputs into a readable first view of coverage, workload pressure, equipment gaps, and unresolved assumptions.</p>
+              <Link href="/quality-lab/planner" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-800 transition hover:text-teal-950" onClick={trackCta("home_model_preview", "planner")}>
+                Build your free model <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm font-bold text-slate-950">Illustrative initial concept</p>
+                <p className="text-xs leading-5 text-slate-500">Values change with your inputs and require site verification.</p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 xl:grid-cols-4">
+                <article className="border-b border-slate-200 p-4 sm:border-r xl:border-b-0">
+                  <p className="text-xs font-bold text-slate-950">Capability coverage</p>
+                  <div className="relative mt-3 h-32" role="img" aria-label="Illustrative capability coverage: 62 percent covered, 23 percent partial, and 15 percent gap.">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie data={capabilityCoverage} dataKey="value" nameKey="name" innerRadius={34} outerRadius={52} paddingAngle={1} stroke="none" isAnimationActive={false}>
+                          {capabilityCoverage.map((entry) => <Cell key={entry.name} fill={entry.color} />)}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                      <span className="text-lg font-bold text-slate-950">62%</span>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    {capabilityCoverage.map((item) => (
+                      <div key={item.name} className="flex items-center justify-between gap-3 text-[11px] text-slate-600">
+                        <span className="flex items-center gap-2"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />{item.name}</span>
+                        <strong className="text-slate-900">{item.value}%</strong>
+                      </div>
+                    ))}
+                  </div>
+                </article>
+
+                <article className="border-b border-slate-200 p-4 xl:border-b-0 xl:border-r">
+                  <p className="text-xs font-bold text-slate-950">Analyst workload</p>
+                  <p className="mt-2 text-2xl font-bold text-slate-950">84% <span className="text-xs font-medium text-slate-500">peak</span></p>
+                  <div className="mt-3 h-36" role="img" aria-label="Illustrative analyst utilization: current 58 percent, expected 72 percent, and peak 84 percent, with an 80 percent planning threshold.">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={workloadScenarios} layout="vertical" margin={{ top: 2, right: 4, bottom: 2, left: 0 }}>
+                        <XAxis type="number" domain={[0, 100]} hide />
+                        <YAxis type="category" dataKey="name" width={54} tick={{ fill: "#475569", fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <ReferenceLine x={80} stroke="#e86d5a" strokeDasharray="3 3" />
+                        <Bar dataKey="value" fill="#0f8f83" radius={[0, 4, 4, 0]} barSize={13} isAnimationActive={false} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <p className="text-[10px] leading-4 text-slate-500"><span className="font-bold text-[#c94f3d]">Dashed line:</span> example planning threshold</p>
+                </article>
+
+                <article className="border-b border-slate-200 p-4 sm:border-r sm:border-b-0 xl:border-r">
+                  <p className="text-xs font-bold text-slate-950">Equipment fit</p>
+                  <p className="mt-5 text-[11px] uppercase tracking-[0.12em] text-slate-500">Items to confirm</p>
+                  <p className="mt-1 text-5xl font-bold tracking-tight text-slate-950">7</p>
+                  <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+                    <div className="h-full w-[68%] rounded-full bg-amber-400" />
+                  </div>
+                  <p className="mt-3 text-xs leading-5 text-slate-600">Capacity, redundancy, utilities, or qualification basis may still need evidence.</p>
+                </article>
+
+                <article className="p-4">
+                  <p className="text-xs font-bold text-slate-950">Top open questions</p>
+                  <ol className="mt-4 space-y-3">
+                    {openQuestions.map((question, index) => (
+                      <li key={question} className="grid grid-cols-[1.35rem_1fr] gap-2 text-xs leading-5 text-slate-600">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-[10px] font-bold text-amber-800">{index + 1}</span>
+                        <span>{question}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </article>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -346,23 +459,23 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="deliverables" className="scroll-mt-20 border-b border-white/10 px-4 py-14 md:py-20">
+      <section id="deliverables" className="scroll-mt-20 border-b border-slate-200 bg-white px-4 py-14 text-[#0b1b2c] md:py-20">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">What the Blueprint contains</p>
-            <h2 className="mt-3 text-3xl font-bold md:text-4xl">A controlled decision package, not another software dashboard.</h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-slate-400 md:text-base">The founding scope is designed to support a real project conversation across QC, QA, engineering, procurement, and leadership.</p>
-            <div className="mt-6 rounded-xl border border-amber-300/20 bg-amber-300/[0.055] p-4 text-sm leading-6 text-slate-300">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">What the Blueprint contains</p>
+            <h2 className="mt-3 text-3xl font-bold text-slate-950 md:text-4xl">A controlled decision package, not another software dashboard.</h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-slate-600 md:text-base">The founding scope is designed to support a real project conversation across QC, QA, engineering, procurement, and leadership.</p>
+            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-slate-700">
               Atlas supports planning and decision-making. It does not replace site risk assessment, qualified engineering, validation, QA approval, or regulatory review.
             </div>
           </div>
-          <div className="divide-y divide-white/10 border-y border-white/10">
+          <div className="divide-y divide-slate-200 border-y border-slate-200">
             {deliverables.map((item, index) => (
               <motion.article key={item.title} initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.35, delay: index * 0.05 }} className="grid gap-4 py-6 sm:grid-cols-[3rem_1fr]">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-300/[0.07] text-teal-200"><item.icon className="h-5 w-5" /></div>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-teal-700/15 bg-teal-50 text-teal-800"><item.icon className="h-5 w-5" /></div>
                 <div>
-                  <h3 className="text-lg font-bold">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
+                  <h3 className="text-lg font-bold text-slate-950">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">{item.body}</p>
                 </div>
               </motion.article>
             ))}
@@ -392,14 +505,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="px-4 py-14 md:py-20">
+      <section className="bg-[#f4f7f5] px-4 py-14 text-[#0b1b2c] md:py-20">
         <div className="mx-auto max-w-5xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Start with the decision in front of you</p>
-          <h2 className="mt-3 text-3xl font-bold md:text-5xl">Build an initial model before committing capital.</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-400 md:text-base">Use the free model for orientation, the $149 diagnostic to resolve scope, or request a founding Blueprint engagement when the project is ready.</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">Start with the decision in front of you</p>
+          <h2 className="mt-3 text-3xl font-bold text-slate-950 md:text-5xl">Build an initial model before committing capital.</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600 md:text-base">Use the free model for orientation, the $149 diagnostic to resolve scope, or request a founding Blueprint engagement when the project is ready.</p>
           <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
             <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_final", "planner")}>Build the free model <ArrowRight className="h-4 w-4" /></Link>
-            <Link href="/quality-lab/review" className={secondaryCta} onClick={trackCta("home_final", "expert_review")}>Discuss a real project</Link>
+            <Link href="/quality-lab/review" className={lightSecondaryCta} onClick={trackCta("home_final", "expert_review")}>Discuss a real project</Link>
           </div>
         </div>
       </section>
