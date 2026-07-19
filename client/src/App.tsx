@@ -11,6 +11,7 @@ import { LazyCommandPalette } from "@/components/LazyCommandPalette";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { usePageTracking } from "@/hooks/use-analytics";
 import { useUser } from "@/context/UserContext";
+import LandingPage from "@/pages/LandingPage";
 
 // Route components are code-split: each becomes its own chunk, loaded on demand.
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -34,7 +35,11 @@ const GMPAuditKit = lazy(() => import("@/pages/GMPAuditKit"));
 const WorkflowsPage = lazy(() => import("@/pages/WorkflowsPage"));
 const WorkflowDetailPage = lazy(() => import("@/pages/WorkflowDetailPage"));
 const ToolkitsPage = lazy(() => import("@/pages/ToolkitsPage"));
-const LandingPage = lazy(() => import("@/pages/LandingPage"));
+const HowItWorksPage = lazy(() => import("@/pages/HowItWorksPage"));
+const PlatformHowItWorksPage = lazy(() => import("@/pages/PlatformHowItWorksPage"));
+const DeliverablesPage = lazy(() => import("@/pages/DeliverablesPage"));
+const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
+const ProPage = lazy(() => import("@/pages/ProPage"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
@@ -103,7 +108,7 @@ function Layout() {
       <DesktopNav />
       <MobileHeader />
 
-      <main id="main" className="animate-in fade-in duration-500">
+      <main id="main">
         <Suspense fallback={<PageFallback />}>
         <Switch>
           {/* Backward-compat: old /en|/vi prefixed URLs → clean English-only URLs */}
@@ -111,7 +116,13 @@ function Layout() {
           <Route path="/vi/:rest*" component={LegacyLangRedirect} />
           <Route path="/workflows" component={WorkflowsPage} />
           <Route path="/workflows/:slug" component={WorkflowDetailPage} />
+          <Route path="/products" component={ProductsPage} />
+          <Route path="/pro" component={ProPage} />
+          <Route path="/how-it-works" component={PlatformHowItWorksPage} />
+          <Route path="/deliverables"><Redirect to="/quality-lab/deliverables" replace /></Route>
           <Route path="/quality-lab" component={QualityLabLandingPage} />
+          <Route path="/quality-lab/how-it-works" component={HowItWorksPage} />
+          <Route path="/quality-lab/deliverables" component={DeliverablesPage} />
           <Route path="/quality-lab/planner" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/projects" component={QualityLabProjectsPage} />
           <Route path="/quality-lab/compare" component={QualityLabScenarioComparePage} />

@@ -78,4 +78,27 @@ Focused captures were required because the first-fold comparison cannot show the
 - Visual comparison: the implementation preserves the reference's white analytical surface, teal/amber/coral semantic palette, donut composition chart, workload comparison, gap summary, and prioritized questions while matching the Atlas light/dark hierarchy.
 - Browser inspection: no horizontal overflow at desktop or mobile widths; the model preview, all paid product paths, and adjacent section transitions remain intact.
 
+## Marketing IA, product cards, footer, and first-load pass
+
+- Audit scope: desktop and 390 × 844 mobile homepage, the primary marketing navigation, the new `/how-it-works` and `/deliverables` routes, commercial-product cards, and footer.
+- Navigation: `How it works` and `Deliverables` now resolve to dedicated routes. The homepage retains concise previews and links to the deeper pages.
+- Product presentation: the three commercial paths remain distinct and complete—Quality Lab (free model, $149 diagnostic, Blueprint from $990), Atlas Pro ($8/month or $80/year when available), and Career Blueprint ($20 one time). Each card now has a real product/evidence visual, concrete inclusions, pricing, audience, and one action.
+- Footer: reorganized into Products, Explore, Resources, and Company groups with a separate legal row; the same structure is usable on desktop and mobile.
+- Performance: removed the initial 500 ms page fade, made the homepage route eager, deferred the Recharts model-preview chunk until near the viewport, and replaced the 759 kB hero PNG with a 36 kB WebP. The 1.69 MB Career preview now has a 67 kB WebP version.
+- Accessibility: navigation remains semantic, active routes are exposed, images have alt text and intrinsic dimensions, footer groups have headings, product cards have clear visible focus states, and no horizontal overflow was detected.
+- Captures: `C:/Users/PC/.codex/visualizations/2026/07/18/019f7461-f9e4-7841-bd41-81ab1496267f/audit-homepage/02-after-home.png`, `03-how-it-works.png`, `04-deliverables.png`, `07-products-final.png`, `06-footer.png`, `08-mobile-home.png`, `09-mobile-products.png`, and `10-mobile-footer.png`.
+- Automated verification: content/path/link/brand validation passed; 31 unit suites with 226 tests passed; production build passed; 83 public E2E tests passed with 2 Stripe-mode tests skipped.
+
 final result: passed
+
+## Product-suite information architecture and detail-page pass
+
+- Audit scope: desktop homepage navigation, the Products dropdown, `/products`, `/how-it-works`, `/pro`, `/career`, `/quality-lab`, `/quality-lab/how-it-works`, `/quality-lab/deliverables`, footer structure, and 390 × 844 responsive behavior.
+- Initial issue: the product chooser described all three commercial offers, while top-level `How it works` and `Deliverables` described only Quality Lab. That mixed platform-wide navigation with product-specific navigation and made the surfaces feel overlapping.
+- Comparator pattern: Stripe, HubSpot, Salesforce, Clay, and Notion separate suite discovery, use-case or platform explanation, dedicated product pages, resource libraries, and pricing. The implementation adopts that hierarchy without copying their visual identity.
+- New hierarchy: `Products` chooses among distinct outcomes; `How Atlas works` explains the shared Evidence → Intelligence → Output system; `Resources` contains learning, tools, and compliance; `Pricing` owns commercial comparison. Quality Lab process and deliverables now live below the Quality Lab product route.
+- Product depth: added a dedicated all-products overview and comparison table, a full Atlas Pro product page, deeper Career personalization and paid-document explanation, and a Quality Lab local detail navigator.
+- Commercial completeness: Quality Lab ($149 diagnostic and Blueprint from $990), Atlas Pro ($8/month or $80/year when available), and Career Blueprint ($20 one time) remain visible and independently reachable.
+- Accessibility and responsiveness: semantic navigation, headings, lists, table headers, alt text, intrinsic product-image dimensions, visible focus states, and no horizontal overflow at 390 px or 1280 px inspected widths.
+- Accepted audit captures: `C:/Users/PC/.codex/visualizations/2026/07/18/019f7461-f9e4-7841-bd41-81ab1496267f/audit-product-ia-2026-07-19/01-current-product-menu.png`, `02-current-how-it-works-viewport.png`, `03-new-product-menu.png`, `04-products-overview.png`, `05-atlas-pro.png`, `06-how-atlas-works.png`, and `07-products-mobile.png`.
+- Evidence limit: screenshots support visual hierarchy, discoverability, and responsive reflow findings; they do not establish full WCAG compliance or validate unconfigured Stripe purchase fulfillment.

@@ -143,7 +143,7 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
           <div className="mt-4 grid gap-4 sm:grid-cols-[minmax(220px,0.95fr)_minmax(200px,1.05fr)] sm:items-center xl:mt-2">
             <div>
               <h2 className="text-2xl font-bold leading-tight xl:text-xl">{profile.fullName} — Personal Career Blueprint</h2>
-              <img src="/images/career/personal-career-blueprint-preview.png" alt="Personal Career Blueprint report cover and inside evidence-comparison page" className="mt-3 aspect-[9/7] w-full rounded-lg object-cover xl:mt-2" />
+              <img src="/images/career/personal-career-blueprint-preview.webp" alt="Personal Career Blueprint report cover and inside evidence-comparison page" width="1421" height="1107" loading="lazy" decoding="async" className="mt-3 aspect-[9/7] w-full rounded-lg object-cover xl:mt-2" />
             </div>
             <div>
               <p className="text-sm font-bold">38-page Career Operating Blueprint</p>

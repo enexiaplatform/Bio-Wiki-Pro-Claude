@@ -1,75 +1,93 @@
 import { Link } from "wouter";
-import { FlaskConical } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { ArrowUpRight, FlaskConical } from "lucide-react";
+
+const footerGroups = [
+  {
+    title: "Products",
+    links: [
+      { label: "All products", href: "/products" },
+      { label: "Quality Lab Blueprint", href: "/quality-lab" },
+      { label: "Atlas Pro", href: "/pro" },
+      { label: "Career Blueprint", href: "/career" },
+    ],
+  },
+  {
+    title: "Quality Lab",
+    links: [
+      { label: "How the project works", href: "/quality-lab/how-it-works" },
+      { label: "Blueprint deliverables", href: "/quality-lab/deliverables" },
+      { label: "Sample Blueprint", href: "/quality-lab/sample" },
+      { label: "Build the free model", href: "/quality-lab/planner" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { label: "Evidence library", href: "/academy" },
+      { label: "Workflows", href: "/workflows" },
+      { label: "Decision tools", href: "/tools" },
+      { label: "Toolkits", href: "/toolkits" },
+      { label: "Compliance", href: "/compliance" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "How Atlas works", href: "/how-it-works" },
+      { label: "Pricing", href: "/pricing" },
+      { label: "About", href: "/about" },
+      { label: "FAQ", href: "/faq" },
+      { label: "Contact", href: "mailto:support@lifescienceatlas.com", external: true },
+    ],
+  },
+];
 
 export function Footer() {
-  const { t } = useTranslation("footer");
   const year = new Date().getFullYear();
 
   return (
-    <footer className="hidden md:block border-t border-white/5 bg-background/80 backdrop-blur-md mt-12">
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Brand */}
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <FlaskConical className="w-4 h-4 text-primary" />
-            </div>
-            <span className="font-bold text-sm">Life Science Atlas</span>
-            <span className="text-muted-foreground text-xs">{t("copyright", { year })}</span>
+    <footer className="border-t border-white/10 bg-[#071426] text-slate-100">
+      <div className="mx-auto max-w-7xl px-5 pb-28 pt-12 md:px-6 md:pb-10 md:pt-14">
+        <div className="grid gap-10 border-b border-white/10 pb-10 lg:grid-cols-[1.1fr_1.9fr] lg:gap-16">
+          <div className="max-w-sm">
+            <Link href="/" className="inline-flex items-center gap-3 transition hover:opacity-85">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-300/[0.08]">
+                <FlaskConical className="h-5 w-5 text-teal-300" />
+              </span>
+              <span className="font-display text-lg font-bold">Life Science <span className="text-teal-300">Atlas</span></span>
+            </Link>
+            <p className="mt-5 text-sm leading-7 text-slate-400">Decision intelligence for quality laboratories serving regulated manufacturing.</p>
+            <a href="mailto:support@lifescienceatlas.com" className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-200 transition hover:text-teal-100">
+              support@lifescienceatlas.com <ArrowUpRight className="h-4 w-4" />
+            </a>
           </div>
 
-          {/* Links */}
-          <nav className="flex items-center gap-6 text-xs text-muted-foreground">
-            <Link href="/quality-lab" className="hover:text-primary transition-colors">
-              Blueprint
-            </Link>
-            <Link href="/quality-lab/review" className="hover:text-primary transition-colors">
-              Expert review
-            </Link>
-            <Link href="/workflows" className="hover:text-primary transition-colors">
-              Workflows
-            </Link>
-            <Link href="/academy" className="hover:text-primary transition-colors">
-              Learn
-            </Link>
-            <Link href="/toolkits" className="hover:text-primary transition-colors">
-              Toolkits
-            </Link>
-            <Link href="/tools" className="hover:text-primary transition-colors">
-              Tools
-            </Link>
-            <Link href="/career" className="hover:text-primary transition-colors">
-              Career
-            </Link>
-            <Link href="/glossary" className="hover:text-primary transition-colors">
-              Glossary
-            </Link>
-            <Link href="/about" className="hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link href="/pricing" className="hover:text-primary transition-colors">
-              {t("links.pricing")}
-            </Link>
-            <Link href="/faq" className="hover:text-primary transition-colors">
-              FAQ
-            </Link>
-            <span className="w-px h-3 bg-white/10" />
-            <Link href="/terms" className="hover:text-primary transition-colors">
-              {t("links.terms")}
-            </Link>
-            <Link href="/privacy" className="hover:text-primary transition-colors">
-              {t("links.privacy")}
-            </Link>
+          <nav aria-label="Footer navigation" className="grid grid-cols-2 gap-x-6 gap-y-9 sm:grid-cols-4">
+            {footerGroups.map((group) => (
+              <div key={group.title}>
+                <h2 className="text-xs font-bold uppercase tracking-[0.15em] text-slate-200">{group.title}</h2>
+                <ul className="mt-4 space-y-3">
+                  {group.links.map((item) => (
+                    <li key={item.label}>
+                      {item.external ? (
+                        <a href={item.href} className="text-sm text-slate-400 transition hover:text-teal-200">{item.label}</a>
+                      ) : (
+                        <Link href={item.href} className="text-sm text-slate-400 transition hover:text-teal-200">{item.label}</Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </nav>
+        </div>
 
-          {/* Contact */}
-          <a
-            href="mailto:support@lifescienceatlas.com"
-            className="text-xs text-muted-foreground hover:text-primary transition-colors"
-          >
-            support@lifescienceatlas.com
-          </a>
+        <div className="flex flex-col gap-4 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {year} Life Science Atlas. Planning support, not regulatory approval.</p>
+          <div className="flex items-center gap-5">
+            <Link href="/terms" className="transition hover:text-slate-300">Terms</Link>
+            <Link href="/privacy" className="transition hover:text-slate-300">Privacy</Link>
+          </div>
         </div>
       </div>
     </footer>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, LayoutDashboard, ChevronDown, Home } from "lucide-react";
+import { ArrowRight, BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, FileCheck2, LayoutDashboard, ChevronDown, Home } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -60,12 +60,12 @@ const mobileTabs = [
   { key: "academy", name: "Learn", icon: BookOpen, path: "/academy" },
 ];
 
-// Desktop groups every commercial path under Product so the flagship remains
-// focused without hiding Pro or the one-time Career Blueprint.
+// Product discovery is organized by the decision being purchased. Prices live on
+// the product and pricing pages so this menu can stay scannable.
 const productLinks = [
-  { name: "Quality Lab Blueprint", description: "Free model · $149 diagnostic · from $990", icon: Building2, path: "/quality-lab" },
-  { name: "Atlas Pro", description: "Evidence, tools and working files from $8/month", icon: Crown, path: "/pricing#evidence-plans" },
-  { name: "Career Blueprint", description: "Free snapshot · personalized PDF for $20", icon: Briefcase, path: "/career" },
+  { name: "Quality Lab Blueprint", audience: "For organizations", description: "Plan capability, capacity, people, equipment, cost, and risk for a real quality laboratory.", icon: Building2, path: "/quality-lab", tone: "border-teal-300/20 bg-teal-300/[0.06]" },
+  { name: "Atlas Pro", audience: "For professionals", description: "Use deeper evidence, premium tools, and reusable quality working files.", icon: Crown, path: "/pro", tone: "border-sky-300/20 bg-sky-300/[0.05]" },
+  { name: "Career Blueprint", audience: "For individuals", description: "Turn your role, evidence, constraints, and target into a personalized career plan.", icon: Briefcase, path: "/career", tone: "border-amber-300/20 bg-amber-300/[0.05]" },
 ];
 
 const resourceLinks = [
@@ -79,7 +79,11 @@ const resourceLinks = [
 // Secondary destinations for the mobile "More" drawer — everything not on the
 // 4-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
 const moreLinks = [
+  { name: "All products", icon: Package, path: "/products" },
   { name: "Request Blueprint Review", icon: ClipboardCheck, path: "/quality-lab/review" },
+  { name: "How Atlas works", icon: Workflow, path: "/how-it-works" },
+  { name: "Blueprint deliverables", icon: FileCheck2, path: "/quality-lab/deliverables" },
+  { name: "Atlas Pro", icon: Crown, path: "/pro" },
   { name: "Workflows", icon: Workflow, path: "/workflows" },
   { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Toolkits", icon: Package, path: "/toolkits" },
@@ -205,35 +209,52 @@ export function DesktopNav() {
               type="button"
               className={clsx(
                 "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                productLinks.some((item) => location.startsWith(item.path.split("#")[0]))
+                location.startsWith("/products") || productLinks.some((item) => location.startsWith(item.path))
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               )}
               data-testid="nav-desktop-product"
             >
-              Product
+              Products
               <ChevronDown className="h-3.5 w-3.5 opacity-60" />
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="w-80 p-2">
-            <DropdownMenuLabel className="px-2 pb-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Products and ways to buy</DropdownMenuLabel>
-            {productLinks.map((item) => (
-              <DropdownMenuItem key={item.path} asChild className="p-0">
-                <Link href={item.path} onMouseEnter={() => prefetchRoute(item.path.split("#")[0])} className="flex cursor-pointer items-start gap-3 rounded-md px-2 py-3">
-                  <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" />
-                  <span>
-                    <span className="block text-sm font-semibold">{item.name}</span>
-                    <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">{item.description}</span>
-                  </span>
-                </Link>
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuContent align="start" className="w-[36rem] max-w-[calc(100vw-2rem)] p-3">
+            <div className="flex items-start justify-between gap-5 px-2 pb-3">
+              <div>
+                <DropdownMenuLabel className="p-0 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Choose by decision</DropdownMenuLabel>
+                <p className="mt-1 text-sm font-semibold text-foreground">Three products. Three clearly different outcomes.</p>
+              </div>
+              <Link href="/products" className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-teal-200 hover:text-teal-100">
+                View all <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {productLinks.map((item) => (
+                <DropdownMenuItem key={item.path} asChild className="p-0">
+                  <Link href={item.path} onMouseEnter={() => prefetchRoute(item.path)} className={clsx("flex min-h-40 cursor-pointer flex-col rounded-xl border p-4", item.tone)}>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-slate-950/30">
+                      <item.icon className="h-4 w-4 text-teal-200" />
+                    </span>
+                    <span className="mt-4 block text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{item.audience}</span>
+                    <span className="mt-1 block text-sm font-semibold">{item.name}</span>
+                    <span className="mt-2 block text-xs leading-5 text-muted-foreground">{item.description}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </div>
+            <DropdownMenuSeparator className="my-3" />
+            <div className="flex items-center justify-between gap-4 px-2 pb-1 text-xs text-muted-foreground">
+              <span>Not sure where to start? Compare buyer, output, depth, and price.</span>
+              <Link href="/pricing" className="shrink-0 font-bold text-slate-200 hover:text-white">Compare pricing</Link>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <a href="/#how-it-works" className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground">How it works</a>
-        <a href="/#deliverables" className="whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground">Deliverables</a>
-
+        <Link href="/how-it-works" onMouseEnter={() => prefetchRoute("/how-it-works")} className={clsx(
+          "whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+          location.startsWith("/how-it-works") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
+        )}>How Atlas works</Link>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
@@ -247,12 +268,12 @@ export function DesktopNav() {
               data-testid="nav-desktop-resources"
             >
               <BookOpen className="h-4 w-4" />
-              Evidence
+              Resources
               <ChevronDown className="h-3.5 w-3.5 opacity-60" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-72 p-2">
-            <DropdownMenuLabel className="px-2 pb-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Knowledge and working tools</DropdownMenuLabel>
+            <DropdownMenuLabel className="px-2 pb-2 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Learn, calculate, and verify</DropdownMenuLabel>
             {resourceLinks.map((item) => (
               <DropdownMenuItem key={item.path} asChild className="p-0">
                 <Link href={item.path} onMouseEnter={() => prefetchRoute(item.path)} className="flex cursor-pointer items-start gap-3 rounded-md px-2 py-2.5">

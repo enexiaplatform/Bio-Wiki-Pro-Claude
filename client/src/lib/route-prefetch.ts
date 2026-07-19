@@ -5,6 +5,11 @@
 
 const importers: Record<string, () => Promise<unknown>> = {
   "/quality-lab": () => import("@/pages/QualityLabLandingPage"),
+  "/products": () => import("@/pages/ProductsPage"),
+  "/pro": () => import("@/pages/ProPage"),
+  "/how-it-works": () => import("@/pages/PlatformHowItWorksPage"),
+  "/quality-lab/how-it-works": () => import("@/pages/HowItWorksPage"),
+  "/quality-lab/deliverables": () => import("@/pages/DeliverablesPage"),
   "/academy": () => import("@/pages/Academy"),
   "/register": () => import("@/pages/RegisterPage"),
   "/login": () => import("@/pages/LoginPage"),

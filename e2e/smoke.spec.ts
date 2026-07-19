@@ -288,6 +288,37 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /QC workflows/i })).toHaveAttribute("href", "/workflows");
   });
 
+  test("product navigation separates the platform, products, resources, and product-specific detail", async ({ page }) => {
+    await page.goto("/");
+    const header = page.locator("header");
+    await expect(header.getByRole("link", { name: "How Atlas works", exact: true })).toHaveAttribute("href", "/how-it-works");
+    await expect(header.getByRole("button", { name: "Products", exact: true })).toBeVisible();
+    await expect(header.getByRole("button", { name: "Resources", exact: true })).toBeVisible();
+    await expect(header.getByRole("link", { name: "Deliverables", exact: true })).toHaveCount(0);
+
+    await header.getByRole("link", { name: "How Atlas works", exact: true }).click();
+    await expect(page).toHaveURL(/\/how-it-works$/);
+    await expect(page.getByRole("heading", { name: /Evidence becomes intelligence/i })).toBeVisible();
+
+    await page.goto("/products");
+    await expect(page.getByRole("heading", { name: /One Atlas\. Three ways to make a better decision/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "See Free vs Pro", exact: true })).toHaveAttribute("href", "/pro");
+
+    await page.goto("/pro");
+    await expect(page.getByRole("heading", { name: /deeper professional layer/i })).toBeVisible();
+
+    await page.goto("/quality-lab/how-it-works");
+    await expect(page.getByRole("heading", { name: /fragmented lab question/i })).toBeVisible();
+
+    await page.goto("/quality-lab/deliverables");
+    await expect(page.getByRole("heading", { name: /decision package built to be/i })).toBeVisible();
+
+    const footer = page.locator("footer");
+    for (const group of ["Products", "Quality Lab", "Resources", "Company"]) {
+      await expect(footer.getByRole("heading", { name: group, exact: true })).toBeVisible();
+    }
+  });
+
   test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {
     await mockAdmin(page);
     await page.goto("/quality-lab/pilots");

@@ -229,7 +229,7 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
 
           <div className="rounded-xl border border-amber-300/30 bg-[#071426] p-5">
             <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Optional paid deliverable</p><h2 className="mt-2 text-xl font-bold">Your named Personal Career Blueprint</h2></div><span className="rounded-full bg-amber-300/10 px-3 py-1 text-sm font-bold text-amber-200">$20</span></div>
-            <img src="/images/career/personal-career-blueprint-preview.png" alt="Preview of a Personal Career Blueprint report and evidence comparison page" className="mt-4 aspect-[9/7] w-full rounded-lg object-cover" />
+            <img src="/images/career/personal-career-blueprint-preview.webp" alt="Preview of a Personal Career Blueprint report and evidence comparison page" width="1421" height="1107" loading="lazy" decoding="async" className="mt-4 aspect-[9/7] w-full rounded-lg object-cover" />
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-300">
               {["38 personalized pages", "Target-role requirement matrix", "13-week execution calendar", "Proof portfolio and interview drills"].map((item) => <span key={item} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" />{item}</span>)}
             </div>
@@ -241,6 +241,43 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
         <Value icon={Route} title="Compare credible routes" body="See a best-fit move, an adjacent option, and a stretch path with the evidence each one requires." />
         <Value icon={BarChart3} title="See the gap visually" body="Compare your current evidence with the planning threshold for the selected target role." />
         <Value icon={FileText} title="Turn insight into a plan" body="Start free, then unlock the detailed month-by-month PDF only if the snapshot feels accurate." />
+      </section>
+
+      <section className="mt-7 overflow-hidden rounded-xl border border-white/10 bg-[#071426]">
+        <div className="grid lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r lg:p-8">
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">How personalization works</p>
+            <h2 className="mt-3 text-2xl font-bold md:text-3xl">The same job title should not produce the same roadmap.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">Atlas builds the route from the combination of your current evidence, target, constraints, horizon, and preferred way of working. Change a material input and the recommendation, gap priorities, or action sequence can change with it.</p>
+            <button type="button" onClick={onStart} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-200 hover:text-teal-100">Show Atlas my real situation <ArrowRight className="h-4 w-4" /></button>
+          </div>
+          <div className="grid gap-px bg-white/10 sm:grid-cols-2">
+            {[
+              { label: "Current position", value: "Role, sector, scope, and experience" },
+              { label: "Evidence you can prove", value: "Outcomes, systems, decisions, and artifacts" },
+              { label: "Target route", value: "Best-fit, adjacent, or stretch destination" },
+              { label: "Real constraints", value: "Time, mobility, risk, language, and study capacity" },
+            ].map((item) => <div key={item.label} className="bg-[#0a1d32] p-5"><p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{item.label}</p><p className="mt-2 text-sm font-semibold leading-6 text-slate-200">{item.value}</p></div>)}
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-7 rounded-xl border border-amber-300/20 bg-amber-300/[0.045] p-6 md:p-8">
+        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Inside the paid Blueprint</p>
+            <h2 className="mt-3 text-2xl font-bold md:text-3xl">Not a longer snapshot—a working document for the next move.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">The free result helps you judge whether the route logic feels credible. The $20 document expands the selected route into concrete proof, positioning, interview, and execution work.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              { title: "Route decision brief", body: "Why this route, why not the alternatives, and what assumptions could change the recommendation." },
+              { title: "Requirement and evidence matrix", body: "Target expectations mapped against the proof you currently have, with priority gaps." },
+              { title: "Proof-building portfolio", body: "Specific artifacts, outcomes, and workplace evidence to create or strengthen." },
+              { title: "13-week execution system", body: "Sequenced actions, review checkpoints, CV prompts, and interview drills tied to the route." },
+            ].map((item) => <article key={item.title} className="rounded-xl border border-white/10 bg-slate-950/35 p-5"><Check className="h-4 w-4 text-amber-200" /><h3 className="mt-3 font-bold text-slate-100">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p></article>)}
+          </div>
+        </div>
       </section>
 
       <section className="mt-7 flex flex-col gap-5 rounded-xl border border-white/10 bg-white/[0.02] p-6 md:flex-row md:items-center md:justify-between">

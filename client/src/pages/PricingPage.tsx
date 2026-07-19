@@ -136,7 +136,7 @@ export default function PricingPage() {
 
       <section className="mb-8 overflow-hidden rounded-xl border border-amber-300/25 bg-gradient-to-br from-amber-300/[0.08] via-white/[0.035] to-teal-300/[0.04] p-6 md:p-8">
         <div className="grid gap-7 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
-          <img src="/images/career/personal-career-blueprint-preview.png" alt="Personalized Career Blueprint product preview" className="aspect-[9/7] w-full rounded-xl border border-white/10 object-cover shadow-2xl shadow-black/20" />
+          <img src="/images/career/personal-career-blueprint-preview.webp" alt="Personalized Career Blueprint product preview" width="1421" height="1107" loading="lazy" decoding="async" className="aspect-[9/7] w-full rounded-xl border border-white/10 object-cover shadow-2xl shadow-black/20" />
           <div>
             <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Personal decision product</span><span className="text-2xl font-bold text-amber-200">$20 one time</span></div>
             <h2 className="mt-4 font-display text-2xl font-bold md:text-3xl">A personalized career operating plan you can actually use.</h2>

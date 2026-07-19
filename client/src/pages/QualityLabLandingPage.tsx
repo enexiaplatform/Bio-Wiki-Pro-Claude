@@ -234,6 +234,17 @@ export default function QualityLabLandingPage() {
         </div>
       </section>
 
+      <nav aria-label="Quality Lab product details" className="border-b border-white/10 bg-[#0a1a2d] px-4 py-4">
+        <div className="mx-auto grid max-w-6xl gap-2 sm:grid-cols-4">
+          {[
+            { label: "Project process", detail: "From inputs to controlled release", href: "/quality-lab/how-it-works" },
+            { label: "Deliverables", detail: "Brief, model, workbook, register", href: "/quality-lab/deliverables" },
+            { label: "Illustrative sample", detail: "Inspect the concept package", href: "/quality-lab/sample" },
+            { label: "Commercial scope", detail: "$149 diagnostic · Blueprint from $990", href: "/pricing" },
+          ].map((item) => <Link key={item.label} href={item.href} className="group rounded-xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-teal-300/30 hover:bg-teal-300/[0.06]"><span className="flex items-center justify-between text-sm font-bold text-slate-100">{item.label}<ArrowRight className="h-4 w-4 text-teal-300 transition group-hover:translate-x-0.5" /></span><span className="mt-1 block text-xs leading-5 text-slate-500">{item.detail}</span></Link>)}
+        </div>
+      </nav>
+
       <section className="border-b border-white/10 bg-slate-950/35 px-4 py-14">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 max-w-2xl">
