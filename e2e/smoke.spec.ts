@@ -308,6 +308,10 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Evidence, tools, and working files/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Start with work to be done, then pull the right depth/i })).toBeVisible();
     await expect(page.getByRole("link", { name: "Inspect the audit kit", exact: true })).toHaveAttribute("href", "/toolkits/gmp-audit-kit");
+    await page.getByRole("button", { name: "Build Investigate a quality signal brief", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Investigate a quality signal", exact: true }).last()).toBeVisible();
+    await page.getByRole("button", { name: "Copy selected workflow brief", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Copied workflow brief", exact: true })).toBeVisible();
 
     await page.goto("/quality-lab");
     await expect(page.getByRole("heading", { name: /See how a real planning question changes shape/i })).toBeVisible();

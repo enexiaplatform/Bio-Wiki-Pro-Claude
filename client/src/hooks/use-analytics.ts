@@ -111,6 +111,12 @@ export const analytics = {
   subscriptionStarted: (plan = "pro_subscription") =>
     capture("subscription_started", { plan }),
 
+  proWorkflowSelected: (workflow: string) =>
+    capture("pro_workflow_selected", { workflow }),
+
+  proWorkflowBriefCopied: (workflow: string) =>
+    capture("pro_workflow_brief_copied", { workflow }),
+
   purchaseCompleted: (productType: string, amountCents?: number) =>
     capture("purchase_completed", { product_type: productType, amount_cents: amountCents }),
 

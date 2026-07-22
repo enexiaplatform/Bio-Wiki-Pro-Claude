@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowRight,
@@ -5,6 +6,8 @@ import {
   BookOpenCheck,
   Calculator,
   Check,
+  CheckCircle2,
+  Copy,
   Crown,
   FileSpreadsheet,
   LockKeyhole,
@@ -13,7 +16,10 @@ import {
   Sparkles,
 } from "lucide-react";
 import { EditorialImage } from "@/components/EditorialImage";
+import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { copyText } from "@/lib/clipboard";
+import { ATLAS_PRO_WORKFLOWS, formatAtlasProWorkflowBrief, getAtlasProWorkflow, type AtlasProWorkflowId } from "@shared/atlas-pro-workflows";
 
 const proLibrary = [
   {
@@ -81,38 +87,28 @@ const qualityLabReasons = [
   "The scope requires project-specific expert challenge and delivery",
 ];
 
-const proPlaybooks = [
-  {
-    question: "Prepare for a GMP audit",
-    evidence: "Understand audit logic, evidence expectations, interview risk and CAPA boundaries.",
-    tool: "Run a structured readiness check and turn gaps into owned actions.",
-    file: "Reuse the GMP Audit Readiness Kit for the review, interview and follow-up cycle.",
-    href: "/toolkits/gmp-audit-kit",
-    cta: "Inspect the audit kit",
-  },
-  {
-    question: "Investigate a quality signal",
-    evidence: "Review deviation, OOS/OOT and data-integrity reasoning before choosing a path.",
-    tool: "Apply a focused workflow or calculator with assumptions kept visible.",
-    file: "Capture evidence, decisions, owners and effectiveness checks in a reusable working record.",
-    href: "/workflows",
-    cta: "Explore quality workflows",
-  },
-  {
-    question: "Make a method or capacity decision",
-    evidence: "Understand the method, applicability limits and operational dependencies.",
-    tool: "Test inputs and scenarios without hiding the calculation basis.",
-    file: "Carry the result into a checklist or worksheet that can be reviewed and repeated.",
-    href: "/tools",
-    cta: "Explore decision tools",
-  },
-];
-
 export default function ProPage() {
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState<AtlasProWorkflowId>("audit-readiness");
+  const [briefCopied, setBriefCopied] = useState(false);
+  const selectedWorkflow = getAtlasProWorkflow(selectedWorkflowId);
+
   useSEO({
     title: "Life Science Atlas Pro",
     description: "Explore Atlas Pro evidence, premium tools, reusable working files, and the GMP Audit Readiness Kit for life science quality professionals.",
   });
+
+  function selectWorkflow(id: AtlasProWorkflowId) {
+    setSelectedWorkflowId(id);
+    setBriefCopied(false);
+    analytics.proWorkflowSelected(id);
+  }
+
+  async function copyWorkflowBrief() {
+    await copyText(formatAtlasProWorkflowBrief(selectedWorkflowId));
+    setBriefCopied(true);
+    analytics.proWorkflowBriefCopied(selectedWorkflowId);
+    window.setTimeout(() => setBriefCopied(false), 1800);
+  }
 
   return (
     <div className="min-h-screen bg-[#f4f7f5] text-[#0b1b2c]">
@@ -241,18 +237,38 @@ export default function ProPage() {
             <p className="mt-4 text-sm leading-7 text-slate-600">These examples show how the Pro layers connect. Availability still depends on the published lesson, tool and file catalog at the time you use it.</p>
           </div>
           <div className="mt-9 grid gap-4 lg:grid-cols-3">
-            {proPlaybooks.map((playbook, index) => (
-              <article key={playbook.question} className="flex flex-col rounded-2xl border border-sky-200 bg-white p-6 shadow-sm shadow-sky-950/5">
+            {ATLAS_PRO_WORKFLOWS.map((playbook, index) => {
+              const selected = playbook.id === selectedWorkflowId;
+              return (
+                <article key={playbook.question} className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm shadow-sky-950/5 transition ${selected ? "border-sky-500 ring-2 ring-sky-200" : "border-sky-200"}`}>
                 <div className="flex items-center justify-between gap-4"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">0{index + 1}</span><BadgeCheck className="h-5 w-5 text-sky-700" /></div>
                 <h3 className="mt-5 text-xl font-bold text-slate-950">{playbook.question}</h3>
                 <div className="mt-5 flex-1 space-y-4 border-t border-slate-200 pt-5">
-                  {[["Evidence", playbook.evidence], ["Tool", playbook.tool], ["Working file", playbook.file]].map(([label, body]) => (
+                  {[["Evidence", playbook.evidence], ["Tool", playbook.tool], ["Working file", playbook.workingFile]].map(([label, body]) => (
                     <div key={label} className="grid grid-cols-[5.5rem_1fr] gap-3 text-sm leading-6"><strong className="text-sky-900">{label}</strong><span className="text-slate-600">{body}</span></div>
                   ))}
                 </div>
-                <Link href={playbook.href} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{playbook.cta} <ArrowRight className="h-4 w-4" /></Link>
-              </article>
-            ))}
+                <button type="button" aria-pressed={selected} onClick={() => selectWorkflow(playbook.id)} className={`mt-6 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${selected ? "bg-sky-900 text-white" : "border border-sky-200 text-sky-900 hover:bg-sky-50"}`}>{selected ? <CheckCircle2 className="h-4 w-4" /> : null}{selected ? "Selected for my brief" : `Build ${playbook.question} brief`}</button>
+                <Link href={playbook.href} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{playbook.cta} <ArrowRight className="h-4 w-4" /></Link>
+                </article>
+              );
+            })}
+          </div>
+          <div className="mt-8 overflow-hidden rounded-2xl border border-sky-200 bg-[#07182d] text-slate-100 shadow-xl shadow-sky-950/10">
+            <div className="grid lg:grid-cols-[0.72fr_1.28fr]">
+              <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r lg:p-7">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Your reusable work brief</p>
+                <h3 className="mt-3 text-2xl font-bold">{selectedWorkflow.question}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-400">Use this as a starting structure for your own work. Confirm claims, evidence, ownership, and site requirements before relying on the result.</p>
+                <button type="button" onClick={copyWorkflowBrief} className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200">{briefCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{briefCopied ? "Copied workflow brief" : "Copy selected workflow brief"}</button>
+              </div>
+              <div className="grid gap-px bg-white/10 sm:grid-cols-2">
+                {[["First step", selectedWorkflow.firstStep], ["Review question", selectedWorkflow.reviewPrompt], ["Evidence", selectedWorkflow.evidence], ["Working file", selectedWorkflow.workingFile]].map(([label, body]) => (
+                  <div key={label} className="bg-[#0b1d33] p-5"><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sky-300">{label}</p><p className="mt-2 text-sm leading-6 text-slate-300">{body}</p></div>
+                ))}
+              </div>
+            </div>
+            <p className="border-t border-white/10 px-6 py-3 text-[10px] leading-5 text-slate-500">Professional planning support only · not project-specific expert review, QA approval, regulatory advice, or a controlled site record.</p>
           </div>
         </div>
       </section>
