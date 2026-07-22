@@ -410,6 +410,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("progressbar", { name: "Decision frame detail", exact: true })).toHaveAttribute("aria-valuenow", "29");
     await page.getByRole("button", { name: "Copy decision frame", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copied decision frame", exact: true })).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "2 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
     await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(11);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
@@ -439,6 +442,10 @@ test.describe("public smoke", () => {
     const impactDownload = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).nth(10).click();
     expect((await impactDownload).suggestedFilename()).toBe("atlas-rule-change-impact-assessment.csv");
+    await page.getByRole("link", { name: "Use in the $149 diagnostic", exact: true }).click();
+    await page.waitForURL(/\/quality-lab\/review\?offer=diagnostic$/);
+    await expect(page.getByText("Browser-local decision frame loaded", { exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: /Project context/i })).toHaveValue(/Decide whether baseline release demand needs one shift or a planned second-shift scenario\./);
   });
 
   test("Blueprint casebook compiles scenarios and opens one as an editable local project", async ({ page }) => {

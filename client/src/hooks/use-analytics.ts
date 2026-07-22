@@ -155,6 +155,14 @@ export const analytics = {
   blueprintDecisionFrameCopied: (detailPercent: number, describedInputs: number) =>
     capture("blueprint_decision_frame_copied", { detail_percent: detailPercent, described_inputs: describedInputs }),
 
+  blueprintDecisionFrameHandoff: (detailPercent: number, describedInputs: number) =>
+    capture("blueprint_decision_frame_handoff", { detail_percent: detailPercent, described_inputs: describedInputs }),
+
+  blueprintDecisionFrameLoaded: (detailPercent: number, describedInputs: number) =>
+    capture("blueprint_decision_frame_loaded", { detail_percent: detailPercent, described_inputs: describedInputs }),
+
+  blueprintDecisionFrameCleared: () => capture("blueprint_decision_frame_cleared"),
+
   commercialPricingViewed: () => capture("commercial_pricing_viewed"),
 
   sampleBlueprintDownloaded: () => capture("sample_blueprint_downloaded", { format: "pdf" }),

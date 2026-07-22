@@ -26,6 +26,26 @@ export interface QualityLabDecisionFrameReadiness {
   boundary: string;
 }
 
+export interface QualityLabDecisionFrameHandoff {
+  version: 1;
+  frame: QualityLabDecisionFrameInput;
+  recordedAt: number;
+}
+
+export const QUALITY_LAB_DECISION_FRAME_STORAGE_KEY = "atlas:quality-lab-decision-frame:v1";
+export const QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY = "atlas:quality-lab-decision-frame-handoff:v1";
+export const QUALITY_LAB_DECISION_FRAME_HANDOFF_TTL_MS = 24 * 60 * 60 * 1000;
+
+export const qualityLabDecisionFrameFieldLimits: Record<keyof QualityLabDecisionFrameInput, number> = {
+  decision: 400,
+  decisionOwner: 300,
+  firstScope: 600,
+  decisionGate: 160,
+  evidenceBasis: 900,
+  unresolvedImpact: 500,
+  excludedDecisions: 500,
+};
+
 export const emptyQualityLabDecisionFrame: QualityLabDecisionFrameInput = {
   decision: "",
   decisionOwner: "",
@@ -35,6 +55,30 @@ export const emptyQualityLabDecisionFrame: QualityLabDecisionFrameInput = {
   unresolvedImpact: "",
   excludedDecisions: "",
 };
+
+const decisionFrameKeys = Object.keys(emptyQualityLabDecisionFrame) as Array<keyof QualityLabDecisionFrameInput>;
+
+export function parseQualityLabDecisionFrame(value: unknown): QualityLabDecisionFrameInput | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const candidate = value as Record<string, unknown>;
+  for (const key of decisionFrameKeys) {
+    if (typeof candidate[key] !== "string" || candidate[key].length > qualityLabDecisionFrameFieldLimits[key]) return null;
+  }
+  return Object.fromEntries(decisionFrameKeys.map((key) => [key, candidate[key]])) as unknown as QualityLabDecisionFrameInput;
+}
+
+export function createQualityLabDecisionFrameHandoff(frame: QualityLabDecisionFrameInput, recordedAt = Date.now()): QualityLabDecisionFrameHandoff {
+  return { version: 1, frame, recordedAt };
+}
+
+export function parseQualityLabDecisionFrameHandoff(value: unknown, now = Date.now()): QualityLabDecisionFrameHandoff | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const candidate = value as Partial<QualityLabDecisionFrameHandoff>;
+  const frame = parseQualityLabDecisionFrame(candidate.frame);
+  if (candidate.version !== 1 || !frame || typeof candidate.recordedAt !== "number") return null;
+  if (candidate.recordedAt > now || now - candidate.recordedAt >= QUALITY_LAB_DECISION_FRAME_HANDOFF_TTL_MS) return null;
+  return { version: 1, frame, recordedAt: candidate.recordedAt };
+}
 
 function described(value: string, minimumLength: number) {
   return value.trim().length >= minimumLength;
@@ -135,5 +179,18 @@ export function formatQualityLabDecisionFrame(input: QualityLabDecisionFrameInpu
     `- Decision inputs described: ${readiness.completeCount} of ${readiness.totalCount} (${readiness.percent}%)`,
     `- Next action: ${readiness.nextAction}`,
     ...(missing.length ? ["- Open inputs:", ...missing.map((criterion) => `  - ${criterion.label}: ${criterion.action}`)] : ["- Open inputs: none based on description length; owner and evidence verification are still required."]),
+  ].join("\n");
+}
+
+export function formatQualityLabDecisionFrameReviewContext(input: QualityLabDecisionFrameInput): string {
+  return [
+    "Decision frame transferred from the browser-local Atlas Blueprint Discovery Pack.",
+    `Decision to support: ${valueOrGap(input.decision)}`,
+    `Decision owner and reviewers: ${valueOrGap(input.decisionOwner)}`,
+    `First review scope: ${valueOrGap(input.firstScope)}`,
+    `Decision gate: ${valueOrGap(input.decisionGate)}`,
+    `Available evidence and limitations: ${valueOrGap(input.evidenceBasis)}`,
+    `Impact if unresolved: ${valueOrGap(input.unresolvedImpact)}`,
+    `Decisions not authorized by this work: ${valueOrGap(input.excludedDecisions)}`,
   ].join("\n");
 }

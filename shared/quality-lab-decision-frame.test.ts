@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
   assessQualityLabDecisionFrame,
+  createQualityLabDecisionFrameHandoff,
   emptyQualityLabDecisionFrame,
   formatQualityLabDecisionFrame,
+  formatQualityLabDecisionFrameReviewContext,
+  parseQualityLabDecisionFrame,
+  parseQualityLabDecisionFrameHandoff,
+  qualityLabDecisionFrameFieldLimits,
   type QualityLabDecisionFrameInput,
 } from "./quality-lab-decision-frame";
 
@@ -39,5 +44,24 @@ describe("Quality Lab decision frame", () => {
     expect(formatted).toContain("Available evidence: List the controlled or working inputs");
     expect(formatted).toContain("Decisions not authorized by this work");
     expect(formatted).toContain("evidence sufficiency");
+  });
+
+  it("validates browser-local records and expires deliberate review handoffs", () => {
+    const recordedAt = Date.UTC(2026, 6, 22, 10, 0, 0);
+    const handoff = createQualityLabDecisionFrameHandoff(completeFrame, recordedAt);
+
+    expect(parseQualityLabDecisionFrame(completeFrame)).toEqual(completeFrame);
+    expect(parseQualityLabDecisionFrame({ ...completeFrame, decision: 42 })).toBeNull();
+    expect(parseQualityLabDecisionFrameHandoff(handoff, recordedAt + 60_000)).toEqual(handoff);
+    expect(parseQualityLabDecisionFrameHandoff(handoff, recordedAt + 24 * 60 * 60 * 1000)).toBeNull();
+  });
+
+  it("builds a review context that preserves every decision boundary without exceeding the intake limit", () => {
+    const context = formatQualityLabDecisionFrameReviewContext(completeFrame);
+    const maximumFrame = Object.fromEntries(Object.entries(qualityLabDecisionFrameFieldLimits).map(([key, limit]) => [key, "x".repeat(limit)])) as unknown as QualityLabDecisionFrameInput;
+    expect(context).toContain("Decision frame transferred from the browser-local Atlas Blueprint Discovery Pack.");
+    expect(context).toContain("Decisions not authorized by this work");
+    expect(context.length).toBeLessThan(4000);
+    expect(formatQualityLabDecisionFrameReviewContext(maximumFrame).length).toBeLessThan(4000);
   });
 });

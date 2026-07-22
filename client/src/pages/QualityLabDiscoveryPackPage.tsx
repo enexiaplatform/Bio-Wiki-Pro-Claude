@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ArrowRight, Check, CheckCircle2, CircleDashed, ClipboardList, Copy, Download, FileSpreadsheet, Network, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Check, CheckCircle2, CircleDashed, ClipboardList, Copy, Download, FileSpreadsheet, Network, RotateCcw, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
@@ -8,8 +8,13 @@ import { copyText } from "@/lib/clipboard";
 import { blueprintDiscoveryTemplates } from "@/data/qualityLabDiscoveryTemplates";
 import {
   assessQualityLabDecisionFrame,
+  createQualityLabDecisionFrameHandoff,
   emptyQualityLabDecisionFrame,
   formatQualityLabDecisionFrame,
+  parseQualityLabDecisionFrame,
+  qualityLabDecisionFrameFieldLimits,
+  QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY,
+  QUALITY_LAB_DECISION_FRAME_STORAGE_KEY,
   type QualityLabDecisionFrameInput,
 } from "@shared/quality-lab-decision-frame";
 
@@ -33,6 +38,16 @@ const decisionFrameFields = [
   { key: "excludedDecisions", label: "Decisions not authorized", prompt: "What must this work not approve yet, such as supplier selection, detailed engineering, validation, or regulatory acceptance?" },
 ] as const satisfies ReadonlyArray<{ key: keyof QualityLabDecisionFrameInput; label: string; prompt: string }>;
 
+function loadStoredDecisionFrame(): QualityLabDecisionFrameInput {
+  try {
+    const parsed = parseQualityLabDecisionFrame(JSON.parse(localStorage.getItem(QUALITY_LAB_DECISION_FRAME_STORAGE_KEY) ?? "null"));
+    return parsed ?? { ...emptyQualityLabDecisionFrame };
+  } catch {
+    localStorage.removeItem(QUALITY_LAB_DECISION_FRAME_STORAGE_KEY);
+    return { ...emptyQualityLabDecisionFrame };
+  }
+}
+
 function csvCell(value: string) {
   return `"${value.replaceAll('"', '""')}"`;
 }
@@ -51,7 +66,7 @@ function downloadTemplate(template: (typeof blueprintDiscoveryTemplates)[number]
 }
 
 export default function QualityLabDiscoveryPackPage() {
-  const [decisionFrame, setDecisionFrame] = useState<QualityLabDecisionFrameInput>(emptyQualityLabDecisionFrame);
+  const [decisionFrame, setDecisionFrame] = useState<QualityLabDecisionFrameInput>(loadStoredDecisionFrame);
   const [decisionFrameCopied, setDecisionFrameCopied] = useState(false);
   const decisionFrameReadiness = useMemo(() => assessQualityLabDecisionFrame(decisionFrame), [decisionFrame]);
 
@@ -59,6 +74,10 @@ export default function QualityLabDiscoveryPackPage() {
     title: "Atlas Blueprint Discovery Pack",
     description: "Free structured templates for collecting Quality Lab Blueprint inputs, requirements, evidence, assumptions and decisions.",
   });
+
+  useEffect(() => {
+    localStorage.setItem(QUALITY_LAB_DECISION_FRAME_STORAGE_KEY, JSON.stringify(decisionFrame));
+  }, [decisionFrame]);
 
   function updateDecisionFrame(key: keyof QualityLabDecisionFrameInput, value: string) {
     setDecisionFrame((current) => ({ ...current, [key]: value }));
@@ -70,6 +89,17 @@ export default function QualityLabDiscoveryPackPage() {
     setDecisionFrameCopied(true);
     analytics.blueprintDecisionFrameCopied(decisionFrameReadiness.percent, decisionFrameReadiness.completeCount);
     window.setTimeout(() => setDecisionFrameCopied(false), 1800);
+  }
+
+  function clearDecisionFrame() {
+    setDecisionFrame({ ...emptyQualityLabDecisionFrame });
+    sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
+    analytics.blueprintDecisionFrameCleared();
+  }
+
+  function handoffDecisionFrame() {
+    sessionStorage.setItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY, JSON.stringify(createQualityLabDecisionFrameHandoff(decisionFrame)));
+    analytics.blueprintDecisionFrameHandoff(decisionFrameReadiness.percent, decisionFrameReadiness.completeCount);
   }
 
   return (
@@ -113,7 +143,7 @@ export default function QualityLabDiscoveryPackPage() {
                 {decisionFrameFields.map((field, index) => (
                   <label key={field.key} className={index === decisionFrameFields.length - 1 ? "md:col-span-2" : ""}>
                     <span className="mb-2 flex items-center justify-between gap-3 text-xs font-bold text-slate-200"><span>{field.label}</span><span className="text-[10px] font-semibold text-slate-600">0{index + 1}</span></span>
-                    <textarea aria-label={field.label} value={decisionFrame[field.key]} onChange={(event) => updateDecisionFrame(field.key, event.target.value)} rows={index === decisionFrameFields.length - 1 ? 3 : 4} placeholder={field.prompt} className="w-full resize-y rounded-xl border border-white/10 bg-slate-950/45 px-4 py-3 text-sm leading-6 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-teal-300/50" />
+                    <textarea aria-label={field.label} value={decisionFrame[field.key]} onChange={(event) => updateDecisionFrame(field.key, event.target.value)} maxLength={qualityLabDecisionFrameFieldLimits[field.key]} rows={index === decisionFrameFields.length - 1 ? 3 : 4} placeholder={field.prompt} className="w-full resize-y rounded-xl border border-white/10 bg-slate-950/45 px-4 py-3 text-sm leading-6 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-teal-300/50" />
                   </label>
                 ))}
               </div>
@@ -144,6 +174,9 @@ export default function QualityLabDiscoveryPackPage() {
               <button type="button" onClick={copyDecisionFrame} className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">
                 {decisionFrameCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{decisionFrameCopied ? "Copied decision frame" : "Copy decision frame"}
               </button>
+              <Link href="/quality-lab/review?offer=diagnostic" onClick={handoffDecisionFrame} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sky-300/25 bg-sky-300/10 px-5 py-3 text-sm font-bold text-sky-200 transition hover:bg-sky-300/15">Use in the $149 diagnostic <ArrowRight className="h-4 w-4" /></Link>
+              <button type="button" onClick={clearDecisionFrame} className="mt-3 inline-flex w-full items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-slate-500 transition hover:text-slate-300"><RotateCcw className="h-3.5 w-3.5" /> Clear this browser-local frame</button>
+              <p className="mt-3 text-center text-[10px] leading-5 text-slate-600">Saved only in this browser. It moves into the review form only when you choose the diagnostic handoff.</p>
               <p className="mt-4 text-[10px] leading-5 text-slate-600">{decisionFrameReadiness.boundary}</p>
             </aside>
           </div>

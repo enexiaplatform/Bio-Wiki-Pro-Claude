@@ -8,6 +8,13 @@ import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabR
 import { assessQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
 import { authPath } from "@shared/auth-return";
+import {
+  assessQualityLabDecisionFrame,
+  formatQualityLabDecisionFrameReviewContext,
+  parseQualityLabDecisionFrameHandoff,
+  QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY,
+  type QualityLabDecisionFrameInput,
+} from "@shared/quality-lab-decision-frame";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -34,6 +41,17 @@ function hasRecentDiagnosticHandoff(): boolean {
   }
 }
 
+function loadDecisionFrameHandoff(): QualityLabDecisionFrameInput | null {
+  try {
+    const handoff = parseQualityLabDecisionFrameHandoff(JSON.parse(sessionStorage.getItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY) ?? "null"));
+    if (!handoff) sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
+    return handoff?.frame ?? null;
+  } catch {
+    sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
+    return null;
+  }
+}
+
 export default function QualityLabReviewPage() {
   useSEO({
     title: "Request Expert Blueprint Review",
@@ -47,6 +65,8 @@ export default function QualityLabReviewPage() {
     return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || projectId ? "blueprint-pilot" : "unsure";
   }, [projectId]);
   const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
+  const transferredDecisionFrame = useMemo(() => project ? null : loadDecisionFrameHandoff(), [project]);
+  const transferredDecisionFrameReadiness = useMemo(() => transferredDecisionFrame ? assessQualityLabDecisionFrame(transferredDecisionFrame) : null, [transferredDecisionFrame]);
   const request = useCreateQualityLabReview();
   const { isAuthenticated } = useUser();
   const [submitted, setSubmitted] = useState(() => requestedOffer === "scope-diagnostic" && hasRecentDiagnosticHandoff());
@@ -74,17 +94,20 @@ export default function QualityLabReviewPage() {
     role: "",
     need: project
       ? `Expert review requested for Atlas project: ${project.name}. Key areas to review: assumptions, testing demand, capacity, risks and implementation priorities.`
+      : transferredDecisionFrame
+        ? formatQualityLabDecisionFrameReviewContext(transferredDecisionFrame)
       : "We are planning or expanding a regulated manufacturing quality laboratory and need help defining the project basis, capability scope and operating model.",
   });
   const briefReadiness = useMemo(() => assessQualityLabReviewBrief({ qualification, projectContext: form.need, hasProject: Boolean(project) }), [form.need, project, qualification]);
 
   useEffect(() => {
     analytics.commercialIntakeViewed(requestedOffer);
+    if (transferredDecisionFrameReadiness) analytics.blueprintDecisionFrameLoaded(transferredDecisionFrameReadiness.percent, transferredDecisionFrameReadiness.completeCount);
     fetch("/api/billing/plans", { credentials: "include" })
       .then((response) => response.json())
       .then((plans) => setDiagnosticCheckoutAvailable(Boolean(plans?.scopeDiagnostic)))
       .catch(() => setDiagnosticCheckoutAvailable(false));
-  }, [requestedOffer]);
+  }, [requestedOffer, transferredDecisionFrameReadiness]);
 
   async function payForDiagnostic() {
     setCheckoutLoading(true);
@@ -156,6 +179,7 @@ export default function QualityLabReviewPage() {
         }
       }
       analytics.expertReviewRequested(Boolean(project), qualification.engagementIntent);
+      sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
       if (qualification.engagementIntent === "scope-diagnostic") {
         sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify({ offer: "scope-diagnostic", recordedAt: Date.now() }));
       }
@@ -269,6 +293,15 @@ export default function QualityLabReviewPage() {
 
           <form onSubmit={submit} className="order-1 rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7 lg:order-2">
             <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Start here</p><p className="mt-1 text-sm font-semibold">About 4–6 minutes · no confidential data</p></div><span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">3 short sections</span></div>
+            {transferredDecisionFrameReadiness && (
+              <section className="mb-5 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4" aria-label="Transferred Blueprint decision frame">
+                <div className="flex items-start gap-3">
+                  <ClipboardCheck className="mt-0.5 h-5 w-5 shrink-0 text-teal-300" />
+                  <div><p className="text-sm font-bold text-teal-100">Browser-local decision frame loaded</p><p className="mt-1 text-xs leading-5 text-slate-400">{transferredDecisionFrameReadiness.completeCount} of {transferredDecisionFrameReadiness.totalCount} discovery inputs were described and inserted into Project context. Review and remove anything confidential before submitting; nothing is sent until you send this request.</p></div>
+                </div>
+                <Link href="/quality-lab/discovery-pack" className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-teal-300 hover:text-teal-200">Edit the decision frame <ArrowRight className="h-3.5 w-3.5" /></Link>
+              </section>
+            )}
             <section className="mb-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.055] p-4" aria-labelledby="review-brief-readiness-title">
               <div className="flex items-start justify-between gap-4">
                 <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Scope brief detail</p><h2 id="review-brief-readiness-title" className="mt-1 text-sm font-bold">{briefReadiness.completeCount} of {briefReadiness.totalCount} decision inputs described</h2></div>
