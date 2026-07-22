@@ -85,6 +85,10 @@
   @apply bg-gradient-to-br from-card to-card/50 border border-white/10 shadow-xl shadow-black/20;
 }
 
+.executive-brief-print {
+  display: none;
+}
+
 /* ── Print: clean, readable lesson/article output ── */
 @media print {
   header,
@@ -124,5 +128,11 @@
   .quality-blueprint-report article,
   .quality-blueprint-report div {
     print-color-adjust: exact;
+  }
+  html[data-blueprint-print="executive"] .quality-blueprint-report > :not(.executive-brief-print) {
+    display: none !important;
+  }
+  html[data-blueprint-print="executive"] .quality-blueprint-report > .executive-brief-print {
+    display: block !important;
   }
 }

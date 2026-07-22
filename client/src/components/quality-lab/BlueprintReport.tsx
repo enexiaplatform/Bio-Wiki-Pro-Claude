@@ -127,6 +127,66 @@ function DecisionEvidenceLinks({ ruleIds }: { ruleIds: string[] }) {
   </div>;
 }
 
+function ExecutiveBriefPrint({ project }: { project: QualityLabProject }) {
+  const { blueprint, input } = project;
+  const packs = roleDecisionPack(blueprint);
+  const roles = Object.keys(packs) as RoleLens[];
+  return (
+    <article className="executive-brief-print mx-auto max-w-4xl bg-white text-slate-950">
+      <div className="border-b-4 border-teal-600 pb-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-700">Atlas Quality Lab Blueprint</p>
+        <h1 className="mt-2 text-3xl font-bold">Working Executive Decision Brief</h1>
+        <p className="mt-2 text-sm text-slate-600">{project.name} · {input.companyName || "Site not specified"} · {input.country}</p>
+        <div className="mt-4 border border-amber-400 bg-amber-50 p-3 text-xs leading-5 text-slate-700"><strong>Working draft · not controlled.</strong> This brief supports discovery and scenario discussion. It is not a validated design, approved specification, regulatory opinion, supplier recommendation or investment approval.</div>
+      </div>
+
+      <section className="mt-6 break-inside-avoid border border-slate-300 p-4">
+        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-sky-700">Decision mandate</p>
+        <h2 className="mt-2 text-xl font-bold leading-7">{input.primaryDecision}</h2>
+        <div className="mt-4 grid grid-cols-3 gap-3 text-xs">
+          <div><p className="font-bold uppercase text-slate-500">Intent</p><p className="mt-1">{projectIntentLabel[input.projectIntent]}</p></div>
+          <div><p className="font-bold uppercase text-slate-500">Owner</p><p className="mt-1 capitalize">{input.decisionOwnerRole.replaceAll("-", " ")}</p></div>
+          <div><p className="font-bold uppercase text-slate-500">Window</p><p className="mt-1">{decisionWindowLabel[input.decisionWindow]}</p></div>
+        </div>
+      </section>
+
+      <section className="mt-6 break-inside-avoid">
+        <div className="flex items-end justify-between border-b border-slate-300 pb-2"><h2 className="text-lg font-bold">Scenario basis</h2><p className="text-[10px] text-slate-500">Concept allowances · verification required</p></div>
+        <table className="mt-3 w-full border-collapse text-left text-xs">
+          <thead><tr className="bg-slate-100"><th className="border border-slate-300 p-2">Scenario</th><th className="border border-slate-300 p-2">Tests / month</th><th className="border border-slate-300 p-2">Team FTE</th><th className="border border-slate-300 p-2">Area</th><th className="border border-slate-300 p-2">CAPEX allowance</th><th className="border border-slate-300 p-2">Annual OPEX</th></tr></thead>
+          <tbody>{[blueprint.current, blueprint.future].map((scenario) => <tr key={scenario.label}><td className="border border-slate-300 p-2 font-bold">{scenario.label}<br /><span className="font-normal text-slate-500">{scenario.multiplier}× demand</span></td><td className="border border-slate-300 p-2">{number.format(scenario.monthlyTests)}</td><td className="border border-slate-300 p-2">{scenario.totalTeamFte}</td><td className="border border-slate-300 p-2">{number.format(scenario.estimatedAreaSqm)} m²</td><td className="border border-slate-300 p-2">{money.format(scenario.capexLowUsd)}–{money.format(scenario.capexHighUsd)}</td><td className="border border-slate-300 p-2">{money.format(scenario.annualOpexLowUsd)}–{money.format(scenario.annualOpexHighUsd)}</td></tr>)}</tbody>
+        </table>
+      </section>
+
+      <section className="mt-6">
+        <div className="flex items-end justify-between border-b border-slate-300 pb-2"><h2 className="text-lg font-bold">Cross-functional decision frame</h2><p className="text-[10px] text-slate-500">{blueprint.dataQuality.blockingOpenCount} controlled-use blockers · {blueprint.review.status.replaceAll("-", " ")}</p></div>
+        <div className="mt-3 space-y-3">{roles.map((role) => <div key={role} className="break-inside-avoid border border-slate-300 p-3"><p className="text-xs font-bold uppercase text-teal-700">{roleLensCopy[role].label}</p><p className="mt-1 text-xs leading-5"><strong>Signal:</strong> {packs[role].signal}</p><p className="mt-1 text-xs leading-5"><strong>Working decision:</strong> {packs[role].workingDecision}</p><p className="mt-1 text-xs leading-5 text-slate-600"><strong>Boundary:</strong> {packs[role].blockedDecision}</p></div>)}</div>
+      </section>
+
+      <section className="mt-6 grid gap-5 sm:grid-cols-2">
+        <div className="break-inside-avoid"><h2 className="border-b border-slate-300 pb-2 text-lg font-bold">Resolve first</h2><ol className="mt-3 space-y-3">{blueprint.unresolvedInputs.filter((item) => item.severity === "blocking").slice(0, 4).map((item, index) => <li key={item.id} className="text-xs leading-5"><strong>{index + 1}. {item.question}</strong><br /><span className="text-slate-600">Required: {item.resolution}</span></li>)}</ol></div>
+        <div className="break-inside-avoid"><h2 className="border-b border-slate-300 pb-2 text-lg font-bold">Priority next decisions</h2><ol className="mt-3 space-y-3">{blueprint.recommendations.slice(0, 4).map((item, index) => <li key={item.id} className="text-xs leading-5"><strong>{index + 1}. {item.recommendation}</strong><br /><span className="text-slate-600">{item.rationale}</span></li>)}</ol></div>
+      </section>
+
+      <section className="mt-6 break-inside-avoid border-t border-slate-300 pt-4 text-[10px] leading-5 text-slate-600">
+        <p><strong>Trace basis:</strong> {blueprint.dataQuality.tracedRuleCount} versioned rules · {blueprint.dataQuality.evidenceCount} evidence records · {blueprint.dataQuality.completenessPercent}% input completeness.</p>
+        <p><strong>Versions:</strong> {input.contractVersion} · {blueprint.contractVersion} · {blueprint.compilerCoreVersion} · {blueprint.domainPack.version}.</p>
+        <p><strong>Generated:</strong> {new Date(blueprint.generatedAt).toLocaleString("en-US")} · Project ID {project.id}.</p>
+        <p className="mt-2 font-semibold text-slate-800">Qualified QC, QA, engineering, procurement and client document-control review remain required before controlled use.</p>
+      </section>
+    </article>
+  );
+}
+
+function printBlueprint(mode: "executive" | "full") {
+  const root = document.documentElement;
+  root.dataset.blueprintPrint = mode;
+  const reset = () => { delete root.dataset.blueprintPrint; };
+  window.addEventListener("afterprint", reset, { once: true });
+  window.print();
+  window.setTimeout(reset, 2_000);
+}
+
 export function BlueprintReport({ project, onEdit }: Props) {
   const { blueprint } = project;
   const { input, current, future } = blueprint;
@@ -139,6 +199,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
 
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
+      <ExecutiveBriefPrint project={project} />
       <div data-print="hide" className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <button onClick={onEdit} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white">
           <ArrowLeft className="h-4 w-4" /> Edit inputs
@@ -150,8 +211,11 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <ClipboardCheck className="h-4 w-4" /> Engagement packet
           </button>
-          <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-teal-200">
-            <Printer className="h-4 w-4" /> Print / save PDF
+          <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "working_brief_print"); printBlueprint("executive"); }} className="inline-flex items-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-teal-200">
+            <FileText className="h-4 w-4" /> Working brief / PDF
+          </button>
+          <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "full_report_print"); printBlueprint("full"); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
+            <Printer className="h-4 w-4" /> Full report / PDF
           </button>
           <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-300/15">
             {project.reviewRequestedAt ? "Review brief submitted" : "Request expert review"} <ArrowRight className="h-4 w-4" />
@@ -165,7 +229,8 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 p-3">
             <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><Download className="h-4 w-4" /> Export model</button>
             <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Engagement packet</button>
-            <button onClick={() => window.print()} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950"><Printer className="h-4 w-4" /> Print / PDF</button>
+            <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "working_brief_print"); printBlueprint("executive"); }} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950"><FileText className="h-4 w-4" /> Working brief</button>
+            <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "full_report_print"); printBlueprint("full"); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><Printer className="h-4 w-4" /> Full report</button>
           </div>
         </details>
       </div>

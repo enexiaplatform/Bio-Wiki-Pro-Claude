@@ -386,6 +386,8 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await expect(page.getByLabel(/Status for/i).first()).toHaveValue("in-progress");
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Working brief \/ PDF/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Full report \/ PDF/i })).toBeVisible();
     await page.goto("/quality-lab/projects");
     const workQueue = page.locator('[aria-labelledby="portfolio-work-queue-title"]');
     await expect(workQueue.getByRole("heading", { name: "Today's work queue" })).toBeVisible();

@@ -118,6 +118,9 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
   const summaryRows: unknown[][] = [
     ["ATLAS QUALITY LAB BLUEPRINT - DELIVERY CONTROL", ""],
     ["Package version", delivery.packageVersion], ["Project", snapshot.projectName], ["Project ID", snapshot.localProjectId],
+    [], ["DECISION MANDATE", ""], ["Primary decision", snapshot.input.primaryDecision], ["Project intent", snapshot.input.projectIntent],
+    ["Decision owner", snapshot.input.decisionOwnerRole], ["Decision window", snapshot.input.decisionWindow], ["Scenario label", snapshot.input.scenarioLabel],
+    [], ["DOCUMENT CONTROL", ""],
     ["Document ID", delivery.control.documentId], ["Revision", delivery.control.revision], ["Recorded status", delivery.control.recordedStatus],
     ["Computed readiness", delivery.readiness.status], ["Intended use", delivery.control.intendedUse], ["Prepared by role", delivery.control.preparedByRole],
     ["Reviewed by role", delivery.control.reviewedByRole], ["External approval reference", delivery.control.externalApprovalReference], ["Generated at", delivery.generatedAt],
@@ -138,7 +141,7 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
   summary["!cols"] = [{ wch: 34 }, { wch: 72 }];
   summary["!rows"] = summaryRows.map((row, index) => ({ hpt: index === 0 ? 34 : row[0] === "CONTROL NOTICE" ? 46 : 24 }));
   summary["!merges"] = [XLSX.utils.decode_range("A1:B1")];
-  const summarySectionLabels = new Set(["READINESS METRIC", "PAID PILOT EVIDENCE", "PILOT EVIDENCE BLOCKERS", "RELEASE BLOCKERS", "CAUTIONS", "CONTROL NOTICE"]);
+  const summarySectionLabels = new Set(["DECISION MANDATE", "DOCUMENT CONTROL", "READINESS METRIC", "PAID PILOT EVIDENCE", "PILOT EVIDENCE BLOCKERS", "RELEASE BLOCKERS", "CAUTIONS", "CONTROL NOTICE"]);
   summaryRows.forEach((row, index) => {
     const isSection = summarySectionLabels.has(String(row[0] ?? ""));
     for (let column = 0; column < 2; column += 1) {
@@ -156,9 +159,10 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
   });
   summary["A1"].s = DELIVERY_TITLE_STYLE;
   const percentStyle = { font: { color: { rgb: "0F172A" }, sz: 10 }, fill: { patternType: "solid", fgColor: { rgb: "FFFFFF" } }, alignment: { horizontal: "right" }, border: { bottom: { style: "thin", color: { rgb: "E2E8F0" } } }, numFmt: "0%" };
-  summary["B22"] = { t: "n", f: "IFERROR((COUNTIF('Review Checklist'!D2:D1000,\"resolved\")+COUNTIF('Review Checklist'!D2:D1000,\"not-applicable\"))/COUNTA('Review Checklist'!A2:A1000),0)", v: delivery.readiness.totalReviewItems ? delivery.readiness.completedReviewItems / delivery.readiness.totalReviewItems : 0, s: percentStyle };
-  summary["B23"] = { t: "n", f: "IFERROR(COUNTIF('Method Portfolio'!J2:J1000,\"ready-for-qualified-review\")/COUNTA('Method Portfolio'!A2:A1000),0)", v: delivery.readiness.totalMethodEvidence ? delivery.readiness.methodEvidenceReady / delivery.readiness.totalMethodEvidence : 0, s: percentStyle };
-  summary["B24"] = { t: "n", f: "IFERROR(COUNTIF('Equipment URS'!K2:K1000,\"ready-for-qualified-review\")/COUNTA('Equipment URS'!A2:A1000),0)", v: delivery.readiness.totalUrsItems ? delivery.readiness.ursItemsReady / delivery.readiness.totalUrsItems : 0, s: percentStyle };
+  const summaryValueCell = (label: string) => `B${summaryRows.findIndex((row) => row[0] === label) + 1}`;
+  summary[summaryValueCell("Review completion")] = { t: "n", f: "IFERROR((COUNTIF('Review Checklist'!D2:D1000,\"resolved\")+COUNTIF('Review Checklist'!D2:D1000,\"not-applicable\"))/COUNTA('Review Checklist'!A2:A1000),0)", v: delivery.readiness.totalReviewItems ? delivery.readiness.completedReviewItems / delivery.readiness.totalReviewItems : 0, s: percentStyle };
+  summary[summaryValueCell("Method evidence ready")] = { t: "n", f: "IFERROR(COUNTIF('Method Portfolio'!J2:J1000,\"ready-for-qualified-review\")/COUNTA('Method Portfolio'!A2:A1000),0)", v: delivery.readiness.totalMethodEvidence ? delivery.readiness.methodEvidenceReady / delivery.readiness.totalMethodEvidence : 0, s: percentStyle };
+  summary[summaryValueCell("URS basis ready")] = { t: "n", f: "IFERROR(COUNTIF('Equipment URS'!K2:K1000,\"ready-for-qualified-review\")/COUNTA('Equipment URS'!A2:A1000),0)", v: delivery.readiness.totalUrsItems ? delivery.readiness.ursItemsReady / delivery.readiness.totalUrsItems : 0, s: percentStyle };
   XLSX.utils.book_append_sheet(wb, summary, "Control Summary");
 
   addDeliverySheet(wb, "Demand Capacity", [
@@ -212,7 +216,13 @@ export function qualityLabDeliveryMarkdown(snapshot: QualityLabReviewedProjectSn
   return [
     `# ${snapshot.projectName}`, "## Atlas Quality Lab Blueprint - Decision Brief",
     `Document: ${delivery.control.documentId || "Unassigned"} | Revision: ${delivery.control.revision} | Status: ${delivery.readiness.status}`,
-    `Generated: ${delivery.generatedAt}`, "", `> ${delivery.controlNotice}`, "", "## Executive basis",
+    `Generated: ${delivery.generatedAt}`, "", `> ${delivery.controlNotice}`, "", "## Decision mandate",
+    `- Primary decision: ${snapshot.input.primaryDecision}`,
+    `- Project intent: ${snapshot.input.projectIntent}`,
+    `- Decision owner: ${snapshot.input.decisionOwnerRole}`,
+    `- Decision window: ${snapshot.input.decisionWindow}`,
+    `- Scenario: ${snapshot.input.scenarioLabel}`,
+    "", "## Executive basis",
     `- Facility: ${snapshot.input.facilityType} in ${snapshot.input.country}`,
     `- Current demand: ${blueprint.current.monthlyTests.toLocaleString("en-US")} modeled tests/month`,
     `- Current team basis: ${blueprint.current.totalTeamFte} FTE`, `- Current area basis: ${blueprint.current.estimatedAreaSqm} m2`,
