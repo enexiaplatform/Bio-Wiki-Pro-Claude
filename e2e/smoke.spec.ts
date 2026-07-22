@@ -386,6 +386,8 @@ test.describe("public smoke", () => {
     await page.waitForURL(/\/quality-lab\/review\?project=/);
     await expect(page.getByRole("heading", { name: /smallest paid engagement/i })).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /3 of 6 decision inputs described/i })).toBeVisible();
+    await expect(page.getByRole("progressbar", { name: "Scope brief detail", exact: true })).toHaveAttribute("aria-valuenow", "50");
     await expect(page.getByText(/quality-lab-review-brief\/v2/i)).toBeVisible();
     await expect(page.getByText("2. Commercial fit", { exact: true })).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();

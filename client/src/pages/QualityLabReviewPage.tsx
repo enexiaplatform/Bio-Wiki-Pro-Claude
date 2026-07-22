@@ -5,7 +5,7 @@ import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
-import { QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
+import { assessQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
 import { authPath } from "@shared/auth-return";
 
@@ -76,6 +76,7 @@ export default function QualityLabReviewPage() {
       ? `Expert review requested for Atlas project: ${project.name}. Key areas to review: assumptions, testing demand, capacity, risks and implementation priorities.`
       : "We are planning or expanding a regulated manufacturing quality laboratory and need help defining the project basis, capability scope and operating model.",
   });
+  const briefReadiness = useMemo(() => assessQualityLabReviewBrief({ qualification, projectContext: form.need, hasProject: Boolean(project) }), [form.need, project, qualification]);
 
   useEffect(() => {
     analytics.commercialIntakeViewed(requestedOffer);
@@ -268,6 +269,22 @@ export default function QualityLabReviewPage() {
 
           <form onSubmit={submit} className="order-1 rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7 lg:order-2">
             <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Start here</p><p className="mt-1 text-sm font-semibold">About 4–6 minutes · no confidential data</p></div><span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">3 short sections</span></div>
+            <section className="mb-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.055] p-4" aria-labelledby="review-brief-readiness-title">
+              <div className="flex items-start justify-between gap-4">
+                <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Scope brief detail</p><h2 id="review-brief-readiness-title" className="mt-1 text-sm font-bold">{briefReadiness.completeCount} of {briefReadiness.totalCount} decision inputs described</h2></div>
+                <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-xs font-bold text-sky-200">{briefReadiness.percent}%</span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Scope brief detail" aria-valuemin={0} aria-valuemax={100} aria-valuenow={briefReadiness.percent}><div className="h-full rounded-full bg-sky-300 transition-all" style={{ width: `${briefReadiness.percent}%` }} /></div>
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {briefReadiness.criteria.map((criterion) => (
+                  <div key={criterion.id} className={`flex gap-2 rounded-lg border p-2.5 text-[11px] leading-5 ${criterion.complete ? "border-teal-300/15 bg-teal-300/[0.045] text-slate-300" : "border-amber-300/15 bg-amber-300/[0.04] text-slate-400"}`}>
+                    {criterion.complete ? <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-300" /> : <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-300" />}
+                    <span><strong className="block text-slate-200">{criterion.label}</strong>{criterion.complete ? "Included in this brief." : criterion.action}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-3 text-[10px] leading-5 text-slate-500">{briefReadiness.boundary}</p>
+            </section>
             <section className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">1. Choose an engagement</p>
               <div className="mt-3 grid gap-2">
@@ -323,6 +340,7 @@ export default function QualityLabReviewPage() {
             </div>
             <label className="mt-5 block text-xs font-semibold text-slate-300">Project context *
               <textarea required minLength={20} rows={7} value={form.need} onChange={(event) => setForm({ ...form, need: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
+              <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-500">Useful brief: decision to resolve · site/product/market boundary · deadline · known evidence · constraints and open questions · who will use the output. Do not include confidential formulations or proprietary methods.</span>
             </label>
             <label className="mt-5 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-slate-400">
               <input required type="checkbox" checked={confidentialityConfirmed} onChange={(event) => setConfidentialityConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-teal-300" />

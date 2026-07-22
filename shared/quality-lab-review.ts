@@ -59,6 +59,75 @@ export const qualityLabReviewRequestSchema = z.object({
 
 export type QualityLabReviewRequest = z.infer<typeof qualityLabReviewRequestSchema>;
 
+export interface QualityLabReviewBriefCriterion {
+  id: "decision-context" | "decision-window" | "portfolio-boundary" | "data-basis" | "model-handoff" | "commercial-basis";
+  label: string;
+  complete: boolean;
+  action: string;
+}
+
+export interface QualityLabReviewBriefReadiness {
+  completeCount: number;
+  totalCount: number;
+  percent: number;
+  criteria: QualityLabReviewBriefCriterion[];
+  boundary: string;
+}
+
+export function assessQualityLabReviewBrief(input: {
+  qualification: QualityLabReviewRequest["qualification"];
+  projectContext: string;
+  hasProject: boolean;
+}): QualityLabReviewBriefReadiness {
+  const { qualification } = input;
+  const criteria: QualityLabReviewBriefCriterion[] = [
+    {
+      id: "decision-context",
+      label: "Decision context",
+      complete: input.projectContext.trim().length >= 120,
+      action: "State the decision, scope, users of the output, constraints, and what happens if the question stays unresolved.",
+    },
+    {
+      id: "decision-window",
+      label: "Decision window",
+      complete: qualification.decisionWindow !== "not-set",
+      action: "Confirm when the next project, budget, design, procurement, or operating decision must be made.",
+    },
+    {
+      id: "portfolio-boundary",
+      label: "Portfolio boundary",
+      complete: qualification.portfolioScale !== "not-set",
+      action: "Confirm the approximate number of products in the first review scope.",
+    },
+    {
+      id: "data-basis",
+      label: "Data basis",
+      complete: qualification.dataReadiness !== "initial",
+      action: "Identify which product, market, workload, method, equipment, site, or cost inputs already exist.",
+    },
+    {
+      id: "model-handoff",
+      label: "Model or discovery basis",
+      complete: input.hasProject || qualification.engagementIntent === "scope-diagnostic",
+      action: "Attach an existing browser-local Blueprint or begin with the diagnostic to structure discovery.",
+    },
+    {
+      id: "commercial-basis",
+      label: "Commercial basis",
+      complete: qualification.engagementIntent !== "blueprint-pilot" || qualification.budgetStatus !== "exploring",
+      action: "For a Blueprint Pilot, indicate whether a working budget range, approval, or procurement basis exists.",
+    },
+  ];
+  const completeCount = criteria.filter((item) => item.complete).length;
+  return {
+    completeCount,
+    totalCount: criteria.length,
+    percent: Math.round((completeCount / criteria.length) * 100),
+    criteria,
+    boundary: "This measures scope-brief detail only. It does not prove engagement fit, evidence sufficiency, reviewer availability, project approval, or controlled-use readiness.",
+  };
+}
+
 const qualificationLabels = {
   engagementIntent: {
     "scope-diagnostic": "Paid Scope Diagnostic ($149 fixed fee)",

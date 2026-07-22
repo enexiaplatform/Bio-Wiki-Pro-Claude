@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { compileQualityLabBlueprint, defaultQualityLabInput } from "./quality-lab";
-import { formatQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, qualityLabReviewRequestSchema } from "./quality-lab-review";
+import { assessQualityLabReviewBrief, formatQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, qualityLabReviewRequestSchema } from "./quality-lab-review";
 
 describe("Quality Lab review brief", () => {
   it("creates a versioned, deterministic triage brief from a Blueprint", () => {
@@ -65,5 +65,24 @@ describe("Quality Lab review brief", () => {
       confidentialityConfirmed: false,
     });
     expect(parsed.success).toBe(false);
+  });
+
+  it("separates scope-brief detail from engagement eligibility", () => {
+    const early = assessQualityLabReviewBrief({
+      qualification: { engagementIntent: "scope-diagnostic", projectStage: "concept", decisionWindow: "not-set", budgetStatus: "exploring", decisionRole: "technical-lead", dataReadiness: "initial", portfolioScale: "not-set" },
+      projectContext: "We need help defining the project.",
+      hasProject: false,
+    });
+    expect(early.completeCount).toBe(2);
+    expect(early.criteria.find((item) => item.id === "model-handoff")?.complete).toBe(true);
+    expect(early.boundary).toContain("does not prove engagement fit");
+
+    const detailedPilot = assessQualityLabReviewBrief({
+      qualification: { engagementIntent: "blueprint-pilot", projectStage: "budget-planning", decisionWindow: "1-3-months", budgetStatus: "range-defined", decisionRole: "decision-owner", dataReadiness: "substantial", portfolioScale: "4-10-products" },
+      projectContext: "The capital committee needs a baseline and alternative microbiology capacity decision for one site and six non-sterile products before the next budget review. Product, market, workload, equipment, and site constraints are available for qualified review.",
+      hasProject: true,
+    });
+    expect(detailedPilot.completeCount).toBe(6);
+    expect(detailedPilot.percent).toBe(100);
   });
 });
