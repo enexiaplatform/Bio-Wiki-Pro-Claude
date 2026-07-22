@@ -21,6 +21,7 @@ const LabTools = lazy(() => import("@/pages/LabTools"));
 const ToolDetailPage = lazy(() => import("@/pages/ToolDetailPage"));
 const Compliance = lazy(() => import("@/pages/Compliance"));
 const Career = lazy(() => import("@/pages/Career"));
+const CareerBlueprintWorkspacePage = lazy(() => import("@/pages/CareerBlueprintWorkspacePage"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const UpgradePage = lazy(() => import("@/pages/UpgradePage"));
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
@@ -168,6 +169,7 @@ function Layout() {
           <Route path="/tools/:slug" component={ToolDetailPage} />
           <Route path="/compliance" component={Compliance} />
           <Route path="/vault" component={Vault} />
+          <Route path="/career/blueprint" component={CareerBlueprintWorkspacePage} />
           <Route path="/career" component={Career} />
           <Route path="/settings" component={Settings} />
           <Route path="/admin" component={AdminDashboardPage} />

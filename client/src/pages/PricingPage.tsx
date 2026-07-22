@@ -93,7 +93,7 @@ export default function PricingPage() {
         <Link href="/career" className="group rounded-xl border border-amber-300/25 bg-amber-300/[0.045] p-5 transition hover:-translate-y-0.5 hover:border-amber-200/45">
           <div className="flex items-center justify-between gap-4"><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">For your career</span><span className="text-sm font-bold">$20 once</span></div>
           <h2 className="mt-3 text-lg font-bold">Personal Career Blueprint</h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">Turn your profile, evidence, constraints, and target role into a 38-page plan.</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Get a 38-page plan plus a lifetime 13-week workspace for evidence-led execution.</p>
           <span className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-amber-200">Start free first <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" /></span>
         </Link>
       </section>
@@ -140,9 +140,9 @@ export default function PricingPage() {
           <div>
             <div className="flex flex-wrap items-center gap-3"><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Personal decision product</span><span className="text-2xl font-bold text-amber-200">$20 one time</span></div>
             <h2 className="mt-4 font-display text-2xl font-bold md:text-3xl">A personalized career operating plan you can actually use.</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Complete the free Career Snapshot first. If the recommended route feels credible, unlock a named 38-page PDF built from your role, sector, experience, evidence, constraints, target horizon, and selected route.</p>
+            <p className="mt-3 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Complete the free Career Snapshot first. If the recommended route feels credible, unlock a named 38-page PDF and a lifetime 13-week workspace built from your role, evidence, constraints, target horizon, and selected route.</p>
             <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {[{ icon: Target, text: "Route and readiness logic" }, { icon: FileText, text: "CV, proof, and interview prompts" }, { icon: CheckCircle2, text: "13-week execution system" }].map((item) => <div key={item.text} className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-950/35 p-3 text-xs font-semibold"><item.icon className="h-4 w-4 shrink-0 text-amber-200" />{item.text}</div>)}
+              {[{ icon: Target, text: "Route and readiness logic" }, { icon: FileText, text: "CV, proof, and interview prompts" }, { icon: CheckCircle2, text: "Lifetime execution workspace" }].map((item) => <div key={item.text} className="flex items-center gap-2 rounded-lg border border-white/10 bg-slate-950/35 p-3 text-xs font-semibold"><item.icon className="h-4 w-4 shrink-0 text-amber-200" />{item.text}</div>)}
             </div>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row"><Link href="/career" className="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200">Build my free Career Snapshot <ArrowRight className="h-4 w-4" /></Link><span className="inline-flex items-center justify-center text-xs text-muted-foreground">No card required for the snapshot</span></div>
           </div>

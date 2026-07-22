@@ -21,6 +21,7 @@ import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } fro
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
 import { careerProfileSchema } from "../shared/career-blueprint.js";
+import { createCareerExecutionRecord } from "../shared/career-execution.js";
 import { careerBlueprintPdf, careerProfileFilename } from "./career-blueprint.js";
 import { atlasProMonthlyReviewRecordSchema } from "../shared/atlas-pro-monthly.js";
 
@@ -695,6 +696,17 @@ export async function registerRoutes(app: Express): Promise<void> {
     const user = await storage.getUser(userId).catch(() => undefined);
     const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
     res.json({ entitled });
+  });
+
+  app.post("/api/career-blueprint/execution", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
+    if (!entitled) return res.status(403).json({ message: "Personal Career Blueprint purchase required" });
+
+    const parsed = careerProfileSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Complete the career assessment before opening your execution workspace" });
+    return res.json({ record: createCareerExecutionRecord(parsed.data, parsed.data.selectedRouteId) });
   });
 
   app.post("/api/career-blueprint/download", isAuthenticated, async (req: any, res) => {

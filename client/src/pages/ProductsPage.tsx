@@ -52,7 +52,7 @@ const comparisonRows = [
   },
   {
     label: "You receive",
-    values: ["Controlled project decision package", "Ongoing premium access", "Named personalized PDF"],
+    values: ["Controlled project decision package", "Ongoing premium access", "Named PDF + 13-week workspace"],
   },
   {
     label: "How you buy",
@@ -230,17 +230,17 @@ export default function ProductsPage() {
             <div className="flex items-center gap-3">
               <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-amber-800"><BriefcaseBusiness className="h-5 w-5" /></span>
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-800">Personalized PDF · one-time</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-800">Personalized system · one-time</p>
                 <p className="mt-1 text-sm font-semibold text-slate-600">Free snapshot · $20 full Blueprint</p>
               </div>
             </div>
             <h2 className="mt-7 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl lg:text-5xl">Personal Career Blueprint</h2>
-            <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">A named 38-page operating plan built from your current role, evidence, constraints, timeline, and target route.</p>
+            <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">A named 38-page operating plan plus a lifetime 13-week workspace built from your evidence, constraints, timeline, and target route.</p>
             <div className="mt-6 space-y-3">
               {[
                 [Gauge, "See your current position", "A free snapshot makes the first diagnosis visible before purchase."],
                 [Route, "Choose a realistic route", "Target-role evidence, gap priorities, and decision constraints stay connected."],
-                [FileText, "Execute the next 13 weeks", "The paid PDF turns the route into a proof plan and weekly calendar."],
+                [FileText, "Execute the next 13 weeks", "The paid workspace tracks weekly actions, proof, reviewer feedback, and your next route decision."],
               ].map(([Icon, title, body]) => {
                 const ItemIcon = Icon as typeof Gauge;
                 return (
@@ -257,7 +257,7 @@ export default function ProductsPage() {
           <div className="rounded-[1.75rem] border border-amber-200 bg-[#fff3cf] p-4 sm:p-7">
             <img src="/images/career/personal-career-blueprint-preview.webp" alt="Personal Career Blueprint cover and evidence comparison page" width="1421" height="1107" loading="lazy" decoding="async" className="aspect-[9/7] w-full rounded-2xl border border-amber-900/10 object-cover shadow-2xl shadow-amber-950/10" />
             <div className="mt-4 flex flex-wrap gap-2">
-              {["Named for you", "Role-specific", "Evidence-led", "13-week plan"].map((item) => <span key={item} className="rounded-full border border-amber-900/10 bg-white/75 px-3 py-1.5 text-xs font-bold text-amber-900">{item}</span>)}
+              {["Named for you", "Role-specific", "Evidence-led", "Lifetime workspace"].map((item) => <span key={item} className="rounded-full border border-amber-900/10 bg-white/75 px-3 py-1.5 text-xs font-bold text-amber-900">{item}</span>)}
             </div>
           </div>
         </div>

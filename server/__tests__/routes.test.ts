@@ -1018,6 +1018,7 @@ describe("career blueprint fulfillment", () => {
   it("keeps access and generation behind authentication", async () => {
     const app = await buildApp();
     await request(app).get("/api/career-blueprint/access").expect(401);
+    await request(app).post("/api/career-blueprint/execution").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
     await request(app).post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
   });
 
@@ -1031,6 +1032,12 @@ describe("career blueprint fulfillment", () => {
     expect(access.status).toBe(200);
     expect(access.body.entitled).toBe(true);
 
+    const execution = await agent.post("/api/career-blueprint/execution").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" });
+    expect(execution.status).toBe(200);
+    expect(execution.body.record.routeTitle).toBe("Senior QC Microbiologist");
+    expect(execution.body.record.plan).toHaveLength(13);
+    expect(execution.body.record.weeks).toHaveLength(13);
+
     const download = await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" });
     expect(download.status).toBe(200);
     expect(download.headers["content-type"]).toContain("application/pdf");
@@ -1043,6 +1050,7 @@ describe("career blueprint fulfillment", () => {
     const agent = await authedAgent(app);
     storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
     storageMock.hasCompletedPurchase.mockResolvedValue(false);
+    await agent.post("/api/career-blueprint/execution").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(403);
     await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(403);
   });
 });

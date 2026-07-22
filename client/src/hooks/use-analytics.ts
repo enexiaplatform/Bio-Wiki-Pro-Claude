@@ -111,6 +111,18 @@ export const analytics = {
   careerBlueprintDownloaded: (route: string) =>
     capture("career_blueprint_downloaded", { route }),
 
+  careerExecutionOpened: (route: string, resumed: boolean) =>
+    capture("career_execution_opened", { route, resumed }),
+
+  careerExecutionSaved: (route: string, completeWeeks: number) =>
+    capture("career_execution_saved", { route, complete_weeks: completeWeeks }),
+
+  careerExecutionExported: (route: string, completeWeeks: number) =>
+    capture("career_execution_exported", { route, complete_weeks: completeWeeks }),
+
+  careerExecutionDecisionChanged: (route: string, decision: string) =>
+    capture("career_execution_decision_changed", { route, decision }),
+
   subscriptionStarted: (plan = "pro_subscription") =>
     capture("subscription_started", { plan }),
 

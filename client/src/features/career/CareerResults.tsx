@@ -73,7 +73,12 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
   const analysis = useMemo(() => buildCareerAnalysis(profile, selectedRouteId), [profile, selectedRouteId]);
   const proofExperiment = useMemo(() => buildCareerProofExperiment(profile, selectedRouteId), [profile, selectedRouteId]);
   const firstName = profile.fullName.trim().split(/\s+/)[0] || "Your";
-  const radarData = analysis.competencies.map((item) => ({ subject: item.label, current: item.current, target: item.target, fullMark: 100 }));
+  const radarData = analysis.competencies.map((item) => ({
+    subject: item.label === "Investigation ownership" ? "Investigation" : item.label,
+    current: item.current,
+    target: item.target,
+    fullMark: 100,
+  }));
 
   function selectRoute(id: string, label: string) {
     setSelectedRouteId(id);
@@ -144,9 +149,9 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
           <div className="mt-4 grid gap-3 lg:grid-cols-[minmax(320px,0.9fr)_minmax(280px,1.1fr)] lg:items-center xl:mt-2">
             <div className="h-[340px] w-full xl:h-[250px]" aria-label="Career competency radar chart">
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData} outerRadius="68%">
+                <RadarChart data={radarData} outerRadius="56%">
                   <PolarGrid stroke="rgba(148,163,184,0.24)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: "#a9b7c9", fontSize: 11 }} />
+                  <PolarAngleAxis dataKey="subject" tick={{ fill: "#a9b7c9", fontSize: 10 }} />
                   <Tooltip contentStyle={{ backgroundColor: "#0b172a", border: "1px solid rgba(255,255,255,.14)", borderRadius: "10px", color: "#f8fafc" }} />
                   <Radar name={`${firstName} today`} dataKey="current" stroke="#2dd4bf" fill="#14b8a6" fillOpacity={0.28} strokeWidth={2.5} />
                   <Radar name="Target role" dataKey="target" stroke="#e7b84b" fill="transparent" strokeWidth={2} />
@@ -173,19 +178,16 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
               <img src="/images/career/personal-career-blueprint-preview.webp" alt="Personal Career Blueprint report cover and inside evidence-comparison page" width="1421" height="1107" loading="lazy" decoding="async" className="mt-3 aspect-[9/7] w-full rounded-lg object-cover xl:mt-2" />
             </div>
             <div>
-              <p className="text-sm font-bold">38-page Career Operating Blueprint</p>
+              <p className="text-sm font-bold">38-page Blueprint + lifetime execution workspace</p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-slate-300 xl:mt-2 xl:space-y-1">
-                {["Route fit and risk comparison", `${profile.targetHorizonMonths}-month action plan`, "Readiness chart and gap logic", "Four fillable worksheets", "Personalized CV and story prompts", "Decision triggers and fallback route"].map((item) => <li key={item} className="flex gap-2"><span className="text-amber-300">•</span>{item}</li>)}
+                {["Route fit and risk comparison", `${profile.targetHorizonMonths}-month action plan`, "13 weeks of personalized actions", "Evidence and reviewer feedback log", "Personalized CV and story prompts", "Continue-adjust-pivot decision gate"].map((item) => <li key={item} className="flex gap-2"><span className="text-amber-300">•</span>{item}</li>)}
               </ul>
             </div>
           </div>
 
           {error && <p role="alert" className="mt-4 rounded-lg border border-red-400/20 bg-red-400/10 px-3 py-2 text-xs text-red-200">{error}</p>}
-          <button type="button" onClick={entitled ? onDownload : onCheckout} disabled={checkingAccess || checkoutLoading || downloadLoading} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300 disabled:cursor-wait disabled:opacity-55 xl:mt-3 xl:py-3">
-            {checkingAccess || checkoutLoading || downloadLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : entitled ? <Download className="h-4 w-4" /> : <LockKeyhole className="h-4 w-4" />}
-            {checkingAccess ? "Checking access…" : checkoutLoading ? "Opening secure checkout…" : downloadLoading ? "Generating your PDF…" : entitled ? "Download my 38-page Blueprint" : "Unlock my personalized Blueprint — $20 one-time"}
-          </button>
-          <p className="mt-2 text-center text-[11px] text-slate-400">{entitled ? "Generate again whenever your browser-local profile changes." : "Secure checkout · instant PDF · lifetime access"}</p>
+          {entitled ? <div className="mt-5 space-y-2 xl:mt-3"><Link href="/career/blueprint" className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300 xl:py-3"><FileCheck2 className="h-4 w-4" /> Open my 13-week workspace</Link><button type="button" onClick={onDownload} disabled={downloadLoading} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 px-5 py-3 text-sm font-bold text-slate-100 transition hover:border-white/40 disabled:cursor-wait disabled:opacity-55">{downloadLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}{downloadLoading ? "Generating your PDF…" : "Download my 38-page Blueprint"}</button></div> : <button type="button" onClick={onCheckout} disabled={checkingAccess || checkoutLoading} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300 disabled:cursor-wait disabled:opacity-55 xl:mt-3 xl:py-3">{checkingAccess || checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LockKeyhole className="h-4 w-4" />}{checkingAccess ? "Checking access…" : checkoutLoading ? "Opening secure checkout…" : "Unlock my personalized Blueprint — $20 one-time"}</button>}
+          <p className="mt-2 text-center text-[11px] text-slate-400">{entitled ? "Lifetime workspace access · regenerate the PDF whenever your profile changes." : "Secure checkout · instant PDF · lifetime execution workspace"}</p>
           <button type="button" onClick={onEdit} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-xs font-semibold text-slate-200 transition hover:border-white/40 xl:mt-2 xl:py-2"><Pencil className="h-3.5 w-3.5" /> Edit my answers</button>
           <p className="mt-3 flex items-center justify-center gap-2 text-[10px] text-slate-500 xl:mt-2"><ShieldCheck className="h-3.5 w-3.5" /> Planning support, not a hiring or salary guarantee.</p>
         </aside>

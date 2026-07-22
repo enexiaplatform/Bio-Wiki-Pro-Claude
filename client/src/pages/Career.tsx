@@ -236,7 +236,7 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
             <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Optional after your free result</p><h2 className="mt-2 text-xl font-bold">Your named Career Blueprint</h2><p className="mt-1 text-xs text-slate-400">One-time purchase · generated from your selected route</p></div><span className="rounded-full bg-amber-300/10 px-3 py-1 text-sm font-bold text-amber-200">$20</span></div>
             <img src="/images/career/personal-career-blueprint-preview.webp" alt="Preview of a Personal Career Blueprint report and evidence comparison page" width="1421" height="1107" loading="eager" decoding="async" className="mt-4 aspect-[9/7] w-full rounded-lg object-cover" />
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-300">
-              {["38 personalized pages", "Target-role requirement matrix", "13-week execution calendar", "Proof portfolio and interview drills"].map((item) => <span key={item} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" />{item}</span>)}
+              {["38 personalized pages", "Target-role requirement matrix", "Lifetime 13-week workspace", "Proof portfolio and interview drills"].map((item) => <span key={item} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" />{item}</span>)}
             </div>
             </div>
           </div>
@@ -294,7 +294,7 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
               { title: "Route decision brief", body: "Why this route, why not the alternatives, and what assumptions could change the recommendation." },
               { title: "Requirement and evidence matrix", body: "Target expectations mapped against the proof you currently have, with priority gaps." },
               { title: "Proof-building portfolio", body: "Specific artifacts, outcomes, and workplace evidence to create or strengthen." },
-              { title: "13-week execution system", body: "Sequenced actions, review checkpoints, CV prompts, and interview drills tied to the route." },
+              { title: "Lifetime 13-week execution workspace", body: "Track weekly actions, evidence, reviewer feedback, and a continue-adjust-pivot decision tied to your route." },
             ].map((item, index) => <article key={item.title} className={`border-b border-slate-200 py-6 sm:px-6 ${index % 2 === 0 ? "sm:border-r sm:pl-0" : "sm:pr-0"}`}><span className="text-xs font-bold text-amber-700">0{index + 1}</span><h3 className="mt-3 font-bold text-slate-950">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{item.body}</p></article>)}
           </div>
         </div>

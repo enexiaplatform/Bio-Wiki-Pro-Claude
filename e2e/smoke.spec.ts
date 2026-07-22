@@ -1,5 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { createQualityLabProject, defaultQualityLabInput } from "../shared/quality-lab";
+import { CAREER_PROFILE_STORAGE_KEY, defaultCareerProfile } from "../shared/career-blueprint";
+import { createCareerExecutionRecord } from "../shared/career-execution";
 
 async function mockAdmin(page: Page) {
   await page.route("**/api/auth/me", (route) => route.fulfill({
@@ -326,6 +328,10 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Turn a responsibility into a claim a reviewer can test/i })).toBeVisible();
     await expect(page.getByRole("button", { name: "Map my current evidence", exact: true })).toBeVisible();
 
+    await page.goto("/career/blueprint");
+    await expect(page.getByRole("heading", { name: /Turn your Blueprint into 13 weeks of evidence/i })).toBeVisible();
+    await expect(page.getByText(/Personalized weekly instructions require a completed one-time purchase/i)).toBeVisible();
+
     await page.goto("/quality-lab/how-it-works");
     await expect(page.getByRole("heading", { name: /fragmented lab question/i })).toBeVisible();
 
@@ -366,6 +372,27 @@ test.describe("public smoke", () => {
       await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
     }
     await expect(page.getByRole("link", { name: /Start the first review/i })).toHaveAttribute("href", "/pro/monthly-review");
+  });
+
+  test("Career Blueprint purchaser can create, track and export the 13-week workspace", async ({ page }) => {
+    const profile = { ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" };
+    const record = createCareerExecutionRecord(profile, undefined, new Date("2026-07-22T12:00:00.000Z"));
+    await mockAdmin(page);
+    await page.route("**/api/career-blueprint/access", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ entitled: true }) }));
+    await page.route("**/api/career-blueprint/execution", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ record }) }));
+    await page.addInitScript(({ key, value }) => window.localStorage.setItem(key, JSON.stringify(value)), { key: CAREER_PROFILE_STORAGE_KEY, value: profile });
+    await page.goto("/career/blueprint");
+    await expect(page.getByRole("heading", { name: "13-Week Execution Workspace", exact: true })).toBeVisible();
+    await expect(page.getByText("Alex Morgan · QC Microbiology Analyst → Senior QC Microbiologist")).toBeVisible();
+    await page.getByLabel("Week status").selectOption("complete");
+    await page.getByLabel("Evidence note").fill("Reviewed five role descriptions and classified each recurring expectation.");
+    await page.getByLabel("Sanitized artifact reference").fill("role-requirement-matrix-v1");
+    await page.getByLabel("Reviewer feedback").fill("The requirement clusters are credible and the ownership boundary is accurate.");
+    await page.getByRole("button", { name: /Save progress/i }).click();
+    await expect(page.getByRole("status")).toContainText("saved in this browser");
+    await expect(page.getByRole("heading", { name: "1/13 weeks complete", exact: true })).toBeVisible();
+    await page.getByLabel("Decision").selectOption("adjust");
+    await expect(page.getByLabel("Decision")).toHaveValue("adjust");
   });
 
   test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {
