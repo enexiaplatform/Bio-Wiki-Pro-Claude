@@ -306,6 +306,16 @@ test.describe("public smoke", () => {
 
     await page.goto("/pro");
     await expect(page.getByRole("heading", { name: /Evidence, tools, and working files/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Start with work to be done, then pull the right depth/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Inspect the audit kit", exact: true })).toHaveAttribute("href", "/toolkits/gmp-audit-kit");
+
+    await page.goto("/quality-lab");
+    await expect(page.getByRole("heading", { name: /See how a real planning question changes shape/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Inspect calculated cases", exact: true })).toHaveAttribute("href", "/quality-lab/casebook");
+
+    await page.goto("/career");
+    await expect(page.getByRole("heading", { name: /Turn a responsibility into a claim a reviewer can test/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Map my current evidence", exact: true })).toBeVisible();
 
     await page.goto("/quality-lab/how-it-works");
     await expect(page.getByRole("heading", { name: /fragmented lab question/i })).toBeVisible();
@@ -1239,6 +1249,9 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Create my free Career Snapshot/i }).click();
     await expect(page.getByRole("heading", { name: /Alex, your strongest next move is Senior QC Microbiologist/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Adjacent QA Investigation Specialist/i })).toBeVisible();
+    await expect(page.getByText(/% readiness/i).first()).toBeVisible();
+    await expect(page.getByText(/directional fit/i).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Why Atlas has/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
   });
 

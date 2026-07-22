@@ -46,6 +46,24 @@ const boundaries = [
   "Human-reviewed decisions — not autonomous batch or compliance decisions",
 ];
 
+const decisionExample = [
+  {
+    label: "Project facts",
+    title: "A site adds two non-sterile products",
+    body: "The team supplies product forms, target markets, batch cadence, sample assumptions, current equipment and the intended operating horizon.",
+  },
+  {
+    label: "Compiler question",
+    title: "Can the current microbiology model absorb the load?",
+    body: "Atlas connects test applicability and execution choices to analyst touch time, media, plates, incubation occupancy, autoclave demand and review work.",
+  },
+  {
+    label: "Decision output",
+    title: "Act on the constraint, not a generic equipment list",
+    body: "The Blueprint identifies the capacity constraint, unresolved evidence, insource/outsource options, phased requirements and the trigger for the next investment decision.",
+  },
+];
+
 const evidenceGuides = [
   {
     eyebrow: "Compiler Core",
@@ -282,6 +300,35 @@ export default function QualityLabLandingPage() {
                 <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-y border-teal-300/15 bg-[#0a1a2d] px-4 py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
+            <div className="max-w-xl">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Example decision chain</p>
+              <h2 className="mt-3 text-3xl font-bold">See how a real planning question changes shape.</h2>
+              <p className="mt-4 leading-7 text-slate-400">The value is not a longer equipment list. It is a traceable path from site facts to the earliest decision the project team can defend.</p>
+              <p className="mt-5 rounded-xl border border-amber-300/15 bg-amber-300/[0.055] p-4 text-xs leading-6 text-amber-100">Illustrative workflow only. The answer changes with product, market, registered specification, method choice, site constraints and qualified review.</p>
+            </div>
+            <div className="grid gap-3">
+              {decisionExample.map((item, index) => (
+                <article key={item.label} className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.035] p-5 sm:grid-cols-[3.5rem_1fr]">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-300/10 text-sm font-bold text-teal-200">0{index + 1}</span>
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-300">{item.label}</p>
+                    <h3 className="mt-2 text-lg font-bold text-white">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p>
+                  </div>
+                </article>
+              ))}
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                <Link href="/quality-lab/casebook" onClick={() => analytics.blueprintCtaClicked("quality_lab_decision_example", "casebook")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Inspect calculated cases <ArrowRight className="h-4 w-4" /></Link>
+                <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("quality_lab_decision_example", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.06]">Model my own scope</Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

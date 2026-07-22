@@ -81,6 +81,33 @@ const qualityLabReasons = [
   "The scope requires project-specific expert challenge and delivery",
 ];
 
+const proPlaybooks = [
+  {
+    question: "Prepare for a GMP audit",
+    evidence: "Understand audit logic, evidence expectations, interview risk and CAPA boundaries.",
+    tool: "Run a structured readiness check and turn gaps into owned actions.",
+    file: "Reuse the GMP Audit Readiness Kit for the review, interview and follow-up cycle.",
+    href: "/toolkits/gmp-audit-kit",
+    cta: "Inspect the audit kit",
+  },
+  {
+    question: "Investigate a quality signal",
+    evidence: "Review deviation, OOS/OOT and data-integrity reasoning before choosing a path.",
+    tool: "Apply a focused workflow or calculator with assumptions kept visible.",
+    file: "Capture evidence, decisions, owners and effectiveness checks in a reusable working record.",
+    href: "/workflows",
+    cta: "Explore quality workflows",
+  },
+  {
+    question: "Make a method or capacity decision",
+    evidence: "Understand the method, applicability limits and operational dependencies.",
+    tool: "Test inputs and scenarios without hiding the calculation basis.",
+    file: "Carry the result into a checklist or worksheet that can be reviewed and repeated.",
+    href: "/tools",
+    cta: "Explore decision tools",
+  },
+];
+
 export default function ProPage() {
   useSEO({
     title: "Life Science Atlas Pro",
@@ -200,6 +227,30 @@ export default function ProPage() {
                 <span className="text-xs font-bold tracking-[0.16em] text-sky-300">{number}</span>
                 <h3 className="mt-5 text-xl font-bold text-white">{title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-400">{body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Three repeatable playbooks</p>
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Start with work to be done, then pull the right depth.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-600">These examples show how the Pro layers connect. Availability still depends on the published lesson, tool and file catalog at the time you use it.</p>
+          </div>
+          <div className="mt-9 grid gap-4 lg:grid-cols-3">
+            {proPlaybooks.map((playbook, index) => (
+              <article key={playbook.question} className="flex flex-col rounded-2xl border border-sky-200 bg-white p-6 shadow-sm shadow-sky-950/5">
+                <div className="flex items-center justify-between gap-4"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">0{index + 1}</span><BadgeCheck className="h-5 w-5 text-sky-700" /></div>
+                <h3 className="mt-5 text-xl font-bold text-slate-950">{playbook.question}</h3>
+                <div className="mt-5 flex-1 space-y-4 border-t border-slate-200 pt-5">
+                  {[["Evidence", playbook.evidence], ["Tool", playbook.tool], ["Working file", playbook.file]].map(([label, body]) => (
+                    <div key={label} className="grid grid-cols-[5.5rem_1fr] gap-3 text-sm leading-6"><strong className="text-sky-900">{label}</strong><span className="text-slate-600">{body}</span></div>
+                  ))}
+                </div>
+                <Link href={playbook.href} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{playbook.cta} <ArrowRight className="h-4 w-4" /></Link>
               </article>
             ))}
           </div>

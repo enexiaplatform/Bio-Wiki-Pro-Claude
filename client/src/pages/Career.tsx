@@ -300,6 +300,38 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
         </div>
       </section>
 
+      <section className="mx-auto mt-12 max-w-7xl px-4 md:mt-16">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#071426]">
+          <div className="grid lg:grid-cols-[0.7fr_1.3fr]">
+            <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r lg:p-8">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">What proof-building means</p>
+              <h2 className="mt-3 text-2xl font-bold md:text-3xl">Turn a responsibility into a claim a reviewer can test.</h2>
+              <p className="mt-4 text-sm leading-7 text-slate-400">The Blueprint does not invent achievements. It helps you separate participation from ownership, then define the evidence still needed.</p>
+            </div>
+            <div className="grid gap-px bg-white/10 sm:grid-cols-2">
+              <article className="bg-[#0a1d32] p-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300">Weak, untested claim</p>
+                <p className="mt-4 text-lg font-semibold leading-8 text-slate-200">“Experienced in deviation investigations.”</p>
+                <p className="mt-3 text-sm leading-6 text-slate-500">The scope, decision, contribution, review status and outcome are unclear.</p>
+              </article>
+              <article className="bg-[#0a1d32] p-6">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Evidence-led version</p>
+                <p className="mt-4 text-lg font-semibold leading-8 text-slate-200">State the bounded event, your decision, the sanitized artifact, reviewer feedback and the observable result.</p>
+                <p className="mt-3 text-sm leading-6 text-slate-500">Only claim what a qualified reviewer and available evidence can support.</p>
+              </article>
+              <div className="bg-[#0a1d32] p-6 sm:col-span-2">
+                <div className="grid gap-4 sm:grid-cols-4">
+                  {[["01", "Boundary", "What exactly did you own?"], ["02", "Decision", "What judgment did you make?"], ["03", "Evidence", "What artifact or feedback supports it?"], ["04", "Outcome", "What changed, and what remains unknown?"]].map(([number, title, body]) => (
+                    <div key={number}><span className="text-xs font-bold text-teal-300">{number}</span><h3 className="mt-2 text-sm font-bold text-white">{title}</h3><p className="mt-1 text-xs leading-5 text-slate-500">{body}</p></div>
+                  ))}
+                </div>
+                <button type="button" onClick={onStart} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-200 hover:text-teal-100">Map my current evidence <ArrowRight className="h-4 w-4" /></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto mt-12 flex max-w-7xl flex-col gap-5 px-4 md:mt-16 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-4"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-teal-400/10 text-teal-200"><ShieldCheck className="h-5 w-5" /></div><div><h2 className="text-lg font-bold">Useful without pretending certainty</h2><p className="mt-1 max-w-3xl text-sm leading-6 text-slate-400">Scores are self-assessment planning aids. Atlas exposes assumptions, avoids hiring guarantees, and encourages review by a qualified manager or mentor.</p></div></div>
         <button type="button" onClick={onStart} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-teal-400/35 px-5 py-3 text-sm font-semibold text-teal-200 hover:bg-teal-400/10">Start assessment <ArrowRight className="h-4 w-4" /></button>
