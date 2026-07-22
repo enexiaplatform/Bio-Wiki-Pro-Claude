@@ -49,9 +49,12 @@ const products = [
   {
     icon: Building2,
     audience: "Organization",
+    model: "Project-based",
     title: "Quality Lab Blueprint",
     job: "Plan a real regulated quality laboratory decision.",
     process: "Describe the site and demand → compile scenarios → expert challenge → controlled delivery.",
+    price: "Free model · $149 diagnostic · from $990",
+    finish: "A controlled project decision package",
     href: "/quality-lab/how-it-works",
     cta: "See the project process",
     tone: "border-teal-200 bg-teal-50 text-teal-900",
@@ -59,9 +62,12 @@ const products = [
   {
     icon: Sparkles,
     audience: "Professional",
+    model: "Subscription",
     title: "Atlas Pro",
     job: "Go deeper with evidence, tools, and working files.",
     process: "Find a work question → study the source context → use the file or tool → retain a reusable reference layer.",
+    price: "$8/month · $80/year when available",
+    finish: "Ongoing access to deeper professional resources",
     href: "/pro",
     cta: "See what Pro includes",
     tone: "border-sky-200 bg-sky-50 text-sky-900",
@@ -69,9 +75,12 @@ const products = [
   {
     icon: BriefcaseBusiness,
     audience: "Individual",
+    model: "One-time",
     title: "Career Blueprint",
     job: "Make a more evidence-based next career move.",
     process: "Describe your profile → compare credible routes → inspect gaps → unlock a named execution plan.",
+    price: "Free snapshot · personalized PDF for $20",
+    finish: "A named 38-page career execution plan",
     href: "/career",
     cta: "See the Career product",
     tone: "border-amber-200 bg-amber-50 text-amber-900",
@@ -90,13 +99,13 @@ export default function PlatformHowItWorksPage() {
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/30 bg-teal-300/[0.07] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-teal-200">
-              <ShieldCheck className="h-3.5 w-3.5" /> One Atlas system
+              <ShieldCheck className="h-3.5 w-3.5" /> How Atlas works
             </span>
             <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-              Evidence becomes intelligence. <span className="text-teal-300">Intelligence becomes a useful decision asset.</span>
+              One evidence system. <span className="text-teal-300">Three clear ways to use it.</span>
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">
-              Atlas is not three copies of the same offer. It is one evidence-led system with three distinct ways to use or buy the output.
+              Build a laboratory decision package, unlock deeper professional resources, or create a named career plan. The evidence system is shared; the buyer, workflow, payment, and finish line are not.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/products" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:-translate-y-0.5 hover:bg-teal-200">
@@ -109,18 +118,22 @@ export default function PlatformHowItWorksPage() {
           </div>
 
           <div className="rounded-[1.75rem] border border-white/10 bg-[#0a1d32] p-5 shadow-2xl shadow-black/20 sm:p-7">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-300">The Atlas value chain</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-300">Choose your finish line</p>
             <div className="mt-5 space-y-3">
-              {["Evidence: learn and inspect", "Intelligence: structure and compare", "Output: decide and act"].map((item, index) => (
-                <div key={item} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.035] p-4">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-300/10 text-xs font-bold text-teal-200">{index + 1}</span>
-                  <span className="text-sm font-semibold text-slate-100">{item}</span>
-                  {index < 2 && <ArrowRight className="ml-auto h-4 w-4 rotate-90 text-slate-600" />}
-                </div>
+              {[
+                { audience: "Organization", product: "Quality Lab Blueprint", outcome: "Project decision package", href: "/quality-lab" },
+                { audience: "Professional", product: "Atlas Pro", outcome: "Evidence, tools, and working files", href: "/pro" },
+                { audience: "Individual", product: "Career Blueprint", outcome: "Named career execution plan", href: "/career" },
+              ].map((item) => (
+                <Link key={item.product} href={item.href} className="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-teal-300/35 hover:bg-white/[0.06]">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-300/10 text-[10px] font-bold uppercase text-teal-200">{item.audience.slice(0, 3)}</span>
+                  <span className="min-w-0"><span className="block text-sm font-bold text-slate-100">{item.product}</span><span className="mt-1 block text-xs text-slate-400">{item.outcome}</span></span>
+                  <ArrowRight className="ml-auto h-4 w-4 shrink-0 text-slate-600 transition group-hover:translate-x-0.5 group-hover:text-teal-300" />
+                </Link>
               ))}
             </div>
             <div className="mt-5 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-xs leading-6 text-amber-100/80">
-              Context, assumptions, evidence, uncertainty, and human accountability stay visible where they materially affect an output.
+              Not sure yet? Start with the free product comparison. No purchase is required to choose a path.
             </div>
           </div>
         </div>
@@ -157,18 +170,25 @@ export default function PlatformHowItWorksPage() {
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">The paths separate here</p>
-            <h2 className="mt-3 text-3xl font-bold text-slate-950 md:text-4xl">Each product has its own workflow and finish line.</h2>
+            <h2 className="mt-3 text-3xl font-bold text-slate-950 md:text-4xl">Different buyer. Different payment. Different finish line.</h2>
+            <p className="mt-4 text-base leading-7 text-slate-600">The three offers share Atlas evidence and reasoning, but they are not tiers of the same product.</p>
           </div>
           <div className="mt-9 grid gap-4 lg:grid-cols-3">
             {products.map((product) => (
               <article key={product.title} className={`rounded-2xl border p-6 ${product.tone}`}>
                 <div className="flex items-center justify-between gap-4">
                   <product.icon className="h-6 w-6" />
-                  <span className="rounded-full bg-white/70 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em]">{product.audience}</span>
+                  <span className="rounded-full bg-white/70 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em]">{product.audience} · {product.model}</span>
                 </div>
                 <h3 className="mt-6 text-xl font-bold text-slate-950">{product.title}</h3>
                 <p className="mt-2 text-sm font-semibold text-slate-800">{product.job}</p>
                 <p className="mt-4 border-t border-slate-900/10 pt-4 text-sm leading-7 text-slate-600">{product.process}</p>
+                <div className="mt-5 border-t border-slate-900/10 pt-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Payment</p>
+                  <p className="mt-1 text-sm font-bold text-slate-900">{product.price}</p>
+                  <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Ends with</p>
+                  <p className="mt-1 text-sm text-slate-700">{product.finish}</p>
+                </div>
                 <Link href={product.href} className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-slate-950">{product.cta} <ArrowRight className="h-4 w-4" /></Link>
               </article>
             ))}

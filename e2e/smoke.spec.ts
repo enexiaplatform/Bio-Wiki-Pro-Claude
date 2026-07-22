@@ -298,7 +298,7 @@ test.describe("public smoke", () => {
 
     await header.getByRole("link", { name: "How Atlas works", exact: true }).click();
     await expect(page).toHaveURL(/\/how-it-works$/);
-    await expect(page.getByRole("heading", { name: /Evidence becomes intelligence/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /One evidence system/i })).toBeVisible();
 
     await page.goto("/products");
     await expect(page.getByRole("heading", { name: /One Atlas\. Three ways to make a better decision/i })).toBeVisible();
