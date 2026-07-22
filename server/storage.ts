@@ -6,6 +6,7 @@ import {
   processedStripeEvents,
   contentEntries,
   lessonReads,
+  atlasProMonthlyReviews,
   nurtureSends,
   lifecycleSends,
   checkoutAttempts,
@@ -22,9 +23,11 @@ import {
   type QualityLabReviewedProjectRevisionRow,
   type QualityLabGovernanceRecordRow,
   type QualityLabGovernanceRevisionRow,
+  type AtlasProMonthlyReviewRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
+import type { AtlasProMonthlyReviewRecord } from "../shared/atlas-pro-monthly.js";
 import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
 
 export type QualityLabReminderPreference = {
@@ -65,6 +68,8 @@ export interface IStorage {
   hasCompletedPurchase(userId: string, productType?: string): Promise<boolean>;
   getReadLessons(userId: string): Promise<string[]>;
   markLessonRead(userId: string, slug: string): Promise<void>;
+  listAtlasProMonthlyReviews(userId: string): Promise<AtlasProMonthlyReviewRow[]>;
+  upsertAtlasProMonthlyReview(userId: string, review: AtlasProMonthlyReviewRecord): Promise<AtlasProMonthlyReviewRow>;
   getNurtureCandidates(maxAgeDays: number): Promise<{ id: string; email: string | null; firstName: string | null; createdAt: Date | null }[]>;
   getSentNurtureSteps(userId: string): Promise<number[]>;
   recordNurtureSend(userId: string, step: number): Promise<void>;
@@ -257,6 +262,18 @@ export class DatabaseStorage implements IStorage {
 
   async markLessonRead(userId: string, slug: string): Promise<void> {
     await db.insert(lessonReads).values({ userId, slug }).onConflictDoNothing();
+  }
+
+  async listAtlasProMonthlyReviews(userId: string): Promise<AtlasProMonthlyReviewRow[]> {
+    return db.select().from(atlasProMonthlyReviews).where(eq(atlasProMonthlyReviews.userId, userId)).orderBy(desc(atlasProMonthlyReviews.updatedAt));
+  }
+
+  async upsertAtlasProMonthlyReview(userId: string, review: AtlasProMonthlyReviewRecord): Promise<AtlasProMonthlyReviewRow> {
+    const [existing] = await db.select().from(atlasProMonthlyReviews).where(and(eq(atlasProMonthlyReviews.userId, userId), eq(atlasProMonthlyReviews.reviewId, review.id)));
+    const [row] = existing
+      ? await db.update(atlasProMonthlyReviews).set({ month: review.input.month, snapshot: review, updatedAt: new Date() }).where(eq(atlasProMonthlyReviews.id, existing.id)).returning()
+      : await db.insert(atlasProMonthlyReviews).values({ userId, reviewId: review.id, month: review.input.month, snapshot: review }).returning();
+    return row;
   }
 
   async getNurtureCandidates(maxAgeDays: number) {

@@ -3,6 +3,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import type { QualityLabReviewedProjectSnapshot } from "./quality-lab-persistence";
 import type { QualityLabGovernanceSnapshot } from "./quality-lab-governance";
+import type { AtlasProMonthlyReviewRecord } from "./atlas-pro-monthly";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -67,6 +68,24 @@ export const lessonReads = pgTable(
   (t) => [uniqueIndex("lesson_reads_user_slug_idx").on(t.userId, t.slug)],
 );
 export type LessonRead = typeof lessonReads.$inferSelect;
+
+// Pro members can deliberately sync monthly quality working records across
+// devices. The snapshot remains a professional working aid, not a controlled
+// quality-system record, approval, electronic signature, or project deliverable.
+export const atlasProMonthlyReviews = pgTable(
+  "atlas_pro_monthly_reviews",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    reviewId: text("review_id").notNull(),
+    month: text("month").notNull(),
+    snapshot: jsonb("snapshot").$type<AtlasProMonthlyReviewRecord>().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("atlas_pro_monthly_reviews_user_review_idx").on(t.userId, t.reviewId)],
+);
+export type AtlasProMonthlyReviewRow = typeof atlasProMonthlyReviews.$inferSelect;
 
 // Free→Pro email nurture: one row per (user, step) so the daily cron never
 // re-sends a step. Degrades gracefully if the table is absent (pre-migration).

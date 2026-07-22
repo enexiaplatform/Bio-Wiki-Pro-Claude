@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const ATLAS_PRO_MONTHLY_REVIEW_VERSION = "atlas-pro-monthly-review/v1" as const;
 
 export const atlasProMonthlyRoleValues = ["qc", "qa", "validation", "quality-leadership", "cross-functional"] as const;
@@ -28,6 +30,14 @@ export interface AtlasProMonthlyInput {
   carryover: string;
 }
 
+export interface AtlasProMonthlyReviewRecord {
+  id: string;
+  version: typeof ATLAS_PRO_MONTHLY_REVIEW_VERSION;
+  input: AtlasProMonthlyInput;
+  statuses: Record<AtlasProMonthlyCycleStep["id"], AtlasProMonthlyActionStatus>;
+  updatedAt: string;
+}
+
 export interface AtlasProMonthlyCycleStep {
   id: "frame" | "verify" | "decide" | "close";
   label: string;
@@ -35,6 +45,30 @@ export interface AtlasProMonthlyCycleStep {
   action: string;
   evidence: string;
 }
+
+export const atlasProMonthlyInputSchema = z.object({
+  month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+  role: z.enum(atlasProMonthlyRoleValues),
+  focus: z.enum(atlasProMonthlyFocusValues),
+  decision: z.string().trim().max(2000),
+  signal: z.string().trim().max(3000),
+  evidenceHeld: z.string().trim().max(5000),
+  evidenceNeeded: z.string().trim().max(5000),
+  owner: z.string().trim().max(200),
+  reviewDate: z.union([z.literal(""), z.string().date()]),
+  outcome: z.string().trim().max(5000),
+  carryover: z.string().trim().max(5000),
+});
+
+const atlasProMonthlyActionStatusSchema = z.enum(["not-started", "in-progress", "waiting-review", "closed"]);
+
+export const atlasProMonthlyReviewRecordSchema = z.object({
+  id: z.string().trim().min(1).max(160),
+  version: z.literal(ATLAS_PRO_MONTHLY_REVIEW_VERSION),
+  input: atlasProMonthlyInputSchema,
+  statuses: z.object({ frame: atlasProMonthlyActionStatusSchema, verify: atlasProMonthlyActionStatusSchema, decide: atlasProMonthlyActionStatusSchema, close: atlasProMonthlyActionStatusSchema }),
+  updatedAt: z.string().datetime(),
+});
 
 interface AtlasProMonthlyFocusDefinition {
   label: string;

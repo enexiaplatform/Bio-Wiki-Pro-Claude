@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import express from "express";
 import request from "supertest";
+import { ATLAS_PRO_MONTHLY_REVIEW_VERSION, exampleAtlasProMonthlyInput } from "../../shared/atlas-pro-monthly";
 
 // ── Mocks (vi.hoisted so the vi.mock factories can reference them) ────────────
 const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate } = vi.hoisted(() => ({
@@ -24,6 +25,8 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     updatePassword: vi.fn(),
     getReadLessons: vi.fn(),
     markLessonRead: vi.fn(),
+    listAtlasProMonthlyReviews: vi.fn(() => Promise.resolve([])),
+    upsertAtlasProMonthlyReview: vi.fn(),
     setVerificationToken: vi.fn(() => Promise.resolve()),
     getUserByVerificationToken: vi.fn(),
     markEmailVerified: vi.fn(() => Promise.resolve()),
@@ -430,6 +433,33 @@ describe("create-checkout-session", () => {
     expect(arg.mode).toBe("payment");
     expect(arg.line_items[0].price).toBe("price_gmp");
     expect(arg.subscription_data).toBeUndefined();
+  });
+
+  it("syncs monthly quality reviews only for an active Pro member", async () => {
+    const app = await buildApp();
+    const proUser = { id: "pro-monthly", email: "pro-monthly@example.com", isPro: true, subscriptionStatus: "active" };
+    const agent = await authedAgent(app, proUser);
+    const review = { id: "apr_2026-08_test", version: ATLAS_PRO_MONTHLY_REVIEW_VERSION, input: exampleAtlasProMonthlyInput, statuses: { frame: "closed", verify: "in-progress", decide: "waiting-review", close: "not-started" }, updatedAt: "2026-07-22T12:00:00.000Z" };
+    storageMock.getUser.mockResolvedValue(proUser);
+    storageMock.listAtlasProMonthlyReviews.mockResolvedValueOnce([{ snapshot: review }]);
+    const listed = await agent.get("/api/pro/monthly-reviews");
+    expect(listed.status).toBe(200);
+    expect(listed.body.reviews[0].id).toBe(review.id);
+
+    storageMock.upsertAtlasProMonthlyReview.mockResolvedValueOnce({ snapshot: review, updatedAt: new Date(review.updatedAt) });
+    const saved = await agent.put(`/api/pro/monthly-reviews/${review.id}`).send(review);
+    expect(saved.status).toBe(201);
+    expect(storageMock.upsertAtlasProMonthlyReview).toHaveBeenCalledWith(proUser.id, expect.objectContaining({ id: review.id }));
+  });
+
+  it("rejects monthly quality review sync for a free member", async () => {
+    const app = await buildApp();
+    const freeUser = { id: "free-monthly", email: "free-monthly@example.com", isPro: false, subscriptionStatus: "free" };
+    const agent = await authedAgent(app, freeUser);
+    storageMock.getUser.mockResolvedValueOnce(freeUser);
+    const res = await agent.get("/api/pro/monthly-reviews");
+    expect(res.status).toBe(403);
+    expect(storageMock.listAtlasProMonthlyReviews).not.toHaveBeenCalled();
   });
 
   it("creates a one-time Diagnostic session with the intake cancel route", async () => {

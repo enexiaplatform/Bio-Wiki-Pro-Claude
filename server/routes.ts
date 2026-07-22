@@ -22,6 +22,7 @@ import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
 import { careerProfileSchema } from "../shared/career-blueprint.js";
 import { careerBlueprintPdf, careerProfileFilename } from "./career-blueprint.js";
+import { atlasProMonthlyReviewRecordSchema } from "../shared/atlas-pro-monthly.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -568,6 +569,36 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (err) {
       console.error("[Progress] mark read error:", err);
       res.json({ ok: false });
+    }
+  });
+
+  // Pro monthly working records sync only after an authenticated member saves.
+  // These remain explicitly non-controlled professional aids; local browser
+  // storage continues to work if the optional table has not been deployed yet.
+  app.get("/api/pro/monthly-reviews", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!isProActive(user)) return res.status(403).json({ message: "Active Pro membership required" });
+      const rows = await storage.listAtlasProMonthlyReviews(req.session.userId);
+      res.json({ reviews: rows.map((row) => row.snapshot), syncAvailable: true });
+    } catch (error) {
+      console.error("[Pro monthly review] list error:", error);
+      res.json({ reviews: [], syncAvailable: false });
+    }
+  });
+
+  app.put("/api/pro/monthly-reviews/:reviewId", isAuthenticated, async (req: any, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId);
+      if (!isProActive(user)) return res.status(403).json({ message: "Active Pro membership required" });
+      const review = atlasProMonthlyReviewRecordSchema.parse(req.body);
+      if (review.id !== req.params.reviewId) return res.status(400).json({ message: "Review identifier mismatch" });
+      const row = await storage.upsertAtlasProMonthlyReview(req.session.userId, review);
+      res.status(201).json({ review: row.snapshot, syncedAt: row.updatedAt });
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid monthly review record", issues: error.issues });
+      console.error("[Pro monthly review] save error:", error);
+      res.status(503).json({ message: "Monthly review saved locally; account sync is temporarily unavailable" });
     }
   });
 

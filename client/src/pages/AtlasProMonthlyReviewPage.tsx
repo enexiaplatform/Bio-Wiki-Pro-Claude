@@ -1,10 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, CheckCircle2, ChevronRight, Crown, Download, History, LockKeyhole, RefreshCw, Save, ShieldCheck, Target } from "lucide-react";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
-import { downloadAtlasProMonthlyReview, emptyAtlasProMonthlyStatuses, loadAtlasProMonthlyReviews, saveAtlasProMonthlyReview, type StoredAtlasProMonthlyReview } from "@/lib/atlas-pro-monthly";
+import { downloadAtlasProMonthlyReview, emptyAtlasProMonthlyStatuses, loadAtlasProMonthlyReviews, mergeAtlasProMonthlyReviews, saveAtlasProMonthlyReview, type StoredAtlasProMonthlyReview } from "@/lib/atlas-pro-monthly";
 import { ATLAS_PRO_MONTHLY_FOCUS, atlasProMonthlyFocusValues, atlasProMonthlyRoleValues, compileAtlasProMonthlyReview, defaultAtlasProMonthlyInput, exampleAtlasProMonthlyInput, formatAtlasProMonthlyReview, type AtlasProMonthlyActionStatus, type AtlasProMonthlyCycleStep, type AtlasProMonthlyInput } from "@shared/atlas-pro-monthly";
 
 const fieldClass = "mt-2 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-300/50 focus:ring-2 focus:ring-sky-300/10";
@@ -72,26 +72,56 @@ function ReviewPreview({ input, statuses, interactive, onStatus }: { input: Atla
 }
 
 export default function AtlasProMonthlyReviewPage() {
-  const { isPro, isLoading } = useUser();
+  const { isPro, isLoading, isAuthenticated } = useUser();
   const [input, setInput] = useState(() => defaultAtlasProMonthlyInput(localMonth()));
   const [statuses, setStatuses] = useState(emptyAtlasProMonthlyStatuses);
   const [records, setRecords] = useState<StoredAtlasProMonthlyReview[]>(loadAtlasProMonthlyReviews);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
+  const [syncState, setSyncState] = useState<"local" | "syncing" | "synced" | "unavailable">("local");
   const review = useMemo(() => compileAtlasProMonthlyReview(input), [input]);
 
   useSEO({ title: "Atlas Pro Monthly Quality Review", description: "Build a reusable monthly quality operating brief with a decision mandate, evidence position, owned actions, review status and carryover." });
 
+  useEffect(() => {
+    if (!isPro || !isAuthenticated) return;
+    let active = true;
+    setSyncState("syncing");
+    fetch("/api/pro/monthly-reviews", { credentials: "include" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Account sync unavailable");
+        return response.json() as Promise<{ reviews?: StoredAtlasProMonthlyReview[]; syncAvailable?: boolean }>;
+      })
+      .then((result) => {
+        if (!active) return;
+        setRecords(mergeAtlasProMonthlyReviews(result.reviews ?? []));
+        setSyncState(result.syncAvailable === false ? "unavailable" : "synced");
+      })
+      .catch(() => { if (active) setSyncState("unavailable"); });
+    return () => { active = false; };
+  }, [isAuthenticated, isPro]);
+
   const patch = <K extends keyof AtlasProMonthlyInput>(key: K, value: AtlasProMonthlyInput[K]) => { setInput((current) => ({ ...current, [key]: value })); setNotice(""); };
   const updateStatus = (id: AtlasProMonthlyCycleStep["id"], status: AtlasProMonthlyActionStatus) => { setStatuses((current) => ({ ...current, [id]: status })); setNotice(""); };
 
-  function save() {
+  async function save() {
     const id = activeId ?? `apr_${input.month}_${Date.now()}`;
     const next: StoredAtlasProMonthlyReview = { id, version: "atlas-pro-monthly-review/v1", input, statuses, updatedAt: new Date().toISOString() };
     setRecords(saveAtlasProMonthlyReview(next));
     setActiveId(id);
     setNotice("Monthly review saved in this browser.");
     analytics.proMonthlyReviewSaved(input.focus, review.readiness.percent);
+    if (!isAuthenticated) return;
+    setSyncState("syncing");
+    try {
+      const response = await fetch(`/api/pro/monthly-reviews/${encodeURIComponent(id)}`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(next) });
+      if (!response.ok) throw new Error("Account sync unavailable");
+      setSyncState("synced");
+      setNotice("Monthly review saved in this browser and synced to your Pro account.");
+    } catch {
+      setSyncState("unavailable");
+      setNotice("Monthly review saved in this browser. Account sync is temporarily unavailable.");
+    }
   }
 
   function load(record: StoredAtlasProMonthlyReview) {
@@ -118,7 +148,7 @@ export default function AtlasProMonthlyReviewPage() {
   }
 
   return <div className="min-h-screen bg-[#07182d] px-4 pb-24 pt-8 text-slate-100"><div className="mx-auto max-w-7xl">
-    <header className="rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/10 via-slate-950 to-teal-300/5 p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200"><Crown className="h-3.5 w-3.5" /> Active Pro workspace</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">Monthly Quality Review</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">Run one bounded quality priority through a repeatable evidence-to-decision cycle, then carry the unresolved work into the next month.</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={save} className="inline-flex items-center gap-2 rounded-xl bg-sky-300 px-4 py-3 text-sm font-bold text-slate-950"><Save className="h-4 w-4" /> Save month</button><button type="button" onClick={download} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><button type="button" onClick={startNextMonth} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RefreshCw className="h-4 w-4" /> Start next month</button></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-sky-200">{notice}</p>}</header>
+    <header className="rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/10 via-slate-950 to-teal-300/5 p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200"><Crown className="h-3.5 w-3.5" /> Active Pro workspace</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">Monthly Quality Review</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">Run one bounded quality priority through a repeatable evidence-to-decision cycle, then carry the unresolved work into the next month.</p><p className="mt-2 text-[11px] text-slate-500">{syncState === "synced" ? "Account sync ready · browser copy retained" : syncState === "syncing" ? "Syncing account records…" : syncState === "unavailable" ? "Browser copy active · account sync unavailable" : "Browser-local working record"}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => void save()} className="inline-flex items-center gap-2 rounded-xl bg-sky-300 px-4 py-3 text-sm font-bold text-slate-950"><Save className="h-4 w-4" /> Save month</button><button type="button" onClick={download} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><button type="button" onClick={startNextMonth} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RefreshCw className="h-4 w-4" /> Start next month</button></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-sky-200">{notice}</p>}</header>
 
     <div className="mt-6 grid gap-6 xl:grid-cols-[22rem_1fr]">
       <aside className="space-y-5">
@@ -126,7 +156,7 @@ export default function AtlasProMonthlyReviewPage() {
 
         <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Review setup</p><div className="mt-4 space-y-4"><label className="block text-xs font-semibold text-slate-300">Month<input type="month" value={input.month} onChange={(event) => patch("month", event.target.value)} className={`${fieldClass} h-11`} /></label><label className="block text-xs font-semibold text-slate-300">Role lens<select value={input.role} onChange={(event) => patch("role", event.target.value as AtlasProMonthlyInput["role"])} className={`${fieldClass} h-11`}>{atlasProMonthlyRoleValues.map((role) => <option key={role} value={role}>{roleLabels[role]}</option>)}</select></label><label className="block text-xs font-semibold text-slate-300">Monthly focus<select value={input.focus} onChange={(event) => patch("focus", event.target.value as AtlasProMonthlyInput["focus"])} className={`${fieldClass} h-11`}>{atlasProMonthlyFocusValues.map((focus) => <option key={focus} value={focus}>{ATLAS_PRO_MONTHLY_FOCUS[focus].label}</option>)}</select></label></div></section>
 
-        <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><div className="flex items-center gap-2"><History className="h-4 w-4 text-sky-300" /><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Monthly history</p></div>{records.length === 0 ? <p className="mt-4 text-xs leading-5 text-slate-500">No saved months yet. Save this review to create the first browser-local record.</p> : <div className="mt-4 space-y-2">{records.slice(0, 8).map((record) => <button type="button" key={record.id} onClick={() => load(record)} className={`w-full rounded-xl border p-3 text-left transition ${record.id === activeId ? "border-sky-300/30 bg-sky-300/10" : "border-white/10 bg-black/15 hover:border-white/20"}`}><p className="text-xs font-bold text-slate-200">{readableMonth(record.input.month)}</p><p className="mt-1 text-[10px] text-slate-500">{ATLAS_PRO_MONTHLY_FOCUS[record.input.focus].label} · {statusLabels[record.statuses.close]}</p></button>)}</div>}<p className="mt-4 text-[10px] leading-4 text-slate-600">Up to 24 recent records stay in this browser. They are not controlled site records or synced to Atlas.</p></section>
+        <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><div className="flex items-center gap-2"><History className="h-4 w-4 text-sky-300" /><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Monthly history</p></div>{records.length === 0 ? <p className="mt-4 text-xs leading-5 text-slate-500">No saved months yet. Save this review to create the first browser-local record.</p> : <div className="mt-4 space-y-2">{records.slice(0, 8).map((record) => <button type="button" key={record.id} onClick={() => load(record)} className={`w-full rounded-xl border p-3 text-left transition ${record.id === activeId ? "border-sky-300/30 bg-sky-300/10" : "border-white/10 bg-black/15 hover:border-white/20"}`}><p className="text-xs font-bold text-slate-200">{readableMonth(record.input.month)}</p><p className="mt-1 text-[10px] text-slate-500">{ATLAS_PRO_MONTHLY_FOCUS[record.input.focus].label} · {statusLabels[record.statuses.close]}</p></button>)}</div>}<p className="mt-4 text-[10px] leading-4 text-slate-600">Up to 24 recent records stay in this browser. Signed-in Pro members also receive best-effort account sync. These are not controlled site records.</p></section>
       </aside>
 
       <main className="space-y-6">
