@@ -1252,6 +1252,8 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/% readiness/i).first()).toBeVisible();
     await expect(page.getByText(/directional fit/i).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /Why Atlas has/i })).toBeVisible();
+    await page.getByRole("button", { name: "Copy career snapshot", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Copied career snapshot", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
   });
 

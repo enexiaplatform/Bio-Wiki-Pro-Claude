@@ -10,6 +10,7 @@ import {
   Check,
   CheckCircle2,
   ClipboardCheck,
+  Copy,
   Download,
   FileCheck2,
   Flag,
@@ -32,7 +33,8 @@ import {
   Tooltip,
 } from "recharts";
 import { analytics } from "@/hooks/use-analytics";
-import { buildCareerAnalysis, type CareerProfile } from "@shared/career-blueprint";
+import { copyText } from "@/lib/clipboard";
+import { buildCareerAnalysis, buildCareerSnapshotSummary, type CareerProfile } from "@shared/career-blueprint";
 
 interface Props {
   profile: CareerProfile;
@@ -60,6 +62,7 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
   const baseAnalysis = useMemo(() => buildCareerAnalysis(profile, profile.selectedRouteId), [profile]);
   const [selectedRouteId, setSelectedRouteId] = useState(baseAnalysis.selectedRoute.id);
   const [showDetails, setShowDetails] = useState(false);
+  const [snapshotCopied, setSnapshotCopied] = useState(false);
   const analysis = useMemo(() => buildCareerAnalysis(profile, selectedRouteId), [profile, selectedRouteId]);
   const firstName = profile.fullName.trim().split(/\s+/)[0] || "Your";
   const radarData = analysis.competencies.map((item) => ({ subject: item.label, current: item.current, target: item.target, fullMark: 100 }));
@@ -68,6 +71,13 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
     setSelectedRouteId(id);
     onRouteChange(id);
     analytics.careerRouteCompared(id, label);
+  }
+
+  async function copySnapshot() {
+    await copyText(buildCareerSnapshotSummary(profile, selectedRouteId));
+    setSnapshotCopied(true);
+    analytics.careerSnapshotCopied(analysis.selectedRoute.id, analysis.readinessIndex);
+    window.setTimeout(() => setSnapshotCopied(false), 1800);
   }
 
   return (
@@ -183,6 +193,17 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
             </li>;
           })}
         </ol>
+      </section>
+
+      <section className="mt-8 rounded-xl border border-teal-300/20 bg-teal-300/[0.045] p-5 md:flex md:items-center md:justify-between md:gap-8 md:p-6">
+        <div className="max-w-3xl">
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Free working artifact</p>
+          <h2 className="mt-2 text-lg font-bold">Take this Snapshot into a real career conversation.</h2>
+          <p className="mt-2 text-xs leading-6 text-slate-400">Copy a structured brief with your selected route, readiness, strongest evidence, priority gap, first proof-building action, confidence basis and assumptions. Review it with someone who understands the target role.</p>
+        </div>
+        <button type="button" onClick={copySnapshot} className="mt-5 inline-flex min-w-52 items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-bold text-teal-950 transition hover:bg-teal-300 md:mt-0">
+          {snapshotCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{snapshotCopied ? "Copied career snapshot" : "Copy career snapshot"}
+        </button>
       </section>
 
       <section id="career-assumptions" className="mt-8 border-t border-white/10 pt-6">

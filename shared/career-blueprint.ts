@@ -537,3 +537,36 @@ export function careerProfileFilename(profile: CareerProfile) {
   const safeName = profile.fullName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "personal";
   return `${safeName}-career-blueprint.pdf`;
 }
+
+export function buildCareerSnapshotSummary(profile: CareerProfile, selectedRouteId?: string) {
+  const analysis = buildCareerAnalysis(profile, selectedRouteId ?? profile.selectedRouteId);
+  const recommendation = analysis.recommendations[0];
+
+  return [
+    `# ${profile.fullName || "Personal"} — Career Snapshot`,
+    "Planning boundary: self-assessment decision support; validate role expectations and evidence with a qualified manager, mentor, or hiring professional.",
+    "",
+    "## Route decision",
+    `- Selected route: ${analysis.selectedRoute.title}`,
+    `- Directional fit: ${analysis.selectedRoute.fitScore}% (${analysis.selectedRoute.readinessLabel})`,
+    `- Decision confidence: ${analysis.decisionConfidence}`,
+    `- Readiness index: ${analysis.readinessIndex}%`,
+    `- Target horizon: ${profile.targetHorizonMonths} months`,
+    "",
+    "## Evidence position",
+    `- Strongest current assets: ${analysis.strongestAssets.join(", ")}`,
+    `- Priority gap: ${analysis.biggestGap}`,
+    `- Route risks: ${analysis.selectedRoute.risks?.join("; ") || analysis.selectedRoute.mainGap}`,
+    "",
+    "## First proof-building move",
+    `- Action: ${recommendation.firstAction}`,
+    `- Proof to retain: ${recommendation.proof}`,
+    `- Suggested effort: ${recommendation.effortHours} hours`,
+    "",
+    "## Why Atlas has this confidence",
+    ...analysis.confidenceReasons.map((item) => `- ${item}`),
+    "",
+    "## Assumptions to confirm",
+    ...analysis.assumptions.map((item) => `- ${item}`),
+  ].join("\n");
+}

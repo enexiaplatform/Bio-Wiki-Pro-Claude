@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildCareerAnalysis, careerProfileFilename, defaultCareerProfile } from "../../shared/career-blueprint";
+import { buildCareerAnalysis, buildCareerSnapshotSummary, careerProfileFilename, defaultCareerProfile } from "../../shared/career-blueprint";
 import { careerBlueprintPdf } from "../career-blueprint";
 
 describe("Personal Career Blueprint", () => {
@@ -26,6 +26,16 @@ describe("Personal Career Blueprint", () => {
     const analysis = buildCareerAnalysis({ ...profile, targetHorizonMonths: 18, targetRole: "QA Investigation Specialist", primaryConstraint: "english" });
     expect(analysis.milestones.map((item) => item.months)).toEqual(["Months 1-4", "Months 5-9", "Months 10-14", "Months 15-18"]);
     expect(analysis.assumptions.at(-1)).toContain("technical English confidence");
+  });
+
+  it("builds a portable free snapshot with decision, evidence, action, and trust boundaries", () => {
+    const summary = buildCareerSnapshotSummary(profile);
+    expect(summary).toContain("# Alex Morgan — Career Snapshot");
+    expect(summary).toContain("Selected route: Senior QC Microbiologist");
+    expect(summary).toContain("## First proof-building move");
+    expect(summary).toContain("## Why Atlas has this confidence");
+    expect(summary).toContain("## Assumptions to confirm");
+    expect(summary).toContain("self-assessment decision support");
   });
 
   it("generates a named 38-page PDF with the planning boundary", async () => {

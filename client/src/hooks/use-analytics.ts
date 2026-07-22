@@ -99,6 +99,9 @@ export const analytics = {
   careerSnapshotViewed: (track: string, route: string) =>
     capture("career_snapshot_viewed", { track, route }),
 
+  careerSnapshotCopied: (route: string, readinessIndex: number) =>
+    capture("career_snapshot_copied", { route, readiness_index: readinessIndex }),
+
   careerRouteCompared: (route: string, label: string) =>
     capture("career_route_compared", { route, label }),
 
