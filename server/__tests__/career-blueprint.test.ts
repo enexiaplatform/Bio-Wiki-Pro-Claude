@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { buildCareerAnalysis, buildCareerSnapshotSummary, careerProfileFilename, defaultCareerProfile } from "../../shared/career-blueprint";
+import {
+  buildCareerAnalysis,
+  buildCareerProofExperiment,
+  buildCareerSnapshotSummary,
+  careerProfileFilename,
+  defaultCareerProfile,
+  formatCareerProofExperiment,
+} from "../../shared/career-blueprint";
 import { careerBlueprintPdf } from "../career-blueprint";
 
 describe("Personal Career Blueprint", () => {
@@ -36,6 +43,21 @@ describe("Personal Career Blueprint", () => {
     expect(summary).toContain("## Why Atlas has this confidence");
     expect(summary).toContain("## Assumptions to confirm");
     expect(summary).toContain("self-assessment decision support");
+  });
+
+  it("turns the priority gap into a bounded proof experiment with review and stop controls", () => {
+    const experiment = buildCareerProofExperiment(profile);
+    const formatted = formatCareerProofExperiment(profile);
+
+    expect(experiment.duration).toBe("30 days");
+    expect(experiment.objective).toContain("Senior QC Microbiologist");
+    expect(experiment.weeklyCadence).toHaveLength(4);
+    expect(experiment.reviewerQuestion).toContain("credibly claim I owned");
+    expect(experiment.changeSignal).toContain("no qualified reviewer");
+    expect(formatted).toContain("## Hypothesis to test");
+    expect(formatted).toContain("## Review control");
+    expect(formatted).toContain("## Four-week cadence");
+    expect(formatted).toContain("Do not copy controlled records");
   });
 
   it("generates a named 38-page PDF with the planning boundary", async () => {

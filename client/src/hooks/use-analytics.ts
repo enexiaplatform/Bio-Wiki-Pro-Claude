@@ -102,6 +102,9 @@ export const analytics = {
   careerSnapshotCopied: (route: string, readinessIndex: number) =>
     capture("career_snapshot_copied", { route, readiness_index: readinessIndex }),
 
+  careerProofExperimentCopied: (route: string, priorityGap: string) =>
+    capture("career_proof_experiment_copied", { route, priority_gap: priorityGap }),
+
   careerRouteCompared: (route: string, label: string) =>
     capture("career_route_compared", { route, label }),
 

@@ -105,6 +105,21 @@ export interface CareerAnalysis {
   confidenceReasons: string[];
 }
 
+export interface CareerProofExperiment {
+  duration: "30 days";
+  objective: string;
+  hypothesis: string;
+  practiceContext: string;
+  action: string;
+  artifact: string;
+  reviewer: string;
+  reviewerQuestion: string;
+  successSignal: string;
+  changeSignal: string;
+  weeklyCadence: string[];
+  boundary: string;
+}
+
 export const CAREER_PROFILE_STORAGE_KEY = "lsa_career_profile_v1";
 
 export const defaultCareerProfile: CareerProfile = {
@@ -531,6 +546,66 @@ export function buildCareerAnalysis(profile: CareerProfile, selectedRouteId?: st
       profile.managerSupport === "yes" ? "Manager or sponsor support is available." : `Manager or sponsor support is ${profile.managerSupport}.`,
     ],
   };
+}
+
+export function buildCareerProofExperiment(profile: CareerProfile, selectedRouteId?: string): CareerProofExperiment {
+  const analysis = buildCareerAnalysis(profile, selectedRouteId ?? profile.selectedRouteId);
+  const recommendation = analysis.recommendations[0];
+  const practiceContext = profile.methods[0] ?? profile.qualityActivities[0] ?? profile.currentRole;
+  const reviewer = profile.managerSupport === "yes"
+    ? "Your manager or an authorized technical reviewer"
+    : "A qualified mentor, manager, or technical reviewer who understands the target role";
+
+  return {
+    duration: "30 days",
+    objective: `Test whether one reviewed ${analysis.biggestGap.toLowerCase()} proof point strengthens your readiness for ${analysis.selectedRoute.title}.`,
+    hypothesis: `If you complete one bounded outcome and a qualified reviewer can verify your contribution, you will have stronger evidence for ${analysis.selectedRoute.title} and a clearer next gap.`,
+    practiceContext,
+    action: recommendation.firstAction ?? recommendation.title,
+    artifact: recommendation.proof ?? "A sanitized artifact, reviewer feedback, and a short outcome note.",
+    reviewer,
+    reviewerQuestion: "What can I credibly claim I owned, what remains participation or learning, and what evidence is still missing?",
+    successSignal: "The reviewer confirms your contribution boundary, identifies one role-relevant capability supported by evidence, and accepts the revised claim as accurate.",
+    changeSignal: "Stop or reduce scope if no qualified reviewer is available, no non-confidential artifact can be retained, or the work would require authority you do not hold.",
+    weeklyCadence: [
+      `Week 1: define the bounded outcome, reviewer, confidentiality boundary, and how ${practiceContext} will be used.`,
+      `Week 2: complete the first evidence increment within ${profile.weeklyHours} available hours and record assumptions separately from facts.`,
+      "Week 3: obtain reviewer challenge, capture corrections, and revise the artifact once.",
+      `Week 4: write the defensible claim, record the result, and decide whether to continue toward ${analysis.selectedRoute.title}, adjust the route, or choose a smaller experiment.`,
+    ],
+    boundary: "Career planning support only. Do not copy controlled records, expose confidential information, claim unheld authority, or treat this experiment as employer verification or a hiring guarantee.",
+  };
+}
+
+export function formatCareerProofExperiment(profile: CareerProfile, selectedRouteId?: string) {
+  const analysis = buildCareerAnalysis(profile, selectedRouteId ?? profile.selectedRouteId);
+  const experiment = buildCareerProofExperiment(profile, selectedRouteId ?? profile.selectedRouteId);
+
+  return [
+    `# ${profile.fullName || "Personal"} - 30-Day Career Proof Experiment`,
+    `Target route: ${analysis.selectedRoute.title}`,
+    `Planning boundary: ${experiment.boundary}`,
+    "",
+    "## Objective",
+    experiment.objective,
+    "",
+    "## Hypothesis to test",
+    experiment.hypothesis,
+    "",
+    "## Work and evidence",
+    `- Practice context: ${experiment.practiceContext}`,
+    `- First action: ${experiment.action}`,
+    `- Artifact to retain: ${experiment.artifact}`,
+    "",
+    "## Review control",
+    `- Reviewer: ${experiment.reviewer}`,
+    `- Review question: ${experiment.reviewerQuestion}`,
+    `- Success signal: ${experiment.successSignal}`,
+    `- Stop or change signal: ${experiment.changeSignal}`,
+    "",
+    "## Four-week cadence",
+    ...experiment.weeklyCadence.map((item) => `- ${item}`),
+  ].join("\n");
 }
 
 export function careerProfileFilename(profile: CareerProfile) {

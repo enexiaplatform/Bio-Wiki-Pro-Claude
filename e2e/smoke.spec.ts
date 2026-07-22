@@ -1258,6 +1258,10 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/% readiness/i).first()).toBeVisible();
     await expect(page.getByText(/directional fit/i).first()).toBeVisible();
     await expect(page.getByRole("heading", { name: /Why Atlas has/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Test the route through one bounded piece of evidence.", exact: true })).toBeVisible();
+    await expect(page.getByText("Stop or change signal", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Copy 30-day proof experiment", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Copied proof experiment", exact: true })).toBeVisible();
     await page.getByRole("button", { name: "Copy career snapshot", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copied career snapshot", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();

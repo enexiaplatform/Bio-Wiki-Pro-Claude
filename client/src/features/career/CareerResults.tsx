@@ -34,7 +34,13 @@ import {
 } from "recharts";
 import { analytics } from "@/hooks/use-analytics";
 import { copyText } from "@/lib/clipboard";
-import { buildCareerAnalysis, buildCareerSnapshotSummary, type CareerProfile } from "@shared/career-blueprint";
+import {
+  buildCareerAnalysis,
+  buildCareerProofExperiment,
+  buildCareerSnapshotSummary,
+  formatCareerProofExperiment,
+  type CareerProfile,
+} from "@shared/career-blueprint";
 
 interface Props {
   profile: CareerProfile;
@@ -63,12 +69,15 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
   const [selectedRouteId, setSelectedRouteId] = useState(baseAnalysis.selectedRoute.id);
   const [showDetails, setShowDetails] = useState(false);
   const [snapshotCopied, setSnapshotCopied] = useState(false);
+  const [proofExperimentCopied, setProofExperimentCopied] = useState(false);
   const analysis = useMemo(() => buildCareerAnalysis(profile, selectedRouteId), [profile, selectedRouteId]);
+  const proofExperiment = useMemo(() => buildCareerProofExperiment(profile, selectedRouteId), [profile, selectedRouteId]);
   const firstName = profile.fullName.trim().split(/\s+/)[0] || "Your";
   const radarData = analysis.competencies.map((item) => ({ subject: item.label, current: item.current, target: item.target, fullMark: 100 }));
 
   function selectRoute(id: string, label: string) {
     setSelectedRouteId(id);
+    setProofExperimentCopied(false);
     onRouteChange(id);
     analytics.careerRouteCompared(id, label);
   }
@@ -78,6 +87,13 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
     setSnapshotCopied(true);
     analytics.careerSnapshotCopied(analysis.selectedRoute.id, analysis.readinessIndex);
     window.setTimeout(() => setSnapshotCopied(false), 1800);
+  }
+
+  async function copyProofExperiment() {
+    await copyText(formatCareerProofExperiment(profile, selectedRouteId));
+    setProofExperimentCopied(true);
+    analytics.careerProofExperimentCopied(analysis.selectedRoute.id, analysis.biggestGap);
+    window.setTimeout(() => setProofExperimentCopied(false), 1800);
   }
 
   return (
@@ -193,6 +209,50 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
             </li>;
           })}
         </ol>
+      </section>
+
+      <section aria-labelledby="career-proof-experiment-title" className="mt-8 overflow-hidden rounded-xl border border-amber-300/25 bg-[#071426]">
+        <div className="flex flex-col gap-5 border-b border-white/10 p-5 md:flex-row md:items-start md:justify-between md:p-6">
+          <div className="max-w-4xl">
+            <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-amber-300"><CalendarDays className="h-3.5 w-3.5" /> Your 30-day proof experiment</p>
+            <h2 id="career-proof-experiment-title" className="mt-2 text-xl font-bold">Test the route through one bounded piece of evidence.</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{proofExperiment.objective}</p>
+          </div>
+          <button type="button" onClick={copyProofExperiment} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200">
+            {proofExperimentCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{proofExperimentCopied ? "Copied proof experiment" : "Copy 30-day proof experiment"}
+          </button>
+        </div>
+        <div className="grid gap-px bg-white/10 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="bg-[#0a1d32] p-5 md:p-6">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-teal-300">Hypothesis to test</p>
+            <p className="mt-3 text-sm leading-7 text-slate-300">{proofExperiment.hypothesis}</p>
+            <div className="mt-5 rounded-lg border border-white/10 bg-slate-950/30 p-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">First action</p>
+              <p className="mt-2 text-xs leading-6 text-slate-300">{proofExperiment.action}</p>
+            </div>
+            <p className="mt-4 text-xs leading-5 text-slate-500"><strong className="text-slate-300">Practice context:</strong> {proofExperiment.practiceContext}</p>
+          </div>
+          <div className="grid gap-px bg-white/10 sm:grid-cols-2">
+            {[
+              ["Artifact to retain", proofExperiment.artifact],
+              ["Reviewer question", proofExperiment.reviewerQuestion],
+              ["Success signal", proofExperiment.successSignal],
+              ["Stop or change signal", proofExperiment.changeSignal],
+            ].map(([label, body]) => (
+              <div key={label} className="bg-[#0a1d32] p-5">
+                <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500"><ClipboardCheck className="h-3.5 w-3.5 text-teal-300" />{label}</p>
+                <p className="mt-2 text-xs leading-6 text-slate-300">{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="border-t border-white/10 p-5 md:p-6">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-teal-300">Four-week cadence</p>
+          <ol className="mt-4 grid gap-3 md:grid-cols-4">
+            {proofExperiment.weeklyCadence.map((item, index) => <li key={item} className="rounded-lg border border-white/10 bg-white/[0.025] p-3 text-xs leading-5 text-slate-400"><span className="mb-2 block font-bold text-teal-300">0{index + 1}</span>{item}</li>)}
+          </ol>
+        </div>
+        <p className="border-t border-white/10 px-5 py-3 text-[10px] leading-5 text-slate-500 md:px-6">{proofExperiment.boundary}</p>
       </section>
 
       <section className="mt-8 rounded-xl border border-teal-300/20 bg-teal-300/[0.045] p-5 md:flex md:items-center md:justify-between md:gap-8 md:p-6">
