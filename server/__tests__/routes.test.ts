@@ -187,7 +187,7 @@ describe("Quality Lab expert review", () => {
     const app = await buildApp();
     storageMock.createQuoteRequest.mockImplementationOnce(async (value: any) => ({ id: 12, ...value }));
     const res = await request(app).post("/api/quality-lab/reviews").send({
-      briefVersion: "quality-lab-review-brief/v2",
+      briefVersion: "quality-lab-review-brief/v3",
       contact: { name: "Quality Lead", email: "QUALITY@EXAMPLE.COM", company: "Example Pharma", role: "QC Manager" },
       qualification: { engagementIntent: "blueprint-pilot", projectStage: "budget-planning", decisionWindow: "1-3-months", budgetStatus: "range-defined", decisionRole: "technical-lead", dataReadiness: "substantial", portfolioScale: "4-10-products" },
       projectContext: "We need a scoped review before the capital planning workshop.",
@@ -198,13 +198,13 @@ describe("Quality Lab expert review", () => {
     expect(storageMock.createQuoteRequest).toHaveBeenCalledWith(expect.objectContaining({
       email: "quality@example.com",
       productOfInterest: "Expert-reviewed Blueprint Pilot (from $990)",
-      need: expect.stringContaining("[quality-lab-review-brief/v2]"),
+      need: expect.stringContaining("[quality-lab-review-brief/v3]"),
     }));
     expect(email.sendCommercialRequestEmails).toHaveBeenCalledWith(expect.objectContaining({
       requestId: "12",
       email: "quality@example.com",
       offer: "Expert-reviewed Blueprint Pilot (from $990)",
-      summary: expect.stringContaining("[quality-lab-review-brief/v2]"),
+      summary: expect.stringContaining("[quality-lab-review-brief/v3]"),
     }));
   });
 

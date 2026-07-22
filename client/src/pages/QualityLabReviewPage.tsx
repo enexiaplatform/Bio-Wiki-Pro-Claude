@@ -81,7 +81,7 @@ export default function QualityLabReviewPage() {
   const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>({
     engagementIntent: requestedOffer,
     projectStage: "concept",
-    decisionWindow: "not-set",
+    decisionWindow: project?.input.decisionWindow ?? "not-set",
     budgetStatus: "exploring",
     decisionRole: "technical-lead",
     dataReadiness: project ? "substantial" : "initial",
@@ -93,7 +93,7 @@ export default function QualityLabReviewPage() {
     company: project?.input.companyName ?? "",
     role: "",
     need: project
-      ? `Expert review requested for Atlas project: ${project.name}. Key areas to review: assumptions, testing demand, capacity, risks and implementation priorities.`
+      ? `Decision to support: ${project.input.primaryDecision}\nProject intent: ${project.input.projectIntent.replaceAll("-", " ")}. Decision owner: ${project.input.decisionOwnerRole.replaceAll("-", " ")}. Decision window: ${project.input.decisionWindow.replaceAll("-", " ")}. Scenario: ${project.input.scenarioLabel}.\nExpert review requested for assumptions, testing demand, capacity, risks, implementation priorities and controlled-use evidence gaps.`
       : transferredDecisionFrame
         ? formatQualityLabDecisionFrameReviewContext(transferredDecisionFrame)
       : "We are planning or expanding a regulated manufacturing quality laboratory and need help defining the project basis, capability scope and operating model.",
@@ -142,6 +142,11 @@ export default function QualityLabReviewPage() {
         project: project ? {
           localProjectId: project.id,
           projectName: project.name,
+          scenarioLabel: project.input.scenarioLabel,
+          projectIntent: project.input.projectIntent,
+          primaryDecision: project.input.primaryDecision,
+          decisionOwnerRole: project.input.decisionOwnerRole,
+          decisionWindow: project.input.decisionWindow,
           country: project.input.country,
           facilityType: project.input.facilityType,
           inputContractVersion: project.input.contractVersion,
@@ -335,6 +340,11 @@ export default function QualityLabReviewPage() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Review handoff choice</p>
                 <p className="mt-1 font-semibold">{project.name}</p>
                 <p className="mt-1 text-xs text-slate-500">Choose whether Atlas receives only the scope brief or also a full Blueprint snapshot for expert review.</p>
+                <div className="mt-3 rounded-xl border border-white/10 bg-black/15 p-3 text-xs leading-5 text-slate-400">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-sky-300">Decision mandate carried into the brief</p>
+                  <p className="mt-1 font-semibold text-slate-100">{project.input.primaryDecision}</p>
+                  <p className="mt-1 capitalize">Owner: {project.input.decisionOwnerRole.replaceAll("-", " ")} · Window: {project.input.decisionWindow.replaceAll("-", " ")} · Scenario: {project.input.scenarioLabel}</p>
+                </div>
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] text-slate-400">
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-red-200">{project.blueprint.dataQuality.blockingOpenCount}</strong>blocking</span>
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.importantOpenCount}</strong>important</span>

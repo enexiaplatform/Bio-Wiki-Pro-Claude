@@ -21,6 +21,11 @@ describe("Quality Lab review brief", () => {
       project: {
         localProjectId: "qlp_test",
         projectName: defaultQualityLabInput.projectName,
+        scenarioLabel: defaultQualityLabInput.scenarioLabel,
+        projectIntent: defaultQualityLabInput.projectIntent,
+        primaryDecision: defaultQualityLabInput.primaryDecision,
+        decisionOwnerRole: defaultQualityLabInput.decisionOwnerRole,
+        decisionWindow: defaultQualityLabInput.decisionWindow,
         country: defaultQualityLabInput.country,
         facilityType: defaultQualityLabInput.facilityType,
         inputContractVersion: defaultQualityLabInput.contractVersion,
@@ -37,12 +42,14 @@ describe("Quality Lab review brief", () => {
       confidentialityConfirmed: true,
     });
     const brief = formatQualityLabReviewBrief(request);
-    expect(brief).toContain("[quality-lab-review-brief/v2]");
+    expect(brief).toContain("[quality-lab-review-brief/v3]");
     expect(brief).toContain("Expert-reviewed Blueprint Pilot (from $990)");
     expect(brief).toContain("decision window=1–3 months");
     expect(brief).toContain("input completeness");
     expect(brief).toContain("controlled-use blockers");
     expect(brief).toContain("Open-input checklist:");
+    expect(brief).toContain("Decision mandate:");
+    expect(brief).toContain(defaultQualityLabInput.primaryDecision);
     expect(brief).toContain("quality-lab-blueprint/v1");
     expect(brief).not.toContain(request.contact.email);
   });
@@ -65,6 +72,18 @@ describe("Quality Lab review brief", () => {
       confidentialityConfirmed: false,
     });
     expect(parsed.success).toBe(false);
+  });
+
+  it("continues to accept a legacy v2 scope-only brief", () => {
+    const parsed = qualityLabReviewRequestSchema.safeParse({
+      briefVersion: "quality-lab-review-brief/v2",
+      contact: { name: "Quality Lead", email: "quality@example.com", company: null, role: null },
+      qualification: { engagementIntent: "scope-diagnostic", projectStage: "concept", decisionWindow: "not-set", budgetStatus: "exploring", decisionRole: "technical-lead", dataReadiness: "initial", portfolioScale: "not-set" },
+      projectContext: "We need a scoped review before the capital planning workshop.",
+      project: null,
+      confidentialityConfirmed: true,
+    });
+    expect(parsed.success).toBe(true);
   });
 
   it("separates scope-brief detail from engagement eligibility", () => {
