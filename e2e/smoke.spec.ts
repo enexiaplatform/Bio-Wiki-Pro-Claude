@@ -354,6 +354,11 @@ test.describe("public smoke", () => {
     }
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+    await expect(page.getByRole("heading", { name: /See the model before reading the detail/i })).toBeVisible();
+    await expect(page.getByTestId("blueprint-scenario-chart")).toBeVisible();
+    await expect(page.getByTestId("blueprint-capacity-chart")).toBeVisible();
+    await expect(page.getByTestId("blueprint-zoning-schematic")).toBeVisible();
+    await expect(page.getByText(/before a decision-grade 3D model can be generated/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /Workforce capacity and skill coverage/i })).toBeVisible();
     await page.getByRole("button", { name: /Show Workforce capacity and skill coverage detail/i }).click();
     await expect(page.getByText(/base execution/i).first()).toBeVisible();

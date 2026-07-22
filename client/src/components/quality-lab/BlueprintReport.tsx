@@ -25,6 +25,7 @@ import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
 import { evidenceForRuleIds, ruleGuidanceForIds } from "@/data/atlasEvidenceGraph";
 import { ProjectActionCenter } from "@/components/quality-lab/ProjectActionCenter";
+import { BlueprintVisualDecisionLayer } from "@/components/quality-lab/BlueprintVisualDecisionLayer";
 
 interface Props {
   project: QualityLabProject;
@@ -200,9 +201,11 @@ export function BlueprintReport({ project, onEdit }: Props) {
 
       <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
         <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
-          {[["#project-action-center", "Action center"], ["#decision-brief", "Decision brief"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
+          {[["#project-action-center", "Action center"], ["#decision-brief", "Decision brief"], ["#visual-decision-layer", "Visual model"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
         </div>
       </nav>
+
+      <BlueprintVisualDecisionLayer blueprint={blueprint} />
 
       <div className="mb-5 grid gap-4 lg:grid-cols-2">
         {[current, future].map((scenario, index) => (
