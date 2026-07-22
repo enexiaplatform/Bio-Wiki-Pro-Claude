@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { buildCareerAnalysis, buildCareerProofExperiment, careerProfileSchema, type CareerProfile } from "./career-blueprint";
+import { buildCareerAnalysis, buildCareerProofExperiment, careerProfileSchema, type CareerProfile } from "./career-blueprint.js";
 
 export const CAREER_EXECUTION_VERSION = "career-execution/v1" as const;
 export const careerExecutionStatusValues = ["not-started", "in-progress", "waiting-review", "complete"] as const;
