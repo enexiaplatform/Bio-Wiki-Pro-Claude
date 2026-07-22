@@ -354,6 +354,10 @@ test.describe("public smoke", () => {
     }
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+    await expect(page.getByText(/^Decision mandate$/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Which microbiology operating model and phased capacity/i })).toBeVisible();
+    await page.getByRole("button", { name: "Engineering", exact: true }).click();
+    await expect(page.getByText(/Use the capability and area allowances to frame a qualified basis-of-design workshop/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /See the model before reading the detail/i })).toBeVisible();
     await expect(page.getByTestId("blueprint-scenario-chart")).toBeVisible();
     await expect(page.getByTestId("blueprint-capacity-chart")).toBeVisible();

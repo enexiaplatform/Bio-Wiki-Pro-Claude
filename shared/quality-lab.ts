@@ -48,10 +48,25 @@ export const facilityTypeValues = [
 
 export const marketValues = ["vietnam", "asean", "eu", "us", "who"] as const;
 
+export const projectIntentValues = [
+  "new-lab",
+  "capacity-expansion",
+  "compliance-upgrade",
+  "insource-outsource",
+  "operating-model-change",
+] as const;
+
+export const decisionOwnerRoleValues = ["qc", "qa", "engineering", "procurement", "cross-functional"] as const;
+export const decisionWindowValues = ["under-30-days", "1-3-months", "3-6-months", "over-6-months", "not-set"] as const;
+
 export const qualityLabInputSchema = z.object({
   contractVersion: z.literal(QUALITY_LAB_INPUT_CONTRACT_VERSION).default(QUALITY_LAB_INPUT_CONTRACT_VERSION),
   projectName: z.string().trim().min(2).max(120),
   scenarioLabel: z.string().trim().min(2).max(80).default("Baseline - current operating model"),
+  projectIntent: z.enum(projectIntentValues).default("new-lab"),
+  primaryDecision: z.string().trim().min(10).max(500).default("What operating model and quality-laboratory capability should this site establish for the planned demand?"),
+  decisionOwnerRole: z.enum(decisionOwnerRoleValues).default("cross-functional"),
+  decisionWindow: z.enum(decisionWindowValues).default("not-set"),
   companyName: z.string().trim().max(120).default(""),
   country: z.string().trim().min(2).max(80),
   facilityType: z.enum(facilityTypeValues),
@@ -98,6 +113,9 @@ export const qualityLabInputSchema = z.object({
 export type QualityLabInput = z.infer<typeof qualityLabInputSchema>;
 export type QualityLabFacilityType = QualityLabInput["facilityType"];
 export type QualityLabMarket = QualityLabInput["markets"][number];
+export type QualityLabProjectIntent = QualityLabInput["projectIntent"];
+export type QualityLabDecisionOwnerRole = QualityLabInput["decisionOwnerRole"];
+export type QualityLabDecisionWindow = QualityLabInput["decisionWindow"];
 
 export interface WorkflowDemand {
   id: string;
@@ -338,6 +356,10 @@ export const defaultQualityLabInput: QualityLabInput = {
   contractVersion: QUALITY_LAB_INPUT_CONTRACT_VERSION,
   projectName: "Vietnam non-sterile QC expansion",
   scenarioLabel: "Baseline - 1 shift",
+  projectIntent: "capacity-expansion",
+  primaryDecision: "Which microbiology operating model and phased capacity should the Vietnam site fund for current demand and the three-year growth scenario?",
+  decisionOwnerRole: "cross-functional",
+  decisionWindow: "3-6-months",
   companyName: "",
   country: "Vietnam",
   facilityType: "nonsterile-pharma",
@@ -391,6 +413,10 @@ export function createBlankQualityLabInput(): QualityLabInput {
     ...defaultQualityLabInput,
     projectName: "",
     scenarioLabel: "Baseline - current operating model",
+    projectIntent: "new-lab",
+    primaryDecision: "",
+    decisionOwnerRole: "cross-functional",
+    decisionWindow: "not-set",
     companyName: "",
     country: "",
     markets: [],

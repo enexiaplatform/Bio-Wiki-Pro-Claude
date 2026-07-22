@@ -27,9 +27,12 @@ import {
   compileQualityLabBlueprint,
   createBlankQualityLabInput,
   defaultQualityLabInput,
+  decisionOwnerRoleValues,
+  decisionWindowValues,
   facilityTypeValues,
   marketValues,
   MICROBIOLOGY_DOMAIN_PACK,
+  projectIntentValues,
   qualityLabInputSchema,
   type QualityLabInput,
   type QualityLabProject,
@@ -63,6 +66,30 @@ const marketLabels: Record<(typeof marketValues)[number], string> = {
   who: "WHO / global health",
 };
 
+const projectIntentLabels: Record<(typeof projectIntentValues)[number], string> = {
+  "new-lab": "New laboratory",
+  "capacity-expansion": "Capacity expansion",
+  "compliance-upgrade": "Compliance upgrade",
+  "insource-outsource": "Insource / outsource",
+  "operating-model-change": "Operating-model change",
+};
+
+const decisionOwnerLabels: Record<(typeof decisionOwnerRoleValues)[number], string> = {
+  qc: "QC",
+  qa: "QA",
+  engineering: "Engineering",
+  procurement: "Procurement",
+  "cross-functional": "Cross-functional team",
+};
+
+const decisionWindowLabels: Record<(typeof decisionWindowValues)[number], string> = {
+  "under-30-days": "Under 30 days",
+  "1-3-months": "1–3 months",
+  "3-6-months": "3–6 months",
+  "over-6-months": "Over 6 months",
+  "not-set": "Not set yet",
+};
+
 const scopeOptions: { key: keyof QualityLabInput["scope"]; title: string; detail: string }[] = [
   { key: "rawMaterials", title: "Raw-material microbiology", detail: "Incoming lots, microbial limits and specified organisms." },
   { key: "finishedProducts", title: "Finished-product microbial limits", detail: "Release testing for non-sterile products." },
@@ -92,6 +119,16 @@ function TextField({ label, value, onChange, placeholder, hint }: { label: strin
     <label className="block">
       <span className="mb-2 block text-xs font-semibold text-slate-300">{label}</span>
       <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
+      {hint && <span className="mt-1.5 block text-[11px] leading-4 text-slate-500">{hint}</span>}
+    </label>
+  );
+}
+
+function TextAreaField({ label, value, onChange, placeholder, hint }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; hint?: string }) {
+  return (
+    <label className="block">
+      <span className="mb-2 block text-xs font-semibold text-slate-300">{label}</span>
+      <textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} rows={3} className="w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
       {hint && <span className="mt-1.5 block text-[11px] leading-4 text-slate-500">{hint}</span>}
     </label>
   );
@@ -174,6 +211,7 @@ export default function QualityLabPlannerPage() {
   function validateStep(currentStep: number): string | null {
     if (currentStep === 0) {
       if (input.projectName.trim().length < 2) return "Give this project a clear name.";
+      if (input.primaryDecision.trim().length < 10) return "Describe the decision this Blueprint must help resolve.";
       if (input.country.trim().length < 2) return "Add the facility country.";
       if (input.markets.length === 0) return "Select at least one target market.";
     }
@@ -356,6 +394,18 @@ export default function QualityLabPlannerPage() {
                   <TextField label="Scenario label" value={input.scenarioLabel} onChange={(value) => update("scenarioLabel", value)} placeholder="e.g. Baseline - 1 shift" />
                   <TextField label="Company / site" value={input.companyName} onChange={(value) => update("companyName", value)} placeholder="Optional" />
                   <TextField label="Facility country" value={input.country} onChange={(value) => update("country", value)} />
+                </div>
+                <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.045] p-4 md:p-5">
+                  <div className="mb-4"><p className="text-sm font-bold text-sky-100">Decision mandate</p><p className="mt-1 text-xs leading-5 text-slate-400">Define the decision the Blueprint must support. This context carries into the executive brief and expert-review handoff.</p></div>
+                  <TextAreaField label="Primary decision to resolve" value={input.primaryDecision} onChange={(value) => update("primaryDecision", value)} placeholder="e.g. Which capabilities should we fund now, phase later, or outsource?" hint="State one decision, the boundary and the intended use of the output. Do not include confidential formulations or proprietary methods." />
+                  <div className="mt-4">
+                    <p className="mb-2 text-xs font-semibold text-slate-300">Project intent</p>
+                    <div className="flex flex-wrap gap-2">{projectIntentValues.map((value) => <button key={value} type="button" aria-pressed={input.projectIntent === value} onClick={() => update("projectIntent", value)} className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${input.projectIntent === value ? "border-sky-300/40 bg-sky-300/10 text-sky-100" : "border-white/10 bg-white/[0.025] text-slate-400 hover:border-white/20"}`}>{projectIntentLabels[value]}</button>)}</div>
+                  </div>
+                  <div className="mt-4 grid gap-4 md:grid-cols-2">
+                    <label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Decision owner</span><select value={input.decisionOwnerRole} onChange={(event) => update("decisionOwnerRole", event.target.value as QualityLabInput["decisionOwnerRole"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-sky-300/50">{decisionOwnerRoleValues.map((value) => <option key={value} value={value}>{decisionOwnerLabels[value]}</option>)}</select></label>
+                    <label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Decision window</span><select value={input.decisionWindow} onChange={(event) => update("decisionWindow", event.target.value as QualityLabInput["decisionWindow"])} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none focus:border-sky-300/50">{decisionWindowValues.map((value) => <option key={value} value={value}>{decisionWindowLabels[value]}</option>)}</select></label>
+                  </div>
                 </div>
                 <div>
                   <p className="mb-3 text-xs font-semibold text-slate-300">Manufacturing context</p>

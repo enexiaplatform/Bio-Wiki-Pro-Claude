@@ -56,10 +56,14 @@ describe("quality lab compiler", () => {
     expect(parsed.success).toBe(false);
   });
 
-  it("migrates a legacy v1 input that has no contract version", () => {
-    const { contractVersion: _removed, ...legacyInput } = defaultQualityLabInput;
+  it("migrates a legacy v1 input that has no contract version or decision mandate", () => {
+    const { contractVersion: _contract, projectIntent: _intent, primaryDecision: _decision, decisionOwnerRole: _owner, decisionWindow: _window, ...legacyInput } = defaultQualityLabInput;
     const parsed = qualityLabInputSchema.parse(legacyInput);
     expect(parsed.contractVersion).toBe(QUALITY_LAB_INPUT_CONTRACT_VERSION);
+    expect(parsed.projectIntent).toBe("new-lab");
+    expect(parsed.primaryDecision).toMatch(/operating model/i);
+    expect(parsed.decisionOwnerRole).toBe("cross-functional");
+    expect(parsed.decisionWindow).toBe("not-set");
   });
 
   it("traces every workflow rule to registered evidence", () => {
@@ -81,6 +85,8 @@ describe("quality lab compiler", () => {
     expect(blank.country).toBe("");
     expect(blank.markets).toEqual([]);
     expect(blank.productProfiles).toEqual([]);
+    expect(blank.primaryDecision).toBe("");
+    expect(blank.decisionOwnerRole).toBe("cross-functional");
     expect(Object.values(blank.scope).some(Boolean)).toBe(false);
     expect(blank.finishedBatchesPerMonth).toBe(0);
   });

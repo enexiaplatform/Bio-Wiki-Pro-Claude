@@ -19,7 +19,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useState } from "react";
-import type { QualityLabProject } from "@shared/quality-lab";
+import type { QualityLabBlueprint, QualityLabProject } from "@shared/quality-lab";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
@@ -40,6 +40,50 @@ const roleLensCopy: Record<RoleLens, { label: string; focus: string; detail: str
   engineering: { label: "Engineering", focus: "space, equipment and phased implementation", detail: "Use the capability, space and equipment allowance as a planning basis before detailed engineering, utilities or layout design." },
   procurement: { label: "Procurement", focus: "vendor-neutral requirements and cost basis", detail: "Use the equipment rationale, method BOM and phased sequence to prepare a comparable request basis; supplier quotations remain required." },
 };
+
+const projectIntentLabel: Record<QualityLabProject["input"]["projectIntent"], string> = {
+  "new-lab": "New laboratory",
+  "capacity-expansion": "Capacity expansion",
+  "compliance-upgrade": "Compliance upgrade",
+  "insource-outsource": "Insource / outsource",
+  "operating-model-change": "Operating-model change",
+};
+
+const decisionWindowLabel: Record<QualityLabProject["input"]["decisionWindow"], string> = {
+  "under-30-days": "Under 30 days",
+  "1-3-months": "1–3 months",
+  "3-6-months": "3–6 months",
+  "over-6-months": "Over 6 months",
+  "not-set": "Not set",
+};
+
+function roleDecisionPack(blueprint: QualityLabBlueprint): Record<RoleLens, { signal: string; workingDecision: string; blockedDecision: string }> {
+  const { current, future } = blueprint;
+  const highestPressure = [...blueprint.methodCapacitySummary].sort((a, b) => b.utilizationPercent - a.utilizationPercent)[0];
+  const capacitySignal = highestPressure ? `${highestPressure.resourceName} is the highest modeled resource pressure at ${number.format(highestPressure.utilizationPercent)}%.` : "Method-level resource pressure is not yet available.";
+  return {
+    qc: {
+      signal: `${number.format(current.monthlyTests)} monthly test units become ${number.format(future.monthlyTests)} in the future scenario; the team allowance moves from ${current.totalTeamFte} to ${future.totalTeamFte} FTE. ${capacitySignal}`,
+      workingDecision: "Challenge workload ownership, shift coverage, method allocation and the capacity evidence that should be collected next.",
+      blockedDecision: "Do not approve staffing, schedules or turnaround commitments until approved methods, observed task times and shift-level skill coverage are reconciled.",
+    },
+    qa: {
+      signal: `${blueprint.dataQuality.tracedRuleCount} versioned rules and ${blueprint.dataQuality.evidenceCount} evidence records support the concept; ${blueprint.dataQuality.blockingOpenCount} controlled-use blockers remain open.`,
+      workingDecision: "Set the review sequence, evidence owners and governance needed to move the model toward qualified review.",
+      blockedDecision: "Do not treat the model as an approved specification, validation basis or regulatory conclusion while review and controlled evidence remain open.",
+    },
+    engineering: {
+      signal: `${number.format(current.estimatedAreaSqm)} m² current and ${number.format(future.estimatedAreaSqm)} m² future allowance support ${blueprint.equipment.length} equipment classes and ${blueprint.spaces.length} functional zones.`,
+      workingDecision: "Use the capability and area allowances to frame a qualified basis-of-design workshop and reserve future expansion interfaces.",
+      blockedDecision: "Do not freeze rooms, adjacencies, utilities, HVAC or segregated flows until site constraints and equipment envelopes are confirmed.",
+    },
+    procurement: {
+      signal: `${blueprint.equipment.length} vendor-neutral equipment classes produce a current CAPEX allowance of ${money.format(current.capexLowUsd)}–${money.format(current.capexHighUsd)} and future allowance of ${money.format(future.capexLowUsd)}–${money.format(future.capexHighUsd)}.`,
+      workingDecision: "Prepare comparable budget-enquiry categories, quotation evidence needs and a phased sourcing sequence.",
+      blockedDecision: "Do not issue a purchase recommendation or supplier award from concept quantities, generic specifications or unverified installed-cost bands.",
+    },
+  };
+}
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
@@ -90,7 +134,8 @@ export function BlueprintReport({ project, onEdit }: Props) {
   const controlledUseBlocked = blueprint.dataQuality.blockingOpenCount > 0 || (blueprint.review.status as string) !== "expert-reviewed";
   const reviewStatusLabel = project.reviewRequestedAt ? "review requested" : blueprint.review.status.replaceAll("-", " ");
   const supportingEvidence = evidenceForRuleIds(blueprint.ruleTrace.map((rule) => rule.ruleId));
-  const [roleLens, setRoleLens] = useState<RoleLens>("qc");
+  const [roleLens, setRoleLens] = useState<RoleLens>(input.decisionOwnerRole === "cross-functional" ? "qc" : input.decisionOwnerRole);
+  const decisionPack = roleDecisionPack(blueprint)[roleLens];
 
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
@@ -163,11 +208,20 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </div>
       </header>
 
-      <div className="mb-5">
-        <ProjectActionCenter project={project} />
-      </div>
-
       <section id="decision-brief" className="mb-5 scroll-mt-32 rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
+        <div className="mb-6 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 print:border-slate-300 print:bg-white">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-4xl">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300 print:text-slate-500">Decision mandate</p>
+              <h2 className="mt-2 text-lg font-bold leading-7 text-slate-100 print:text-slate-950">{input.primaryDecision}</h2>
+            </div>
+            <div className="grid shrink-0 grid-cols-2 gap-2 text-[10px] sm:grid-cols-3 lg:max-w-md">
+              <div className="rounded-lg border border-white/10 bg-slate-950/30 p-3 print:border-slate-300 print:bg-white"><p className="font-bold uppercase tracking-wider text-slate-500">Intent</p><p className="mt-1 font-semibold text-slate-200 print:text-slate-950">{projectIntentLabel[input.projectIntent]}</p></div>
+              <div className="rounded-lg border border-white/10 bg-slate-950/30 p-3 print:border-slate-300 print:bg-white"><p className="font-bold uppercase tracking-wider text-slate-500">Owner</p><p className="mt-1 font-semibold capitalize text-slate-200 print:text-slate-950">{input.decisionOwnerRole.replaceAll("-", " ")}</p></div>
+              <div className="col-span-2 rounded-lg border border-white/10 bg-slate-950/30 p-3 sm:col-span-1 print:border-slate-300 print:bg-white"><p className="font-bold uppercase tracking-wider text-slate-500">Window</p><p className="mt-1 font-semibold text-slate-200 print:text-slate-950">{decisionWindowLabel[input.decisionWindow]}</p></div>
+            </div>
+          </div>
+        </div>
         <div className="grid gap-5 lg:grid-cols-[1fr_1.25fr_auto] lg:items-start">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:text-slate-500">Decision brief</p>
@@ -188,24 +242,29 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-teal-300">Role lens</p>
             <div className="mt-2 flex flex-wrap gap-2 print:hidden">
-              {(Object.keys(roleLensCopy) as RoleLens[]).map((lens) => <button key={lens} type="button" aria-pressed={roleLens === lens} onClick={() => setRoleLens(lens)} className={`rounded-lg border px-3 py-2 text-xs font-bold transition ${roleLens === lens ? "border-teal-300/40 bg-teal-300/15 text-teal-100" : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/25"}`}>{roleLensCopy[lens].label}</button>)}
+              {(Object.keys(roleLensCopy) as RoleLens[]).map((lens) => <button key={lens} type="button" aria-pressed={roleLens === lens} onClick={() => { setRoleLens(lens); analytics.blueprintCtaClicked("decision_role_lens", lens); }} className={`rounded-lg border px-3 py-2 text-xs font-bold transition ${roleLens === lens ? "border-teal-300/40 bg-teal-300/15 text-teal-100" : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/25"}`}>{roleLensCopy[lens].label}</button>)}
             </div>
             <p className="mt-3 text-xs leading-5 text-slate-400 print:text-slate-700"><strong className="text-slate-200 print:text-slate-950">{roleLensCopy[roleLens].label} focus:</strong> {roleLensCopy[roleLens].focus}. {roleLensCopy[roleLens].detail}</p>
+            <p className="mt-3 rounded-lg border border-white/8 bg-slate-950/25 p-3 text-xs leading-5 text-slate-300 print:border-slate-300 print:bg-white print:text-slate-800"><strong className="text-sky-200 print:text-slate-950">Decision signal:</strong> {decisionPack.signal}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-200 print:text-slate-600">Decisions possible now</p><ol className="mt-3 space-y-2">{blueprint.recommendations.slice(0, 3).map((item, index) => <li key={item.id} className="flex gap-2 text-xs leading-5 text-slate-300 print:text-slate-800"><span className="font-bold text-teal-200 print:text-slate-700">{index + 1}.</span><span>{item.recommendation}</span></li>)}</ol></div>
-            <div className="rounded-xl border border-red-300/15 bg-red-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-red-200 print:text-slate-600">Decisions blocked</p><ul className="mt-3 space-y-2">{blueprint.unresolvedInputs.filter((item) => item.severity === "blocking").slice(0, 3).map((item) => <li key={item.id} className="text-xs leading-5 text-slate-300 print:text-slate-800"><strong className="text-red-200 print:text-slate-700">Needed:</strong> {item.resolution}</li>)}{blueprint.dataQuality.blockingOpenCount === 0 && <li className="text-xs leading-5 text-slate-400 print:text-slate-700">Qualified review is still required before controlled use.</li>}</ul></div>
+            <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-200 print:text-slate-600">Working decision</p><p className="mt-3 text-xs leading-5 text-slate-300 print:text-slate-800">{decisionPack.workingDecision}</p><p className="mt-3 text-[10px] leading-4 text-slate-500 print:text-slate-600">Suitable for discovery and scenario framing—not controlled approval.</p></div>
+            <div className="rounded-xl border border-red-300/15 bg-red-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-red-200 print:text-slate-600">Decision boundary</p><p className="mt-3 text-xs leading-5 text-slate-300 print:text-slate-800">{decisionPack.blockedDecision}</p><p className="mt-3 text-[10px] leading-4 text-slate-500 print:text-slate-600">{blueprint.dataQuality.blockingOpenCount} controlled-use blocker{blueprint.dataQuality.blockingOpenCount === 1 ? "" : "s"} · {reviewStatusLabel}</p></div>
           </div>
         </div>
       </section>
 
       <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
         <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
-          {[["#project-action-center", "Action center"], ["#decision-brief", "Decision brief"], ["#visual-decision-layer", "Visual model"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
+          {[["#decision-brief", "Decision brief"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
         </div>
       </nav>
 
       <BlueprintVisualDecisionLayer blueprint={blueprint} />
+
+      <div className="mb-5">
+        <ProjectActionCenter project={project} />
+      </div>
 
       <div className="mb-5 grid gap-4 lg:grid-cols-2">
         {[current, future].map((scenario, index) => (
