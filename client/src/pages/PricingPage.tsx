@@ -22,7 +22,7 @@ async function createCheckoutSession(productType: ProductType): Promise<string> 
 
 export default function PricingPage() {
   const { t } = useTranslation("pricing");
-  useSEO({ title: "Ways to work with Life Science Atlas", description: "Compare Quality Lab project work, Pro evidence access, and the one-time Personal Career Blueprint." });
+  useSEO({ title: "Ways to work with Life Science Atlas", description: "Compare Quality Lab project work, the Atlas Pro monthly quality operating layer, and the one-time Personal Career Blueprint." });
   const freeFeatures = t("free.features", { returnObjects: true }) as string[];
   const proFeatures = t("pro.features", { returnObjects: true }) as string[];
   const faqs = t("faq", { returnObjects: true }) as { q: string; a: string }[];
@@ -62,7 +62,7 @@ export default function PricingPage() {
           <div className="flex flex-col justify-center p-2 text-left md:p-4">
             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300"><Zap className="h-3.5 w-3.5" /> Ways to work with Atlas</span>
             <h1 className="mt-5 max-w-3xl font-display text-3xl font-bold leading-tight md:text-5xl">Start with the decision you need to make.</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Choose project work for a real laboratory decision, Pro for reusable professional resources, or a one-time Career Blueprint for your next move.</p>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">Choose project work for a real laboratory decision, Pro for a recurring monthly quality workflow and reusable resources, or a one-time Career Blueprint for your next move.</p>
             <div className="mt-5 grid grid-cols-3 gap-2 lg:hidden">
               <Link href="/quality-lab/review?offer=diagnostic" className="rounded-xl border border-sky-300/25 bg-sky-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-sky-200">Paid diagnostic</span><strong className="mt-1 block text-xl">$149</strong><span className="text-[11px] text-muted-foreground">Fixed fee</span></Link>
               <Link href="/quality-lab/review?offer=blueprint" className="rounded-xl border border-teal-300/25 bg-teal-300/10 p-3"><span className="block text-[10px] font-bold uppercase tracking-wide text-teal-200">Blueprint pilot</span><strong className="mt-1 block text-xl">From $990</strong><span className="text-[11px] text-muted-foreground">Per project</span></Link>
@@ -151,7 +151,7 @@ export default function PricingPage() {
 
       {error && <div className="mb-8 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-center text-sm text-red-400">{error}</div>}
 
-      <div id="evidence-plans" className="mb-5 scroll-mt-24"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Supporting evidence access</p><h2 className="mt-2 text-2xl font-bold">Keep the reference layer separate from the engagement</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">Free and Pro help individuals learn and reuse evidence-backed tools. They do not replace a project-specific Blueprint review.</p></div>
+      <div id="evidence-plans" className="mb-5 scroll-mt-24"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Recurring professional workspace</p><h2 className="mt-2 text-2xl font-bold">Keep monthly quality work moving without confusing it with an engagement</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">Pro combines a repeatable monthly review, deeper evidence, tools, and working files for individual professional use. It does not replace a project-specific Blueprint review.</p></div>
       <div className="mb-8 grid gap-4 md:grid-cols-2">
         <div className={`${cardClass} flex flex-col`}>
           <span className="mb-4 w-fit rounded bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t("free.badge")}</span>
@@ -171,7 +171,7 @@ export default function PricingPage() {
       </div>
 
       <TrustBadges className="mb-8" />
-      <div className="mb-8 flex items-start gap-3 rounded-lg border border-amber-300/20 bg-amber-300/[0.055] p-4 text-sm leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-foreground">Choose by outcome:</strong> Quality Lab for a project-specific operating decision; Career Blueprint for a personal one-time plan; Pro for deeper evidence and reusable resources; Free for orientation and public tools.</p></div>
+      <div className="mb-8 flex items-start gap-3 rounded-lg border border-amber-300/20 bg-amber-300/[0.055] p-4 text-sm leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-foreground">Choose by outcome:</strong> Quality Lab for a project-specific operating decision; Career Blueprint for a personal one-time plan; Pro for recurring individual quality work backed by deeper evidence and reusable resources; Free for orientation and public tools.</p></div>
       <div className="grid gap-4 text-center sm:grid-cols-3">{faqs.map((item, index) => <div key={item.q} className={cardClass}>{[<Lock key="lock" className="mx-auto mb-2 h-5 w-5 text-teal-400" />, <Zap key="zap" className="mx-auto mb-2 h-5 w-5 text-teal-400" />, <ShieldCheck key="shield" className="mx-auto mb-2 h-5 w-5 text-teal-400" />][index]}<p className="mb-1 text-sm font-semibold">{item.q}</p><p className="text-xs text-muted-foreground">{item.a}</p></div>)}</div>
     </div>
   );

@@ -69,6 +69,7 @@ const workflow = [
 ];
 
 const comparisonRows = [
+  ["Monthly operating review", "Illustrative preview only", "Editable workspace, account sync, portfolio pulse, carryover, and export"],
   ["Evidence", "Public orientation and selected guides", "Deeper context, decision logic, and worked examples"],
   ["Tools", "Selected public calculators", "Available premium calculators and planning tools"],
   ["Working files", "Limited public samples", "Available downloadable toolkits and templates"],
@@ -77,6 +78,7 @@ const comparisonRows = [
 ];
 
 const proReasons = [
+  "You need to keep one quality priority moving from evidence gap to owned carryover each month",
   "You repeatedly use evidence, calculators, templates, or audit resources",
   "You need more context than the public orientation layer",
   "The output supports your own recurring professional workflow",
@@ -95,7 +97,7 @@ export default function ProPage() {
 
   useSEO({
     title: "Life Science Atlas Pro",
-    description: "Explore Atlas Pro evidence, premium tools, reusable working files, and the GMP Audit Readiness Kit for life science quality professionals.",
+    description: "Run a recurring Monthly Quality Review with connected Pro evidence, tools, reusable working files, account history, carryover, and export.",
   });
 
   function selectWorkflow(id: AtlasProWorkflowId) {
@@ -124,7 +126,7 @@ export default function ProPage() {
               Evidence, tools, and working files for quality work <span className="text-sky-300">you repeat.</span>
             </h1>
             <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
-              Pro connects deeper evidence to practical tools and reusable outputs—so learning and execution stay in the same professional workflow.
+              Pro turns deeper evidence, practical tools, and reusable outputs into a monthly working cycle you can continue instead of rebuilding.
             </p>
 
             <div className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -148,7 +150,7 @@ export default function ProPage() {
             <div className="relative overflow-hidden rounded-2xl">
               <EditorialImage src="/images/editorial/evidence-data-review.jpg" alt="Life science professionals reviewing quality evidence and data" creditName="Faustina Okeke" creditUrl="https://unsplash.com/photos/XLQuTdktpa8" eager className="aspect-[16/7] w-full" imageClassName="object-center" />
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent px-5 pb-4 pt-12">
-                <div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-200">Inside your membership</p><p className="mt-1 text-lg font-bold text-white">One connected Pro library</p></div>
+                <div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-200">Inside your membership</p><p className="mt-1 text-lg font-bold text-white">One connected operating layer</p></div>
                 <BadgeCheck className="h-6 w-6 shrink-0 text-sky-300" />
               </div>
             </div>
@@ -178,9 +180,24 @@ export default function ProPage() {
               ["01", "Choose the monthly decision", "Focus audit readiness, quality signals, method capacity, data integrity, or supplier control."],
               ["02", "Make evidence gaps visible", "Separate controlled evidence already held from records, confirmation, or qualified review still needed."],
               ["03", "Track an owned operating cycle", "Move the work through four statuses without confusing working completeness with approval."],
-              ["04", "Export and roll forward", "Download a decision brief, retain browser-local monthly history, and start the next month from carryover."],
+              ["04", "See continuity and roll forward", "Use account-backed history, a six-month portfolio pulse, export, and carryover to start the next review."],
             ].map(([number, title, body]) => <div key={number} className="bg-white p-6"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">{number}</span><h3 className="mt-4 text-lg font-bold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{body}</p></div>)}
           </div>
+        </div>
+      </section>
+
+      <section className="border-b border-slate-200 bg-white px-4 py-14 md:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">First 7 days</p><h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Prove the workflow before you keep the membership.</h2><p className="mt-4 text-sm leading-7 text-slate-600">A practical trial should end with a useful working brief—not a tour of the catalog. Use this activation path on one real but appropriately bounded priority.</p></div>
+          <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 md:grid-cols-4">
+            {[
+              ["Day 1", "Frame", "Choose one of five focus areas and write the decision, signal, owner, and review date."],
+              ["Day 2", "Verify", "Use the paired Pro lesson or working file to separate evidence held from evidence still needed."],
+              ["Day 4", "Decide", "Apply the connected workflow or tool and assign the qualified decision or escalation owner."],
+              ["Day 7", "Close or carry", "Export the working brief, record the boundary, and roll unresolved work into the next month."],
+            ].map(([day, title, body]) => <article key={day} className="bg-[#f8fafb] p-6"><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-700">{day}</span><h3 className="mt-3 text-lg font-bold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{body}</p></article>)}
+          </div>
+          <div className="mt-6 flex flex-wrap items-center gap-4"><Link href="/pro/monthly-review" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-800">Start the first review <ArrowRight className="h-4 w-4" /></Link><p className="text-xs leading-5 text-slate-500">Professional working support only · no site approval, compliance determination, or project-specific expert review.</p></div>
         </div>
       </section>
 

@@ -359,6 +359,15 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("status")).toContainText("Started a new month");
   });
 
+  test("Atlas Pro explains a concrete seven-day activation path before checkout", async ({ page }) => {
+    await page.goto("/pro");
+    await expect(page.getByRole("heading", { name: /Prove the workflow before you keep the membership/i })).toBeVisible();
+    for (const step of ["Frame", "Verify", "Decide", "Close or carry"]) {
+      await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
+    }
+    await expect(page.getByRole("link", { name: /Start the first review/i })).toHaveAttribute("href", "/pro/monthly-review");
+  });
+
   test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {
     await mockAdmin(page);
     await page.goto("/quality-lab/pilots");
