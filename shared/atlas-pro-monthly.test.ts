@@ -6,7 +6,9 @@ describe("Atlas Pro monthly quality review", () => {
     for (const focus of atlasProMonthlyFocusValues) {
       const review = compileAtlasProMonthlyReview({ ...exampleAtlasProMonthlyInput, focus });
       expect(review.steps.map((step) => step.id)).toEqual(["frame", "verify", "decide", "close"]);
-      expect(review.focus.resources.length).toBeGreaterThanOrEqual(3);
+      expect(review.focus.resources.map((resource) => resource.cycleStep)).toEqual(["frame", "verify", "decide", "close"]);
+      expect(review.focus.resources.filter((resource) => resource.access === "pro").length).toBeGreaterThanOrEqual(2);
+      expect(review.focus.resources.every((resource) => resource.href.startsWith("/"))).toBe(true);
       expect(review.boundary).toContain("does not establish compliance");
       expect(ATLAS_PRO_MONTHLY_FOCUS[focus].reviewQuestion.length).toBeGreaterThan(40);
     }
@@ -27,7 +29,9 @@ describe("Atlas Pro monthly quality review", () => {
     expect(markdown).toContain(exampleAtlasProMonthlyInput.decision);
     expect(markdown).toContain("### 1. Frame — closed");
     expect(markdown).toContain("### 2. Verify — in progress");
-    expect(markdown).toContain("## Connected Atlas resources");
+    expect(markdown).toContain("## Four-week guided resource path");
+    expect(markdown).toContain("Week 1 / frame");
+    expect(markdown).toContain("Pro member");
     expect(markdown).toContain("does not establish compliance");
   });
 });

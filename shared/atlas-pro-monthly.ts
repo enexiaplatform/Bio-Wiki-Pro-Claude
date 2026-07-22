@@ -14,6 +14,8 @@ export interface AtlasProMonthlyResource {
   label: string;
   href: string;
   kind: "evidence" | "workflow" | "tool" | "working-file";
+  access: "pro" | "open";
+  cycleStep: AtlasProMonthlyCycleStep["id"];
 }
 
 export interface AtlasProMonthlyInput {
@@ -92,9 +94,10 @@ export const ATLAS_PRO_MONTHLY_FOCUS: Record<AtlasProMonthlyFocus, AtlasProMonth
     ],
     evidence: ["Audit scope and inspection context", "Controlled records and evidence-request list", "Owned gap and CAPA register", "Management-review note and residual-risk record"],
     resources: [
-      { label: "GMP Audit Readiness Kit", href: "/toolkits/gmp-audit-kit", kind: "working-file" },
-      { label: "Audit Readiness Scorecard", href: "/tools/audit-readiness-scorecard", kind: "tool" },
-      { label: "How to prepare for a GMP audit in 30 days", href: "/blog/gmp-audit-30-day-plan", kind: "evidence" },
+      { label: "GMP Audit Readiness Kit", href: "/toolkits/gmp-audit-kit", kind: "working-file", access: "pro", cycleStep: "frame" },
+      { label: "Batch Record Review & Product Release", href: "/academy/batch-record-review", kind: "evidence", access: "pro", cycleStep: "verify" },
+      { label: "CAPA Fundamentals", href: "/academy/capa-fundamentals", kind: "evidence", access: "pro", cycleStep: "decide" },
+      { label: "Audit Readiness Scorecard", href: "/tools/audit-readiness-scorecard", kind: "tool", access: "open", cycleStep: "close" },
     ],
   },
   "quality-signals": {
@@ -109,9 +112,10 @@ export const ATLAS_PRO_MONTHLY_FOCUS: Record<AtlasProMonthlyFocus, AtlasProMonth
     ],
     evidence: ["Signal and event population", "Trend, investigation and effectiveness evidence", "Qualified disposition and escalation record", "Closure rationale and monitoring trigger"],
     resources: [
-      { label: "OOS Investigation workflow", href: "/workflows/oos-investigation", kind: "workflow" },
-      { label: "OOT Trend Triage Planner", href: "/tools/oot-trend-triage-planner", kind: "tool" },
-      { label: "OOS Investigation Template", href: "/my-downloads", kind: "working-file" },
+      { label: "OOS Investigation â€” Deep Dive", href: "/academy/oos-investigation-deep-dive", kind: "evidence", access: "pro", cycleStep: "frame" },
+      { label: "Out-of-Trend Investigation", href: "/academy/out-of-trend-investigation", kind: "evidence", access: "pro", cycleStep: "verify" },
+      { label: "OOS Investigation workflow", href: "/workflows/oos-investigation", kind: "workflow", access: "open", cycleStep: "decide" },
+      { label: "OOS Investigation Template", href: "/my-downloads", kind: "working-file", access: "pro", cycleStep: "close" },
     ],
   },
   "method-capacity": {
@@ -126,9 +130,10 @@ export const ATLAS_PRO_MONTHLY_FOCUS: Record<AtlasProMonthlyFocus, AtlasProMonth
     ],
     evidence: ["Decision and natural capacity unit", "Workload, time, availability and skill evidence", "Sensitivity or alternative-scenario record", "Working decision and reopening trigger"],
     resources: [
-      { label: "Quality Lab tools", href: "/tools", kind: "tool" },
-      { label: "Structured quality workflows", href: "/workflows", kind: "workflow" },
-      { label: "Method and capacity evidence library", href: "/academy", kind: "evidence" },
+      { label: "Measurement Systems Analysis", href: "/academy/measurement-systems-analysis", kind: "evidence", access: "pro", cycleStep: "frame" },
+      { label: "Analytical Method Transfer", href: "/academy/analytical-method-transfer", kind: "evidence", access: "pro", cycleStep: "verify" },
+      { label: "Process Capability Calculator", href: "/tools/process-capability-calculator", kind: "tool", access: "open", cycleStep: "decide" },
+      { label: "Quality Lab Capacity Planner", href: "/quality-lab/planner", kind: "tool", access: "open", cycleStep: "close" },
     ],
   },
   "data-integrity": {
@@ -143,9 +148,10 @@ export const ATLAS_PRO_MONTHLY_FOCUS: Record<AtlasProMonthlyFocus, AtlasProMonth
     ],
     evidence: ["System, record population and review period", "Original records, metadata and audit trails", "Exception classification and escalation", "Remediation and effectiveness evidence"],
     resources: [
-      { label: "Data Integrity Review workflow", href: "/workflows/data-integrity-review", kind: "workflow" },
-      { label: "Audit Trail Review Triage", href: "/tools/audit-trail-review-triage", kind: "tool" },
-      { label: "Data Integrity Self-Check", href: "/my-downloads", kind: "working-file" },
+      { label: "Data Integrity â€” Audit Trail Review", href: "/academy/data-integrity-deep-dive", kind: "evidence", access: "pro", cycleStep: "frame" },
+      { label: "Electronic Records & Signatures", href: "/academy/electronic-records-part-11", kind: "evidence", access: "pro", cycleStep: "verify" },
+      { label: "Data Integrity Review workflow", href: "/workflows/data-integrity-review", kind: "workflow", access: "open", cycleStep: "decide" },
+      { label: "Data Integrity Self-Check", href: "/my-downloads", kind: "working-file", access: "pro", cycleStep: "close" },
     ],
   },
   "supplier-control": {
@@ -160,9 +166,10 @@ export const ATLAS_PRO_MONTHLY_FOCUS: Record<AtlasProMonthlyFocus, AtlasProMonth
     ],
     evidence: ["Approved supplier scope and risk tier", "Agreement, change and performance evidence", "Qualified escalation or requalification basis", "Decision record and next review trigger"],
     resources: [
-      { label: "Supplier Qualification workflow", href: "/workflows/supplier-qualification-workflow", kind: "workflow" },
-      { label: "Supplier qualification and quality agreements", href: "/blog/supplier-qualification-quality-agreement", kind: "evidence" },
-      { label: "Available Pro working files", href: "/toolkits", kind: "working-file" },
+      { label: "Supplier Qualification", href: "/academy/supplier-qualification", kind: "evidence", access: "pro", cycleStep: "frame" },
+      { label: "Technology Transfer", href: "/academy/technology-transfer", kind: "evidence", access: "pro", cycleStep: "verify" },
+      { label: "Supplier Qualification workflow", href: "/workflows/supplier-qualification-workflow", kind: "workflow", access: "open", cycleStep: "decide" },
+      { label: "Supplier Qualification Risk Triage", href: "/tools/supplier-qualification-risk-triage", kind: "tool", access: "open", cycleStep: "close" },
     ],
   },
 };
@@ -255,8 +262,8 @@ export function formatAtlasProMonthlyReview(input: AtlasProMonthlyInput, statuse
     `- Working outcome: ${input.outcome || "Open"}`,
     `- Carryover / next trigger: ${input.carryover || "Not yet recorded"}`,
     "",
-    "## Connected Atlas resources",
-    ...review.focus.resources.map((resource) => `- [${resource.label}](${resource.href}) — ${resource.kind.replaceAll("-", " ")}`),
+    "## Four-week guided resource path",
+    ...review.focus.resources.map((resource, index) => `- Week ${index + 1} / ${resource.cycleStep}: [${resource.label}](${resource.href}) — ${resource.kind.replaceAll("-", " ")} / ${resource.access === "pro" ? "Pro member" : "open access"}`),
     "",
     `Review question: ${review.focus.reviewQuestion}`,
   ].join("\n");
