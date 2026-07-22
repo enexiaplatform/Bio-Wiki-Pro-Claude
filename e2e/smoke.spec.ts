@@ -1229,7 +1229,7 @@ test.describe("public smoke", () => {
 
   test("career assessment builds a personalised route comparison", async ({ page }) => {
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /Stop following a generic career ladder/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /A career plan built around what you can prove/i })).toBeVisible();
     await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
     await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
     await page.getByRole("textbox", { name: /^Location$/i }).fill("Singapore");

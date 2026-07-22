@@ -213,42 +213,58 @@ export default function Career() {
 
 function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: boolean; onStart: () => void; onResume: () => void }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-28 pt-4 md:pt-8">
-      <section className="overflow-hidden rounded-xl border border-teal-400/20 bg-white/[0.025] p-6 shadow-2xl shadow-black/15 md:p-10">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,1.04fr)_minmax(420px,0.96fr)] lg:items-center">
-          <div>
+    <div className="pb-28">
+      <section className="mx-auto max-w-7xl px-4 pb-8 pt-4 md:pb-12 md:pt-8">
+        <div className="overflow-hidden rounded-2xl border border-teal-400/20 bg-[#0d1a2f] px-6 py-8 shadow-2xl shadow-black/20 md:px-10 md:py-12">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(420px,0.9fr)] lg:items-center">
+            <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-teal-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Personal Career Navigator</span>
-            <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-[1.05] md:text-6xl">Stop following a generic career ladder.</h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 md:text-lg">Tell Atlas where you are, what evidence you can show, and what constraints matter. Get a free Career Snapshot built around your real situation—not only your job title.</p>
+            <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-[1.05] md:text-6xl">A career plan built around what you can prove.</h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-300 md:text-lg">Atlas compares your current role, evidence, constraints, and target to build a route that is specific to your situation—not a generic job-title ladder.</p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={onStart} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-6 py-3.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300">Build my free Career Snapshot <ArrowRight className="h-4 w-4" /></button>
               {hasSavedProfile && <button type="button" onClick={onResume} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-6 py-3.5 text-sm font-semibold transition hover:border-white/30">Resume my snapshot</button>}
             </div>
-            <p className="mt-4 flex items-center gap-2 text-xs text-slate-500"><LockKeyhole className="h-3.5 w-3.5" /> Free assessment · no card required · browser-local by default</p>
-          </div>
+            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-400">
+              <span className="flex items-center gap-2"><LockKeyhole className="h-3.5 w-3.5" /> No card required</span>
+              <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" /> Free route comparison</span>
+              <span className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" /> Browser-local by default</span>
+            </div>
+            </div>
 
-          <div className="rounded-xl border border-amber-300/30 bg-[#071426] p-5">
-            <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Optional paid deliverable</p><h2 className="mt-2 text-xl font-bold">Your named Personal Career Blueprint</h2></div><span className="rounded-full bg-amber-300/10 px-3 py-1 text-sm font-bold text-amber-200">$20</span></div>
-            <img src="/images/career/personal-career-blueprint-preview.webp" alt="Preview of a Personal Career Blueprint report and evidence comparison page" width="1421" height="1107" loading="lazy" decoding="async" className="mt-4 aspect-[9/7] w-full rounded-lg object-cover" />
+            <div className="rounded-xl border border-amber-300/30 bg-[#061326] p-5 shadow-xl shadow-black/25">
+            <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Optional after your free result</p><h2 className="mt-2 text-xl font-bold">Your named Career Blueprint</h2><p className="mt-1 text-xs text-slate-400">One-time purchase · generated from your selected route</p></div><span className="rounded-full bg-amber-300/10 px-3 py-1 text-sm font-bold text-amber-200">$20</span></div>
+            <img src="/images/career/personal-career-blueprint-preview.webp" alt="Preview of a Personal Career Blueprint report and evidence comparison page" width="1421" height="1107" loading="eager" decoding="async" className="mt-4 aspect-[9/7] w-full rounded-lg object-cover" />
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-300">
               {["38 personalized pages", "Target-role requirement matrix", "13-week execution calendar", "Proof portfolio and interview drills"].map((item) => <span key={item} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" />{item}</span>)}
+            </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mt-7 grid gap-4 md:grid-cols-3">
-        <Value icon={Route} title="Compare credible routes" body="See a best-fit move, an adjacent option, and a stretch path with the evidence each one requires." />
-        <Value icon={BarChart3} title="See the gap visually" body="Compare your current evidence with the planning threshold for the selected target role." />
-        <Value icon={FileText} title="Turn insight into a plan" body="Start free, then unlock the detailed month-by-month PDF only if the snapshot feels accurate." />
+      <section className="bg-[#f5f7f8] py-14 text-slate-950 md:py-20">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-teal-700">Your free Career Snapshot</p>
+            <h2 className="mt-3 font-display text-3xl font-bold leading-tight text-slate-950 md:text-4xl">Make the route decision before you buy the roadmap.</h2>
+            <p className="mt-4 text-base leading-7 text-slate-600">Complete five focused sections and Atlas returns a best-fit route, two credible alternatives, and the evidence gaps that matter most.</p>
+          </div>
+          <div className="mt-10 grid border-y border-slate-200 md:grid-cols-3 md:divide-x md:divide-slate-200">
+            <Value icon={Route} step="01" title="Compare three routes" body="Best-fit, adjacent, and stretch paths—each tied to the evidence it requires." />
+            <Value icon={BarChart3} step="02" title="See your priority gaps" body="A visual comparison of current evidence against the selected role threshold." />
+            <Value icon={FileText} step="03" title="Choose what to do next" body="Keep the free result or unlock the detailed execution document only if it feels accurate." />
+          </div>
+          <button type="button" onClick={onStart} className="mt-9 inline-flex items-center justify-center gap-2 rounded-lg bg-slate-950 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-slate-800">Build my free snapshot <ArrowRight className="h-4 w-4" /></button>
+        </div>
       </section>
 
-      <section className="mt-7 overflow-hidden rounded-xl border border-white/10 bg-[#071426]">
+      <section className="mx-auto mt-12 max-w-7xl overflow-hidden rounded-2xl border border-white/10 bg-[#071426] md:mt-16">
         <div className="grid lg:grid-cols-[0.82fr_1.18fr]">
           <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r lg:p-8">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">How personalization works</p>
-            <h2 className="mt-3 text-2xl font-bold md:text-3xl">The same job title should not produce the same roadmap.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-400">Atlas builds the route from the combination of your current evidence, target, constraints, horizon, and preferred way of working. Change a material input and the recommendation, gap priorities, or action sequence can change with it.</p>
+            <h2 className="mt-3 text-2xl font-bold md:text-3xl">The same title can produce a different route.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">Atlas does not retrieve a fixed roadmap by job title. It recomputes the recommendation from the combination of your evidence, target, horizon, and real-world constraints.</p>
             <button type="button" onClick={onStart} className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-200 hover:text-teal-100">Show Atlas my real situation <ArrowRight className="h-4 w-4" /></button>
           </div>
           <div className="grid gap-px bg-white/10 sm:grid-cols-2">
@@ -262,25 +278,29 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
         </div>
       </section>
 
-      <section className="mt-7 rounded-xl border border-amber-300/20 bg-amber-300/[0.045] p-6 md:p-8">
-        <div className="grid gap-8 lg:grid-cols-[0.72fr_1.28fr]">
+      <section className="mt-12 bg-[#fffaf0] py-14 text-slate-950 md:mt-16 md:py-20">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-[0.76fr_1.24fr]">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Inside the paid Blueprint</p>
-            <h2 className="mt-3 text-2xl font-bold md:text-3xl">Not a longer snapshot—a working document for the next move.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-400">The free result helps you judge whether the route logic feels credible. The $20 document expands the selected route into concrete proof, positioning, interview, and execution work.</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-amber-700">What the $20 Blueprint adds</p>
+            <h2 className="mt-3 font-display text-3xl font-bold leading-tight text-slate-950 md:text-4xl">Not more analysis. A working document for your next move.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-600">The free result helps you validate the route. The paid PDF turns the route you select into concrete proof-building, positioning, interview, and execution work.</p>
+            <div className="mt-6 rounded-xl border border-amber-300/50 bg-white p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-amber-800">Personalized throughout</p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">Your name, current position, sector, target role, selected route, evidence gaps, constraints, and timing drive the report—not a single reusable career template.</p>
+            </div>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid border-t border-slate-200 sm:grid-cols-2">
             {[
               { title: "Route decision brief", body: "Why this route, why not the alternatives, and what assumptions could change the recommendation." },
               { title: "Requirement and evidence matrix", body: "Target expectations mapped against the proof you currently have, with priority gaps." },
               { title: "Proof-building portfolio", body: "Specific artifacts, outcomes, and workplace evidence to create or strengthen." },
               { title: "13-week execution system", body: "Sequenced actions, review checkpoints, CV prompts, and interview drills tied to the route." },
-            ].map((item) => <article key={item.title} className="rounded-xl border border-white/10 bg-slate-950/35 p-5"><Check className="h-4 w-4 text-amber-200" /><h3 className="mt-3 font-bold text-slate-100">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.body}</p></article>)}
+            ].map((item, index) => <article key={item.title} className={`border-b border-slate-200 py-6 sm:px-6 ${index % 2 === 0 ? "sm:border-r sm:pl-0" : "sm:pr-0"}`}><span className="text-xs font-bold text-amber-700">0{index + 1}</span><h3 className="mt-3 font-bold text-slate-950">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{item.body}</p></article>)}
           </div>
         </div>
       </section>
 
-      <section className="mt-7 flex flex-col gap-5 rounded-xl border border-white/10 bg-white/[0.02] p-6 md:flex-row md:items-center md:justify-between">
+      <section className="mx-auto mt-12 flex max-w-7xl flex-col gap-5 px-4 md:mt-16 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-4"><div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-teal-400/10 text-teal-200"><ShieldCheck className="h-5 w-5" /></div><div><h2 className="text-lg font-bold">Useful without pretending certainty</h2><p className="mt-1 max-w-3xl text-sm leading-6 text-slate-400">Scores are self-assessment planning aids. Atlas exposes assumptions, avoids hiring guarantees, and encourages review by a qualified manager or mentor.</p></div></div>
         <button type="button" onClick={onStart} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-teal-400/35 px-5 py-3 text-sm font-semibold text-teal-200 hover:bg-teal-400/10">Start assessment <ArrowRight className="h-4 w-4" /></button>
       </section>
@@ -288,6 +308,6 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
   );
 }
 
-function Value({ icon: Icon, title, body }: { icon: typeof Sparkles; title: string; body: string }) {
-  return <div className="rounded-xl border border-white/10 bg-white/[0.025] p-5"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-400/10 text-teal-200"><Icon className="h-5 w-5" /></div><h2 className="mt-4 text-lg font-bold">{title}</h2><p className="mt-2 text-sm leading-6 text-slate-400">{body}</p></div>;
+function Value({ icon: Icon, step, title, body }: { icon: typeof Sparkles; step: string; title: string; body: string }) {
+  return <div className="py-7 md:px-7 md:first:pl-0"><div className="flex items-center justify-between"><div className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-100 text-teal-800"><Icon className="h-5 w-5" /></div><span className="text-xs font-bold tracking-[0.14em] text-slate-400">{step}</span></div><h3 className="mt-5 text-lg font-bold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{body}</p></div>;
 }
