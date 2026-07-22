@@ -1,9 +1,10 @@
 import { Link } from "wouter";
 import {
   ArrowRight,
+  BadgeCheck,
   BookOpenCheck,
   Calculator,
-  CheckCircle2,
+  Check,
   Crown,
   FileSpreadsheet,
   LockKeyhole,
@@ -11,21 +12,73 @@ import {
   ShieldCheck,
   Sparkles,
 } from "lucide-react";
-import { useSEO } from "@/hooks/use-seo";
 import { EditorialImage } from "@/components/EditorialImage";
+import { useSEO } from "@/hooks/use-seo";
 
-const included = [
-  { icon: BookOpenCheck, title: "Deeper evidence-backed lessons", body: "Move beyond public orientation into more detailed source context, decision logic, and practical interpretation." },
-  { icon: Calculator, title: "Premium decision tools", body: "Use focused calculators and models that keep formulas, inputs, and planning assumptions visible." },
-  { icon: FileSpreadsheet, title: "Reusable working files", body: "Download templates and working assets designed to support repeat professional tasks—not just reading." },
-  { icon: PackageCheck, title: "GMP Audit Readiness Kit", body: "Use the included readiness kit to organize audit preparation, evidence requests, and follow-up work." },
+const proLibrary = [
+  {
+    icon: BookOpenCheck,
+    number: "01",
+    title: "Evidence with more context",
+    body: "Move beyond public orientation into deeper source context, decision logic, boundaries, and worked interpretation.",
+    example: "Lessons and decision guides",
+    href: "/academy",
+    linkLabel: "Browse public evidence",
+  },
+  {
+    icon: Calculator,
+    number: "02",
+    title: "Premium decision tools",
+    body: "Use focused calculators and models that keep formulas, inputs, assumptions, and limits visible.",
+    example: "Calculators and planning models",
+    href: "/tools",
+    linkLabel: "Explore public tools",
+  },
+  {
+    icon: FileSpreadsheet,
+    number: "03",
+    title: "Reusable working files",
+    body: "Download templates, checklists, and working assets for professional tasks you need to repeat.",
+    example: "Templates and downloadable files",
+    href: "/toolkits",
+    linkLabel: "Preview the toolkit library",
+  },
+  {
+    icon: PackageCheck,
+    number: "04",
+    title: "GMP Audit Readiness Kit",
+    body: "Organize gap review, evidence requests, CAPA planning, interview preparation, and follow-up work.",
+    example: "Guide, gap analysis, CAPA, and Q&A",
+    href: "/toolkits/gmp-audit-kit",
+    linkLabel: "See what the kit contains",
+  },
 ];
 
 const workflow = [
-  { number: "01", title: "Start from a real work question", body: "Choose the method, compliance task, calculation, or deliverable you need to understand or execute." },
-  { number: "02", title: "Inspect the evidence context", body: "Use deeper lessons and linked source context to understand the basis and boundaries—not only the answer." },
-  { number: "03", title: "Apply a tool or working file", body: "Turn the learning into a calculation, checklist, template, or reusable professional artifact." },
-  { number: "04", title: "Keep the reference layer", body: "Return to the same evidence and files as the work evolves, without purchasing a project engagement." },
+  ["01", "Ask", "Start from a method, compliance, calculation, or audit question."],
+  ["02", "Understand", "Inspect the evidence basis, assumptions, and boundaries."],
+  ["03", "Apply", "Use the relevant tool, checklist, template, or working file."],
+  ["04", "Reuse", "Return to the same reference layer as the work evolves."],
+];
+
+const comparisonRows = [
+  ["Evidence", "Public orientation and selected guides", "Deeper context, decision logic, and worked examples"],
+  ["Tools", "Selected public calculators", "Available premium calculators and planning tools"],
+  ["Working files", "Limited public samples", "Available downloadable toolkits and templates"],
+  ["Audit readiness", "Public orientation resources", "GMP Audit Readiness Kit included"],
+  ["Expert project review", "Not included", "Not included — use Quality Lab for scoped review"],
+];
+
+const proReasons = [
+  "You repeatedly use evidence, calculators, templates, or audit resources",
+  "You need more context than the public orientation layer",
+  "The output supports your own recurring professional workflow",
+];
+
+const qualityLabReasons = [
+  "The decision concerns a site, portfolio, capacity, equipment, cost, or risk",
+  "Multiple functions need one controlled decision basis",
+  "The scope requires project-specific expert challenge and delivery",
 ];
 
 export default function ProPage() {
@@ -36,59 +89,156 @@ export default function ProPage() {
 
   return (
     <div className="min-h-screen bg-[#f4f7f5] text-[#0b1b2c]">
-      <section className="border-b border-white/10 bg-[#061426] px-4 py-16 text-slate-100 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-sky-300/[0.07] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-sky-200"><Crown className="h-3.5 w-3.5" /> Atlas Pro</span>
-            <h1 className="mt-6 max-w-3xl font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">A deeper professional layer for the work <span className="text-sky-300">you need to reuse.</span></h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">Pro connects deeper evidence, premium tools, working files, and audit-readiness resources in one ongoing membership.</p>
-            <div className="mt-7 flex flex-wrap items-center gap-3"><strong className="text-2xl text-white">$8/month</strong><span className="text-sm text-slate-400">or $80/year when annual access is available</span></div>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/pricing#evidence-plans" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200">Compare Free and Pro <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/academy" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/25 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white hover:bg-white/[0.08]">Explore public evidence first</Link>
+      <section className="relative overflow-hidden border-b border-white/10 bg-[#061426] px-4 py-12 text-slate-100 md:py-16 lg:py-20">
+        <div className="pointer-events-none absolute -right-28 top-8 h-80 w-80 rounded-full bg-sky-300/[0.07] blur-3xl" />
+        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.94fr_1.06fr] lg:items-center">
+          <div className="max-w-2xl">
+            <span className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-sky-300/[0.07] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-sky-200">
+              <Crown className="h-3.5 w-3.5" /> Atlas Pro
+            </span>
+            <h1 className="mt-6 font-display text-4xl font-bold leading-[1.04] tracking-[-0.035em] sm:text-5xl lg:text-[3.7rem]">
+              Evidence, tools, and working files for quality work <span className="text-sky-300">you repeat.</span>
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
+              Pro connects deeper evidence to practical tools and reusable outputs—so learning and execution stay in the same professional workflow.
+            </p>
+
+            <div className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <strong className="text-3xl tracking-tight text-white">$8/month</strong>
+              <span className="text-sm text-slate-400">or $80/year when annual access is available</span>
             </div>
-            <p className="mt-4 flex items-center gap-2 text-xs text-slate-500"><LockKeyhole className="h-3.5 w-3.5" /> Membership access · not a project-specific expert review</p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+              <a href="#what-pro-unlocks" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                See what Pro unlocks <ArrowRight className="h-4 w-4" />
+              </a>
+              <Link href="/academy" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300">
+                Explore the public layer
+              </Link>
+            </div>
+            <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500">
+              <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" /> Membership access for individual professional use · not project-specific expert review
+            </p>
           </div>
-          <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0a1d32] p-3 shadow-2xl shadow-black/20">
-            <EditorialImage src="/images/editorial/evidence-data-review.jpg" alt="Professional reviewing quality evidence and data" creditName="Faustina Okeke" creditUrl="https://unsplash.com/photos/XLQuTdktpa8" eager className="aspect-[4/3] w-full rounded-[1.25rem]" imageClassName="object-center" />
-            <div className="grid gap-2 p-4 sm:grid-cols-3">
-              {["Learn deeper", "Apply faster", "Reuse the work"].map((item, index) => <div key={item} className="rounded-lg border border-white/10 bg-white/[0.035] p-3"><span className="text-[10px] font-bold text-sky-300">0{index + 1}</span><p className="mt-1 text-xs font-semibold text-slate-200">{item}</p></div>)}
+
+          <aside className="overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#0b1d33] p-3 shadow-2xl shadow-black/25 sm:p-4" aria-label="Inside Atlas Pro">
+            <div className="relative overflow-hidden rounded-2xl">
+              <EditorialImage src="/images/editorial/evidence-data-review.jpg" alt="Life science professionals reviewing quality evidence and data" creditName="Faustina Okeke" creditUrl="https://unsplash.com/photos/XLQuTdktpa8" eager className="aspect-[16/7] w-full" imageClassName="object-center" />
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent px-5 pb-4 pt-12">
+                <div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-200">Inside your membership</p><p className="mt-1 text-lg font-bold text-white">One connected Pro library</p></div>
+                <BadgeCheck className="h-6 w-6 shrink-0 text-sky-300" />
+              </div>
             </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              {proLibrary.map((item) => (
+                <div key={item.title} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.045] p-3.5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-300/10 text-sky-200"><item.icon className="h-4 w-4" /></span>
+                  <div><p className="text-sm font-bold text-white">{item.title}</p><p className="mt-1 text-xs leading-5 text-slate-400">{item.example}</p></div>
+                </div>
+              ))}
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="what-pro-unlocks" className="scroll-mt-20 border-b border-slate-200 bg-white px-4 py-16 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">What Pro unlocks</p>
+              <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-5xl">Not more content. A more useful work layer.</h2>
+            </div>
+            <p className="max-w-2xl text-base leading-8 text-slate-600 lg:justify-self-end">Each part has a different role: evidence helps you understand, tools help you decide, and working files help you execute without rebuilding the same artifact from scratch.</p>
+          </div>
+
+          <div className="mt-10 grid gap-px overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-200 lg:grid-cols-2">
+            {proLibrary.map((item) => (
+              <article key={item.title} className="bg-[#f8fafb] p-6 sm:p-8">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-100 text-sky-800"><item.icon className="h-5 w-5" /></span>
+                  <span className="text-xs font-bold tracking-[0.16em] text-sky-800">{item.number}</span>
+                </div>
+                <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{item.example}</p>
+                <h3 className="mt-2 text-xl font-bold text-slate-950">{item.title}</h3>
+                <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">{item.body}</p>
+                <Link href={item.href} className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{item.linkLabel} <ArrowRight className="h-4 w-4" /></Link>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="px-4 py-16 md:py-24">
+      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-16 md:py-20">
         <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">What Pro includes</p><h2 className="mt-3 text-3xl font-bold text-slate-950 md:text-5xl">Four kinds of depth, designed to work together.</h2><p className="mt-4 text-base leading-7 text-slate-600">The value is not “more pages.” It is the connection between evidence, a practical tool, and a reusable output.</p></div>
-          <div className="mt-10 grid gap-5 lg:grid-cols-2">
-            {included.map((item) => <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_50px_rgba(15,35,50,0.06)] sm:p-7"><span className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-sky-800"><item.icon className="h-5 w-5" /></span><h3 className="mt-6 text-xl font-bold text-slate-950">{item.title}</h3><p className="mt-3 text-sm leading-7 text-slate-600">{item.body}</p></article>)}
+          <div className="grid gap-8 lg:grid-cols-[0.74fr_1.26fr] lg:items-start">
+            <div className="max-w-xl">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Free versus Pro</p>
+              <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Know exactly what changes when you upgrade.</h2>
+              <p className="mt-4 text-sm leading-7 text-slate-600">Start free. Upgrade only when deeper evidence and reusable files match work you genuinely need to do.</p>
+              <Link href="/pricing#evidence-plans" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-800">See plans and availability <ArrowRight className="h-4 w-4" /></Link>
+            </div>
+
+            <div className="overflow-x-auto rounded-2xl border border-sky-200 bg-white shadow-xl shadow-sky-950/5">
+              <table className="w-full min-w-[650px] border-collapse text-left text-sm">
+                <thead className="bg-[#07182d] text-white"><tr><th className="p-4 font-semibold">Access</th><th className="p-4 font-semibold">Free</th><th className="p-4 font-semibold text-sky-200">Atlas Pro</th></tr></thead>
+                <tbody>{comparisonRows.map(([label, free, pro]) => <tr key={label} className="border-t border-slate-200"><th className="bg-slate-50 p-4 font-semibold text-slate-950">{label}</th><td className="p-4 leading-6 text-slate-600">{free}</td><td className="p-4 leading-6 text-slate-700"><span className="flex items-start gap-2"><Check className="mt-1 h-3.5 w-3.5 shrink-0 text-sky-700" />{pro}</span></td></tr>)}</tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="border-y border-white/10 bg-[#081a2d] px-4 py-16 text-slate-100 md:py-20">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
-            <div><p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-300">How professionals use it</p><h2 className="mt-3 text-3xl font-bold md:text-4xl">From a work question to a reusable reference.</h2><p className="mt-4 text-sm leading-7 text-slate-400">Pro is most useful when learning and execution happen in the same workflow.</p></div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {workflow.map((step) => <article key={step.number} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"><span className="text-xs font-bold text-sky-300">{step.number}</span><h3 className="mt-4 font-bold text-white">{step.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{step.body}</p></article>)}
-            </div>
+          <div className="max-w-3xl">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-300">How Pro fits the work</p>
+            <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] md:text-4xl">One question becomes a reusable professional workflow.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">Pro is most useful when understanding and execution happen together.</p>
+          </div>
+          <div className="mt-9 grid gap-3 md:grid-cols-4">
+            {workflow.map(([number, title, body]) => (
+              <article key={number} className="relative rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+                <span className="text-xs font-bold tracking-[0.16em] text-sky-300">{number}</span>
+                <h3 className="mt-5 text-xl font-bold text-white">{title}</h3>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{body}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="border-b border-slate-200 bg-white px-4 py-16 md:py-20">
         <div className="mx-auto max-w-7xl">
-          <div className="grid gap-5 lg:grid-cols-2">
-            <article className="rounded-2xl border border-sky-200 bg-sky-50 p-6 sm:p-8"><Sparkles className="h-6 w-6 text-sky-800" /><p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-sky-800">Choose Pro when</p><h2 className="mt-2 text-2xl font-bold text-slate-950">You want ongoing professional depth.</h2><ul className="mt-5 space-y-3">{["You repeatedly use evidence, calculators, templates, or audit resources", "You want deeper material than the public orientation layer", "The output is for your own professional workflow"].map((item) => <li key={item} className="flex items-start gap-2 text-sm text-slate-700"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" />{item}</li>)}</ul></article>
-            <article className="rounded-2xl border border-teal-200 bg-teal-50 p-6 sm:p-8"><ShieldCheck className="h-6 w-6 text-teal-800" /><p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-teal-800">Choose Quality Lab when</p><h2 className="mt-2 text-2xl font-bold text-slate-950">A real site decision needs project-specific work.</h2><ul className="mt-5 space-y-3">{["The decision concerns a site, product portfolio, capacity, equipment, cost, or risk", "Multiple functions need one controlled decision basis", "The scope requires project-specific expert challenge and delivery"].map((item) => <li key={item} className="flex items-start gap-2 text-sm text-slate-700"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-700" />{item}</li>)}</ul><Link href="/quality-lab" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-800">Explore Quality Lab <ArrowRight className="h-4 w-4" /></Link></article>
+          <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-200 lg:grid-cols-2">
+            <article className="bg-sky-50 p-6 sm:p-8">
+              <Sparkles className="h-6 w-6 text-sky-800" />
+              <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-sky-800">Choose Pro when</p>
+              <h2 className="mt-2 text-2xl font-bold text-slate-950">You want ongoing professional depth.</h2>
+              <ul className="mt-5 space-y-3">{proReasons.map((item) => <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-slate-700"><Check className="mt-1 h-4 w-4 shrink-0 text-sky-700" />{item}</li>)}</ul>
+            </article>
+            <article className="bg-teal-50 p-6 sm:p-8">
+              <ShieldCheck className="h-6 w-6 text-teal-800" />
+              <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-teal-800">Choose Quality Lab when</p>
+              <h2 className="mt-2 text-2xl font-bold text-slate-950">A real site decision needs scoped work.</h2>
+              <ul className="mt-5 space-y-3">{qualityLabReasons.map((item) => <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-slate-700"><Check className="mt-1 h-4 w-4 shrink-0 text-teal-700" />{item}</li>)}</ul>
+              <Link href="/quality-lab" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-800">Explore Quality Lab <ArrowRight className="h-4 w-4" /></Link>
+            </article>
           </div>
         </div>
       </section>
 
-      <section className="bg-[#ecf5f2] px-4 py-16 md:py-20">
-        <div className="mx-auto max-w-4xl text-center"><Crown className="mx-auto h-8 w-8 text-sky-800" /><h2 className="mt-4 text-3xl font-bold text-slate-950 md:text-5xl">Inspect the public layer before upgrading.</h2><p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600">Explore public evidence and tools first. Upgrade when the deeper resources and reusable files match work you actually need to do.</p><div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><Link href="/pricing#evidence-plans" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-sky-700 px-5 py-3 text-sm font-bold text-white hover:bg-sky-800">Compare Free and Pro <ArrowRight className="h-4 w-4" /></Link><Link href="/academy" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-950 hover:border-sky-700">Explore public resources</Link></div></div>
+      <section className="bg-[#07182d] px-4 py-14 text-slate-100 md:py-16">
+        <div className="mx-auto max-w-6xl rounded-[1.75rem] border border-sky-300/20 bg-sky-300/[0.055] p-6 sm:p-9 lg:flex lg:items-center lg:justify-between lg:gap-12">
+          <div className="max-w-2xl">
+            <div className="flex items-center gap-2 text-sky-200"><Crown className="h-5 w-5" /><span className="text-xs font-bold uppercase tracking-[0.17em]">Atlas Pro</span></div>
+            <h2 className="mt-4 font-display text-3xl font-bold tracking-[-0.025em] md:text-4xl">Start with the public layer. Upgrade when repeat work begins.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">No project engagement is bundled into Pro. You are paying for deeper access and reusable professional resources.</p>
+          </div>
+          <div className="mt-7 min-w-[17rem] rounded-2xl border border-white/10 bg-[#0b1d33] p-5 lg:mt-0">
+            <p className="text-sm text-slate-400">Membership from</p>
+            <p className="mt-1 text-3xl font-bold text-white">$8/month</p>
+            <Link href="/pricing#evidence-plans" className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200">See plans <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+        </div>
       </section>
     </div>
   );

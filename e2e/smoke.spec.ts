@@ -305,7 +305,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: "See Free vs Pro", exact: true })).toHaveAttribute("href", "/pro");
 
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /deeper professional layer/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Evidence, tools, and working files/i })).toBeVisible();
 
     await page.goto("/quality-lab/how-it-works");
     await expect(page.getByRole("heading", { name: /fragmented lab question/i })).toBeVisible();
