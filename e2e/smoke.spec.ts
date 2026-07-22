@@ -351,6 +351,10 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Save month/i }).click();
     await expect(page.getByRole("status")).toContainText("saved in this browser");
     await expect(page.getByText("Site QA lead").first()).toBeVisible();
+    const portfolio = page.getByLabel("Monthly portfolio pulse");
+    await expect(portfolio.getByText("Six-month working completeness")).toBeVisible();
+    await expect(portfolio.getByText("Attention queue")).toBeVisible();
+    await expect(portfolio.getByTitle(/Open Audit readiness review/i)).toBeVisible();
     await page.getByRole("button", { name: /Start next month/i }).click();
     await expect(page.getByRole("status")).toContainText("Started a new month");
   });

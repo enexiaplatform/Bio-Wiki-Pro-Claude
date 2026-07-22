@@ -48,6 +48,18 @@ export interface AtlasProMonthlyCycleStep {
   evidence: string;
 }
 
+export interface AtlasProMonthlyPortfolioItem {
+  id: string;
+  month: string;
+  focus: AtlasProMonthlyFocus;
+  focusLabel: string;
+  readinessPercent: number;
+  closeStatus: AtlasProMonthlyActionStatus;
+  reviewDate: string;
+  carryover: string;
+  isPastReviewDate: boolean;
+}
+
 export const atlasProMonthlyInputSchema = z.object({
   month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
   role: z.enum(atlasProMonthlyRoleValues),
@@ -228,6 +240,34 @@ export function compileAtlasProMonthlyReview(input: AtlasProMonthlyInput) {
     readiness: { completeCount, totalCount: checks.length, percent: Math.round((completeCount / checks.length) * 100), checks, missing: checks.filter((item) => !item.complete).map((item) => item.label) },
     steps,
     boundary: "This is a browser-local professional working record. It does not establish compliance, close an investigation or CAPA, approve a method or supplier, disposition product, replace a controlled site record, or provide project-specific expert review.",
+  };
+}
+
+export function compileAtlasProMonthlyPortfolio(records: AtlasProMonthlyReviewRecord[], today = new Date().toISOString().slice(0, 10)) {
+  const items: AtlasProMonthlyPortfolioItem[] = records
+    .map((record) => ({
+      id: record.id,
+      month: record.input.month,
+      focus: record.input.focus,
+      focusLabel: ATLAS_PRO_MONTHLY_FOCUS[record.input.focus].label,
+      readinessPercent: compileAtlasProMonthlyReview(record.input).readiness.percent,
+      closeStatus: record.statuses.close,
+      reviewDate: record.input.reviewDate,
+      carryover: record.input.carryover,
+      isPastReviewDate: Boolean(record.input.reviewDate && record.input.reviewDate < today && record.statuses.close !== "closed"),
+    }))
+    .sort((left, right) => right.month.localeCompare(left.month));
+  const uniqueMonths = new Set(items.map((item) => item.month)).size;
+  const focusCoverage = new Set(items.map((item) => item.focus)).size;
+  const closedCycles = items.filter((item) => item.closeStatus === "closed").length;
+  const attentionItems = items.filter((item) => item.closeStatus !== "closed" || item.carryover.trim()).slice(0, 4);
+  return {
+    items,
+    uniqueMonths,
+    focusCoverage,
+    closedCycles,
+    attentionItems,
+    recentTrend: [...items].sort((left, right) => left.month.localeCompare(right.month)).slice(-6),
   };
 }
 
