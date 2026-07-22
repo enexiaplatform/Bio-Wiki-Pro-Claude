@@ -152,6 +152,9 @@ export const analytics = {
   blueprintCtaClicked: (placement: string, destination: string) =>
     capture("blueprint_cta_clicked", { placement, destination }),
 
+  blueprintDecisionFrameCopied: (detailPercent: number, describedInputs: number) =>
+    capture("blueprint_decision_frame_copied", { detail_percent: detailPercent, described_inputs: describedInputs }),
+
   commercialPricingViewed: () => capture("commercial_pricing_viewed"),
 
   sampleBlueprintDownloaded: () => capture("sample_blueprint_downloaded", { format: "pdf" }),

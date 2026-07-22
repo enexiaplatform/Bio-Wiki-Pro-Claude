@@ -1,9 +1,17 @@
-import { ArrowRight, CheckCircle2, ClipboardList, Download, FileSpreadsheet, Network, ShieldCheck } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowRight, Check, CheckCircle2, CircleDashed, ClipboardList, Copy, Download, FileSpreadsheet, Network, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { copyText } from "@/lib/clipboard";
 import { blueprintDiscoveryTemplates } from "@/data/qualityLabDiscoveryTemplates";
+import {
+  assessQualityLabDecisionFrame,
+  emptyQualityLabDecisionFrame,
+  formatQualityLabDecisionFrame,
+  type QualityLabDecisionFrameInput,
+} from "@shared/quality-lab-decision-frame";
 
 const domains = [
   ["Compiler Core", "Cross-domain decisions, demand, capacity, scenarios, evidence and review", "/blog/product-portfolio-to-qc-capability-map"],
@@ -14,6 +22,16 @@ const domains = [
   ["Stability & sample management", "Protocols, chamber inventory, pulls, methods, trends and continuity", "/blog/stability-sample-management-capability-planning"],
   ["Validation & learning governance", "Frozen baselines, actuals, variance drivers, validation cases and controlled rule changes", "/blog/how-to-validate-a-quality-lab-domain-pack"],
 ] as const;
+
+const decisionFrameFields = [
+  { key: "decision", label: "Decision to support", prompt: "What operating, investment, capacity, sourcing, or sequencing decision must this Blueprint support?" },
+  { key: "decisionOwner", label: "Owner and reviewers", prompt: "Who owns the decision, and which QC, QA, regulatory, engineering, finance, or operations roles must review it?" },
+  { key: "firstScope", label: "First review scope", prompt: "Which site, products, markets, workflows, and scenarios belong in the first bounded review?" },
+  { key: "decisionGate", label: "Decision gate", prompt: "What date or project event requires the next decision?" },
+  { key: "evidenceBasis", label: "Available evidence", prompt: "Which demand histories, methods, specifications, equipment records, layouts, costs, or other inputs exist, and what are their limits?" },
+  { key: "unresolvedImpact", label: "Impact if unresolved", prompt: "What delay, cost, compliance, capacity, release, continuity, or redesign risk remains if this stays open?" },
+  { key: "excludedDecisions", label: "Decisions not authorized", prompt: "What must this work not approve yet, such as supplier selection, detailed engineering, validation, or regulatory acceptance?" },
+] as const satisfies ReadonlyArray<{ key: keyof QualityLabDecisionFrameInput; label: string; prompt: string }>;
 
 function csvCell(value: string) {
   return `"${value.replaceAll('"', '""')}"`;
@@ -33,10 +51,26 @@ function downloadTemplate(template: (typeof blueprintDiscoveryTemplates)[number]
 }
 
 export default function QualityLabDiscoveryPackPage() {
+  const [decisionFrame, setDecisionFrame] = useState<QualityLabDecisionFrameInput>(emptyQualityLabDecisionFrame);
+  const [decisionFrameCopied, setDecisionFrameCopied] = useState(false);
+  const decisionFrameReadiness = useMemo(() => assessQualityLabDecisionFrame(decisionFrame), [decisionFrame]);
+
   useSEO({
     title: "Atlas Blueprint Discovery Pack",
     description: "Free structured templates for collecting Quality Lab Blueprint inputs, requirements, evidence, assumptions and decisions.",
   });
+
+  function updateDecisionFrame(key: keyof QualityLabDecisionFrameInput, value: string) {
+    setDecisionFrame((current) => ({ ...current, [key]: value }));
+    setDecisionFrameCopied(false);
+  }
+
+  async function copyDecisionFrame() {
+    await copyText(formatQualityLabDecisionFrame(decisionFrame));
+    setDecisionFrameCopied(true);
+    analytics.blueprintDecisionFrameCopied(decisionFrameReadiness.percent, decisionFrameReadiness.completeCount);
+    window.setTimeout(() => setDecisionFrameCopied(false), 1800);
+  }
 
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
@@ -66,6 +100,52 @@ export default function QualityLabDiscoveryPackPage() {
                 <p className="mt-4 text-sm font-bold leading-6">{step}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="mb-12 overflow-hidden rounded-3xl border border-teal-300/20 bg-[#0a1728]">
+          <div className="grid lg:grid-cols-[1.3fr_0.7fr]">
+            <div className="border-b border-white/10 p-5 md:p-8 lg:border-b-0 lg:border-r">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Decision framing canvas</p>
+              <h2 className="mt-3 text-3xl font-bold">Define the decision before collecting every possible input.</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">A narrow decision frame prevents discovery from becoming an open-ended data request. Describe what must be decided, by whom, against which evidence, and what this work is not authorized to conclude.</p>
+              <div className="mt-7 grid gap-4 md:grid-cols-2">
+                {decisionFrameFields.map((field, index) => (
+                  <label key={field.key} className={index === decisionFrameFields.length - 1 ? "md:col-span-2" : ""}>
+                    <span className="mb-2 flex items-center justify-between gap-3 text-xs font-bold text-slate-200"><span>{field.label}</span><span className="text-[10px] font-semibold text-slate-600">0{index + 1}</span></span>
+                    <textarea aria-label={field.label} value={decisionFrame[field.key]} onChange={(event) => updateDecisionFrame(field.key, event.target.value)} rows={index === decisionFrameFields.length - 1 ? 3 : 4} placeholder={field.prompt} className="w-full resize-y rounded-xl border border-white/10 bg-slate-950/45 px-4 py-3 text-sm leading-6 text-slate-100 outline-none transition placeholder:text-slate-600 focus:border-teal-300/50" />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <aside className="bg-slate-950/35 p-5 md:p-8">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-300">Description status</p>
+              <h3 className="mt-2 text-2xl font-bold">{decisionFrameReadiness.completeCount} of {decisionFrameReadiness.totalCount} decision inputs described</h3>
+              <div role="progressbar" aria-label="Decision frame detail" aria-valuemin={0} aria-valuemax={100} aria-valuenow={decisionFrameReadiness.percent} className="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full rounded-full bg-teal-300 transition-all" style={{ width: `${decisionFrameReadiness.percent}%` }} />
+              </div>
+              <p className="mt-2 text-xs text-slate-500">{decisionFrameReadiness.percent}% described</p>
+
+              <div className="mt-6 space-y-3">
+                {decisionFrameReadiness.criteria.map((criterion) => (
+                  <div key={criterion.id} className="flex gap-3 text-xs leading-5">
+                    {criterion.complete ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" /> : <CircleDashed className="mt-0.5 h-4 w-4 shrink-0 text-slate-600" />}
+                    <div><p className={criterion.complete ? "font-bold text-slate-200" : "font-semibold text-slate-400"}>{criterion.label}</p>{!criterion.complete && <p className="mt-1 text-slate-600">{criterion.action}</p>}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-xl border border-amber-300/20 bg-amber-300/[0.045] p-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-300">Next discovery action</p>
+                <p className="mt-2 text-xs leading-6 text-slate-400">{decisionFrameReadiness.nextAction}</p>
+              </div>
+
+              <button type="button" onClick={copyDecisionFrame} className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">
+                {decisionFrameCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{decisionFrameCopied ? "Copied decision frame" : "Copy decision frame"}
+              </button>
+              <p className="mt-4 text-[10px] leading-5 text-slate-600">{decisionFrameReadiness.boundary}</p>
+            </aside>
           </div>
         </section>
 
