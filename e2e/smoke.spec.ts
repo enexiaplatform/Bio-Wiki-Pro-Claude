@@ -379,7 +379,12 @@ test.describe("public smoke", () => {
     const record = createCareerExecutionRecord(profile, undefined, new Date("2026-07-22T12:00:00.000Z"));
     await mockAdmin(page);
     await page.route("**/api/career-blueprint/access", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ entitled: true }) }));
-    await page.route("**/api/career-blueprint/execution", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ record }) }));
+    await page.route("**/api/career-blueprint/execution**", async (route) => {
+      if (route.request().method() === "GET") return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ record: null, syncAvailable: true }) });
+      if (route.request().method() === "POST") return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ record, syncAvailable: true }) });
+      const saved = route.request().postDataJSON();
+      return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ record: saved, syncAvailable: true }) });
+    });
     await page.addInitScript(({ key, value }) => window.localStorage.setItem(key, JSON.stringify(value)), { key: CAREER_PROFILE_STORAGE_KEY, value: profile });
     await page.goto("/career/blueprint");
     await expect(page.getByRole("heading", { name: "13-Week Execution Workspace", exact: true })).toBeVisible();
@@ -389,7 +394,7 @@ test.describe("public smoke", () => {
     await page.getByLabel("Sanitized artifact reference").fill("role-requirement-matrix-v1");
     await page.getByLabel("Reviewer feedback").fill("The requirement clusters are credible and the ownership boundary is accurate.");
     await page.getByRole("button", { name: /Save progress/i }).click();
-    await expect(page.getByRole("status")).toContainText("saved in this browser");
+    await expect(page.getByRole("status")).toContainText("saved to this browser and your Atlas account");
     await expect(page.getByRole("heading", { name: "1/13 weeks complete", exact: true })).toBeVisible();
     await page.getByLabel("Decision").selectOption("adjust");
     await expect(page.getByLabel("Decision")).toHaveValue("adjust");

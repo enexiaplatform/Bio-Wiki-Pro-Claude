@@ -214,7 +214,7 @@ export function CareerAssessment({ initialProfile, onCancel, onComplete, onStepC
               <p className="text-xs font-bold uppercase tracking-[0.13em] text-amber-300">Optional $20 upgrade</p>
               <p className="mt-2 text-sm leading-6 text-slate-400">A named, 38-page Career Operating Blueprint with role deconstruction, requirement diagnostics, proof-portfolio design, and a week-by-week execution system.</p>
             </div>
-            <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-500"><LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />Your profile stays in this browser unless you explicitly generate the purchased PDF.</p>
+            <p className="mt-5 flex items-start gap-2 text-xs leading-5 text-slate-500"><LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />Your free profile stays in this browser. After purchase, generating the PDF or opening the synced workspace sends the profile to your Atlas account.</p>
           </div>
         </aside>
       </div>

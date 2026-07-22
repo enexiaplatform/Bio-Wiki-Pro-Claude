@@ -17,7 +17,11 @@ export function loadCareerExecution(): CareerExecutionRecord | null {
 }
 
 export function saveCareerExecution(record: CareerExecutionRecord): CareerExecutionRecord {
-  const parsed = careerExecutionRecordSchema.parse({ ...record, updatedAt: new Date().toISOString() });
+  return cacheCareerExecution({ ...record, updatedAt: new Date().toISOString() });
+}
+
+export function cacheCareerExecution(record: CareerExecutionRecord): CareerExecutionRecord {
+  const parsed = careerExecutionRecordSchema.parse(record);
   window.localStorage.setItem(CAREER_EXECUTION_STORAGE_KEY, JSON.stringify(parsed));
   return parsed;
 }

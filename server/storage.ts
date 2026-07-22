@@ -7,6 +7,7 @@ import {
   contentEntries,
   lessonReads,
   atlasProMonthlyReviews,
+  careerBlueprintExecutions,
   nurtureSends,
   lifecycleSends,
   checkoutAttempts,
@@ -24,10 +25,12 @@ import {
   type QualityLabGovernanceRecordRow,
   type QualityLabGovernanceRevisionRow,
   type AtlasProMonthlyReviewRow,
+  type CareerBlueprintExecutionRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
 import type { AtlasProMonthlyReviewRecord } from "../shared/atlas-pro-monthly.js";
+import type { CareerExecutionRecord } from "../shared/career-execution.js";
 import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
 
 export type QualityLabReminderPreference = {
@@ -70,6 +73,8 @@ export interface IStorage {
   markLessonRead(userId: string, slug: string): Promise<void>;
   listAtlasProMonthlyReviews(userId: string): Promise<AtlasProMonthlyReviewRow[]>;
   upsertAtlasProMonthlyReview(userId: string, review: AtlasProMonthlyReviewRecord): Promise<AtlasProMonthlyReviewRow>;
+  getLatestCareerBlueprintExecution(userId: string): Promise<CareerBlueprintExecutionRow | undefined>;
+  upsertCareerBlueprintExecution(userId: string, record: CareerExecutionRecord): Promise<CareerBlueprintExecutionRow>;
   getNurtureCandidates(maxAgeDays: number): Promise<{ id: string; email: string | null; firstName: string | null; createdAt: Date | null }[]>;
   getSentNurtureSteps(userId: string): Promise<number[]>;
   recordNurtureSend(userId: string, step: number): Promise<void>;
@@ -273,6 +278,19 @@ export class DatabaseStorage implements IStorage {
     const [row] = existing
       ? await db.update(atlasProMonthlyReviews).set({ month: review.input.month, snapshot: review, updatedAt: new Date() }).where(eq(atlasProMonthlyReviews.id, existing.id)).returning()
       : await db.insert(atlasProMonthlyReviews).values({ userId, reviewId: review.id, month: review.input.month, snapshot: review }).returning();
+    return row;
+  }
+
+  async getLatestCareerBlueprintExecution(userId: string): Promise<CareerBlueprintExecutionRow | undefined> {
+    const [row] = await db.select().from(careerBlueprintExecutions).where(eq(careerBlueprintExecutions.userId, userId)).orderBy(desc(careerBlueprintExecutions.updatedAt)).limit(1);
+    return row;
+  }
+
+  async upsertCareerBlueprintExecution(userId: string, record: CareerExecutionRecord): Promise<CareerBlueprintExecutionRow> {
+    const [existing] = await db.select().from(careerBlueprintExecutions).where(and(eq(careerBlueprintExecutions.userId, userId), eq(careerBlueprintExecutions.executionId, record.id)));
+    const [row] = existing
+      ? await db.update(careerBlueprintExecutions).set({ routeId: record.routeId, snapshot: record, updatedAt: new Date() }).where(eq(careerBlueprintExecutions.id, existing.id)).returning()
+      : await db.insert(careerBlueprintExecutions).values({ userId, executionId: record.id, routeId: record.routeId, snapshot: record }).returning();
     return row;
   }
 

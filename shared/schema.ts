@@ -4,6 +4,7 @@ import { z } from "zod";
 import type { QualityLabReviewedProjectSnapshot } from "./quality-lab-persistence";
 import type { QualityLabGovernanceSnapshot } from "./quality-lab-governance";
 import type { AtlasProMonthlyReviewRecord } from "./atlas-pro-monthly";
+import type { CareerExecutionRecord } from "./career-execution";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -86,6 +87,24 @@ export const atlasProMonthlyReviews = pgTable(
   (t) => [uniqueIndex("atlas_pro_monthly_reviews_user_review_idx").on(t.userId, t.reviewId)],
 );
 export type AtlasProMonthlyReviewRow = typeof atlasProMonthlyReviews.$inferSelect;
+
+// One-time Career Blueprint purchasers can retain their execution workspace
+// across devices. This is a planning/evidence record, not a hiring assessment,
+// verified competency record, employment guarantee, or confidential file store.
+export const careerBlueprintExecutions = pgTable(
+  "career_blueprint_executions",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    executionId: text("execution_id").notNull(),
+    routeId: text("route_id").notNull(),
+    snapshot: jsonb("snapshot").$type<CareerExecutionRecord>().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("career_blueprint_executions_user_execution_idx").on(t.userId, t.executionId)],
+);
+export type CareerBlueprintExecutionRow = typeof careerBlueprintExecutions.$inferSelect;
 
 // Free→Pro email nurture: one row per (user, step) so the daily cron never
 // re-sends a step. Degrades gracefully if the table is absent (pre-migration).

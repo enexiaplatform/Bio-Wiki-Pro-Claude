@@ -19,8 +19,8 @@ export default function PaymentSuccessPage() {
   const isDiagnostic = productType === "scope_diagnostic";
   const isCareerBlueprint = productType === "career_blueprint";
   const isKit = productType !== "unknown" && !productType.startsWith("pro_subscription") && !isDiagnostic && !isCareerBlueprint;
-  const destination = isDiagnostic ? "/quality-lab/review?offer=diagnostic" : isCareerBlueprint ? "/career?purchase=success" : isKit ? "/my-downloads" : "/academy";
-  const destinationLabel = isDiagnostic ? "Complete Diagnostic intake" : isCareerBlueprint ? "Generate my Career Blueprint" : isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
+  const destination = isDiagnostic ? "/quality-lab/review?offer=diagnostic" : isCareerBlueprint ? "/career/blueprint" : isKit ? "/my-downloads" : "/academy";
+  const destinationLabel = isDiagnostic ? "Complete Diagnostic intake" : isCareerBlueprint ? "Open my 13-week workspace" : isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
 
   useSEO({
     title: "Payment successful",
@@ -49,9 +49,9 @@ export default function PaymentSuccessPage() {
       ]
     : isCareerBlueprint
       ? [
-          "Return to your saved Career Snapshot.",
-          "Generate the personalized 38-page Career Operating Blueprint from your browser-local profile.",
-          "Download it again whenever your career evidence changes.",
+          "Open the personalized 13-week workspace built from your saved Career Snapshot.",
+          "Track weekly evidence, sanitized artifacts, and reviewer feedback.",
+          "Download the 38-page Blueprint and export your execution brief whenever your evidence changes.",
         ]
     : isKit
       ? [
@@ -74,7 +74,7 @@ export default function PaymentSuccessPage() {
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300">Payment confirmed</p>
         <h1 className="text-3xl font-bold tracking-tight md:text-5xl">{t("paymentSuccess.title")}</h1>
         <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-muted-foreground md:text-base">
-          {isDiagnostic ? "Your $149 Paid Scope Diagnostic is reserved. Atlas will respond within two business days." : isCareerBlueprint ? "Your Personal Career Blueprint is unlocked. Return to Career to generate your named PDF." : isKit ? "Your files are ready in your download library." : t("paymentSuccess.subtitle")}
+          {isDiagnostic ? "Your $149 Paid Scope Diagnostic is reserved. Atlas will respond within two business days." : isCareerBlueprint ? "Your Personal Career Blueprint is unlocked: named PDF, lifetime workspace, and account-synced progress." : isKit ? "Your files are ready in your download library." : t("paymentSuccess.subtitle")}
         </p>
 
         <div className="mx-auto mt-7 grid max-w-3xl gap-3 text-left md:grid-cols-3">

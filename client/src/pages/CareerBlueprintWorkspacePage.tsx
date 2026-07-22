@@ -5,8 +5,8 @@ import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { CAREER_PROFILE_STORAGE_KEY, careerProfileSchema } from "@shared/career-blueprint";
-import { careerExecutionDecisionValues, careerExecutionStatusValues, compileCareerExecution, type CareerExecutionDecision, type CareerExecutionRecord, type CareerExecutionStatus } from "@shared/career-execution";
-import { downloadCareerExecution, loadCareerExecution, saveCareerExecution } from "@/lib/career-execution";
+import { careerExecutionDecisionValues, careerExecutionRecordSchema, careerExecutionStatusValues, compileCareerExecution, type CareerExecutionDecision, type CareerExecutionRecord, type CareerExecutionStatus } from "@shared/career-execution";
+import { cacheCareerExecution, downloadCareerExecution, loadCareerExecution, saveCareerExecution } from "@/lib/career-execution";
 
 const statusLabels: Record<CareerExecutionStatus, string> = { "not-started": "Not started", "in-progress": "In progress", "waiting-review": "Waiting review", complete: "Complete" };
 const decisionLabels: Record<CareerExecutionDecision, string> = { "not-decided": "Not decided", continue: "Continue the route", adjust: "Adjust the route", pivot: "Pivot to another route" };
@@ -26,7 +26,7 @@ function readCareerProfile() {
 function LockedWorkspace() {
   return <div className="min-h-screen bg-[#07182d] px-4 pb-24 pt-8 text-slate-100"><div className="mx-auto max-w-6xl">
     <section className="grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-start">
-      <div className="lg:sticky lg:top-24"><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><LockKeyhole className="h-3.5 w-3.5" /> Career Blueprint workspace</span><h1 className="mt-5 text-4xl font-bold leading-tight md:text-5xl">Turn your Blueprint into 13 weeks of evidence.</h1><p className="mt-4 text-sm leading-7 text-slate-400">The paid Blueprint includes a lifetime-access execution workspace for weekly actions, sanitized proof records, reviewer feedback, and a continue-adjust-pivot decision.</p><div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-sm font-bold text-white">Included with the $20 one-time Blueprint</p><ul className="mt-3 space-y-2 text-xs leading-5 text-slate-400">{["Personalized 13-week action path", "Weekly evidence and artifact log", "Reviewer feedback checkpoints", "Continue, adjust, or pivot decision gate", "Portable Markdown execution brief", "Lifetime browser-local workspace access"].map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-300" />{item}</li>)}</ul><Link href="/career" className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950">Build my free snapshot first <ArrowRight className="h-4 w-4" /></Link></div><p className="mt-4 flex gap-2 text-[11px] leading-5 text-slate-500"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />The preview shows the operating structure. Personalized weekly instructions require a completed one-time purchase.</p></div>
+      <div className="lg:sticky lg:top-24"><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><LockKeyhole className="h-3.5 w-3.5" /> Career Blueprint workspace</span><h1 className="mt-5 text-4xl font-bold leading-tight md:text-5xl">Turn your Blueprint into 13 weeks of evidence.</h1><p className="mt-4 text-sm leading-7 text-slate-400">The paid Blueprint includes a lifetime-access execution workspace for weekly actions, sanitized proof records, reviewer feedback, and a continue-adjust-pivot decision.</p><div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-sm font-bold text-white">Included with the $20 one-time Blueprint</p><ul className="mt-3 space-y-2 text-xs leading-5 text-slate-400">{["Personalized 13-week action path", "Weekly evidence and artifact log", "Reviewer feedback checkpoints", "Continue, adjust, or pivot decision gate", "Portable Markdown execution brief", "Browser copy with lifetime account sync"].map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-teal-300" />{item}</li>)}</ul><Link href="/career" className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950">Build my free snapshot first <ArrowRight className="h-4 w-4" /></Link></div><p className="mt-4 flex gap-2 text-[11px] leading-5 text-slate-500"><ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />The preview shows the operating structure. Personalized weekly instructions require a completed one-time purchase.</p></div>
       <div className="overflow-hidden rounded-3xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.08] via-slate-950 to-teal-300/[0.05] p-5 md:p-7"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">Illustrative execution map</p><div className="mt-5 grid gap-3 sm:grid-cols-2">{[["01", "Validate", "Confirm the route against real requirements and reviewed evidence."], ["02", "Build", "Create one bounded proof asset without inflating contribution."], ["03", "Prove", "Obtain reviewer challenge and make the outcome observable."], ["04", "Transition", "Translate accepted proof and make a continue-adjust-pivot decision."]].map(([number, title, body]) => <article key={number} className="rounded-2xl border border-white/10 bg-black/20 p-5"><span className="text-xs font-bold text-amber-200">{number}</span><h2 className="mt-4 text-xl font-bold">{title}</h2><p className="mt-2 text-xs leading-6 text-slate-400">{body}</p></article>)}</div><div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-5"><div className="flex items-center justify-between gap-3"><p className="text-sm font-bold">13-week progress rail</p><span className="text-[10px] uppercase tracking-wider text-slate-500">Evidence, not gamification</span></div><div className="mt-5 grid grid-cols-[repeat(13,minmax(0,1fr))] gap-1">{Array.from({ length: 13 }, (_, index) => <span key={index} className={`h-8 rounded-md border ${index < 3 ? "border-amber-300/30 bg-amber-300/10" : "border-white/10 bg-white/[0.03]"}`} />)}</div></div></div>
     </section>
   </div></div>;
@@ -38,6 +38,7 @@ export default function CareerBlueprintWorkspacePage() {
   const [access, setAccess] = useState<"checking" | "locked" | "ready">("checking");
   const [activeWeek, setActiveWeek] = useState(1);
   const [notice, setNotice] = useState("");
+  const [syncState, setSyncState] = useState<"local" | "syncing" | "synced" | "unavailable">("local");
   const compiled = useMemo(() => record ? compileCareerExecution(record) : null, [record]);
 
   useSEO({ title: "Career Blueprint Execution Workspace", description: "Run a personalized 13-week career evidence plan with weekly actions, artifact references, reviewer feedback, progress, and a route decision gate." });
@@ -53,16 +54,31 @@ export default function CareerBlueprintWorkspacePage() {
         if (!active) return;
         if (!accessData.entitled) { setAccess("locked"); return; }
         const saved = loadCareerExecution();
-        if (saved) { setRecord(saved); setActiveWeek(compileCareerExecution(saved).currentWeek); setAccess("ready"); analytics.careerExecutionOpened(saved.routeId, true); return; }
+        setSyncState("syncing");
+        const remoteResponse = await fetch("/api/career-blueprint/execution", { credentials: "include" });
+        const remoteData = remoteResponse.ok ? await remoteResponse.json() : { record: null, syncAvailable: false };
+        const remoteParsed = careerExecutionRecordSchema.safeParse(remoteData.record);
+        const remote = remoteParsed.success ? remoteParsed.data : null;
+        const selected = remote && (!saved || Date.parse(remote.updatedAt) > Date.parse(saved.updatedAt)) ? remote : saved;
+        if (selected) {
+          const selectedRecord = selected === remote ? cacheCareerExecution(selected) : selected;
+          setRecord(selectedRecord); setActiveWeek(compileCareerExecution(selectedRecord).currentWeek); setAccess("ready"); analytics.careerExecutionOpened(selectedRecord.routeId, Boolean(saved));
+          if (!remoteData.syncAvailable) { setSyncState("unavailable"); return; }
+          if (selected === saved && (!remote || Date.parse(saved.updatedAt) > Date.parse(remote.updatedAt))) {
+            const syncResponse = await fetch(`/api/career-blueprint/execution/${encodeURIComponent(saved.id)}`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(saved) });
+            setSyncState(syncResponse.ok ? "synced" : "unavailable");
+          } else setSyncState("synced");
+          return;
+        }
         const profile = readCareerProfile();
-        if (!profile) { setAccess("ready"); return; }
+        if (!profile) { setAccess("ready"); setSyncState(remoteData.syncAvailable ? "synced" : "unavailable"); return; }
         const response = await fetch("/api/career-blueprint/execution", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(profile) });
         const data = await response.json();
         if (!response.ok || !data.record) throw new Error(data.message ?? "Unable to create execution workspace");
         const next = saveCareerExecution(data.record);
         if (!active) return;
-        setRecord(next); setActiveWeek(1); setAccess("ready"); analytics.careerExecutionOpened(next.routeId, false);
-      } catch { if (active) { setAccess("ready"); setNotice("Your purchased workspace could not be prepared. Your browser-local profile remains unchanged."); } }
+        setRecord(next); setActiveWeek(1); setAccess("ready"); setSyncState(data.syncAvailable ? "synced" : "unavailable"); analytics.careerExecutionOpened(next.routeId, false);
+      } catch { if (active) { setAccess("ready"); setSyncState("unavailable"); setNotice("Your purchased workspace could not be prepared. Your browser-local profile remains unchanged."); } }
     }
     void initialize();
     return () => { active = false; };
@@ -76,11 +92,23 @@ export default function CareerBlueprintWorkspacePage() {
   const activeState = record.weeks.find((item) => item.week === activeWeek)!;
 
   function patchWeek(patch: Partial<typeof activeState>) { setRecord((current) => current ? { ...current, weeks: current.weeks.map((item) => item.week === activeWeek ? { ...item, ...patch } : item) } : current); setNotice(""); }
-  function save() { if (!record) return; const saved = saveCareerExecution(record); setRecord(saved); setNotice("Execution workspace saved in this browser."); analytics.careerExecutionSaved(saved.routeId, compileCareerExecution(saved).completeWeeks); }
+  async function save() {
+    if (!record) return;
+    const saved = saveCareerExecution(record);
+    setRecord(saved); setSyncState("syncing"); setNotice("Saved in this browser. Syncing your account copy…");
+    analytics.careerExecutionSaved(saved.routeId, compileCareerExecution(saved).completeWeeks);
+    try {
+      const response = await fetch(`/api/career-blueprint/execution/${encodeURIComponent(saved.id)}`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(saved) });
+      if (!response.ok) throw new Error("Account sync unavailable");
+      setSyncState("synced"); setNotice("Progress saved to this browser and your Atlas account.");
+    } catch {
+      setSyncState("unavailable"); setNotice("Progress is safe in this browser. Account sync is temporarily unavailable.");
+    }
+  }
   function exportBrief() { if (!record || !compiled) return; downloadCareerExecution(record); analytics.careerExecutionExported(record.routeId, compiled.completeWeeks); }
 
   return <div className="min-h-screen bg-[#07182d] px-4 pb-28 pt-8 text-slate-100"><div className="mx-auto max-w-7xl">
-    <header className="rounded-3xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.08] via-slate-950 to-teal-300/[0.05] p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Purchased Career Blueprint</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">13-Week Execution Workspace</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">{record.profile.fullName} · {record.profile.currentRole} → {record.routeTitle}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={save} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950"><Save className="h-4 w-4" /> Save progress</button><button type="button" onClick={exportBrief} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><Link href="/career" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RotateCcw className="h-4 w-4" /> Review route</Link></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-teal-200">{notice}</p>}</header>
+    <header className="rounded-3xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.08] via-slate-950 to-teal-300/[0.05] p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Purchased Career Blueprint</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">13-Week Execution Workspace</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">{record.profile.fullName} · {record.profile.currentRole} → {record.routeTitle}</p><p className="mt-2 text-[11px] text-slate-500">{syncState === "synced" ? "Atlas account synced · browser copy retained" : syncState === "syncing" ? "Syncing your Atlas account copy…" : syncState === "unavailable" ? "Browser copy active · account sync temporarily unavailable" : "Browser-local working copy"}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => void save()} disabled={syncState === "syncing"} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 disabled:cursor-wait disabled:opacity-60"><Save className="h-4 w-4" /> Save progress</button><button type="button" onClick={exportBrief} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><Link href="/career" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RotateCcw className="h-4 w-4" /> Review route</Link></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-teal-200">{notice}</p>}</header>
 
     <section className="mt-6 grid gap-4 md:grid-cols-4" aria-label="Career execution phases">{compiled.phases.map((phase, index) => <article key={phase.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center justify-between"><span className="text-xs font-bold text-amber-200">0{index + 1}</span><span className="text-[10px] text-slate-500">{phase.complete}/{phase.total} complete</span></div><h2 className="mt-4 font-bold">{phase.label}</h2><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-teal-300" style={{ width: `${(phase.complete / phase.total) * 100}%` }} /></div></article>)}</section>
 

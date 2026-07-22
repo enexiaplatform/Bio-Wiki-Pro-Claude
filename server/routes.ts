@@ -21,7 +21,7 @@ import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } fro
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
 import { careerProfileSchema } from "../shared/career-blueprint.js";
-import { createCareerExecutionRecord } from "../shared/career-execution.js";
+import { careerExecutionRecordSchema, createCareerExecutionRecord } from "../shared/career-execution.js";
 import { careerBlueprintPdf, careerProfileFilename } from "./career-blueprint.js";
 import { atlasProMonthlyReviewRecordSchema } from "../shared/atlas-pro-monthly.js";
 
@@ -698,6 +698,22 @@ export async function registerRoutes(app: Express): Promise<void> {
     res.json({ entitled });
   });
 
+  app.get("/api/career-blueprint/execution", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
+    if (!entitled) return res.status(403).json({ message: "Personal Career Blueprint purchase required" });
+
+    try {
+      const row = await storage.getLatestCareerBlueprintExecution(userId);
+      const record = row ? careerExecutionRecordSchema.parse(row.snapshot) : null;
+      return res.json({ record, syncedAt: row?.updatedAt ?? null, syncAvailable: true });
+    } catch (error) {
+      console.error("[Career Blueprint execution] load error:", error);
+      return res.json({ record: null, syncedAt: null, syncAvailable: false });
+    }
+  });
+
   app.post("/api/career-blueprint/execution", isAuthenticated, async (req: any, res) => {
     const userId: string = req.session.userId;
     const user = await storage.getUser(userId).catch(() => undefined);
@@ -706,7 +722,32 @@ export async function registerRoutes(app: Express): Promise<void> {
 
     const parsed = careerProfileSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: "Complete the career assessment before opening your execution workspace" });
-    return res.json({ record: createCareerExecutionRecord(parsed.data, parsed.data.selectedRouteId) });
+    const record = createCareerExecutionRecord(parsed.data, parsed.data.selectedRouteId);
+    try {
+      const row = await storage.upsertCareerBlueprintExecution(userId, record);
+      return res.json({ record: row.snapshot, syncedAt: row.updatedAt, syncAvailable: true });
+    } catch (error) {
+      console.error("[Career Blueprint execution] initial sync error:", error);
+      return res.json({ record, syncedAt: null, syncAvailable: false });
+    }
+  });
+
+  app.put("/api/career-blueprint/execution/:executionId", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
+    if (!entitled) return res.status(403).json({ message: "Personal Career Blueprint purchase required" });
+
+    try {
+      const record = careerExecutionRecordSchema.parse(req.body);
+      if (record.id !== req.params.executionId) return res.status(400).json({ message: "Execution identifier mismatch" });
+      const row = await storage.upsertCareerBlueprintExecution(userId, record);
+      return res.status(201).json({ record: row.snapshot, syncedAt: row.updatedAt, syncAvailable: true });
+    } catch (error) {
+      if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid Career Blueprint execution record", issues: error.issues });
+      console.error("[Career Blueprint execution] save error:", error);
+      return res.status(503).json({ message: "Workspace saved locally; account sync is temporarily unavailable" });
+    }
   });
 
   app.post("/api/career-blueprint/download", isAuthenticated, async (req: any, res) => {

@@ -126,9 +126,9 @@ export async function sendPurchaseConfirmation(
       ` : isCareerBlueprint ? `
       <div class="box">
         <p><strong style="color:#10b981;">Your Personal Career Blueprint is unlocked</strong></p>
-        <p>Return to your browser-local Career Snapshot to generate the named 38-page Career Operating Blueprint. Atlas receives your profile only when you explicitly request the download.</p>
+        <p>Open your personalized 13-week workspace to track evidence and reviewer feedback, then generate the named 38-page Career Operating Blueprint whenever your profile changes.</p>
       </div>
-      <a href="${BASE_URL}/career?purchase=success" class="cta">Generate my Career Blueprint â†’</a>
+      <a href="${BASE_URL}/career/blueprint" class="cta">Open my Career Blueprint workspace â†’</a>
       ` : hasDownloads ? `
     <div class="box">
       <p><strong style="color:#10b981;">Your files are ready</strong></p>

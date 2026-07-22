@@ -27,6 +27,8 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     markLessonRead: vi.fn(),
     listAtlasProMonthlyReviews: vi.fn(() => Promise.resolve([])),
     upsertAtlasProMonthlyReview: vi.fn(),
+    getLatestCareerBlueprintExecution: vi.fn(() => Promise.resolve(undefined)),
+    upsertCareerBlueprintExecution: vi.fn(),
     setVerificationToken: vi.fn(() => Promise.resolve()),
     getUserByVerificationToken: vi.fn(),
     markEmailVerified: vi.fn(() => Promise.resolve()),
@@ -93,6 +95,7 @@ import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
 import { defaultCareerProfile } from "../../shared/career-blueprint.js";
+import { createCareerExecutionRecord } from "../../shared/career-execution.js";
 
 async function buildApp() {
   const app = express();
@@ -1018,7 +1021,9 @@ describe("career blueprint fulfillment", () => {
   it("keeps access and generation behind authentication", async () => {
     const app = await buildApp();
     await request(app).get("/api/career-blueprint/access").expect(401);
+    await request(app).get("/api/career-blueprint/execution").expect(401);
     await request(app).post("/api/career-blueprint/execution").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
+    await request(app).put("/api/career-blueprint/execution/execution-1").send({}).expect(401);
     await request(app).post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
   });
 
@@ -1027,6 +1032,7 @@ describe("career blueprint fulfillment", () => {
     const agent = await authedAgent(app);
     storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
     storageMock.hasCompletedPurchase.mockResolvedValue(true);
+    storageMock.upsertCareerBlueprintExecution.mockImplementation(async (_userId, record) => ({ snapshot: record, updatedAt: new Date("2026-07-22T12:00:00.000Z") }));
 
     const access = await agent.get("/api/career-blueprint/access");
     expect(access.status).toBe(200);
@@ -1037,6 +1043,17 @@ describe("career blueprint fulfillment", () => {
     expect(execution.body.record.routeTitle).toBe("Senior QC Microbiologist");
     expect(execution.body.record.plan).toHaveLength(13);
     expect(execution.body.record.weeks).toHaveLength(13);
+    expect(execution.body.syncAvailable).toBe(true);
+
+    storageMock.getLatestCareerBlueprintExecution.mockResolvedValueOnce({ snapshot: execution.body.record, updatedAt: new Date("2026-07-22T12:00:00.000Z") });
+    const synced = await agent.get("/api/career-blueprint/execution");
+    expect(synced.status).toBe(200);
+    expect(synced.body.record.id).toBe(execution.body.record.id);
+
+    const updatedRecord = { ...execution.body.record, decision: "adjust", decisionRationale: "Reviewer evidence shows a narrower intermediate role is more credible." };
+    const saved = await agent.put(`/api/career-blueprint/execution/${execution.body.record.id}`).send(updatedRecord);
+    expect(saved.status).toBe(201);
+    expect(saved.body.record.decision).toBe("adjust");
 
     const download = await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" });
     expect(download.status).toBe(200);
@@ -1050,7 +1067,10 @@ describe("career blueprint fulfillment", () => {
     const agent = await authedAgent(app);
     storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
     storageMock.hasCompletedPurchase.mockResolvedValue(false);
+    await agent.get("/api/career-blueprint/execution").expect(403);
     await agent.post("/api/career-blueprint/execution").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(403);
+    const record = createCareerExecutionRecord({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" });
+    await agent.put(`/api/career-blueprint/execution/${record.id}`).send(record).expect(403);
     await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(403);
   });
 });
