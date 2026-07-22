@@ -40,6 +40,7 @@ const PlatformHowItWorksPage = lazy(() => import("@/pages/PlatformHowItWorksPage
 const DeliverablesPage = lazy(() => import("@/pages/DeliverablesPage"));
 const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const ProPage = lazy(() => import("@/pages/ProPage"));
+const AtlasProMonthlyReviewPage = lazy(() => import("@/pages/AtlasProMonthlyReviewPage"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
@@ -118,6 +119,7 @@ function Layout() {
           <Route path="/workflows/:slug" component={WorkflowDetailPage} />
           <Route path="/products" component={ProductsPage} />
           <Route path="/pro" component={ProPage} />
+          <Route path="/pro/monthly-review" component={AtlasProMonthlyReviewPage} />
           <Route path="/how-it-works" component={PlatformHowItWorksPage} />
           <Route path="/deliverables"><Redirect to="/quality-lab/deliverables" replace /></Route>
           <Route path="/quality-lab" component={QualityLabLandingPage} />

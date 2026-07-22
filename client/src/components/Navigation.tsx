@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, FileCheck2, LayoutDashboard, ChevronDown, Home } from "lucide-react";
+import { ArrowRight, BookOpen, Calculator, ShieldCheck, Briefcase, TrendingUp, LogIn, LogOut, Crown, NotebookPen, Package, Search, Menu, GraduationCap, Download, Tag, BookA, Info, HelpCircle, Workflow, Settings as SettingsIcon, Building2, ClipboardCheck, FileCheck2, LayoutDashboard, ChevronDown, Home, CalendarDays } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -84,6 +84,7 @@ const moreLinks = [
   { name: "How Atlas works", icon: Workflow, path: "/how-it-works" },
   { name: "Blueprint deliverables", icon: FileCheck2, path: "/quality-lab/deliverables" },
   { name: "Atlas Pro", icon: Crown, path: "/pro" },
+  { name: "Pro Monthly Review", icon: CalendarDays, path: "/pro/monthly-review" },
   { name: "Workflows", icon: Workflow, path: "/workflows" },
   { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Toolkits", icon: Package, path: "/toolkits" },
@@ -103,6 +104,7 @@ const moreLinks = [
 // Account menu (desktop avatar dropdown) — personal surfaces moved off the
 // primary tab bar so the top nav stays content-focused.
 const accountLinks = [
+  { name: "Pro Monthly Review", icon: CalendarDays, path: "/pro/monthly-review" },
   { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
   { name: "My Downloads", icon: Download, path: "/my-downloads" },
   { name: "Vault", icon: NotebookPen, path: "/vault" },

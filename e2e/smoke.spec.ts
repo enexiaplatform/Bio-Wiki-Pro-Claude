@@ -307,11 +307,16 @@ test.describe("public smoke", () => {
     await page.goto("/pro");
     await expect(page.getByRole("heading", { name: /Evidence, tools, and working files/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Start with work to be done, then pull the right depth/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open the monthly workspace/i })).toHaveAttribute("href", "/pro/monthly-review");
     await expect(page.getByRole("link", { name: "Inspect the audit kit", exact: true })).toHaveAttribute("href", "/toolkits/gmp-audit-kit");
     await page.getByRole("button", { name: "Build Investigate a quality signal brief", exact: true }).click();
     await expect(page.getByRole("heading", { name: "Investigate a quality signal", exact: true }).last()).toBeVisible();
     await page.getByRole("button", { name: "Copy selected workflow brief", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copied workflow brief", exact: true })).toBeVisible();
+
+    await page.goto("/pro/monthly-review");
+    await expect(page.getByRole("heading", { name: /A quality review you can run again next month/i })).toBeVisible();
+    await expect(page.getByText(/editing, saving, history and export require an active Pro entitlement/i)).toBeVisible();
 
     await page.goto("/quality-lab");
     await expect(page.getByRole("heading", { name: /See how a real planning question changes shape/i })).toBeVisible();
@@ -331,6 +336,23 @@ test.describe("public smoke", () => {
     for (const group of ["Products", "Quality Lab", "Resources", "Company"]) {
       await expect(footer.getByRole("heading", { name: group, exact: true })).toBeVisible();
     }
+  });
+
+  test("Pro member can save, reopen and roll forward a monthly quality review", async ({ page }) => {
+    await mockAdmin(page);
+    await page.goto("/pro/monthly-review");
+    await expect(page.getByRole("heading", { name: "Monthly Quality Review", exact: true })).toBeVisible();
+    await page.getByLabel("Decision this month").fill("Decide which recurring laboratory signals require qualified escalation before this month's quality review closes.");
+    await page.getByLabel("Signal or trigger").fill("Three repeat deviations share one sample-handling step and two effectiveness checks remain overdue.");
+    await page.getByLabel("Evidence held").fill("Deviation register, trend report, sample-handling records and current CAPA status.");
+    await page.getByLabel("Evidence still needed").fill("Original-record review, training effectiveness and qualified product-impact disposition.");
+    await page.getByLabel("Accountable owner").fill("Site QA lead");
+    await page.getByLabel("Review date").fill("2026-08-28");
+    await page.getByRole("button", { name: /Save month/i }).click();
+    await expect(page.getByRole("status")).toContainText("saved in this browser");
+    await expect(page.getByText("Site QA lead").first()).toBeVisible();
+    await page.getByRole("button", { name: /Start next month/i }).click();
+    await expect(page.getByRole("status")).toContainText("Started a new month");
   });
 
   test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {

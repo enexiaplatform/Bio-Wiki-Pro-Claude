@@ -120,6 +120,15 @@ export const analytics = {
   proWorkflowBriefCopied: (workflow: string) =>
     capture("pro_workflow_brief_copied", { workflow }),
 
+  proMonthlyReviewSaved: (focus: string, completeness: number) =>
+    capture("pro_monthly_review_saved", { focus, completeness }),
+
+  proMonthlyReviewExported: (focus: string, completeness: number) =>
+    capture("pro_monthly_review_exported", { focus, completeness }),
+
+  proMonthlyReviewRolledForward: (focus: string) =>
+    capture("pro_monthly_review_rolled_forward", { focus }),
+
   purchaseCompleted: (productType: string, amountCents?: number) =>
     capture("purchase_completed", { product_type: productType, amount_cents: amountCents }),
 

@@ -215,7 +215,7 @@ export default function ProductsPage() {
             <h2 className="mt-7 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl lg:text-5xl">Life Science Atlas Pro</h2>
             <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">For professionals who need reusable depth—not a project-specific consulting engagement.</p>
             <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {["Deeper evidence-backed lessons", "Premium calculators", "Reusable working files", "GMP Audit Readiness Kit"].map((item) => (
+              {["Monthly Quality Review workspace", "Deeper evidence-backed lessons", "Premium calculators", "Reusable working files", "GMP Audit Readiness Kit"].map((item) => (
                 <li key={item} className="flex items-center gap-2.5 rounded-xl border border-sky-200 bg-white/70 px-3.5 py-3 text-sm font-semibold text-slate-700"><Check className="h-4 w-4 shrink-0 text-sky-700" />{item}</li>
               ))}
             </ul>

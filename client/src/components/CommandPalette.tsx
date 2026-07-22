@@ -24,6 +24,7 @@ const PAGES: { label: string; path: string }[] = [
   { label: "GMP Audit Kit", path: "/toolkits/gmp-audit-kit" },
   { label: "Pricing", path: "/pricing" },
   { label: "Upgrade to Pro", path: "/upgrade" },
+  { label: "Pro Monthly Quality Review", path: "/pro/monthly-review" },
   { label: "My Learning", path: "/my-learning" },
   { label: "My Downloads", path: "/my-downloads" },
   { label: "Vault", path: "/vault" },

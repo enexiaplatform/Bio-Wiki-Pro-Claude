@@ -5,6 +5,7 @@ import {
   BadgeCheck,
   BookOpenCheck,
   Calculator,
+  CalendarDays,
   Check,
   CheckCircle2,
   Copy,
@@ -160,6 +161,26 @@ export default function ProPage() {
               ))}
             </div>
           </aside>
+        </div>
+      </section>
+
+      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-14 md:py-20">
+        <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[1.75rem] border border-sky-200 bg-white shadow-xl shadow-sky-950/5 lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="bg-[#07182d] p-6 text-slate-100 sm:p-9">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-300/10 text-sky-200"><CalendarDays className="h-5 w-5" /></span>
+            <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Monthly Quality Review</p>
+            <h2 className="mt-3 text-3xl font-bold leading-tight">A reason to return every month.</h2>
+            <p className="mt-4 text-sm leading-7 text-slate-400">Run one recurring quality priority through a visible Frame → Verify → Decide → Close cycle, then carry unresolved work into the next month.</p>
+            <Link href="/pro/monthly-review" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Open the monthly workspace <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+          <div className="grid gap-px bg-sky-100 sm:grid-cols-2">
+            {[
+              ["01", "Choose the monthly decision", "Focus audit readiness, quality signals, method capacity, data integrity, or supplier control."],
+              ["02", "Make evidence gaps visible", "Separate controlled evidence already held from records, confirmation, or qualified review still needed."],
+              ["03", "Track an owned operating cycle", "Move the work through four statuses without confusing working completeness with approval."],
+              ["04", "Export and roll forward", "Download a decision brief, retain browser-local monthly history, and start the next month from carryover."],
+            ].map(([number, title, body]) => <div key={number} className="bg-white p-6"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">{number}</span><h3 className="mt-4 text-lg font-bold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{body}</p></div>)}
+          </div>
         </div>
       </section>
 
