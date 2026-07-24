@@ -152,7 +152,7 @@ export function compareQualityLabScenarios(baseline: QualityLabProject, alternat
     metric("area", "Concept area allowance", "sqm", baselineFuture.estimatedAreaSqm, alternativeFuture.estimatedAreaSqm),
     metric("capex-high", "CAPEX planning high", "usd", baselineFuture.capexHighUsd, alternativeFuture.capexHighUsd),
     metric("opex-high", "Annual OPEX planning high", "usd", baselineFuture.annualOpexHighUsd, alternativeFuture.annualOpexHighUsd),
-    metric("input-completeness", "Input completeness", "percent", baseline.blueprint.dataQuality.completenessPercent, alternative.blueprint.dataQuality.completenessPercent),
+    metric("input-completeness", "Controlled-use evidence readiness", "percent", baseline.blueprint.dataQuality.completenessPercent, alternative.blueprint.dataQuality.completenessPercent),
   ];
 
   const inputChanges = trackedInputs.flatMap(({ id, label, unit }) => {

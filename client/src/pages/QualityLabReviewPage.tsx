@@ -96,7 +96,7 @@ export default function QualityLabReviewPage() {
       ? `Decision to support: ${project.input.primaryDecision}\nProject intent: ${project.input.projectIntent.replaceAll("-", " ")}. Decision owner: ${project.input.decisionOwnerRole.replaceAll("-", " ")}. Decision window: ${project.input.decisionWindow.replaceAll("-", " ")}. Scenario: ${project.input.scenarioLabel}.\nExpert review requested for assumptions, testing demand, capacity, risks, implementation priorities and controlled-use evidence gaps.`
       : transferredDecisionFrame
         ? formatQualityLabDecisionFrameReviewContext(transferredDecisionFrame)
-      : "We are planning or expanding a regulated manufacturing quality laboratory and need help defining the project basis, capability scope and operating model.",
+      : "",
   });
   const briefReadiness = useMemo(() => assessQualityLabReviewBrief({ qualification, projectContext: form.need, hasProject: Boolean(project) }), [form.need, project, qualification]);
 
@@ -279,21 +279,19 @@ export default function QualityLabReviewPage() {
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <div className="order-2 lg:order-1">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight">Choose the smallest paid engagement that resolves the next decision.</h1>
-            <p className="mt-4 leading-7 text-slate-400">Use the $149 diagnostic to frame the operating question, evidence and gaps. Use a Blueprint Pilot, starting at $990, when a non-sterile pharmaceutical microbiology build, expansion, or operating-model change is ready for qualified, project-specific review.</p>
+            <h1 className="mt-5 text-4xl font-bold leading-tight">Leave with a scoped decision, evidence gap map and clear Blueprint basis.</h1>
+            <p className="mt-4 leading-7 text-slate-400">The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope and decision memo within two business days after the workshop. The fee is credited to a Blueprint started within 30 days.</p>
             <div className="mt-5 grid grid-cols-2 gap-3">
               <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-sky-200">Diagnostic</p><p className="mt-1 text-2xl font-bold">$149</p><p className="mt-1 text-xs text-slate-400">60-minute workshop + written scope memo</p></div>
               <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-teal-200">Blueprint</p><p className="mt-1 text-2xl font-bold">From $990</p><p className="mt-1 text-xs text-slate-400">Controlled workbook + decision brief</p></div>
             </div>
             <div className="mt-6 space-y-3">
-              {["Scope qualification and input check", "Reviewer coverage, assumptions and scenario challenge", "Controlled workbook, decision brief and acceptance basis agreed in scope"].map((item) => (
+              {["60-minute stakeholder workshop", "Written scope and decision memo within two business days", "Confirmed evidence gaps, reviewer interfaces and next engagement basis"].map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
               ))}
             </div>
-            <div className="mt-8 flex gap-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.06] p-4 text-sm leading-6 text-slate-400">
-              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" /> A review request does not create an approved design, regulatory opinion, supplier specification, or investment recommendation.
-            </div>
-            <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><p className="font-bold text-slate-200">What Atlas confirms after qualification</p><p className="mt-1">Fit, project inputs and workshops, named delivery files, reviewer role coverage, timeline, payment schedule, clarification/revision policy, acceptance event and the applicable data-handling arrangement. Travel, third-party specialists, detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside the quoted scope unless stated otherwise.</p></div>
+            <p className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 text-xs leading-5 text-sky-100/80"><strong>No payment is taken when you submit this brief.</strong> Secure checkout appears as a separate step; Atlas confirms fit and availability before delivery begins.</p>
+            <details className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><summary className="cursor-pointer font-bold text-slate-200">What this is—and is not</summary><p className="mt-3">Atlas confirms fit, inputs, reviewer role coverage, timeline, payment schedule, revision policy, acceptance and data handling. The request does not create an approved design, regulatory opinion, supplier specification or investment recommendation. Travel, specialists, detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside scope unless quoted.</p></details>
           </div>
 
           <form onSubmit={submit} className="order-1 rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7 lg:order-2">
@@ -309,7 +307,7 @@ export default function QualityLabReviewPage() {
             )}
             <section className="mb-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.055] p-4" aria-labelledby="review-brief-readiness-title">
               <div className="flex items-start justify-between gap-4">
-                <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Scope brief detail</p><h2 id="review-brief-readiness-title" className="mt-1 text-sm font-bold">{briefReadiness.completeCount} of {briefReadiness.totalCount} decision inputs described</h2></div>
+               <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Brief readiness</p><h2 id="review-brief-readiness-title" className="mt-1 text-sm font-bold">{briefReadiness.completeCount} of {briefReadiness.totalCount} decision inputs described</h2></div>
                 <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-xs font-bold text-sky-200">{briefReadiness.percent}%</span>
               </div>
               <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label="Scope brief detail" aria-valuemin={0} aria-valuemax={100} aria-valuenow={briefReadiness.percent}><div className="h-full rounded-full bg-sky-300 transition-all" style={{ width: `${briefReadiness.percent}%` }} /></div>
@@ -321,7 +319,7 @@ export default function QualityLabReviewPage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] leading-5 text-slate-500">{briefReadiness.boundary}</p>
+              <p className="mt-3 text-[10px] leading-5 text-slate-500">For a Diagnostic, the engagement choice and commercial basis can count before you type; they describe the route, not your project facts. {briefReadiness.boundary}</p>
             </section>
             <section className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">1. Choose an engagement</p>
@@ -348,7 +346,7 @@ export default function QualityLabReviewPage() {
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] text-slate-400">
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-red-200">{project.blueprint.dataQuality.blockingOpenCount}</strong>blocking</span>
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.importantOpenCount}</strong>important</span>
-                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</strong>input complete</span>
+                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.completenessPercent}%</strong>evidence ready</span>
                 </div>
                 <div className="mt-4 grid gap-2">
                   <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-xs leading-5 ${attachMode === "brief-only" ? "border-teal-300/30 bg-teal-300/10 text-teal-50" : "border-white/10 bg-black/15 text-slate-400"}`}>
@@ -382,7 +380,7 @@ export default function QualityLabReviewPage() {
               <label className="text-xs font-semibold text-slate-300">Role<input autoComplete="organization-title" value={form.role} onChange={(event) => setForm({ ...form, role: event.target.value })} className={fieldClass} placeholder="QC, QA, Engineering…" /></label>
             </div>
             <label className="mt-5 block text-xs font-semibold text-slate-300">Project context *
-              <textarea required minLength={20} rows={7} value={form.need} onChange={(event) => setForm({ ...form, need: event.target.value })} className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
+              <textarea required minLength={20} rows={7} value={form.need} onChange={(event) => setForm({ ...form, need: event.target.value })} placeholder="Example: We are planning a non-sterile QC microbiology expansion and need to decide which capabilities to build now, phase later or outsource. The budget decision is due in Q4; product demand and current method lists are partially available." className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
               <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-500">Useful brief: decision to resolve · site/product/market boundary · deadline · known evidence · constraints and open questions · who will use the output. Do not include confidential formulations or proprietary methods.</span>
             </label>
             <label className="mt-5 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-slate-400">

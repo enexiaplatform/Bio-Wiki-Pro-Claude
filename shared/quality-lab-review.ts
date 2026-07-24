@@ -208,7 +208,7 @@ export function formatQualityLabReviewBrief(request: QualityLabReviewRequest): s
       project.scenarioLabel ? `- Scenario: ${project.scenarioLabel}` : null,
       `Basis: ${project.country}; ${project.facilityType}; ${project.monthlyTests} modeled monthly test units`,
       `Contracts: ${project.inputContractVersion}; ${project.outputContractVersion}; ${project.compilerCoreVersion}; ${project.domainPackId}@${project.domainPackVersion}`,
-      `Triage: ${project.inputCompletenessPercent}% input completeness; ${project.blockingOpenCount} controlled-use blockers and ${project.importantOpenCount} important inputs open`,
+      `Triage: ${project.inputCompletenessPercent}% controlled-use evidence readiness; ${project.blockingOpenCount} controlled-use blockers and ${project.importantOpenCount} important inputs open`,
       "Open-input checklist:",
       ...project.unresolvedInputs.map((item) => `- [${item.severity}] ${item.id}: ${item.question} Resolve: ${item.resolution}`),
     );

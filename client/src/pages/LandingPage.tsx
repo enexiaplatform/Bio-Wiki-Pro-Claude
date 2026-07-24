@@ -315,47 +315,21 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
             <div className="max-w-3xl">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Three products · three distinct outcomes</p>
-              <h2 className="mt-3 text-3xl font-bold md:text-5xl">Choose what you need to move forward.</h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400 md:text-base">Plan a real quality laboratory, unlock professional evidence and tools, or receive a personal career plan. Each product has its own scope, price, and outcome.</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Flagship · Quality Lab Blueprint</p>
+              <h2 className="mt-3 text-3xl font-bold md:text-5xl">Move one real laboratory decision forward.</h2>
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400 md:text-base">Build a free concept model, inspect the full public sample, then use the $149 Diagnostic when the decision, evidence and project scope need qualified framing.</p>
             </div>
             <Link href="/products" className="inline-flex items-center gap-2 text-sm font-semibold text-teal-200 transition hover:text-teal-100">
               Compare every option <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
 
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {commercialPaths.map((offer) => (
-              <Link
-                key={offer.title}
-                href={offer.href}
-                className={`group flex min-h-[560px] flex-col overflow-hidden rounded-[1.35rem] border shadow-[0_22px_60px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_30px_75px_rgba(0,0,0,0.26)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 ${offer.tone}`}
-              >
-                <div className="relative h-44 overflow-hidden border-b border-black/10">
-                  <img src={offer.image} alt={offer.alt} width={offer.imageWidth} height={offer.imageHeight} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />
-                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-950/35 to-transparent" aria-hidden="true" />
-                  <div className={`absolute left-5 top-5 flex h-11 w-11 items-center justify-center rounded-xl shadow-lg ${offer.iconTone}`}><offer.icon className="h-5 w-5" /></div>
-                  <span className={`absolute right-4 top-4 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] backdrop-blur-md ${offer.badgeTone}`}>{offer.note}</span>
-                </div>
-
-                <div className="flex flex-1 flex-col p-6">
-                  <p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${offer.textTone}`}>{offer.eyebrow}</p>
-                  <h3 className={`mt-2 text-2xl font-bold leading-tight ${offer.titleTone}`}>{offer.title}</h3>
-                  <p className={`mt-3 text-sm leading-6 ${offer.bodyTone}`}>{offer.body}</p>
-                  <ul className={`mt-5 flex-1 space-y-2.5 border-t pt-5 ${offer.dividerTone}`}>
-                    {offer.highlights.map((item) => (
-                      <li key={item} className={`flex items-start gap-2 text-sm ${offer.bodyTone}`}>
-                        <CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${offer.textTone}`} />{item}
-                      </li>
-                    ))}
-                  </ul>
-                  <div className={`mt-5 border-t pt-4 ${offer.dividerTone}`}>
-                    <p className={`text-base font-bold ${offer.priceTone}`}>{offer.price}</p>
-                    <span className={`mt-3 inline-flex items-center gap-2 text-sm font-bold ${offer.textTone}`}>{offer.cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
-                  </div>
-                </div>
-              </Link>
-            ))}
+          <div className="mt-10 grid gap-5 lg:grid-cols-[1.45fr_.55fr] lg:items-start">
+            <CommercialPathCard offer={commercialPaths[0]} />
+            <aside className="space-y-4" aria-label="Also from Life Science Atlas">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Also from Atlas</p>
+              {commercialPaths.slice(1).map((offer) => <CommercialPathCard key={offer.title} offer={offer} compact />)}
+            </aside>
           </div>
 
           <p className="mt-6 text-xs leading-5 text-slate-500">Partner-led laboratory projects are scoped through the Quality Lab review path. Larger portfolios, specialist coverage, and additional scenarios are quoted separately.</p>
@@ -422,4 +396,18 @@ export default function LandingPage() {
       </section>
     </div>
   );
+}
+
+type CommercialPath = (typeof commercialPaths)[number];
+
+function CommercialPathCard({ offer, compact = false }: { offer: CommercialPath; compact?: boolean }) {
+  return <Link href={offer.href} className={`group flex flex-col overflow-hidden rounded-[1.35rem] border shadow-[0_22px_60px_rgba(0,0,0,0.18)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_75px_rgba(0,0,0,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 ${offer.tone} ${compact ? "min-h-0" : "min-h-[560px]"}`}>
+    {!compact && <div className="relative h-56 overflow-hidden border-b border-black/10"><img src={offer.image} alt={offer.alt} width={offer.imageWidth} height={offer.imageHeight} loading="lazy" decoding="async" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" /><div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-950/35 to-transparent" aria-hidden="true" /><div className={`absolute left-5 top-5 flex h-11 w-11 items-center justify-center rounded-xl shadow-lg ${offer.iconTone}`}><offer.icon className="h-5 w-5" /></div><span className={`absolute right-4 top-4 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] backdrop-blur-md ${offer.badgeTone}`}>{offer.note}</span></div>}
+    <div className={`flex flex-1 flex-col ${compact ? "p-5" : "p-6 md:p-8"}`}>
+      <div className="flex items-start justify-between gap-3">{compact && <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${offer.iconTone}`}><offer.icon className="h-4 w-4" /></div>}<div className="min-w-0 flex-1"><p className={`text-[10px] font-bold uppercase tracking-[0.16em] ${offer.textTone}`}>{offer.eyebrow}</p><h3 className={`${compact ? "mt-1 text-lg" : "mt-2 text-3xl"} font-bold leading-tight ${offer.titleTone}`}>{offer.title}</h3></div>{compact && <span className={`shrink-0 rounded-full border px-2 py-1 text-[9px] font-bold uppercase ${offer.badgeTone}`}>{offer.note}</span>}</div>
+      <p className={`${compact ? "mt-3 text-xs" : "mt-4 text-sm"} leading-6 ${offer.bodyTone}`}>{offer.body}</p>
+      {!compact && <ul className={`mt-6 flex-1 space-y-2.5 border-t pt-5 ${offer.dividerTone}`}>{offer.highlights.map((item) => <li key={item} className={`flex items-start gap-2 text-sm ${offer.bodyTone}`}><CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${offer.textTone}`} />{item}</li>)}</ul>}
+      <div className={`${compact ? "mt-4" : "mt-6"} border-t pt-4 ${offer.dividerTone}`}><p className={`${compact ? "text-sm" : "text-base"} font-bold ${offer.priceTone}`}>{offer.price}</p><span className={`mt-2 inline-flex items-center gap-2 text-sm font-bold ${offer.textTone}`}>{offer.cta} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span></div>
+    </div>
+  </Link>;
 }

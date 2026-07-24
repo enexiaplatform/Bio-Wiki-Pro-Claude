@@ -45,7 +45,7 @@ describe("Quality Lab review brief", () => {
     expect(brief).toContain("[quality-lab-review-brief/v3]");
     expect(brief).toContain("Expert-reviewed Blueprint Pilot (from $990)");
     expect(brief).toContain("decision window=1–3 months");
-    expect(brief).toContain("input completeness");
+    expect(brief).toContain("controlled-use evidence readiness");
     expect(brief).toContain("controlled-use blockers");
     expect(brief).toContain("Open-input checklist:");
     expect(brief).toContain("Decision mandate:");

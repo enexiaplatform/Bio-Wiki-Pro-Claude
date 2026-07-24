@@ -307,7 +307,7 @@ export default function QualityLabProjectsPage() {
                 </div>
                 <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.04] p-3 text-center">
                   <strong className="block text-lg text-teal-200">{averageCompleteness}%</strong>
-                  <span className="text-[10px] text-slate-500">avg input completeness</span>
+                  <span className="text-[10px] text-slate-500">avg evidence readiness</span>
                 </div>
                 <div className="rounded-xl border border-sky-300/15 bg-sky-300/[0.04] p-3 text-center">
                   <strong className="block text-lg text-sky-200">{activeProjectActions}</strong>
@@ -480,10 +480,10 @@ export default function QualityLabProjectsPage() {
                 </div>
                 <div className="mt-3 rounded-xl border border-white/8 bg-slate-950/30 p-3">
                   <div className="flex items-center justify-between gap-3 text-xs">
-                    <span className="font-semibold text-slate-300">Input completeness</span>
+                    <span className="font-semibold text-slate-300">Controlled-use evidence readiness</span>
                     <span className="font-bold text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</span>
                   </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`${project.name} input completeness`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={project.blueprint.dataQuality.completenessPercent}>
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`${project.name} controlled-use evidence readiness`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={project.blueprint.dataQuality.completenessPercent}>
                     <div className="h-full rounded-full bg-teal-300" style={{ width: `${project.blueprint.dataQuality.completenessPercent}%` }} />
                   </div>
                   <p className="mt-2 text-[10px] text-slate-500">

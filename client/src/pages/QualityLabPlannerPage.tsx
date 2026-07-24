@@ -37,6 +37,7 @@ import {
   type QualityLabInput,
   type QualityLabProject,
 } from "@shared/quality-lab";
+import { qualityLabPlannerStepIssues } from "@shared/quality-lab-planner";
 import { BlueprintReport } from "@/components/quality-lab/BlueprintReport";
 import { getQualityLabProject, saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
@@ -114,22 +115,24 @@ function NumberField({ label, value, onChange, suffix, hint, min = 0, max }: { l
   );
 }
 
-function TextField({ label, value, onChange, placeholder, hint }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; hint?: string }) {
+function TextField({ id, label, value, onChange, placeholder, hint, error }: { id?: string; label: string; value: string; onChange: (value: string) => void; placeholder?: string; hint?: string; error?: string }) {
   return (
     <label className="block">
       <span className="mb-2 block text-xs font-semibold text-slate-300">{label}</span>
-      <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
+      <input id={id} aria-invalid={Boolean(error)} aria-describedby={error && id ? `${id}-error` : undefined} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} className={`h-11 w-full rounded-xl border bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:ring-2 ${error ? "border-red-300/60 focus:border-red-300 focus:ring-red-300/10" : "border-white/10 focus:border-teal-300/50 focus:ring-teal-300/10"}`} />
       {hint && <span className="mt-1.5 block text-[11px] leading-4 text-slate-500">{hint}</span>}
+      {error && <span id={id ? `${id}-error` : undefined} className="mt-1.5 block text-[11px] leading-4 text-red-200">{error}</span>}
     </label>
   );
 }
 
-function TextAreaField({ label, value, onChange, placeholder, hint }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string; hint?: string }) {
+function TextAreaField({ id, label, value, onChange, placeholder, hint, error }: { id?: string; label: string; value: string; onChange: (value: string) => void; placeholder?: string; hint?: string; error?: string }) {
   return (
     <label className="block">
       <span className="mb-2 block text-xs font-semibold text-slate-300">{label}</span>
-      <textarea value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} rows={3} className="w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
+      <textarea id={id} aria-invalid={Boolean(error)} aria-describedby={error && id ? `${id}-error` : undefined} value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} rows={3} className={`w-full resize-y rounded-xl border bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:ring-2 ${error ? "border-red-300/60 focus:border-red-300 focus:ring-red-300/10" : "border-white/10 focus:border-teal-300/50 focus:ring-teal-300/10"}`} />
       {hint && <span className="mt-1.5 block text-[11px] leading-4 text-slate-500">{hint}</span>}
+      {error && <span id={id ? `${id}-error` : undefined} className="mt-1.5 block text-[11px] leading-4 text-red-200">{error}</span>}
     </label>
   );
 }
@@ -151,6 +154,7 @@ export default function QualityLabPlannerPage() {
   const [project, setProject] = useState<QualityLabProject | null>(null);
   const [view, setView] = useState<"form" | "report">(params?.id ? "report" : "form");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [portfolioExpanded, setPortfolioExpanded] = useState(false);
   const [startMode, setStartMode] = useState<"example" | "blank" | "import" | "existing" | null>(params?.id ? "existing" : null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -180,6 +184,12 @@ export default function QualityLabPlannerPage() {
   const update = <K extends keyof QualityLabInput>(key: K, value: QualityLabInput[K]) => {
     setInput((current) => ({ ...current, [key]: value }));
     setError(null);
+    setFieldErrors((current) => {
+      if (!(key in current)) return current;
+      const next = { ...current };
+      delete next[String(key)];
+      return next;
+    });
   };
 
   const updateScope = (key: keyof QualityLabInput["scope"], value: boolean) => {
@@ -208,24 +218,19 @@ export default function QualityLabPlannerPage() {
     setError(null);
   };
 
-  function validateStep(currentStep: number): string | null {
-    if (currentStep === 0) {
-      if (input.projectName.trim().length < 2) return "Give this project a clear name.";
-      if (input.primaryDecision.trim().length < 10) return "Describe the decision this Blueprint must help resolve.";
-      if (input.country.trim().length < 2) return "Add the facility country.";
-      if (input.markets.length === 0) return "Select at least one target market.";
-    }
-    if (currentStep === 1) {
-      const demand = input.finishedBatchesPerMonth + input.rawMaterialLotsPerMonth + input.waterPoints + input.emLocations + input.sterilityBatchesPerMonth + input.endotoxinSamplesPerMonth + input.bioburdenSamplesPerMonth;
-      if (demand <= 0) return "Add at least one source of monthly testing demand.";
-    }
-    if (currentStep === 2 && !Object.values(input.scope).some(Boolean)) return "Select at least one in-house capability.";
-    return null;
+  function validateStep(currentStep: number): Array<{ id: string; message: string }> {
+    return qualityLabPlannerStepIssues(input, currentStep);
   }
 
   function next() {
-    const issue = validateStep(step);
-    if (issue) return setError(issue);
+    const issues = validateStep(step);
+    if (issues.length > 0) {
+      setFieldErrors(Object.fromEntries(issues.map((issue) => [issue.id, issue.message])));
+      setError(`${issues.length} ${issues.length === 1 ? "field needs" : "fields need"} attention. Review all highlighted items below.`);
+      window.setTimeout(() => document.getElementById(issues[0].id)?.focus(), 0);
+      return;
+    }
+    setFieldErrors({});
     setError(null);
     const nextStep = Math.min(steps.length - 1, step + 1);
     setStep(nextStep);
@@ -262,6 +267,7 @@ export default function QualityLabPlannerPage() {
     setStep(0);
     setFurthestStep(0);
     setError(null);
+    setFieldErrors({});
     setStartMode("example");
     analytics.blueprintStartModeSelected("example");
   }
@@ -272,6 +278,7 @@ export default function QualityLabPlannerPage() {
     setStep(0);
     setFurthestStep(0);
     setError(null);
+    setFieldErrors({});
     setStartMode("blank");
     analytics.blueprintStartModeSelected("blank");
   }
@@ -346,12 +353,19 @@ export default function QualityLabPlannerPage() {
               <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">Build the basis of design.</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400 md:text-base md:leading-7">Add the operational facts you know. Atlas separates your inputs, concept assumptions and decisions that still need site verification.</p>
             </div>
-            <div className="flex items-start gap-2 rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /><span>No product data leaves this browser in the current concept edition.</span></div>
+            <details className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm">
+              <summary className="flex cursor-pointer list-none items-start gap-2 font-semibold"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /><span>Where is my project data stored?</span></summary>
+              <div className="mt-3 space-y-2 border-t border-amber-200/10 pt-3 text-[11px] leading-5 text-slate-300">
+                <p><strong className="text-amber-100">Browser-local draft:</strong> planner inputs and concept projects stay on this device.</p>
+                <p><strong className="text-amber-100">Account review snapshot:</strong> the full model leaves the browser only when you sign in and explicitly attach it for review.</p>
+                <p><strong className="text-amber-100">Submitted brief:</strong> contact and qualification details are sent only when you submit a Diagnostic or Blueprint request.</p>
+              </div>
+            </details>
           </div>
         </header>
 
         <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-          <span>Blueprint intake</span><span>{step + 1} / {steps.length}</span>
+          <span>Planner progress</span><span>{step + 1} / {steps.length}</span>
         </div>
         <div className="mb-4 h-1 overflow-hidden rounded-full bg-white/5"><div className="h-full rounded-full bg-teal-300 transition-all" style={{ width: `${((step + 1) / steps.length) * 100}%` }} /></div>
         <div className="mb-4 grid grid-cols-2 gap-2 lg:mb-5 lg:grid-cols-4">
@@ -373,8 +387,8 @@ export default function QualityLabPlannerPage() {
 
         {preview && <div className="mb-4 grid grid-cols-4 gap-2 rounded-2xl border border-white/10 bg-slate-950/55 p-3 xl:hidden">
           {[
-            [`${preview.dataQuality.completenessPercent}%`, "input complete", "text-teal-200"],
-            [String(preview.dataQuality.blockingOpenCount), "blockers", "text-red-200"],
+            [`${furthestStep + 1}/${steps.length}`, "planner steps", "text-teal-200"],
+            [`${preview.dataQuality.completenessPercent}%`, "evidence ready", "text-amber-200"],
             [formatInt(preview.current.monthlyTests), "tests / mo", "text-slate-100"],
             [String(preview.current.totalTeamFte), "team FTE", "text-slate-100"],
           ].map(([value, label, tone]) => <div key={label} className="min-w-0 text-center"><p className={`truncate text-sm font-bold ${tone}`}>{value}</p><p className="mt-0.5 truncate text-[9px] text-slate-500">{label}</p></div>)}
@@ -390,14 +404,14 @@ export default function QualityLabPlannerPage() {
             {step === 0 && (
               <div className="space-y-7">
                 <div className="grid gap-4 md:grid-cols-2">
-                  <TextField label="Project name" value={input.projectName} onChange={(value) => update("projectName", value)} placeholder="e.g. Site A microbiology expansion" />
+                  <TextField id="projectName" label="Project name" value={input.projectName} onChange={(value) => update("projectName", value)} placeholder="e.g. Site A microbiology expansion" error={fieldErrors.projectName} />
                   <TextField label="Scenario label" value={input.scenarioLabel} onChange={(value) => update("scenarioLabel", value)} placeholder="e.g. Baseline - 1 shift" />
                   <TextField label="Company / site" value={input.companyName} onChange={(value) => update("companyName", value)} placeholder="Optional" />
-                  <TextField label="Facility country" value={input.country} onChange={(value) => update("country", value)} />
+                  <TextField id="country" label="Facility country" value={input.country} onChange={(value) => update("country", value)} error={fieldErrors.country} />
                 </div>
                 <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.045] p-4 md:p-5">
                   <div className="mb-4"><p className="text-sm font-bold text-sky-100">Decision mandate</p><p className="mt-1 text-xs leading-5 text-slate-400">Define the decision the Blueprint must support. This context carries into the executive brief and expert-review handoff.</p></div>
-                  <TextAreaField label="Primary decision to resolve" value={input.primaryDecision} onChange={(value) => update("primaryDecision", value)} placeholder="e.g. Which capabilities should we fund now, phase later, or outsource?" hint="State one decision, the boundary and the intended use of the output. Do not include confidential formulations or proprietary methods." />
+                  <TextAreaField id="primaryDecision" label="Primary decision to resolve" value={input.primaryDecision} onChange={(value) => update("primaryDecision", value)} placeholder="e.g. Which capabilities should we fund now, phase later, or outsource?" hint="State one decision, the boundary and the intended use of the output. Do not include confidential formulations or proprietary methods." error={fieldErrors.primaryDecision} />
                   <div className="mt-4">
                     <p className="mb-2 text-xs font-semibold text-slate-300">Project intent</p>
                     <div className="flex flex-wrap gap-2">{projectIntentValues.map((value) => <button key={value} type="button" aria-pressed={input.projectIntent === value} onClick={() => update("projectIntent", value)} className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${input.projectIntent === value ? "border-sky-300/40 bg-sky-300/10 text-sky-100" : "border-white/10 bg-white/[0.025] text-slate-400 hover:border-white/20"}`}>{projectIntentLabels[value]}</button>)}</div>
@@ -417,12 +431,13 @@ export default function QualityLabPlannerPage() {
                 </div>
                 <div>
                   <p className="mb-3 text-xs font-semibold text-slate-300">Target markets</p>
-                  <div className="flex flex-wrap gap-2">
+                  <div id="markets" tabIndex={-1} aria-invalid={Boolean(fieldErrors.markets)} aria-describedby={fieldErrors.markets ? "markets-error" : undefined} className={`flex flex-wrap gap-2 rounded-xl outline-none ${fieldErrors.markets ? "ring-2 ring-red-300/30" : ""}`}>
                     {marketValues.map((value) => {
                       const selected = input.markets.includes(value);
                       return <button key={value} type="button" aria-pressed={selected} onClick={() => update("markets", selected ? input.markets.filter((item) => item !== value) : [...input.markets, value])} className={`rounded-full border px-3 py-2 text-xs font-semibold transition ${selected ? "border-teal-300/40 bg-teal-300/10 text-teal-100" : "border-white/10 bg-white/[0.025] text-slate-400"}`}>{selected && <Check className="mr-1 inline h-3.5 w-3.5" />}{marketLabels[value]}</button>;
                     })}
                   </div>
+                  {fieldErrors.markets && <p id="markets-error" className="mt-2 text-[11px] text-red-200">{fieldErrors.markets}</p>}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <NumberField label="Finished products" value={input.finishedProducts} onChange={(value) => update("finishedProducts", value)} suffix="SKUs" hint="Portfolio breadth; used as a review signal, not direct workload." />
@@ -515,7 +530,7 @@ export default function QualityLabPlannerPage() {
               </div>
             )}
 
-            {error && <div className="mt-6 flex items-start gap-2 rounded-xl border border-red-300/20 bg-red-300/10 p-3 text-sm text-red-100"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div>}
+            {error && <div role="alert" aria-live="assertive" className="mt-6 flex items-start gap-2 rounded-xl border border-red-300/20 bg-red-300/10 p-3 text-sm text-red-100"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />{error}</div>}
 
             <div className="mt-8 hidden items-center justify-between border-t border-white/10 pt-5 md:flex">
               <button onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(null); }} disabled={step === 0} className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-slate-400 transition hover:bg-white/5 hover:text-white disabled:invisible"><ArrowLeft className="h-4 w-4" /> Back</button>
@@ -544,10 +559,16 @@ export default function QualityLabPlannerPage() {
                     <div className="flex justify-between gap-2"><span>Selected workflows</span><strong className="text-slate-200">{preview.workflows.length}</strong></div>
                     <div className="flex justify-between gap-2"><span>Equipment classes</span><strong className="text-slate-200">{preview.equipment.length}</strong></div>
                     <div className="flex justify-between gap-2"><span>Future multiplier</span><strong className="text-slate-200">{preview.future.multiplier}×</strong></div>
-                    <div className="flex justify-between gap-2 border-t border-white/10 pt-2"><span>Input completeness</span><strong className="text-teal-200">{preview.dataQuality.completenessPercent}%</strong></div>
+                    <div className="flex justify-between gap-2 border-t border-white/10 pt-2"><span>Planner completion</span><strong className="text-teal-200">{furthestStep + 1}/{steps.length}</strong></div>
+                    <div className="flex justify-between gap-2"><span>Controlled-use evidence readiness</span><strong className="text-amber-200">{preview.dataQuality.completenessPercent}%</strong></div>
                     <div className="flex justify-between gap-2"><span>Blocking inputs open</span><strong className="text-red-200">{preview.dataQuality.blockingOpenCount}</strong></div>
                     <div className="flex justify-between gap-2"><span>Versioned rules traced</span><strong className="text-sky-200">{preview.dataQuality.tracedRuleCount}</strong></div>
                   </div>
+                  <details className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-[11px] leading-5 text-slate-400">
+                    <summary className="cursor-pointer font-bold text-amber-100">Why can evidence readiness be low after 4/4 steps?</summary>
+                    <p className="mt-2">Planner completion means the concept can compile. Evidence readiness measures unresolved reliance: each blocking input reduces the score by 12 points and each important input by 5 points.</p>
+                    <p className="mt-2 text-slate-300">Raise it by confirming approved methods, replacing benchmark workload with site observations, and attaching qualified equipment, facility and governance evidence.</p>
+                  </details>
                   {params?.id && <div className="mt-4 grid gap-2"><Link href={`/quality-lab/skill-shift-coverage?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.06] px-4 py-2.5 text-xs font-bold text-cyan-200 transition hover:bg-cyan-300/10"><Users className="h-4 w-4" /> Test skill & shift coverage</Link><Link href={`/quality-lab/non-routine-load?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-4 py-2.5 text-xs font-bold text-amber-200 transition hover:bg-amber-300/10"><AlertTriangle className="h-4 w-4" /> Test exception workload</Link><Link href={`/quality-lab/equipment-resilience?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-2.5 text-xs font-bold text-emerald-200 transition hover:bg-emerald-300/10"><Wrench className="h-4 w-4" /> Test equipment resilience</Link><Link href={`/quality-lab/sensitivity?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-xs font-bold text-violet-200 transition hover:bg-violet-300/10"><Activity className="h-4 w-4" /> Test assumption sensitivity</Link></div>}
                 </>
               ) : <p className="mt-4 text-xs leading-5 text-slate-500">Complete the required fields to preview the model.</p>}

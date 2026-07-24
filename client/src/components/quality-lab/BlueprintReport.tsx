@@ -169,7 +169,7 @@ function ExecutiveBriefPrint({ project }: { project: QualityLabProject }) {
       </section>
 
       <section className="mt-6 break-inside-avoid border-t border-slate-300 pt-4 text-[10px] leading-5 text-slate-600">
-        <p><strong>Trace basis:</strong> {blueprint.dataQuality.tracedRuleCount} versioned rules · {blueprint.dataQuality.evidenceCount} evidence records · {blueprint.dataQuality.completenessPercent}% input completeness.</p>
+        <p><strong>Trace basis:</strong> {blueprint.dataQuality.tracedRuleCount} versioned rules · {blueprint.dataQuality.evidenceCount} evidence records · {blueprint.dataQuality.completenessPercent}% controlled-use evidence readiness.</p>
         <p><strong>Versions:</strong> {input.contractVersion} · {blueprint.contractVersion} · {blueprint.compilerCoreVersion} · {blueprint.domainPack.version}.</p>
         <p><strong>Generated:</strong> {new Date(blueprint.generatedAt).toLocaleString("en-US")} · Project ID {project.id}.</p>
         <p className="mt-2 font-semibold text-slate-800">Qualified QC, QA, engineering, procurement and client document-control review remain required before controlled use.</p>
@@ -195,7 +195,11 @@ export function BlueprintReport({ project, onEdit }: Props) {
   const reviewStatusLabel = project.reviewRequestedAt ? "review requested" : blueprint.review.status.replaceAll("-", " ");
   const supportingEvidence = evidenceForRuleIds(blueprint.ruleTrace.map((rule) => rule.ruleId));
   const [roleLens, setRoleLens] = useState<RoleLens>(input.decisionOwnerRole === "cross-functional" ? "qc" : input.decisionOwnerRole);
+  const [reportMode, setReportMode] = useState<"executive" | "technical">("executive");
   const decisionPack = roleDecisionPack(blueprint)[roleLens];
+  const activeActions = project.actionPlan.actions.filter((action) => action.status !== "resolved");
+  const blockingActions = activeActions.filter((action) => action.severity === "blocking");
+  const importantActions = activeActions.filter((action) => action.severity === "important");
 
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
@@ -204,6 +208,9 @@ export function BlueprintReport({ project, onEdit }: Props) {
         <button onClick={onEdit} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white">
           <ArrowLeft className="h-4 w-4" /> Edit inputs
         </button>
+        <div className="flex rounded-xl border border-white/10 bg-white/[0.03] p-1" aria-label="Blueprint report detail level">
+          {(["executive", "technical"] as const).map((mode) => <button key={mode} type="button" aria-pressed={reportMode === mode} onClick={() => setReportMode(mode)} className={`rounded-lg px-3 py-2 text-xs font-bold capitalize transition ${reportMode === mode ? "bg-teal-300 text-slate-950" : "text-slate-400 hover:text-white"}`}>{mode} mode</button>)}
+        </div>
         <div className="hidden flex-wrap gap-2 sm:flex">
           <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <Download className="h-4 w-4" /> Export model
@@ -260,12 +267,12 @@ export function BlueprintReport({ project, onEdit }: Props) {
               <p className="text-xl font-bold text-teal-200 print:text-slate-950">{current.estimatedAreaSqm} m²</p><p className="text-[11px] text-slate-400 print:text-slate-600">concept allowance</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
-              <p className="text-xl font-bold text-amber-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high modeled operational risks</p>
+              <p className="text-xl font-bold text-slate-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high operational risks detected from current inputs</p>
             </div>
           </div>
           </div>
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">input completeness</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-amber-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">controlled-use evidence readiness</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">controlled-use blockers</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{blueprint.dataQuality.tracedRuleCount}</p><p className="text-[10px] text-slate-500">versioned rules traced</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="truncate text-xs font-bold text-amber-200 print:text-slate-950">{reviewStatusLabel}</p><p className="mt-1 text-[10px] text-slate-500">review status</p></div>
@@ -293,7 +300,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
             <h2 className="mt-2 text-xl font-bold print:text-slate-950">{controlledUseBlocked ? "Not ready for controlled use." : "No controlled-use blocker is open."}</h2>
             <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">The model is useful for discovery and scenario discussion. Resolve the blocking inputs and complete qualified review before using it for investment, URS or procurement decisions.</p>
             <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-teal-300" style={{ width: `${blueprint.dataQuality.completenessPercent}%` }} /></div>
-            <p className="mt-2 text-[10px] text-slate-500">{blueprint.dataQuality.completenessPercent}% input completeness · {blueprint.dataQuality.blockingOpenCount} controlled-use blockers · {reviewStatusLabel}</p>
+            <p className="mt-2 text-[10px] text-slate-500">{blueprint.dataQuality.completenessPercent}% controlled-use evidence readiness · {blueprint.dataQuality.blockingOpenCount} blockers · {reviewStatusLabel}</p>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Resolve first</p>
@@ -319,6 +326,35 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </div>
       </section>
 
+      <section id="executive-summary" className="mb-5 scroll-mt-32 rounded-2xl border border-sky-300/15 bg-sky-300/[0.035] p-5 md:p-6 print:border-slate-300 print:bg-white">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300 print:text-slate-500">Executive reading layer</p><h2 className="mt-1 text-xl font-bold print:text-slate-950">What the counts mean—and what to do next</h2></div>
+          <span className="rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-200 print:border-slate-300 print:bg-white print:text-slate-700">Planner complete · 4/4 steps</span>
+        </div>
+
+        <div className="mt-5 grid gap-3 lg:grid-cols-4">
+          <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Modeled operational risk</p><p className="mt-2 text-2xl font-bold text-slate-100 print:text-slate-950">{highRisks}</p><p className="mt-2 text-[11px] leading-5 text-slate-400 print:text-slate-700">Detected from the inputs currently modeled. This does not override evidence blockers.</p></div>
+          <div className="rounded-xl border border-red-300/15 bg-red-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-red-200 print:text-slate-600">Controlled-use blocker</p><p className="mt-2 text-2xl font-bold text-red-100 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="mt-2 text-[11px] leading-5 text-slate-400 print:text-slate-700">Missing evidence that prevents reliance for controlled decisions.</p></div>
+          <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-200 print:text-slate-600">Open input</p><p className="mt-2 text-2xl font-bold text-amber-100 print:text-slate-950">{blueprint.unresolvedInputs.length}</p><p className="mt-2 text-[11px] leading-5 text-slate-400 print:text-slate-700">A question whose answer could change or qualify the model.</p></div>
+          <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-200 print:text-slate-600">Active action</p><p className="mt-2 text-2xl font-bold text-teal-100 print:text-slate-950">{activeActions.length}</p><p className="mt-2 text-[11px] leading-5 text-slate-400 print:text-slate-700">Owned work that resolves a blocker, important input or advisory gap.</p></div>
+        </div>
+
+        <div className="mt-4 rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Relationship between the counts</p>
+          <p className="mt-2 text-sm font-semibold text-slate-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount} blockers → {blockingActions.length} blocker actions · {blueprint.dataQuality.importantOpenCount} important inputs → {importantActions.length} important actions</p>
+          <p className="mt-2 text-[11px] leading-5 text-slate-500 print:text-slate-700">Evidence readiness is a weighted gap indicator, not form completion: start at 100, deduct 12 points per blocker and 5 per important input, then clamp between 0–100. Raise it by resolving the listed evidence actions and completing qualified review.</p>
+        </div>
+
+        {reportMode === "executive" && <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-sky-300 print:text-slate-600">Scenario delta</p><p className="mt-3 text-sm font-bold print:text-slate-950">{current.label} → {future.label}</p><ul className="mt-3 space-y-2 text-xs leading-5 text-slate-400 print:text-slate-700"><li>{number.format(current.monthlyTests)} → {number.format(future.monthlyTests)} tests/month</li><li>{current.totalTeamFte} → {future.totalTeamFte} team FTE</li><li>{number.format(current.estimatedAreaSqm)} → {number.format(future.estimatedAreaSqm)} m² concept area</li></ul></div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-300 print:text-slate-600">Three material uncertainties</p><ol className="mt-3 space-y-2 text-xs leading-5 text-slate-400 print:text-slate-700">{blueprint.unresolvedInputs.slice(0, 3).map((item, index) => <li key={item.id}><strong className="text-slate-200 print:text-slate-950">{index + 1}.</strong> {item.question}</li>)}</ol></div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300 print:text-slate-600">Next five actions</p><ol className="mt-3 space-y-2 text-xs leading-5 text-slate-400 print:text-slate-700">{activeActions.slice(0, 5).map((action, index) => <li key={action.id}><strong className="text-slate-200 print:text-slate-950">{index + 1}.</strong> {action.requiredEvidence}</li>)}</ol></div>
+        </div>}
+      </section>
+
+      {reportMode === "executive" && <div data-print="hide" className="mb-5 flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center"><p className="max-w-2xl text-sm leading-6 text-slate-400">Executive mode keeps the decision, readiness, material uncertainties, scenario movement and next actions visible. The full model, formulas, evidence and versioned rule trace remain available.</p><button type="button" onClick={() => { setReportMode("technical"); window.setTimeout(() => document.getElementById("visual-decision-layer")?.scrollIntoView({ behavior: "smooth" }), 0); }} className="inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200">Open technical detail <ArrowRight className="h-4 w-4" /></button></div>}
+
+      <div className={reportMode === "technical" ? "block" : "hidden"}>
       <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
         <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
           {[["#decision-brief", "Decision brief"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
@@ -463,7 +499,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[880px] text-left text-sm">
                 <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
-                  <tr><th className="pb-3 pr-4">Resource</th><th className="pb-3 pr-4">Method load / month</th><th className="pb-3 pr-4">Peak-week allowance</th><th className="pb-3 pr-4">Available capacity</th><th className="pb-3">Planning utilization</th></tr>
+                  <tr><th className="pb-3 pr-4">Resource</th><th className="pb-3 pr-4">Method load / month</th><th className="pb-3 pr-4">Peak-week equivalent</th><th className="pb-3 pr-4">Available capacity</th><th className="pb-3">Planning utilization</th></tr>
                 </thead>
                 <tbody>
                   {blueprint.methodCapacitySummary.map((item) => (
@@ -472,7 +508,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
                       <td className="py-3 pr-4 print:text-slate-800">{number.format(item.monthlyDemand)}</td>
                       <td className="py-3 pr-4 print:text-slate-800">{number.format(item.peakWeekDemand)}</td>
                       <td className="py-3 pr-4 print:text-slate-800">{number.format(item.availableMonthlyCapacity)}</td>
-                      <td className="py-3"><p className={`font-bold ${item.utilizationPercent >= 85 ? "text-amber-200" : "text-teal-200"} print:text-slate-950`}>{number.format(item.utilizationPercent)}%</p><p className="mt-1 max-w-sm text-[10px] leading-4 text-slate-500">{item.limitations}</p></td>
+                      <td className="py-3"><p className={`font-bold ${item.utilizationPercent >= 85 ? "text-amber-200" : "text-teal-200"} print:text-slate-950`}>{number.format(item.utilizationPercent)}%</p><p className="mt-1 max-w-sm text-[10px] leading-4 text-sky-200/80 print:text-slate-600">Formula: ({number.format(item.monthlyDemand)} × 1.3 peak factor) ÷ {number.format(item.availableMonthlyCapacity)} available × 100</p><p className="mt-1 max-w-sm text-[10px] leading-4 text-slate-500">{item.limitations}</p></td>
                     </tr>
                   ))}
                 </tbody>
@@ -656,10 +692,12 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </Section>
         </div>
       </div>
+      </div>
 
       <footer className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-5 text-xs leading-6 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700">
         <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300 print:text-slate-700" /><p><strong className="text-slate-200 print:text-slate-950">Concept-use notice.</strong> This blueprint is a planning aid, not a validated design, regulatory opinion, supplier quote, approved specification or substitute for qualified QC, QA and engineering review. Reconcile all outputs against current registered specifications, pharmacopeial requirements, site procedures, methods, utilities, local regulations and vendor data before use.</p></div>
       </footer>
+      <button data-print="hide" type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report_mobile_sticky", "working_brief_print"); printBlueprint("executive"); }} className="fixed bottom-20 right-4 z-40 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-xs font-bold text-slate-950 shadow-2xl shadow-black/40 md:hidden"><FileText className="h-4 w-4" /> Download decision brief</button>
     </div>
   );
 }
