@@ -51,13 +51,13 @@ describe("Quality Lab controlled delivery files", () => {
     const pdf = await qualityLabBlueprintPdf(reviewedSnapshot());
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
     expect(pdf.length).toBeGreaterThan(40000);
-    expect(pdf.toString("latin1")).toContain("/Count 16");
+    expect(pdf.toString("latin1")).toContain("/Count 17");
   });
 
   it("generates the branded public Blueprint sample", async () => {
     const pdf = await qualityLabSampleBlueprintPdf();
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
     expect(pdf.length).toBeGreaterThan(40000);
-    expect(pdf.toString("latin1")).toContain("/Count 16");
+    expect(pdf.toString("latin1")).toContain("/Count 17");
   });
 });

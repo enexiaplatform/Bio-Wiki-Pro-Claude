@@ -12,6 +12,7 @@ import {
 } from "../shared/quality-lab-persistence.js";
 import { createQualityLabDeliveryPackage } from "../shared/quality-lab-delivery.js";
 import { buildCapacityVisual, buildScenarioComparison, buildZoneLayout } from "../shared/quality-lab-visuals.js";
+import { analyzeQualityLabSensitivity } from "../shared/quality-lab-sensitivity.js";
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
@@ -552,9 +553,38 @@ function drawEvidencePage(doc: Doc, project: QualityLabProject, sample: boolean)
   callout(doc, MARGIN, 713, CONTENT_WIDTH, "Closure rule", "A source link alone does not close a gap. Record exact version, locator, project scope, limitations and qualified review disposition.", "teal", 58);
 }
 
+function drawSensitivityPage(doc: Doc, project: QualityLabProject, sample: boolean) {
+  const analysis = analyzeQualityLabSensitivity(project);
+  const ranked = analysis.drivers.slice(0, 6);
+  const maximum = Math.max(1, ...ranked.map((driver) => driver.maxOutputSwingPercent));
+  const dominant = ranked[0];
+  sectionPage(doc, 13, "12 / Decision sensitivity", "Decision sensitivity and evidence priority", "One-at-a-time input tests rank which assumptions can move the planning decision and which site evidence should be verified first.", sample);
+
+  const cardWidth = (CONTENT_WIDTH - 20) / 3;
+  kpi(doc, MARGIN, 140, cardWidth, "Dominant tested swing", dominant ? pct(dominant.maxOutputSwingPercent) : "0%", dominant?.label ?? "No active driver", dominant?.verificationPriority === "critical" ? "gold" : "blue");
+  kpi(doc, MARGIN + cardWidth + 10, 140, cardWidth, "Decision-critical", number(analysis.summary.decisionCriticalCount), "drivers in tested ranges", analysis.summary.decisionCriticalCount ? "gold" : "teal");
+  kpi(doc, MARGIN + (cardWidth + 10) * 2, 140, cardWidth, "Evidence required", number(analysis.summary.siteEvidenceRequiredCount), `screened by ${analysis.engineVersion}`, "neutral");
+
+  label(doc, "Ranked driver influence", MARGIN, 247, 220, C.ink);
+  paragraph(doc, "Largest absolute movement across six planning outputs", 305, 247, 244, { size: 7.2, color: C.muted });
+  ranked.forEach((driver, index) => {
+    const y = 278 + index * 45;
+    paragraph(doc, `${index + 1}. ${short(driver.label, 34)}`, MARGIN, y - 3, 145, { size: 8, color: C.ink, bold: true });
+    horizontalBar(doc, 198, y, 235, driver.maxOutputSwingPercent, maximum, driver.verificationPriority === "critical" ? C.gold : C.teal);
+    doc.font("Helvetica-Bold").fontSize(8).fillColor(C.ink).text(pct(driver.maxOutputSwingPercent), 440, y - 2, { width: 43, align: "right" });
+    doc.font("Helvetica-Bold").fontSize(6.8).fillColor(driver.verificationPriority === "critical" ? C.gold : C.slate).text(driver.verificationPriority.toUpperCase(), 488, y - 2, { width: 61, align: "right" });
+    paragraph(doc, `${number(driver.lowValue, 1)}-${number(driver.highValue, 1)} ${driver.unit}`, 198, y + 15, 235, { size: 6.8, color: C.muted });
+  });
+
+  callout(doc, MARGIN, 548, CONTENT_WIDTH, "How to read this chart", "The longest bar identifies the input with the largest modeled output movement inside its stated test range. It does not express likelihood, statistical confidence, design margin, combined-driver interaction or an approval basis.", "blue", 62);
+  label(doc, "Evidence verification queue", MARGIN, 628, 220, C.ink);
+  const queueRows = analysis.verificationQueue.slice(0, 3).map((driver) => [driver.verificationPriority.toUpperCase(), driver.label, driver.evidenceNeeded]);
+  table(doc, MARGIN, 651, ["Priority", "Driver", "Evidence needed before reliance"], queueRows, [68, 128, 307], { rowHeight: 35, fontSize: 6.9, emphasisColumn: 0 });
+}
+
 function drawActionPage(doc: Doc, project: QualityLabProject, sample: boolean) {
   const b = project.blueprint;
-  sectionPage(doc, 13, "12 / Action roadmap", "From concept to a defensible decision", "The roadmap converts open information into owned evidence work and explicit decision gates.", sample);
+  sectionPage(doc, 14, "13 / Action roadmap", "From concept to a defensible decision", "The roadmap converts open information into owned evidence work and explicit decision gates.", sample);
   const groups = [
     { title: "Now - frame evidence", tone: "red" as Tone, items: b.unresolvedInputs.filter((item) => item.severity === "blocking").slice(0, 3).map((item) => item.resolution) },
     { title: "Before design freeze", tone: "blue" as Tone, items: b.recommendations.filter((item) => item.priority === "before-design-freeze").slice(0, 3).map((item) => item.recommendation) },
@@ -578,7 +608,7 @@ function drawActionPage(doc: Doc, project: QualityLabProject, sample: boolean) {
 }
 
 function drawTracePage(doc: Doc, b: QualityLabBlueprint, sample: boolean) {
-  sectionPage(doc, 14, "13 / Traceability", "How the Blueprint reaches an output", "Counts and version labels make the calculation chain inspectable without implying that every evidence dependency is closed.", sample);
+  sectionPage(doc, 15, "14 / Traceability", "How the Blueprint reaches an output", "Counts and version labels make the calculation chain inspectable without implying that every evidence dependency is closed.", sample);
   const nodes = [
     { title: "Project inputs", value: "4 steps", note: b.input.contractVersion, tone: "blue" as Tone },
     { title: "Workflow demand", value: String(b.workflows.length), note: "operating workflows", tone: "teal" as Tone },
@@ -611,7 +641,7 @@ function drawTracePage(doc: Doc, b: QualityLabBlueprint, sample: boolean) {
 }
 
 function drawRegistersPage(doc: Doc, b: QualityLabBlueprint, sample: boolean) {
-  sectionPage(doc, 15, "14 / Registers", "Evidence, assumptions and limitations", "The PDF carries decision-critical entries; the workbook retains the full editable registers.", sample);
+  sectionPage(doc, 16, "15 / Registers", "Evidence, assumptions and limitations", "The PDF carries decision-critical entries; the workbook retains the full editable registers.", sample);
   label(doc, "Evidence register excerpt", MARGIN, 140, 220, C.ink);
   const evidenceRows = b.evidence.slice(0, 5).map((item) => [item.title, item.kind, item.status, item.version || "Open"]);
   const evidenceBottom = table(doc, MARGIN, 165, ["Evidence", "Kind", "Status", "Version"], evidenceRows, [214, 88, 103, 98], { rowHeight: 36, fontSize: 7.2, emphasisColumn: 0 });
@@ -624,7 +654,7 @@ function drawRegistersPage(doc: Doc, b: QualityLabBlueprint, sample: boolean) {
 function drawHandoverPage(doc: Doc, project: QualityLabProject, snapshot: QualityLabReviewedProjectSnapshot, sample: boolean) {
   const b = project.blueprint;
   const control = snapshot.engagement?.deliveryControl;
-  sectionPage(doc, 16, "15 / Controlled handover", "Release, acceptance and next decision", "The final page states exactly what the artifact can support, what remains open and how the client records acceptance.", sample);
+  sectionPage(doc, 17, "16 / Controlled handover", "Release, acceptance and next decision", "The final page states exactly what the artifact can support, what remains open and how the client records acceptance.", sample);
   const leftWidth = 241;
   callout(doc, MARGIN, 145, leftWidth, "Suitable now", "Discovery, scenario discussion, evidence planning, scope definition and qualified review preparation.", "teal", 102);
   callout(doc, MARGIN + leftWidth + 21, 145, leftWidth, "Not suitable yet", "Final staffing, room design, turnaround commitment, URS approval, procurement, validation or regulatory reliance.", "red", 102);
@@ -672,6 +702,7 @@ export function qualityLabBlueprintPdf(snapshot: QualityLabReviewedProjectSnapsh
     drawConsumablesPage(doc, project.blueprint, sample);
     drawControlsPage(doc, project, sample);
     drawEvidencePage(doc, project, sample);
+    drawSensitivityPage(doc, project, sample);
     drawActionPage(doc, project, sample);
     drawTracePage(doc, project.blueprint, sample);
     drawRegistersPage(doc, project.blueprint, sample);

@@ -18,8 +18,9 @@ import {
   Users,
   ArrowRight,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { QualityLabBlueprint, QualityLabProject } from "@shared/quality-lab";
+import { analyzeQualityLabSensitivity } from "@shared/quality-lab-sensitivity";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
@@ -200,6 +201,9 @@ export function BlueprintReport({ project, onEdit }: Props) {
   const activeActions = project.actionPlan.actions.filter((action) => action.status !== "resolved");
   const blockingActions = activeActions.filter((action) => action.severity === "blocking");
   const importantActions = activeActions.filter((action) => action.severity === "important");
+  const sensitivity = useMemo(() => analyzeQualityLabSensitivity(project), [project]);
+  const dominantDriver = sensitivity.drivers[0];
+  const sensitivityScale = Math.max(1, ...sensitivity.drivers.slice(0, 5).map((driver) => driver.maxOutputSwingPercent));
 
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
@@ -352,12 +356,52 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </div>}
       </section>
 
+      <section id="decision-sensitivity" data-testid="blueprint-sensitivity-summary" className="mb-5 scroll-mt-32 rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-300 print:text-slate-500">Decision sensitivity · evidence priority</p>
+            <h2 className="mt-1 text-xl font-bold print:text-slate-950">Verify the assumptions that can move the decision most.</h2>
+            <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">Each input is stressed independently while all other inputs stay fixed. The ranked swing is the largest modeled movement across workload, team, CAPEX, OPEX, area and peak resource utilization—not a probability.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:min-w-[19rem]">
+            <div className="rounded-xl border border-violet-300/15 bg-violet-300/[0.055] p-3 print:border-slate-300 print:bg-white"><p className="text-2xl font-bold text-violet-100 print:text-slate-950">{sensitivity.summary.decisionCriticalCount}</p><p className="text-[10px] leading-4 text-slate-500">decision-critical drivers</p></div>
+            <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.045] p-3 print:border-slate-300 print:bg-white"><p className="text-2xl font-bold text-amber-100 print:text-slate-950">{sensitivity.verificationQueue.filter((item) => item.verificationPriority === "critical").length}</p><p className="text-[10px] leading-4 text-slate-500">critical evidence checks</p></div>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
+          <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white">
+            <div className="flex items-center justify-between gap-3"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Largest output swing in tested range</p><p className="text-[10px] text-slate-500">relative rank</p></div>
+            <div className="mt-4 space-y-4">
+              {sensitivity.drivers.slice(0, 5).map((driver, index) => <div key={driver.id}>
+                <div className="mb-1.5 flex items-start justify-between gap-3 text-xs"><span className="font-semibold text-slate-200 print:text-slate-950">{index + 1}. {driver.label}</span><span className="shrink-0 font-bold text-violet-200 print:text-slate-800">{number.format(driver.maxOutputSwingPercent)}%</span></div>
+                <div className="h-2 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className={`h-full rounded-full ${driver.verificationPriority === "critical" ? "bg-amber-300" : "bg-violet-300"}`} style={{ width: `${Math.max(3, driver.maxOutputSwingPercent / sensitivityScale * 100)}%` }} /></div>
+                <p className="mt-1.5 text-[10px] leading-4 text-slate-500">Tested {number.format(driver.lowValue)}–{number.format(driver.highValue)} {driver.unit} · {driver.verificationPriority} verification</p>
+              </div>)}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4 print:border-slate-300 print:bg-white">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-300 print:text-slate-600">Evidence queue</p>
+            <ol className="mt-4 space-y-3">
+              {sensitivity.verificationQueue.slice(0, 3).map((driver, index) => <li key={driver.id} className="border-l-2 border-amber-300/40 pl-3">
+                <div className="flex flex-wrap items-center gap-2"><span className="text-xs font-bold text-slate-200 print:text-slate-950">{index + 1}. {driver.label}</span><span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-0.5 text-[9px] font-bold uppercase text-amber-200 print:border-slate-300 print:bg-white print:text-slate-700">{driver.verificationPriority}</span></div>
+                <p className="mt-1 text-[11px] leading-5 text-slate-500 print:text-slate-700">{driver.evidenceNeeded}</p>
+              </li>)}
+            </ol>
+            {dominantDriver && <p className="mt-4 rounded-lg border border-violet-300/15 bg-violet-300/[0.045] p-3 text-[11px] leading-5 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700"><strong className="text-violet-200 print:text-slate-950">Dominant tested driver:</strong> {dominantDriver.label}. {dominantDriver.decisionUse}</p>}
+            <Link data-print="hide" href={`/quality-lab/sensitivity?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_sensitivity", "open_full_analysis")} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-violet-300/25 bg-violet-300/10 px-3 py-2 text-xs font-bold text-violet-200 transition hover:bg-violet-300/15">Open all drivers and output ranges <ArrowRight className="h-4 w-4" /></Link>
+          </div>
+        </div>
+        <p className="mt-4 text-[10px] leading-5 text-slate-500 print:text-slate-600">Method: {sensitivity.engineVersion} · one-at-a-time perturbation · interactions and probability distributions are outside this screen. Stable-in-range does not prove an input is correct.</p>
+      </section>
+
       {reportMode === "executive" && <div data-print="hide" className="mb-5 flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center"><p className="max-w-2xl text-sm leading-6 text-slate-400">Executive mode keeps the decision, readiness, material uncertainties, scenario movement and next actions visible. The full model, formulas, evidence and versioned rule trace remain available.</p><button type="button" onClick={() => { setReportMode("technical"); window.setTimeout(() => document.getElementById("visual-decision-layer")?.scrollIntoView({ behavior: "smooth" }), 0); }} className="inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200">Open technical detail <ArrowRight className="h-4 w-4" /></button></div>}
 
       <div className={reportMode === "technical" ? "block" : "hidden"}>
       <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
         <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
-          {[["#decision-brief", "Decision brief"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
+          {[["#decision-brief", "Decision brief"], ["#decision-sensitivity", "Sensitivity"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
         </div>
       </nav>
 

@@ -15,6 +15,7 @@ The public sample and controlled delivery use the same `qualityLabBlueprintPdf` 
 | Supply resilience | Which consumables drive spend and stock exposure? | Ranked spend bars | gross demand, reorder point, safety stock, spend | Item master and supplier qualification remain open |
 | Decision controls | How do risk, evidence and action relate? | KPI taxonomy + control chain | risks, gaps, actions | Zero modeled high risk does not cancel blockers |
 | Evidence readiness | What prevents controlled reliance? | Readiness meter + ranked gap list | readiness score and unresolved inputs | Weighted gap indicator, not approval score |
+| Decision sensitivity | Which assumptions can move the decision most, and what should be verified first? | Ranked influence bars + evidence queue | one-at-a-time driver ranges, six planning outputs, verification priority | Deterministic tested ranges, not probability, correlation or combined-driver simulation |
 | Action roadmap | What work unlocks the decision? | Four-stage roadmap | blockers and recommendations | Owners/dates remain in the workbook |
 | Traceability | How does an input reach an output? | Directed calculation chain + rule table | input, workflows, methods, rules, evidence | Traceability does not itself close evidence |
 | Registers | What basis and assumptions are carried? | Controlled tables | evidence and assumptions | PDF is an excerpt; workbook is complete register |

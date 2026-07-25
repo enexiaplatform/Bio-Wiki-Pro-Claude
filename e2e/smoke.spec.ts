@@ -425,6 +425,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Which microbiology operating model and phased capacity/i })).toBeVisible();
     await page.getByRole("button", { name: "Engineering", exact: true }).click();
     await expect(page.locator("#decision-brief").getByText(/Use the capability and area allowances to frame a qualified basis-of-design workshop/i)).toBeVisible();
+    await expect(page.getByTestId("blueprint-sensitivity-summary")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Verify the assumptions that can move the decision most/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open all drivers and output ranges/i })).toHaveAttribute("href", /\/quality-lab\/sensitivity\?project=qlp_/);
     await page.getByRole("button", { name: "technical mode", exact: true }).click();
     await expect(page.getByRole("heading", { name: /See the model before reading the detail/i })).toBeVisible();
     await expect(page.getByTestId("blueprint-scenario-chart")).toBeVisible();
@@ -759,6 +762,8 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/sample");
     await expect(page.getByRole("heading", { name: /See what a controlled Blueprint looks like/i })).toBeVisible();
     await expect(page.getByText(/not a customer result or an approved facility design/i)).toBeVisible();
+    await expect(page.getByText(/This 17-page synthetic example/i)).toBeVisible();
+    await expect(page.getByRole("listitem").filter({ hasText: /Decision sensitivity and evidence priority/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Download sample PDF/i })).toHaveAttribute("href", "/api/quality-lab/sample-blueprint.pdf");
   });
 
