@@ -414,17 +414,18 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
     await page.getByRole("link", { name: /Build a blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/planner$/);
-    await page.getByRole("button", { name: /Use example/i }).click();
+    await page.getByRole("button", { name: /Explore a worked example/i }).click();
     await expect(page.getByText(/microbiology-pack\/v1\.1/i)).toBeVisible();
     for (let step = 0; step < 3; step++) {
       await page.getByRole("button", { name: /^Continue$/ }).click();
     }
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
-    await expect(page.getByText(/^Decision mandate$/i)).toBeVisible();
+    await expect(page.locator("#decision-brief").getByText(/^Decision mandate$/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /Which microbiology operating model and phased capacity/i })).toBeVisible();
     await page.getByRole("button", { name: "Engineering", exact: true }).click();
-    await expect(page.getByText(/Use the capability and area allowances to frame a qualified basis-of-design workshop/i)).toBeVisible();
+    await expect(page.locator("#decision-brief").getByText(/Use the capability and area allowances to frame a qualified basis-of-design workshop/i)).toBeVisible();
+    await page.getByRole("button", { name: "technical mode", exact: true }).click();
     await expect(page.getByRole("heading", { name: /See the model before reading the detail/i })).toBeVisible();
     await expect(page.getByTestId("blueprint-scenario-chart")).toBeVisible();
     await expect(page.getByTestId("blueprint-capacity-chart")).toBeVisible();
@@ -466,7 +467,7 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await page.getByRole("link", { name: /Request expert review/i }).click();
     await page.waitForURL(/\/quality-lab\/review\?project=/);
-    await expect(page.getByRole("heading", { name: /smallest paid engagement/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Leave with a scoped decision, evidence gap map/i })).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
     await expect(page.getByText(/Decision mandate carried into the brief/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /4 of 6 decision inputs described/i })).toBeVisible();

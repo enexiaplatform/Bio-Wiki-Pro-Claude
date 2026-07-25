@@ -38,6 +38,16 @@ import {
   type QualityLabProject,
 } from "@shared/quality-lab";
 import { qualityLabPlannerStepIssues } from "@shared/quality-lab-planner";
+import {
+  applyQualityLabDemandPreset,
+  applyQualityLabOperatingPreset,
+  qualityLabDemandPresets,
+  qualityLabOperatingPresets,
+  suggestQualityLabDecision,
+  suggestQualityLabScope,
+  type QualityLabDemandPresetId,
+  type QualityLabOperatingPresetId,
+} from "@shared/quality-lab-guidance";
 import { BlueprintReport } from "@/components/quality-lab/BlueprintReport";
 import { getQualityLabProject, saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
@@ -156,7 +166,8 @@ export default function QualityLabPlannerPage() {
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [portfolioExpanded, setPortfolioExpanded] = useState(false);
-  const [startMode, setStartMode] = useState<"example" | "blank" | "import" | "existing" | null>(params?.id ? "existing" : null);
+  const [startMode, setStartMode] = useState<"guided" | "example" | "blank" | "import" | "existing" | null>(params?.id ? "existing" : null);
+  const [appliedGuidance, setAppliedGuidance] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -268,8 +279,23 @@ export default function QualityLabPlannerPage() {
     setFurthestStep(0);
     setError(null);
     setFieldErrors({});
+    setAppliedGuidance(["demand:growing-site", "scope-from-demand", "operating:balanced"]);
     setStartMode("example");
     analytics.blueprintStartModeSelected("example");
+  }
+
+  function beginGuided() {
+    const guided = applyQualityLabOperatingPreset(createBlankQualityLabInput(), "balanced");
+    guided.primaryDecision = suggestQualityLabDecision(guided);
+    setInput(guided);
+    setProject(null);
+    setStep(0);
+    setFurthestStep(0);
+    setError(null);
+    setFieldErrors({});
+    setAppliedGuidance(["decision-frame", "operating:balanced"]);
+    setStartMode("guided");
+    analytics.blueprintStartModeSelected("guided");
   }
 
   function beginBlank() {
@@ -279,8 +305,36 @@ export default function QualityLabPlannerPage() {
     setFurthestStep(0);
     setError(null);
     setFieldErrors({});
+    setAppliedGuidance([]);
     setStartMode("blank");
     analytics.blueprintStartModeSelected("blank");
+  }
+
+  function useSuggestedDecision() {
+    update("primaryDecision", suggestQualityLabDecision(input));
+    setAppliedGuidance((current) => Array.from(new Set([...current, "decision-frame"])));
+  }
+
+  function useDemandPreset(presetId: QualityLabDemandPresetId) {
+    setInput((current) => applyQualityLabDemandPreset(current, presetId));
+    setAppliedGuidance((current) => Array.from(new Set([...current.filter((item) => !item.startsWith("demand:")), `demand:${presetId}`, "scope-from-demand"])));
+    setError(null);
+  }
+
+  function useSuggestedScope() {
+    updateScopeModel(suggestQualityLabScope(input));
+    setAppliedGuidance((current) => Array.from(new Set([...current, "scope-from-demand"])));
+  }
+
+  function updateScopeModel(scope: QualityLabInput["scope"]) {
+    setInput((current) => ({ ...current, scope }));
+    setError(null);
+  }
+
+  function useOperatingPreset(presetId: QualityLabOperatingPresetId) {
+    setInput((current) => applyQualityLabOperatingPreset(current, presetId));
+    setAppliedGuidance((current) => Array.from(new Set([...current.filter((item) => !item.startsWith("operating:")), `operating:${presetId}`])));
+    setError(null);
   }
 
   async function importInputs(file: File) {
@@ -298,6 +352,7 @@ export default function QualityLabPlannerPage() {
       setStep(0);
       setFurthestStep(0);
       setError(null);
+      setAppliedGuidance([]);
       setStartMode("import");
       analytics.blueprintStartModeSelected("import");
       analytics.blueprintImported(isProjectExport ? "project" : "input");
@@ -317,14 +372,16 @@ export default function QualityLabPlannerPage() {
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>
           <section className="mt-8 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/5 p-6 md:p-10">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> Microbiology concept intake</span>
-            <h1 className="mt-5 max-w-3xl text-3xl font-bold md:text-5xl">Choose how to start your Blueprint.</h1>
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-400 md:text-base">The example is illustrative only. Choose blank for your own site facts, or import a previously exported Atlas input. Imports are validated and start as a new local project.</p>
+            <h1 className="mt-5 max-w-3xl text-3xl font-bold md:text-5xl">You do not need to know every lab number.</h1>
+            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 md:text-base">Tell Atlas what decision you face. We will suggest a transparent starting model, explain where each input usually comes from and mark every suggestion that still needs site confirmation.</p>
             {error && <div role="alert" className="mt-5 rounded-xl border border-red-300/20 bg-red-300/10 p-3 text-sm text-red-100">{error}</div>}
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <button type="button" onClick={beginWithExample} className="rounded-2xl border border-amber-300/25 bg-amber-300/[0.07] p-5 text-left transition hover:-translate-y-0.5 hover:border-amber-300/45"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Illustrative only</p><h2 className="mt-2 text-lg font-bold">Use example</h2><p className="mt-2 text-xs leading-5 text-slate-400">Explore the prefilled Vietnam non-sterile scenario. Replace every site fact before using it for discussion.</p></button>
-              <button type="button" onClick={beginBlank} className="rounded-2xl border border-teal-300/25 bg-teal-300/[0.07] p-5 text-left transition hover:-translate-y-0.5 hover:border-teal-300/45"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">Your site</p><h2 className="mt-2 text-lg font-bold">Start blank</h2><p className="mt-2 text-xs leading-5 text-slate-400">Enter only the project facts you know. The model will show the evidence and inputs still needed.</p></button>
+            <div className="mt-8 grid gap-4 md:grid-cols-2">
+              <button type="button" onClick={beginGuided} className="relative rounded-2xl border border-teal-300/40 bg-teal-300/[0.10] p-5 text-left transition hover:-translate-y-0.5 hover:border-teal-300/65"><span className="absolute right-4 top-4 rounded-full bg-teal-300 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-slate-950">Recommended</span><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">Atlas-guided</p><h2 className="mt-2 text-lg font-bold">Guide me from the decision</h2><p className="mt-2 max-w-md text-xs leading-5 text-slate-300">Choose the closest demand and resilience pattern. Atlas proposes the first model; you confirm, replace or leave evidence open.</p></button>
+              <button type="button" onClick={beginBlank} className="rounded-2xl border border-sky-300/25 bg-sky-300/[0.06] p-5 text-left transition hover:-translate-y-0.5 hover:border-sky-300/45"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Experienced team</p><h2 className="mt-2 text-lg font-bold">Enter known site data</h2><p className="mt-2 text-xs leading-5 text-slate-400">Start with an empty site record when you already have batch, lot, monitoring and operating data.</p></button>
+              <button type="button" onClick={beginWithExample} className="rounded-2xl border border-amber-300/25 bg-amber-300/[0.07] p-5 text-left transition hover:-translate-y-0.5 hover:border-amber-300/45"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Illustrative only</p><h2 className="mt-2 text-lg font-bold">Explore a worked example</h2><p className="mt-2 text-xs leading-5 text-slate-400">See a prefilled Vietnam non-sterile scenario and the full 16-page document structure before using your own data.</p></button>
               <button type="button" onClick={() => fileInputRef.current?.click()} className="rounded-2xl border border-sky-300/25 bg-sky-300/[0.07] p-5 text-left transition hover:-translate-y-0.5 hover:border-sky-300/45"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Portable JSON</p><h2 className="mt-2 text-lg font-bold">Import inputs</h2><p className="mt-2 text-xs leading-5 text-slate-400">Load a compatible input or exported model. It cannot overwrite a saved project.</p></button>
             </div>
+            <p className="mt-5 text-xs leading-5 text-slate-500">Atlas suggestions are labeled planning assumptions. They never become site facts, approved methods or qualified evidence unless your team confirms them.</p>
             <input ref={fileInputRef} type="file" accept="application/json,.json" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; event.currentTarget.value = ""; if (file) void importInputs(file); }} />
           </section>
         </div>
@@ -338,7 +395,7 @@ export default function QualityLabPlannerPage() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>
           <div className="flex items-center gap-2">
-            <button onClick={() => { setStartMode(null); setInput(defaultQualityLabInput); setProject(null); setStep(0); setFurthestStep(0); setError(null); setLocation("/quality-lab/planner"); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/10"><RotateCcw className="h-3.5 w-3.5" /> Choose start</button>
+            <button onClick={() => { setStartMode(null); setInput(defaultQualityLabInput); setProject(null); setStep(0); setFurthestStep(0); setError(null); setAppliedGuidance([]); setLocation("/quality-lab/planner"); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/10"><RotateCcw className="h-3.5 w-3.5" /> Choose start</button>
             <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-slate-300 transition hover:border-white/25 hover:bg-white/10"><Save className="h-3.5 w-3.5" /> Saved projects</Link>
           </div>
         </div>
@@ -347,11 +404,12 @@ export default function QualityLabPlannerPage() {
           <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end lg:gap-6">
             <div>
               {startMode === "example" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">Example project · replace site facts</span>}
+              {startMode === "guided" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-teal-300/30 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-100"><Sparkles className="h-3.5 w-3.5" /> Atlas-guided · suggestions active</span>}
               {startMode === "blank" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200">Blank project</span>}
               {startMode === "import" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200">Imported input · not yet saved</span>}
               <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> {MICROBIOLOGY_DOMAIN_PACK.version} · concept</span>
-              <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">Build the basis of design.</h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400 md:text-base md:leading-7">Add the operational facts you know. Atlas separates your inputs, concept assumptions and decisions that still need site verification.</p>
+              <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">{startMode === "guided" ? "Build with Atlas guidance." : "Build the basis of design."}</h1>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400 md:text-base md:leading-7">{startMode === "guided" ? "Choose the closest pattern first. Atlas exposes every suggested assumption so you can confirm it, replace it with site data or leave it open for expert review." : "Add the operational facts you know. Atlas separates your inputs, concept assumptions and decisions that still need site verification."}</p>
             </div>
             <details className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm">
               <summary className="flex cursor-pointer list-none items-start gap-2 font-semibold"><ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /><span>Where is my project data stored?</span></summary>
@@ -403,6 +461,12 @@ export default function QualityLabPlannerPage() {
 
             {step === 0 && (
               <div className="space-y-7">
+                <div className="rounded-2xl border border-teal-300/25 bg-teal-300/[0.06] p-4 md:p-5">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div className="max-w-2xl"><p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.17em] text-teal-200"><Sparkles className="h-3.5 w-3.5" /> Atlas suggested decision</p><p className="mt-2 text-sm font-bold text-white">Start with the decision your team must make.</p><p className="mt-2 text-xs leading-5 text-slate-300">{suggestQualityLabDecision(input)}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">Generated from project intent and country. Edit it freely; do not include confidential formulations or proprietary methods.</p></div>
+                    <button type="button" onClick={useSuggestedDecision} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-teal-200"><Sparkles className="h-3.5 w-3.5" /> Use this decision</button>
+                  </div>
+                </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <TextField id="projectName" label="Project name" value={input.projectName} onChange={(value) => update("projectName", value)} placeholder="e.g. Site A microbiology expansion" error={fieldErrors.projectName} />
                   <TextField label="Scenario label" value={input.scenarioLabel} onChange={(value) => update("scenarioLabel", value)} placeholder="e.g. Baseline - 1 shift" />
@@ -459,20 +523,27 @@ export default function QualityLabPlannerPage() {
 
             {step === 1 && (
               <div className="space-y-7">
+                <div className="rounded-2xl border border-teal-300/25 bg-teal-300/[0.055] p-4 md:p-5">
+                  <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.17em] text-teal-200"><Sparkles className="h-3.5 w-3.5" /> Atlas starting patterns</p>
+                  <h3 className="mt-2 text-base font-bold">Do not know the monthly numbers yet?</h3>
+                  <p className="mt-1 text-xs leading-5 text-slate-400">Choose the closest operating pattern. Atlas fills a transparent starting case and recommends capabilities from the demand. Replace it later with production plans, receiving logs and monitoring schedules.</p>
+                  <div className="mt-4 grid gap-3 lg:grid-cols-3">{qualityLabDemandPresets.map((preset) => { const selected = appliedGuidance.includes(`demand:${preset.id}`); return <button key={preset.id} type="button" aria-pressed={selected} onClick={() => useDemandPreset(preset.id)} className={`rounded-xl border p-4 text-left transition ${selected ? "border-teal-300/50 bg-teal-300/10" : "border-white/10 bg-slate-950/30 hover:border-teal-300/30"}`}><span className="flex items-center justify-between gap-2 text-sm font-bold text-white">{preset.label}{preset.id === "growing-site" && <span className="rounded-full bg-teal-300/15 px-2 py-1 text-[9px] uppercase tracking-wide text-teal-200">Recommended</span>}</span><span className="mt-2 block text-[11px] leading-5 text-slate-400">{preset.summary}</span><span className="mt-2 block text-[10px] leading-4 text-slate-500">{preset.bestFor}</span></button>; })}</div>
+                  <p className="mt-3 text-[10px] leading-4 text-amber-100/80">Suggested patterns are planning assumptions, not industry benchmarks or site facts.</p>
+                </div>
                 <div>
                   <h3 className="text-sm font-bold">Release and incoming demand</h3><p className="mt-1 text-xs leading-5 text-slate-500">Use actual monthly lots/batches where possible — product count alone does not define workload.</p>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <NumberField label="Finished-product batches" value={input.finishedBatchesPerMonth} onChange={(value) => update("finishedBatchesPerMonth", value)} suffix="/ month" />
-                    <NumberField label="Raw-material lots received" value={input.rawMaterialLotsPerMonth} onChange={(value) => update("rawMaterialLotsPerMonth", value)} suffix="/ month" />
+                    <NumberField label="Finished-product batches" value={input.finishedBatchesPerMonth} onChange={(value) => update("finishedBatchesPerMonth", value)} suffix="/ month" hint="Best source: production plan or batch-release log. Count batches, not SKUs." />
+                    <NumberField label="Raw-material lots received" value={input.rawMaterialLotsPerMonth} onChange={(value) => update("rawMaterialLotsPerMonth", value)} suffix="/ month" hint="Best source: ERP receipt history or incoming-sampling log." />
                   </div>
                 </div>
                 <div className="border-t border-white/10 pt-6">
                   <h3 className="text-sm font-bold">Routine monitoring demand</h3>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <NumberField label="Water sampling points" value={input.waterPoints} onChange={(value) => update("waterPoints", value)} suffix="points" />
-                    <NumberField label="Water sampling rounds" value={input.waterRoundsPerWeek} onChange={(value) => update("waterRoundsPerWeek", value)} suffix="/ week" />
-                    <NumberField label="EM locations per round" value={input.emLocations} onChange={(value) => update("emLocations", value)} suffix="locations" />
-                    <NumberField label="EM sampling rounds" value={input.emRoundsPerWeek} onChange={(value) => update("emRoundsPerWeek", value)} suffix="/ week" />
+                    <NumberField label="Water sampling points" value={input.waterPoints} onChange={(value) => update("waterPoints", value)} suffix="points" hint="Use the approved sampling plan; count active routine locations." />
+                    <NumberField label="Water sampling rounds" value={input.waterRoundsPerWeek} onChange={(value) => update("waterRoundsPerWeek", value)} suffix="/ week" hint="How often the full or representative route is sampled." />
+                    <NumberField label="EM locations per round" value={input.emLocations} onChange={(value) => update("emLocations", value)} suffix="locations" hint="Count locations in one typical monitoring round." />
+                    <NumberField label="EM sampling rounds" value={input.emRoundsPerWeek} onChange={(value) => update("emRoundsPerWeek", value)} suffix="/ week" hint="Use the approved EM schedule; separate event-driven sampling later." />
                   </div>
                 </div>
                 <div className="border-t border-white/10 pt-6">
@@ -489,7 +560,8 @@ export default function QualityLabPlannerPage() {
 
             {step === 2 && (
               <div>
-                <p className="mb-5 max-w-3xl text-sm leading-6 text-slate-400">Select capabilities performed in-house. The outsource percentage in the next step reduces modeled in-house workload across the selected scope.</p>
+                <div className="mb-6 rounded-2xl border border-teal-300/25 bg-teal-300/[0.055] p-4 md:p-5"><div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"><div><p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.17em] text-teal-200"><Sparkles className="h-3.5 w-3.5" /> Atlas scope recommendation</p><h3 className="mt-2 text-base font-bold">Select capabilities implied by your demand.</h3><p className="mt-2 text-xs leading-5 text-slate-400">Suggested now: {scopeOptions.filter((option) => suggestQualityLabScope(input)[option.key]).map((option) => option.title).join(", ") || "No capability yet - add demand in Step 2"}.</p><p className="mt-2 text-[10px] leading-4 text-amber-100/80">Atlas does not add sterility, endotoxin or bioburden unless matching demand is present.</p></div><button type="button" onClick={useSuggestedScope} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-xs font-bold text-slate-950 hover:bg-teal-200"><Sparkles className="h-3.5 w-3.5" /> Apply recommendation</button></div></div>
+                <p className="mb-5 max-w-3xl text-sm leading-6 text-slate-400">Confirm which capabilities will be performed in-house. The outsource percentage in the next step reduces modeled in-house workload across the selected scope.</p>
                 <div className="grid gap-3 md:grid-cols-2">
                   {scopeOptions.map((option) => {
                     const selected = input.scope[option.key];
@@ -506,6 +578,12 @@ export default function QualityLabPlannerPage() {
 
             {step === 3 && (
               <div className="space-y-7">
+                <div className="rounded-2xl border border-teal-300/25 bg-teal-300/[0.055] p-4 md:p-5">
+                  <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.17em] text-teal-200"><Sparkles className="h-3.5 w-3.5" /> Atlas operating assumptions</p>
+                  <h3 className="mt-2 text-base font-bold">Choose the planning posture you want to test.</h3>
+                  <p className="mt-1 text-xs leading-5 text-slate-400">This sets the first scenario. Every assumption remains visible in the Blueprint and can be replaced with observed site data.</p>
+                  <div className="mt-4 grid gap-3 lg:grid-cols-3">{qualityLabOperatingPresets.map((preset) => { const selected = appliedGuidance.includes(`operating:${preset.id}`); return <button key={preset.id} type="button" aria-pressed={selected} onClick={() => useOperatingPreset(preset.id)} className={`rounded-xl border p-4 text-left transition ${selected ? "border-teal-300/50 bg-teal-300/10" : "border-white/10 bg-slate-950/30 hover:border-teal-300/30"}`}><span className="flex items-center justify-between gap-2 text-sm font-bold text-white">{preset.label}{preset.id === "balanced" && <span className="rounded-full bg-teal-300/15 px-2 py-1 text-[9px] uppercase tracking-wide text-teal-200">Recommended</span>}</span><span className="mt-2 block text-[11px] leading-5 text-slate-400">{preset.summary}</span><span className="mt-2 block text-[10px] leading-4 text-slate-500">{preset.bestFor}</span></button>; })}</div>
+                </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <NumberField label="Release target" value={input.targetTurnaroundDays} onChange={(value) => update("targetTurnaroundDays", value)} suffix="days" min={1} max={60} hint="Atlas will flag conflicts with conventional incubation." />
                   <NumberField label="Growth over horizon" value={input.growthRatePercent} onChange={(value) => update("growthRatePercent", value)} suffix="%" min={-50} max={500} />

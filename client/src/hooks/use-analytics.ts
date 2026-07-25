@@ -193,7 +193,7 @@ export const analytics = {
   blueprintStarted: (source = "planner") =>
     capture("blueprint_started", { source }),
 
-  blueprintStartModeSelected: (mode: "example" | "blank" | "import") =>
+  blueprintStartModeSelected: (mode: "guided" | "example" | "blank" | "import") =>
     capture("blueprint_start_mode_selected", { mode }),
 
   blueprintImported: (source: "input" | "project") =>

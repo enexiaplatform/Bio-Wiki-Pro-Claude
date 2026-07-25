@@ -3,7 +3,8 @@ import * as XLSX from "xlsx";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab";
 import { createQualityLabEngagementPacket } from "../../shared/quality-lab-engagement";
 import type { QualityLabReviewedProjectSnapshot } from "../../shared/quality-lab-persistence";
-import { markdownToPdf, qualityLabDeliveryMarkdown, qualityLabDeliveryWorkbook, qualityLabSampleBlueprintPdf } from "../generate";
+import { qualityLabDeliveryMarkdown, qualityLabDeliveryWorkbook, qualityLabSampleBlueprintPdf } from "../generate";
+import { qualityLabBlueprintPdf } from "../quality-lab-blueprint-pdf";
 
 function reviewedSnapshot(): QualityLabReviewedProjectSnapshot {
   const project = createQualityLabProject(defaultQualityLabInput, "qlp_delivery_test");
@@ -47,15 +48,16 @@ describe("Quality Lab controlled delivery files", () => {
     expect(markdown).toContain("Decision mandate");
     expect(markdown).toContain(defaultQualityLabInput.primaryDecision);
     expect(markdown).toContain("not a validated design");
-    const pdf = await markdownToPdf(markdown, "Atlas Blueprint Decision Brief");
+    const pdf = await qualityLabBlueprintPdf(reviewedSnapshot());
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
-    expect(pdf.length).toBeGreaterThan(1000);
+    expect(pdf.length).toBeGreaterThan(40000);
+    expect(pdf.toString("latin1")).toContain("/Count 16");
   });
 
   it("generates the branded public Blueprint sample", async () => {
     const pdf = await qualityLabSampleBlueprintPdf();
     expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
-    expect(pdf.length).toBeGreaterThan(12000);
-    expect(pdf.toString("latin1")).toContain("/Count 13");
+    expect(pdf.length).toBeGreaterThan(40000);
+    expect(pdf.toString("latin1")).toContain("/Count 16");
   });
 });

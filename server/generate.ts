@@ -6,6 +6,7 @@ import PDFDocument from "pdfkit";
 import { qualityLabProjectFromReviewedSnapshot, type QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import { createQualityLabDeliveryPackage } from "../shared/quality-lab-delivery.js";
 import { assessPaidPilotEvidence } from "../shared/quality-lab-engagement.js";
+import { qualityLabIllustrativeSamplePdf } from "./quality-lab-blueprint-pdf.js";
 
 // 20 quality-system elements scored 0–2; % readiness computed by a live formula.
 const GAP_ROWS: [number, string, string, string][] = [
@@ -312,6 +313,11 @@ export function markdownToPdf(md: string, title: string): Promise<Buffer> {
 
 /** Branded public sample that demonstrates the structure of a paid decision brief. */
 export function qualityLabSampleBlueprintPdf(): Promise<Buffer> {
+  return qualityLabIllustrativeSamplePdf();
+}
+
+/** @deprecated Retained temporarily as source history; the shared paid/sample renderer is authoritative. */
+function legacyQualityLabSampleBlueprintPdf(): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument({
       size: "A4",

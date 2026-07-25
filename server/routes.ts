@@ -971,9 +971,9 @@ export async function registerRoutes(app: Express): Promise<void> {
     const row = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
     if (!row) return res.status(404).json({ message: "Reviewed project not found" });
     if (!row.snapshot.engagement) return res.status(409).json({ message: "Complete the review engagement workspace before exporting a decision brief" });
-    const { markdownToPdf, qualityLabDeliveryMarkdown } = await import("./generate.js");
+    const { qualityLabBlueprintPdf } = await import("./quality-lab-blueprint-pdf.js");
     const filename = `${row.projectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atlas-quality-lab"}-decision-brief.pdf`;
-    const pdf = await markdownToPdf(qualityLabDeliveryMarkdown(row.snapshot), `${row.projectName} - Atlas Quality Lab Blueprint`);
+    const pdf = await qualityLabBlueprintPdf(row.snapshot);
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(pdf);
