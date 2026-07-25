@@ -4,86 +4,270 @@ slug: "cleaning-validation"
 lang: "en"
 tier: "pro"
 category: "Validation"
-seoDescription: "Prove cleaning procedures remove product, cleaning agents, and microbes to safe levels — limits, sampling, and HBEL-based acceptance."
-updatedAt: "2026-06-11"
+seoDescription: "Cleaning validation for shared pharmaceutical equipment: HBEL/PDE-based MACO with a worked example, worst-case product matrixing, swab and rinse recovery studies, and campaign approaches."
+updatedAt: "2026-07-25"
 quiz:
-  - q: "Modern cleaning-validation limits are primarily based on:"
-    options: ["The 10-ppm rule alone", "Health-Based Exposure Limits (HBEL/PDE)", "Visual inspection only", "Supplier recommendation"]
+  - q: "Modern cleaning-validation acceptance limits are primarily based on:"
+    options: ["The 10-ppm rule alone", "Health-Based Exposure Limits (HBEL/PDE) per the EMA guideline", "Visual inspection only", "The detergent supplier's recommendation"]
     answer: 1
-  - q: "A recovery study is needed to:"
-    options: ["Speed up cleaning", "Correct results for incomplete analyte recovery from the surface", "Replace swabbing", "Set the production schedule"]
+  - q: "A swab recovery study is needed to:"
+    options: ["Speed up the cleaning cycle", "Correct results for incomplete analyte recovery from the sampled surface", "Replace swabbing entirely", "Set the production schedule"]
     answer: 1
   - q: "MACO stands for:"
     options: ["Maximum Allowable Carryover", "Mean Average Cleaning Output", "Minimum Acceptable Contamination", "Material And Cleaning Order"]
     answer: 0
+  - q: "In a product-grouping (worst-case) approach, the representative product is chosen mainly by:"
+    options: ["The largest batch size", "A documented matrix of toxicity (PDE), solubility, cleanability, and equipment contact", "The newest product", "Alphabetical order"]
+    answer: 1
 ---
 
 # Cleaning Validation
 
-Cleaning validation documents that a cleaning procedure consistently reduces
-residues (product, degradants, cleaning agents, bioburden) below safe limits —
-preventing cross-contamination in shared equipment.
+Cleaning validation is the documented evidence that a cleaning procedure
+consistently removes product residues, degradants, cleaning agents, and
+microbial contamination from shared equipment to levels that cannot harm the
+next patient. Cross-contamination through inadequately cleaned equipment is
+one of the oldest recall causes in the industry - which is why regulators
+treat cleaning validation as a core sterility-assurance and patient-safety
+control, not a housekeeping exercise.
 
-## Acceptance limits
+The governing framework:
 
-Modern limits are based on **Health-Based Exposure Limits (HBEL / PDE)** per the
-EMA guideline, rather than the older 1/1000-dose and 10-ppm criteria alone.
+- **EMA guideline on setting health-based exposure limits
+  (EMA/CHMP/CVMP/SWP/169430/2012, effective 2015)** - mandates HBEL/PDE-based
+  limits and is the reason the old default criteria are no longer sufficient
+  on their own.
+- **EU GMP Annex 15 (Qualification and Validation, 2015)** - sections on
+  cleaning validation: worst-case logic, HBEL use, campaign and hold times.
+- **FDA Guide to Inspections: Validation of Cleaning Processes (1993)** -
+  still the clearest statement of FDA expectations (documentation,
+  rationale, worst case, analytical specificity).
+- **EU GMP Chapter 3 and Chapter 5** - dedicated vs shared equipment and
+  cross-contamination prevention, reinforced by the Chapter 5 revisions
+  driven by the HBEL guideline.
+- **PIC/S PI 006** and **PDA Technical Report No. 29 (Points to Consider for
+  Cleaning Validation)** - practical inspection and industry guidance.
+- **ASTM E3106** - science- and risk-based cleaning process development
+  lifecycle.
 
-## Sampling methods
+> Practice it: the
+> [Cleaning Validation Program workflow](/workflows/cleaning-validation-program)
+> walks the full sequence from product matrixing through protocol, execution,
+> and continued verification; the
+> [Health-Based Exposure Limits lesson](/library/health-based-exposure-limits)
+> explains where PDE values come from.
 
-- **Swab sampling** — direct, for hard-to-reach "worst-case" locations.
-- **Rinse sampling** — covers large surface areas indirectly.
+## Dedicated vs Shared Equipment: The First Decision
 
-## Worst-case logic
+Before any calculation, decide the contamination strategy:
 
-Validate the hardest-to-clean product, equipment train, and locations. A
-successful worst case justifies a grouping/bracketing approach.
+| Scenario | Regulatory expectation | Cleaning-validation consequence |
+| --- | --- | --- |
+| Dedicated equipment (one product only) | Cleaning still required for hygiene, degradants, and microbial control | Validation focuses on cleaning-agent residues and microbiological control; carryover to other products is not the driver |
+| Shared equipment, comparable products | HBEL-based MACO limits and worst-case grouping | Full MACO program with justified product/equipment matrix |
+| Highly potent or sensitizing compounds (e.g. certain cytotoxics, hormones, beta-lactams, biologicals at risk levels set by QRM) | EU GMP expects dedicated facilities/equipment where risk cannot be controlled otherwise | Cleaning validation may not be an acceptable substitute for dedication - decide via documented quality risk management (ICH Q9) |
 
-## MACO calculation — worked example
+The HBEL guideline's sharpest consequence: where the HBEL-based risk
+assessment shows cleaning cannot reliably control the hazard, dedication - not
+a tighter swab limit - is the answer.
 
-**Maximum Allowable Carryover (MACO)** is the most product-A residue that may
-safely carry into the next product B. The HBEL-based formula:
+## Acceptance Limits: From HBEL to MACO
+
+Historically sites used **1/1000 of the minimum daily dose** or **10 ppm** as
+default carryover criteria. Those are now screening heuristics at best. The
+EMA guideline requires a **Permitted Daily Exposure (PDE)** derived by a
+qualified toxicologist from the compound's pharmacological/toxicological data
+(NOEL/LOEL with adjustment factors - see the
+[Health-Based Exposure Limits lesson](/library/health-based-exposure-limits)).
+The PDE feeds the MACO:
 
 ```
-MACO = (PDE_A × MBS_B) / MDD_B
+MACO (mg) = (PDE of product A  ×  minimum batch size of product B) / maximum daily dose of product B
 ```
 
-where PDE_A = permitted daily exposure of product A (mg/day), MBS_B = minimum
-batch size of B (mg), MDD_B = maximum daily dose of B (mg/day).
+where product A is the residue source (previous product) and product B is the
+next product manufactured on the same equipment train. All in consistent mass
+units.
 
-*Example:* PDE_A = 0.1 mg/day, MBS_B = 50,000,000 mg (50 kg), MDD_B = 1,000
-mg/day → MACO = (0.1 × 50,000,000) / 1,000 = **5,000 mg** of A across the whole
-batch of B. Divide by shared surface area to get the limit **per cm²**, then by
-the swab area to get the per-swab acceptance value the lab reports against.
+From MACO to the laboratory limit:
 
-## Recovery study (the step people skip)
+```
+Limit per surface area (mg/cm2) = MACO / total shared product-contact surface area
+Limit per swab (mg)             = (MACO / total surface area) × swabbed area
+Reportable limit after recovery = limit per swab × recovery factor
+```
 
-Swab and rinse results are only valid after a **recovery study**: spike a coupon
-of the actual surface material (316L steel, PTFE, glass) with a known residue
-level, then sample and recover it. A recovery factor below ~70–80% must be
-justified or the method improved — and results are **corrected** by the recovery
-factor. No recovery data = uninterpretable cleaning results.
+Take the **lowest** value across all next-product B scenarios as the governing
+limit, and compare it against the legacy criteria (1/1000 dose, 10 ppm) and
+the visually-clean threshold - the strictest defensible value wins. State in
+the protocol which criteria were evaluated and why the governing one was
+chosen; regulators expect HBEL-based limits unless a documented rationale
+shows another criterion is more conservative or more appropriate.
 
-## Acceptance criteria you must define up front
+## Worked Example: MACO for a Tablet Train (Fictional but Realistic)
 
-1. **Chemical** — residue ≤ MACO-derived per-area limit (corrected for recovery).
-2. **Cleaning agent** — detergent residue below its own HBEL/toxicity limit.
-3. **Microbial** — bioburden (and endotoxin for sterile) below action levels.
-4. **Visual** — visually clean at a defined viewing distance/lux (necessary but
-   never sufficient on its own).
+Product A (previous): an antihypertensive, PDE established by toxicology at
+**0.10 mg/day**. Product B (next): a vitamin tablet, minimum batch size
+**50 kg = 50,000,000 mg**, maximum daily dose **1,000 mg/day**.
 
-## Campaign length and hold times
+1. MACO = (0.10 × 50,000,000) / 1,000 = **5,000 mg** of A permitted in the
+   entire next batch of B.
+2. The shared train (granulator, fluid-bed dryer, blender, tablet press,
+   coater) has a total product-contact area of **250,000 cm2** (fictional;
+   obtain yours from equipment drawings and as-built measurements - this
+   number is a common audit weak point).
+3. Limit per area = 5,000 / 250,000 = **0.02 mg/cm2 = 20 µg/cm2**.
+4. Swab template area = 25 cm2, so limit per swab = 20 × 25 = **500 µg/swab**.
+5. Swab recovery factor from the recovery study = 0.80 (80%). Corrected
+   acceptance limit = 500 × 0.80 = **400 µg/swab** as analyzed.
+6. The analytical method must quantify comfortably below 400 µg/swab with
+   demonstrated specificity for A in the presence of the detergent - set the
+   LOQ well under the limit (common practice: LOQ at or below 50% of the
+   limit - confirm against your method-validation SOP).
 
-- **Dirty hold time (DHT)** — max time soiled equipment may sit before cleaning.
-- **Clean hold time (CHT)** — max time clean equipment stays clean before use.
-- **Campaign** — number of consecutive batches before a full clean; validate the
-  worst-case (longest) campaign, then monitor.
+If the toxicologist later revises PDE_A down to 0.01 mg/day, every number
+scales by ten - which is why the PDE register and the MACO workbook must be
+under change control, with a trigger to re-evaluate limits when HBELs are
+updated. The
+[Cleaning Validation MACO Calculator](/tools/cleaning-validation-maco-calculator)
+automates steps 1-5 so you can sanity-check the arithmetic.
 
-Both DHT and CHT must be validated with microbial data, not assumed.
+## Worst-Case Product Matrix and Grouping
 
-> Practitioner tip: build a residue/equipment matrix and validate the single
-> hardest-to-clean product on the hardest-to-clean equipment train. A successful
-> worst case lets you bracket the rest instead of validating every combination.
+Validating every product on every equipment train is usually impractical.
+Annex 15 and PIC/S accept a **bracketing/grouping approach** if the worst case
+is chosen by documented rationale. Build a matrix scoring every product on:
 
+| Criterion | Why it matters | Scoring example |
+| --- | --- | --- |
+| Toxicity / PDE | Lower PDE = tighter limit | PDE band (µg/day vs mg/day) |
+| Solubility in the cleaning medium | Poorly soluble residues persist | Freely soluble / soluble / practically insoluble |
+| Cleanability | Adhesion, drying behavior, coating | Lab or pilot cleanability study ranking |
+| Batch size and dose (MACO impact) | Small next batches and high doses tighten limits | Calculated limit per cm2 |
+| Equipment contact area and train complexity | More area dilutes or concentrates risk | Shared trains listed per product |
 
-> **Try the free tool:** calculate carryover limits in the [Cleaning Validation MACO Calculator](/tools/cleaning-validation-maco-calculator).
+The product with the worst combination - typically low PDE, poor solubility,
+poor cleanability - becomes the **worst-case representative** for its group.
+Validate that one; the rest of the group is covered by the documented matrix
+rationale. The matrix is a living document: every new product introduction
+triggers a re-assessment (via change control), and a new product can silently
+dethrone the worst case - a classic inspection finding.
+
+Equipment is grouped the same way: same design, same cleaning procedure, same
+materials of construction. Different geometries or cleaning parameters break
+the group.
+
+## Sampling Methods and Recovery Studies
+
+| Method | What it measures | Strengths | Weaknesses |
+| --- | --- | --- | --- |
+| Swab (direct surface sampling) | Residue physically removed from a defined area | Direct evidence at worst-case locations (hard-to-clean: gaskets, valves, dead legs, agitator shafts) | Technique-dependent; needs recovery factor; limited area |
+| Rinse sampling | Residue in the final rinse solvent/water | Covers large and inaccessible areas; easy to execute | Indirect - assumes residue dissolves into the rinse; dilution can mask localized failures; needs its own recovery rationale |
+| Visual inspection | Visible residue under defined light, distance, and acuity | Fast, catches gross failures; regulators expect a quantified visual threshold where possible | Never sufficient alone; subjective without a defined and trained threshold |
+| Microbial sampling (contact plates/swabs, rinse) | Bioburden and, for sterile equipment, endotoxin | Verifies hygienic state and CHT/DHT claims | Separate acceptance criteria; see EM and endotoxin references |
+
+**Recovery studies are the step people skip - and the first thing a good
+inspector asks for.** Spike coupons of each material of construction (316L
+stainless steel, PTFE, EPDM, glass, silicone - whatever the train contains) at
+levels bracketing the acceptance limit, let them dry as residues would in
+production, then sample with the actual SOP technique and analyze. Industry
+practice treats recoveries around 70-80% or better as readily acceptable,
+around 50% and above as usable with documented justification and correction,
+and below 50% as a signal to improve the method (swab material, solvent,
+technique) - confirm thresholds against your site SOP; they are convention,
+not compendial limits. Results are **corrected** by the recovery factor, and
+each material/residue combination needs its own factor.
+
+Sampling locations must be justified as worst case: hard-to-clean points
+identified from equipment drawings and cleaning-spray coverage studies, not
+the most convenient flat panel.
+
+## Campaign Approaches, Dirty Hold Time, Clean Hold Time
+
+- **Campaign production**: running multiple consecutive batches of the same
+  product between full cleans reduces changeover risk. Validate the
+  **longest** campaign (maximum batch count and maximum time), with data
+  showing residue and bioburden do not accumulate beyond limits - typically
+  microbial monitoring at campaign end plus residue data at defined points.
+- **Dirty hold time (DHT)**: the maximum time equipment may sit soiled before
+  cleaning. Validate it with worst-case residue drying plus microbial data -
+  wet residues grow; dried residues harden.
+- **Clean hold time (CHT)**: the maximum time cleaned equipment stays clean
+  before use. Validate with microbial (and, for sterile product contact,
+  endotoxin) data at the claimed storage duration and conditions.
+
+All three are validated parameters with numbers in the protocol - not verbal
+conventions. DHT and CHT failures trend in FDA 483s because sites claim them
+without supporting data.
+
+## Validation Execution and Lifecycle
+
+A defensible program runs like any validation lifecycle:
+
+1. **Development**: cleanability studies, cleaning-agent selection (and its
+   own residue/toxicity assessment), parameter ranges (time, temperature,
+   concentration, flow/pressure for CIP).
+2. **Protocol**: scope, product/equipment matrix rationale, MACO calculations,
+   sampling plan with worst-case locations, methods with LOQ and recovery
+   factors, acceptance criteria (chemical, cleaning agent, microbial,
+   visual), number of consecutive successful runs (commonly three - site
+   convention, state your rationale), DHT/CHT challenges.
+3. **Execution**: trained operators, cleaning per SOP, sampling per plan,
+   deviations investigated in real time.
+4. **Report**: data vs criteria, deviations dispositioned, matrix conclusions,
+   routine monitoring plan.
+5. **Continued verification**: periodic swab/rinse monitoring, visual checks
+   each clean, trend review, re-validation triggers (new products, equipment
+   modification, cleaning-agent or parameter change, repeated failures).
+
+## Common Failure Modes and What Inspectors Look For
+
+Recurring FDA 483 / Warning Letter and MHRA themes:
+
+1. **No recovery data, or recovery not applied to results.** Defense:
+   coupon studies per material, correction factor in every calculation.
+2. **Worst-case product chosen by convenience**, matrix undocumented or never
+   updated for new products. Defense: living matrix under change control with
+   new-product triggers.
+3. **MACO arithmetic errors or unjustified surface areas.** Defense:
+   documented surface calculations from drawings; independent QA check of the
+   math.
+4. **Sampling only easy, flat, accessible surfaces.** Defense: worst-case
+   location rationale tied to spray coverage and design review.
+5. **Cleaning agent never addressed** - detergent residues unlimited and
+   untested. Defense: agent-specific limit (toxicity-based) and test.
+6. **Visual clean used as the sole criterion.** Defense: visual threshold as
+   one of four criterion types, never the only one.
+7. **DHT/CHT claimed without microbial data.** Defense: hold-time studies
+   with bioburden (and endotoxin where relevant) endpoints.
+8. **Failures "cleaned again until pass" without investigation.** FDA's 1993
+   guide is explicit that repeated re-cleaning to pass is not acceptable
+   practice. Defense: failures investigated as deviations with root cause and
+   CAPA.
+9. **No continued verification after the three validation runs.** Defense:
+   routine monitoring plan and periodic review in the report.
+10. **Lab method cannot see the limit** - LOQ above the acceptance criterion.
+    Defense: method suitability demonstrated against the MACO-derived limit
+    before protocol approval.
+
+## Take It Further
+
+- [Health-Based Exposure Limits](/library/health-based-exposure-limits) - how
+  PDE values are derived and maintained.
+- [Cleaning Validation Program workflow](/workflows/cleaning-validation-program)
+  and the [MACO Calculator](/tools/cleaning-validation-maco-calculator).
+- [Quality Risk Management (ICH Q9)](/library/quality-risk-management-q9) -
+  for dedication vs shared-equipment decisions.
+- [Endotoxin (BET/LAL) Testing](/library/endotoxin-lal-testing) - for
+  sterile-equipment CHT and rinse endotoxin criteria.
+- [Change Control](/library/change-control) - the mechanism that keeps the
+  matrix, HBEL register, and validated parameters current.
+- The **Environmental Monitoring Checklist** Pro toolkit pack supports the
+  microbial side of hold-time and campaign verification.
+
+> *General educational content. Numeric recovery and replicate conventions
+> cited here are industry practice, not compendial limits - verify against the
+> current EMA HBEL guideline, EU GMP Annex 15, FDA and PIC/S expectations, your
+> toxicologist-assessed PDE values, and approved site procedures before setting
+> acceptance criteria or releasing equipment for production. Nothing here
+> substitutes for QA judgement.*

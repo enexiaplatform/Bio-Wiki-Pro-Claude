@@ -22,7 +22,7 @@ import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
 import { careerProfileSchema } from "../shared/career-blueprint.js";
 import { careerExecutionRecordSchema, createCareerExecutionRecord } from "../shared/career-execution.js";
-import { careerBlueprintPdf, careerProfileFilename } from "./career-blueprint.js";
+import { careerBlueprintPdf, careerBlueprintSamplePdf, careerProfileFilename } from "./career-blueprint.js";
 import { atlasProMonthlyReviewRecordSchema } from "../shared/atlas-pro-monthly.js";
 
 const googleClient = new OAuth2Client();
@@ -46,6 +46,18 @@ const authLimiter = rateLimit({
   // The limiter uses a process-wide in-memory store; under vitest every test
   // shares it across freshly-built apps, so cumulative auth POSTs would trip
   // the limit and flake unrelated tests. Disable it in the test env only.
+  skip: () => process.env.NODE_ENV === "test",
+});
+
+// Throttles unauthenticated PDF sample generation (CPU-bound render per hit).
+// Same in-memory-store caveat as authLimiter; disabled in the test env.
+const publicSampleLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+  message: { message: "Too many requests. Please wait a few minutes and try again." },
   skip: () => process.env.NODE_ENV === "test",
 });
 
@@ -689,8 +701,24 @@ export async function registerRoutes(app: Express): Promise<void> {
     res.send(pdf);
   });
 
-  // Career profiles remain browser-local. The server receives a profile only
-  // when an entitled user explicitly asks to generate their personalized PDF.
+  // Public illustrative sample of the paid Personal Career Blueprint: fictional
+  // profile, first pages of the real engine, every page watermarked. Same
+  // in-memory limiter pattern as the auth endpoints (disabled under vitest).
+  app.get("/api/career-blueprint/sample.pdf", publicSampleLimiter, async (_req, res) => {
+    try {
+      const pdf = await careerBlueprintSamplePdf();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", 'attachment; filename="career-blueprint-illustrative-sample.pdf"');
+      res.send(pdf);
+    } catch (error) {
+      console.error("[Career Blueprint sample] generation error:", error);
+      res.status(500).json({ message: "Unable to generate the sample Blueprint" });
+    }
+  });
+
+  // Career profiles stay browser-local for guests; authenticated users also
+  // keep an account copy (see the profile routes below) so a purchase survives
+  // a device switch. The PDF endpoint still receives the profile explicitly.
   app.get("/api/career-blueprint/access", isAuthenticated, async (req: any, res) => {
     const userId: string = req.session.userId;
     const user = await storage.getUser(userId).catch(() => undefined);
@@ -747,6 +775,39 @@ export async function registerRoutes(app: Express): Promise<void> {
       if (error instanceof z.ZodError) return res.status(400).json({ message: "Invalid Career Blueprint execution record", issues: error.issues });
       console.error("[Career Blueprint execution] save error:", error);
       return res.status(503).json({ message: "Workspace saved locally; account sync is temporarily unavailable" });
+    }
+  });
+
+  // Server-side copy of the assessment profile so an entitled buyer can
+  // restore it on a new device (PDF regeneration, workspace creation).
+  // Latest write wins — one active profile per user. Like the execution sync,
+  // a missing table degrades to syncAvailable:false instead of a 500.
+  app.put("/api/career-blueprint/profile", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const parsed = careerProfileSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Invalid career profile", issues: parsed.error.issues });
+    try {
+      const row = await storage.upsertCareerBlueprintProfile(userId, parsed.data);
+      return res.json({ profile: row.profile, syncedAt: row.updatedAt, syncAvailable: true });
+    } catch (error) {
+      console.error("[Career Blueprint profile] save error:", error);
+      return res.json({ profile: parsed.data, syncedAt: null, syncAvailable: false });
+    }
+  });
+
+  app.get("/api/career-blueprint/profile", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "career_blueprint").catch(() => false));
+    if (!entitled) return res.status(403).json({ message: "Personal Career Blueprint purchase required", code: "career_blueprint_purchase_required" });
+
+    try {
+      const row = await storage.getCareerBlueprintProfile(userId);
+      const profile = row ? careerProfileSchema.parse(row.profile) : null;
+      return res.json({ profile, syncedAt: row?.updatedAt ?? null, syncAvailable: true });
+    } catch (error) {
+      console.error("[Career Blueprint profile] load error:", error);
+      return res.json({ profile: null, syncedAt: null, syncAvailable: false });
     }
   });
 
@@ -857,6 +918,17 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/quality-lab/reviewed-projects", isAuthenticated, async (req: any, res) => {
     const rows = await storage.listQualityLabReviewedProjects(req.session.userId);
     res.json(rows.map((row) => row.snapshot));
+  });
+
+  // Lets the review page recognize a user returning from a successful $149
+  // Paid Scope Diagnostic checkout, so it can show the post-payment state
+  // instead of a fresh intake form. Mirrors /api/career-blueprint/access.
+  app.get("/api/quality-lab/diagnostic-access", isAuthenticated, async (req: any, res) => {
+    const userId: string = req.session.userId;
+    const user = await storage.getUser(userId).catch(() => undefined);
+    const entitled = isAdminEmail(user?.email) || (await storage.hasCompletedPurchase(userId, "scope_diagnostic").catch(() => false));
+    const purchasedAt = await storage.getLatestCompletedPurchaseAt(userId, "scope_diagnostic").catch(() => null);
+    res.json({ entitled, purchasedAt: purchasedAt ? purchasedAt.toISOString() : null });
   });
 
   app.get("/api/quality-lab/reminder-preference", isAuthenticated, async (req: any, res) => {

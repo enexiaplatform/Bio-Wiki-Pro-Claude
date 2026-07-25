@@ -4,8 +4,8 @@ slug: "good-documentation-practice"
 lang: "en"
 tier: "free"
 category: "Data Integrity"
-seoDescription: "Good Documentation Practice — ALCOA+, correct error-correction, contemporaneous recording, and the habits that keep records audit-ready."
-updatedAt: "2026-06-02"
+seoDescription: "Good Documentation Practice - ALCOA+ applied to paper records, correct error-correction, controlled forms and logbooks, and the habits that keep records audit-ready."
+updatedAt: "2026-07-25"
 quiz:
   - q: "How should a recording error be corrected on a paper record?"
     options: ["Erase it cleanly", "Use correction fluid", "Single line through, initial, date, and reason", "Rewrite the whole page"]
@@ -16,34 +16,138 @@ quiz:
   - q: "A record that can be linked to the person who created it satisfies which attribute?"
     options: ["Legible", "Attributable", "Accurate", "Enduring"]
     answer: 1
+  - q: "Why are controlled forms issued with unique sequential numbers?"
+    options: ["To save paper", "So blank-form copying or record substitution can be detected", "To identify the printer", "It is not required"]
+    answer: 1
 ---
 
 # Good Documentation Practice (GDocP)
 
-Good Documentation Practice is the foundation of data integrity. If it isn't
-documented correctly, regulators treat it as if it didn't happen. GDocP turns
-the ALCOA+ principles into day-to-day behavior.
+Good Documentation Practice is the day-to-day discipline that makes GMP records
+trustworthy. Regulators in every region work from the same premise: if an
+activity is not documented correctly, it is treated as if it never happened.
+The governing framework includes EU GMP Part I Chapter 4 (Documentation),
+FDA 21 CFR Part 211 Subpart J (Records and Reports), WHO GMP guidance on good
+data and record management practices (2016), the MHRA GxP Data Integrity
+Guidance (2018), and FDA's Data Integrity and Compliance With Drug CGMP
+questions-and-answers guidance (2018).
 
-## ALCOA+ at a glance
+GDocP turns those expectations into behavior: what you write, when you write
+it, how you correct it, and how blank documents are controlled. The ALCOA+
+acronym - long attributed to FDA inspector Stan Woollen's training material
+and now embedded in MHRA and WHO guidance - is the standard checklist.
 
-- **Attributable** — who recorded it, and when.
-- **Legible** — readable and permanent.
-- **Contemporaneous** — recorded at the time of the activity.
-- **Original** — the first capture (or a verified true copy).
-- **Accurate** — correct, with no editing that hides the original.
-- *Plus:* Complete, Consistent, Enduring, Available.
+## ALCOA+ applied to paper records
+
+| Attribute | Question it answers | Paper-record practice |
+| --- | --- | --- |
+| Attributable | Who recorded it, and when? | Sign or initial each entry with date; use a signature log for initials. |
+| Legible | Can it be read years later? | Indelible ink (blue or black per site SOP); no pencil; consistent units and formats. |
+| Contemporaneous | Was it recorded when the work happened? | Record at the time of the activity, not from memory at end of shift. |
+| Original | Is this the first capture or a verified true copy? | Record directly into the controlled record, not onto scrap paper for later transcription. |
+| Accurate | Is it correct, complete, and error-free? | Verify calculations; second-person check where defined; correct errors openly. |
+| Complete | Is all data retained, including repeats and failed runs? | Keep raw data, printouts, and re-runs; no cherry-picking. |
+| Consistent | Do time stamps and sequences make sense? | Logical date/time order; instrument clocks synchronized. |
+| Enduring | Will the record survive the retention period? | Durable media; thermal printouts photocopied or scanned where they fade. |
+| Available | Can it be retrieved for review, audit, or inspection? | Controlled storage; retrievable within a defined timeframe. |
+
+A record does not need to be perfect; it needs to be honest, complete, and
+traceable. Most data-integrity findings are not exotic fraud - they are
+routine GDocP failures repeated at scale.
+
+## Writing rules for paper records
+
+- Use indelible ink. Pencil, erasable ink, and correction fluid are prohibited
+  on GMP records.
+- Record entries in real time. If an unusual circumstance prevents
+  contemporaneous recording, document what happened and when the entry was
+  actually made.
+- Never leave a required field blank. If a field does not apply, enter N/A
+  with initials and date so nobody can add data later.
+- Sign only for work you performed or personally verified. Pre-signing,
+  signing for a colleague, or back-dating is falsification.
+- Do not record data before the activity exists. A time stamp ahead of the
+  work is a classic red flag in an audit trail or record review.
+- Record actual values, not rounded or assumed ones. If the balance reads
+  10.02 g, write 10.02 g - not 10 g.
 
 ## Correcting an error the right way
 
-Draw a **single line** through the entry so the original remains readable, then
-initial, date, and add a brief reason. Never overwrite, erase, or use correction
-fluid — those are classic data-integrity findings.
+EU GMP Chapter 4 requires that corrections leave the original entry readable
+and record who made the change, when, and why. The compliant method:
 
-## Habits that keep you audit-ready
+1. Draw a **single line** through the incorrect entry so it remains legible.
+2. Enter the correct value nearby.
+3. Initial and date the correction.
+4. Add a brief reason (for example: "transcription error", "wrong unit
+   entered"). A generic reason on every correction is itself a warning sign.
 
-- Record in real time — not from memory at the end of the shift.
-- No blank fields: use N/A with initials where an entry doesn't apply.
-- Sign for your own work only; pre-signing or back-dating is falsification.
+Prohibited: overwriting, erasing, scratching out until unreadable, correction
+fluid or tape, and re-writing the whole page to make it look clean. Each of
+these hides the original data and is treated as a data-integrity breach.
 
-> Tip: the cheapest data-integrity control is culture. Teams that record
-> contemporaneously and correct errors openly rarely generate serious findings.
+A correction made by someone other than the original recorder should be
+justified and traceable - some sites require a supervisor countersignature;
+define the rule in the site SOP and follow it.
+
+## Controlled forms, logbooks, and blank documents
+
+If a blank form can be photocopied freely, records can be substituted or
+re-created. That is why inspectors pay close attention to blank-document
+control. A defensible system includes:
+
+- **Version-controlled masters**: every form template has a document number,
+  version, and effective date managed through document control.
+- **Controlled issuance**: bound, sequentially numbered logbooks and paginated
+  batch records issued against a register, with page reconciliation ("page X
+  of Y") so missing pages are detectable.
+- **Reconciliation at closure**: issued versus used, voided, and returned
+  forms are counted; discrepancies are investigated.
+- **Void handling**: voided pages are marked, retained, and signed - never
+  destroyed - so the record set stays complete.
+- **Controlled copies**: stamped or colored-paper copies where uncontrolled
+  photocopying would create a falsification risk.
+
+The same logic applies to electronic blank forms and spreadsheets: uncontrolled
+templates with unlocked calculation cells are the digital version of a
+photocopiable blank form.
+
+## Raw data and true copies
+
+Raw data is the original record of the activity: the notebook entry, the
+instrument printout, the balance ticket. When the original medium cannot be
+retained (a fading thermal printout, for example), make a **true copy** that is
+verified against the original, marked as a copy, and signed and dated by the
+person verifying it. Transcribing data from scrap paper into the official
+record destroys originality and is a common finding; if it ever happens,
+retain the scrap as raw data and cross-reference it.
+
+## Common inspection findings
+
+- Corrections made with correction fluid, or single-line corrections with no
+  date or reason.
+- Entries in pencil, or ink colors that do not match the site procedure.
+- Blank fields in batch records that were completed after the fact.
+- Data recorded on loose paper, then transcribed into the logbook.
+- Missing pages from numbered logbooks with no investigation.
+- Uncontrolled photocopies of blank forms in circulation.
+- Signatures that cannot be matched to a signature log.
+- Time inconsistencies: a result recorded before the instrument run finished.
+
+## Take it further
+
+GDocP on paper is the foundation; the same ALCOA+ logic extends to electronic
+systems, where audit trails and access controls replace ink and page numbers.
+The Atlas Pro deep dive
+[Data Integrity - Audit Trail Review](/library/data-integrity-deep-dive)
+covers the electronic side, and
+[Electronic Records & Signatures (21 CFR Part 11 / Annex 11)](/library/electronic-records-part-11)
+explains the regulatory framework for computerised records. For applying GDocP
+during review of manufacturing documentation, see
+[Batch Record Review & Product Release](/library/batch-record-review)
+and the [Data Integrity Review workflow](/workflows/data-integrity-review).
+
+> Educational content only. Documentation requirements vary by region, product
+> type, and marketing authorization. Always verify against the current editions
+> of EU GMP Chapter 4, 21 CFR Part 211, WHO guidance, and your approved site
+> procedures; this article is not a substitute for QA judgement.

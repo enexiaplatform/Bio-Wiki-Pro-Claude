@@ -1,8 +1,7 @@
-Location ID,Area / Room,Grade,Method,Frequency,Alert Limit,Action Limit,Last Result,Trend,Notes
-EM-001,Filling line - point of fill,A,Active air,Each session,1 CFU/m3,1 CFU/m3,,,Worst-case - continuous during fill
-EM-002,Filling line - point of fill,A,Settle plate,Each session,1 CFU/4h,1 CFU/4h,,,
-EM-003,Operator gloves,A,Contact plate,Each session,1 CFU/plate,1 CFU/plate,,,Personnel monitoring
-EM-004,Background room,B,Active air,Daily,10 CFU/m3,10 CFU/m3,,,
-EM-005,Background room - floor,B,Contact plate,Daily,5 CFU/plate,5 CFU/plate,,,
-EM-006,Material airlock,C,Active air,Weekly,100 CFU/m3,100 CFU/m3,,,
-EM-007,Corridor,D,Settle plate,Weekly,200 CFU/4h,200 CFU/4h,,,
+Room ID,Room Name,Grade,Classification Ref,Sample Site ID,Location Description,Method,Frequency,At-Rest/In-Operation,Alert Level,Action Level,Responsible,Qualification Date
+R-101,Aseptic filling suite - line 1,A,ISO 5 in operation,EM-A-001,Point of fill - under fill needle guard,Active air 1000L,Each session,In operation,<1 cfu/m3,<1 cfu/m3,Micro analyst on shift,2025-11-14
+R-101,Aseptic filling suite - line 1,A,ISO 5 in operation,EM-A-002,Adjacent to open vial path - conveyor side,Settle plate 90mm 4h,Each session,In operation,<1 cfu/4h,<1 cfu/4h,Micro analyst on shift,2025-11-14
+R-102,Background room to filling suite,B,ISO 7 in operation,EM-B-012,Pass-through door handle side - filling room,Contact plate 55mm,Daily,In operation,3 cfu/plate,5 cfu/plate,Micro analyst on shift,2025-11-14
+R-102,Background room to filling suite,B,ISO 7 in operation,EM-B-015,Centre of room 1m from filling line door,Active air 1000L,Daily,In operation,5 cfu/m3,10 cfu/m3,Micro analyst on shift,2025-11-14
+R-103,Component preparation room,C,ISO 8 in operation,EM-C-004,Work surface next to stopper washing machine,Contact plate 55mm,Weekly,In operation,12 cfu/plate,25 cfu/plate,Micro technician,2025-10-02
+R-104,Gowning airlock - grade D side,D,ISO 8 at rest,EM-D-002,Floor centre of airlock,Settle plate 90mm 4h,Weekly,In operation,50 cfu/4h,100 cfu/4h,Micro technician,2025-10-02

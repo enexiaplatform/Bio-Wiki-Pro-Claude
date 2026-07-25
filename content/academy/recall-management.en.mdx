@@ -4,90 +4,263 @@ slug: "recall-management"
 lang: "en"
 tier: "pro"
 category: "Quality Systems"
-seoDescription: "Managing a pharmaceutical product recall — recall classes, mock recalls, traceability and reconciliation, regulator notification, and effectiveness checks."
-updatedAt: "2026-06-11"
+seoDescription: "Pharmaceutical recall execution: FDA 21 CFR Part 7 and EU GMP Chapter 8 classification, health-hazard evaluation, mock recall design, reconciliation math, communication trees, and effectiveness checks."
+updatedAt: "2026-07-25"
 quiz:
   - q: "A Class I recall (FDA) means:"
-    options: ["Unlikely to cause harm", "Reasonable probability of serious harm or death", "A labeling typo only", "A voluntary withdrawal"]
+    options: ["Unlikely to cause harm", "Reasonable probability that use will cause serious adverse health consequences or death", "A labeling typography error only", "A routine stock rotation"]
     answer: 1
   - q: "A mock recall is run to:"
-    options: ["Sell old stock", "Test traceability and speed before a real event", "Avoid notifying regulators", "Replace reconciliation"]
+    options: ["Sell old stock", "Test traceability, reconciliation, and speed before a real event", "Avoid notifying regulators", "Replace the distribution records"]
     answer: 1
   - q: "An effectiveness check after a recall confirms:"
-    options: ["The product was actually retrieved from the market", "The batch record is signed", "The supplier was paid", "The label was correct"]
+    options: ["The product was actually retrieved from the market and consignees responded", "The batch record is signed", "The supplier was paid", "The label was correct"]
     answer: 0
+  - q: "The decision to recall (versus another field action) should be made by:"
+    options: ["The sales director alone", "A documented decision by the designated recall committee/quality function", "The warehouse manager", "Whoever received the complaint"]
+    answer: 1
 ---
 
 # Product Recall Management
 
-A recall removes a defective or potentially harmful product from the market. A
-mature quality system can execute one **fast and completely** — and proves it can
-via periodic **mock recalls**.
+A recall removes a defective or potentially harmful product from the market.
+It is the quality system's emergency procedure: rarely used, but when used,
+it must work **fast, completely, and provably** - under regulatory and media
+scrutiny, often within hours of the decision.
 
-## Recall classes (FDA framing)
+The governing framework in the US is **21 CFR Part 7** (Enforcement
+Policy), particularly Subpart C, which defines recall strategy,
+classification, and public notification, together with **21 CFR 211.150**
+(distribution procedures) and **211.180** (records that make traceability
+possible). In the EU, **GMP Chapter 8** (Complaints and Product Recall)
+requires a designated person responsible for recalls, written procedures,
+rapid notification of competent authorities, and recorded reconciliation;
+the QP is typically central to the decision. Globally, the WHO GMP recall
+guidance follows the same architecture.
 
-- **Class I** — reasonable probability of serious harm or death.
-- **Class II** — temporary or medically reversible harm; low probability of
-  serious harm.
-- **Class III** — unlikely to cause harm but violates regulations.
+The high-stakes reality: in a recall, the regulator grades your *system*,
+not your intentions. Distribution records that cannot produce a consignee
+list in hours, a reconciliation that never balances, or a mock recall never
+performed - each converts one product problem into a company-level finding.
 
-The class drives urgency, depth (how far down the distribution chain), and
-communication.
+## Recall classification: FDA and EU
 
-## What a recall procedure needs
+| Class | FDA definition (21 CFR 7.3(m)) | Typical examples | Depth and urgency |
+| --- | --- | --- | --- |
+| Class I | Reasonable probability that use will cause serious adverse health consequences or death | Sterility failure in an injectable; wrong API strength; label mix-up between two potent products | To consumer/patient level; immediate; public warning typical |
+| Class II | Use may cause temporary or medically reversible consequences, or probability of serious harm is remote | Sub-potent batch still within therapeutic margin; particulate contamination in a non-critical product | Usually to retail/pharmacy level; days |
+| Class III | Use not likely to cause adverse health consequences, but the product violates regulations | Minor labeling deviation with no safety impact; container defect without product compromise | Often wholesale level; routine pace |
 
-- **Traceability** — distribution records that let you identify every customer who
-  received the affected batch(es), to the required level (wholesaler, pharmacy,
-  patient where relevant).
-- **Reconciliation** — quantity produced vs distributed vs returned/accounted for.
-- **Regulator notification** within required timelines.
-- **Defined roles** (recall coordinator, decision committee) and a communication
-  plan.
+The EU uses the same Class I/II/III convention under Chapter 8 practice,
+with depth defined as wholesale, retail/pharmacy, or patient level.
+Classification is proposed by the firm and confirmed by the authority -
+FDA's Health Hazard Evaluation committee formally assesses it. Never
+self-classify downward to reduce urgency: an understated class that the
+authority later upgrades is a credibility event on top of a quality event.
 
-## Mock recalls and effectiveness
+## The health-hazard evaluation
 
-Run **mock recalls** periodically to test traceability and speed (e.g. "can we
-account for 100% of batch X within N hours?"). After a real recall, an
-**effectiveness check** confirms the recalled product was actually retrieved.
+**21 CFR 7.41** lists the factors FDA weighs, and they double as the firm's
+own assessment template:
+
+1. Whether disease or injury has already occurred from the product.
+2. Whether existing conditions (age, disease state, concomitant therapy)
+   in the exposed population could contribute to harm.
+3. Assessment of the hazard to the various population segments - children,
+   elderly, immunocompromised - with greatest-risk segments driving the
+   call.
+4. Degree of seriousness of the health hazard.
+5. Likelihood of occurrence.
+6. Consequences (immediate and long-range) of occurrence.
+
+Document this evaluation even when the answer is "no recall": the
+structured no-action decision is what separates a mature quality system
+from a lucky one.
 
 ## Recall decision tree
 
-1. **Signal** — complaint, OOS, stability failure, deviation, or regulator query.
-2. **Health-hazard evaluation** — assess risk to patients (severity ×
-   probability × population). This drives the class.
-3. **Decide scope** — which batches, which markets, how deep (wholesaler /
+1. **Signal** - complaint, OOS, stability failure, deviation, adverse
+   event, or regulator query.
+2. **Health-hazard evaluation** - severity x probability x exposed
+   population (above). This drives the class.
+3. **Decide the action type** - recall, market withdrawal (no violation),
+   stock recovery (within the firm's direct control), or field correction.
+   The vocabulary matters to regulators; a recall relabelled a "market
+   withdrawal" to avoid reporting is a serious finding.
+4. **Decide scope** - which batches, which markets, how deep (wholesaler /
    pharmacy / patient).
-4. **Classify** (I/II/III) and set timelines.
-5. **Notify** — regulators within required windows; consignees with clear
-   instructions.
-6. **Retrieve & reconcile** — track returns against distributed quantity.
-7. **Effectiveness check** — confirm retrieval; close with CAPA and trend.
+5. **Classify** (I/II/III) and set timelines.
+6. **Notify** - regulators within required windows; consignees with clear
+   written instructions and response forms.
+7. **Retrieve and reconcile** - track returns against distributed
+   quantity.
+8. **Effectiveness check and close** - confirm retrieval; close with CAPA
+   and trend.
 
-The decision to recall (vs other field action) is a documented quality decision,
-usually by a recall committee — not an individual under pressure.
+The decision is a documented quality decision by the designated recall
+committee or responsible person - not an individual under commercial
+pressure.
 
-## Mock-recall protocol template
+## Notification timelines
 
-- **Objective** — e.g. account for 100% of a chosen batch within a target time.
-- **Scope** — pick a real batch with realistic multi-tier distribution.
-- **Method** — trace from batch record → distribution records → consignees;
-  reconcile quantities.
-- **Acceptance** — % accounted for and time taken vs target (e.g. ≥99% within
-  24–48 h).
-- **Output** — gaps found (e.g. slow consignee data), CAPA, and a re-test date.
+- **US:** Part 7 expects firms to notify FDA promptly - for Class I
+  situations, contact the district office immediately; FDA will confirm
+  classification and may issue or request public warning. Recall
+  communications to consignees go out per the approved recall strategy
+  (21 CFR 7.42), which FDA reviews.
+- **EU:** Chapter 8 requires informing the competent authorities of any
+  defect that could result in a recall or abnormal restriction on supply -
+  without delay; for serious quality defects in critical products, national
+  authorities expect notification within hours to days (confirm against
+  your national requirements and MA obligations).
+- **Other markets:** many agencies (Health Canada, TGA, MHRA) publish
+  market-specific recall notification rules. A multinational recall needs a
+  market-by-market notification matrix prepared *in advance*.
 
-Run mock recalls at a defined frequency (often annually) and after major
-distribution or system changes.
+## The communication tree
+
+A recall is won or lost in the first hours, and the first hours are pure
+communication. The tree must be written, current, and tested:
+
+| Role | Responsibility |
+| --- | --- |
+| Recall coordinator | Single point of command; runs the log, timeline, and tasking |
+| Recall committee / decision group | QA head (or QP in the EU), regulatory affairs, medical/pharmacovigilance, legal, supply chain |
+| Regulatory affairs | Authority notifications, recall strategy submission, public warning wording |
+| Supply chain / distribution | Consignee lists, 3PL activation, return logistics, quarantine of stock |
+| Medical / pharmacovigilance | Adverse-event interface, medical risk input to the hazard evaluation |
+| Communications / legal | Customer letters, press response, liability posture |
+| Distributors and 3PLs | Downstream consignee identification and retrieval |
+
+Every entry needs a name, a deputy, and a 24-hour contact route. A
+communication tree with personal mobile numbers from two reorganisations
+ago fails exactly when needed - re-verify it at every mock recall.
+
+## Reconciliation math
+
+Reconciliation answers one question: *can we account for every unit of the
+affected batch?*
+
+```text
+% accounted = (units in own stock + units returned by consignees
+             + units confirmed destroyed/consumed) / total distributed
+            x 100
+```
+
+Worked logic:
+
+- **Total distributed** comes from the distribution records - itself a
+  GMP-controlled dataset.
+- **Own stock** includes warehouse, in-transit, and returned-to-stock
+  quantities under quarantine.
+- **Consignee responses** count only when documented (response form,
+  return receipt, or confirmed destruction record). "They didn't reply" is
+  not accounted for - it is an open gap that drives follow-up calls and,
+  for Class I, escalation.
+- Sites commonly target full accountability, with defined tolerance and a
+  documented rationale for any unreconciled remainder (e.g. consumed
+  product supported by pharmacy dispensing data - common industry
+  practice; confirm your SOP's acceptance criterion).
+
+Reconciliation never perfectly balances in the real world; what inspectors
+expect is that the gap is **small, explained, and chased**, with
+effectiveness checks documenting how far retrieval actually went.
+
+## Mock recall exercise design
+
+A mock recall is a full-dress rehearsal of traceability and reconciliation
+against the clock:
+
+- **Objective** - e.g. account for 100% (or the SOP's target) of a chosen
+  batch within a defined time (24-48 h is common industry practice -
+  confirm against your SOP).
+- **Scope** - pick a real, recently distributed batch with realistic
+  multi-tier distribution (wholesalers, pharmacies, possibly export).
+  Choosing an easy batch teaches nothing.
+- **Method** - trace from batch record to distribution records to
+  consignee lists; issue mock notifications; collect responses; reconcile
+  quantities; time every step.
+- **Acceptance criteria** - percent accounted for and elapsed time versus
+  target; consignee list completeness; contact-tree performance.
+- **Output** - gap report (slow consignee data, missing contacts, system
+  query limits), CAPAs, and a re-test date.
+
+Run mock recalls at a defined frequency - at least annually is common
+industry practice - and after any major change to distribution networks,
+ERP systems, or 3PL contracts. Decide in advance whether downstream
+partners are informed it is an exercise; uninformed drills are more
+realistic but must be agreed with distributors contractually.
+
+## What inspectors look for: failure modes
+
+1. **No mock recall ever performed**, or one performed so long ago the
+   contacts are dead. FDA 483 observations routinely cite missing or stale
+   recall exercises.
+2. **Distribution records that cannot produce consignee lists quickly** -
+   the traceability requirement exists on paper only.
+3. **Reconciliation never completed** in past real recalls - the file
+   shows returns arriving but no final accounting.
+4. **Recalls classified downward** without a documented health-hazard
+   evaluation.
+5. **Regulator notified late**, or after commercial stakeholders were
+   managed first.
+6. **No effectiveness checks** - nobody verified that consignees actually
+   acted.
+7. **Recall ends at retrieval** - no CAPA on the root cause, so the same
+   defect ships again in a different batch.
+8. **Export markets forgotten** - domestic recall executed, international
+   consignees informed weeks later.
+
+## Worked example: reconciliation under pressure
+
+*Fictional but realistic.* A Class II recall: sub-potent assay confirmed on
+retain samples for batch RX-4412, an oral antihypertensive.
+
+- Total distributed: 84,200 units to 61 consignees across 3 markets.
+- Hour 4: own warehouse stock located and quarantined - 21,750 units.
+- Hour 24: distributor and 3PL reports in - 58,900 units traceable at
+  wholesale level; pharmacy-level lists requested.
+- Day 5: consignee responses document 57,100 units returned or
+  quarantined at pharmacy level; 1,800 units confirmed dispensed to
+  patients (pharmacy records).
+- Reconciliation: (21,750 + 57,100 + 1,800) / 84,200 = 95.8% accounted.
+  The residual 3,450 units are chased with a second notification round;
+  2,900 more are located, leaving 550 units (0.65%) unreconciled -
+  documented as dispensed/destroyed at sites with incomplete records,
+  with the rationale signed by QA.
+- Effectiveness checks: 94% of consignees responded within 10 days; the
+  remainder received follow-up calls with logged outcomes.
+- Closure: CAPA on the granulation process root cause; the recall file
+  shows decision, notifications, reconciliation, effectiveness, and
+  CAPA linkage.
 
 ## How recalls connect to the QMS
 
-A recall is rarely standalone: it usually originates in a **complaint**, an
-**OOS/stability** failure, or a **deviation**, and it always ends in **CAPA** and
-trending. The recall procedure should reference these processes so the root cause
-is fixed — not just the market cleared. Recurring recalls of the same type are a
-serious quality-system signal in management review.
+A recall is rarely standalone: it originates in a **complaint**, an
+**OOS/stability** failure, or a **deviation**, and it always ends in
+**CAPA** and trending. The recall procedure should reference these
+processes so the root cause is fixed - not just the market cleared.
+Recurring recalls of the same type are a serious quality-system signal for
+management review under ICH Q10.
 
-> Practitioner tip: the weak link is almost always downstream distribution data,
-> not your own records. Use mock recalls specifically to test how fast your
-> distributors and 3PLs can give you consignee lists — that's where the real clock
-> is lost in a Class I event.
+## Take it further
+
+- Trace the usual upstream signals in
+  [Complaint Handling](/library/complaint-handling) and the
+  [OOS Investigation - Deep Dive](/library/oos-investigation-deep-dive).
+- Close the loop with [CAPA Fundamentals](/library/capa-fundamentals) and
+  run the process in the
+  [Deviation & CAPA workflow](/workflows/deviation-capa).
+- Keep batch-level evidence release-ready with
+  [Batch Record Review & Product Release](/library/batch-record-review).
+
+> Practitioner tip: the weak link is almost always downstream distribution
+> data, not your own records. Use mock recalls specifically to test how
+> fast your distributors and 3PLs can give you consignee lists - that is
+> where the real clock is lost in a Class I event.
+
+> General educational content. Verify against current 21 CFR Part 7 and
+> Parts 210/211, EU GMP Chapter 8, national recall-notification rules for
+> every market supplied, and your approved recall SOP before executing or
+> classifying any field action. This is not a substitute for QA, QP, or
+> regulatory-affairs judgement.

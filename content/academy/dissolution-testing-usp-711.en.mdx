@@ -4,51 +4,162 @@ slug: "dissolution-testing-usp-711"
 lang: "en"
 tier: "free"
 category: "Laboratory Controls"
-seoDescription: "Dissolution testing per USP 711 — apparatus 1 and 2, the S1/S2/S3 acceptance stages, and why dissolution is a critical quality and bioavailability surrogate."
-updatedAt: "2026-06-02"
+seoDescription: "USP <711> dissolution testing: apparatus 1 and 2, medium and temperature control, sink conditions, the Q value, the S1/S2/S3 staged acceptance logic, and common laboratory mistakes."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Which USP 711 apparatus is the 'paddle' method?"
     options: ["Apparatus 1 (basket)", "Apparatus 2 (paddle)", "Apparatus 3 (reciprocating cylinder)", "Apparatus 4 (flow-through)"]
     answer: 1
-  - q: "What does the staged S1/S2/S3 scheme control?"
-    options: ["Sterility", "Acceptance testing of dissolution results", "Endotoxin limits", "Particle size"]
+  - q: "At stage S1 for an immediate-release product, each of the 6 units must be:"
+    options: ["Not less than Q + 5%", "Not less than Q - 5%", "Exactly equal to Q", "Above 50%"]
+    answer: 0
+  - q: "The standard dissolution medium temperature per USP 711 is:"
+    options: ["25 deg C +/- 2 deg C", "37 deg C +/- 0.5 deg C", "40 deg C +/- 2 deg C", "Room temperature"]
     answer: 1
-  - q: "Dissolution is often used as a surrogate for what?"
-    options: ["Sterility", "In-vivo bioavailability", "Color", "Weight"]
+  - q: "Sink conditions in a dissolution method mean:"
+    options: ["The vessel sits in a sink", "Medium volume keeps the drug well below saturation so release is not solubility-limited", "The tablet sinks to the vessel bottom", "The medium is changed hourly"]
     answer: 1
 ---
 
 # Dissolution Testing (USP 711)
 
-Dissolution testing measures how much drug substance releases from a dosage form
-into solution over time under standardized conditions. For oral solids it is a
-critical quality attribute and a recognized surrogate for in-vivo bioavailability.
+Dissolution testing measures how much drug substance releases from a dosage
+form into solution over time under standardized conditions. For oral solid
+products it is a critical quality attribute and a recognized in-vitro surrogate
+for bioavailability — which is why it appears in nearly every tablet and
+capsule monograph. The governing compendial chapter is **USP &lt;711&gt;
+Dissolution** (harmonized with Ph. Eur. 2.9.3 and JP).
 
-## The common apparatus
+## The Apparatus
 
-- **Apparatus 1 — Basket** — the dosage unit sits in a rotating basket; useful
-  for capsules and units that float.
-- **Apparatus 2 — Paddle** — a rotating paddle stirs the medium with the unit at
-  the vessel bottom; the most widely used for tablets.
+USP &lt;711&gt; defines four apparatus; two dominate routine QC.
 
-Other apparatus (reciprocating cylinder, flow-through cell) serve modified-release
-and special dosage forms.
+| Apparatus | Name | How it works | Typical use |
+| --- | --- | --- | --- |
+| 1 | Basket | Dosage unit held in a rotating wire-mesh basket | Capsules, beads, units that float or disintegrate into floating debris |
+| 2 | Paddle | Rotating paddle stirs the medium; unit lies at the vessel bottom | Tablets — the most widely used apparatus |
+| 3 | Reciprocating cylinder | Unit moves vertically through rows of media | Modified-release and bead formulations |
+| 4 | Flow-through cell | Medium pumped continuously past the unit | Poorly soluble drugs, implants, special forms |
 
-## The S1 / S2 / S3 acceptance stages
+The method for a given product specifies apparatus, rotation speed (common
+settings are 50–100 rpm, set by the monograph), medium composition and volume
+(frequently 500–1000 mL), and sampling times.
 
-USP 711 uses a staged scheme: test 6 units (S1); if criteria aren't met, test 6
-more (S2); and if still not met, 12 more (S3), with progressively defined
-acceptance criteria. This controls the risk of passing or failing on too few
-units.
+## The Conditions That Must Be Controlled
 
-> Practice it: use the free [Dissolution S1/S2/S3 Acceptance Checker](/tools/dissolution-acceptance-checker)
-> to paste unit results, set Q, and see the staged disposition.
+USP &lt;711&gt; fixes the key physical conditions tightly:
 
-## Why control parameters matter
+- **Temperature: 37 deg C +/- 0.5 deg C** in each vessel throughout the run.
+- **Medium deaeration** where required — dissolved gases form bubbles on the
+  dosage unit and basket mesh, slowing wetting and biasing results low.
+- **Vessel centering, shaft verticality, and wobble** — verified through
+  mechanical qualification of the dissolution bath.
+- **Sampling position and time tolerance** — withdrawals at the specified
+  height, at times within the compendial tolerance.
 
-Medium, volume, temperature (37°C), rotation speed, and de-aeration all affect
-results. Small deviations change the dissolution profile — which is why method
-parameters are tightly specified and qualified.
+Small deviations in any of these change the release profile. That is why
+dissolution baths are mechanically qualified and why "the bath was a degree
+cold" is an investigation, not a shrug.
 
-> Tip: profile comparisons (e.g. the f2 similarity factor) are how you judge
-> whether a formulation or process change altered release behavior.
+## Q and the S1/S2/S3 Acceptance Logic
+
+The **Q value** is the specified percentage of labeled content that must be
+dissolved at the stated time — a single-point release criterion. USP &lt;711&gt;
+then stages the test so that borderline products are judged on more units
+rather than passed or failed on six.
+
+For immediate-release dosage forms (Acceptance Table 1 of USP &lt;711&gt;):
+
+| Stage | Units tested | Acceptance criterion |
+| --- | --- | --- |
+| S1 | 6 | Each unit is not less than Q + 5% |
+| S2 | 6 more (12 total) | Average of 12 units is equal to or greater than Q, and no unit is less than Q - 5% |
+| S3 | 12 more (24 total) | Average of 24 units is equal to or greater than Q, not more than 2 units are less than Q - 5%, and no unit is less than Q - 10% |
+
+Modified-release and delayed-release products use their own acceptance tables
+with level/time-point logic. The point of the staging is statistical: S1 is a
+fast screen for clearly good product, while S2 and S3 protect both the patient
+(no single badly under-releasing unit slips through) and the manufacturer (a
+single odd unit does not fail a good batch).
+
+## Sink Conditions
+
+A valid dissolution method must maintain **sink conditions**: the medium volume
+and composition keep the dissolved drug far below its saturation solubility —
+practically, the medium should be able to dissolve at least about three times
+the total drug load. Without sink conditions, the test measures solubility
+limitation, not dosage-form release, and it cannot discriminate between good
+and bad product.
+
+For poorly soluble drugs this drives method design: larger volumes, surfactants
+such as sodium lauryl sulfate, or pH adjustment — each justified during method
+development, not improvised at the bench.
+
+## Profiles and the f2 Similarity Factor
+
+Beyond single-point QC release, full **dissolution profiles** (multiple time
+points) are how you judge whether a formulation, site, scale, or process change
+altered release behavior. The standard comparison tool is the **f2 similarity
+factor** per FDA's 1997 SUPAC guidance (SUPAC-IR/MR): f2 between 50 and 100
+indicates similar profiles, given adequate time points and variability limits.
+Profile comparison is a development and change-control tool; the Q/S1–S3
+scheme is the release tool. Do not confuse the two.
+
+## Immediate, Delayed, and Extended Release
+
+The Q/S1–S3 scheme above is the immediate-release logic. USP &lt;711&gt;
+carries separate acceptance tables for the other families:
+
+- **Delayed-release (enteric)**: two-tier testing — an acid stage (typically
+  0.1 N HCl for 2 hours, during which no unit may substantially dissolve)
+  followed by a buffer stage with its own Q-based acceptance table.
+- **Extended-release**: multiple time points with per-time-point acceptance
+  ranges, judging the release profile level by level instead of a single Q
+  point.
+
+## Bath Qualification
+
+Dissolution results depend on the mechanical state of the bath, so labs
+maintain **mechanical qualification** (shaft verticality, wobble, vessel
+centering, rotation speed, temperature uniformity) on a schedule, with the
+USP Performance Verification Test using reference standard tablets where
+applicable. A failed batch on an unqualified bath is an unanswerable
+question.
+
+## Common Mistakes and Inspection Findings
+
+- Skipping or shortcutting medium deaeration for methods that need it.
+- Using Apparatus 2 for a formulation that floats or congeals without a
+  justified modification (e.g. sinker use documented in the method).
+- Vessels not mechanically qualified — wobble, misalignment, and speed errors
+  invisible to the analyst but visible in the data's variability.
+- Applying S2/S3 logic incorrectly, e.g. averaging units at S1 instead of
+  requiring each unit to meet Q + 5%.
+- Temperature verified only at run start, not maintained at 37 +/- 0.5 deg C
+  throughout.
+- Filters adsorbing drug at sample withdrawal, silently biasing early
+  time-points low — filter compatibility must be demonstrated.
+- Treating an OOS dissolution result as a lab error to be re-tested away
+  instead of following the OOS procedure.
+
+## Take It Further
+
+**Practice it:** use the free
+[Dissolution S1/S2/S3 Acceptance Checker](/tools/dissolution-acceptance-checker)
+— paste unit results, set Q, and see the staged disposition.
+
+- [Dissolution Testing workflow](/workflows/dissolution-testing-workflow) —
+  the run sequence from bath qualification to staged acceptance.
+- [Analytical Method Validation (ICH Q2)](/library/analytical-method-validation)
+  — how the dissolution method itself is validated.
+- [Stability Studies — ICH Q1A Program Design](/library/stability-studies) —
+  dissolution drift over shelf life is a classic stability signal.
+- [OOS Investigation workflow](/workflows/oos-investigation) — for failed
+  stages and unexpected profiles.
+- [USP &lt;711&gt; Dissolution](https://www.usp.org) — the governing general
+  chapter (current edition via USP-NF).
+
+> Educational content. Acceptance tables, apparatus details, and tolerances
+> above reflect the general chapter as commonly applied; always verify against
+> the current USP-NF edition, the product monograph, and your approved methods
+> and SOPs. This lesson is not a substitute for QA judgement.

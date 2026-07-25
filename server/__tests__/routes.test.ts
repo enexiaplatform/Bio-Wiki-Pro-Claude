@@ -20,6 +20,7 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     getContentEntry: vi.fn(),
     upsertContentEntry: vi.fn(),
     hasCompletedPurchase: vi.fn(),
+    getLatestCompletedPurchaseAt: vi.fn(() => Promise.resolve(null)),
     getUserByResetToken: vi.fn(),
     setResetToken: vi.fn(),
     updatePassword: vi.fn(),
@@ -29,6 +30,8 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     upsertAtlasProMonthlyReview: vi.fn(),
     getLatestCareerBlueprintExecution: vi.fn(() => Promise.resolve(undefined)),
     upsertCareerBlueprintExecution: vi.fn(),
+    getCareerBlueprintProfile: vi.fn(() => Promise.resolve(undefined)),
+    upsertCareerBlueprintProfile: vi.fn(),
     setVerificationToken: vi.fn(() => Promise.resolve()),
     getUserByVerificationToken: vi.fn(),
     markEmailVerified: vi.fn(() => Promise.resolve()),
@@ -252,6 +255,45 @@ describe("Quality Lab expert review", () => {
     await request(app).delete("/api/quality-lab/reviewed-projects/qlp_private").expect(401);
     expect(storageMock.listQualityLabReviewedProjects).not.toHaveBeenCalled();
     expect(storageMock.deleteQualityLabReviewedProject).not.toHaveBeenCalled();
+  });
+
+  it("keeps diagnostic access behind authentication", async () => {
+    const app = await buildApp();
+    await request(app).get("/api/quality-lab/diagnostic-access").expect(401);
+    expect(storageMock.hasCompletedPurchase).not.toHaveBeenCalled();
+  });
+
+  it("reports paid scope-diagnostic access with the purchase date", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" }).expect(201);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValue(true);
+    storageMock.getLatestCompletedPurchaseAt.mockResolvedValue(new Date("2026-07-20T10:00:00.000Z"));
+
+    const res = await agent.get("/api/quality-lab/diagnostic-access");
+    expect(res.status).toBe(200);
+    expect(res.body.entitled).toBe(true);
+    expect(res.body.purchasedAt).toBe("2026-07-20T10:00:00.000Z");
+    expect(storageMock.hasCompletedPurchase).toHaveBeenCalledWith("u1", "scope_diagnostic");
+    expect(storageMock.getLatestCompletedPurchaseAt).toHaveBeenCalledWith("u1", "scope_diagnostic");
+  });
+
+  it("reports no diagnostic entitlement without a completed purchase", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" }).expect(201);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValue(false);
+    storageMock.getLatestCompletedPurchaseAt.mockResolvedValue(null);
+
+    const res = await agent.get("/api/quality-lab/diagnostic-access");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ entitled: false, purchasedAt: null });
   });
 });
 
@@ -1024,6 +1066,8 @@ describe("career blueprint fulfillment", () => {
     await request(app).get("/api/career-blueprint/execution").expect(401);
     await request(app).post("/api/career-blueprint/execution").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
     await request(app).put("/api/career-blueprint/execution/execution-1").send({}).expect(401);
+    await request(app).put("/api/career-blueprint/profile").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
+    await request(app).get("/api/career-blueprint/profile").expect(401);
     await request(app).post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(401);
   });
 
@@ -1062,6 +1106,15 @@ describe("career blueprint fulfillment", () => {
     expect(download.body.subarray(0, 4).toString()).toBe("%PDF");
   });
 
+  it("serves the illustrative sample PDF without authentication", async () => {
+    const app = await buildApp();
+    const sample = await request(app).get("/api/career-blueprint/sample.pdf");
+    expect(sample.status).toBe(200);
+    expect(sample.headers["content-type"]).toContain("application/pdf");
+    expect(sample.headers["content-disposition"]).toContain("career-blueprint-illustrative-sample.pdf");
+    expect(sample.body.subarray(0, 4).toString()).toBe("%PDF");
+  });
+
   it("rejects generation without a completed purchase", async () => {
     const app = await buildApp();
     const agent = await authedAgent(app);
@@ -1072,6 +1125,57 @@ describe("career blueprint fulfillment", () => {
     const record = createCareerExecutionRecord({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" });
     await agent.put(`/api/career-blueprint/execution/${record.id}`).send(record).expect(403);
     await agent.post("/api/career-blueprint/download").send({ ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" }).expect(403);
+    const denied = await agent.get("/api/career-blueprint/profile");
+    expect(denied.status).toBe(403);
+    expect(denied.body.code).toBe("career_blueprint_purchase_required");
+  });
+
+  it("rejects a malformed profile on PUT and round-trips a valid one for an entitled user", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValue(true);
+
+    const invalid = await agent.put("/api/career-blueprint/profile").send({ fullName: "X" });
+    expect(invalid.status).toBe(400);
+    expect(storageMock.upsertCareerBlueprintProfile).not.toHaveBeenCalled();
+
+    const profile = { ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" };
+    const syncedAt = new Date("2026-07-25T12:00:00.000Z");
+    storageMock.upsertCareerBlueprintProfile.mockImplementation(async (_userId, value) => ({ profile: value, updatedAt: syncedAt }));
+    const saved = await agent.put("/api/career-blueprint/profile").send(profile);
+    expect(saved.status).toBe(200);
+    expect(saved.body.syncAvailable).toBe(true);
+    expect(saved.body.profile.fullName).toBe("Alex Morgan");
+    expect(storageMock.upsertCareerBlueprintProfile).toHaveBeenCalledWith("u1", expect.objectContaining({ fullName: "Alex Morgan" }));
+
+    storageMock.getCareerBlueprintProfile.mockResolvedValueOnce({ profile, updatedAt: syncedAt });
+    const restored = await agent.get("/api/career-blueprint/profile");
+    expect(restored.status).toBe(200);
+    expect(restored.body.syncAvailable).toBe(true);
+    expect(restored.body.profile).toEqual(saved.body.profile);
+
+    const empty = await agent.get("/api/career-blueprint/profile");
+    expect(empty.status).toBe(200);
+    expect(empty.body.profile).toBeNull();
+  });
+
+  it("degrades to syncAvailable:false instead of failing when the profile table is missing", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockResolvedValue(true);
+    storageMock.upsertCareerBlueprintProfile.mockRejectedValueOnce(new Error("relation does not exist"));
+    storageMock.getCareerBlueprintProfile.mockRejectedValueOnce(new Error("relation does not exist"));
+
+    const profile = { ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" };
+    const saved = await agent.put("/api/career-blueprint/profile").send(profile);
+    expect(saved.status).toBe(200);
+    expect(saved.body.syncAvailable).toBe(false);
+
+    const restored = await agent.get("/api/career-blueprint/profile");
+    expect(restored.status).toBe(200);
+    expect(restored.body).toEqual({ profile: null, syncedAt: null, syncAvailable: false });
   });
 });
 

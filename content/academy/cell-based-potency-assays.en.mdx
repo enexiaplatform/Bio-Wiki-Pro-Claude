@@ -4,14 +4,17 @@ slug: "cell-based-potency-assays"
 lang: "en"
 tier: "free"
 category: "Biologics QC"
-seoDescription: "Potency bioassays for biologics - why activity must be measured biologically, relative potency vs a reference, the 4-parameter logistic fit, and why bioassays are so variable."
-updatedAt: "2026-07-05"
+seoDescription: "Cell-based potency bioassays per the USP 1032/1033/1034 chapters: relative potency vs a reference standard, 4PL curve fitting, parallelism testing, and variability control."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Why is potency for a biologic usually measured by a bioassay rather than a chemical assay?"
     options: ["Bioassays are cheaper", "Structure alone doesn't guarantee biological function", "Chemical assays are illegal", "It is faster"]
     answer: 1
   - q: "Bioassay potency is normally reported as:"
     options: ["An absolute concentration", "Relative potency vs a reference standard", "A pass/fail color", "A melting point"]
+    answer: 1
+  - q: "Before a relative-potency result is calculated, the test and reference curves must demonstrate:"
+    options: ["Identical colors", "Parallelism (similar curve shape)", "Zero variability", "Different cell lines"]
     answer: 1
   - q: "Dose-response curves in bioassays are commonly fit with:"
     options: ["A straight line only", "A 4-parameter logistic (4PL) model", "No model", "A pie chart"]
@@ -20,52 +23,142 @@ quiz:
 
 # Cell-Based Potency Assays (Bioassays)
 
-Potency is the QC attribute that answers the only question that ultimately
-matters: **does the drug do what it is supposed to do?** For biologics, that has
-to be measured biologically - a bioassay.
+Potency answers the only question that ultimately matters: does the product do
+what it is supposed to do? For biologics, that must be measured biologically.
+A correctly sequenced antibody can still be inactive if it is misfolded or its
+binding region is modified, so structure alone cannot stand in for function.
+The governing framework is the USP bioassay trilogy - &lt;1032&gt; Design and
+Development of Biological Assays, &lt;1033&gt; Biological Assay Validation,
+and &lt;1034&gt; Analysis of Biological Assays - together with ICH Q6B, which
+expects a potency assay reflecting the mechanism of action in the
+specification.
 
-## Why biological measurement
+## Common assay formats
 
-A correctly sequenced, correctly sized antibody can still be inactive if it is
-misfolded or its binding region is modified. Only a functional assay - the
-molecule acting on cells or a target - confirms activity. Common formats:
+| Format | Readout | Typical use |
+| --- | --- | --- |
+| Reporter gene assay | Luminescence/fluorescence from a signaling-responsive promoter | Mechanism-of-action potency for antibodies, cytokines, Fc-fusion proteins |
+| Proliferation / anti-proliferation | Cell growth or its inhibition | Growth factors, cytokines, cytotoxic products |
+| Cytotoxicity / ADCC / CDC | Target-cell killing via immune effector functions | Therapeutic antibodies with effector function |
+| Binding assay (ELISA, SPR) | Target binding signal | Justified surrogate when binding correlates with function |
 
-- **Cell-based functional assays** - proliferation, reporter-gene, cytotoxicity,
-  or signaling readouts in a responsive cell line.
-- **Binding assays** (ELISA/SPR) - measure target binding; sometimes a surrogate
-  for potency when justified.
+Regulators increasingly expect the potency assay to reflect the mechanism of
+action. A pure binding assay may be accepted as a surrogate only with a
+documented scientific bridge to biological function.
 
-## Relative potency
+## Why relative potency
 
-Bioassays are too variable for absolute numbers, so potency is reported as
-**relative potency**: the test sample's dose-response curve compared against a
-**reference standard** run in the same plate. Result about 100% means "as potent
-as the reference."
+Cell-based assays are too variable for absolute measurements: the same sample
+can read differently on different days, plates, and cell passages. The solution
+is **relative potency** - the test sample is always compared against a
+reference standard run on the same plate, and potency is reported as a
+percentage of the reference (about 100% means "as potent as the reference").
+The reference standard absorbs most of the assay's day-to-day noise because the
+comparison, not the absolute signal, is what is measured.
 
 > Practice it: use the free [Cell-Based Potency Readiness Planner](/tools/cell-based-potency-readiness-planner)
 > to check reference standard, cell system, curve fit, parallelism, and
 > reportability blockers.
 
-## The 4-parameter logistic (4PL)
+This makes the reference standard a critical reagent: it is qualified against a
+higher-tier standard (international or primary), bridged carefully when
+replaced, and trended over its life. A drifting reference silently shifts every
+batch result.
 
-Dose-response data are sigmoidal, fit with a **4PL** model (top, bottom, slope,
-EC50). Relative potency comes from the horizontal shift between the test and
-reference curves - valid only when the curves are **parallel** (a parallelism
-test gates the result).
+## The 4PL curve and parallelism
 
-## Living with variability
+Dose-response data are sigmoidal. The standard model is the **4-parameter
+logistic (4PL)**: lower asymptote, upper asymptote, slope (Hill coefficient),
+and EC50 (the concentration giving half-maximal response). Relative potency is
+derived from the horizontal shift between the test and reference curves - the
+ratio of their EC50 values - which is meaningful **only if the curves are
+parallel**: same asymptotes and same slope, differing only in horizontal
+position.
 
-Cell-based assays are inherently noisy (cell passage, plate position, operator).
-QC controls this with: a reference on every plate, system-suitability limits,
-replicate plates, and **trending** of the reference's own parameters. A potency
-result outside spec triggers an investigation that always asks "assay or sample?"
+Parallelism is therefore a gate, not a courtesy. USP &lt;1032&gt; supports both
+significance-testing and equivalence-testing approaches to similarity; modern
+practice favors equivalence tests with predefined margins, because a
+non-significant difference is not proof of similarity. A sample that fails
+parallelism is telling you something real - partial degradation, aggregation,
+or a variant with altered dose-response - and its potency result is not
+reportable from that run.
 
-## Why it matters
+## Assay design that controls noise
 
-Potency is often the hardest biologics method to validate and transfer, and the
-most common source of OOS. Analysts who understand parallelism, 4PL fits, and
-assay control are valuable precisely because bioassays are unforgiving.
+USP &lt;1032&gt; treats design as the cheapest place to buy precision:
 
-> Tip: many "potency OOS" results are assay artifacts. Strong system suitability
-> and reference trending let you tell a real product change from a bad plate -
-> before you quarantine a good batch.
+- enough dilutions (commonly 8 or more across the curve) to define both
+  asymptotes and the slope;
+- replicate wells per dilution and, for critical assays, replicate
+  independent runs;
+- the same number of dilution steps and comparable concentration ranges for
+  test and reference;
+- plate-layout randomization or blocking to control edge and position
+  effects;
+- controlled cell passage window and consistent cell seeding density, since
+  cell state is a dominant variability source;
+- predefined system-suitability criteria (curve-fit quality, reference EC50
+  range, asymptote windows, signal-to-background) that must pass before any
+  sample result is read.
+
+## Validation per USP &lt;1033&gt;
+
+Bioassay validation follows the ICH Q2 logic adapted to relative potency:
+
+- **specificity** - the assay responds to the product's mechanism, not the
+  matrix or related molecules;
+- **range** - relative-potency interval over which results are accurate and
+  precise, demonstrated with samples spiked or degraded to known activity
+  levels;
+- **intermediate precision** - across days, analysts, plates, and cell
+  passages; this, not repeatability, is the realistic variability estimate;
+- **accuracy of relative potency** - measured potencies of samples with known
+  relative activity recover the expected values within pre-set margins.
+
+Acceptance criteria for a bioassay specification are then set with the assay's
+demonstrated variability in mind; an unrealistically tight potency spec on a
+noisy assay manufactures OOS results.
+
+## Living with variability in routine use
+
+- reference standard on every plate, with its own parameters trended;
+- replicate independent runs combined into a reportable value when justified
+  by the validation;
+- control charts on system-suitability parameters to catch assay drift before
+  it fails a batch;
+- OOS investigation that always asks "assay or sample?" first - cell passage
+  anomalies, reagent lot changes, and plate effects are the usual suspects;
+- trending of batch potency over time, because a slow drift across batches is
+  more informative than any single result.
+
+## Common findings and mistakes
+
+- Potency reported from non-parallel curves because "the EC50 looked fine."
+- No predefined similarity/parallelism criteria; decisions made after seeing
+  the data.
+- Reference standard replaced without a bridging study against its
+  predecessor.
+- Cell passage number uncontrolled or untracked as a variability source.
+- Specification limits set tighter than the validated assay variability can
+  support.
+- System suitability defined so loosely that a bad plate still "passes."
+- Replicates treated as independent runs to average away a failed result
+  rather than investigating it.
+- Method transfer attempted without accounting for the receiving lab's cells,
+  reagents, and plate readers.
+
+## Take it further
+
+- [Cell-Based Potency Assay workflow](/workflows/cell-based-potency-assay)
+- [Reference Standards Management](/library/reference-standards-management)
+- [Biologics QC - What Makes It Different](/library/biologics-qc-overview)
+- [Analytical Method Validation - ICH Q2](/library/analytical-method-validation)
+- [Cell-Based Potency Readiness Planner](/tools/cell-based-potency-readiness-planner)
+- The Atlas Pro lesson **Analytical Method Transfer** covers the extra controls
+  bioassays need when moving between labs.
+
+> Educational content only. USP &lt;1032&gt;/&lt;1033&gt;/&lt;1034&gt; and ICH
+> Q6B expectations are revised over time; assay-specific designs and
+> acceptance criteria live in validated methods and approved specifications.
+> Verify against current compendia and approved site procedures before
+> reporting or releasing any potency result.

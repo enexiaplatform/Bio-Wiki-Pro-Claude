@@ -4,8 +4,8 @@ slug: "quality-risk-management-q9"
 lang: "en"
 tier: "free"
 category: "Quality Systems"
-seoDescription: "ICH Q9(R1) quality risk management — the assess/control/communicate/review lifecycle, FMEA vs HACCP, and avoiding subjectivity in risk scoring."
-updatedAt: "2026-06-02"
+seoDescription: "ICH Q9(R1) quality risk management - the assess/control/communicate/review process, FMEA vs HACCP vs fault tree, formality commensurate with risk, and controlling subjectivity."
+updatedAt: "2026-07-25"
 quiz:
   - q: "What are the two primary components of risk per ICH Q9?"
     options: ["Cost and time", "Severity and probability of harm", "Frequency and budget", "Detectability and color"]
@@ -16,34 +16,138 @@ quiz:
   - q: "The level of effort and documentation of a QRM exercise should be:"
     options: ["Always maximal", "Commensurate with the level of risk", "Decided by finance", "The same for every product"]
     answer: 1
+  - q: "Which concern did the 2023 Q9(R1) revision explicitly add guidance on?"
+    options: ["Marketing claims", "Subjectivity in risk assessments and risk-based decision-making", "Laboratory glassware", "Office ergonomics"]
+    answer: 1
 ---
 
 # Quality Risk Management (ICH Q9)
 
-ICH Q9(R1) provides a systematic process for assessing, controlling,
-communicating, and reviewing risks to product quality across the lifecycle. The
-guiding principle: risk effort should be **commensurate with the level of risk**.
+Quality Risk Management (QRM) is the systematic process for assessing,
+controlling, communicating, and reviewing risks to the quality of a drug
+product across its lifecycle. The governing framework is **ICH Q9(R1)**, which
+reached Step 4 in January 2023 and was subsequently adopted by FDA, EMA, and
+other ICH members. The revision clarified four areas: subjectivity in QRM,
+formality of QRM activities, risk-based decision-making, and the role of QRM in
+supply availability.
 
-## The QRM lifecycle
+ICH Q9 defines risk as the combination of the **probability of occurrence of
+harm** and the **severity of that harm**. Detectability can be a third factor
+in tools like FMEA, but Q9's definition rests on severity and probability.
 
-1. **Risk assessment** — identify hazards, analyze and evaluate risk.
-2. **Risk control** — reduce or accept risk to an acceptable level.
-3. **Risk communication** — share information among stakeholders.
-4. **Risk review** — revisit outputs as new knowledge emerges.
+## The two Q9 principles
 
-## Common tools
+Everything in Q9 hangs on two principles:
 
-- **FMEA** — Failure Mode and Effects Analysis; scores Severity × Occurrence ×
-  Detection into a Risk Priority Number (RPN).
-- **HACCP** — Hazard Analysis and Critical Control Points; identifies critical
-  control points in a process.
-- **Fault tree / PHA** — for top-down or preliminary hazard analysis.
+1. The evaluation of risk to quality should be based on **scientific knowledge
+   and experience with the process**, and ultimately link to protection of the
+   patient.
+2. The **level of effort, formality, and documentation** of the QRM process
+   should be commensurate with the level of risk.
 
-## Avoiding subjectivity
+Principle 2 is the one sites get wrong most often. A 40-page FMEA for a
+low-risk labeling change and a two-line email assessing a new API supplier are
+both failures of proportionality - one over-controls, one under-controls.
 
-The Q9(R1) revision specifically calls out **subjectivity** as a weakness.
-Mitigate it with clearly defined scoring scales, cross-functional teams, and
-explicit, documented rationale for each rating — not a single person's gut feel.
+## The QRM process
 
-> Tip: a risk assessment is a living document. Tie it to change control so that
-> changes trigger a re-review, rather than letting it go stale on a shared drive.
+Q9 describes a repeating cycle with four activities:
+
+| Step | Core question | Typical output |
+| --- | --- | --- |
+| Risk assessment | What might go wrong, how bad, how likely? | Hazard identification, risk analysis, risk evaluation against acceptance criteria. |
+| Risk control | What do we reduce, what do we accept? | Mitigation actions with owners, or documented risk acceptance. |
+| Risk communication | Who needs to know? | Shared information among assessors, QA, operations, management, and suppliers. |
+| Risk review | Is the assessment still true? | Re-evaluation triggered by new data, deviations, changes, or periodic review. |
+
+Risk review is what ties QRM into the rest of the quality system: deviation
+data, complaint trends, change control, and annual product review all feed new
+knowledge back into existing risk assessments. A risk assessment that is never
+revisited decays into decoration.
+
+## Where QRM plugs into the quality system
+
+Q9 Annex II maps QRM onto everyday quality-system decisions:
+
+| Application | How QRM is used |
+| --- | --- |
+| Deviations and CAPA | Sets investigation depth, impact-assessment scope, and whether CAPA is warranted. |
+| Change control | Determines assessment effort, testing, and requalification needs for a change. |
+| Validation scope | Focuses qualification and validation effort on the highest-risk parameters and worst cases. |
+| Audits and supplier oversight | Drives audit frequency and depth by material criticality and performance. |
+| Monitoring and sampling | Justifies sample locations, frequencies, and alert-level placement. |
+| Complaints and recalls | Structures health-hazard evaluation and field-action decisions. |
+
+The common thread: QRM is how you decide *how much* control each situation
+deserves, and the rationale is what makes that decision defensible.
+
+## Choosing a tool: FMEA vs HACCP vs FTA
+
+Q9 Annex I lists recognized tools. None is mandatory; the tool should fit the
+question.
+
+| Tool | How it works | Best suited for | Watch out for |
+| --- | --- | --- | --- |
+| FMEA / FMECA | Bottom-up: each failure mode scored for severity, occurrence, detection; RPN = S x O x D. | Equipment, process steps, utilities, cleaning - many discrete failure modes. | RPN arithmetic can rank a high-severity/low-RPN risk below a trivial high-RPN one; use severity gating. |
+| HACCP | Identify hazards, then define critical control points (CCPs) with limits, monitoring, and corrective actions. | Process flows where hazards can be controlled at specific points (e.g., microbial control in a process). | Over-declaring CCPs dilutes monitoring effort on the true critical points. |
+| Fault Tree Analysis (FTA) | Top-down: start from an undesired event and map the combinations of causes. | Investigating how a serious failure could occur (sterility breach, mix-up). | Requires good underlying event data; garbage probabilities in, garbage out. |
+| Preliminary Hazard Analysis (PHA) | Early, high-level hazard screening before design is fixed. | Early development, facility or process design. | Too coarse for final control decisions. |
+| Risk ranking and filtering | Score risks against weighted criteria, rank, and filter for action. | Comparing many sites, products, or suppliers for audit scheduling or prioritization. | Weights are subjective; document the rationale. |
+| HAZOP | Structured "guide word" deviations from design intent. | Process engineering, new equipment, tech transfer. | Team-intensive; needs an experienced facilitator. |
+
+An FMEA scoring example (scales are site-defined, not compendial): severity 1-5,
+occurrence 1-5, detection 1-5 gives an RPN from 1 to 125. Many sites add a
+rule that any severity of 5 escalates regardless of RPN, because multiplying a
+catastrophic severity by low occurrence and easy detection must not quietly
+de-prioritize a patient-safety hazard.
+
+## Formality and subjectivity - the Q9(R1) additions
+
+Q9(R1) acknowledges that formality is a continuum: informal tools (an
+experienced team's documented judgement) may suit low-risk decisions, while
+formal tools with full documentation suit high-risk ones. What must not vary is
+that the decision and its rationale are recorded.
+
+Subjectivity is the revision's other major theme. Every risk assessment
+contains judgement; the controls that keep it honest are:
+
+- **Defined scoring scales** with written anchors for each score level, not a
+  blank 1-5 column.
+- **Cross-functional teams** so no single person's gut feel dominates.
+- **Documented rationale** for each rating, especially severity.
+- **Explicit risk-acceptance criteria** decided before the data are seen.
+- **Facilitator challenge**: someone asks "why is occurrence a 2 and not a 3?"
+
+## Common mistakes and inspection findings
+
+- One-size-fits-all FMEAs where every assessment uses the same template and
+  effort regardless of risk.
+- RPN thresholds set after scoring, conveniently placing current controls on
+  the acceptable side.
+- Risk acceptance with no documented rationale or no QA sign-off.
+- Assessments filed and never reviewed when deviations, complaints, or changes
+  produce new knowledge.
+- Copy-paste severity ratings across products with different patient risk.
+- QRM used to justify *not* doing something GMP requires - risk assessment
+  informs how to comply, it cannot exempt compliance.
+- No linkage between the risk register and change control, CAPA, or audit
+  scheduling.
+
+## Take it further
+
+QRM is one of the two enablers of the pharmaceutical quality system described
+in [The Pharmaceutical Quality System (ICH Q10)](/library/pharmaceutical-quality-system-q10).
+Risk assessments should live and die by
+[Change Control - Protecting the Validated State](/library/change-control)
+and feed the decisions in
+[Deviation Management](/library/deviation-management).
+For risk-based contamination control, see
+[Contamination Control Strategy](/library/contamination-control-strategy),
+and apply QRM to changes with the
+[Change Control workflow](/workflows/change-control-workflow).
+
+> Educational content only. ICH Q9(R1) is a guideline, not a procedure: scoring
+> scales, formality expectations, and acceptance criteria are site-specific and
+> must be defined in your own quality system. Verify against the current
+> guideline text and approved SOPs; this article is not a substitute for QA
+> judgement.

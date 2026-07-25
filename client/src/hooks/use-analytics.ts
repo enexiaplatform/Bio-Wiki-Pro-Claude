@@ -111,6 +111,8 @@ export const analytics = {
   careerBlueprintDownloaded: (route: string) =>
     capture("career_blueprint_downloaded", { route }),
 
+  careerSampleDownloaded: () => capture("career_sample_downloaded"),
+
   careerExecutionOpened: (route: string, resumed: boolean) =>
     capture("career_execution_opened", { route, resumed }),
 

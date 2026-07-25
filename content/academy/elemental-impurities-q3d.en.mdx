@@ -4,47 +4,148 @@ slug: "elemental-impurities-q3d"
 lang: "en"
 tier: "free"
 category: "Laboratory Controls"
-seoDescription: "ICH Q3D elemental impurities — PDEs, the risk-based control approach, classes of elements, and why the old USP heavy-metals limit test was retired."
-updatedAt: "2026-06-02"
+seoDescription: "ICH Q3D elemental impurities: the PDE concept, classes 1/2A/2B/3, the four risk-assessment control options, ICP-MS/OES testing per USP <232>/<233>, and the 30% control threshold."
+updatedAt: "2026-07-25"
 quiz:
   - q: "What does a PDE represent in ICH Q3D?"
     options: ["Permitted Daily Exposure", "Process Design Element", "Particle Detection Equipment", "Purity Determination Estimate"]
     answer: 0
-  - q: "Which approach does ICH Q3D require for controlling elemental impurities?"
-    options: ["A single colorimetric test", "A risk-based assessment", "No control needed", "Visual inspection"]
+  - q: "Which elements are Class 1 (assessed in every risk assessment)?"
+    options: ["As, Cd, Hg, Pb", "Cu, Fe, Zn, Mn", "Li, Sb, Ba, Sn", "Pt, Pd, Rh, Ir"]
+    answer: 0
+  - q: "The Q3D control threshold, below which additional control is typically not needed, is:"
+    options: ["100% of the PDE", "30% of the PDE", "10 ppm", "1 ppm"]
     answer: 1
-  - q: "Why was the old USP heavy-metals test (USP 231) retired?"
-    options: ["Too expensive", "Non-specific and insensitive vs instrumental methods", "Banned globally", "Patient preference"]
+  - q: "Why was the old heavy-metals limit test (former USP 231) retired?"
+    options: ["Too expensive", "Non-specific and insensitive compared with element-specific instrumental methods", "Banned globally", "Patient preference"]
     answer: 1
 ---
 
 # Elemental Impurities (ICH Q3D)
 
-ICH Q3D shifted control of metals in drug products from a single non-specific
-colorimetric test to a **risk-based, toxicology-driven** framework. The old USP
-heavy-metals limit test (USP 231) was retired because it was neither specific nor
-sensitive enough.
+Elemental impurities — traces of catalysts, reagents, processing equipment, or
+container components in a drug product — are controlled today under **ICH
+Q3D(R2) Guideline for Elemental Impurities**, mirrored in **USP &lt;232&gt;
+Elemental Impurities — Limits** and Ph. Eur. 5.20. The framework replaced the
+old sulfide-precipitation "heavy metals" limit test (former USP &lt;231&gt;),
+which was retired because it was neither element-specific nor sensitive enough:
+a color comparison cannot tell you how much lead is actually in the product.
 
-## Permitted Daily Exposure (PDE)
+## The PDE Concept
 
-Each element of concern has a **PDE** — the maximum acceptable daily intake,
-derived from toxicology. Limits depend on the route of administration (oral,
-parenteral, inhalation), since the same element carries different risk by route.
+Every element of concern carries a **Permitted Daily Exposure (PDE)** — the
+maximum acceptable daily intake, derived from toxicological assessment, in
+micrograms per day. PDEs are **route-specific**: oral, parenteral, and
+inhalation products each have their own values, because bioavailability and
+toxicity differ sharply by route. Parenteral PDEs are generally far lower than
+oral ones.
 
-## Element classes
+| Class | Meaning | Elements | Example PDEs (oral / parenteral, µg/day) |
+| --- | --- | --- | --- |
+| 1 | Known human toxicants; restricted or banned in pharma use | As, Cd, Hg, Pb | As 15 / 15; Cd 5 / 2; Hg 30 / 3; Pb 5 / 5 |
+| 2A | Route-dependent toxicants with relatively high probability of occurrence | Co, Ni, V | Co 50 / 5; Ni 200 / 20; V 100 / 10 |
+| 2B | Route-dependent toxicants with low probability of occurrence unless deliberately added | Ag, Au, Pd, Pt, Se, Tl, and others | Pd 100 / 10; Se 150 / 80 |
+| 3 | Relatively low oral toxicity; may need control for parenteral/inhalation | Ba, Cr, Cu, Li, Mo, Sb, Sn | Cu 3000 / 300; Li 550 / 250 |
 
-- **Class 1** — human toxicants (As, Cd, Hg, Pb); avoid or strictly limit.
-- **Class 2** — route-dependent toxicants (2A more likely present, 2B less so).
-- **Class 3** — lower toxicity by oral route, but relevant for parenteral and
-  inhalation.
+Other elements (e.g. Al, Fe, Zn) are not assigned PDEs by Q3D but may need
+consideration from product-quality or regional requirements.
 
-## The risk assessment
+## Who Must Be in the Risk Assessment
 
-The deliverable auditors expect is a documented assessment of potential
-elemental sources — drug substance, excipients, water, container/closure, and
-equipment — concluding whether routine testing is needed or control is otherwise
-assured.
+Class 1 elements and any element **deliberately added** in manufacture (e.g. a
+palladium hydrogenation catalyst) must be evaluated in **every** risk
+assessment, regardless of class. Class 2A elements join them because of their
+relatively high natural occurrence in excipients and minerals. Class 2B and
+Class 3 elements enter the assessment only when there is a reason — added
+catalyst, known source, or parenteral/inhalation route.
 
-> Tip: instrumental methods (ICP-OES, ICP-MS) per USP 233 are the modern way to
-> measure. But measurement is the last resort — a sound risk assessment often
-> shows testing isn't routinely required.
+## Building the Risk Assessment Step by Step
+
+1. List every component and contact source: API synthesis, excipients, water,
+   manufacturing equipment, and the container closure system.
+2. Mark deliberately added elements (catalysts, reagents) — they are always
+   in scope regardless of class.
+3. Gather data: supplier CoAs and questionnaires, compendial grades,
+   published excipient surveys, equipment material knowledge, and any
+   available screening results.
+4. Estimate each element's contribution per daily dose and compare the total
+   against the PDE and the 30% control threshold.
+5. Assign a control option, define any testing or justification, and document
+   a conclusion per element.
+6. Reassess on change: new supplier, new site, new container, or a process
+   change that could add or remove a source.
+
+## The Risk Assessment and Its Four Control Options
+
+The expected deliverable is a documented assessment of all potential sources:
+drug substance (synthesis, catalysts), excipients, water, manufacturing
+equipment, and the container closure system. ICH Q3D then offers four control
+options:
+
+| Option | Logic | When it fits |
+| --- | --- | --- |
+| 1 | Apply common permitted concentration limits across all components of a product with daily intake ≤ 10 g | Simple products, conventional excipients, no red flags |
+| 2A | Common permitted concentration limits applied to actual component amounts | Like Option 1 but using real formulation quantities |
+| 2B | Component-level limits set from the actual composition and summed against the PDE | Products where one component dominates the risk |
+| 3 | Test the finished drug product directly against the PDE | When component data are weak or the product is the only sensible test article |
+
+The pivotal number is the **control threshold: 30% of the PDE**. Where the
+assessment shows total elemental impurity levels are consistently below 30% of
+the PDE, additional routine testing is typically not required. Levels between
+30% and 100% of the PDE call for additional control measures — periodic
+testing, tighter component controls, or process changes.
+
+## Measuring: USP &lt;233&gt; and ICP
+
+When testing is needed, **USP &lt;233&gt; Elemental Impurities — Procedures**
+governs how. The workhorse techniques are:
+
+- **ICP-MS** (inductively coupled plasma mass spectrometry) — the sensitivity
+  needed for parenteral and inhalation PDEs;
+- **ICP-OES/AES** (optical emission) — adequate for many oral-product levels
+  and less demanding limits.
+
+Sample preparation is usually microwave-assisted acid digestion — and it is
+where methods fail: volatile elements (notably mercury) are lost with open
+digestion, and some matrices simply refuse to dissolve. USP &lt;233&gt;
+requires the procedure to be validated or verified with accuracy, precision,
+specificity, and limits appropriate to the target concentrations, including the
+**J-value** concept for setting limit-test thresholds against the PDE. A
+compendial procedure applied to a new matrix still needs documented
+verification under actual conditions of use.
+
+## Common Mistakes and Inspection Findings
+
+- No documented risk assessment at all — "we test sometimes" is not a control
+  strategy.
+- Risk assessment ignores excipients and container closure, focusing only on
+  the API.
+- Class 2A elements (Co, Ni, V) skipped because "we never add them" — they
+  occur naturally in mineral-derived excipients and must still be assessed.
+- A deliberately added catalyst (Pd, Pt) missing from the assessment.
+- One generic assessment copied across products with different routes of
+  administration and daily intakes.
+- Data in the 30–100% PDE band with no additional controls defined.
+- Digestion procedure never verified for the matrix — especially mercury loss.
+- Old heavy-metals thinking: a single "pass" with no element-specific data.
+
+## Take It Further
+
+- [Residual Solvents (ICH Q3C)](/library/residual-solvents-q3c) — the sister
+  impurity guideline, same PDE-driven logic.
+- [Extractables and Leachables](/library/extractables-and-leachables) — the
+  container-closure piece of the elemental risk picture.
+- [Analytical Method Validation (ICH Q2)](/library/analytical-method-validation)
+  — validating the ICP procedure per USP &lt;233&gt;.
+- [Supplier Qualification workflow](/workflows/supplier-qualification-workflow)
+  — excipient CoAs and supplier data feed the risk assessment.
+- [ICH Q3D(R2) Guideline](https://database.ich.org/sites/default/files/ICH_Q3D-R2_Guideline_Step4_2022_0308.pdf)
+  — the governing text with the full PDE tables.
+- [USP &lt;232&gt;/&lt;233&gt;](https://www.usp.org) — limits and procedures
+  chapters (current edition via USP-NF).
+
+> Educational content. PDE values above are taken from ICH Q3D(R2) for oral and
+> parenteral routes; inhalation PDEs exist and are often far lower. Always
+> verify against the current ICH guideline, USP-NF, Ph. Eur., your product's
+> registration commitments, and approved procedures. This lesson is not a
+> substitute for QA judgement.

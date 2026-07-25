@@ -4,88 +4,256 @@ slug: "extractables-and-leachables"
 lang: "en"
 tier: "pro"
 category: "Laboratory Controls"
-seoDescription: "Extractables and leachables studies for container-closure and single-use systems — the difference, the AET threshold, and a risk-based study design."
-updatedAt: "2026-06-11"
+seoDescription: "Extractables and leachables study design: USP <1663>/<1664> framework, AET calculation from the SCT, PQRI thresholds, risk ranking by dosage form, and CCS and material-selection interplay."
+updatedAt: "2026-07-25"
 quiz:
-  - q: "Leachables are best described as:"
-    options: ["Compounds forced out under exaggerated lab conditions", "Compounds that actually migrate into product under real conditions", "Always identical to extractables", "Only relevant for tablets"]
+  - q: "Leachables are best defined as:"
+    options: ["Compounds forced out under exaggerated lab conditions", "Compounds that actually migrate into the drug product under normal storage and use conditions", "Always identical to the extractables profile", "Only relevant to inhalation products"]
     answer: 1
-  - q: "The Analytical Evaluation Threshold (AET) defines:"
-    options: ["The boiling point", "The level above which a compound must be identified and toxicologically assessed", "The batch size", "The shelf life"]
+  - q: "The Analytical Evaluation Threshold (AET) marks the level:"
+    options: ["Below which testing is impossible", "At or above which a compound must be identified and toxicologically assessed", "Of the batch size for the study", "That defines shelf life"]
     answer: 1
-  - q: "Which products carry the highest E&L risk?"
-    options: ["Oral tablets in blister", "Inhalation and parenteral with prolonged contact", "Topical creams", "External devices"]
+  - q: "Which dosage form carries the highest E&L concern and the most demanding study expectation?"
+    options: ["Oral solid in a blister", "Inhalation aerosols and parenterals with prolonged container contact", "Topical cream in a jar", "Powder for reconstitution in a glass vial only"]
+    answer: 1
+  - q: "Supplier extractables data for a single-use component should be used to:"
+    options: ["Replace the leachables study entirely", "Define the potential compound universe and target leachables, then confirm actual migration in a product-specific leachables study", "Skip toxicological assessment", "Set the AET arbitrarily"]
     answer: 1
 ---
 
 # Extractables & Leachables (E&L)
 
-Extractables and leachables (E&L) studies assess chemical compounds that migrate
-from packaging, container-closure systems, or single-use manufacturing equipment
-into the drug product — a growing focus as single-use systems become standard.
+Every drug product touches materials — container-closure systems, delivery
+devices, and increasingly single-use manufacturing equipment — and those
+materials shed chemicals into it. Extractables and leachables (E&L) work is
+the disciplined answer to two questions: what *could* come out of the
+material (extractables), and what *actually does* come out into the product
+the patient receives (leachables)?
 
-## Extractables vs leachables
+The governing references are **USP &lt;1663&gt; Assessment of Extractables**
+and **USP &lt;1664&gt; Assessment of Drug Product Leachables**, with
+**USP &lt;1664.1&gt;** covering orally inhaled and nasal drug products, and
+**USP &lt;665&gt;/&lt;1665&gt;** covering plastic components in manufacturing
+(single-use systems). The risk philosophy traces to the **PQRI** (Product
+Quality Research Institute) recommendations for inhalation products, which
+introduced the threshold framework the whole field now uses. FDA expects E&L
+data in NDAs/BLAs and ANDAs for applicable dosage forms; EU expectations run
+through the Ph. Eur. and the guideline on plastic primary packaging.
 
-- **Extractables** — compounds forced out under exaggerated lab conditions
-  (aggressive solvents, heat, time). They define the *potential* universe.
-- **Leachables** — compounds that actually migrate into the product under real
-  storage and use conditions. They are a subset of extractables that matters most
-  for patient safety.
+## Extractables vs Leachables: The Core Distinction
 
-## The Analytical Evaluation Threshold (AET)
-
-The AET is the concentration above which a compound must be identified and
-toxicologically assessed. It is derived from a Safety Concern Threshold and the
-product's dosing — so reporting below the AET is not required, which keeps the
-study tractable.
-
-## Designing the study
-
-Risk scales with route of administration and contact: inhalation and parenteral
-products with prolonged contact carry the highest risk. A defensible program ties
-material selection, extractables screening, and a leachables study to that risk.
-
-## E&L risk-ranking matrix
-
-Risk scales with how the dosage form contacts the material and for how long:
-
-| Dosage form | Contact risk | E&L expectation |
+| | Extractables | Leachables |
 | --- | --- | --- |
-| Inhalation (MDI/DPI/nebulizer) | Highest | Full extractables + leachables |
-| Injectable / large-volume parenteral | High | Full extractables + leachables |
-| Ophthalmic, transdermal | Medium–High | Risk-based leachables |
-| Oral liquid | Medium | Screening + targeted leachables |
-| Oral solid (blister/HDPE) | Lower | Often supplier data + justification |
+| Definition | Compounds released from a material under exaggerated conditions (aggressive solvents, elevated temperature, extended time) | Compounds that migrate into the drug product under actual formulation, storage, and use conditions |
+| Question answered | What is the worst-case universe of migrants? | What does the patient actually receive? |
+| When performed | Material characterization, early development, component selection | Development and commercial lifecycle, on the actual product over shelf life |
+| Relationship | Superset | Subset of extractables — and anything leachable not predicted by extractables demands investigation |
+| Governing chapter | USP &lt;1663&gt; | USP &lt;1664&gt; |
 
-Layer on material factors (polymer type, additives, processing aids, surface area,
-gamma-irradiation of single-use systems) and storage (time, temperature, solvent
-power of the formulation).
+A leachable found in product that was never seen in the extractables study
+is a red flag: it means either the extraction missed a compound class, or
+the compound formed by reaction with the formulation — either way the
+extractables study did not bound the problem.
 
-## AET — the concept and a worked figure
+## Risk Ranking Drives Study Depth
 
-The AET converts a safety threshold into an analytical reporting level:
+Risk scales with route of administration, contact intimacy, and duration.
+PQRI's framework, reflected in the USP chapters, ranks dosage forms by the
+likelihood that packaging interacts with the dose and the clinical
+consequence if it does.
+
+| Dosage form | Interaction risk | Typical E&L expectation |
+| --- | --- | --- |
+| Inhalation aerosols (MDI/DPI) | Highest | Full extractables + long-term leachables, PQRI thresholds, per-component assessment |
+| Injectable / ophthalmic solutions | High | Full extractables + leachables over shelf life, AET-based identification |
+| Topical / transdermal / nasal (non-inhaled) | Medium | Risk-based extractables, targeted leachables |
+| Oral liquids | Medium | Screening extractables, targeted leachables for known migrants |
+| Oral solids (blister, HDPE bottle) | Lower | Supplier data + documented justification often suffices |
+| Single-use process components | Varies with process step proximity | USP &lt;665&gt; extractables + process-equipment-related leachables (PERLs) assessment |
+
+Layer material factors on top: polymer type and additive package, gamma or
+e-beam sterilization (which generates new extractables), surface-area-to-
+volume ratio, formulation solvent power (a lipophilic or surfactant-rich
+formulation extracts far more than water), and storage time/temperature.
+
+## The Threshold Framework: SCT to AET
+
+PQRI defined safety-based thresholds so that analytical work focuses where
+it matters:
+
+- **Safety Concern Threshold (SCT)** — the daily intake below which a
+  leachable presents negligible safety concern even if unidentified. For
+  inhalation products PQRI set 0.15 µg/day; for parenterals the commonly
+  applied value is 1.5 µg/day (aligned with the ICH M7 TTC logic). Treat
+  these as the published PQRI/USP reference values; confirm against current
+  guidance for your product type.
+- **Qualification Threshold (QT)** — the level below which a *non-genotoxic*
+  leachable need not be further qualified (PQRI: 5 µg/day for inhalation).
+- **Analytical Evaluation Threshold (AET)** — the SCT converted into a
+  product concentration, so analysts know the level at or above which a
+  chromatographic peak must be identified and toxicologically assessed.
 
 ```
-AET (µg/mL) ≈ (SCT in µg/day) / (daily volume or dose intake)
+AET (µg/g product) = SCT (µg/day) / daily dose (g or mL product/day)
 ```
 
-*Example:* with a Safety Concern Threshold of 1.5 µg/day and a product where a
-patient receives 10 mL/day, the AET ≈ 1.5 / 10 = **0.15 µg/mL**. Compounds below
-the AET need not be identified/assessed; those above it must be. An *uncertainty
-factor* (often ~50%) is applied to account for response-factor variability in the
-screening method, lowering the practical reporting level.
+*Worked example (fictional product, real arithmetic).* A parenteral with SCT
+1.5 µg/day and a maximum dose of 10 mL/day: AET = 1.5 / 10 = **0.15 µg/mL**.
+Because screening methods (GC-MS, LC-MS with generic response factors) carry
+response-factor uncertainty, the practice is to divide by an uncertainty
+factor — commonly 2 (i.e. ~50% response uncertainty): working AET ≈
+**0.075 µg/mL**. Any screening peak at or above that level must be
+identified, quantified against an authentic or surrogate standard, and
+toxicologically assessed. This is what makes the study tractable: thousands
+of potential peaks collapse to the handful above threshold.
 
-## Aligning supplier data to avoid duplication
+## Designing the Extractables Study (USP &lt;1663&gt;)
 
-Single-use and packaging suppliers increasingly provide **extractables data
-packages** (often to BPOG/USP &lt;665&gt;-style protocols). Use them to define the
-*potential* compound list and to select your **target leachables**, then run a
-product-specific **leachables** study under real conditions to confirm what
-actually migrates. Don't re-run extractables the supplier already did to a
-recognized protocol — but never substitute extractables data for the leachables
-study where risk (inhalation/parenteral) demands it.
+1. **Define the purpose** — material selection, vendor comparison, or input
+   to the leachables study; the purpose sets the extraction rigor.
+2. **Characterize the material** — polymer, additives, processing aids,
+   sterilization mode, surface-area-to-extraction-solvent-volume ratio.
+3. **Choose extraction conditions** — solvents spanning polarity (e.g. water,
+   alcohol/water mix, isopropanol or hexane for lipophilic extraction),
+   time and temperature justified as exaggerated but not destructive.
+4. **Analyze with complementary platforms** — GC-MS for volatiles and
+   semi-volatiles, LC-MS (±) for non-volatiles, ICP-MS for elemental
+   extractables, and often headspace GC for the most volatile fraction. No
+   single platform sees everything.
+5. **Report against the AET** — identify and semi-quantify everything above
+   the working AET; list below-threshold signals as an inventory.
 
-> Practitioner tip: start E&L at material selection, not at the stability stage.
-> Choosing a well-characterized, low-additive polymer up front prevents the
-> nightmare of discovering an unsafe leachable in a system you've already locked
-> into your process.
+The analytical platform table below shows why "complementary" is not a
+buzzword:
+
+| Platform | Compound domain | Typical blind spot |
+| --- | --- | --- |
+| Headspace GC-MS | Volatiles (residual solvents, small monomers) | Anything non-volatile |
+| GC-MS (liquid injection) | Semi-volatiles (antioxidants, plasticizers) | Thermally labile or polar non-volatiles |
+| LC-UV-MS (ESI ±) | Non-volatiles, oligomers, degradants | Non-ionizing compounds; response-factor spread |
+| ICP-MS | Elemental extractables (metals from catalysts, glass, pigments) | Organic compounds entirely |
+| Ion chromatography | Ionic species (acids, halides, sulfates) | Neutral organics |
+
+A material that shows "clean" on one platform may shed a whole compound
+class visible only to another.
+
+## Extraction Conditions: Exaggerated, Not Destructive
+
+Extraction design is a balancing act. Conditions must be aggressive enough
+to reveal everything the material can plausibly release — but conditions
+that melt, dissolve, or chemically degrade the polymer produce artifacts
+(degradation products of the polymer itself) that never occur in use and
+drown the study in false compounds. Document for each extraction: solvent
+and why its polarity bracketing is relevant, temperature and duration,
+surface-area-to-volume ratio, and whether the material's physical integrity
+was preserved. Soxhlet, reflux, and sealed-vessel incubation are all
+acceptable when justified; "we always use isopropanol at 50 °C" is not a
+justification.
+
+## Designing the Leachables Study (USP &lt;1664&gt;)
+
+1. **Derive target leachables** from the extractables profile plus any
+   formulation-reaction products anticipated chemically.
+2. **Test the actual product** — real formulation, real container, real
+   storage (accelerated arms are acceptable early; real-time data close the
+   study), at intervals across shelf life including end-of-shelf-life.
+3. **Use validated methods** where targets are known — the screening
+   method's job is to catch the unexpected; validated quantitative methods
+   confirm the known targets.
+4. **Assess toxicologically** — every leachable above the AET gets a
+   safety assessment against its daily intake; structure-activity tools and
+   read-across fill data gaps, documented per ICH M7 principles where
+   mutagenicity is a question.
+5. **Close the loop** — if a leachable trends upward toward its
+   qualification threshold, the study feeds specification decisions, shelf-
+   life justification, or a material change.
+
+## E&L and the Contamination Control Strategy
+
+For sterile and biologic products, E&L is not a standalone study — it is an
+input to the site's contamination control strategy (CCS) under EU GMP Annex
+1 (2022). Single-use systems in the fluid path, filters, tubing, and
+storage bags all contribute process-equipment-related leachables, and the
+CCS should document how E&L risk was assessed for each contact material,
+what supplier data (ideally to USP &lt;665&gt;/BPOG-style protocols) was
+accepted, and where product-specific confirmation was required. A CCS that
+lists single-use components with no E&L rationale is an inspection gap.
+
+Single-use components deserve one extra note: they sit in the process, not
+in the final container, so their migrants must survive downstream
+processing (filtration, chromatography, formulation, filling) to reach the
+patient. The risk assessment therefore weighs both the extractables burden
+and the clearance the process provides — a biocontainer film with an
+extensive extractables profile may still present negligible leachables risk
+if the compound classes are cleared by the purification train. That
+clearance argument must be made explicitly, with the process steps named,
+not implied.
+
+## Toxicological Assessment Workflow
+
+Every compound above the AET passes through the same safety funnel:
+
+1. **Identify** — confident structure (authentic standard or high-
+   confidence MS/library match); unidentified compounds above the SCT are
+   the worst outcome and drive method improvement.
+2. **Compute the exposure** — concentration × maximum daily dose of
+   product = µg/day intake.
+3. **Classify the hazard** — screen for structural alerts (mutagenicity
+   per ICH M7 principles); a genotoxic-alert compound is held to the SCT
+   with no further latitude, a non-genotoxic compound to the QT.
+4. **Assess against data** — literature tox data, read-across to structural
+   analogues, or (Q)SAR; the assessment is signed by a qualified
+   toxicologist.
+5. **Decide** — acceptable as-is, monitor with a specification, mitigate
+   (change material/supplier), or escalate. The decision and its basis go
+   into the E&L report and, for registered products, the dossier.
+
+## Documentation Package
+
+A complete E&L file contains: material characterization and supplier
+extractables data with gap assessment; the risk-ranking rationale per
+dosage form; extraction-study protocols and reports with AET derivation;
+leachables methods and validation; leachables data across shelf life;
+toxicological assessments with sign-off; the leachables specification
+rationale; and the CCS cross-reference for sterile products.
+
+## Common Failure Modes (Inspection Themes)
+
+- Extractables run on the resin or component *before* sterilization, while
+  the product touches the gamma-irradiated version — the irradiation
+  products are exactly the compounds of interest.
+- AET calculated from the wrong SCT or the wrong daily dose, so the study
+  screened at the wrong sensitivity.
+- Leachables study that tests only T0 and one accelerated point — no
+  end-of-shelf-life data for a 24-month product.
+- Supplier extractables data accepted wholesale with no check that
+  extraction solvents matched the formulation's solvent power.
+- A leachable appearing in product that was absent from extractables,
+  accepted without investigation of why.
+- Semi-quantitation presented as quantitation — generic response factors
+  used to claim a leachable is "below threshold" without uncertainty
+  treatment.
+- Single-use components in the aseptic path with no E&L assessment linked
+  to the CCS.
+- Toxicological assessment done by the lab without a qualified toxicologist
+  sign-off.
+
+## Take It Further
+
+- [Container Closure Integrity](/library/container-closure-integrity) — the
+  physical-seal complement to the chemical-migration question.
+- [Elemental Impurities (ICH Q3D)](/library/elemental-impurities-q3d) — the
+  ICP-MS arm of an extractables study overlaps the Q3D risk assessment.
+- [Stability Studies](/library/stability-studies) — leachables trending
+  rides on the same stations and time points.
+- [Contamination Control Strategy](/library/contamination-control-strategy) —
+  where single-use E&L assessments are documented for sterile sites.
+- The Atlas Pro **Data Integrity Self-Check** pack supports the
+  chromatographic review discipline that AET-based identification depends on.
+
+> Educational content for QC/QA professionals. SCT/QT values, AET
+> conventions, and study expectations are product- and region-specific —
+> verify against the current USP &lt;1663&gt;/&lt;1664&gt;/&lt;665&gt; text,
+> PQRI recommendations, FDA and EMA expectations for your dosage form, and
+> your approved protocols and toxicological assessments. This is not a
+> substitute for QA or toxicology judgement.

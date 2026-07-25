@@ -4,47 +4,194 @@ slug: "hvac-qualification"
 lang: "en"
 tier: "free"
 category: "Validation"
-seoDescription: "Qualifying cleanroom HVAC systems — air changes, pressure cascades, recovery time, and the tests that prove a classified area performs per Annex 1 / ISO 14644."
-updatedAt: "2026-06-02"
+seoDescription: "Cleanroom HVAC qualification: ISO 14644-3 tests, HEPA integrity, air changes, pressure cascades, recovery time, and EU GMP Annex 1 requalification frequencies."
+updatedAt: "2026-07-25"
 quiz:
   - q: "A positive pressure cascade between rooms is designed to do what?"
     options: ["Save energy", "Protect cleaner areas from contamination ingress", "Increase humidity", "Reduce air changes"]
     answer: 1
-  - q: "Which test measures how quickly a cleanroom returns to its classified state?"
+  - q: "Which test measures how quickly a cleanroom returns to its classified state after a challenge?"
     options: ["Recovery time test", "Endotoxin test", "Sterility test", "TOC test"]
     answer: 0
-  - q: "Air change rate in a cleanroom primarily controls:"
-    options: ["Lighting", "Dilution and removal of airborne contamination", "Floor cleanliness", "Water quality"]
+  - q: "HEPA filter integrity is normally verified by:"
+    options: ["Visual inspection", "An installed-filter aerosol leak test (PAO/DOP challenge with scan or probe)", "Room temperature mapping", "Particle counts at rest only"]
     answer: 1
+  - q: "Under EU GMP Annex 1 (2022), cleanroom requalification frequency for Grade A and B areas is:"
+    options: ["Every 6 months", "Every 5 years", "Only after construction", "Never required"]
+    answer: 0
 ---
 
 # HVAC Qualification for Cleanrooms
 
-The HVAC system is the engine of a cleanroom. Qualifying it demonstrates that
-filtration, airflow, pressure, and environmental control reliably maintain the
-required classification per EU GMP Annex 1 and ISO 14644.
+The HVAC system is the engine of a cleanroom: it supplies filtered air,
+maintains dilution and removal of contamination, holds pressure cascades, and
+controls temperature and humidity. Qualifying it proves that the room actually
+achieves and holds its classification. Two frameworks govern this work: the ISO
+14644 series (14644-1 classification, 14644-2 monitoring, 14644-3 test methods)
+and, for sterile manufacturing in the EU and PIC/S world, EU GMP Annex 1 (2022
+revision), which defines Grades A to D and adds GMP expectations on top of the
+particle classes.
 
-## What HVAC qualification proves
+## The qualification test menu
 
-- **HEPA filter integrity** — filters are installed and leak-free (DOP/PAO test).
-- **Air change rate** — enough air volume to dilute and remove contamination.
-- **Airflow pattern** — unidirectional flow where required (smoke studies in
-  Grade A).
-- **Pressure cascade** — cleaner rooms held at higher pressure so air flows
-  outward, protecting the critical zone.
-- **Temperature & humidity** — within ranges for product and personnel.
+ISO 14644-3 lists the test methods used to qualify a cleanroom and its air
+system. The qualification program selects the relevant ones and defines
+acceptance criteria per room grade.
+
+| Test | What it proves | Typical method basis |
+| --- | --- | --- |
+| Installed filter system leakage (HEPA integrity) | Filters and their seals are leak-free | Aerosol challenge (PAO or equivalent) upstream; downstream scan or probe sampling per ISO 14644-3 |
+| Airflow velocity and volume | Supply air volume meets design | Anemometer, balometer/hood, or duct traverse |
+| Air changes per hour (ACPH) | Sufficient dilution for the class | Calculated from measured supply volume and room volume |
+| Room differential pressure | Cascade direction and magnitude hold | Calibrated differential pressure gauges across doorways |
+| Airflow visualization | Flow direction protects critical zones | Smoke/fog study, recorded, in Grade A and key transfer points |
+| Recovery test | Room returns to class after a particle challenge | 100:1 recovery-time method per ISO 14644-3 |
+| Particle count classification | Room meets its ISO class at rest and in operation | ISO 14644-1 sampling plan and limits |
+| Temperature and humidity | Environmental conditions stay within defined ranges | Calibrated sensors, mapped across the room |
+
+The qualification sequence matters: balancing and pressure tests come before
+filter integrity and particle classification, because airflow and cascade
+changes alter everything downstream.
+
+## Particle limits and Annex 1 grades
+
+ISO 14644-1 defines classes by maximum permitted particle concentrations. The
+values below are compendial/standard values (particles per cubic meter):
+
+| ISO class | 0.5 micrometers and larger | 5.0 micrometers and larger |
+| --- | --- | --- |
+| ISO 5 | 3,520 | 29 (per ISO 14644-1:2015 table) |
+| ISO 6 | 35,200 | 293 |
+| ISO 7 | 352,000 | 2,930 |
+| ISO 8 | 3,520,000 | 29,300 |
+
+Annex 1 maps its grades onto these classes and adds at-rest/in-operation states
+plus microbiological limits: Grade A corresponds to ISO 5 in both states for
+particles, Grade B is ISO 5 at rest / ISO 7 in operation, Grade C is ISO 7 /
+ISO 8, and Grade D is ISO 8 at rest (in-operation class is set by the site
+based on risk). Microbiological action limits in Annex 1 are "no growth" for
+Grade A and tighten progressively from Grade B to D.
+
+## Air changes and airflow velocity
+
+Air changes per hour are the dilution engine of a non-unidirectional cleanroom.
+The numbers below are **industry-practice guidance, not compendial limits**:
+ISO 14644 does not mandate ACPH values.
+
+| Area | Industry-practice guidance |
+| --- | --- |
+| ISO 5 unidirectional (Grade A) | Unidirectional airflow, commonly 0.36-0.54 m/s (guidance range from FDA's 2004 aseptic processing guidance) |
+| ISO 7 (Grade B background / C) | Commonly 20 or more ACPH as a design starting point |
+| ISO 8 (Grade C/D support areas) | Commonly 10-20 ACPH |
+
+The real acceptance criterion is performance: the measured particle counts,
+recovery time, and pressure stability must demonstrate the class, whatever the
+nominal ACPH. Rooms often need more air changes than the textbook value if
+equipment, personnel density, or process emissions raise the particle load.
+
+## Pressure cascades
+
+Adjacent rooms of different grades are held at different pressures so air flows
+from cleaner to less-clean areas when doors or transfer hatches open. Annex 1
+gives guidance of a minimum of 10 Pascals between adjacent rooms of different
+grade (with airlocks and pass-throughs bridging the steps). Two cautions:
+
+- the cascade is verified with doors closed and challenged under worst-case
+  operation (door openings, equipment doors, transfer operations);
+- pressure alarms and continuous monitoring for critical cascades are expected
+  in aseptic facilities, with alert and action limits and defined response
+  times.
+
+Cascade reversal, even briefly, is a contamination event for the cleaner side
+and should be assessed under the deviation system.
+
+## HEPA integrity testing
+
+Installed-filter leak testing is the single most failure-prone qualification
+test. An aerosol (PAO or an approved alternative) is generated upstream and the
+downstream face and seal are scanned at close range with an aerosol photometer,
+or sampled with a discrete particle counter where justified. The widely used
+acceptance criterion is no downstream penetration above 0.01% of the upstream
+challenge concentration (industry criterion, per ISO 14644-3 method). Leaks are
+most often found at the gel or gasket seal and frame, not through the media
+itself. Repair (patching) is possible within limits defined in the site
+procedure; oversized or edge repairs usually mean filter replacement and retest.
 
 ## Recovery time
 
-A key performance test: after a defined disturbance, how long the room takes to
-return to its classified particle level. Annex 1 expects a documented,
-risk-based recovery performance for the grade.
+The recovery test asks: after a particle challenge (for example from a brief
+door opening or a generated aerosol), how fast does the room return to its
+classified particle level? ISO 14644-3 describes the 100:1 recovery method,
+measuring the time for concentration to fall by a factor of 100. Annex 1
+(2022) gives a guidance clean-up time of 15-20 minutes for Grades B and C in
+its qualification expectations. Recovery time is one of the best single
+indicators of real dilution performance: a room can pass static particle counts
+and still recover slowly if airflow patterns are poor.
 
-## Tying it together
+## Requalification frequency
 
-HVAC qualification feeds cleanroom classification and the Contamination Control
-Strategy. Requalification is triggered periodically and after changes to filters,
-ductwork, room layout, or air balancing.
+- Annex 1 (2022): requalification of Grade A and B areas at least every 6
+  months; Grade C and D at least every 12 months.
+- ISO 14644-2 allows longer intervals (up to 12 months for ISO class 5 and
+  cleaner, up to 24 months for ISO class 6 and less clean) where a documented
+  monitoring program demonstrates continued compliance. For sterile
+  manufacturing under EU/PIC/S GMP, the Annex 1 frequencies take precedence.
 
-> Tip: pressure differentials and air changes drift over time as filters load —
-> trend them continuously, don't just re-test once a year.
+Requalification is also triggered by change: filter replacement, ductwork or
+balancing changes, room layout or equipment changes, HVAC system maintenance
+affecting airflow, and after any shutdown significant enough to disturb the
+system's qualified state.
+
+## From qualification to routine control
+
+Qualification output feeds the site's Contamination Control Strategy (CCS) and
+the environmental monitoring program: classified states, alert/action limits,
+monitoring locations, and recovery expectations all trace back to what the
+qualification demonstrated. Pressure differentials and ACPH drift as filters
+load, dampers move, and belts age, so the trends from continuous monitoring
+between requalifications are part of the qualified state, not an afterthought.
+
+## Common GMP findings
+
+- HEPA integrity test not performed, or performed but with the upstream
+  challenge concentration never verified.
+- Pressure cascade measured once at qualification and never trended; reversal
+  events unnoticed between annual tests.
+- Recovery test absent or acceptance criterion undefined.
+- ACPH calculated from design drawings instead of measured airflow.
+- Smoke studies missing for Grade A or for critical interventions; unrecorded
+  studies that cannot be reviewed.
+- Filter replacements and damper adjustments made under maintenance orders
+  without change control or partial requalification.
+- Particle classification performed "at rest" only, with no "in operation"
+  data supporting the operating state.
+- Temperature/humidity excursions treated as comfort issues rather than
+  potential product and contamination-control impacts.
+
+## Documentation checklist
+
+- URS and design documentation for the air-handling system;
+- balancing reports (airflow, ACPH, pressures);
+- HEPA filter certificates and installed-leak test reports;
+- airflow visualization study reports with recordings;
+- recovery test data;
+- ISO 14644-1 classification reports, at rest and in operation;
+- temperature/humidity mapping;
+- monitoring-system qualification (sensors, alarms, data recording);
+- requalification schedule and change-control triggers.
+
+## Take it further
+
+- [Environmental Monitoring - Basics](/library/environmental-monitoring-basics)
+- [Environmental Monitoring workflow](/workflows/environmental-monitoring)
+- [Gowning Qualification](/library/gowning-qualification)
+- [EM Scenario Decision Tree](/tools/em-scenario-decision-tree)
+- The Atlas Pro lesson **Contamination Control Strategy (CCS)** shows how HVAC
+  qualification, EM data, personnel flows, and cleaning programs are integrated
+  into the Annex 1 CCS document regulators now expect.
+
+> Educational content only. ISO 14644 classes and Annex 1 expectations cited
+> here reflect the referenced editions; ACPH and velocity values are labeled
+> industry-practice guidance, not compendial limits. Verify against the current
+> ISO 14644 series, EU GMP Annex 1, and approved site qualification SOPs before
+> making classification or release decisions.

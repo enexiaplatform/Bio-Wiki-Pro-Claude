@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Download, FileText, Loader2, Lock, Package, ShoppingBag } from "lucide-react";
+import { BriefcaseBusiness, Download, FileText, Loader2, Lock, Package, ShoppingBag } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
@@ -25,6 +25,21 @@ export default function MyDownloadsPage() {
   const { isAuthenticated } = useUser();
   const [products, setProducts] = useState<DeliverableProduct[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [careerEntitled, setCareerEntitled] = useState(false);
+
+  // The Career Blueprint is a workspace product (not a file-directory
+  // deliverable), so it gets its own section instead of a manifest entry.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    let active = true;
+    fetch("/api/career-blueprint/access", { credentials: "include" })
+      .then((response) => (response.ok ? response.json() : { entitled: false }))
+      .then((data) => active && setCareerEntitled(Boolean(data.entitled)))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -162,7 +177,7 @@ export default function MyDownloadsPage() {
             </section>
           ))}
         </div>
-      ) : (
+      ) : careerEntitled ? null : (
         <EmptyState
           icon={ShoppingBag}
           title="No available files yet"
@@ -170,6 +185,33 @@ export default function MyDownloadsPage() {
           ctaHref="/toolkits"
           ctaLabel="Browse available toolkits"
         />
+      )}
+
+      {isAuthenticated && careerEntitled && (
+        <section className="mt-5 overflow-hidden rounded-lg border border-amber-300/25 bg-white/[0.035] shadow-lg shadow-black/10">
+          <div className="border-b border-white/10 bg-background/35 px-5 py-4">
+            <div className="flex items-center gap-2">
+              <BriefcaseBusiness className="h-4 w-4 text-amber-200" />
+              <h2 className="font-bold">Personal Career Blueprint</h2>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold">13-week execution workspace + 38-page Blueprint PDF</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                Your purchased workspace keeps weekly evidence and reviewer feedback. Regenerate the named PDF from the Career results panel whenever your profile changes.
+              </p>
+            </div>
+            <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+              <Link href="/career/blueprint" className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-4 py-2 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300">
+                Open workspace
+              </Link>
+              <Link href="/career" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-4 py-2 text-sm font-semibold transition-colors hover:border-white/30">
+                Download PDF
+              </Link>
+            </div>
+          </div>
+        </section>
       )}
     </div>
   );

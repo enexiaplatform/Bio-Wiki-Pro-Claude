@@ -1,6 +1,6 @@
-Run / Cycle ID,BI Lot,Organism,D-value (min),Population (CFU),Location,Type,Result,Date,Notes
-,, , , ,Worst-case point 1,Exposed,,,
-,, , , ,Worst-case point 2,Exposed,,,
-,, , , ,Worst-case point 3,Exposed,,,
-,, , , ,Bench,Positive control,,,Must show growth for a valid run
-,, , , ,Bench,Negative control,,,Sterile media - no growth expected
+Run ID,Date,Sterilizer ID,Cycle Type,Cycle Parameters (Temp/Time),BI Lot,Organism,D-value (min),Population (CFU),Carrier Type,Location in Load,Control Type,Exposure Result,Control Result,Incubation Start,Incubation End,Read By,Disposition,Deviation Ref
+ST02-2026-0311,2026-02-11,ST-02,Gravity air displacement 121C,"121.1 C / 20 min / F0 21.8",GS-4471,G. stearothermophilus ATCC 7953,1.9,2.3E6,Self-contained,Center of wrapped tubing coil (mapped cold spot),Exposed,No growth,N/A,2026-02-11 10:20,2026-02-18 08:30,T. Nguyen,Load released,N/A
+ST02-2026-0311,2026-02-11,ST-02,Gravity air displacement 121C,Not exposed - bench control,GS-4471,G. stearothermophilus ATCC 7953,1.9,2.3E6,Self-contained,Incubation bench,Positive control,N/A,Growth as expected,2026-02-11 10:20,2026-02-12 08:30,T. Nguyen,Control valid,N/A
+ST02-2026-0311,2026-02-11,ST-02,Gravity air displacement 121C,Not exposed - media blank,N/A,N/A,N/A,N/A,Media only,Incubation bench,Negative control,N/A,No growth,2026-02-11 10:20,2026-02-18 08:30,T. Nguyen,Control valid,N/A
+ST02-2026-0312,2026-02-12,ST-02,Gravity air displacement 121C,"121.1 C / 20 min / F0 21.3 / come-up 14 min",GS-4471,G. stearothermophilus ATCC 7953,1.9,2.3E6,Self-contained,Center of wrapped tubing coil (mapped cold spot),Exposed,GROWTH POSITIVE day 3,Growth,2026-02-12 10:05,2026-02-19 08:35,T. Nguyen,Load rejected - resterilized after ST-02 return to service,DEV-2026-041
+ST01-2026-0987,2026-02-12,ST-01,Pre-vacuum 134C,"134.0 C / 3.5 min / F0 38.2",GS-4471,G. stearothermophilus ATCC 7953,1.9,2.3E6,Self-contained,Lowest-point drain region (mapped cold spot),Exposed,No growth,N/A,2026-02-12 14:40,2026-02-19 09:10,M. Okafor,Load released,N/A

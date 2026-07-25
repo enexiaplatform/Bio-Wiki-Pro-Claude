@@ -4,89 +4,280 @@ slug: "statistical-process-control"
 lang: "en"
 tier: "pro"
 category: "Quality Systems"
-seoDescription: "Using control charts and trending in pharma QC — common vs special cause variation, Western Electric rules, and linking SPC to continued process verification."
-updatedAt: "2026-06-11"
+seoDescription: "SPC for pharmaceutical QC: control chart selection (I-MR, Xbar-R, u, p), Western Electric and Nelson rules, Cp/Cpk/Ppk interpretation, and annual product review trending."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Control limits on a control chart are derived from:"
-    options: ["The specification", "The process data itself (typically ±3 sigma)", "The label claim", "The supplier"]
+    options: ["The product specification", "The process data itself, typically plus/minus 3 sigma of the plotted statistic", "The label claim", "The customer's complaint rate"]
     answer: 1
-  - q: "A single point beyond a control limit indicates:"
-    options: ["Common-cause variation", "A special (assignable) cause to investigate", "A passing result", "A spec failure by definition"]
+  - q: "A single point beyond a 3-sigma control limit indicates:"
+    options: ["Common-cause variation", "A special (assignable) cause that must be investigated", "A specification failure by definition", "A charting error"]
     answer: 1
-  - q: "A process in statistical control but unable to meet spec has a problem with its:"
-    options: ["Audit trail", "Capability (Cpk)", "Labeling", "Calibration only"]
+  - q: "For one-value-per-batch data (e.g. batch assay), the correct default chart is:"
+    options: ["Xbar-R", "I-MR (individuals and moving range)", "p chart", "c chart"]
+    answer: 1
+  - q: "A process with Cpk = 1.0 is expected to produce roughly:"
+    options: ["Zero defects", "About 0.27% of results outside a two-sided specification if centered and normal", "50% defects", "Exactly one defect per million"]
     answer: 1
 ---
 
 # Statistical Process Control & Trending
 
-Statistical Process Control (SPC) turns raw quality data into a signal you can
-act on. Under the lifecycle approach to validation, **Stage 3 — Continued Process
-Verification** depends on it.
+Statistical Process Control (SPC) converts a stream of quality results into
+a decision: is this variation the ordinary voice of the process, or a signal
+that something changed? In pharmaceutical manufacturing this is not an
+optional statistical garnish - it is the operational engine of **Stage 3
+Continued Process Verification** under FDA's 2011 process validation
+guidance, the trending backbone of the EU GMP Chapter 6 expectation that
+results are trended and reviewed, and the evidence base of the **Annual
+Product Review / Product Quality Review** required by 21 CFR 211.180(e) and
+EU GMP Chapter 1 (PQR).
 
-## Common vs special cause
+The stakes are symmetric and both directions hurt: react to noise and you
+destabilize a good process (tampering); ignore a real signal and you ship
+drifting product until an OOS forces the conversation. SPC exists to tell
+the two apart.
 
-- **Common cause** — the inherent, random variation of a stable process. You do
-  not investigate individual points; you improve the system.
-- **Special cause** — an assignable, unusual signal. This is what triggers
-  investigation.
+Reference framework: FDA Process Validation guidance (2011, Stage 3); ICH
+Q8/Q9/Q10 lifecycle concepts; 21 CFR 211.180(e) and EU GMP Chapters 1 and 6
+for review/trending duties; the statistical content follows the classical
+texts - Western Electric's Statistical Quality Control Handbook (1956) for
+the WE rules and Nelson (1984) for the expanded run rules. Acceptance
+conventions (Cpk 1.33 and the like) are industry practice, not regulation -
+confirm against your procedures.
 
-Confusing the two leads to either over-reacting to noise or missing real shifts.
+> Practice it: put numbers on capability with the
+> [Process Capability Calculator](/tools/process-capability-calculator), and
+> run the lifecycle through the
+> [Process Validation workflow](/workflows/process-validation).
 
-## Reading a control chart
+## Common Cause vs Special Cause: The Only Distinction That Matters
 
-Control limits are derived from the process data itself (typically ±3 sigma) —
-**not** from the specification. A process can be in statistical control yet still
-incapable of meeting spec, which is why capability (Cpk) is assessed separately.
+- **Common-cause variation**: the inherent, random, always-present variation
+  of a stable process. Individual points carry no assignable meaning. The
+  correct response to common-cause variation is **process improvement**
+  (reduce the noise floor) or **no action** - never investigation of
+  individual points.
+- **Special-cause variation**: an assignable, unusual signal - a shift,
+  trend, cycle, or outlier with a findable reason. The correct response is
+  **timely investigation** of that point or pattern.
 
-The Western Electric rules flag special causes: a point beyond a control limit,
-runs on one side of the mean, trends, and other non-random patterns.
+Confusing the two is the central failure mode of all trending programs:
+investigating every wiggle (tampering, which mathematically *increases*
+variation) or filing every excursion as "normal variation" (drift to
+failure). Control charts are the instrument that separates them.
 
-## Which chart for which data
+## Choosing the Right Chart
 
-- **I-MR (individuals & moving range)** — one value per batch (most common in
-  pharma CPV: assay, content, fill weight averages).
-- **Xbar-R / Xbar-S** — subgroups (e.g. multiple tablets per batch).
-- **p / np charts** — proportion defective (attribute data, e.g. % rejects).
-- **EWMA / CUSUM** — sensitive to small, sustained drifts; good early warning.
+Chart selection follows data structure. Get this wrong and every downstream
+limit is wrong.
 
-Match the chart to the data structure; an I-MR chart on data that really has
-subgroups hides within-subgroup variation.
-
-## Alert vs action vs control limits
-
-| Limit | Source | Meaning | Response |
+| Chart | Data structure | Pharma examples | Watch-outs |
 | --- | --- | --- | --- |
-| Control (±3σ) | Process data | Statistical boundary of common cause | Investigate special cause |
-| Alert | Often ±2σ or internal | Early warning | Heightened attention, no rejection |
-| Action | Internal, risk-based | Pre-spec intervention threshold | Defined action / investigation |
-| Specification | Registered/compendial | Pass/fail for the product | OOS handling |
+| I-MR (individuals & moving range) | One value per sampling point; no rational subgroups | Batch assay, content uniformity mean, yield, dissolution result, pH | The default pharma CPV chart; sensitive to non-normality of individuals - check distribution; MR chart flags sudden jumps |
+| Xbar-R / Xbar-S | Subgroups of n = 2-10 (R) or n larger (S) per point | Multiple tablets per batch, fill weights sampled each hour, vial weights per head | Subgrouping must be rational - within-subgroup variation should represent only common cause; mixing days/shifts inside a subgroup destroys the limits |
+| p / np chart | Proportion or count defective, varying (p) or constant (np) sample size | Reject rate per batch, visual-inspection defect proportion | Needs large enough n (n×p conventionally at least about 5) or limits behave badly |
+| u / c chart | Count of defects per unit, varying (u) or fixed (c) area of opportunity | Particles per unit volume, defects per 100 units, deviations per month | Poisson assumption; same size-sensitivity as p charts |
+| EWMA / CUSUM | Any of the above where small sustained drifts matter | Slow assay drift, gradual impurity creep, water-system trending | Detects small shifts far earlier than Shewhart charts; pair with, don't replace, the Shewhart chart; design parameters need justification |
 
-Crucially, **control ≠ spec**. A point can breach a control limit (a real process
-signal) while still passing spec — that's exactly the early signal SPC exists to
-catch.
+One structural caution before charting anything: the
+[Measurement Systems Analysis](/library/measurement-systems-analysis) must
+show the measurement system can resolve the variation you intend to chart.
+An ndc below 5 turns your control chart into a picture of gauge noise.
 
-## Western Electric rules (special-cause signals)
+## Building Limits Correctly
 
-1. One point beyond 3σ.
-2. Two of three consecutive points beyond 2σ (same side).
-3. Four of five beyond 1σ (same side).
+1. **Baseline period**: compute limits from data representative of the
+   process in control - conventionally 20-25+ points; in batch
+   manufacturing that may mean limits mature over the first commercial
+   year. State the baseline rule in the SOP.
+2. **Center line and limits**: mean plus/minus 3 standard deviations of the
+   plotted statistic (estimated via MR-bar/d2 for I-MR, or subgroup
+   statistics for Xbar charts - software handles this; know what it is
+   doing).
+3. **Control limits are not specifications.** Limits come from process
+   data; specifications come from registration/compendia. A process can be
+   perfectly in control and totally incapable (always predictable, always
+   near the spec edge) - or out of control while every result still passes.
+   The two questions are independent and both must be answered.
+4. **Recalculation**: limits are revised only after a confirmed, understood,
+   and sustained process change - not because points keep hitting them, and
+   never silently. Recalculation events belong in change control or the
+   periodic review record.
+
+| Limit type | Source | Meaning | Response |
+| --- | --- | --- | --- |
+| Control (±3σ) | Process data | Boundary of common cause | Investigate special cause |
+| Alert / warning (often ±2σ) | Internal convention | Early warning zone | Heightened attention; no rejection |
+| Action limit | Internal, risk-based | Pre-defined intervention threshold | Defined action / formal investigation |
+| Specification | Registered / compendial | Pass/fail for the product | OOS procedure |
+
+For microbiological and utility data (EM counts, water), pharmacopeial
+practice adds its own alert/action framework - same logic, compendial
+vocabulary.
+
+## Run Rules: Western Electric and Nelson
+
+A point beyond 3σ is the weakest signal a good program reacts to. The run
+rules catch non-random patterns *within* the limits. Western Electric
+(1956), the classic set:
+
+1. One point beyond 3σ from the mean.
+2. Two of three consecutive points beyond 2σ, same side.
+3. Four of five consecutive points beyond 1σ, same side.
 4. Eight consecutive points on one side of the mean (a shift).
 
-Plus runs and trends (e.g. seven steadily rising points). Each pattern is too
-unlikely to be random — it flags an assignable cause.
+Nelson (1984) adds, among others:
 
-## Wiring SPC into CPV and the APR
+5. Six consecutive points steadily increasing or decreasing (a trend).
+6. Fifteen consecutive points within ±1σ (stratification - suspiciously
+   *little* variation; often a subgrouping or data-integrity problem).
+7. Fourteen consecutive points alternating up and down (over-control or
+   mixed streams).
+8. Eight points in a row beyond 1σ on both sides with none within 1σ
+   (bimodal mixture).
 
-Stage 3 Continued Process Verification *is* ongoing SPC: chart CQAs/CPPs batch to
-batch, react to special causes through deviation/CAPA, and reduce common-cause
-variation through improvement. The **Annual Product Review** aggregates these
-charts to confirm the process stayed in control and capable across the year, and
-to re-justify limits.
+Do not arm all rules blindly on every chart: each additional rule raises the
+false-alarm rate. Common practice is to adopt a defined subset per data
+type (e.g. rules 1, 4, and 5 for batch CQAs), written into the trending
+SOP with the response each rule triggers. A rule that triggers without a
+defined response is decoration.
 
-> Practitioner tip: don't investigate every wiggle. Reacting to common-cause noise
-> ("tampering") actually *increases* variation. Investigate signals defined by the
-> rules — and leave a stable process alone while you work on the system.
+## Capability: Cp, Cpk, Ppk
 
+Capability answers the second question - can this (stable) process meet the
+specification?
 
-> **Try the free tool:** put a number on capability with the [Process Capability Calculator](/tools/process-capability-calculator).
+| Index | Uses | Tells you |
+| --- | --- | --- |
+| Cp | Overall (long-term) σ estimate; two-sided specs | Potential: spec width vs process spread, ignoring centering |
+| Cpk | Overall σ; two-sided or one-sided | Performance including centering: distance from mean to nearest spec, scaled |
+| Pp / Ppk | Same formulas with long-term (all-data) σ | Long-run performance including drift between subgroups - the index usually reported in APR/PQR and CPV summaries |
+
+Formulas (two-sided): Cp = (USL − LSL) / 6σ; Cpk = min[(USL − mean), (mean
+− LSL)] / 3σ. When σ is estimated within-subgroup (short-term), the same
+formulas give Cp/Cpk; with overall σ they give Pp/Ppk.
+
+Interpretation anchors (assuming normality): Cpk = 1.00 corresponds to about
+0.27% outside a two-sided specification for a centered process (the classic
+±3σ tail area); Cpk = 1.33 to roughly 63 ppm; Cpk = 1.67 to roughly 0.6 ppm.
+Common industry targets: 1.33 as a minimum for established processes, 1.67
+for critical or new ones - convention, not regulation; set targets by
+criticality in your procedures.
+
+Three honesty rules for capability:
+
+- **Capability is meaningless without control.** Cpk computed on an
+  unstable process describes a process that does not exist.
+- **Check the distribution.** Batch CQAs are often skewed or bounded
+  (degradants pile up near zero); normal-theory capability on skewed data
+  misleads - transform or use non-normal methods, and say which you did.
+- **Watch the measurement system.** Capability of a noisy measurement
+  understates the process and overstates your risk - see
+  [Measurement Systems Analysis](/library/measurement-systems-analysis).
+
+## Wiring SPC into CPV and the Annual Product Review
+
+Stage 3 Continued Process Verification *is* ongoing SPC: chart CQAs and
+CPPs batch to batch, react to special causes through deviation/CAPA, reduce
+common-cause variation through improvement projects, and keep the charts
+honest with periodic limit reviews. The
+[Annual Product Review](/library/annual-product-review) then aggregates a
+year of charts into judgements: Did the process stay in control? Did
+capability hold against specification? Are alert/action limits still right
+for the data? Which trends (even sub-signal ones - a slow creep visible
+only across 40 batches) need action next year?
+
+Practical wiring:
+
+- define per-product trending plans (which attributes, which charts, which
+  rules, which review cadence);
+- route rule violations into the
+  [Out-of-Trend investigation](/library/out-of-trend-investigation) process
+  with predefined depth (a WE-rule hit is not automatically a deviation -
+  but the triage decision must be documented; the
+  [OOT Trend Triage Planner](/tools/oot-trend-triage-planner) structures
+  this);
+- summarize control and capability in the APR/PQR with year-over-year
+  comparison, and re-justify limits;
+- feed recurring special causes into CAPA, and recurring common-cause
+  complaints into process improvement - the two tracks must not merge.
+
+## Worked Example: Fill-Weight Trending (Fictional but Realistic)
+
+A capsule filler produces one fill-weight mean per batch; specification
+248-252 mg, target 250 mg. The last 30 batches give mean = 250.1 mg,
+MR-bar = 0.28 mg → estimated σ(individuals) = 0.28/1.128 ≈ 0.248 mg; I-chart
+limits ≈ 250.1 ± 3 × 0.248 ≈ 249.35 to 250.85 mg.
+
+- Batches 1-28 sit inside the limits with no pattern - the process is in
+  control.
+- Batch 29 and 30 land at 250.71 and 250.79 mg: inside 3σ, but both beyond
+  2σ on the same side → WE rule 2 triggers a documented triage.
+  Investigation finds a feeder auger replaced at batch 29 with a slightly
+  different pitch - a special cause with a known assignable reason.
+- Capability with the current data: Cp = (252 − 248)/(6 × 0.248) ≈ 2.69;
+  Cpk = min(252 − 250.1, 250.1 − 248)/3σ... using the *post-change* mean
+  250.75 for honesty: Cpk = min(252 − 250.75, 250.75 − 248)/(3 × 0.248) =
+  min(1.25, 2.75)/0.744 ≈ **1.68** - still above the site's 1.33 target,
+  so the decision is to accept the new mean, recenter the feeder setup
+  target to 250.0, and recalculate limits after 20 further batches under
+  the documented change.
+
+The shape of the decision is the lesson: signal → triage → assignable
+cause → capability check → controlled limit revision. Every step leaves a
+record.
+
+## Common Failure Modes and What Inspectors Look For
+
+1. **Charting against specification limits** - spec lines drawn as if they
+   were control limits, or control charts never computed at all. Defense:
+   process-derived limits; specs shown (if at all) as clearly distinct
+   references.
+2. **Tampering** - every ±2σ wiggle generates a deviation or a setpoint
+   adjustment. Defense: defined rules with defined responses; common-cause
+   noise addressed by improvement, not knob-turning.
+3. **Signals without response** - rule violations visible in the data, no
+   triage records. Defense: documented triage per signal, even when the
+   conclusion is "no action justified."
+4. **Limits recalculated to absorb drift** - moving limits every time
+   points approach them. Defense: recalculation only after confirmed,
+   documented process change.
+5. **Capability reported on unstable processes** - Cpk theater for the APR.
+   Defense: control demonstrated first; distribution checked.
+6. **Wrong chart for the data structure** - I-MR on subgrouped data, p
+   charts on tiny samples. Defense: chart-selection table in the SOP.
+7. **Trending islands** - QC trends assay, production trends yield,
+   engineering trends utilities, nobody integrates. Defense: per-product
+   trending plans feeding one APR/PQR narrative.
+8. **APR as a copy-paste ritual** - tables restated without statistical
+   evaluation or conclusions. Defense: year-over-year control and
+   capability comparison with explicit judgements and actions.
+9. **No measurement-system check** behind the charts. Defense: MSA
+   evidence for charted methods.
+10. **Microbiological/utility data exempted from trending** - EM and water
+    excursions handled case-by-case with no alert/action review. Defense:
+    the same run-rule and limit-review discipline applied to utility data.
+
+## Take It Further
+
+- [Process Validation Stages](/library/process-validation-stages) - Stage 3
+  is where SPC lives.
+- [Annual Product Review](/library/annual-product-review) - the yearly
+  aggregation of everything charted here.
+- [Measurement Systems Analysis](/library/measurement-systems-analysis) -
+  the prerequisite that makes charts believable.
+- [Out-of-Trend Investigation](/library/out-of-trend-investigation) and the
+  [OOT Trend Triage Planner](/tools/oot-trend-triage-planner) - the response
+  side of every signal.
+- [Quality Metrics & KPIs](/library/quality-metrics-kpis) - rolling process
+  performance up to management review.
+- [Process Capability Calculator](/tools/process-capability-calculator) -
+  verify your Cp/Cpk/Ppk arithmetic.
+
+> *General educational content. Control-chart rules, capability indices, and
+> acceptance conventions are statistical and industry practice, not
+> compendial requirements - verify chart designs, run-rule subsets,
+> capability targets, and trending responses against current FDA process
+> validation guidance, ICH Q8-Q10, EU GMP Chapters 1 and 6, and your approved
+> SOPs. Nothing here substitutes for QA judgement.*

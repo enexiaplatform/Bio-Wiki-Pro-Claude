@@ -4,79 +4,309 @@ slug: "batch-record-review"
 lang: "en"
 tier: "pro"
 category: "Quality Systems"
-seoDescription: "How QA reviews batch records and releases product — review by exception, the Qualified Person model, and the disposition decision that gates every shipment."
-updatedAt: "2026-06-11"
+seoDescription: "The complete batch record review: section-by-section checklist, common BMR deficiencies from inspections, review timing versus release, eBR and review-by-exception specifics, and the disposition decision."
+updatedAt: "2026-07-25"
 quiz:
-  - q: "In the EU, who carries personal legal responsibility for certifying a batch?"
-    options: ["The operator", "The Qualified Person (QP)", "The supplier", "The auditor"]
+  - q: "In the EU, who carries personal legal responsibility for certifying a batch before release?"
+    options: ["The production operator", "The Qualified Person (QP)", "The raw-material supplier", "The external auditor"]
     answer: 1
-  - q: "Review by exception is acceptable when:"
-    options: ["The record is on paper", "It rests on a validated system and a sound risk basis", "The batch is small", "The QP is unavailable"]
+  - q: "Review by exception in an electronic batch record is acceptable when:"
+    options: ["The record is still on paper", "It rests on a validated system, verified exception logic, and a sound risk basis", "The batch is small", "The QA reviewer is busy"]
     answer: 1
   - q: "Before disposition, every deviation and OOS affecting the batch must be:"
-    options: ["Ignored if minor", "Closed with an impact assessment", "Deferred to next batch", "Logged verbally"]
+    options: ["Ignored if considered minor", "Closed with a documented impact assessment", "Deferred to the next batch", "Discussed verbally in the shift meeting"]
+    answer: 1
+  - q: "A yield reconciliation outside its defined range should be:"
+    options: ["Averaged with the previous batch", "Investigated before release because it can signal loss, mix-up, or diversion", "Rounded to the limit", "Left to the next campaign"]
     answer: 1
 ---
 
 # Batch Record Review & Product Release
 
-Batch record review is the final quality gate before product reaches patients. QA
-confirms the batch was made and tested per the approved process and that every
-deviation was resolved before disposition.
+Batch record review is the final quality gate before product reaches
+patients. Everything the site claims about a batch - that it was made
+according to the registered process, tested against the approved
+specification, and that every anomaly was understood - is proven, or
+disproven, in this record. The reviewer's signature converts a pile of
+executed steps into a legal disposition decision.
 
-## What the review confirms
+The governing framework: **21 CFR 211.22** (quality control unit
+responsibilities), **211.100(b)** (deviations must be recorded and
+justified), **211.188** (batch production and control records),
+**211.192** (investigation of discrepancies and failures), and
+**211.180(f)** for reconciliation. In the EU, **GMP Chapter 4**
+(Documentation) and **Chapter 5** (Production) define record content, and
+**Annex 16** defines certification by the **Qualified Person (QP)** - the
+person who carries personal legal responsibility for each batch certified
+for the EU market. For electronic batch records, **21 CFR Part 11** and
+**EU Annex 11** apply.
 
-- The **executed batch record** is complete, with no missing entries, unexplained
-  gaps, or uncorrected errors (good documentation practice throughout).
-- In-process and finished-product results meet specification.
-- All deviations, OOS/OOT results, and change controls affecting the batch are
-  closed with an impact assessment.
-- Reconciliation (yield, labels, components) is within limits.
+The high-stakes reality: inspectors rarely reconstruct your manufacturing
+day - they reconstruct your *review*. A batch record with unexplained gaps,
+a deviation closed without an impact statement, or a reconciliation
+"adjusted" to fit is read as a quality unit that signs without looking.
 
-## Review by exception
+## The review at a glance: what is being confirmed
 
-In mature, electronic systems, "review by exception" focuses human attention on
-flagged anomalies rather than re-checking every in-spec value — but it depends on
-a validated system and a sound risk basis.
+| Question | Where the evidence lives |
+| --- | --- |
+| Was the batch made per the approved master record? | Executed BMR/eBR, equipment logs, cleaning status |
+| Were the right materials used? | Dispensing records, weigh/verify signatures, material status |
+| Did in-process and finished results conform? | IPC records, QC results, CoA traceable to raw data |
+| Were all anomalies resolved? | Deviation, OOS/OOT, and change-control records with impact assessments |
+| Is everything accounted for? | Yield, component, and label reconciliation |
+| Is the environment/utility context acceptable? | EM, water, HVAC data for the manufacturing window |
+
+## Review by section: the checklist that survives audits
+
+Work the record in the order the batch was made. Each section below lists
+what to verify and the classic deficiency it catches.
+
+### 1. Header, identity, and record control
+
+- Correct master record version in force at manufacture date (a batch made
+  on a superseded version is a deviation, not a paperwork issue).
+- Batch/lot number, product, strength, and dates consistent across all
+  pages and attachments.
+- Record issued under controlled conditions; all pages accounted for,
+  including voided ones.
+
+*Classic deficiency:* pages photocopied and re-issued without explanation,
+or an executed record that does not match the approved master - a finding
+FDA investigators cite as failure to follow written procedures.
+
+### 2. Materials and dispensing
+
+- Every component: correct material, approved status at time of use, lot
+  number, quantity within tolerance.
+- Weigh operations signed by performer **and** independent verifier where
+  the SOP requires it.
+- Balance identification and calibration status current on each date of
+  use.
+- Reconciled quantities of dispensed vs returned material.
+
+*Classic deficiency:* second-person verification added in the same hand,
+or a material used while in quarantine status - caught by comparing
+dispensing timestamps against the material status history.
+
+### 3. Equipment, rooms, and cleaning
+
+- Equipment IDs match the logbooks; cleaning and use logs cover the
+  manufacturing window with no overlaps or gaps.
+- Room and line clearance documented before start (previous product
+  cleared, labels removed).
+- Calibration/PM status of critical instruments valid on the dates used.
+
+*Classic deficiency:* the use log shows the equipment in two places at
+once, or cleaning recorded after the next batch started - indicators of
+retrospective documentation.
+
+### 4. Process execution and in-process controls
+
+- Every step signed and dated by the performer, with verifier signatures
+  where required; no blanks, no skipped steps without explanation.
+- Critical parameters (times, temperatures, speeds, pressures) recorded
+  against the specified ranges - actual values, not checkmarks where the
+  record asks for values.
+- IPC results within limits; any out-of-limit IPC tied to a deviation.
+- Corrections follow good documentation practice: single line, original
+  legible, initialled, dated, reason where required.
+
+*Classic deficiency:* every recorded value identical across batches ("flat"
+data), or a correction without a reason on a critical parameter.
+
+### 5. Yields and reconciliation
+
+- Theoretical vs actual yield at defined stages, each within its limit.
+- Reconciliation of components, bulk product, printed packaging materials,
+  and labels - **21 CFR 211.180(f)** and EU GMP Chapter 5 require
+  significant discrepancies to be investigated.
+- Label accountability is unforgiving: issued = used + destroyed +
+  returned, with counts and destruction records.
+
+*Classic deficiency:* a label reconciliation forced to zero by an
+unexplained "adjustment" entry, or yield limits widened in the master
+record after batches kept failing them.
+
+### 6. Packaging and labelling
+
+- Correct packaging components and printed matter versions per the bill of
+  materials.
+- Line clearance before and after; reconciliation of printed materials.
+- Serialization/aggregation data where applicable, with exception records
+  resolved.
+
+### 7. Deviations, OOS/OOT, and change controls
+
+- **Every** deviation opened during manufacture and testing is listed,
+  closed, and carries a batch-specific impact assessment.
+- OOS and OOT results resolved per the investigation procedures; an open
+  OOS blocks release.
+- Change controls affecting the batch assessed for impact on this batch.
+
+This is the section where releases die. A deviation marked "closed" with
+no impact statement is a release that will not survive an audit.
+
+### 8. Laboratory results and CoA
+
+- All specification tests performed and reported; results within limits.
+- CoA values traceable to raw data (chromatograms, printouts, worksheets) -
+  not retyped summaries.
+- Retest/resample history visible and justified; no unexplained result
+  versions.
+- Stability commitments and post-approval conditions for the batch noted.
+
+### 9. Environmental and utility context
+
+- EM results, water quality, and HVAC status for the manufacturing window
+  acceptable, or excursions assessed for impact on this batch.
+- For sterile products: media fill status, intervention records, and
+  personnel qualification current.
+
+## Deviation impact assessment: the framework
+
+For each item affecting the batch, the record must answer four questions:
+
+1. **What** happened - the event, when, who detected it.
+2. **What attribute** could it affect - identity, strength, quality,
+   purity, or the evidence trail itself.
+3. **What data** addresses that concern - additional testing, comparison
+   batches, process data, scientific rationale.
+4. **Conclusion** - impact or no impact, signed, with the reasoning on
+   paper.
+
+Disposition cannot proceed until each deviation has a documented impact
+call. "No impact" must be argued, not asserted.
+
+## Review timing vs release
+
+The reviewer's clock is part of the control:
+
+- **21 CFR 211.192** requires unexplained discrepancies and failures to be
+  investigated - industry practice completes batch record review within a
+  defined window (often 30 days from batch completion - common industry
+  practice, confirm against your SOP), and the batch must not ship before
+  QA disposition.
+- Review should be **timely, not rushed**: a record reviewed 11 months
+  later has lost its corrective value; a record "reviewed" in an hour after
+  a complex batch was not reviewed at all.
+- Quarantine status must be real: physical or system-enforced segregation
+  until disposition. A batch that shipped "pending review" is a
+  self-inflicted recall scenario.
+- Deviations and OOS investigations may extend the window; the record
+  should show the batch remained under control (quarantine) throughout.
+
+## eBR specifics and review by exception
+
+Electronic batch records change the reviewer's job from reading every value
+to **verifying the exceptions**:
+
+- The eBR system must be validated (Part 11 / Annex 11): access control,
+  audit trails, enforced sequencing, and electronic signatures tied to
+  individuals.
+- "Review by exception" means the system flags out-of-limit entries,
+  missed steps, and overridden interlocks, and the reviewer focuses there -
+  but this is only defensible when the exception logic itself is validated
+  and periodically verified. An exception report nobody configured is a
+  false sense of security.
+- The reviewer must still sample the audit trail: signature attributions,
+  timestamp plausibility, any manual overrides of automated captures.
+- Hybrid records (eBR plus paper printouts) are the riskiest: the reviewer
+  must confirm the paper matches the electronic record and that the
+  "official" record is defined.
+
+See [Data Integrity - Audit Trail Review](/library/data-integrity-deep-dive)
+for the reviewer's audit-trail routine, and
+[Electronic Records - Part 11](/library/electronic-records-part-11) for the
+system requirements.
 
 ## The disposition decision
 
-Release is a documented decision: **release, reject, or hold/quarantine**. In the
-EU, a **Qualified Person (QP)** certifies each batch and carries personal legal
-responsibility for it.
+Release is a documented decision with three outcomes: **release, reject, or
+hold/quarantine** pending further information. In the EU, the QP certifies
+each batch per Annex 16 - a personal, legal certification that manufacture
+and testing complied with GMP and the marketing authorisation. In the US,
+the quality unit approves or rejects under 211.22(a). Either way:
 
-## Batch-record-review checklist
-
-- [ ] Executed record matches the approved master/MBR version.
-- [ ] All steps signed/dated by performer and verifier where required; no blanks,
-      no undocumented corrections (single-line, initialed, dated).
-- [ ] In-process checks within limits; finished-product results meet spec.
-- [ ] Yield and reconciliation (components, labels) within defined ranges.
-- [ ] Every deviation, OOS/OOT, and change control affecting the batch is closed
-      with an impact assessment concluding "no adverse impact" (or justified).
-- [ ] Environmental/utility data for the manufacturing period acceptable.
-- [ ] Stability commitments and any post-approval conditions met.
-- [ ] Certificate of Analysis accurate and traceable to raw data.
-
-## Deviation impact assessment — the framework
-
-For each open item ask: **What** happened, **what batch attribute** could it
-affect, **what data** addresses that concern, and **what is the conclusion**?
-Disposition cannot proceed until each deviation has a documented impact call. A
-deviation marked "closed" with no impact statement is a release that won't survive
-audit.
+- The decision must be **reproducible by a second reviewer from the record
+  alone**. If the reasoning lives in someone's head, the record is
+  incomplete.
+- Conditional releases ("release pending stability") need a defined basis
+  and a tracking mechanism - they are exceptions, not a workflow.
 
 ## Parametric release
 
-For terminally sterilized products, **parametric release** lets validated process
-data (e.g. the full sterilization F0 record) substitute for the finished-product
-sterility test — but only with regulatory approval, a robust CCS, and tight
-control of the critical parameters. It raises, not lowers, the bar on data
-integrity for those parameters.
+For terminally sterilized products, **parametric release** lets validated
+sterilization process data (e.g. the full F0 record) substitute for the
+finished-product sterility test - only with regulatory approval (in the EU,
+per Annex 17; FDA accepts it under approved applications), a robust
+contamination control strategy, and tight control of the critical
+parameters. It raises, not lowers, the bar on data integrity for those
+parameters: the F0 record *is* the sterility evidence, so its review must
+be correspondingly rigorous.
 
-> Practitioner tip: release decisions should be reproducible by a second reviewer
-> from the record alone. If the reasoning lives in someone's head, the record is
-> incomplete — write down *why* the batch is releasable, not just that it is.
+## What inspectors look for: the deficiency patterns
 
-> Practice it: use the free [Batch Release Readiness Checklist](/tools/batch-release-readiness-checklist)
-> to identify release blockers before the authorized QA/QP disposition.
+1. **Missing signatures and unexplained blanks** - steps performed but not
+   contemporaneously recorded.
+2. **Corrections without reason** on critical entries, or correction fluid /
+   overwritten values destroying the original entry.
+3. **Deviations closed without impact assessment** - the single most common
+   release-blocker finding.
+4. **Reconciliation forced to fit** - adjustment entries with no
+   investigation; label counts that only balance on paper.
+5. **Backdated or batch-copied entries** - identical data across batches,
+   timestamps inconsistent with building access or equipment logs.
+6. **Review performed after shipment** - disposition date later than the
+   first distribution record.
+7. **eBR exception reports never reviewed** - the system flagged overrides
+   that nobody read.
+8. **Master record version drift** - batch executed on a superseded version
+   with no deviation.
+
+## Worked example: a yield discrepancy at compression
+
+*Fictional but realistic.* A tablet batch shows compression-stage yield of
+97.1% against a limit of 98.0-102.0% - a shortfall of about 14 kg of
+tablet core mass. The reviewer does not sign and moves on; the deviation
+is opened instead.
+
+The impact assessment reconstructs mass: granulation yield was in range,
+blending reconciliation balanced, so the loss occurred between blender
+discharge and compressed-tablet weigh-up. Equipment inspection finds a
+damaged feed-frame gasket on press 4 leaking granulation into the deduster
+waste stream. Waste is recovered and weighed: 13.6 kg, reconciling the
+gap within 0.4 kg.
+
+Conclusion: the loss is physically accounted for, located in waste, and the
+compressed tablets themselves show in-range weight, hardness, and assay
+results - no impact on the batch, with QA sign-off. CAPA: gasket added to
+press preventive maintenance and to the set-up checklist; a spare-parts
+review across all presses. The batch releases ten days later with a
+complete story. Had the mass not reconciled, the question would have been
+different - where did product go? - and disposition would have waited on
+the answer.
+
+## Take it further
+
+- Run the review as a structured process with the
+  [Batch Record Review & Release workflow](/workflows/batch-record-review-release).
+- Identify release blockers early with the free
+  [Batch Release Readiness Checklist](/tools/batch-release-readiness-checklist).
+- Strengthen the underlying habits in
+  [Good Documentation Practice](/library/good-documentation-practice) and
+  handle the anomalies via
+  [Deviation Management](/library/deviation-management).
+- The Pro **Data Integrity Self-Check** toolkit pack supports reviewer
+  audit-trail habits for eBR environments.
+
+> Practitioner tip: release decisions should be reproducible by a second
+> reviewer from the record alone. If the reasoning lives in someone's head,
+> the record is incomplete - write down *why* the batch is releasable, not
+> just that it is.
+
+> General educational content. Verify against current 21 CFR Parts 210/211,
+> EU GMP Chapters 4 and 5, Annexes 11, 16 and 17, your approved master
+> records, registered specifications, and site SOPs before making any
+> release or disposition decision. This is not a substitute for QA or QP
+> judgement.

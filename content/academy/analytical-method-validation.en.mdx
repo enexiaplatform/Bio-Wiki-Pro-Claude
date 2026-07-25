@@ -4,8 +4,8 @@ slug: "analytical-method-validation"
 lang: "en"
 tier: "free"
 category: "Validation"
-seoDescription: "The ICH Q2(R2) validation characteristics — accuracy, precision, specificity, linearity, range, LOD/LOQ — and which apply to which test type."
-updatedAt: "2026-06-02"
+seoDescription: "ICH Q2(R2) method validation: which characteristics apply to each test type, how to design the experiments and acceptance criteria, what the validation report must contain, and common audit findings."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Which characteristic describes closeness between the measured value and the true value?"
     options: ["Precision", "Accuracy", "Linearity", "Specificity"]
@@ -16,40 +16,164 @@ quiz:
   - q: "For a quantitative impurity assay, which is typically required?"
     options: ["LOD only", "Accuracy, precision, specificity, linearity, range, LOQ", "Specificity only", "No validation needed"]
     answer: 1
+  - q: "When should validation acceptance criteria be defined?"
+    options: ["After reviewing the data", "Before the study, justified from the method's intended purpose", "Only if results look bad", "During the first OOS"]
+    answer: 1
 ---
 
 # Analytical Method Validation (ICH Q2)
 
-Method validation demonstrates that an analytical procedure is fit for its
-intended purpose. ICH Q2(R2) defines the characteristics to evaluate and which
-ones apply depending on the test type.
+Method validation is the documented evidence that an analytical procedure is fit
+for its intended purpose. It is what separates a method that merely produces
+numbers from a method whose numbers a QA unit can use to release product.
 
-## The core characteristics
+The governing framework is **ICH Q2(R2) Validation of Analytical Procedures**
+(adopted in 2023), read together with **ICH Q14 Analytical Procedure
+Development**. Q2(R2) defines which validation characteristics apply to which
+type of procedure and how they are demonstrated; Q14 covers the development and
+lifecycle knowledge that makes validation rational rather than ritual. The
+underlying expectations also appear in USP &lt;1225&gt; and FDA's 2015 guidance
+on analytical procedures and methods validation.
 
-- **Specificity** — ability to measure the analyte unequivocally in the presence
-  of impurities, degradants, and matrix.
-- **Accuracy** — closeness of the measured value to the true value (often via
-  recovery studies).
-- **Precision** — closeness among repeated measurements: repeatability,
-  intermediate precision, and reproducibility.
-- **Linearity & range** — proportional response across the working interval.
-- **LOD / LOQ** — the smallest amount detectable and reliably quantifiable.
+## Which Characteristics Apply to Which Test
 
-## Which characteristics apply?
+The first validation decision is classifying the procedure, because that drives
+the whole study design.
 
-| Test type | Typically required |
+| Procedure type | Characteristics typically required |
 | --- | --- |
 | Identification | Specificity |
-| Impurities (quantitative) | Specificity, accuracy, precision, linearity, range, LOQ |
-| Impurities (limit) | Specificity, LOD |
-| Assay / content | Specificity, accuracy, precision, linearity, range |
+| Impurity test — quantitative | Specificity, accuracy, precision, linearity, range, quantitation limit |
+| Impurity test — limit test | Specificity, detection limit |
+| Assay / content / potency | Specificity, accuracy, precision, linearity, range |
+| Dissolution / performance tests | Specificity, accuracy, precision, range, as applicable |
 
-## Common pitfalls
+Two rules of thumb: identification tests only need to show the method sees the
+right analyte, while quantitative tests must prove the result is *right*, not
+just specific. LOD alone is never enough for an impurity you must quantitate.
 
-- Treating **system suitability** as a substitute for validation — it confirms
-  the system performs on the day, not that the method is valid.
-- Skipping **robustness** evaluation, then being surprised by failures during
-  transfer to QC.
+## The Characteristics, Designed as Experiments
 
-> Tip: define acceptance criteria *before* you run the study, and justify them
-> against the method's purpose — not against whatever the data happened to show.
+### Specificity
+
+Show the procedure measures the analyte unequivocally in the presence of
+impurities, degradants, excipients, and matrix. For chromatographic assay, this
+means forced degradation samples (acid, base, oxidation, heat, light) with peak
+purity or resolution evidence that degradants do not co-elute with the main
+peak. A stability-indicating method claim lives or dies here.
+
+### Accuracy
+
+Closeness to the true value, usually shown as recovery of known added analyte.
+Common industry practice (not a compendial mandate) is **three concentration
+levels across the range, three replicates each**, with recovery acceptance such
+as 98.0–102.0% for assay of a drug substance and wider, justified limits for
+trace-level impurities.
+
+### Precision
+
+Three nested levels, all reported as %RSD:
+
+- **Repeatability** — same analyst, same equipment, short time. Typical design:
+  six determinations at 100% of the test concentration, or nine determinations
+  across the range.
+- **Intermediate precision** — within-laboratory variation: different days,
+  analysts, or instruments. This is the characteristic that predicts QC
+  transfer pain.
+- **Reproducibility** — between laboratories; relevant for method
+  standardization or transfer, not required for every validation.
+
+### Linearity and range
+
+Demonstrate a proportional response across the working interval. ICH Q2
+recommends a **minimum of five concentration levels** for establishing
+linearity, evaluated visually and by regression (correlation coefficient,
+y-intercept, residual plot — a good r value with a biased residual pattern is
+not linearity). The range is the interval over which accuracy, precision, and
+linearity were all shown to be adequate.
+
+### Detection limit and quantitation limit
+
+For impurity methods, ICH Q2(R2) accepts several approaches: visual evaluation,
+**signal-to-noise (about 3:1 for LOD, 10:1 for LOQ)**, or calculation from the
+standard deviation of the response and the calibration slope. Whatever the
+approach, the LOQ must be confirmed experimentally with accuracy and precision
+at that level — an LOQ you cannot measure precisely is a paper number.
+
+### Robustness
+
+Deliberate small variations in method parameters (mobile phase composition, pH,
+column lot, temperature, flow rate) show the method stays reliable under normal
+use. Under the Q14 lifecycle model, robustness knowledge is built during
+development; validation confirms it. Skipping it entirely is a common reason a
+method fails at transfer.
+
+## Designing Acceptance Criteria
+
+Acceptance criteria belong in the protocol **before** the first injection, and
+they must be derived from the method's job, not negotiated from the data after
+the fact.
+
+| Characteristic | Example criterion (industry practice — justify per method) |
+| --- | --- |
+| Assay accuracy | Mean recovery 98.0–102.0% |
+| Assay repeatability | %RSD ≤ 2.0% (n = 6) |
+| Impurity LOQ | Accuracy/precision demonstrated at or below the reporting threshold |
+| Linearity | r ≥ 0.999 plus acceptable residuals |
+| Specificity | No interfering peak; resolution to nearest degradant ≥ 1.5 |
+
+The logic: a method controlling an attribute with a 90.0–110.0% specification
+needs far better precision than one measuring a 0.5% impurity limit. Write the
+criterion from the specification's tolerance and the decision the result feeds,
+then record the justification in the protocol.
+
+## The Validation Report
+
+The report is the deliverable an inspector actually reads. It should contain:
+
+1. the method's intended purpose and procedure reference/version;
+2. the approved protocol, including pre-defined acceptance criteria;
+3. the design executed per characteristic (levels, replicates, analysts,
+   instruments, column lots);
+4. all raw and summarized data, with statistical treatment;
+5. every deviation from the protocol and its disposition;
+6. a clear pass/fail conclusion against each criterion;
+7. the validated range and any restrictions on method use;
+8. revalidation triggers: method changes, synthesis route changes, new
+   impurity profiles, or instrument/platform changes.
+
+A report that lists results without comparing them to pre-set criteria is not a
+validation; it is a data dump.
+
+## Common Inspection Findings
+
+- Acceptance criteria written (or relaxed) after the data were in.
+- Specificity claimed without forced degradation or peak-purity evidence.
+- Intermediate precision omitted — then the method fails during transfer to QC.
+- LOQ calculated but never confirmed with experimental accuracy and precision.
+- Validation run once at development and never revisited after a route,
+  formulation, or instrument change.
+- System suitability drift treated as random noise instead of evidence the
+  validated state is eroding.
+- Compendial method used for a new matrix without verification that it is
+  suitable under actual conditions of use.
+
+## Take It Further
+
+- [HPLC System Suitability](/library/hplc-system-suitability) — the routine
+  gate that keeps a validated method honest day to day.
+- [Analytical Instrument Qualification](/library/analytical-instrument-qualification)
+  — validation assumes the instrument itself is qualified.
+- [Stability Studies — ICH Q1A Program Design](/library/stability-studies) —
+  where stability-indicating validation earns its keep.
+- [OOS Investigation workflow](/workflows/oos-investigation) — for when a
+  validated method produces a surprising result.
+
+The Atlas Pro deep-dives **Analytical Procedure Lifecycle (ICH Q14)** and
+**Analytical Method Transfer** cover enhanced development approaches, ATP
+definition, and comparative transfer designs beyond this lesson's scope.
+
+> Educational content. Validation requirements and numeric criteria above are
+> general teaching points; always verify against the current editions of ICH
+> Q2(R2), ICH Q14, USP &lt;1225&gt;, applicable monographs, and your approved
+> protocols and SOPs. This lesson is not a substitute for QA judgement.

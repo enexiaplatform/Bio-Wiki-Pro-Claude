@@ -7,7 +7,7 @@ import {
   defaultCareerProfile,
   formatCareerProofExperiment,
 } from "../../shared/career-blueprint";
-import { careerBlueprintPdf } from "../career-blueprint";
+import { careerBlueprintPdf, careerBlueprintSamplePdf } from "../career-blueprint";
 
 describe("Personal Career Blueprint", () => {
   const profile = { ...defaultCareerProfile, fullName: "Alex Morgan", location: "Toronto, Canada" };
@@ -66,6 +66,13 @@ describe("Personal Career Blueprint", () => {
     expect(pdf.length).toBeGreaterThan(20_000);
     expect(pdf.toString("latin1")).toContain("/Count 38");
     expect(careerProfileFilename(profile)).toBe("alex-morgan-career-blueprint.pdf");
+  });
+
+  it("generates a short illustrative sample from the same engine (fictional profile, first pages)", async () => {
+    const pdf = await careerBlueprintSamplePdf();
+    expect(pdf.subarray(0, 4).toString()).toBe("%PDF");
+    // Cover + 4 content pages — deliberately much shorter than the paid 38.
+    expect(pdf.toString("latin1")).toContain("/Count 5");
   });
 
   it("generates the full role playbook across every supported career track", async () => {

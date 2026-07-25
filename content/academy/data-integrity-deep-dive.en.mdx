@@ -4,79 +4,264 @@ slug: "data-integrity-deep-dive"
 lang: "en"
 tier: "pro"
 category: "Data Integrity"
-seoDescription: "Beyond ALCOA+: building a risk-based audit trail review program that inspectors trust — what to review, how often, and by whom."
-updatedAt: "2026-06-11"
+seoDescription: "Operational audit trail review for QC labs: step-by-step procedure, what to look for in Empower/Chromeleon-style CDS trails, risk-based review frequency, and the warning-letter failure modes."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Audit trail review should be performed by:"
-    options: ["The analyst who generated the data", "Someone independent of the work, at a risk-based frequency", "Anyone, once a year", "Only the FDA"]
+    options: ["The analyst who generated the data", "Someone independent of the work, at a risk-based frequency", "Anyone, once a year", "Only external consultants"]
     answer: 1
   - q: "Which is the highest data-integrity risk in a QC lab?"
-    options: ["Reading a thermometer", "Chromatography reprocessing/re-integration and shared logins", "Filing paper records", "Labeling vials"]
+    options: ["Reading a thermometer", "Chromatography reprocessing/re-integration and shared logins", "Filing paper records", "Labelling sample vials"]
     answer: 1
   - q: "Reviewing audit trails without keeping records of the review is:"
-    options: ["Best practice", "A likely inspection finding", "Required by ALCOA", "Acceptable if verbal"]
+    options: ["Best practice", "A likely inspection finding - undocumented review is treated as undone", "Required by ALCOA+", "Acceptable if done verbally"]
+    answer: 1
+  - q: "A sequence of short \"test\" injections before the official run, with failing versions absent from the results table, suggests:"
+    options: ["Good instrument warm-up", "Possible testing into compliance - it requires formal review and explanation", "Normal column conditioning", "A printer problem"]
     answer: 1
 ---
 
 # Data Integrity — Audit Trail Review (Deep Dive)
 
-ALCOA+ defines the principles; the hard part is operationalising **audit trail
-review** so data integrity is actually assured day to day.
+ALCOA+ (Attributable, Legible, Contemporaneous, Original, Accurate - plus
+Complete, Consistent, Enduring, Available) defines the principles. The hard
+part is operationalising **audit trail review** so data integrity is
+actually assured day to day, batch by batch, in the systems where results
+are born.
 
-## Risk-based review
+The framework: FDA's **Data Integrity and Compliance with Drug CGMP:
+Questions and Answers (2018)**, the **MHRA GxP Data Integrity Guidance and
+Definitions (2018)**, **PIC/S PI 041** (Good Practices for Data Management
+and Integrity, 2021), **21 CFR Part 11**, and **EU Annex 11**. Together
+they converge on one expectation: audit trails must be **reviewed** - by
+someone independent, at a risk-based frequency, with the review itself
+recorded.
 
-Not every audit trail needs the same scrutiny. Tier systems by impact:
-chromatography integration changes and result reprocessing are high-risk and
-warrant routine review; low-risk metadata can be reviewed by exception.
+The high-stakes reality: in every major data-integrity enforcement action
+of the last decade, the audit trail *contained* the evidence - nobody had
+looked at it. An unreviewed audit trail is not a control; it is a recording
+of what you chose not to see.
 
-## What reviewers look for
+## What an audit trail actually is
 
-- Reprocessed or re-integrated results
-- Aborted/incomplete runs and "test" injections
-- Changes to methods, sequences, or clocks
-- Disabled audit trails or shared logins
+Before reviewing, separate the layers:
 
-## Who and how often
+| Layer | Contents | Typical review depth |
+| --- | --- | --- |
+| Data/record audit trail | Changes to results, integration parameters, sample entries, reprocessing events | Per batch / per result for high-risk systems |
+| Sequence/run audit trail | Aborted runs, re-injections, sequence edits, deleted injections | Per batch |
+| System audit trail | User creation, privilege changes, audit-trail on/off events, clock changes, configuration edits | Periodic (monthly/quarterly) + by exception |
+| Instrument audit trail | Method changes, detector settings, lamp/energy logs | Per batch or periodic by risk |
 
-Review by someone independent of the analyst, at a defined frequency tied to
-risk (e.g. per batch for high-risk systems). Document the review — "we review
-audit trails" without records is a finding.
+A review that only looks at the printed results table reviews none of
+these. Regulators expect the *metadata* review, because that is where
+testing into compliance leaves footprints.
 
-## A risk matrix for common QC systems
+## Risk-based review frequency
+
+Not every audit trail deserves the same scrutiny - but the CDS deserves
+the deepest:
 
 | System | DI risk | Review frequency |
 | --- | --- | --- |
-| HPLC/GC (CDS) | **High** — integration, reprocessing, sequence edits | Every batch / every result |
-| Dissolution, UV with reprocessing | **High–Medium** | Per batch |
-| Balance with printout + LIMS | **Medium** | Periodic + per exception |
-| pH meter, standalone instruments | **Low–Medium** | Periodic (e.g. monthly) |
-| Infrastructure (OS clock, AD) | **Low** | By exception / IT change control |
+| HPLC/GC CDS (Empower, Chromeleon, LabSolutions, OpenLab) | **High** - integration, reprocessing, sequence edits | Every batch / every reportable result |
+| Dissolution, UV with reprocessing capability | **High-Medium** | Per batch |
+| Balances with printout + LIMS | **Medium** | Periodic + per exception |
+| pH meters, standalone instruments | **Low-Medium** | Periodic (e.g. monthly) |
+| Spreadsheets used for GMP calculations | **Medium-High** (often unvalidated, editable) | Per use + periodic access/version check |
+| Infrastructure (OS clock, Active Directory, backup) | **Low** | By exception / IT change control, periodic access review |
 
-Tier the *frequency* and *depth* of review to the risk — don't pretend a pH
-meter deserves the same scrutiny as a CDS, and don't under-review the CDS.
+Tier the frequency *and* the depth to the risk. Do not pretend a pH meter
+deserves the same scrutiny as a CDS - and never under-review the CDS
+because it is labour-intensive.
 
-## Audit-trail review SOP — the skeleton
+## The audit trail review procedure, step by step
 
-1. **Scope & trigger** — which systems, tied to batch release vs periodic.
-2. **Reviewer** — independent of the data generator; trained and named.
-3. **What to examine** — result reprocessing, deleted/aborted runs, "test"
-   injections, method/sequence/clock changes, failed logins, disabled trails.
-4. **Decision** — accept / investigate; link any anomaly to a deviation.
-5. **Record** — checklist signed and dated; retained with the batch record.
-6. **Escalation** — what constitutes a data-integrity event and who is notified.
+A defensible review for a chromatographic batch looks like this:
+
+1. **Identify the review unit.** Define exactly which sequence(s), sample
+   sets, and result versions constitute this batch's data - including
+   aborted and partial runs in the same project/folder window.
+2. **Reconcile injections to results.** Count injections in the sequence
+   versus results reported. Any injection not in the results table must
+   have a documented reason (failed system suitability, documented
+   preparation error) - a missing injection with no explanation is an
+   escalation.
+3. **Review integration events.** List every manual integration and every
+   reprocessing. For each: what changed (baseline, peak start/end,
+   integration events), who did it, when, and was a reason code/comment
+   recorded? Check the before/after values - manual integration that
+   consistently moves results toward passing is the classic manipulation
+   pattern.
+4. **Check system suitability outcomes.** Were SST failures followed by
+   sequence aborts and restarts? Repeated "SST fail, tweak, re-run" cycles
+   before the official run are trial-injection behaviour.
+5. **Examine sequence and method edits.** Changes after the run started,
+   method version swaps mid-sequence, or modified processing methods
+   applied selectively to some samples.
+6. **Check timestamps against reality.** Acquisition times vs analyst
+   shift, building access, and instrument use logs. Gaps, overlapping
+   runs, or results created before the run finished all need explanation.
+7. **Look for clock and configuration events.** System-clock changes
+   around the run window, audit-trail disable/enable events, privilege
+   grants - these live in the system audit trail, not the data trail.
+8. **Verify attribution.** Every action maps to a unique user. Shared or
+   generic logins make the trail formally complete and practically
+   meaningless.
+9. **Decide and record.** Accept, or escalate to a deviation/DI event.
+   The reviewer signs a dated checklist or electronic review record naming
+   the trails reviewed, the findings, and the decision.
+10. **Trend the findings.** Manual-integration rates, aborted sequences,
+    and repeat SST failures per analyst/instrument/method are leading
+    indicators - review them periodically at lab-management level.
+
+## What to look for in Empower/Chromeleon-style CDS trails
+
+Vendor specifics differ, but the review themes are constant:
+
+- **Empower-style:** check the *project* audit trail and *result* audit
+  trails, not just the sample set. Look for multiple result versions with
+  different integration, results signed off by a different person than
+  the one who processed them, use of "Altered Sample" flags, and manual
+  integration reason codes that are blank or boilerplate. Verify the
+  project covers the full window - data archived or deleted between run
+  and review breaks the story.
+- **Chromeleon-style:** review the *sequence* audit trail (aborted and
+  restarted sequences, modified injection lists), the *instrument* audit
+  trail (method parameter changes during the queue), and reprocessed
+  injection versions. Watch for sequences renamed to look like
+  column-conditioning runs.
+- **Any CDS:** "test", "wash", "equilibration", or "conditioning"
+  injections of actual samples or standards before the official sequence;
+  orphaned results not linked to any reportable set; failed SST runs that
+  vanish from the reviewed window; users with combined analyst + admin
+  privileges; and audit trails that can be (or were) switched off.
+
+One more CDS truth: the reviewer needs read access to the trails, training
+to read them, and time budgeted to do it. A review SOP without access and
+training is decorative.
+
+## The review record
+
+The review itself must produce a GMP record:
+
+- scope (system, project/sequence IDs, date window, batch linkage);
+- checklist of items examined;
+- findings, including "nothing anomalous" where true;
+- decision (accept / escalate) with the linked deviation if any;
+- reviewer name, signature, date - and a QA counter-review at defined
+  frequency for high-risk systems.
+
+"We review audit trails" without records is a finding. Undocumented is
+undone.
+
+## Spreadsheets and standalone instruments: compensating controls
+
+The systems without audit trails need procedural armour instead:
+
+- **Spreadsheets** - validate the calculation, lock the formula cells,
+  control versions through a register, and require a second-person check
+  of both inputs and outputs. An uncontrolled spreadsheet on a share
+  drive is a recurring warning-letter subject.
+- **Standalone instruments** (pH meters, balances without data
+  management, older UV units) - contemporaneous printouts signed and
+  attached, bound logbooks, defined access, and periodic review of the
+  printouts against the logbook. Where retrofit is possible, plan it;
+  where not, document the risk assessment and the compensating control.
+- **Hybrid flows** - where a printout is transcribed into LIMS, the
+  transcription check is a defined, signed step, not an assumption.
+
+## Building the program: roles and cadence
+
+A workable cadence for a mid-size QC lab (common industry practice -
+adapt to your risk assessment):
+
+| Activity | Frequency | Owner |
+| --- | --- | --- |
+| CDS data/sequence trail review | Per batch, before result approval | Trained second reviewer |
+| CDS system trail (users, privileges, clocks) | Monthly | Lab supervisor + IT |
+| Exception/metric trend (manual integration rate, aborted runs) | Monthly management review | QC management |
+| Spreadsheet register and access review | Quarterly | System owner |
+| Infrastructure (AD, backup restore test, clock sync) | Quarterly/annual | IT, QA oversight |
+| DI self-assessment against guidance | Annual | QA |
+
+QA counter-reviews a sample of completed trail reviews at a defined
+frequency - the reviewer needs a reviewer.
 
 ## What inspectors actually cite
 
-Recurring FDA warning-letter themes (paraphrased): shared/generic logins so
-actions can't be attributed; audit trails switched off or never reviewed;
-"trial" injections used to dial in a passing result; analysts with admin rights
-able to delete data; review limited to the result printout while the metadata
-goes unexamined.
+Recurring FDA warning-letter and MHRA themes (paraphrased from public
+enforcement documents):
 
-> Practitioner tip: the fastest credibility win in an inspection is producing a
-> *signed, dated audit-trail review record* on demand. Many sites "do" review but
-> can't prove it — and to a regulator, undocumented is undone.
+1. **Shared or generic logins** so actions cannot be attributed.
+2. **Audit trails switched off**, configured to overwrite, or never
+   reviewed - sometimes with the vendor default left in place.
+3. **Trial injections** used to dial in a passing result, with the failing
+   runs excluded from the record.
+4. **Analysts holding admin rights** - able to delete data, change clocks,
+   or alter integration parameters without oversight.
+5. **Review limited to the printout** while chromatograms, metadata, and
+   audit trails go unexamined.
+6. **Unofficial "testing into compliance"** - repeating analyses until
+   passing, with no OOS opened on the failures.
+7. **System clock manipulation** to backdate runs.
+8. **Data deletion between acquisition and review** - gaps in sequence
+   numbering, recycle-bin recoveries.
+9. **Standalone systems with no audit trail at all** and no compensating
+   procedural controls.
+10. **Second-person "review" that is a signature, not a review** - the
+    checker cannot describe what they checked.
 
-> Practice it: use the free [Audit Trail Review Triage](/tools/audit-trail-review-triage)
-> to risk-rank a CDS/LIMS/spreadsheet exception and build the reviewer note before
-> approval or QA escalation.
+Defence against all ten: independent review at risk-based frequency,
+recorded reviews, unique accounts, least-privilege access, and management
+that treats DI metrics as quality metrics.
+
+## Worked example: the integration pattern that meant something
+
+*Fictional but realistic.* A QC reviewer's per-batch trail review for
+assay batch B-77 shows four reprocessed results out of six injections -
+all by one analyst, all with manual baseline adjustments, all with the
+reason code "baseline optimisation." Before/after values: each
+reprocessing raised the result by 0.3-0.6%; the pre-reprocessing mean was
+94.7% against a 95.0% lower limit; the post-reprocessing mean was 95.4%.
+
+The reviewer escalates. The trend pull shows the same analyst has a
+manual-integration rate three times the lab average, concentrated on
+borderline batches. The deviation investigation finds no intent to
+falsify - the analyst was never trained on integration rules and believed
+"optimising" baselines was skill - but the process failure is real: no
+documented integration procedure, no review of reason codes. Outcome: the
+affected batches re-evaluated using the original integrations with QA
+disposition decisions; an integration SOP written and trained; manual
+integration restricted to documented, justified cases with supervisory
+review; monthly manual-integration metrics added to lab review.
+
+The audit trail had told the story for months. The review made someone
+read it.
+
+## Take it further
+
+- Run reviews as a structured process with the
+  [Data Integrity Review workflow](/workflows/data-integrity-review).
+- Triage a specific exception with the free
+  [Audit Trail Review Triage](/tools/audit-trail-review-triage).
+- Shore up the system layer with
+  [Electronic Records - Part 11](/library/electronic-records-part-11) and
+  [Computer System Validation](/library/computer-system-validation), and
+  the paper layer with
+  [Good Documentation Practice](/library/good-documentation-practice).
+- See how trail findings interact with investigations in the
+  [OOS Investigation - Deep Dive](/library/oos-investigation-deep-dive).
+- The Pro **Data Integrity Self-Check** toolkit pack supports periodic
+  self-assessment of these controls.
+
+> Practitioner tip: the fastest credibility win in an inspection is
+> producing a *signed, dated audit-trail review record* on demand. Many
+> sites "do" review but cannot prove it - and to a regulator,
+> undocumented is undone.
+
+> General educational content. Verify against current FDA Data Integrity
+> Q&A (2018), MHRA GxP Data Integrity Guidance (2018), PIC/S PI 041,
+> 21 CFR Part 11, EU Annex 11, your CDS vendor's audit-trail
+> documentation, and approved DI SOPs. This is not a substitute for QA
+> judgement or your validated quality system.

@@ -284,6 +284,18 @@ export function BlueprintReport({ project, onEdit }: Props) {
         </div>
       </header>
 
+      {input.facilityType !== "nonsterile-pharma" && (
+        <section aria-label="Domain Pack availability" className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-5 text-xs leading-6 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-300 print:text-slate-700" />
+            <div>
+              <p><strong className="text-slate-200 print:text-slate-950">Domain Pack availability.</strong> The detailed method architecture and method-level BOM layer currently covers the non-sterile pharmaceutical microbiology wedge. This {input.facilityType.replaceAll("-", " ")} blueprint still applied the portfolio-level workload, capacity, space and cost rules, but Atlas does not compile a product-to-method trace, method BOM or method-level equipment load for this facility type, so the method sections below are intentionally empty.</p>
+              <p className="mt-2">For method-level scoping in other domains, <Link href="/quality-lab/review?offer=diagnostic" className="font-bold text-amber-200 underline underline-offset-2 transition hover:text-amber-100 print:text-slate-950">request a Paid Scope Diagnostic</Link> and Atlas will confirm the domain evidence basis with an expert.</p>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section id="decision-brief" className="mb-5 scroll-mt-32 rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
         <div className="mb-6 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 print:border-slate-300 print:bg-white">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

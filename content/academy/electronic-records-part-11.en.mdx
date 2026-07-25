@@ -4,85 +4,291 @@ slug: "electronic-records-part-11"
 lang: "en"
 tier: "pro"
 category: "Data Integrity"
-seoDescription: "21 CFR Part 11 and EU GMP Annex 11 for electronic records and signatures — audit trails, access control, validation, and what makes an e-signature compliant."
-updatedAt: "2026-06-11"
+seoDescription: "21 CFR Part 11 and EU GMP Annex 11 in practice: clause-by-clause mapping, e-signature rules, hybrid systems, scoping assessments, and the audit-trail controls inspectors test."
+updatedAt: "2026-07-25"
 quiz:
-  - q: "A compliant audit trail must be:"
-    options: ["Editable by the analyst", "Secure, computer-generated, time-stamped, without overwriting prior entries", "Optional for QC systems", "Kept on paper"]
+  - q: "Under 21 CFR Part 11, a compliant audit trail must be:"
+    options: ["Editable by the analyst who created the record", "Secure, computer-generated, time-stamped, and retained without obscuring prior entries", "Optional for QC laboratory systems", "Printed and filed weekly"]
     answer: 1
-  - q: "Shared/generic logins are a problem because they break:"
-    options: ["Speed", "Attributability of actions to an individual", "Backups", "The user interface"]
+  - q: "A Part 11-compliant electronic signature on first signing requires:"
+    options: ["A scanned image of a handwritten signature", "Two distinct identification components such as user ID and password", "A notary", "A shared departmental account"]
     answer: 1
-  - q: "Annex 11's central theme for control depth is:"
-    options: ["Test everything equally", "Risk-based controls proportionate to GMP impact", "Vendor decides", "Paper preferred"]
+  - q: "A hybrid system (electronic records plus signed paper printouts) is acceptable only when:"
+    options: ["The paper is shredded after scanning", "The relationship between electronic and paper records is defined, and the record relied on for GxP decisions is identified and controlled", "The analyst promises not to edit files", "The printer is locked"]
+    answer: 1
+  - q: "Part 11 applies to a record when:"
+    options: ["Any computer is anywhere in the building", "The record is required by a predicate rule and is created, maintained, or relied upon in electronic form", "The vendor says the software is compliant", "The file is a PDF"]
     answer: 1
 ---
 
 # Electronic Records & Signatures (21 CFR Part 11 / Annex 11)
 
-When records and signatures move from paper to computer systems, two regulations
-define what "trustworthy" means: **FDA 21 CFR Part 11** (US) and **EU GMP Annex
-11** (EU). They are the technical backbone of data integrity.
+When GMP records and signatures moved from paper to computers, two regulations
+defined what "trustworthy" means: **FDA 21 CFR Part 11 (1997)** in the US and
+**EU GMP Annex 11 (2011)** in Europe. They are the technical backbone of data
+integrity - and they are high-stakes because almost every modern 483 or
+Warning Letter data-integrity observation (deleted sequences, shared logins,
+unreviewed audit trails, trial injections) is, at root, a Part 11 / Annex 11
+failure.
 
-## What Part 11 requires of electronic records
+This lesson covers how to scope which records are in, the clause-by-clause
+mapping between the two frameworks, what makes an electronic signature
+compliant, the reality of hybrid paper/electronic systems, and how to run a
+gap assessment that survives inspection.
 
-- **Validation** of the system for its intended use.
-- **Audit trails** — secure, computer-generated, time-stamped, recording who
-  did what and when, without overwriting prior entries.
-- **Access controls** — only authorized individuals; unique accounts (no shared
-  logins).
-- **Copies** — the ability to generate accurate, complete copies for inspection.
-- **Record retention** for the required period, retrievable throughout.
+> Practice it: use the
+> [Data Integrity Review workflow](/workflows/data-integrity-review) to turn
+> these requirements into a routine, documented review of audit trails, access
+> rights, and record completeness.
 
-## What makes an electronic signature compliant
+## The Golden Rule: Predicate Rules Come First
 
-- Uniquely attributable to one individual; never reused or reassigned.
-- Linked to its record so it can't be copied or transferred.
-- Shows the **signed meaning** (e.g. review, approval) plus the signer and
-  timestamp.
-- Two distinct components on first signing (e.g. user ID + password).
+Part 11 does not create record-keeping requirements. **Predicate rules** - the
+GxP regulations themselves (21 CFR Parts 210/211 for drugs, 58 for GLP, device
+QSR/QMSR, and so on) - define which records must exist. Part 11 then applies
+when those records are **created, modified, maintained, archived, retrieved,
+or transmitted in electronic form** and relied upon to perform regulated
+activities.
 
-## Annex 11 — the EU counterpart
+This gives you the scoping test:
 
-Annex 11 covers similar ground (risk management, validation, data, audit trails,
-e-signatures) and is read together with EU GMP Chapter 4. A key theme: **risk-
-based** controls proportionate to the system's GMP impact.
+1. Is the record required by a predicate rule (batch record, test result,
+   stability data, training record, complaint file)?
+2. Is it held or relied upon electronically - including as the source data
+   behind a printout?
 
-## Access-control matrix
+If both are yes, Part 11 controls apply to the electronic record. A common
+error is scoping by "is there a signature" - Part 11 Subpart B (electronic
+records) applies even where nobody signs electronically. FDA's 2003 guidance
+**Part 11, Electronic Records; Electronic Signatures - Scope and Application**
+narrowed enforcement to records required by predicate rules and confirmed
+enforcement discretion on some legacy aspects, but the core Subpart B
+expectations - validation, audit trails, access control, copies, retention -
+are enforced fully today, especially after the 2018 data-integrity Q&A
+guidance.
 
-Map roles to least-privilege permissions and review it periodically:
+## Part 11 vs Annex 11: Clause Mapping
+
+Annex 11 is shorter and principle-based; Part 11 is prescriptive about
+signatures. Both are read with their parent GMPs (Annex 11 with EU GMP Chapter
+4 on documentation). The practical mapping:
+
+| Control area | 21 CFR Part 11 | EU GMP Annex 11 (2011) |
+| --- | --- | --- |
+| Validation for intended use | 11.10(a) | Clause 4 (Validation) - risk-based, lifecycle |
+| Accurate and complete copies for inspection | 11.10(b) | Clause 8.2 (printouts/exports with metadata) |
+| Record protection, retention, retrievability | 11.10(c) | Clauses 7 (Storage), 16 (Business Continuity), 17 (Archiving) |
+| Limiting system access to authorized individuals | 11.10(d) | Clause 12 (Security) |
+| Secure, computer-generated, time-stamped audit trails | 11.10(e) | Clause 9 (Audit Trails) - with risk-based regular review |
+| Authority checks before action | 11.10(g) | Clause 12.4 (access rights management) |
+| Operational system checks / sequencing | 11.10(f) | Clause 5 (Data) and workflow design |
+| Training and qualification of users | 11.10(i) | Clause 3 (Suppliers and Service Providers), Chapter 2 (Personnel) |
+| Electronic signature manifestation and linkage | 11.50, 11.70 | Clause 14 (Electronic Signature) - same security/integrity expectation |
+| Signature components and controls (ID/password) | 11.100, 11.200, 11.300 | Clause 14 plus security expectations in Clause 12 |
+| Risk management as the sizing principle | FDA 2003 scope guidance | Clause 1 (Risk Management) - explicit |
+
+Two structural differences matter in practice:
+
+- **Annex 11 makes risk management the explicit sizing dial** (Clause 1):
+  controls must be proportionate to the GMP impact of the system and data.
+  Part 11 achieves the same outcome through FDA's scope guidance and
+  enforcement practice, but Annex 11 says it in the text.
+- **Part 11 is far more specific on signatures** (Subpart C): uniqueness,
+  two-component signing, linkage to the record. Annex 11 Clause 14 requires
+  equivalent security and integrity but leaves mechanism to you.
+
+Other frameworks say the same thing: **MHRA GxP Data Integrity Guidance
+(2018)**, **PIC/S PI 041 (Good Practices for Data Management and Integrity,
+2021)**, and **WHO guidance on data integrity (TRS 996 Annex 5, 2016)** all
+converge on ALCOA+ expectations for electronic records.
+
+## Subpart B in Practice: The Six Controls That Fail Inspections
+
+**1. Validation (11.10(a)).** The system must be validated for its intended
+use - accuracy, reliability, consistent intended performance. This is where
+Part 11 meets CSV: see the
+[Computer System Validation lesson](/library/computer-system-validation).
+"Vendor said it is Part 11 compliant" is not validation; no software is
+compliant in the abstract - only your configured, intended use of it.
+
+**2. Copies (11.10(b)).** You must produce accurate and complete copies -
+including metadata and audit trail context - in human-readable form for FDA
+inspection. If your CDS can only print a flattened PDF without audit trail,
+your copy provision is weak.
+
+**3. Record protection and retention (11.10(c)).** Records must be retrievable
+throughout their retention period - through software upgrades, server
+migrations, and vendor changes. Retention periods come from predicate rules
+(e.g. 21 CFR 211.180: batch records at least one year past expiry; longer for
+many record types - confirm against the applicable rule and your SOPs).
+
+**4. Access control (11.10(d), (g)).** Unique accounts, role-based least
+privilege, authority checks. Shared logins destroy attributability - the "A"
+in ALCOA - and are among the most cited observations.
+
+**5. Audit trails (11.10(e)).** Secure, computer-generated, time-stamped,
+recording operator entries and actions that create, modify, or delete records
+- without obscuring previously recorded information. The trail itself is a
+record: it must be retained with the record and **reviewed**. FDA's 2018
+data-integrity guidance expects audit trails that capture changes to critical
+data to be reviewed with each record and before batch release; MHRA expects
+risk-based regular review. An enabled-but-never-read audit trail is treated
+as no control at all.
+
+**6. Time and sequence (11.10(f)).** Operational checks enforce permitted
+sequencing (you cannot approve before review), and system time must be
+synchronized and protected from user edits - backdating is a classic
+falsification vector.
+
+## Access-Control Matrix
+
+Map roles to least-privilege permissions and review the matrix periodically
+(access review is itself an Annex 11 / PI 041 expectation):
 
 | Role | Acquire data | Reprocess | Modify method | Delete | Admin/config | Approve |
 | --- | --- | --- | --- | --- | --- | --- |
-| Analyst | ✔ | ✔ (logged) | ✘ | ✘ | ✘ | ✘ |
-| Reviewer / QA | view | ✘ | ✘ | ✘ | ✘ | ✔ |
-| Lab supervisor | ✔ | ✔ (logged) | ✔ (controlled) | ✘ | ✘ | ✘ |
-| System admin (IT) | ✘ | ✘ | ✘ | ✘ | ✔ | ✘ |
+| Analyst | Yes | Yes (logged, with reason) | No | No | No | No |
+| Lab supervisor | Yes | Yes (logged, second-person verified) | Yes (change-controlled) | No | No | No |
+| Reviewer / QA | View | No | No | No | No | Yes |
+| System admin (IT) | No | No | No | No | Yes | No |
 
-The cardinal rule: **no one who generates data should be able to delete it or
-disable its audit trail.** Admin rights belong to people without a stake in the
-result. Separate the "do the work" and "configure the system" duties.
+The cardinal rule: **no one who generates data should be able to delete it,
+overwrite it, or disable its audit trail.** Administration belongs to people
+without a stake in the results. Where a small site cannot fully segregate,
+compensating controls (enhanced audit trail review by QA, dual authorization)
+must be documented and risk-assessed.
 
-## Part 11 / Annex 11 gap-assessment checklist
+## What Makes an Electronic Signature Compliant
 
-- [ ] System validated for intended use; validation current after upgrades.
-- [ ] Audit trail on, secure, time-stamped, and **reviewed** (with records).
-- [ ] Unique user accounts; no shared logins; password/lockout policy enforced.
-- [ ] Role-based access follows least privilege; periodic access review done.
-- [ ] E-signatures meet the two-component + signed-meaning + linkage rules.
-- [ ] Accurate, complete copies producible for inspection (human-readable export).
-- [ ] Time source synchronized and controlled (no local clock edits).
-- [ ] Backup/restore validated; retention and retrievability assured.
-- [ ] Open/closed system controls appropriate (encryption for open systems).
+Part 11 Subpart C, in operational terms:
 
-## Open vs closed systems
+- **Unique to one individual** (11.100): never reused, reassigned, or shared.
+  A signature applied by "LabGroup1" fails.
+- **Verified identity before issuance** - the organization confirms the
+  signer's identity and certifies to FDA (a one-time agency certification per
+  11.100(c)) that e-signatures are legally equivalent to handwritten ones.
+- **Two components at first signing** (11.200(a)): e.g. user ID plus password
+  both applied during a single continuous session; subsequent signings in the
+  same session need at least one component. Biometrics follow 11.200(b).
+- **Linked to the record** (11.70): the signature cannot be excised, copied,
+  or transferred to falsify another record - technically enforced, not by
+  policy alone.
+- **Manifestation** (11.50): the signed record displays the signer's printed
+  name, date/time of signing, and the **meaning** (review, approval,
+  responsibility, authorship). A bare "Signed: yes" flag fails 11.50.
+- **Credential controls** (11.300): passwords aged, complexity enforced,
+  lockout after failed attempts, loss management, tokens/cards controlled.
 
-A **closed** system limits access to people responsible for the content (most
-on-prem GxP systems). An **open** system (data crosses parties who don't control
-access) adds requirements like encryption and additional signature controls —
-relevant for some cloud/exchange scenarios.
+## Hybrid Systems: Paper plus Electronic
 
-> Practitioner tip: Part 11 is not about having the most features — it's about
-> attributability and an audit trail you actually review. A simple system with
-> unique logins and a reviewed trail beats a feature-rich one run on a shared
-> "admin" account.
+The real world runs hybrid: a CDS holds the electronic chromatograms while a
+paper printout gets a wet-ink signature; a LIMS result is transcribed into a
+paper batch record. Hybrid is acceptable when you answer, in writing:
+
+1. **Which record is the GxP record relied upon for decisions?** FDA's 2018
+   data-integrity Q&A is explicit: where electronic and paper coexist, the
+   electronic record is generally the source - a signed printout of a
+   chromatogram is not the complete record, because dynamic data (integration
+   changes, reprocessing history, audit trail) lives electronically.
+2. **Is the relationship defined?** The paper must reference the electronic
+   record unambiguously (file paths, sequence IDs, versions) and vice versa.
+3. **Is transcription controlled?** Any manual transfer needs second-person
+   verification or validated interfacing; unverified transcription is a
+   perennial 483 theme.
+4. **Are both retained and synchronized?** Discrepancies between paper and
+   electronic versions are treated as potential falsification until resolved.
+
+The defensible long-term direction per regulators: minimize hybrid states,
+eliminate transcription, and make the electronic system the system of record
+with full Part 11 / Annex 11 controls.
+
+## Scoping Assessment: A Worked Method
+
+Run this inventory per system (spreadsheet register owned by QA, refreshed
+periodically):
+
+| Step | Question | Example outcome (fictional CDS) |
+| --- | --- | --- |
+| 1. Records inventory | Which predicate-rule records does this system create or hold? | Chromatograms, integration results, sequence audit trails, e-signed test reports |
+| 2. Electronic reliance | Do we rely on the electronic form for GxP decisions? | Yes - batch disposition uses CDS results |
+| 3. Part 11 applicability | Subpart B applies? E-signatures used (Subpart C)? | Both apply |
+| 4. Control mapping | Map each 11.10 / Annex 11 clause to existing controls | Audit trail present; copy function lacks audit trail export |
+| 5. Gap and risk scoring | Score each gap for data-integrity and patient impact | Copy gap = high (inspection exposure); missing time-sync control = high |
+| 6. Remediation plan | Actions, owners, dates, interim mitigations | Configure full export; lock clock to domain time; interim QA review of raw data |
+
+Document the conclusion even when the answer is "not applicable" - inspectors
+ask how you decided.
+
+## Common Failure Modes and What Inspectors Look For
+
+Recurring FDA 483 / Warning Letter and MHRA themes:
+
+1. **Shared or generic accounts** ("QC1", "HPLC_Admin") - attributability
+   destroyed. Defense: unique accounts, disabled shared credentials, access
+   review evidence.
+2. **Audit trail enabled but never reviewed** - or review SOP exists with no
+   completed records. Defense: risk-based review schedule tied to batch
+   release; the [Audit Trail Review Triage tool](/tools/audit-trail-review-triage)
+   structures it.
+3. **Users can delete or overwrite data** - recycle-bin level "protection" or
+   local folder storage. Defense: controlled network storage, no delete
+   rights, authority checks tested in validation.
+4. **Unreviewed electronic raw data behind signed paper** - trial injections,
+   aborted sequences, "test" runs invisible to reviewers. Defense: reviewers
+   examine the complete electronic sequence, not the printout.
+5. **System time under user control** - clock editable, enabling backdating.
+   Defense: centralized time sync, admin-only access, verified in IQ/OQ.
+6. **No accurate-and-complete copy capability** - exports strip metadata and
+   audit trails. Defense: test copy provision during validation; include in
+   supplier assessment.
+7. **E-signatures not linked or not manifested** - signature as a checkbox
+   with no meaning, name, or timestamp on the record. Defense: verify 11.50 /
+   11.70 behavior in UAT with falsification attempts.
+8. **Backup untested, archive unreadable** - restore never demonstrated;
+   legacy data orphaned. Defense: scheduled restore tests with records;
+   migration verification.
+9. **Spreadsheet shadow systems** - results recomputed in uncontrolled Excel.
+   Defense: inventory, validate or eliminate; see the
+   [Computer System Validation lesson](/library/computer-system-validation).
+10. **Vendor "Part 11 compliant" certificates filed as the assessment** -
+    no evaluation of your configuration and use. Defense: documented
+    scoping and gap assessment per system, owned by QA.
+
+## Worked Example: Hybrid CDS Assessment (Fictional but Realistic)
+
+A QC lab runs HPLC assays on a networked CDS. Analysts print chromatograms,
+sign the paper, and file it in the batch record; the electronic data sits on
+the CDS server. The scoping assessment finds: predicate-rule records (assay
+results) are relied upon electronically (results are transcribed from CDS to
+LIMS); therefore Subpart B applies. Gaps found: (1) reviewers sign paper
+without opening the electronic sequence - aborted runs invisible; (2) two
+shared accounts exist for "night shift"; (3) the CDS export omits the audit
+trail. Remediation: unique accounts within two weeks; review procedure changed
+so second-person review covers the full electronic sequence including audit
+trail, documented per batch; transcription replaced by a validated interface;
+copy/export configuration corrected and verified in a change-controlled
+update. The paper printout is redefined as a convenience copy - the electronic
+record is the GxP record. Total effort: six weeks, mostly procedural - the
+typical shape of Part 11 remediation.
+
+## Take It Further
+
+- [Data Integrity Deep Dive](/library/data-integrity-deep-dive) - ALCOA+
+  applied record by record.
+- [Computer System Validation (GAMP 5)](/library/computer-system-validation) -
+  validating the systems that hold these records.
+- [Good Documentation Practice](/library/good-documentation-practice) - the
+  paper-side disciplines that hybrid systems still need.
+- [OOS Investigation Deep Dive](/library/oos-investigation-deep-dive) - where
+  audit trail review becomes decisive evidence.
+- [Data Integrity Review workflow](/workflows/data-integrity-review) and the
+  [Audit Trail Review Triage tool](/tools/audit-trail-review-triage) for
+  routine execution.
+- The **Data Integrity Self-Check** Pro toolkit pack turns this lesson into a
+  clause-by-clause self-assessment for your systems.
+
+> *General educational content. Part 11, Annex 11, MHRA and PIC/S data-
+> integrity guidance are living frameworks - verify against current editions,
+> FDA scope guidance, your predicate rules, and approved site procedures before
+> making compliance or batch-disposition decisions. Nothing here substitutes
+> for QA judgement or legal/regulatory advice.*

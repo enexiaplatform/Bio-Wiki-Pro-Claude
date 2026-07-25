@@ -4,83 +4,271 @@ slug: "technology-transfer"
 lang: "en"
 tier: "pro"
 category: "Quality Systems"
-seoDescription: "Pharmaceutical process technology transfer per ICH Q10 / WHO TRS 961 — the sending/receiving unit model, the transfer protocol, and proving comparability."
-updatedAt: "2026-06-11"
+seoDescription: "Pharmaceutical process technology transfer per ICH Q10 and WHO TRS 961: sending/receiving unit model, gap assessment, transfer protocol, comparability criteria, and the PPQ linkage."
+updatedAt: "2026-07-25"
 quiz:
   - q: "The Sending Unit (SU) in a technology transfer:"
-    options: ["Runs the commercial batches", "Owns and transfers the process knowledge and control strategy", "Approves the marketing", "Audits the regulator"]
+    options: ["Runs the commercial batches at the new site", "Owns and transfers the process knowledge and control strategy", "Approves the marketing authorization", "Audits the regulator"]
     answer: 1
   - q: "Transfer acceptance criteria and batch numbers should be agreed:"
-    options: ["After the batches are made", "Before execution, in a formal protocol", "By the supplier", "Only if a gap appears"]
+    options: ["After the batches are made", "Before execution, in a formal transfer protocol approved by both parties", "By the equipment supplier", "Only if a gap appears"]
     answer: 1
-  - q: "Technology transfer most often fails because of:"
-    options: ["Too many documents", "Untransferred tacit know-how", "Excess batches", "Strong protocols"]
+  - q: "A gap assessment in technology transfer compares:"
+    options: ["Only the two companies' logos", "Equipment, scale, utilities, materials, methods, and people between SU and RU to identify variables needing control", "The two QA heads' preferences", "Nothing - it is optional"]
+    answer: 1
+  - q: "Transfer qualification batches normally feed into:"
+    options: ["The bin", "Stage 2 Process Performance Qualification (PPQ) at the receiving site", "A marketing brochure", "The waste stream"]
     answer: 1
 ---
 
 # Technology Transfer (Process)
 
-Technology transfer moves a product and its process from development to
-manufacturing, or between manufacturing sites, with the knowledge needed to
-reproduce it reliably. ICH Q10 treats it as a core element of the pharmaceutical
-quality system; WHO TRS 961 Annex 7 gives a practical framework.
+Technology transfer moves a product and its manufacturing process - together
+with the knowledge needed to reproduce it reliably - from development to
+commercial manufacturing, or from one manufacturing site to another. It is
+high-stakes because it sits at the exact point where the industry's two most
+common failure patterns meet: knowledge that was never written down, and
+processes that were never as robust as their documentation claimed. A failed
+transfer surfaces months later as OOS trends, yield erosion, or a PPQ that
+cannot pass.
 
-## Sending and receiving units
+The governing framework:
 
-- **Sending Unit (SU)** — owns the process knowledge: development reports,
-  validated methods, specifications, and the control strategy.
-- **Receiving Unit (RU)** — must demonstrate it can run the process within the
-  defined parameters and consistently meet quality attributes.
+- **ICH Q10 (Pharmaceutical Quality System, 2008)** - names technology
+  transfer as one of the four lifecycle elements of the PQS, spanning
+  development-to-manufacturing and site-to-site transfers.
+- **WHO TRS 961, Annex 7 (Guidelines on transfer of technology in
+  pharmaceutical manufacturing, 2011)** - the most operational public
+  framework: SU/RU model, transfer protocol contents, documentation packages.
+- **FDA Process Validation guidance (2011)** - transfer batches link directly
+  into Stage 2 Process Performance Qualification at the receiving site.
+- **EU GMP Chapter 4 and Annex 15** - documentation and qualification
+  expectations at the receiving site.
+- **ISPE Good Practice Guide: Technology Transfer** - detailed industry
+  practice for governance and knowledge packages.
+- For the analytical half: **USP &lt;1224&gt; Transfer of Analytical
+  Procedures** and **FDA/EU method-transfer expectations** - see the
+  [Analytical Method Transfer lesson](/library/analytical-method-transfer).
 
-Transfer is a knowledge-management exercise as much as a documentation one — tacit
-know-how is where transfers most often fail.
+> Practice it: run the process-side work through the
+> [Process Validation workflow](/workflows/process-validation) - transfer
+> qualification and PPQ are the same lifecycle seen from two sides.
 
-## The transfer protocol
+## The Sending Unit / Receiving Unit Model
 
-A formal protocol defines scope, responsibilities, the parameters and attributes
-to be compared, acceptance criteria, and the number of qualification/verification
-batches — agreed by both parties **before** execution.
+WHO TRS 961 Annex 7 frames every transfer as two parties with distinct
+accountabilities:
 
-## Proving comparability
+| | Sending Unit (SU) | Receiving Unit (RU) |
+| --- | --- | --- |
+| Owns | Process and product knowledge: development reports, CQAs, CPPs, control strategy, validated methods, specifications, historical data | Facility, equipment, utilities, local operations, and the demonstration that the process runs correctly there |
+| Must provide | Complete knowledge package, training, on-site support, honest statement of known weaknesses | Gap assessment, qualified equipment and methods, trained staff, transfer protocol execution, comparability data |
+| Success looks like | The RU can reproduce the process without the SU in the room | Predefined acceptance criteria met on qualification batches, feeding PPQ and routine manufacture |
 
-The RU demonstrates equivalence through process performance and product quality
-data against pre-defined criteria, feeding into process validation at the new
-site. Gaps trigger investigation, not a quiet adjustment of limits.
+Both parties need a named **transfer team** with a project manager, technical
+leads (process, analytical, engineering), QA from both sides, and regulatory
+affairs. Transfers fail organizationally before they fail technically: unclear
+decision rights between SU and RU QA is the classic one.
 
-## Transfer-readiness checklist
+## The Knowledge Package: What Actually Moves
 
-- [ ] Development/process knowledge package compiled (CQAs, CPPs, control strategy,
-      DoE/robustness data).
-- [ ] Validated analytical methods + reference standards available to the RU.
-- [ ] RU facility, equipment, and utilities qualified for the process.
-- [ ] Equipment differences (scale, geometry, mixing) assessed for impact.
-- [ ] Materials/suppliers aligned; any substitution risk-assessed.
-- [ ] Transfer protocol approved by both SU and RU with criteria and batch count.
-- [ ] Training and "person-to-person" knowledge transfer planned (tacit know-how).
-- [ ] Regulatory strategy clear (post-approval change category, variations).
+The SU's documentation package should include, at minimum:
 
-## Gap-analysis dimensions
+- development and process-characterization reports (DoE, robustness, PAR
+  studies where they exist);
+- the **control strategy**: CQAs with specifications and rationale, CPPs with
+  proven acceptable ranges, in-process controls;
+- master batch record and process description at SU scale, with critical
+  hold times;
+- validated analytical methods, reference standards, and method-transfer
+  history;
+- raw-material specifications and approved supplier list, with any
+  material-attribute sensitivities;
+- equipment train description with critical design parameters (geometry,
+  working volumes, shear, heating/cooling rates);
+- process validation history, APR/PQR trend data, complaint and deviation
+  themes;
+- regulatory commitments: the registered process description and any filed
+  ranges the RU must stay inside.
 
-Compare SU vs RU across: equipment train, scale and hold times, utilities and
-environment, analytical capability, operator skill, and material sources. Each
-difference is a potential variable — document it, assess impact, and either
-control it or include it in the qualification batches' scope.
+The last item quietly constrains everything: the RU does not have freedom to
+"improve" the process outside registered parameters without a variation. That
+is a regulatory question, not an engineering one.
 
-## Transfer the methods too
+## Gap Assessment: Finding the Variables Before They Find You
 
-A process transfer that forgets the **analytical method transfer** stalls at the
-RU's QC lab. Coordinate both: comparative testing (RU vs SU on the same samples),
-co-validation, or full re-validation depending on risk. The RU can't release
-batches it can't reliably test.
+The gap assessment is a structured SU-vs-RU comparison; every difference is a
+potential variable that must be controlled, justified, or included in the
+qualification scope. Standard dimensions:
 
-## Proving comparability
+| Dimension | Typical gaps | Control approach |
+| --- | --- | --- |
+| Equipment train and scale | Different granulator geometry, blender fill ratio, tablet press speed, heat-transfer area | Engineering comparability assessment; scale-up/down models; include in qualification batches |
+| Utilities and environment | Water quality, HVAC class, compressed air, steam quality | Qualification evidence at RU; impact assessment vs process needs |
+| Raw materials and suppliers | Same material, different supplier or grade; different excipient lots | Risk assessment; comparative testing; supplier qualification at RU |
+| Analytical capability | Method never run at RU; different instruments, columns, software | Formal analytical method transfer per USP &lt;1224&gt; |
+| People and tacit knowledge | SU operators know the "feel" of the process; RU does not | Person-to-person transfer: SU staff at RU for first batches, RU staff at SU beforehand |
+| Procedures and documentation | SU tribal knowledge not in any SOP | Document gaps found during on-site observation before protocol freeze |
+| Regulatory status | Filed parameters, site-specific commitments, market registrations | Regulatory strategy agreed before execution; variations filed where needed |
 
-Define equivalence criteria *before* running batches — typically process
-performance (yield, in-process parameters) and product quality attributes against
-the SU's established ranges, using statistical comparison where appropriate. A
-result outside criteria triggers investigation; you never quietly widen a limit to
-make the transfer "pass."
+Score each gap for impact on CQAs (a Q9-style risk assessment works well) and
+record the disposition: **close before transfer, control during transfer, or
+accept with justification**. "No gaps found" on a complex transfer is a red
+flag, not good news.
 
-> Practitioner tip: budget time for tacit knowledge. The development scientist who
-> knows the slurry "looks wrong at this viscosity" carries information no SOP
-> captures — send people, not just paper.
+## The Transfer Protocol
+
+The formal protocol - approved by both SU and RU **before execution** -
+defines:
+
+- scope (products, strengths, equipment trains, methods);
+- responsibilities and decision/escalation paths, including joint QA
+  disposition of deviations;
+- the parameters and quality attributes to be compared, with **predefined
+  acceptance criteria**;
+- number and type of batches: engineering/demonstration batches (not for
+  release) vs qualification batches (potentially releasable, feeding PPQ);
+- sampling plans, test methods (post-transfer), and statistical comparison
+  approach where applicable;
+- deviation handling, success/failure decision rules, and the report
+  structure;
+- training plan and knowledge-transfer verification (how you will know the
+  tacit knowledge moved).
+
+Writing acceptance criteria after seeing the data is the single most
+cited transfer-integrity failure. Criteria come from the control strategy and
+SU historical performance - not from what the first RU batch happened to
+deliver.
+
+## Comparability and Acceptance Criteria
+
+Comparability is demonstrated, not asserted. Typical evidence:
+
+- **Process performance**: CPPs within proven acceptable ranges; yields,
+  cycle times, and in-process results vs SU historical distributions.
+- **Product quality**: CQAs (assay, content uniformity, dissolution,
+  degradation products, physical attributes) meeting specification and
+  statistically consistent with SU data where a comparison is pre-specified.
+- **Analytical comparability**: the RU's QC lab must demonstrate it can run
+  the methods - comparative testing on shared samples, co-validation, or
+  re-validation per risk, per USP &lt;1224&gt; logic. A process transfer that
+  forgets method transfer stalls at the RU's QC bench: you cannot release
+  what you cannot reliably test.
+
+Where statistics are used (equivalence tests, tolerance intervals, trend
+comparison), pre-specify the method and criteria in the protocol. A result
+outside criteria triggers **investigation**, never a quiet widening of
+limits. If the RU genuinely cannot match SU performance, that is information
+about the process's robustness - escalate it into the control strategy
+discussion instead of forcing a pass.
+
+## Linkage to PPQ and the Validation Lifecycle
+
+Under FDA's 2011 process validation model, transfer qualification batches at
+the RU typically constitute or feed directly into **Stage 2 Process
+Performance Qualification** - see the
+[Process Validation Stages lesson](/library/process-validation-stages).
+Practical implications:
+
+- Design transfer batches to PPQ standards from the start: enhanced sampling,
+  defined CPP monitoring, releasability criteria.
+- The transfer report and the PPQ report can be one document or linked
+  documents - but the comparability conclusion must be explicit either way.
+- After successful PPQ, the RU enters Stage 3 continued process verification
+  with its own trending baseline; early RU batches deserve heightened
+  attention in CPV because the transfer is precisely when latent differences
+  surface.
+- Changes introduced during transfer (equipment, scale, supplier) must be
+  traceable through change control into the validation rationale.
+
+## Regulatory Strategy
+
+Site and process changes are post-approval changes in most markets. Align
+early with regulatory affairs on:
+
+- filing category per market (e.g. US PAS/CBE/annual-report logic, EU
+  variation classification) for the site addition or process change;
+- whether transfer batches can be commercially released in each market and
+  when;
+- stability commitments: transferred-product batches typically enter the
+  stability program; significant process/site changes usually trigger
+  commitment batches - see the
+  [Ongoing Stability Program lesson](/library/ongoing-stability-program).
+
+Discovering the filing requirement after the batches are made is an expensive
+way to learn this section.
+
+## Worked Example: Tablet Process to a Second Site (Fictional but Realistic)
+
+An immediate-release tablet transfers from Site A (pilot-commercial) to Site
+B (high-volume). The gap assessment finds: Site B's high-shear granulator has
+different bowl geometry and tip speed; Site B uses a different magnesium
+stearate supplier; Site B's QC has never run the dissolution method. Risk
+assessment rates granulation endpoint and lubrication as high risk. Actions:
+granulation endpoint transferred with a quantitative marker (power
+consumption plus granule size distribution) rather than time; comparative
+lubricant testing on SU lots precedes the transfer; the dissolution method is
+transferred by comparative testing on three shared lots (analyst-to-analyst
+and site-to-site agreement within pre-set limits). The protocol defines two
+engineering batches and three qualification batches at commercial scale, with
+acceptance criteria on blend uniformity, tablet hardness range, dissolution
+profile similarity vs Site A historical data, and assay/degradants vs
+specification. One qualification batch shows borderline dissolution at the
+45-minute point; investigation traces it to over-lubrication from a longer
+blending time, the lubrication step is re-specified, and a replacement batch
+meets criteria - the deviation and resolution are documented in the transfer
+report, which then supports the PPQ conclusion. Site B enters CPV with weekly
+dissolution trending for the first three months.
+
+## Common Failure Modes and What Inspectors Look For
+
+1. **Tacit knowledge never transferred** - the process works only when the
+   SU's senior operator is watching. Defense: person-to-person exchange, and
+   verification that RU staff execute unaided on qualification batches.
+2. **Acceptance criteria written or relaxed after seeing data.** Defense:
+   protocol approved by both QAs before execution; changes only via
+   deviation/change control with rationale.
+3. **Gap assessment as a formality** - "no gaps" claimed despite different
+   equipment and suppliers. Defense: structured dimensions, documented
+   dispositions, QA challenge.
+4. **Method transfer forgotten or done after process batches.** Defense:
+   analytical transfer on the critical path with USP &lt;1224&gt;-aligned
+   criteria; QC readiness as a protocol prerequisite.
+5. **Engineering batches silently released** - demonstration material shipped
+   without qualification status. Defense: batch disposition rules in the
+   protocol; QA control of release status.
+6. **Registered parameters breached** - RU "optimized" outside the filing.
+   Defense: regulatory review of the transfer plan; variations filed first.
+7. **No stability commitment for transferred product.** Defense: stability
+   protocol linkage in the transfer plan.
+8. **SU historical data never used** - comparability asserted without
+   baseline. Defense: SU trend data extracted into the protocol as the
+   comparison reference.
+9. **Deviations resolved by SU and RU arguing** - no joint disposition
+   authority. Defense: escalation and decision rules in the protocol.
+10. **Transfer report without conclusions** - data dump with no comparability
+    statement. Defense: report template requiring explicit criteria-vs-data
+    disposition and PPQ linkage.
+
+## Take It Further
+
+- [Process Validation Stages](/library/process-validation-stages) - where
+  transfer batches land in the validation lifecycle.
+- [Analytical Method Transfer](/library/analytical-method-transfer) and
+  [Analytical Method Validation](/library/analytical-method-validation) - the
+  analytical half of the transfer.
+- [Pharmaceutical Quality System (ICH Q10)](/library/pharmaceutical-quality-system-q10) -
+  the framework that owns transfer.
+- [Change Control](/library/change-control) and the
+  [Change Control workflow](/workflows/change-control-workflow), plus the
+  [Change Control Impact Triage tool](/tools/change-control-impact-triage) -
+  every transfer is, formally, a controlled change.
+- [Ongoing Stability Program](/library/ongoing-stability-program) - stability
+  commitments for transferred product.
+
+> *General educational content. Verify transfer scope, batch disposition,
+> comparability criteria, and filing strategy against current ICH Q10, WHO TRS
+> 961 Annex 7, FDA process validation guidance, EU GMP Annex 15, USP
+> &lt;1224&gt;, your registrations, quality agreements, and approved site
+> procedures. Nothing here substitutes for QA and regulatory-affairs
+> judgement.*

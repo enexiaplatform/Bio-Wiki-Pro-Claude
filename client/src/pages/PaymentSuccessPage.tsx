@@ -19,8 +19,10 @@ export default function PaymentSuccessPage() {
   const isDiagnostic = productType === "scope_diagnostic";
   const isCareerBlueprint = productType === "career_blueprint";
   const isKit = productType !== "unknown" && !productType.startsWith("pro_subscription") && !isDiagnostic && !isCareerBlueprint;
-  const destination = isDiagnostic ? "/quality-lab/review?offer=diagnostic" : isCareerBlueprint ? "/career/blueprint" : isKit ? "/my-downloads" : "/academy";
-  const destinationLabel = isDiagnostic ? "Complete Diagnostic intake" : isCareerBlueprint ? "Open my 13-week workspace" : isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
+  // ?purchase=success lets the workspace keep polling entitlement while a slow
+  // Stripe webhook is still granting the purchase (see CareerBlueprintWorkspacePage).
+  const destination = isDiagnostic ? "/quality-lab/review?offer=diagnostic" : isCareerBlueprint ? "/career/blueprint?purchase=success" : isKit ? "/my-downloads" : "/academy";
+  const destinationLabel = isDiagnostic ? "View my reserved Diagnostic" : isCareerBlueprint ? "Open my 13-week workspace" : isKit ? "Go to my downloads" : t("paymentSuccess.goNow");
 
   useSEO({
     title: "Payment successful",
@@ -43,7 +45,7 @@ export default function PaymentSuccessPage() {
 
   const nextSteps = isDiagnostic
     ? [
-        "Complete the Diagnostic intake with your decision and available evidence.",
+        "Your intake brief and payment are confirmed — no resubmission is needed.",
         "Atlas confirms fit and schedules one 60-minute stakeholder workshop.",
         "Receive the written scope and decision memo within two business days after the workshop.",
       ]
@@ -105,7 +107,7 @@ export default function PaymentSuccessPage() {
         </div>
 
         <p className="mt-5 text-sm text-muted-foreground">
-          {isDiagnostic ? `Opening the Diagnostic intake in ${countdown} seconds.` : t("paymentSuccess.redirecting", { count: countdown })}
+          {isDiagnostic ? `Opening your Diagnostic summary in ${countdown} seconds.` : t("paymentSuccess.redirecting", { count: countdown })}
         </p>
 
         {sessionId && (

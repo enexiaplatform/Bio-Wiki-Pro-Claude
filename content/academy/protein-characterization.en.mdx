@@ -4,8 +4,8 @@ slug: "protein-characterization"
 lang: "en"
 tier: "free"
 category: "Biologics QC"
-seoDescription: "Core protein characterization for biologics QC — peptide mapping, intact/reduced mass, CE-SDS for size/purity, and icIEF/CEX for charge variants, used as orthogonal identity."
-updatedAt: "2026-06-11"
+seoDescription: "Protein characterization under ICH Q6B: peptide mapping, intact and reduced mass, CE-SDS, icIEF/CEX charge variants, higher-order structure, and the orthogonal identity panel."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Peptide mapping primarily confirms:"
     options: ["Aggregate level", "The amino-acid sequence / primary structure", "The fill volume", "Endotoxin"]
@@ -13,62 +13,140 @@ quiz:
   - q: "CE-SDS is used to assess:"
     options: ["Charge variants", "Size-based purity (fragments, heavy/light chains)", "Glycan identity", "pH"]
     answer: 1
-  - q: "icIEF and cation-exchange (CEX) separate:"
-    options: ["By size", "Charge variants (acidic/main/basic species)", "By color", "By weight only"]
+  - q: "Which ICH guideline defines specifications and characterization expectations for biotechnological products?"
+    options: ["ICH Q1A", "ICH Q6B", "ICH Q3A", "ICH M7"]
+    answer: 1
+  - q: "Identity of a protein therapeutic is concluded from:"
+    options: ["The single most sensitive test", "A combination of orthogonal methods", "The newest instrument", "A visual check"]
     answer: 1
 ---
 
 # Protein Characterization Methods
 
-No single test defines a large protein, so biologics QC uses a panel of
-**orthogonal** methods — each looking at a different attribute. Together they form
-the identity and purity story for a monoclonal antibody or recombinant protein.
+No single test defines a large protein. ICH Q6B (Specifications: Test
+Procedures and Acceptance Criteria for Biotechnological/Biological Products)
+therefore expects characterization by a panel of **orthogonal** methods, each
+sensitive to a different attribute, so that a change invisible to one method is
+caught by another. Characterization feeds three places: the identity section
+of the release specification, comparability assessments after process changes
+(ICH Q5E), and investigations when a routine result looks wrong.
 
-## Peptide mapping (primary structure)
+## The attribute-method map
 
-The protein is enzymatically digested (e.g. trypsin) and the peptides separated by
-LC, usually with MS detection. The resulting **map** is a fingerprint that
-confirms the amino-acid **sequence** and can localize modifications (oxidation,
-deamidation, clipping). It's the most definitive identity method and a key
-comparability tool.
+| Attribute | Question | Core methods |
+| --- | --- | --- |
+| Primary structure | Is the sequence right, and where are modifications? | Peptide mapping (LC-MS/MS), intact and reduced mass, N- and C-terminal analysis |
+| Higher-order structure | Is it folded correctly? | Circular dichroism (far-/near-UV CD), DSC, FTIR, fluorescence |
+| Charge heterogeneity | What is the acidic/main/basic species profile? | icIEF, cation-exchange HPLC (CEX), capillary zone electrophoresis |
+| Size heterogeneity | Fragments and aggregates at what levels? | CE-SDS (reduced and non-reduced), SEC with UV or MALS detection |
+| Glycosylation | What glycoforms are present, at which sites? | Released-glycan analysis (HILIC-FLD/MS), site occupancy by peptide map, monosaccharide/sialic acid assays |
+| Process-related impurities | What did the process leave behind? | Host-cell protein ELISA, residual DNA, residual Protein A |
 
-## Intact and reduced mass
+## Primary structure: sequence and modifications
 
-**Intact mass** (by high-resolution MS) confirms the overall molecular weight and
-reveals major glycoforms. **Reduced mass** breaks disulfides to weigh heavy and
-light chains separately — useful for confirming chain identity and modifications.
+**Peptide mapping** is the definitive identity method. The protein is digested
+with a specific protease (trypsin is the classic choice) and the resulting
+peptides separated by LC with UV or, far more powerfully, MS detection. The
+map is a fingerprint: every expected peptide at its expected mass confirms the
+sequence, and new or shifted peaks localize modifications - oxidation,
+deamidation, clipping, glycosylation occupancy. For comparability, the peptide
+map is usually the first method asked to show "same molecule."
 
-## CE-SDS (size/purity)
+**Intact mass** by high-resolution MS confirms the overall molecular weight and
+reveals the major glycoform pattern of an antibody in one measurement.
+**Reduced mass** breaks the disulfide bonds to weigh heavy and light chains
+separately, confirming chain identity and chain-specific modifications.
+Together they are fast, information-dense release-supporting characterization.
 
-Capillary electrophoresis–SDS is the modern replacement for SDS-PAGE: it sizes the
-molecule and quantifies **size-based purity** — main peak vs fragments
-(clips, free light chain) and, non-reduced, vs aggregates/incomplete species.
+## Higher-order structure: folded or not
 
-## Charge-variant analysis (icIEF / CEX)
+Sequence and mass do not prove folding. Higher-order methods are comparative
+rather than absolute: the test article's spectrum or thermogram is compared
+against the reference.
 
-Imaged capillary isoelectric focusing (**icIEF**) or **cation-exchange** HPLC
-separates **charge variants** into acidic, main, and basic species. Deamidation,
-sialylation, and C-terminal lysine all shift charge — so the charge profile is a
-sensitive, routinely monitored CQA.
+- **Far-UV circular dichroism** reports secondary structure (alpha-helix,
+  beta-sheet content); **near-UV CD** reports tertiary environment of aromatic
+  side chains.
+- **Differential scanning calorimetry (DSC)** measures thermal unfolding;
+  domain-specific melting transitions are a sensitive fingerprint of
+  conformational integrity and formulation effects.
+- **FTIR and intrinsic fluorescence** provide complementary structure windows
+  at low cost.
 
-## How they work together
+These methods rarely appear on release specifications, but they are workhorses
+in comparability and forced-degradation interpretation.
 
-| Attribute | Method |
-| --- | --- |
-| Sequence / modifications | Peptide mapping (LC-MS) |
-| Molecular weight / glycoforms | Intact & reduced mass |
-| Size purity (fragments, aggregates) | CE-SDS (reduced & non-reduced) |
-| Charge heterogeneity | icIEF / CEX |
+## Charge variants: icIEF and CEX
 
-Identity is concluded from the *combination* — e.g. peptide map + charge profile +
-a binding assay — not any one result.
+Deamidation, sialylation, glycation, and C-terminal lysine all shift net
+charge, so the charge profile is one of the most sensitive routinely monitored
+CQAs. **Imaged capillary isoelectric focusing (icIEF)** separates species by
+isoelectric point; **cation-exchange HPLC (CEX)** separates by surface charge
+interaction. Both resolve the profile into acidic, main, and basic species,
+reported as percent of total. A growing acidic-species trend is an early
+warning light for degradation or process drift.
 
-## Why it matters
+## Size variants: CE-SDS and SEC
 
-These methods are the daily language of biologics QC and the backbone of every
-comparability study. Fluency in what each method sees (and misses) is exactly the
-skill that distinguishes a biologics analyst.
+**CE-SDS** is the modern replacement for SDS-PAGE: quantitative, automatable,
+and run in two modes. Reduced CE-SDS quantifies heavy chain, light chain, and
+fragments; non-reduced CE-SDS quantifies intact monomer versus clips and
+incomplete species. **Size-exclusion chromatography (SEC)** quantifies soluble
+aggregates under native conditions; coupling SEC to multi-angle light
+scattering (MALS) confirms what the peaks actually are rather than trusting
+elution time. Aggregates matter beyond purity numbers because of their
+immunogenicity concern, which is why aggregate levels are among the most
+scrutinized CQAs in a biologics dossier.
 
-> Tip: when a process change is proposed, the characterization panel — not the
-> release spec alone — is what proves the product is still "the same." Know which
-> method would first reveal the change you're worried about.
+## Release spec versus characterization panel
+
+A key Q6B concept: the release specification contains a subset of methods
+chosen for routine control (identity by one or two orthogonal tests, purity,
+potency, quantity, safety), while the **full characterization panel** is run at
+development, at comparability, and periodically. When a process change is
+proposed, it is the characterization panel - not the release spec alone -
+that answers "is it still the same product?" The release spec may be blind to
+the exact attribute the change touches.
+
+## Glycosylation: the CQA with its own language
+
+For most recombinant glycoproteins, glycosylation is both a potency-relevant
+and consistency-relevant attribute: specific glycan features (for example
+afucosylation or galactosylation on an IgG Fc) directly modulate effector
+function. Characterization works at three levels: released-glycan profiling
+(enzymatic release, fluorescent labeling, HILIC separation with MS support)
+for the total glycan population; glycopeptide analysis by LC-MS for
+site-specific occupancy; and intact or subunit mass for a rapid glycoform
+fingerprint. Routine control usually picks the level where the critical
+feature is visible and the method is robust enough for a QC lab.
+
+## Common findings and mistakes
+
+- Identity claimed from a single method; regulators expect orthogonality.
+- Peptide map run without MS, so modifications cannot be localized or
+  confirmed.
+- SEC aggregate results reported without confirming peak identity (a column
+  artifact and an aggregate can co-elute or be misassigned).
+- Charge methods swapped (icIEF to CEX or back) without bridging data, then
+  trends misread.
+- Characterization methods unvalidated or unqualified where they are used to
+  support comparability claims.
+- Reference material not characterized with the same panel, so "shift vs
+  reference" is uninterpretable.
+- Forced-degradation samples analyzed with methods that were never shown to
+  resolve the degradation products.
+
+## Take it further
+
+- [Biologics QC - What Makes It Different](/library/biologics-qc-overview)
+- [Cell-Based Potency Assays (Bioassays)](/library/cell-based-potency-assays)
+- [Analytical Method Validation - ICH Q2](/library/analytical-method-validation)
+- Atlas Pro deep dives: **Aggregation Analysis & SEC-MALS** for size-variant
+  science, **Glycosylation Analysis** for glycan CQAs, and **Host-Cell Protein
+  Testing** for the process-impurity side of the panel.
+
+> Educational content only. ICH Q6B/Q5E expectations and method choices cited
+> here reflect the referenced guidelines; product-specific panels and
+> acceptance criteria are set in the marketing authorization and validated
+> methods. Verify against current compendia and the registered control strategy
+> before using characterization data for release or comparability decisions.

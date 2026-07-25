@@ -4,78 +4,321 @@ slug: "computer-system-validation"
 lang: "en"
 tier: "pro"
 category: "Validation"
-seoDescription: "Risk-based CSV with GAMP 5 — software categories, the V-model, and how data integrity (ALCOA+) drives validation scope for GxP systems."
-updatedAt: "2026-06-11"
+seoDescription: "Computer system validation for GxP: GAMP 5 Second Edition categories, the validation plan-to-report lifecycle, risk-based test depth, CSA versus CSV, and SaaS supplier oversight."
+updatedAt: "2026-07-25"
 quiz:
-  - q: "A configured LIMS falls into which GAMP category?"
-    options: ["Category 1", "Category 3", "Category 4", "Category 5"]
+  - q: "A configured commercial LIMS with site-specific workflows falls into which GAMP 5 category?"
+    options: ["Category 1 - infrastructure", "Category 3 - non-configured product", "Category 4 - configured product", "Category 5 - custom application"]
     answer: 2
-  - q: "In the V-model, User Requirements (URS) are verified by:"
-    options: ["Installation Qualification", "User Acceptance Testing / PQ", "Code review", "Supplier audit"]
+  - q: "Under GAMP 5 Second Edition, the depth of testing for a system function should be driven by:"
+    options: ["The number of test cases the template contains", "A documented risk assessment of patient safety, product quality, and data integrity impact", "The supplier's recommendation", "Testing everything equally"]
+    answer: 1
+  - q: "FDA's 2022 draft CSA guidance differs from traditional CSV mainly by:"
+    options: ["Eliminating all documentation", "Emphasizing critical thinking and right-sized assurance activities over exhaustive scripted testing", "Applying only to spreadsheets", "Removing the need for supplier assessment"]
     answer: 1
   - q: "For a SaaS GxP system, the regulated company remains accountable for:"
-    options: ["Nothing — the vendor owns it", "Validation for intended use, data integrity, and supplier oversight", "Only the password", "Only the invoice"]
+    options: ["Nothing - the vendor owns the system", "Validation for intended use, data integrity, and ongoing supplier oversight", "Only the password policy", "Only paying the invoice"]
     answer: 1
 ---
 
 # Computer System Validation (GAMP 5)
 
-Computer System Validation (CSV) provides documented evidence that a GxP
-computerized system does what it is supposed to do, consistently and reliably.
-GAMP 5 (Second Edition) frames this as a **risk- and science-based** activity,
-not a paperwork exercise.
+Computer System Validation (CSV) is the documented evidence that a GxP
+computerized system does what it purports to do, consistently and reliably, for
+its intended use. It is high-stakes work because almost every GMP decision -
+batch release, stability trending, OOS disposition, environmental monitoring
+excursions - now runs through a computerized system, and an unvalidated or
+poorly controlled system silently corrupts the data those decisions rest on.
 
-## GAMP software categories
+The governing framework today is a stack of references, not one document:
 
-- **Category 1** — infrastructure software (operating systems, databases).
-- **Category 3** — non-configured products used as supplied.
-- **Category 4** — configured products (e.g. a configured LIMS).
-- **Category 5** — custom / bespoke applications (highest risk, most rigor).
+- **ISPE GAMP 5, Second Edition (2022)** - the industry framework for
+  risk-based validation of GxP computerized systems.
+- **FDA 21 CFR Part 11 (1997)** and **EU GMP Annex 11 (2011)** - the binding
+  rules for electronic records and signatures.
+- **FDA General Principles of Software Validation (2002)** - still the clearest
+  FDA statement of validation principles for software.
+- **FDA draft guidance, Computer Software Assurance for Production and Quality
+  System Software (September 2022)** - the CSA proposal, written for medical
+  device quality-system software but widely read as FDA's direction of travel
+  on risk-based assurance.
+- **PIC/S PI 011 and PI 041** - inspector-side expectations for computerized
+  systems and data integrity.
 
-## The V-model
+> Practice it: pair this lesson with the
+> [Electronic Records & Signatures lesson](/library/electronic-records-part-11)
+> and the [Data Integrity Deep Dive](/library/data-integrity-deep-dive) -
+> validation scope and data-integrity controls are two views of the same risk.
 
-User requirements map to acceptance testing; functional specs map to functional
-testing; design specs map to installation/operational qualification. Each left
-arm has a corresponding right-arm verification.
+## GAMP 5 Second Edition: What Changed and What Did Not
 
-## Data integrity drives scope
+The Second Edition (2022) kept the core of GAMP 5 - scalable, science- and
+risk-based lifecycle activities - and sharpened three messages:
 
-Validation effort should focus where data integrity risk is highest — audit
-trails, access controls, electronic signatures, and ALCOA+ attributes. Leverage
-supplier documentation for low-risk categories instead of duplicating it.
+1. **Avoid linear, document-heavy "V-model worship."** Iterative and agile
+   development, cloud delivery, and continuous updates are normal; the
+   lifecycle activities and their logic matter, not a rigid document stack.
+2. **Leverage supplier work.** For mature commercial products, supplier
+   development and testing evidence can be leveraged instead of being
+   duplicated - if the supplier has been assessed.
+3. **Critical thinking over box-ticking.** Appendices on critical thinking and
+   on software tools/automation push practitioners to justify effort by risk,
+   not by template.
 
-## Risk assessment — how to scope effort
+GAMP 5 is a good-practice guide, not a regulation. Inspectors cite Part 11,
+Annex 11, and predicate rules; GAMP is how industry shows it met them.
 
-For each function, score **impact** (patient safety / product quality / data
-integrity) × **probability** of failure × **detectability**. High-risk functions
-get scripted testing with evidence; low-risk functions can lean on supplier
-testing and a documented rationale. Capture this in a simple worksheet:
+## Software Categories Drive the Baseline Effort
 
-| Function | GxP impact | Likelihood | Detectability | Risk | Test approach |
-| --- | --- | --- | --- | --- | --- |
-| Result calculation | High | Low | Low | High | Scripted OQ + data check |
-| Audit trail capture | High | Low | Medium | High | Verify on/off, content |
-| Report cosmetic layout | Low | Low | High | Low | Leverage supplier docs |
+| GAMP category | What it is | Examples | Typical validation emphasis |
+| --- | --- | --- | --- |
+| Category 1 - infrastructure | Established software layers under the application | Operating systems, database engines, network, virtualization, middleware | Control via IT qualification and good IT practice; not individually "validated" |
+| Category 3 - non-configured products | Commercial software used as supplied, run-time parameters only | Firmware-driven balances and pH meters, simple standalone instruments | Short lifecycle: URS, risk assessment, supplier check, verification of intended use |
+| Category 4 - configured products | Commercial products configured to a business process | Configured LIMS, CDS (chromatography data systems), MES, SCADA, ERP with workflows | Full lifecycle: configuration specification, configuration testing, risk-based functional testing, data-integrity verification |
+| Category 5 - custom applications | Bespoke or heavily customized software | Custom-built LIMS modules, bespoke interfaces, complex macros and scripts | Rigorous lifecycle: design review, code-level controls, unit/integration evidence, strongest supplier or developer oversight |
 
-## Periodic review checklist (post-go-live)
+Category is assigned per system (or per component of a layered system) and
+recorded in the risk assessment with a rationale. Miscategorizing a configured
+CDS as Category 3 to shrink the workload is a classic inspection finding.
 
-- Change history since last review (patches, config changes, all under change
-  control?)
-- User access list reviewed — leavers removed, privileges still appropriate?
-- Audit trail enabled and being reviewed?
-- Backups tested / restore verified?
-- Open incidents, deviations, and CAPAs related to the system closed?
-- Still validated for current intended use (no "creep" into new uses)?
+A note on spreadsheets: validated-template spreadsheets used for GxP
+calculations are treated in industry practice as small configured/custom
+applications - they need specification (the formulas), verification (checked
+calculations, locked cells), access control, and change control. Uncontrolled
+Excel calculators are among the most common data-integrity observations.
 
-## Cloud / SaaS GxP systems
+## The Validation Lifecycle: Plan to Report to Retirement
 
-The vendor may run the infrastructure, but **accountability stays with you**. Use
-a **shared-responsibility matrix**, qualify the supplier (audit or assessment),
-get their SOC 2 / validation summary, and pin down: change notification (you must
-know before they push updates), data ownership and export on exit, and how their
-audit trail meets ALCOA+. Validate the *configuration and intended use* — you
-can't outsource the regulatory responsibility.
+GAMP's lifecycle is often drawn as a V: specification stages on the left arm,
+verification stages on the right, each level of testing tracing back to a
+specification. The documents below are the defensible minimum set; scale them
+by category and risk.
 
-> Practitioner tip: GAMP 5 Second Edition explicitly discourages "testing
-> everything." The defensible position is a documented risk rationale showing
-> *why* you tested what you tested — and leveraged the supplier for the rest.
+| Stage | Owner | Document produced | Core question |
+| --- | --- | --- | --- |
+| Validation plan | Process owner + QA | Validation Plan (VP) | What system, what intended use, what lifecycle activities, what roles, what acceptance approach? |
+| User requirements | Process owner | URS | What must the system do for the GxP process, including data-integrity and regulatory requirements? |
+| Risk assessment | Cross-functional | Risk assessment (per Q9) | Which functions are critical to patient safety, product quality, data integrity - and how deep must testing go? |
+| Supplier assessment | QA + process owner | Supplier audit/assessment report | Can the supplier's development and testing evidence be leveraged? |
+| Configuration / design | System owner + supplier | Configuration specification (Cat 4) or design spec (Cat 5) | How exactly will the product be set up for our process? |
+| Installation | System owner / IT | IQ or installation verification records | Is it installed per specification in the qualified environment? |
+| Configuration / functional testing | Process owner + testers | Executed test scripts with evidence | Does each specified function work, at a depth set by risk? |
+| User acceptance / performance | Process owner + end users | UAT / PQ records | Does the system support the real business process end to end? |
+| Release | QA | Traceability matrix + Validation Report | Does every requirement trace to verified evidence, and are deviations resolved or risk-accepted? |
+| Operational phase | System owner + QA | SOPs, training, change records, periodic review reports | Is the system maintained in a validated state? |
+| Retirement | System owner + QA | Retirement plan, data migration/archive records | Is data preserved, readable, and retrievable for its retention period? |
+
+Three documents carry the most inspection weight:
+
+- **Validation Plan** - written before work starts; defines scope, lifecycle
+  model, deliverables, roles, and acceptance strategy. Changing the plan
+  mid-project is fine - through change control, with reasons.
+- **Traceability matrix** - links URS items to configuration/design and to
+  executed tests. It is the fastest way to prove nothing was dropped.
+- **Validation Report** - summarizes what was done against the plan,
+  disposition of deviations, and the release statement. QA approves; the
+  report, not the pile of scripts, is the validation conclusion.
+
+## Roles: Who Does What
+
+- **Process owner** (e.g. QC laboratory manager): owns intended use, writes or
+  approves the URS, leads UAT, accepts the system for use.
+- **System owner** (often the same person, or IT for infrastructure): owns the
+  system in operation - access, backup, change control, periodic review.
+- **QA**: approves the plan, risk assessment, and report; ensures data
+  integrity requirements are in scope; owns release for GxP use.
+- **IT / infrastructure**: qualifies Category 1 layers, manages hosting,
+  backup/restore, time synchronization, security patching under change
+  control.
+- **Supplier**: provides product, documentation, and (where contracted)
+  configuration and testing services - but never owns regulatory
+  accountability.
+
+Segregation of duties matters for testing too: the person who configured the
+system should not be the sole verifier of that configuration.
+
+## Risk-Based Testing Depth
+
+GAMP 5 Second Edition is explicit that "test everything equally" is not
+defensible - it wastes effort on trivia and starves the functions that
+matter. Score each function or requirement for impact on **patient safety,
+product quality, and data integrity**, then assign test depth:
+
+| Risk level | Example function (CDS/LIMS context) | Test depth (industry practice - confirm against your procedures) |
+| --- | --- | --- |
+| High | Result calculation and rounding; audit trail capture; e-signature linkage; integration result transfer; access-control enforcement | Scripted tests with objective evidence, negative/challenge cases (invalid input, unauthorized action, disabled audit trail), boundary values, traced to URS |
+| Medium | Report generation of reviewed results; instrument interface status flags; custom field configuration | Scripted tests covering normal path plus key failure modes |
+| Low | Screen layout, cosmetic labels, navigation, help text | Supplier documentation leveraged, unscripted verification, or documented rationale for no direct test |
+
+Every "no test" or "leveraged supplier evidence" decision needs a written
+rationale in the risk assessment. The rationale - not the volume of paper - is
+what an inspector probes.
+
+## CSA versus CSV: FDA's 2022 Draft Direction
+
+FDA's draft guidance **Computer Software Assurance for Production and Quality
+System Software** (September 2022) was written for medical-device
+manufacturers under 21 CFR Part 820, not for drug GMP. It remains a **draft**,
+and it does not amend Part 11 or Annex 11. Read it as a signal of FDA's
+thinking, not as a pharma rulebook.
+
+Its core ideas, all consistent with GAMP 5 Second Edition:
+
+- **Critical thinking first**: identify intended use and determine risk of the
+  software function to device/product quality before choosing assurance
+  activities.
+- **Right-sized assurance**: high-risk functions get more rigorous activities;
+  lower-risk functions may use unscripted or ad hoc testing rather than
+  exhaustive scripted protocols.
+- **Value records that show thinking**: assurance records should capture what
+  was intended, what risk was determined, what was done, and issues found -
+  not screenshots for their own sake.
+
+The practical convergence for pharma CSV: scripted testing for high-risk,
+GxP-critical functions; leaner, risk-justified approaches elsewhere; and a
+documented rationale tying it together. Until the guidance is final and its
+scope clarified, do not cite CSA as a reason to skip Part 11 controls or
+established predicate-rule expectations.
+
+## Data Integrity Requirements Belong in the URS
+
+Validation scope fails most often because data-integrity controls were never
+specified. The URS should explicitly require, where relevant:
+
+- unique user accounts with role-based least privilege - no shared logins;
+- secure, computer-generated, time-stamped audit trails that cannot be
+  disabled or edited by users;
+- electronic signature linkage to records with signed meaning;
+- accurate and complete copies (human-readable exports) for inspection;
+- time synchronization under administrative control;
+- backup, restore, and archive with demonstrated retrievability;
+- controlled interfaces - no unlogged manual data re-entry between systems.
+
+These map to Part 11 / Annex 11 clauses; treat the
+[Electronic Records & Signatures lesson](/library/electronic-records-part-11)
+as the requirements source and CSV as the verification mechanism.
+
+## Cloud and SaaS GxP Systems
+
+The vendor runs the infrastructure; **accountability stays with the regulated
+company**. For SaaS:
+
+- **Qualify the supplier**: audit or structured assessment of their quality
+  system, SDLC, security (e.g. SOC 2 reports as input, not as a substitute for
+  assessment), and validation evidence for the platform.
+- **Shared-responsibility matrix**: write down who owns each control -
+  infrastructure qualification, backup, patching, audit trail configuration,
+  access management, incident response.
+- **Change notification**: the contract must give you advance notice of
+  updates with GxP impact, so your change control can assess before release.
+  Silent vendor pushes that alter validated behavior are a recurring
+  inspection problem.
+- **Data ownership and exit**: export formats, completeness (including audit
+  trails and metadata), retention after termination, and tested restore from
+  export.
+- **Validate configuration and intended use**: your workflows, roles, and
+  integrations - the platform vendor's own validation does not cover them.
+
+## Operational Phase: Staying Validated
+
+Validation is a state, not an event. The operational phase needs:
+
+- **SOPs and training** for use, administration, backup, and incident
+  handling - training records current for all users.
+- **Change control** for every change: patches, configuration edits, interface
+  changes, infrastructure changes. Each assessed for validation impact before
+  implementation.
+- **Incident and problem management** with GxP impact assessment.
+- **Periodic review** (risk-based frequency, commonly annual for high-impact
+  systems - confirm against your SOP): change history under control, access
+  list current (leavers removed, privileges appropriate), audit trail enabled
+  and reviewed, backups tested by restore, open deviations/CAPAs closed,
+  intended use unchanged.
+
+A system whose use has crept beyond its validated intended use - new product
+types, new calculations, new interfaces - is, by definition, in an unvalidated
+state for the new use until assessed.
+
+## Common Failure Modes and What Inspectors Look For
+
+Recurring themes from FDA 483s, Warning Letters, and MHRA deficiency reports:
+
+1. **No validation at all for spreadsheets and small tools.** Bench
+   calculators and Excel sheets computing reportable results with no
+   verification, no access control, no version control. Defense: inventory all
+   GxP computerized tools, classify, and apply scaled validation.
+2. **Validation frozen in time.** System validated in 2015, upgraded many
+   times since, no impact assessment or regression evidence. Defense: change
+   control with mandatory validation-impact questions, plus periodic review.
+3. **UAT as a signature exercise.** Users "accepted" a system they never
+   exercised on real workflows. Defense: UAT scripts built from actual process
+   scenarios, executed by trained end users, with evidence.
+4. **No traceability.** Test cases exist but cannot be mapped to requirements;
+   nobody can prove a requirement was verified. Defense: maintain the
+   traceability matrix as testing executes, not after.
+5. **Audit trail never tested.** Audit trail assumed to work; validation never
+   challenged it (edit a result, change system time, attempt deletion).
+   Defense: negative/challenge tests on audit trail behavior for high-risk
+   systems, plus routine review procedures.
+6. **Supplier evidence leveraged without assessment.** "The vendor validated
+   it" with no audit, no assessment, no review of their documentation.
+   Defense: documented supplier assessment before leveraging; critical
+   suppliers audited.
+7. **Shared admin accounts and uncontrolled time.** IT admin credentials used
+   by analysts; system clock editable. Defense: role segregation, unique
+   accounts, time sync locked to a controlled source.
+8. **Cloud updates applied silently.** SaaS vendor pushed an update changing
+   calculation behavior; the site learned from a result shift. Defense:
+   contractual change notification plus pre-implementation impact assessment.
+9. **Retirement with unreadable data.** Legacy system decommissioned; data
+   "archived" in a format nothing can open. Defense: retirement plans with
+   demonstrated readability and retrievability for the retention period.
+10. **Copy-paste validation packages.** Identical scripts across different
+    systems, evidence that does not match the installed configuration.
+    Defense: configuration review before test execution; QA spot-checks
+    evidence against the live system.
+
+## Worked Example: Scoping a New CDS (Fictional but Realistic)
+
+A QC lab replaces its chromatography data system. The team classifies it as
+**GAMP Category 4** (configured commercial product). The risk assessment
+scores functions:
+
+- Result calculation, integration parameters, audit trail, e-signature, and
+  the interface pushing results to LIMS: **high risk** - scripted tests with
+  challenge cases (altered integration, backdated clock, disabled audit
+  trail attempt, interface interruption mid-transfer).
+- Sequence report generation and custom fields: **medium** - scripted normal
+  path plus key failure modes.
+- Screen cosmetics and navigation: **low** - supplier documentation leveraged,
+  rationale recorded.
+
+The supplier's development documentation is reviewed under a documented
+supplier assessment and leveraged for platform-level functions. The URS
+includes the data-integrity requirements list above. UAT runs the lab's three
+real assay workflows end to end with trained analysts. The validation report
+dispositions two deviations (a rounding configuration corrected before
+release; a minor report-format issue risk-accepted with justification). The
+periodic review is set at 12 months given direct impact on batch release. The
+whole package is roughly 60% the size of the site's old "test everything"
+template - and far more defensible, because every depth decision traces to the
+risk assessment.
+
+## Take It Further
+
+- [Electronic Records & Signatures (21 CFR Part 11 / Annex 11)](/library/electronic-records-part-11) - the regulatory requirements CSV verifies.
+- [Data Integrity Deep Dive](/library/data-integrity-deep-dive) - ALCOA+ applied to everyday lab data.
+- [Quality Risk Management (ICH Q9)](/library/quality-risk-management-q9) - the risk-scoring discipline behind test depth.
+- [Equipment Qualification](/library/equipment-qualification) and the
+  [Equipment Qualification Lifecycle workflow](/workflows/equipment-qualification-lifecycle) - the hardware counterpart.
+- [Change Control](/library/change-control) - the mechanism that keeps a validated system validated.
+- [Audit Trail Review Triage tool](/tools/audit-trail-review-triage) - structure routine audit trail review for your validated systems.
+- The **Data Integrity Self-Check** Pro toolkit pack walks your systems
+  through an attributability, audit trail, and access-control self-assessment.
+
+> *General educational content. GAMP 5 is an industry good-practice guide, not
+> a regulation; FDA's CSA guidance is a draft for medical-device quality-system
+> software. Verify validation scope, test depth, and acceptance criteria
+> against current regulatory texts, the current GAMP edition, and your approved
+> validation procedures before making GMP decisions. Nothing here substitutes
+> for QA judgement.*

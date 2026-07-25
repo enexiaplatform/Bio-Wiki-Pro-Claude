@@ -1,26 +1,6 @@
-Phase,Step,Owner,Status,Date Completed,Notes
-Trigger,Confirm OOS is not a calculation/transcription error,Supervisor,,,
-Trigger,Retain original solutions and data,Analyst,,,
-Phase I,Verify calculations and transcription,Analyst,,,
-Phase I,Check standards/reagents (identity & expiry),Analyst,,,
-Phase I,Review system suitability and calibration,Analyst,,,
-Phase I,Review sample preparation and dilutions,Analyst,,,
-Phase I,Inspect glassware/column/consumables,Analyst,,,
-Phase I,Review analyst technique (factual),Supervisor,,,
-Phase I,Conclude: assignable lab cause? (Yes/No),Supervisor,,,
-Hypothesis,Document hypothesis (if testing),Supervisor,,,
-Hypothesis,QA pre-approval of retest plan,QA,,,
-Hypothesis,Record retest outcome and interpretation,Analyst,,,
-Phase II,Review batch record and IPCs,QA,,,
-Phase II,Review raw materials and components,QA,,,
-Phase II,Review equipment and process parameters,Production,,,
-Phase II,Assess other batches potentially affected,QA,,,
-Phase II,Trend review (method/product/analyst),QA,,,
-Phase II,Determine probable root cause,QA,,,
-Disposition,Decide batch disposition,QA,,,
-Disposition,Document rationale and impact,QA,,,
-Disposition,QA approval signature,QA,,,
-CAPA,Define corrective action,QA,,,
-CAPA,Define preventive action,QA,,,
-CAPA,Define effectiveness check,QA,,,
-CAPA,Close investigation,QA,,,
+OOS ID,Product,Batch,Test/Method,Spec Limit,Result,Date Opened,Phase Reached,Assignable Cause Y/N,Root Cause Category,Retest Count,Disposition,CAPA Ref,Target Date,Date Closed,Days Open,Owner,QA Approver
+OOS-2026-014,Amoxicillin Capsules 500 mg,AC-26114,Assay HPLC AMX-ASY-04,95.0-105.0%,89.2%,2026-03-04,Phase I complete,Y,Laboratory error - dilution,0,Released,CAPA-2026-031,2026-03-25,2026-03-21,17,J. Okafor,R. Iqbal
+OOS-2026-019,Metformin HCl Tablets 850 mg,MF-26088,Dissolution HPLC MET-DIS-02,Q=80% in 30 min,Stage 2 fail,2026-03-18,Phase II complete,N,Manufacturing - granulation,6,Rejected,CAPA-2026-044,2026-04-17,2026-04-15,28,L. Marsh,R. Iqbal
+OOS-2026-023,Purified Water Loop PW-03,PW-260327,Microbial enumeration USP 61,NMT 100 CFU/mL,240 CFU/mL,2026-03-27,Phase II in progress,N,Under investigation - utility,0,On hold,,2026-04-24,,,S. Adeyemi,R. Iqbal
+OOS-2026-027,Ibuprofen Suspension 100 mg/5 mL,IB-26152,Assay HPLC IBU-ASY-01,90.0-110.0%,87.6%,2026-04-06,Phase I complete,Y,Laboratory error - standard prep,0,Released,CAPA-2026-052,2026-04-20,2026-04-14,8,T. Nguyen,K. Osei
+OOS-2026-031,Paracetamol Tablets 500 mg,PC-26201,Related substances HPLC PAR-RS-03,Any impurity NMT 0.2%,0.31%,2026-04-22,Phase II in progress,N,Under investigation - raw material,6,Pending,,2026-05-22,,,J. Okafor,K. Osei

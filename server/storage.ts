@@ -8,6 +8,7 @@ import {
   lessonReads,
   atlasProMonthlyReviews,
   careerBlueprintExecutions,
+  careerBlueprintProfiles,
   nurtureSends,
   lifecycleSends,
   checkoutAttempts,
@@ -26,11 +27,13 @@ import {
   type QualityLabGovernanceRevisionRow,
   type AtlasProMonthlyReviewRow,
   type CareerBlueprintExecutionRow,
+  type CareerBlueprintProfileRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
 import type { AtlasProMonthlyReviewRecord } from "../shared/atlas-pro-monthly.js";
 import type { CareerExecutionRecord } from "../shared/career-execution.js";
+import type { CareerProfile } from "../shared/career-blueprint.js";
 import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
 
 export type QualityLabReminderPreference = {
@@ -69,12 +72,15 @@ export interface IStorage {
   getContentEntry(slug: string, lang: string): Promise<ContentEntryRow | undefined>;
   upsertContentEntry(entry: InsertContentEntry): Promise<void>;
   hasCompletedPurchase(userId: string, productType?: string): Promise<boolean>;
+  getLatestCompletedPurchaseAt(userId: string, productType: string): Promise<Date | null>;
   getReadLessons(userId: string): Promise<string[]>;
   markLessonRead(userId: string, slug: string): Promise<void>;
   listAtlasProMonthlyReviews(userId: string): Promise<AtlasProMonthlyReviewRow[]>;
   upsertAtlasProMonthlyReview(userId: string, review: AtlasProMonthlyReviewRecord): Promise<AtlasProMonthlyReviewRow>;
   getLatestCareerBlueprintExecution(userId: string): Promise<CareerBlueprintExecutionRow | undefined>;
   upsertCareerBlueprintExecution(userId: string, record: CareerExecutionRecord): Promise<CareerBlueprintExecutionRow>;
+  getCareerBlueprintProfile(userId: string): Promise<CareerBlueprintProfileRow | undefined>;
+  upsertCareerBlueprintProfile(userId: string, profile: CareerProfile): Promise<CareerBlueprintProfileRow>;
   getNurtureCandidates(maxAgeDays: number): Promise<{ id: string; email: string | null; firstName: string | null; createdAt: Date | null }[]>;
   getSentNurtureSteps(userId: string): Promise<number[]>;
   recordNurtureSend(userId: string, step: number): Promise<void>;
@@ -257,6 +263,16 @@ export class DatabaseStorage implements IStorage {
     return rows.length > 0;
   }
 
+  async getLatestCompletedPurchaseAt(userId: string, productType: string): Promise<Date | null> {
+    const rows = await db
+      .select({ createdAt: purchases.createdAt })
+      .from(purchases)
+      .where(and(eq(purchases.userId, userId), eq(purchases.productType, productType), eq(purchases.status, "completed")))
+      .orderBy(desc(purchases.createdAt))
+      .limit(1);
+    return rows[0]?.createdAt ?? null;
+  }
+
   async getReadLessons(userId: string): Promise<string[]> {
     const rows = await db
       .select({ slug: lessonReads.slug })
@@ -291,6 +307,19 @@ export class DatabaseStorage implements IStorage {
     const [row] = existing
       ? await db.update(careerBlueprintExecutions).set({ routeId: record.routeId, snapshot: record, updatedAt: new Date() }).where(eq(careerBlueprintExecutions.id, existing.id)).returning()
       : await db.insert(careerBlueprintExecutions).values({ userId, executionId: record.id, routeId: record.routeId, snapshot: record }).returning();
+    return row;
+  }
+
+  async getCareerBlueprintProfile(userId: string): Promise<CareerBlueprintProfileRow | undefined> {
+    const [row] = await db.select().from(careerBlueprintProfiles).where(eq(careerBlueprintProfiles.userId, userId)).limit(1);
+    return row;
+  }
+
+  async upsertCareerBlueprintProfile(userId: string, profile: CareerProfile): Promise<CareerBlueprintProfileRow> {
+    const [existing] = await db.select().from(careerBlueprintProfiles).where(eq(careerBlueprintProfiles.userId, userId));
+    const [row] = existing
+      ? await db.update(careerBlueprintProfiles).set({ profile, updatedAt: new Date() }).where(eq(careerBlueprintProfiles.id, existing.id)).returning()
+      : await db.insert(careerBlueprintProfiles).values({ userId, profile }).returning();
     return row;
   }
 

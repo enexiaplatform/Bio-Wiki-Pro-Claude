@@ -4,51 +4,153 @@ slug: "antimicrobial-effectiveness-test"
 lang: "en"
 tier: "free"
 category: "Microbiology QC"
-seoDescription: "Preservative efficacy / antimicrobial effectiveness testing per USP 51 — challenge organisms, log-reduction criteria by product category, and when it's required."
-updatedAt: "2026-06-04"
+seoDescription: "Antimicrobial effectiveness testing per USP <51> and Ph. Eur. 5.1.3: the five challenge organisms, product categories 1-4, log-reduction criteria, neutralization, and when AET is required."
+updatedAt: "2026-07-25"
 quiz:
   - q: "What does Antimicrobial Effectiveness Testing (USP 51) demonstrate?"
-    options: ["Product sterility", "That the preservative system controls microbial growth over shelf life", "Endotoxin level", "Tablet hardness"]
+    options: ["Product sterility", "That the preservative system controls microbial growth over the product's life", "Endotoxin level", "Tablet hardness"]
     answer: 1
-  - q: "The test works by:"
-    options: ["Filtering the product", "Inoculating product with challenge organisms and measuring log reduction over time", "Heating the product", "Measuring pH only"]
+  - q: "The USP 51 challenge panel includes:"
+    options: ["Only S. aureus", "S. aureus, P. aeruginosa, E. coli, C. albicans, A. brasiliensis", "Any environmental isolate the lab prefers", "Only spores"]
     answer: 1
   - q: "Acceptance criteria (log reductions and time points) depend on:"
     options: ["The product category / route of administration", "The day of the week", "The analyst", "The price"]
     answer: 0
+  - q: "Before counting survivors, the preservative must be neutralized because:"
+    options: ["It stains the plates", "Otherwise continued preservative action during recovery falsely inflates the apparent kill", "Neutralization grows more organisms", "It is a tradition with no technical basis"]
+    answer: 1
 ---
 
 # Antimicrobial Effectiveness Testing (USP 51)
 
-Multi-dose and many non-sterile aqueous products contain a **preservative system**
-to stop microbes that get in during use. Antimicrobial Effectiveness Testing (AET,
-USP &lt;51&gt;) proves that system actually works over the product's life.
+Multi-dose and most non-sterile aqueous products contain a **preservative
+system** to control microorganisms introduced during manufacture or — more
+importantly — by the patient during repeated use. Antimicrobial Effectiveness
+Testing (AET, also called preservative efficacy testing) is the compendial
+proof that this system works. The governing chapters are **USP &lt;51&gt;
+Antimicrobial Effectiveness Testing** and **Ph. Eur. 5.1.3**, which use the
+same logic with different criterion tables.
 
-## How the test works
+## How the Test Works
 
-The product is **inoculated** with a panel of challenge organisms (bacteria,
-yeast, mould — e.g. *S. aureus*, *P. aeruginosa*, *E. coli*, *C. albicans*,
-*A. brasiliensis*). At defined time points (e.g. 7, 14, 28 days) you enumerate
-survivors and calculate the **log reduction**.
+The product is inoculated directly with a panel of five challenge organisms, at
+a final concentration between **1 x 10^5 and 1 x 10^6 CFU per mL** of product.
+The inoculated containers are held at controlled room temperature, and viable
+survivors are enumerated at defined intervals — **7, 14, and 28 days** under
+USP &lt;51&gt;. Results are expressed as log reductions from the initial
+calculated count.
 
-## Acceptance criteria by category
+| Organism | Type | ATCC reference |
+| --- | --- | --- |
+| Staphylococcus aureus | Gram-positive bacterium | 6538 |
+| Pseudomonas aeruginosa | Gram-negative bacterium | 9027 |
+| Escherichia coli | Gram-negative bacterium | 8739 |
+| Candida albicans | Yeast | 10231 |
+| Aspergillus brasiliensis | Mould | 16404 |
 
-USP &lt;51&gt; defines product **categories** (e.g. injections, topicals, oral
-liquids) each with its own required log reductions and "no increase" criteria at
-set intervals. Stricter products (parenteral) demand faster, deeper kill.
+The panel spans the classic contamination risks for aqueous products; labs may
+add justified organisms (e.g. relevant isolates), but the five compendial
+strains are the baseline.
 
-## When it's needed
+## Product Categories and Criteria
 
-- During **development** to design the preservative system.
-- On **stability** (the preservative can degrade — efficacy at end of shelf life
-  matters).
-- After **formulation changes** that could affect preservation.
+USP &lt;51&gt; divides products into four categories by route and risk, each
+with its own required performance:
 
-## Why it matters
+| Category | Products | Bacteria requirement (summary) | Yeast/mould requirement |
+| --- | --- | --- | --- |
+| 1 | Injections and other parenterals, ophthalmics, sterile nasal, otic | ≥ 1.0 log at 7 days, ≥ 3.0 log at 14 days, no increase from day 14 at 28 days | No increase from initial at 7, 14, 28 days |
+| 2 | Topical aqueous products, nonsterile nasal | ≥ 2.0 log at 14 days, no increase from day 14 at 28 days | No increase from initial at 14 and 28 days |
+| 3 | Oral aqueous products (not antacids) | ≥ 1.0 log at 14 days, no increase from day 14 at 28 days | No increase from initial at 14 and 28 days |
+| 4 | Aqueous antacids | No increase from initial at 14 and 28 days | No increase from initial at 14 and 28 days |
 
-Under-preserved products can grow contaminants in the patient's hands; over-
-preservation raises toxicity. AET finds the safe, effective minimum — and confirms
-it lasts.
+Compendial "**no increase**" is defined precisely: not more than **0.5 log10
+higher** than the previous value measured. Parenteral and ophthalmic products
+(Category 1) demand the fastest, deepest kill — they carry the highest patient
+risk.
 
-> Tip: pair AET with the lowest effective preservative level, and re-confirm
-> efficacy at the end of shelf life, not just at release.
+Ph. Eur. 5.1.3 expresses the same idea through **criteria A and B**: criterion
+A is the recommended efficacy target, while criterion B is acceptable where A
+cannot be achieved for justified reasons (for example, when the preservative
+concentration needed for A would raise toxicity concerns). The Ph. Eur. tables
+also add earlier evaluation points (6 and 24 hours for parenteral/ophthalmic
+bacteria under criterion A).
+
+## Neutralization: The Step That Makes the Data Valid
+
+At each pull, surviving organisms must be recovered *without* the preservative
+continuing to act during plating. If residual preservative carries into the
+recovery step, organisms are killed on the plate and the test overstates
+efficacy. Standard neutralization approaches:
+
+- **dilution** below the preservative's effective concentration;
+- **membrane filtration** with rinsing;
+- **chemical neutralizers** — e.g. lecithin and polysorbate 80 for common
+  preservative classes.
+
+The neutralization scheme itself must be validated: demonstrate the neutralizer
+both stops the preservative's activity and is not toxic to the challenge
+organisms. Skipping this verification invalidates every log-reduction number
+downstream.
+
+## When AET Is Required
+
+- **Development**: to design and justify the preservative system, typically at
+  the lowest effective concentration.
+- **Registration and release justification**: as part of the product's quality
+  dossier for preserved multi-dose and aqueous non-sterile products.
+- **Stability**: preservatives degrade and migrate into closures — efficacy at
+  **end of shelf life** is what the patient actually experiences, and
+  compendia expect it to be demonstrated (often as part of stability or
+  development studies).
+- **Change control**: formulation, preservative level, or container changes
+  that could affect preservation.
+
+The formulation goal is the **minimum effective preservative level**: enough to
+meet the category criteria across shelf life, not a milligram more —
+over-preservation is a toxicity problem, not a safety margin.
+
+## Practical Controls at the Bench
+
+- Verify the actual inoculum delivered per container; the recovered initial
+  count at time zero anchors every log-reduction calculation.
+- Test the product in its market container where feasible — headspace,
+  closure contact, and fill volume all affect preservation.
+- Hold inoculated containers at the compendial temperature, protected from
+  light; do not refrigerate or shake.
+- Count in duplicate with dilutions that stay countable at every interval,
+  including the low survivor levels expected at 28 days.
+
+## Common Mistakes and Inspection Findings
+
+- No neutralizer validation — recovery numbers inflated by on-plate kill.
+- AET performed only at release, never at end of shelf life.
+- Wrong category applied (e.g. topical criteria used for an ophthalmic).
+- "No increase" read as "roughly similar" instead of the compendial 0.5 log
+  definition.
+- Inoculum level outside the compendial 10^5–10^6 CFU/mL window, or not
+  verified per container.
+- Challenge strains not traceable to the compendial culture collection, or
+  over-passaged.
+- Preservative level reduced for cost without a new AET.
+
+## Take It Further
+
+- [Bioburden Testing (USP &lt;61&gt;)](/library/bioburden-usp-61) — the
+  companion enumeration methods AET recovery relies on.
+- [Method Suitability for Nonsterile Products](/library/method-suitability-nonsterile-products)
+  — neutralization validation logic, applied to the microbial limits tests.
+- [Growth Promotion Testing](/library/growth-promotion-testing) — the media
+  behind every count must actually grow the organisms.
+- [Stability Studies — ICH Q1A Program Design](/library/stability-studies) —
+  preservative content and AET at shelf life belong in the stability panel.
+- [USP &lt;51&gt; Antimicrobial Effectiveness Testing](https://www.usp.org) —
+  the governing chapter (current edition via USP-NF).
+
+The Atlas Pro lesson **Microbial Excursion Investigation** covers the response
+when a preserved product shows in-use contamination despite a passing AET.
+
+> Educational content. Criteria tables above summarize the general chapters for
+> teaching; verify category assignment, time points, and limits against the
+> current USP-NF and Ph. Eur. editions and your approved protocols. This lesson
+> is not a substitute for QA judgement.

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, BriefcaseBusiness, CheckCircle2, ChevronRight, Download, LockKeyhole, RotateCcw, Save, ShieldCheck, Target } from "lucide-react";
 import { useUser } from "@/context/UserContext";
@@ -7,6 +7,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { CAREER_PROFILE_STORAGE_KEY, careerProfileSchema } from "@shared/career-blueprint";
 import { careerExecutionDecisionValues, careerExecutionRecordSchema, careerExecutionStatusValues, compileCareerExecution, type CareerExecutionDecision, type CareerExecutionRecord, type CareerExecutionStatus } from "@shared/career-execution";
 import { cacheCareerExecution, downloadCareerExecution, loadCareerExecution, saveCareerExecution } from "@/lib/career-execution";
+import { cacheCareerProfile, fetchServerCareerProfile } from "@/lib/career-profile";
 
 const statusLabels: Record<CareerExecutionStatus, string> = { "not-started": "Not started", "in-progress": "In progress", "waiting-review": "Waiting review", complete: "Complete" };
 const decisionLabels: Record<CareerExecutionDecision, string> = { "not-decided": "Not decided", continue: "Continue the route", adjust: "Adjust the route", pivot: "Pivot to another route" };
@@ -39,7 +40,13 @@ export default function CareerBlueprintWorkspacePage() {
   const [activeWeek, setActiveWeek] = useState(1);
   const [notice, setNotice] = useState("");
   const [syncState, setSyncState] = useState<"local" | "syncing" | "synced" | "unavailable">("local");
+  const [dirty, setDirty] = useState(false);
+  const [autoSaveState, setAutoSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const recordRef = useRef(record);
   const compiled = useMemo(() => record ? compileCareerExecution(record) : null, [record]);
+
+  useEffect(() => { recordRef.current = record; }, [record]);
 
   useSEO({ title: "Career Blueprint Execution Workspace", description: "Run a personalized 13-week career evidence plan with weekly actions, artifact references, reviewer feedback, progress, and a route decision gate." });
 
@@ -49,10 +56,21 @@ export default function CareerBlueprintWorkspacePage() {
     let active = true;
     async function initialize() {
       try {
-        const accessResponse = await fetch("/api/career-blueprint/access", { credentials: "include" });
-        const accessData = accessResponse.ok ? await accessResponse.json() : { entitled: false };
-        if (!active) return;
-        if (!accessData.entitled) { setAccess("locked"); return; }
+        // A fresh buyer can land here before the Stripe webhook has granted the
+        // purchase; poll entitlement briefly before concluding "locked" so a slow
+        // webhook never shows a paid customer the paywall (~6 attempts over ~15s).
+        const purchaseReturn = new URLSearchParams(window.location.search).get("purchase") === "success";
+        let entitled = false;
+        for (let attempt = 0; attempt < 6; attempt += 1) {
+          const accessResponse = await fetch("/api/career-blueprint/access", { credentials: "include" });
+          const accessData = accessResponse.ok ? await accessResponse.json() : { entitled: false };
+          if (!active) return;
+          if (accessData.entitled) { entitled = true; break; }
+          if (!purchaseReturn || attempt === 5) break;
+          await new Promise((resolve) => window.setTimeout(resolve, 3000));
+          if (!active) return;
+        }
+        if (!entitled) { setAccess("locked"); return; }
         const saved = loadCareerExecution();
         setSyncState("syncing");
         const remoteResponse = await fetch("/api/career-blueprint/execution", { credentials: "include" });
@@ -70,7 +88,10 @@ export default function CareerBlueprintWorkspacePage() {
           } else setSyncState("synced");
           return;
         }
-        const profile = readCareerProfile();
+        // New-device restore: with no browser-local profile, fall back to the
+        // account copy stored after the assessment and re-hydrate localStorage
+        // so the workspace (and later PDF downloads) work without redoing it.
+        const profile = readCareerProfile() ?? await fetchServerCareerProfile().then((serverProfile) => serverProfile ? cacheCareerProfile(serverProfile) : null);
         if (!profile) { setAccess("ready"); setSyncState(remoteData.syncAvailable ? "synced" : "unavailable"); return; }
         const response = await fetch("/api/career-blueprint/execution", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(profile) });
         const data = await response.json();
@@ -84,6 +105,21 @@ export default function CareerBlueprintWorkspacePage() {
     return () => { active = false; };
   }, [isAuthenticated, isLoading]);
 
+  // Autosave: debounce edits and reuse the same save path as the manual button.
+  useEffect(() => {
+    if (!dirty || !record || access !== "ready") return;
+    const timer = window.setTimeout(() => { void save({ automatic: true }); }, 1800);
+    return () => window.clearTimeout(timer);
+  }, [record, dirty, access]);
+
+  // Warn before leaving only while there are unsaved changes.
+  useEffect(() => {
+    if (!dirty) return;
+    function handler(event: BeforeUnloadEvent) { event.preventDefault(); }
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [dirty]);
+
   if (isLoading || access === "checking") return <div className="min-h-[70vh] bg-[#07182d]" />;
   if (access === "locked") return <LockedWorkspace />;
   if (!record || !compiled) return <div className="min-h-screen bg-[#07182d] px-4 py-12 text-slate-100"><div className="mx-auto max-w-2xl rounded-3xl border border-amber-300/20 bg-amber-300/[0.05] p-7 text-center"><BriefcaseBusiness className="mx-auto h-8 w-8 text-amber-200" /><h1 className="mt-5 text-3xl font-bold">Complete your Career Snapshot first.</h1><p className="mt-3 text-sm leading-7 text-slate-400">Your purchased workspace needs the browser-local profile and selected route from the free assessment before it can generate the 13-week path.</p><Link href="/career" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950">Open Career assessment <ArrowRight className="h-4 w-4" /></Link>{notice && <p className="mt-4 text-xs text-amber-200">{notice}</p>}</div></div>;
@@ -91,24 +127,35 @@ export default function CareerBlueprintWorkspacePage() {
   const activeDefinition = record.plan.find((item) => item.week === activeWeek)!;
   const activeState = record.weeks.find((item) => item.week === activeWeek)!;
 
-  function patchWeek(patch: Partial<typeof activeState>) { setRecord((current) => current ? { ...current, weeks: current.weeks.map((item) => item.week === activeWeek ? { ...item, ...patch } : item) } : current); setNotice(""); }
-  async function save() {
+  function patchWeek(patch: Partial<typeof activeState>) { setRecord((current) => current ? { ...current, weeks: current.weeks.map((item) => item.week === activeWeek ? { ...item, ...patch } : item) } : current); setNotice(""); setDirty(true); }
+  async function save(options?: { automatic?: boolean }) {
     if (!record) return;
+    const automatic = options?.automatic ?? false;
+    if (automatic) setAutoSaveState("saving");
     const saved = saveCareerExecution(record);
-    setRecord(saved); setSyncState("syncing"); setNotice("Saved in this browser. Syncing your account copy…");
-    analytics.careerExecutionSaved(saved.routeId, compileCareerExecution(saved).completeWeeks);
+    setRecord(saved); setSyncState("syncing");
+    if (!automatic) {
+      setNotice("Saved in this browser. Syncing your account copy…");
+      analytics.careerExecutionSaved(saved.routeId, compileCareerExecution(saved).completeWeeks);
+    }
     try {
       const response = await fetch(`/api/career-blueprint/execution/${encodeURIComponent(saved.id)}`, { method: "PUT", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(saved) });
       if (!response.ok) throw new Error("Account sync unavailable");
-      setSyncState("synced"); setNotice("Progress saved to this browser and your Atlas account.");
+      setSyncState("synced");
+      if (!automatic) setNotice("Progress saved to this browser and your Atlas account.");
     } catch {
-      setSyncState("unavailable"); setNotice("Progress is safe in this browser. Account sync is temporarily unavailable.");
+      setSyncState("unavailable");
+      if (!automatic) setNotice("Progress is safe in this browser. Account sync is temporarily unavailable.");
     }
+    setLastSavedAt(new Date());
+    if (automatic) setAutoSaveState("saved");
+    // Only clear the dirty flag when no newer edit landed while the save was in flight.
+    if (recordRef.current === record || recordRef.current === saved) setDirty(false);
   }
   function exportBrief() { if (!record || !compiled) return; downloadCareerExecution(record); analytics.careerExecutionExported(record.routeId, compiled.completeWeeks); }
 
   return <div className="min-h-screen bg-[#07182d] px-4 pb-28 pt-8 text-slate-100"><div className="mx-auto max-w-7xl">
-    <header className="rounded-3xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.08] via-slate-950 to-teal-300/[0.05] p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Purchased Career Blueprint</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">13-Week Execution Workspace</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">{record.profile.fullName} · {record.profile.currentRole} → {record.routeTitle}</p><p className="mt-2 text-[11px] text-slate-500">{syncState === "synced" ? "Atlas account synced · browser copy retained" : syncState === "syncing" ? "Syncing your Atlas account copy…" : syncState === "unavailable" ? "Browser copy active · account sync temporarily unavailable" : "Browser-local working copy"}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => void save()} disabled={syncState === "syncing"} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 disabled:cursor-wait disabled:opacity-60"><Save className="h-4 w-4" /> Save progress</button><button type="button" onClick={exportBrief} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><Link href="/career" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RotateCcw className="h-4 w-4" /> Review route</Link></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-teal-200">{notice}</p>}</header>
+    <header className="rounded-3xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.08] via-slate-950 to-teal-300/[0.05] p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200"><BriefcaseBusiness className="h-3.5 w-3.5" /> Purchased Career Blueprint</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">13-Week Execution Workspace</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">{record.profile.fullName} · {record.profile.currentRole} → {record.routeTitle}</p><p className="mt-2 text-[11px] text-slate-500">{syncState === "synced" ? "Atlas account synced · browser copy retained" : syncState === "syncing" ? "Syncing your Atlas account copy…" : syncState === "unavailable" ? "Browser copy active · account sync temporarily unavailable" : "Browser-local working copy"}{autoSaveState === "saving" ? " · Saving…" : dirty ? " · Unsaved changes" : lastSavedAt ? ` · Saved ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : ""}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => void save()} disabled={syncState === "syncing"} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 disabled:cursor-wait disabled:opacity-60"><Save className="h-4 w-4" /> Save progress</button><button type="button" onClick={exportBrief} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><Link href="/career" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RotateCcw className="h-4 w-4" /> Review route</Link></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-teal-200">{notice}</p>}</header>
 
     <section className="mt-6 grid gap-4 md:grid-cols-4" aria-label="Career execution phases">{compiled.phases.map((phase, index) => <article key={phase.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-center justify-between"><span className="text-xs font-bold text-amber-200">0{index + 1}</span><span className="text-[10px] text-slate-500">{phase.complete}/{phase.total} complete</span></div><h2 className="mt-4 font-bold">{phase.label}</h2><div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-teal-300" style={{ width: `${(phase.complete / phase.total) * 100}%` }} /></div></article>)}</section>
 
@@ -119,7 +166,7 @@ export default function CareerBlueprintWorkspacePage() {
         <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-6"><div className="grid gap-5 md:grid-cols-2"><label className="block text-xs font-semibold text-slate-300">Week status<select value={activeState.status} onChange={(event) => patchWeek({ status: event.target.value as CareerExecutionStatus })} className={`${fieldClass} h-11`}>{careerExecutionStatusValues.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}</select></label><div className="hidden md:block" /><label className="block text-xs font-semibold text-slate-300">Evidence note<textarea rows={4} value={activeState.evidenceNote} onChange={(event) => patchWeek({ evidenceNote: event.target.value })} className={`${fieldClass} py-3 leading-6`} placeholder="What evidence was created, observed, or is still missing?" /></label><label className="block text-xs font-semibold text-slate-300">Sanitized artifact reference<textarea rows={4} value={activeState.artifactReference} onChange={(event) => patchWeek({ artifactReference: event.target.value })} className={`${fieldClass} py-3 leading-6`} placeholder="Non-confidential file name, portfolio label, or location reference" /></label><label className="block text-xs font-semibold text-slate-300">Reviewer feedback<textarea rows={4} value={activeState.reviewerFeedback} onChange={(event) => patchWeek({ reviewerFeedback: event.target.value })} className={`${fieldClass} py-3 leading-6`} placeholder="What did the reviewer accept, correct, or leave open?" /></label><label className="block text-xs font-semibold text-slate-300">Reflection and next move<textarea rows={4} value={activeState.reflection} onChange={(event) => patchWeek({ reflection: event.target.value })} className={`${fieldClass} py-3 leading-6`} placeholder="What changed in your evidence position, and what happens next?" /></label></div></section></main>
 
       <aside className="space-y-5"><section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Completion</p><p className="mt-2 text-3xl font-bold">{compiled.percent}%</p></div><Target className="h-6 w-6 text-teal-300" /></div><div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-teal-300" style={{ width: `${compiled.percent}%` }} /></div><p className="mt-3 text-[11px] leading-5 text-slate-500">Execution completion only. This is not a competence, employability, or hiring score.</p></section>
-        <section className="rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] p-5"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">Route decision gate</p><label className="mt-4 block text-xs font-semibold text-slate-300">Decision<select value={record.decision} onChange={(event) => { const decision = event.target.value as CareerExecutionDecision; setRecord({ ...record, decision }); setNotice(""); analytics.careerExecutionDecisionChanged(record.routeId, decision); }} className={`${fieldClass} h-11`}>{careerExecutionDecisionValues.map((decision) => <option key={decision} value={decision}>{decisionLabels[decision]}</option>)}</select></label><label className="mt-4 block text-xs font-semibold text-slate-300">Decision rationale<textarea rows={5} value={record.decisionRationale} onChange={(event) => setRecord({ ...record, decisionRationale: event.target.value })} className={`${fieldClass} py-3 leading-6`} placeholder="What evidence and real-world signal support this choice?" /></label><label className="mt-4 block text-xs font-semibold text-slate-300">Next review date<input type="date" value={record.nextReviewDate} onChange={(event) => setRecord({ ...record, nextReviewDate: event.target.value })} className={`${fieldClass} h-11`} /></label></section>
+        <section className="rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] p-5"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200">Route decision gate</p><label className="mt-4 block text-xs font-semibold text-slate-300">Decision<select value={record.decision} onChange={(event) => { const decision = event.target.value as CareerExecutionDecision; setRecord({ ...record, decision }); setNotice(""); setDirty(true); analytics.careerExecutionDecisionChanged(record.routeId, decision); }} className={`${fieldClass} h-11`}>{careerExecutionDecisionValues.map((decision) => <option key={decision} value={decision}>{decisionLabels[decision]}</option>)}</select></label><label className="mt-4 block text-xs font-semibold text-slate-300">Decision rationale<textarea rows={5} value={record.decisionRationale} onChange={(event) => { setRecord({ ...record, decisionRationale: event.target.value }); setDirty(true); }} className={`${fieldClass} py-3 leading-6`} placeholder="What evidence and real-world signal support this choice?" /></label><label className="mt-4 block text-xs font-semibold text-slate-300">Next review date<input type="date" value={record.nextReviewDate} onChange={(event) => { setRecord({ ...record, nextReviewDate: event.target.value }); setDirty(true); }} className={`${fieldClass} h-11`} /></label></section>
         <div className="rounded-xl border border-white/10 bg-black/15 p-4 text-[10px] leading-5 text-slate-500"><ShieldCheck className="mr-2 inline h-4 w-4 text-amber-200" />{compiled.boundary}</div><Link href="/career" className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-4 text-xs font-bold text-slate-300 hover:border-teal-300/25">Return to route comparison <ChevronRight className="h-4 w-4 text-teal-300" /></Link>
       </aside>
     </div>

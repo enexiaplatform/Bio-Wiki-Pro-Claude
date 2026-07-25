@@ -27,8 +27,8 @@ const proLibrary = [
     icon: BookOpenCheck,
     number: "01",
     title: "Evidence with more context",
-    body: "Move beyond public orientation into deeper source context, decision logic, boundaries, and worked interpretation.",
-    example: "Lessons and decision guides",
+    body: "Move beyond public orientation into 30+ deep-dive lessons with full workflows, decision tables, inspector findings, worked examples, and quizzes.",
+    example: "30+ in-depth lessons with quizzes",
     href: "/academy",
     linkLabel: "Browse public evidence",
   },
@@ -45,8 +45,8 @@ const proLibrary = [
     icon: FileSpreadsheet,
     number: "03",
     title: "Reusable working files",
-    body: "Download templates, checklists, and working assets for professional tasks you need to repeat.",
-    example: "Templates and downloadable files",
+    body: "Download 7 complete working packs — OOS investigation, environmental monitoring, biological indicators, culture media, lab water, data integrity, and micro onboarding — each with a full guide (PDF) and a working register (Excel).",
+    example: "7 working packs: guide (PDF) + register (Excel)",
     href: "/toolkits",
     linkLabel: "Preview the toolkit library",
   },
@@ -70,9 +70,9 @@ const workflow = [
 
 const comparisonRows = [
   ["Monthly operating review", "Illustrative preview only", "Editable workspace, account sync, portfolio pulse, carryover, and export"],
-  ["Evidence", "Public orientation and selected guides", "Deeper context, decision logic, and worked examples"],
+  ["Evidence", "Public orientation and selected guides", "30+ deep-dive lessons with decision tables, inspector findings, worked examples, and quizzes"],
   ["Tools", "Selected public calculators", "Available premium calculators and planning tools"],
-  ["Working files", "Limited public samples", "Available downloadable toolkits and templates"],
+  ["Working files", "Limited public samples", "7 complete working packs (PDF guides + Excel registers) plus the GMP Audit Readiness Kit"],
   ["Audit readiness", "Public orientation resources", "GMP Audit Readiness Kit included"],
   ["Expert project review", "Not included", "Not included — use Quality Lab for scoped review"],
 ];

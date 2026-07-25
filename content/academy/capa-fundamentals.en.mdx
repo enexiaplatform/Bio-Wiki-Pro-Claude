@@ -4,86 +4,252 @@ slug: "capa-fundamentals"
 lang: "en"
 tier: "pro"
 category: "Quality Systems"
-seoDescription: "Corrective and Preventive Action done right — root cause, correction vs corrective action, and the effectiveness check that auditors look for."
-updatedAt: "2026-06-11"
+seoDescription: "Corrective and Preventive Action at professional depth: correction vs corrective vs preventive action, root-cause methods compared, effectiveness check design, CAPA metrics, and the failure modes inspectors cite."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Rejecting the affected batch immediately is an example of:"
-    options: ["Corrective action", "Correction (immediate fix)", "Preventive action", "Root cause analysis"]
+    options: ["Corrective action", "Correction (immediate containment)", "Preventive action", "Root cause analysis"]
     answer: 1
   - q: "The most common CAPA inspection finding is:"
-    options: ["Too much documentation", "Actions defined before root cause is established", "Closing too slowly", "Using 5 Whys"]
+    options: ["Too much documentation", "Actions defined before root cause is established", "Closing too slowly", "Using 5 Whys at all"]
     answer: 1
   - q: "An acceptable effectiveness check is:"
-    options: ["\"Training completed\"", "\"SOP updated\"", "Objective data showing zero recurrence over a defined period", "Manager sign-off"]
+    options: ["\"Training completed\"", "\"SOP updated\"", "Objective data showing zero recurrence over a defined period and scope", "Manager sign-off"]
     answer: 2
+  - q: "\"Retrain the analyst\" as the sole corrective action is weak because:"
+    options: ["Training is too expensive", "It treats a symptom and leaves the system condition that allowed the error untouched", "Only managers may be trained", "It requires revalidation"]
+    answer: 1
 ---
 
 # CAPA Fundamentals
 
 Corrective and Preventive Action (CAPA) is how a quality system learns from
-failure. Per ICH Q10, a robust CAPA process is expected across the product
-lifecycle.
+failure - and the subsystem regulators probe hardest, because its health
+predicts everything else. A site with a weak CAPA process will repeat its
+deviations; a site with a strong one converts each failure into permanent
+improvement.
 
-## Correction vs corrective vs preventive
+The framework: **ICH Q10** (Pharmaceutical Quality System, 2008) names CAPA
+as one of the four core elements of the pharmaceutical quality system,
+expected to operate across the product lifecycle. **21 CFR 211.192** and
+**211.180(e)** create the investigation and annual-review obligations that
+feed it. For medical devices, **21 CFR 820.100** defines CAPA explicitly and
+remains the most detailed regulatory description of the concept - FDA's
+QSIT inspection approach was built around it. **EU GMP Chapter 1** requires
+CAPA as part of the pharmaceutical quality system, and Annex 1 (2022)
+extends it to contamination-control events.
 
-- **Correction** — the immediate fix (e.g. reject the batch).
-- **Corrective action** — eliminates the *cause* of the detected problem.
-- **Preventive action** — eliminates the cause of a *potential* problem.
+The high-stakes version of CAPA is this: every other subsystem (deviations,
+OOS, complaints, EM, audits) is a *sensor*. CAPA is the only subsystem that
+*changes the machine*. If it is broken, the sensors just keep counting the
+same failures.
 
-## Root cause first
+## Correction vs corrective action vs preventive action
 
-Jumping to actions before establishing root cause is the most common CAPA
-finding. Use a structured tool (5 Whys, Ishikawa) and tie each action to a
-verified cause.
+These three are routinely confused, and the confusion shows up in
+inspection findings:
 
-## The effectiveness check (the part everyone skips)
+| Term | Definition | Example | What it does NOT do |
+| --- | --- | --- | --- |
+| Correction | Immediate action on the detected problem | Quarantine and reject the affected batch; reclean the tank | Prevent recurrence |
+| Corrective action (CA) | Eliminate the cause of a detected nonconformity | Add an expiry check to the buffer prep log after an expired buffer caused an OOS | Address problems that have not happened yet |
+| Preventive action (PA) | Eliminate the cause of a potential nonconformity | Roll the log fix to all labs before they experience the same failure | Fix the current batch |
 
-Define **quantitative, time-bound** criteria *before* closing the CAPA — e.g.
-"zero recurrence across the next 3 batches." Evidence must be objective data,
-not "training completed."
-> Practice it: use the [CAPA Effectiveness Check Planner](/tools/capa-effectiveness-check-planner)
-> to pressure-test the metric, time window, evidence source, owner, and QA review
-> point before the CAPA is closed.
+A complete CAPA record usually contains all three. "We rejected the batch"
+closes a deviation; it does not close a CAPA. The test question is always:
+*what did we change so this cannot happen again, here and everywhere else
+it could happen?*
+
 ## When do you even need a CAPA?
 
-Not every deviation needs a full CAPA. A quick triage:
+Not every deviation needs a full CAPA - over-raising CAPAs buries the
+system in trivial records until nothing gets done, while under-raising
+hides systemic problems. A defensible triage:
 
-- **Minor, well-understood, one-off** → correction + documented rationale; no CAPA.
-- **Recurring, systemic, or high-risk** → full CAPA with root cause.
-- **Critical / patient-impact** → CAPA + risk assessment + possible field action.
+| Signal | Response |
+| --- | --- |
+| Minor, well-understood, one-off | Correction + documented rationale; monitor in trending |
+| Recurring event (same or similar cause) | CAPA - recurrence is the strongest single trigger |
+| Systemic or high-risk (sterility, data integrity, cross-contamination) | Full CAPA with formal root-cause analysis |
+| Critical / potential patient impact | CAPA + risk assessment + possible field action |
+| Trend breach (OOT pattern, rising complaint rate) | CAPA even without a single "big" event |
 
-Over-raising CAPAs buries the system; under-raising them hides systemic problems.
-Tie the threshold to risk and trend, and review borderline calls at the quality
-review.
+Tie the threshold to risk and trend, document the triage rule in the SOP,
+and review borderline calls at the quality review board. The triage rule
+itself is inspectable - auditors ask "show me a deviation that did NOT
+become a CAPA and explain why."
 
-## CAPA record — fields that survive an audit
+## Root cause first: comparing the methods
 
-1. Problem statement (what, where, when, how detected, magnitude)
-2. Immediate correction + containment
-3. Risk assessment (severity, scope, other batches/products affected)
-4. Root-cause method and the **verified** root cause
-5. Corrective action(s) — each mapped to a cause, with owner + due date
-6. Preventive action(s) — extend the fix to similar processes/products
-7. **Effectiveness check** — metric, target, time window, owner
-8. Closure approval + effectiveness-verification record
+Jumping to actions before establishing root cause is the most common CAPA
+finding worldwide. Each method has a legitimate role:
+
+| Method | Best for | Strength | Weakness |
+| --- | --- | --- | --- |
+| 5 Whys | Single-cause, well-bounded events | Fast, forces past "human error" | Linear; misses branching causes; quality depends on the asker |
+| Ishikawa (fishbone) | Multi-factor problems (method, machine, material, man, measurement, environment) | Structured breadth; good team facilitation | Generates candidates, not proof - each branch still needs evidence |
+| Is / Is-not analysis | Object-, location-, time-specific problems | Sharply localises where the cause acts | Weak for diffuse, chronic problems |
+| Fault-tree analysis | Complex systems with interacting causes | Rigorous logic; quantifiable | Slow; needs system knowledge |
+| Kepner-Tregoe | High-stakes, ambiguous problems | Disciplined separation of facts from speculation | Training-intensive |
+| Change analysis | Events correlating with a change (new lot, maintenance, method version) | Directly testable | Only works if change records are complete |
+
+Whichever tool you use, the root cause must be **verified with evidence**:
+reproduce it, correlate it, or show the mechanism in the data. An unverified
+root cause is a hypothesis wearing a conclusion's clothes.
+
+### The "human error" trap
+
+"Operator error" and "analyst retrained" are where investigations go to
+die. FDA warning letters repeatedly reject human error as a root cause
+without a deeper answer: *what in the system allowed a competent person to
+make that error and allowed it to go undetected?* Ask instead:
+
+- Was the procedure ambiguous, or did it conflict with another document?
+- Was the interface (label, log field, software screen) error-prone?
+- Was the verification step missing, or performed by the same person?
+- Was workload, staffing, or time pressure a contributing system factor?
+
+If "retraining" appears in your CAPA, it may be one component - but the
+system change (checklist, forcing function, second check, redesigned form)
+is what makes the CAPA real.
+
+## Designing the effectiveness check - the part everyone skips
+
+The effectiveness check is the difference between a CAPA and a hope. It
+must be defined **before** the CAPA is closed, and it must be:
+
+1. **Quantitative** - a metric with a target, not an activity. "Zero
+   prep-related OOS across the next 20 batches" is a check; "training
+   completed" is not.
+2. **Time-bound and scope-bound** - over what period, which batches,
+   products, or lines?
+3. **Fed by an objective data source** - deviation log, OOS trend, EM
+   trend, audit results - with the source named in the CAPA.
+4. **Owned** - a named person verifies it, and QA reviews the outcome.
+5. **Honest about failure** - the record must say what happens if the
+   check fails (reopen, escalate, broaden scope).
+
+| Weak check | Why it fails | Strong version |
+| --- | --- | --- |
+| "Training completed" | Activity, not outcome | Zero recurrence of the error type across 3 months / N batches |
+| "SOP updated" | Document change, not behaviour | Next 2 audits show correct execution; zero related deviations |
+| "Manager reviewed" | No measurable criterion | Defined metric met at the defined review date |
+| "No complaints received" | Absence of evidence; complaints lag | Active verification: sampled records, targeted testing, or audit of the process |
+
+Effectiveness checks need a calendar: a CAPA closed today with a 3-month
+check must surface for verification in 3 months - via the CAPA tracking
+system, not someone's memory.
+
+## CAPA record - the fields that survive an audit
+
+1. **Problem statement** - what, where, when, how detected, magnitude.
+2. **Immediate correction and containment** - what was protected right now.
+3. **Risk assessment** - severity, scope, other batches/products/sites
+   affected (a structured QRM tool per ICH Q9 helps here).
+4. **Root-cause method and the verified root cause** - method named,
+   evidence attached.
+5. **Corrective actions** - each mapped to a cause, each with owner and
+   due date.
+6. **Preventive actions** - the fix extended to similar processes,
+   products, lines, or sites.
+7. **Effectiveness check** - metric, target, time window, data source,
+   owner.
+8. **Closure approval and effectiveness-verification record** - two
+   separate events, often months apart.
+
+## CAPA metrics: how you know the system works
+
+CAPA is itself a process, so trend it. Useful metrics (common industry
+practice - set targets against your own baseline):
+
+| Metric | What it reveals |
+| --- | --- |
+| Aging distribution / % overdue | Capacity problem or approval bottleneck |
+| Median days to closure | System responsiveness; watch for both rushing and stalling |
+| Recurrence rate (same cause reopens) | Root-cause quality - the single most damning metric |
+| Effectiveness-check pass rate | Whether actions actually change outcomes |
+| % CAPAs citing "human error/retraining" as sole cause | Investigation depth |
+| Source mix (deviation / complaint / audit / trend) | Whether all sensors feed the system |
+
+Rising overdue counts plus a high recurrence rate is the classic pattern
+FDA cites when concluding a CAPA system is "not adequate" - the paperwork
+exists, but nothing improves.
+
+## What inspectors look for - and how to defend
+
+1. **Actions before root cause.** The CAPA was written backwards from a
+   convenient fix. Defence: the record shows method, candidates, evidence,
+   and verification of the cause.
+2. **"Human error + retraining" closures.** Defence: every human-error
+   cause is paired with a system change, or the record explains why the
+   system is already sound.
+3. **No effectiveness check, or a check that is an activity.** Defence:
+   pre-defined, quantitative, time-bound criteria in every CAPA.
+4. **CAPAs closed without the check ever being performed.** The calendar
+   event never happened. Defence: the tracking system flags pending checks;
+   QA signs the verification separately from closure.
+5. **Narrow scope.** The fix applied to one line while three identical
+   lines kept the defect. Defence: the risk assessment explicitly evaluates
+   where else the cause could act.
+6. **Overdue CAPAs with no escalation.** Defence: aging review at
+   management review with documented extensions and justifications.
+7. **Everything is a CAPA / nothing is a CAPA.** Defence: a written triage
+   rule, applied consistently, with borderline calls reviewed.
+8. **CAPA disconnected from APR/PQR and management review.** Defence:
+   recurrence and effectiveness metrics feed both, per ICH Q10.
 
 ## Worked example
 
-*Event:* OOS for assay on Batch 23. **Correction:** quarantine batch, invalidate
-result only after a confirmed lab error. **Root cause (5 Whys):** mobile-phase
-prepared with an expired buffer because the prep log had no expiry field.
-**Corrective:** redo affected analyses; add expiry field + check to the prep log.
-**Preventive:** roll the log change across all HPLC methods in the lab.
-**Effectiveness check:** zero prep-related OOS across the next 20 batches over 3
-months — verified from the OOS trend before closure. *Note "training" is not the
-root cause here — the missing log control is.*
+*Event:* OOS for assay on Batch 23.
 
-> Practitioner tip: if your corrective action is "retrain the analyst," stop. That
-> is almost never the true root cause — it's where investigations go to die. Ask
-> what in the *system* let the error happen and be undetected.
+- **Correction:** quarantine the batch; invalidate the result only after a
+  confirmed, documented laboratory error.
+- **Root cause (5 Whys):** the result failed because the mobile phase
+  degraded; it degraded because it was prepared with an expired buffer; the
+  expired buffer was used because the preparation log had no expiry field
+  and no check step. Note: "analyst failed to notice" is the fourth Why,
+  not the root - the missing log control is.
+- **Corrective action:** repeat affected analyses with verified reagents;
+  add an expiry field and a second-person expiry check to the prep log;
+  verify the fix on the next five preparations.
+- **Preventive action:** roll the log change across all HPLC methods in
+  the lab and assess the two other labs using the same log template.
+- **Effectiveness check:** zero prep-related OOS across the next 20
+  batches over 3 months, verified from the OOS trend by QC management,
+  with QA review before final closure.
+
+The whole record takes two pages - but every element is evidenced, and the
+effectiveness check is a number, not a feeling.
+
+> Practice it: use the [CAPA Effectiveness Check Planner](/tools/capa-effectiveness-check-planner)
+> to pressure-test the metric, time window, evidence source, owner, and QA review
+> point before the CAPA is closed.
 
 ## Put it into a workflow
 
 Run the full [Deviation & CAPA workflow](/workflows/deviation-capa) when a
 deviation needs containment, impact assessment, root cause, CAPA, and an
 effectiveness check that can survive QA review.
+
+## Take it further
+
+- Strengthen the upstream sensor in
+  [Deviation Management](/library/deviation-management) and the downstream
+  proof in [Quality Metrics & KPIs](/library/quality-metrics-kpis).
+- Frame the risk assessments with
+  [Quality Risk Management (ICH Q9)](/library/quality-risk-management-q9)
+  and the system context with
+  [Pharmaceutical Quality System (ICH Q10)](/library/pharmaceutical-quality-system-q10).
+- Test the system from the inside with
+  [Internal Audit & Self-Inspection](/library/internal-audit-self-inspection).
+
+> Practitioner tip: if your corrective action is "retrain the analyst,"
+> stop. That is almost never the true root cause - it is where
+> investigations go to die. Ask what in the *system* let the error happen
+> and go undetected.
+
+> General educational content. Verify against current ICH Q9 and Q10,
+> 21 CFR Parts 211 and 820, EU GMP Chapter 1, and your approved CAPA and
+> deviation SOPs before closing investigations or making disposition
+> decisions. This is not a substitute for QA judgement or your validated
+> quality system.

@@ -396,8 +396,8 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Save progress/i }).click();
     await expect(page.getByRole("status")).toContainText("saved to this browser and your Atlas account");
     await expect(page.getByRole("heading", { name: "1/13 weeks complete", exact: true })).toBeVisible();
-    await page.getByLabel("Decision").selectOption("adjust");
-    await expect(page.getByLabel("Decision")).toHaveValue("adjust");
+    await page.getByRole("combobox", { name: "Decision", exact: true }).selectOption("adjust");
+    await expect(page.getByRole("combobox", { name: "Decision", exact: true })).toHaveValue("adjust");
   });
 
   test("Gate 1 portfolio does not count concept work as paid validation", async ({ page }) => {

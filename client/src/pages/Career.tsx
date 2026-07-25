@@ -16,6 +16,7 @@ import { CareerResults } from "@/features/career/CareerResults";
 import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { cacheCareerProfile, fetchServerCareerProfile, syncCareerProfileToServer } from "@/lib/career-profile";
 import {
   buildCareerAnalysis,
   CAREER_PROFILE_STORAGE_KEY,
@@ -57,6 +58,21 @@ export default function Career() {
       setHydrated(true);
     }
   }, []);
+
+  // New-device restore: an entitled buyer without a browser-local profile
+  // recovers the account copy stored after their assessment (403 for
+  // non-buyers resolves to null inside the helper).
+  useEffect(() => {
+    if (!hydrated || !isAuthenticated || profile) return;
+    let active = true;
+    void fetchServerCareerProfile().then((serverProfile) => {
+      if (!active || !serverProfile) return;
+      setProfile(cacheCareerProfile(serverProfile));
+    });
+    return () => {
+      active = false;
+    };
+  }, [hydrated, isAuthenticated, profile]);
 
   useEffect(() => {
     if (phase !== "results" || !profile) return;
@@ -112,6 +128,7 @@ export default function Career() {
   function completeAssessment(nextProfile: CareerProfile) {
     localStorage.setItem(CAREER_PROFILE_STORAGE_KEY, JSON.stringify(nextProfile));
     setProfile(nextProfile);
+    if (isAuthenticated) void syncCareerProfileToServer(nextProfile);
     setPhase("results");
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -121,6 +138,7 @@ export default function Career() {
       if (!current) return current;
       const nextProfile = { ...current, selectedRouteId: routeId };
       localStorage.setItem(CAREER_PROFILE_STORAGE_KEY, JSON.stringify(nextProfile));
+      if (isAuthenticated) void syncCareerProfileToServer(nextProfile);
       return nextProfile;
     });
   }

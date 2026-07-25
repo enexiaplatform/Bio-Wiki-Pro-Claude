@@ -4,8 +4,8 @@ slug: "acceptance-sampling-aql"
 lang: "en"
 tier: "free"
 category: "Quality Systems"
-seoDescription: "Acceptance sampling with AQL per ANSI/ASQ Z1.4 — sample size codes, accept/reject numbers, and why a sampling plan is a risk decision, not just a count."
-updatedAt: "2026-06-02"
+seoDescription: "Acceptance sampling per ANSI/ASQ Z1.4 (ISO 2859-1): sample size code letters, AQL selection by defect class, OC curves explained, and normal/tightened/reduced switching rules."
+updatedAt: "2026-07-25"
 quiz:
   - q: "What does AQL stand for?"
     options: ["Average Quality Level", "Acceptable Quality Limit", "Audit Quality Log", "Annual Quality List"]
@@ -16,33 +16,136 @@ quiz:
   - q: "A lower AQL means:"
     options: ["More defects tolerated", "Stricter acceptance (fewer defects allowed)", "No inspection", "Larger defects only"]
     answer: 1
+  - q: "After a run of lots fails under normal inspection, Z1.4 switching rules require:"
+    options: ["Stopping inspection", "Switching to tightened inspection", "Reducing the sample size", "Changing the AQL"]
+    answer: 1
 ---
 
 # Acceptance Sampling & AQL (ANSI/ASQ Z1.4)
 
-Acceptance sampling lets you make a release/reject decision about a lot by
-inspecting a sample instead of 100% of units. ANSI/ASQ Z1.4 is the standard plan;
-it is widely used for visual inspection and attribute defects.
+Acceptance sampling lets you make an accept/reject decision about a lot by
+inspecting a sample instead of 100% of the units. The governing standard for
+attribute (pass/fail) inspection is **ANSI/ASQ Z1.4**, which is technically
+identical to **ISO 2859-1** and MIL-STD-105E before it. It is widely used in
+pharma for incoming components, packaging materials, and visual-inspection
+attribute checks. (For measurement data rather than counts, the variables
+counterpart is ANSI/ASQ Z1.9 / ISO 3951.)
+
+The essential mindset: a sampling plan does not prove a lot is defect-free. It
+bounds the **risk** of accepting a bad lot. Every plan is a documented risk
+decision, and inspectors will ask for the rationale.
 
 ## How a Z1.4 plan is built
 
-1. **Lot size + inspection level** → a **sample size code letter**.
-2. **Code letter + AQL** → a **sample size** and **accept (Ac) / reject (Re)**
-   numbers.
-3. Inspect the sample: defects ≤ Ac → accept; defects ≥ Re → reject.
+1. **Lot size + inspection level** determines a **sample size code letter**
+   (A through R). General inspection level II is the default; level I samples
+   less (lower discrimination), level III samples more. Special levels S-1 to
+   S-4 take small samples for costly or destructive tests.
+2. **Code letter + chosen AQL** gives the **sample size (n)** and the
+   **acceptance (Ac) / rejection (Re)** numbers from the master table.
+3. Inspect the n units: observed defects at or below Ac means accept; at or
+   above Re means reject.
+
+Example shape of a plan (values from the Z1.4 single-sampling normal table;
+verify against the standard before use):
+
+| Code letter | Typical lot range (level II) | Sample size | At AQL 0.65: Ac/Re | At AQL 2.5: Ac/Re |
+| --- | --- | --- | --- | --- |
+| F | 51-90 | 20 | 0/1 | 1/2 |
+| J | 501-1,200 | 80 | 1/2 | 5/6 |
+| L | 3,201-10,000 | 200 | 3/4 | 10/11 |
+| N | 35,001-150,000 | 500 | 7/8 | 21/22 |
+
+Note the pattern: bigger lots get bigger samples, but the *proportion* sampled
+shrinks - the plan's protection comes from lot-to-lot consistency, not from
+counting a fixed percentage.
 
 ## AQL is a risk decision
 
-The **Acceptable Quality Limit** is the worst tolerable process average that the
-plan will routinely accept — a lower AQL is stricter. Defects are usually
-classified (critical / major / minor), each with its own AQL, because a critical
-defect carries far more risk than a cosmetic one.
+The **Acceptable Quality Limit** is the worst tolerable *process average* that
+the plan will accept most of the time. It is not a target for defect rate, and
+it does not guarantee that every accepted lot meets it - it defines the quality
+level the plan routinely lets through. A lower AQL is stricter.
+
+Defects are classified because their risks differ:
+
+| Defect class | Meaning | Typical AQL choice (industry practice, site-defined) |
+| --- | --- | --- |
+| Critical | Could harm the patient or render the product unusable or non-compliant. | Very low, often 0.1-0.65, frequently with Ac = 0. |
+| Major | Likely to cause failure, complaints, or reduced usability. | Commonly 0.65-1.5. |
+| Minor | Cosmetic or unlikely to affect function. | Commonly 2.5-4.0. |
+
+The specific AQLs above are common industry practice, not mandated values. The
+defensible approach is to derive them from risk assessment: what defect rate
+in this class could hurt the patient, trigger a complaint, or break a
+downstream process?
+
+## OC curves, conceptually
+
+Every sampling plan has an **operating characteristic (OC) curve**: the
+probability of accepting a lot plotted against the lot's true defect rate. Two
+points frame the risk conversation:
+
+- At the **AQL**, a normal plan accepts with high probability - the
+  **producer's risk** of rejecting good product is small.
+- At the **LTPD** (lot tolerance percent defective, the quality level you
+  really do not want), acceptance probability is low but not zero - the
+  remaining chance of accepting bad product is the **consumer's risk**.
+
+Steeper curves (larger samples, stricter levels) separate good lots from bad
+lots more sharply but cost more inspection. Choosing a plan is choosing where
+on this trade-off you sit. A plan with Ac = 0 looks strict, but on small
+samples its OC curve can still pass lots with meaningful defect rates - check
+the curve, not just the Ac number.
 
 ## Switching rules
 
-Z1.4 has **normal → tightened → reduced** switching rules: consistent good
-quality earns reduced inspection; failures trigger tightened inspection. Skipping
-these rules is a common audit finding.
+Z1.4 section 9 defines **normal / tightened / reduced** switching:
 
-> Tip: a sampling plan does not "prove" a lot is defect-free — it bounds the
-> *risk* of accepting a bad lot. Document the rationale for the AQLs you choose.
+- Start at **normal**.
+- A defined pattern of non-acceptance forces **tightened** inspection (more
+  protection for the customer).
+- A sustained history of acceptance under stable production can earn
+  **reduced** inspection (smaller samples), with defined rules for reverting.
+
+Skipping these rules is a common audit finding: sites run "normal" inspection
+forever regardless of lot history, which means the plan never responds to
+deteriorating supplier or process quality.
+
+## When sampling is not the answer
+
+- **Sterility, identity, safety-critical attributes**: a sample result cannot
+  release the uninspected units; these rely on process control and validated
+  systems, with testing as confirmation.
+- **Low, stable, well-characterized processes**: variables sampling (Z1.9),
+  parametric release, or statistical process control may give more information
+  per unit of effort.
+- **New or unstable suppliers/processes**: tighten or move to 100% inspection
+  until the data earn a sampled approach.
+
+## Common mistakes and inspection findings
+
+- AQLs copied from a template with no risk rationale.
+- Using "Ac = 0" as if it guaranteed defect-free lots.
+- Inspecting a convenience sample (top of the box) instead of a representative
+  random sample.
+- No switching-rule history; normal inspection regardless of past failures.
+- One AQL applied to all defect classes.
+- Sampling by fixed percentage ("10% of every lot"), which weakens protection
+  on small lots and wastes effort on large ones.
+- Inspectors not qualified for the defect library they are scoring.
+
+## Take it further
+
+For attribute inspection of parenterals, see
+[Visual Inspection of Injectables](/library/visual-inspection). For the
+measurement-system side of inspection reliability, the Pro lesson
+[Measurement Systems Analysis](/library/measurement-systems-analysis) covers
+attribute agreement studies, and
+[Statistical Process Control & Trending](/library/statistical-process-control)
+covers moving beyond accept/reject toward process monitoring.
+
+> Educational content only. Table values, defect classes, and AQL choices shown
+> are illustrative industry practice; always work from the current ANSI/ASQ
+> Z1.4 / ISO 2859-1 tables and your approved, risk-justified sampling
+> procedures. This article is not a substitute for QA judgement.

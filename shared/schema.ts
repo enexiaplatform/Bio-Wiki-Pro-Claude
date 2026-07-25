@@ -5,6 +5,7 @@ import type { QualityLabReviewedProjectSnapshot } from "./quality-lab-persistenc
 import type { QualityLabGovernanceSnapshot } from "./quality-lab-governance";
 import type { AtlasProMonthlyReviewRecord } from "./atlas-pro-monthly";
 import type { CareerExecutionRecord } from "./career-execution";
+import type { CareerProfile } from "./career-blueprint";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -105,6 +106,25 @@ export const careerBlueprintExecutions = pgTable(
   (t) => [uniqueIndex("career_blueprint_executions_user_execution_idx").on(t.userId, t.executionId)],
 );
 export type CareerBlueprintExecutionRow = typeof careerBlueprintExecutions.$inferSelect;
+
+// The Career Blueprint assessment profile itself, so an entitled buyer can
+// restore it (PDF regeneration, workspace creation) on a new device. One
+// active profile per user (unique userId, latest write wins). The userId
+// references auth users but stays a plain text column like the other tables
+// here: schema.ts intentionally never imports ./models/auth (see the header
+// note about drizzle-kit's loader). Degrades gracefully pre-push.
+export const careerBlueprintProfiles = pgTable(
+  "career_blueprint_profiles",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    profile: jsonb("profile").$type<CareerProfile>().notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("career_blueprint_profiles_user_idx").on(t.userId)],
+);
+export type CareerBlueprintProfileRow = typeof careerBlueprintProfiles.$inferSelect;
 
 // Free→Pro email nurture: one row per (user, step) so the daily cron never
 // re-sends a step. Degrades gracefully if the table is absent (pre-migration).

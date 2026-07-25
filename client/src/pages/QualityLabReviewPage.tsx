@@ -78,6 +78,7 @@ export default function QualityLabReviewPage() {
   const [diagnosticCheckoutAvailable, setDiagnosticCheckoutAvailable] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [diagnosticAccess, setDiagnosticAccess] = useState<{ entitled: boolean; purchasedAt: string | null } | null>(null);
   const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>({
     engagementIntent: requestedOffer,
     projectStage: "concept",
@@ -108,6 +109,18 @@ export default function QualityLabReviewPage() {
       .then((plans) => setDiagnosticCheckoutAvailable(Boolean(plans?.scopeDiagnostic)))
       .catch(() => setDiagnosticCheckoutAvailable(false));
   }, [requestedOffer, transferredDecisionFrameReadiness]);
+
+  useEffect(() => {
+    if (requestedOffer !== "scope-diagnostic" || !isAuthenticated) return;
+    let cancelled = false;
+    fetch("/api/quality-lab/diagnostic-access", { credentials: "include" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.entitled) setDiagnosticAccess({ entitled: true, purchasedAt: typeof data.purchasedAt === "string" ? data.purchasedAt : null });
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAuthenticated, requestedOffer]);
 
   async function payForDiagnostic() {
     setCheckoutLoading(true);
@@ -212,6 +225,34 @@ export default function QualityLabReviewPage() {
     } finally {
       setRetryingSnapshot(false);
     }
+  }
+
+  if (requestedOffer === "scope-diagnostic" && diagnosticAccess?.entitled) {
+    const reservedOn = diagnosticAccess.purchasedAt ? new Date(diagnosticAccess.purchasedAt) : null;
+    return (
+      <div className="min-h-[75vh] bg-[#08111f] px-4 py-16 text-slate-100">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-teal-300/25 bg-gradient-to-br from-teal-300/12 to-slate-950 p-7 shadow-2xl shadow-black/25 md:p-10">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-300 text-slate-950"><CheckCircle2 className="h-7 w-7" /></div>
+          <p className="mt-6 text-center text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Payment confirmed</p>
+          <h1 className="mt-3 text-center text-3xl font-bold">Diagnostic reserved — what happens next</h1>
+          <p className="mx-auto mt-4 max-w-xl text-center leading-7 text-slate-400">Your $149 Paid Scope Diagnostic is confirmed{reservedOn ? ` (reserved ${reservedOn.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })})` : ""}. Your intake brief is already with Atlas — please do not resubmit the form.</p>
+          <div className="mt-6 grid gap-3 text-left">
+            {[
+              "Atlas responds within two business days to confirm fit and schedule your 60-minute stakeholder workshop.",
+              "You receive a written scope and decision memo within two business days after the workshop.",
+              "The $149 fee is credited to a Blueprint started within 30 days.",
+            ].map((step) => (
+              <div key={step} className="flex items-start gap-3 rounded-xl border border-white/10 bg-black/15 p-4 text-sm leading-6 text-slate-300"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-teal-300" /> {step}</div>
+            ))}
+          </div>
+          <p className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 text-left text-xs leading-5 text-sky-100/80">If your project facts changed since you submitted the brief, bring the update to the workshop or reply to the confirmation email — no new payment or form submission is needed.</p>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link href="/quality-lab" className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950">Quality Lab overview <ArrowRight className="h-4 w-4" /></Link>
+            {project && <Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold">Return to blueprint</Link>}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (submitted) {

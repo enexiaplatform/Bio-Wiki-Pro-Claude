@@ -4,8 +4,8 @@ slug: "supplier-audit-program"
 lang: "en"
 tier: "free"
 category: "Quality Systems"
-seoDescription: "Run a risk-based supplier audit program: questionnaire, remote, and on-site audits; audit frequency by supplier risk and performance; finding closure; and approved-supplier decisions."
-updatedAt: "2026-07-05"
+seoDescription: "Run a risk-based supplier audit program: questionnaire vs remote vs on-site audits, risk-tiered frequency, audit content, finding closure, and approved-supplier decisions."
+updatedAt: "2026-07-25"
 quiz:
   - q: "What should primarily drive how often a supplier is audited?"
     options: ["Alphabetical order", "Risk, criticality, and performance", "Distance from the site", "Contract value only"]
@@ -16,47 +16,100 @@ quiz:
   - q: "A supplier audit finding should feed into:"
     options: ["Nothing", "Supplier CAPA and the approved-supplier decision", "Only the auditor's notes", "Sales forecasts"]
     answer: 1
+  - q: "When is a questionnaire alone usually sufficient oversight?"
+    options: ["For a sole-source sterile API supplier", "For a low-risk, well-performing supplier of non-critical materials", "Never", "Only when travel is expensive"]
+    answer: 1
 ---
 
 # Supplier Audit Programs
 
-Supplier qualification does not end at approval. Audits check whether the
-supplier's quality system, process controls, data integrity, material controls,
-and change-management practices still support the approved status.
+You cannot test quality into a purchased material; you have to buy it from a
+controlled source. GMP therefore expects manufacturers to qualify and monitor
+suppliers of materials and outsourced services: EU GMP Part I Chapter 5
+requires that starting materials be purchased only from approved suppliers,
+Chapter 7 governs outsourced activities, FDA 21 CFR 211.84 requires that
+components come from suppliers whose quality can be relied upon, and ICH Q10
+places supply-chain controls inside the pharmaceutical quality system. The
+audit program is the evidence engine behind the approved-supplier list.
+
+Auditing does not end at approval. Audits verify that the supplier's quality
+system, process controls, data integrity, material controls, and
+change-management practices still support the approved status - and they give
+you early warning when they no longer do.
 
 ## Audit types by assurance level
 
-- **Questionnaire or desk assessment** - useful for low-risk suppliers or as a
-  first screen before deeper review.
-- **Remote audit** - useful for document review, quality-system interviews, CAPA
-  follow-up, and lower-risk or travel-limited situations.
-- **On-site audit** - strongest assurance for high-risk suppliers such as API
-  manufacturers, sterile component suppliers, contract sterilizers, critical test
-  labs, or sole-source suppliers.
+| Audit type | What it can verify | Appropriate use | Limitations |
+| --- | --- | --- | --- |
+| Questionnaire / desk assessment | QMS existence and structure, certifications, regulatory status, key documents. | Low-risk suppliers; first screen before deeper review; periodic confirmation. | Self-reported; cannot verify actual practice or data integrity. |
+| Remote audit | Document review, system walkthroughs, interviews, CAPA follow-up. | Medium-risk suppliers, travel limits, targeted follow-ups between on-site visits. | Facility condition, shop-floor practice, and record culture are hard to see. |
+| On-site audit | Everything above plus facility condition, actual operations, raw data, personnel practices. | High-risk suppliers: APIs, sterile components, contract sterilizers, critical labs, sole sources. | Cost and effort; a two-day visit is still a sample. |
+| Shared / third-party audit | Same as on-site, via an accredited audit body or industry scheme. | Routine oversight where your own visit adds little. | You own the decision; review scope and findings critically. |
 
 The audit type should match risk. A fixed approach for every supplier wastes
-effort on low-risk suppliers and under-controls high-risk suppliers.
+effort on low-risk suppliers and under-controls high-risk ones.
 
-## Frequency follows risk
+## Risk-based scheduling
 
 Audit interval should reflect:
 
-- material or service criticality;
-- supplier performance history;
-- previous audit findings;
-- regulatory inspection status;
-- change-notification reliability;
-- complaint, deviation, or incoming-test trends;
+- material or service criticality (does it touch sterility, potency, identity?);
+- supplier performance history - complaints, deviations, incoming-test trends;
+- previous audit findings and CAPA closure quality;
+- regulatory inspection history and certifications;
+- change-notification reliability (do they tell you before things change?);
 - sole-source or supply-continuity risk.
 
-A high-risk supplier may need audit every one to three years and after major
-changes or quality issues. A low-risk supplier may be managed through
-questionnaire and periodic documentation review.
+Frequency tiers are site-defined, but common industry practice looks like:
+
+| Supplier risk tier | Typical oversight pattern |
+| --- | --- |
+| High (API, sterile/primary packaging, contract sterilizer, critical CMO/lab, sole source) | On-site audit every 1-3 years, plus continuous performance monitoring; audit triggered early by quality signals or major changes. |
+| Medium (excipients with functional impact, secondary packaging) | On-site or remote audit every 2-4 years plus periodic questionnaires. |
+| Low (non-critical consumables, general services) | Questionnaire plus incoming verification; audit on signal. |
+
+These intervals are industry practice, not compendial numbers. What regulators
+expect is a documented, risk-justified schedule - and that you actually follow
+it.
+
+## Preparing for the audit
+
+The quality of an on-site audit is set before you travel:
+
+- Pull the supplier's **performance data**: incoming-test results, complaint
+  and deviation history, change notifications, and prior CAPA status.
+- Re-read the **quality agreement** and technical specifications - audit
+  against what was contracted, not generic GMP.
+- Review the previous audit report and verify claimed CAPA closures first;
+  uncorrected repeat findings change the tone of the whole visit.
+- Build an agenda that reserves time for the **shop floor and raw data**, not
+  just the conference room; request specific batch records, deviation files,
+  and audit trails in advance.
+- Brief the audit team on roles: lead auditor, technical specialists (QC,
+  engineering, microbiology) for high-risk processes.
+
+A questionnaire still has a role for higher-risk suppliers: send it ahead of
+the visit so the on-site time goes to verification, not fact-finding.
+
+## What an on-site supplier audit covers
+
+- **Quality system**: deviation, CAPA, change control, complaint handling,
+  self-inspection, management review - the ICH Q10 elements at the supplier.
+- **Process and material controls**: manufacturing process state of control,
+  cleaning, cross-contamination prevention, pest control, warehousing.
+- **Data integrity**: raw data practices, audit trails, access control, record
+  retention - for both paper and electronic systems.
+- **Laboratory controls**: method validation status, OOS handling, reference
+  standard management, instrument qualification.
+- **Regulatory posture**: registration status, inspection history, and whether
+  the material you buy matches what was inspected.
+- **Change management**: the contractual commitment to notify changes before
+  implementation - the clause that protects you more than any single visit.
 
 ## Closing the loop
 
-An audit report is not the end of the audit. Findings should drive supplier CAPA,
-approved-supplier status decisions, increased incoming verification where
+An audit report is not the end of the audit. Findings should drive supplier
+CAPA, approved-supplier status decisions, increased incoming verification where
 justified, and follow-up to confirm effectiveness.
 
 Strong programs define:
@@ -67,6 +120,34 @@ Strong programs define:
 - triggers for probation, restricted approval, or disqualification;
 - linkage to supplier performance review and management review.
 
-> Tip: tie the audit program to supplier risk assessment and change control, so a
-> supplier change, complaint trend, or quality signal can trigger an audit ahead
-> of schedule.
+The quality agreement is the enforcement instrument: it should name audit
+rights, change-notification obligations, data-access expectations, and what
+happens when the supplier fails to perform.
+
+## Common inspection findings
+
+- Approved-supplier status with no supporting audit or assessment evidence.
+- Audit schedules that exist but slip year after year with no escalation.
+- High-risk suppliers managed by questionnaire while low-risk ones get site
+  visits.
+- Audit findings closed on the supplier's promise, with no verification.
+- No quality agreement, or one without change-notification terms.
+- Supplier changes (site, process, specification) discovered after the fact
+  during incoming testing.
+- Audits that review certificates but never raw data or the shop floor.
+
+## Take it further
+
+Supplier risk ranking and qualification workflows are covered in the Pro
+lesson [Supplier Qualification](/library/supplier-qualification), the
+[Supplier Qualification workflow](/workflows/supplier-qualification-workflow),
+and the
+[Supplier Qualification Risk Triage tool](/tools/supplier-qualification-risk-triage).
+Supplier failures land in your own system via
+[Deviation Management](/library/deviation-management) and
+[Complaint Handling](/library/complaint-handling).
+
+> Educational content only. Audit intervals and oversight patterns shown here
+> are industry practice, not regulatory mandates. Verify against current EU GMP
+> Chapters 5 and 7, 21 CFR 211.84, ICH Q10, your quality agreements, and
+> approved procedures; this article is not a substitute for QA judgement.

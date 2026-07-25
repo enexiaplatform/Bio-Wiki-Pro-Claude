@@ -1,8 +1,7 @@
-Media,Lot,Prep Date,Expiry,pH (post-sterilization),GPT Strain,Recovery (target),Inhibition (non-target / selective),Result,Analyst,Date
-TSA,,,,,S. aureus,,,N/A,,
-TSA,,,,,P. aeruginosa,,,N/A,,
-TSA,,,,,B. subtilis,,,N/A,,
-TSA,,,,,C. albicans,,,N/A,,
-TSA,,,,,A. brasiliensis,,,N/A,,
-MacConkey,,,,,E. coli,,,,,
-Cetrimide,,,,,P. aeruginosa,,,,,
+Media Name,Lot Number,Supplier,Date Received,CoA Reviewed (Y/N),Prep Date,Sterilization Cycle,pH Before Sterilization,pH After Sterilization,Appearance,Test Strain(s),Inoculum (cfu),Incubation Temp/Time,Recovery Result,Inhibition/Indicative Result,GPT Pass/Fail,Expiry Assigned,Released By,Release Date
+TSA (SCDA),TS-4471,MediChem Labs,2026-02-10,Y,2026-02-11,121C 15 min,7.28,7.31,"Clear amber; no cracks or bubbles","S. aureus ATCC 6538; P. aeruginosa ATCC 9027; B. subtilis ATCC 6633; C. albicans ATCC 10231; A. brasiliensis ATCC 16404",62; 74; 55; 48; 78,30-35C 3 d / 20-25C 5 d,"58; 70; 52; 45; 76 cfu (ratios 0.94-1.00 vs control lot TS-4402)",N/A,PASS,2026-03-11,J. Rivera,2026-02-13
+SDA,SD-2210,MediChem Labs,2026-02-10,Y,2026-02-11,121C 15 min,5.58,5.62,"Clear pale amber; no cracks or bubbles","C. albicans ATCC 10231; A. brasiliensis ATCC 16404",41; 66,20-25C 5 d,"39; 61 cfu (ratios 0.95; 0.92 vs control)",N/A,PASS,2026-03-11,J. Rivera,2026-02-16
+FTM,FT-0903,BioReady Media (RTU),2026-02-17,Y,N/A (ready-to-use),Manufacturer sterilized per CoA,N/A,7.15 (from CoA),"Clear straw; no oxidized pink band; packaging intact","S. aureus ATCC 6538; P. aeruginosa ATCC 9027; B. subtilis ATCC 6633; C. sporogenes ATCC 19404",58; 49; 63; 44,30-35C 3 d,"Visible turbidity all strains within 3 d; comparable to control","N/A; sterility check: no growth in 3 uninoculated tubes",PASS,2026-04-30,M. Chen,2026-02-20
+MacConkey Agar,MC-3345,MediChem Labs,2026-02-24,Y,2026-02-25,121C 15 min,7.11,7.08,"Clear red; no precipitate","E. coli ATCC 8739; P. aeruginosa ATCC 9027 (GP); S. aureus ATCC 6538 (inhibitory)",52; 47; >100,30-35C 3 d,"50; 44 cfu (ratios 0.96; 0.94 vs control)","E. coli pink colonies (indicative); S. aureus no growth (inhibitory)",PASS,2026-03-25,A. Okafor,2026-02-28
+Cetrimide Agar,CT-1187,BioReady Media (RTU),2026-03-03,Y,N/A (ready-to-use),Manufacturer sterilized per CoA,N/A,7.21 (from CoA),"Greenish gel; no dehydration; wraps sealed","P. aeruginosa ATCC 9027 (GP); E. coli ATCC 8739 (inhibitory)",39; >100,30-35C 3 d,"37 cfu (ratio 0.95 vs control)","P. aeruginosa greenish fluorescence (indicative); E. coli no growth (inhibitory)",PASS,2026-05-01,M. Chen,2026-03-06
+TSA (SCDA),TS-4520,MediChem Labs,2026-03-09,Y,2026-03-10,121C 22 min (cycle error),7.26,6.88,"Darkened amber; slight caramel odor","S. aureus ATCC 6538; P. aeruginosa ATCC 9027; B. subtilis ATCC 6633; C. albicans ATCC 10231; A. brasiliensis ATCC 16404",70; 66; 58; 44; 72,30-35C 3 d / 20-25C 5 d,"21; 18; 15; 10; 19 cfu (ratios 0.26-0.30 vs control lot TS-4471)",N/A,FAIL - batch rejected; pH out of spec and overheated cycle; deviation DEV-2026-022,N/A (rejected),A. Okafor,2026-03-13

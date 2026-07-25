@@ -2,6 +2,7 @@ import PDFDocument from "pdfkit";
 import {
   buildCareerAnalysis,
   careerProfileFilename,
+  defaultCareerProfile,
   type CareerAnalysis,
   type CareerProfile,
 } from "../shared/career-blueprint.js";
@@ -699,26 +700,65 @@ function drawCover(doc: PDFKit.PDFDocument, profile: CareerProfile, analysis: Ca
   doc.font("Helvetica").fontSize(8).fillColor("#7890a6").text("Generated career decision-support artifact / Keep confidential", 54, 780, { width: 480 });
 }
 
-export function careerBlueprintPdf(profile: CareerProfile): Promise<Buffer> {
+/** Diagonal "Illustrative sample" watermark drawn on every page of the public sample. */
+function drawSampleWatermark(doc: PDFKit.PDFDocument) {
+  doc.save();
+  doc.opacity(0.1);
+  doc.font("Helvetica-Bold").fontSize(48).fillColor(MUTED);
+  doc.rotate(-32, { origin: [doc.page.width / 2, doc.page.height / 2] });
+  doc.text("ILLUSTRATIVE SAMPLE", 0, doc.page.height / 2 - 26, { width: doc.page.width, align: "center", lineBreak: false });
+  doc.restore();
+}
+
+interface CareerBlueprintRenderOptions {
+  /** Watermark every page and use sample metadata. */
+  sample?: boolean;
+  /** Limit the number of content pages after the cover (default: all). */
+  pageLimit?: number;
+}
+
+function renderCareerBlueprintPdf(profile: CareerProfile, options: CareerBlueprintRenderOptions = {}): Promise<Buffer> {
   const analysis = buildCareerAnalysis(profile, profile.selectedRouteId);
   const pages = profilePageData(profile, analysis);
   if (pages.length !== 37) throw new Error(`Career Blueprint requires 37 content pages; received ${pages.length}`);
+  const contentPages = options.pageLimit === undefined ? pages : pages.slice(0, options.pageLimit);
 
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A4", margin: 48, info: { Title: `${profile.fullName} — Personal Career Blueprint`, Author: "Life Science Atlas", Subject: analysis.selectedRoute.title } });
+    const doc = new PDFDocument({ size: "A4", margin: 48, info: { Title: options.sample ? "Personal Career Blueprint — Illustrative sample" : `${profile.fullName} — Personal Career Blueprint`, Author: "Life Science Atlas", Subject: options.sample ? "Illustrative sample — fictional profile" : analysis.selectedRoute.title } });
     const chunks: Buffer[] = [];
     doc.on("data", (chunk) => chunks.push(chunk as Buffer));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
     drawCover(doc, profile, analysis);
-    pages.forEach((page, index) => {
+    if (options.sample) drawSampleWatermark(doc);
+    contentPages.forEach((page, index) => {
       doc.addPage({ size: "A4", margin: 48, layout: "portrait" });
       doc.rect(0, 0, doc.page.width, doc.page.height).fill(PAPER);
       drawContentPage(doc, page, index + 2, analysis);
+      if (options.sample) drawSampleWatermark(doc);
     });
     doc.end();
   });
+}
+
+export function careerBlueprintPdf(profile: CareerProfile): Promise<Buffer> {
+  return renderCareerBlueprintPdf(profile);
+}
+
+/** Clearly-labeled fictional profile used only for the public sample PDF. */
+const sampleCareerBlueprintProfile: CareerProfile = {
+  ...defaultCareerProfile,
+  fullName: "Jordan Example (fictional profile)",
+  location: "Example City",
+};
+
+/**
+ * Public illustrative sample: real engine, fictional profile, first pages only,
+ * every page watermarked. Lets buyers preview the $20 Blueprint structure.
+ */
+export function careerBlueprintSamplePdf(): Promise<Buffer> {
+  return renderCareerBlueprintPdf(sampleCareerBlueprintProfile, { sample: true, pageLimit: 4 });
 }
 
 export { careerProfileFilename };

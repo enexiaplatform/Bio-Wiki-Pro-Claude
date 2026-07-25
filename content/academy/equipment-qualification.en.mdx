@@ -4,50 +4,224 @@ slug: "equipment-qualification"
 lang: "en"
 tier: "free"
 category: "Validation"
-seoDescription: "Equipment qualification explained — DQ, IQ, OQ, PQ, the role of the URS, and how qualification feeds into ongoing process validation."
-updatedAt: "2026-06-02"
+seoDescription: "The DQ/IQ/OQ/PQ equipment qualification lifecycle under EU GMP Annex 15 and FDA process validation guidance: URS writing, FAT/SAT, requalification triggers, and audit-proof traceability."
+updatedAt: "2026-07-25"
 quiz:
   - q: "Which qualification stage verifies the equipment is installed correctly per specification?"
     options: ["DQ", "IQ", "OQ", "PQ"]
     answer: 1
   - q: "Operational Qualification (OQ) demonstrates the equipment:"
-    options: ["Is delivered", "Performs across its operating ranges", "Is depreciated", "Is cleaned"]
+    options: ["Is delivered", "Performs across its operating ranges, including alarms and interlocks", "Is depreciated", "Is cleaned"]
     answer: 1
-  - q: "What document defines the user's needs before purchase?"
+  - q: "What document defines the user's needs before purchase and anchors all later testing?"
     options: ["URS", "CAPA", "OOS", "SOP"]
     answer: 0
+  - q: "Requalification is typically triggered by:"
+    options: ["A fixed five-year rule only", "Change control, periodic review, or performance drift", "A vendor request", "Annual leave schedules"]
+    answer: 1
 ---
 
 # Equipment Qualification (IQ/OQ/PQ)
 
-Qualification provides documented evidence that equipment is suitable for its
-intended use and performs reliably. It is the equipment-level counterpart to
-process validation and follows a staged sequence.
+Equipment qualification is the documented evidence that a piece of equipment is
+suitable for its intended use, is installed correctly, operates as specified, and
+performs reliably under real production conditions. It is the equipment-level
+counterpart to process validation: FDA's 2011 Process Validation guidance places
+facility, utility, and equipment qualification inside Stage 1 (Process Design),
+and EU GMP Annex 15 (Qualification and Validation, 2015) defines the classic
+DQ/IQ/OQ/PQ stages for the EU framework. ASTM E2500 adds the risk- and
+science-based twist: apply verification effort where the risk to product quality
+actually lives.
 
-## The qualification stages
+The logic chain is simple and auditors will walk it end to end: the URS says
+what you need, DQ shows the design can deliver it, IQ shows it was installed as
+designed, OQ shows it works across its ranges, and PQ shows it keeps working in
+routine use.
 
-- **DQ — Design Qualification** — the design meets the User Requirements
-  Specification (URS) and GMP needs.
-- **IQ — Installation Qualification** — installed correctly: utilities,
-  calibration, documentation, and components per spec.
-- **OQ — Operational Qualification** — performs across its full operating
-  ranges, including alarms and interlocks.
-- **PQ — Performance Qualification** — performs consistently under real,
-  routine production conditions.
+## The qualification lifecycle
 
-## The URS anchors everything
-
-A clear URS defines acceptance criteria up front and gives every later stage
-something objective to test against. Weak URS = ambiguous qualification.
-
-## Qualification feeds validation
-
-PQ results feed directly into process validation and the control strategy.
-Requalification is triggered by change control, periodic review, or performance
-drift detected in trending.
+| Stage | Core question | Typical evidence |
+| --- | --- | --- |
+| URS | What must the equipment do, and under what constraints? | Process needs, capacity, materials of construction, utilities, data requirements, regulatory commitments |
+| DQ | Does the proposed design meet the URS and GMP? | Design review vs URS, vendor assessment, drawings, material certificates, software architecture review |
+| IQ | Was it delivered and installed as designed? | As-built verification, utility connections, instrument list and calibration status, manuals, spare parts, software installation checks |
+| OQ | Does it operate correctly across its specified ranges? | Operating-range challenge, alarms and interlocks, set-point verification, worst-case conditions, sequence tests |
+| PQ | Does it perform consistently under routine load? | Consecutive runs under production conditions with representative product, load, and operators |
+| Maintained state | Does it stay qualified over time? | Calibration, preventive maintenance, trending, periodic review, change control, requalification |
 
 > Practice it: use the free [Equipment Qualification Readiness Planner](/tools/equipment-qualification-readiness-planner)
 > to check DQ/IQ/OQ/PQ evidence and identify release blockers.
 
-> Tip: keep traceability from URS → DQ → IQ → OQ → PQ. Auditors love to follow
-> one requirement all the way through to its verifying test.
+## The URS anchors everything
+
+A User Requirement Specification written before purchase is the acceptance
+standard for every later stage. A useful URS is specific, testable, and owned by
+the user, not copied from a vendor brochure. It should state:
+
+- process requirements: capacity, throughput, temperature/pressure ranges,
+  cycle times, and product-contact conditions;
+- product-contact materials and surface finish (for example 316L stainless
+  steel, Ra values, where relevant);
+- cleaning and sanitization requirements;
+- instrumentation and control requirements, including accuracy classes;
+- data-integrity expectations: audit trail, user access levels, electronic
+  records where applicable;
+- utility requirements and environmental constraints;
+- applicable regulatory and compendial requirements.
+
+A weak URS ("autoclave, 121 degrees C, big enough") forces teams to negotiate
+acceptance criteria after the equipment arrives, which is exactly backwards.
+
+## DQ: prove the design before you buy
+
+Design Qualification documents that the chosen design can meet the URS. In
+practice this means a documented design review, a vendor assessment (quality
+system, track record, support capability), and review of drawings, materials,
+and control architecture against each URS line. For standardized commercial
+equipment, Annex 15 allows a risk-based approach where vendor documentation and
+a documented selection rationale can cover much of DQ. For custom-built or
+highly integrated systems, expect a formal DQ protocol.
+
+Factory Acceptance Testing (FAT) and Site Acceptance Testing (SAT) sit beside
+DQ/IQ rather than replacing them: FAT catches build and function problems while
+fixing them is still cheap; SAT confirms nothing was damaged or changed in
+shipping and installation. Where FAT/SAT documentation is sound, Annex 15
+permits leveraging it into IQ/OQ instead of repeating tests, provided the
+rationale is documented.
+
+## IQ: installed as designed
+
+Installation Qualification verifies, against approved specifications and
+drawings, that what arrived and was installed matches what was qualified on
+paper. Typical IQ content:
+
+- equipment identification: make, model, serial numbers;
+- verification against purchase specification and as-built drawings;
+- utility connections (power, air, steam, water) within required quality and
+  capacity;
+- installation environment: room classification, temperature, humidity, space
+  for operation and maintenance;
+- instrument inventory with calibration status and certificates;
+- materials of construction certificates for product-contact parts;
+- software installation: version, configuration baseline, backup verification;
+- documentation delivered: manuals, P&IDs, wiring diagrams, spare-parts lists,
+  lubrication and maintenance schedules;
+- safety features present and tagged.
+
+Every deviation found during IQ (wrong gasket material, missing certificate,
+different instrument range) is recorded and resolved or formally accepted
+before OQ starts.
+
+## OQ: challenge the operating envelope
+
+Operational Qualification demonstrates that the equipment functions as intended
+across its specified operating ranges, in its final installed state. OQ is where
+you deliberately push the edges:
+
+- run at minimum and maximum set points, not just the nominal value;
+- challenge alarms, interlocks, and safety cut-offs by triggering them;
+- verify control-system functions: sequences, recipes, access levels, audit
+  trail entries, power-loss and recovery behavior;
+- test worst-case conditions justified by risk: minimum/maximum load, extreme
+  fill volumes, highest viscosity, lowest line speed;
+- verify instruments under operating conditions against calibrated references.
+
+OQ is normally performed with placebo, water, or dummy loads; the point is the
+equipment, not the product. Acceptance criteria come from the URS and the
+manufacturer's specification, tightened where the process needs more.
+
+## PQ: prove it in routine use
+
+Performance Qualification demonstrates that the qualified equipment performs
+consistently under actual routine production conditions: real product or
+representative material, real loads, real operators, real SOPs. PQ typically
+runs consecutive successful batches or cycles and is often integrated with
+process performance qualification. The PQ report closes the loop by mapping
+results back to URS requirements and releasing the equipment for GMP use.
+
+Qualification also feeds the downstream system: PQ results become the operating
+ranges cited in process validation, cleaning validation, and the control
+strategy. That link is why qualification records must be retrievable, not
+archived and forgotten.
+
+## Who does what
+
+| Role | Responsibility |
+| --- | --- |
+| User / process owner | Writes and owns the URS; defines what "suitable for intended use" means |
+| Engineering | Executes IQ/OQ, manages vendors, maintains drawings and technical files |
+| Vendor | Supplies documentation, executes FAT/SAT, supports IQ/OQ under agreed scope |
+| QA | Approves protocols and reports, confirms deviations are closed, releases equipment for GMP use |
+| Validation group | Owns the validation plan, risk assessments, traceability, and periodic review |
+
+Annex 15 explicitly allows tasks to be contracted to vendors or third parties,
+but the responsibility for qualification stays with the manufacturer. A vendor
+protocol signed unread by the site is a finding, not a delegation.
+
+## Requalification triggers
+
+Qualification is a state, not a date. Requalification (full or partial, decided
+by documented risk assessment) is typically triggered by:
+
+- modification of the equipment, control system, or software;
+- relocation, even within the same building, for affected equipment;
+- major maintenance: replacement of critical components, sensors, or
+  product-contact parts;
+- change in use: new product, new operating range, new load configuration;
+- performance drift seen in calibration results, monitoring trends, or
+  recurring deviations;
+- periodic review concluding that accumulated small changes amount to a
+  significant change;
+- long shutdown or return to service after a contamination event.
+
+Many sites add a time-based periodic review (industry practice, commonly annual
+for critical equipment) whose job is to decide whether the accumulated evidence
+still supports the qualified state. The review can conclude "no requalification
+needed", but it must conclude it with data.
+
+## Common GMP findings
+
+- No URS, or a URS written after the purchase order.
+- FAT/SAT performed but never leveraged or referenced in IQ/OQ, or the reverse:
+  vendor tests accepted with no site review.
+- OQ run only at nominal set points; alarms and interlocks never challenged.
+- Calibration certificates missing or expired at the time of qualification.
+- Software treated as invisible: no version control, no configuration baseline,
+  no audit-trail verification.
+- Relocation or major repair done under maintenance work orders, bypassing
+  change control and requalification.
+- PQ performed with ideal operators and hand-picked loads, then released for
+  routine conditions never demonstrated.
+- No traceability from URS requirement to the test that verified it.
+
+## Documentation checklist
+
+A defensible qualification file contains:
+
+- validation/qualification plan and risk assessment;
+- approved URS with version history;
+- DQ review or vendor/design assessment;
+- FAT/SAT reports with deviations;
+- IQ and OQ protocols and reports with raw data;
+- instrument list and calibration certificates;
+- drawings (as-built) and material certificates;
+- software configuration baseline and data-integrity assessment;
+- PQ protocol, report, and release statement;
+- SOPs for operation, cleaning, maintenance, and calibration;
+- periodic-review schedule and change-control linkage.
+
+## Take it further
+
+- [Equipment Qualification workflow](/workflows/equipment-qualification-lifecycle)
+- [Process Validation - The Three Stages](/library/process-validation-stages)
+- [Calibration & Metrology Fundamentals](/library/calibration-metrology)
+- [Change Control](/library/change-control)
+- [Equipment Qualification Readiness Planner](/tools/equipment-qualification-readiness-planner)
+- When equipment software is in scope, the Atlas Pro lesson **Computer System
+  Validation (CSV)** covers GAMP 5 categories, audit trails, and the
+  qualification-to-CSV interface in depth.
+
+> Educational content only. Qualification expectations vary by market,
+> equipment criticality, and site procedure; verify against current editions of
+> EU GMP Annex 15, FDA guidance, ASTM E2500, and approved site SOPs. Nothing
+> here substitutes for QA judgement on a specific qualification decision.
