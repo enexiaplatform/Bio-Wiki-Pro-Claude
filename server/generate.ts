@@ -7,6 +7,8 @@ import { qualityLabProjectFromReviewedSnapshot, type QualityLabReviewedProjectSn
 import { createQualityLabDeliveryPackage } from "../shared/quality-lab-delivery.js";
 import { assessPaidPilotEvidence } from "../shared/quality-lab-engagement.js";
 import { qualityLabIllustrativeSamplePdf } from "./quality-lab-blueprint-pdf.js";
+import { getQualityLabReadiness } from "../shared/quality-lab.js";
+import { createQualityLabCommercialHandoff } from "../shared/quality-lab-commercial-handoff.js";
 
 // 20 quality-system elements scored 0–2; % readiness computed by a live formula.
 const GAP_ROWS: [number, string, string, string][] = [
@@ -73,12 +75,24 @@ const DELIVERY_TITLE_STYLE = {
 };
 
 function applyDeliverySheetLayout(ws: XLSX.WorkSheet, widths: number[], headerRow = 0) {
-  ws["!cols"] = widths.map((wch) => ({ wch: Math.min(wch, 48) }));
+  const effectiveWidths = widths.map((wch) => Math.min(wch, 48));
+  ws["!cols"] = effectiveWidths.map((wch) => ({ wch }));
   ws["!autofilter"] = ws["!ref"] ? { ref: XLSX.utils.encode_range({ r: headerRow, c: 0 }, XLSX.utils.decode_range(ws["!ref"]).e) } : undefined;
   ws["!freeze"] = { xSplit: 0, ySplit: headerRow + 1, topLeftCell: `A${headerRow + 2}`, activePane: "bottomLeft", state: "frozen" } as any;
   const range = ws["!ref"] ? XLSX.utils.decode_range(ws["!ref"]) : null;
   if (!range) return;
-  ws["!rows"] = Array.from({ length: range.e.r + 1 }, (_, row) => ({ hpt: row === headerRow ? 30 : 42 }));
+  ws["!rows"] = Array.from({ length: range.e.r + 1 }, (_, row) => {
+    if (row === headerRow) return { hpt: 30 };
+    let maxLines = 1;
+    for (let column = range.s.c; column <= range.e.c; column += 1) {
+      const value = ws[XLSX.utils.encode_cell({ r: row, c: column })]?.v;
+      if (value === undefined || value === null || value === "") continue;
+      const width = Math.max(8, effectiveWidths[column] ?? 12);
+      const lines = String(value).split("\n").reduce((count, line) => count + Math.max(1, Math.ceil(line.length / width)), 0);
+      maxLines = Math.max(maxLines, lines);
+    }
+    return { hpt: Math.min(240, Math.max(42, maxLines * 15 + 8)) };
+  });
   for (let row = range.s.r; row <= range.e.r; row += 1) {
     for (let column = range.s.c; column <= range.e.c; column += 1) {
       const cell = ws[XLSX.utils.encode_cell({ r: row, c: column })];
@@ -91,7 +105,7 @@ function applyDeliverySheetLayout(ws: XLSX.WorkSheet, widths: number[], headerRo
           fill: { patternType: "solid", fgColor: { rgb: "FFFFFF" } },
           alignment: { vertical: "top", wrapText: true, horizontal: cell.t === "n" ? "right" : "left" },
           border: { bottom: { style: "thin", color: { rgb: "E2E8F0" } } },
-          numFmt: cell.t === "n" ? "#,##0.0" : undefined,
+          numFmt: cell.t === "n" ? (Number.isInteger(cell.v) ? "#,##0" : "#,##0.0") : undefined,
         };
       }
     }
@@ -113,6 +127,7 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
   const delivery = createQualityLabDeliveryPackage(project, packet);
   const pilot = assessPaidPilotEvidence(packet, delivery.readiness);
   const blueprint = snapshot.blueprint;
+  const readiness = getQualityLabReadiness(blueprint);
   const wb = XLSX.utils.book_new();
   wb.Props = { Title: `${snapshot.projectName} - Atlas Quality Lab Blueprint Delivery`, Subject: delivery.control.intendedUse, Author: "Life Science Atlas", CreatedDate: new Date(delivery.generatedAt) };
 
@@ -195,6 +210,10 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
 
   addDeliverySheet(wb, "Rule Trace", [["Rule ID", "Rule version", "Domain Pack", "Output types", "Applicability", "Confidence", "Review required", "Evidence IDs", "Limitations"], ...blueprint.ruleTrace.map((item) => [item.ruleId, item.ruleVersion, item.domainPackId, item.outputTypes.join(" | "), item.applicability, item.confidence, item.reviewRequired ? "Yes" : "No", item.evidenceIds.join(" | "), item.limitations])], [30, 18, 28, 28, 65, 16, 18, 38, 65]);
 
+  addDeliverySheet(wb, "Decision Lineage", [["Lineage ID", "Decision type", "Output key", "Conclusion", "Current output", "Calculation", "Input paths", "Rule versions", "Evidence versions", "Assumptions", "Limitations", "Open inputs", "Material change factors"], ...blueprint.decisionLineage.map((item) => [item.id, item.decisionType, item.outputKey, item.summary, item.currentOutput, item.calculation, item.contributingInputPaths.join(" | "), item.ruleRefs.map((ref) => `${ref.id}@${ref.version}`).join(" | "), item.evidenceRefs.map((ref) => `${ref.id}@${ref.version}`).join(" | "), item.assumptionIds.join(" | "), item.limitations.join(" | "), item.unresolvedInputIds.join(" | "), item.materialChangeFactors.join(" | ")])], [36, 18, 32, 55, 22, 70, 55, 55, 55, 40, 70, 45, 55]);
+
+  addDeliverySheet(wb, "Readiness", [["Measure", "Dimension / stage", "Score", "Status", "Summary", "Related open inputs", "Formula / next gate"], ["Model completeness", "Overall", readiness.modelCompleteness.score, "calculated", readiness.modelCompleteness.summary, "", readiness.modelCompleteness.formula], ...readiness.modelCompleteness.dimensions.map((item) => ["Model completeness", item.label, item.score, item.status, item.summary, item.relatedUnresolvedInputIds.join(" | "), ""]), ["Evidence readiness", "Overall", readiness.evidenceReadiness.score, "calculated", readiness.evidenceReadiness.summary, "", readiness.evidenceReadiness.formula], ...readiness.evidenceReadiness.dimensions.map((item) => ["Evidence readiness", item.label, item.score, item.status, item.summary, item.relatedUnresolvedInputIds.join(" | "), ""]), ["Decision readiness", readiness.decisionReadiness.label, readiness.decisionReadiness.score, readiness.decisionReadiness.stage, readiness.decisionReadiness.summary, readiness.decisionReadiness.blockingInputIds.join(" | "), `${readiness.decisionReadiness.formula} Next gate: ${readiness.decisionReadiness.nextGate}`]], [22, 30, 12, 22, 70, 45, 75]);
+
   addDeliverySheet(wb, "Review Checklist", [["Review item ID", "Owner role", "Question", "Status", "Required evidence", "Related rule IDs", "Reviewer note"], ...packet.checklist.map((item) => [item.id, item.ownerRole, item.question, item.status, item.requiredEvidence, item.relatedRuleIds.join(" | "), item.reviewerNote])], [28, 24, 62, 18, 62, 36, 62]);
 
   addDeliverySheet(wb, "Decisions Corrections", [["Record type", "Recorded at", "Field, rule or decision", "Previous value / options", "Corrected value", "Evidence / rationale", "Owner or reviewer", "Downstream impact"], ...packet.corrections.map((item) => ["Correction", item.recordedAt, item.fieldOrRuleId, item.previousValue, item.correctedValue, `${item.evidenceRef} | ${item.rationale}`, item.reviewerRole, ""]), ...packet.decisions.map((item) => ["Decision", item.recordedAt, item.decision, item.optionsConsidered.join(" | "), "", item.rationale, item.owner, item.downstreamImpact])], [18, 22, 42, 45, 32, 65, 28, 55]);
@@ -208,12 +227,148 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
   return XLSX.write(wb, { type: "buffer", bookType: "xlsx", cellStyles: true });
 }
 
+/** Build a supplier-neutral RFQ response and comparison workbook from the same versioned handoff contract as the URS document. */
+export function qualityLabRfqWorkbook(snapshot: QualityLabReviewedProjectSnapshot): Buffer {
+  if (!snapshot.engagement) throw new Error("A review engagement packet is required before RFQ export");
+  const project = qualityLabProjectFromReviewedSnapshot(snapshot);
+  const handoff = createQualityLabCommercialHandoff(project, snapshot.engagement);
+  const wb = XLSX.utils.book_new();
+  wb.Props = { Title: `${snapshot.projectName} - Vendor-neutral RFQ Comparison`, Subject: handoff.controls.notice, Author: "Life Science Atlas", CreatedDate: new Date(handoff.generatedAt) };
+
+  addDeliverySheet(wb, "RFQ Control", [
+    ["Control field", "Value"],
+    ["Workbook contract", handoff.rfqWorkbookVersion],
+    ["Handoff contract", handoff.handoffVersion],
+    ["Project", handoff.project.name],
+    ["Project ID", handoff.project.id],
+    ["Project revision", handoff.project.revisionReference],
+    ["Document ID", handoff.documentControl.documentId],
+    ["Revision", handoff.documentControl.revision],
+    ["Handoff status", handoff.status],
+    ["Generated at", handoff.generatedAt],
+    ["Input contract", handoff.sourceVersions.inputContract],
+    ["Output contract", handoff.sourceVersions.outputContract],
+    ["Compiler Core", handoff.sourceVersions.compilerCore],
+    ["Blueprint engine", handoff.sourceVersions.blueprintEngine],
+    ["Domain Pack", handoff.sourceVersions.domainPack],
+    ["Vendor-neutral", "Yes"],
+    ["Automatic supplier selection", "No"],
+    ["Product equivalence asserted", "No"],
+    ["Approved engineering specification", "No"],
+    ["Control notice", handoff.controls.notice],
+  ], [32, 100]);
+
+  addDeliverySheet(wb, "Requirements", [[
+    "Requirement ID", "Equipment ID", "Equipment", "Category", "Intended use", "Qty current", "Qty planning horizon", "Quantity status",
+    "Functional requirements", "Performance requirements", "Utilities and interfaces", "Qualification impact", "Explicit exclusions", "Supplier evidence requested",
+    "Method requirement IDs", "Rule references", "Evidence references", "Decision Lineage IDs", "Unresolved input IDs", "Handoff status", "Blockers",
+  ], ...handoff.requirements.map((item) => [
+    item.requirementId, item.equipmentId, item.equipmentName, item.equipmentCategory, item.intendedUse, item.quantityBasis.current, item.quantityBasis.planningHorizon, item.quantityBasis.status,
+    item.functionalRequirements.join("\n"), item.performanceRequirements.join("\n"), item.utilitiesAndInterfaces.join("\n"), item.qualificationImpact, item.exclusions.join("\n"), item.supplierEvidenceRequested.join("\n"),
+    item.relatedMethodRequirementIds.join(" | "), item.ruleRefs.map((ref) => `${ref.id}@${ref.version}`).join(" | "), item.evidenceRefs.map((ref) => `${ref.id}@${ref.version}`).join(" | "), item.decisionLineageIds.join(" | "), item.unresolvedInputIds.join(" | "), item.handoffStatus, item.blockers.join("\n"),
+  ])], [28, 24, 30, 22, 60, 14, 18, 18, 65, 70, 70, 60, 70, 70, 45, 50, 50, 45, 40, 24, 70]);
+
+  const supplierSlots = ["Supplier A", "Supplier B", "Supplier C"];
+  const responseRows = supplierSlots.flatMap((supplier, supplierIndex) => handoff.requirements.map((item) => [
+    supplier, { t: "s", f: `IF('Comparison Summary'!B${supplierIndex + 2}="","",'Comparison Summary'!B${supplierIndex + 2})`, v: "" }, item.requirementId, "", "", "", "", "", "",
+  ]));
+  const responses = addDeliverySheet(wb, "Supplier Responses", [[
+    "Supplier slot", "Supplier legal name", "Requirement ID", "Declared response", "Offered configuration / approach", "Technical evidence reference", "Deviation or exception", "Clarification requested", "Reviewer note",
+  ], ...responseRows], [18, 30, 30, 24, 55, 45, 55, 55, 55]);
+  responses["!autofilter"] = { ref: `A1:I${responseRows.length + 1}` };
+
+  const comparisonRows: unknown[][] = [["Supplier slot", "Supplier legal name", "Requirements", "Responses recorded", "Declared comply", "Deviation", "Clarification required", "Not offered", "Open responses", "Decision boundary"]];
+  supplierSlots.forEach((slot, index) => comparisonRows.push([slot, "", null, null, null, null, null, null, null, "No automatic score, rank, equivalence or award recommendation."]));
+  const comparison = addDeliverySheet(wb, "Comparison Summary", comparisonRows, [18, 30, 18, 20, 18, 16, 24, 16, 18, 65]);
+  supplierSlots.forEach((slot, index) => {
+    const row = index + 2;
+    const quoted = slot.replaceAll('"', '""');
+    const formulas = [
+      ["C", `COUNTA('Requirements'!A2:A${handoff.requirements.length + 1})`],
+      ["D", `COUNTIFS('Supplier Responses'!A2:A${responseRows.length + 1},"${quoted}",'Supplier Responses'!D2:D${responseRows.length + 1},"<>")`],
+      ["E", `COUNTIFS('Supplier Responses'!A2:A${responseRows.length + 1},"${quoted}",'Supplier Responses'!D2:D${responseRows.length + 1},"comply")`],
+      ["F", `COUNTIFS('Supplier Responses'!A2:A${responseRows.length + 1},"${quoted}",'Supplier Responses'!D2:D${responseRows.length + 1},"deviation")`],
+      ["G", `COUNTIFS('Supplier Responses'!A2:A${responseRows.length + 1},"${quoted}",'Supplier Responses'!D2:D${responseRows.length + 1},"clarification-required")`],
+      ["H", `COUNTIFS('Supplier Responses'!A2:A${responseRows.length + 1},"${quoted}",'Supplier Responses'!D2:D${responseRows.length + 1},"not-offered")`],
+      ["I", `C${row}-D${row}`],
+    ];
+    formulas.forEach(([column, formula]) => {
+      comparison[`${column}${row}`] = {
+        t: "n",
+        f: formula,
+        v: column === "C" || column === "I" ? handoff.requirements.length : 0,
+        s: {
+          font: { color: { rgb: "123C3A" }, sz: 10, bold: true },
+          fill: { patternType: "solid", fgColor: { rgb: "E7F4F2" } },
+          alignment: { vertical: "top", horizontal: "right" },
+          border: { bottom: { style: "thin", color: { rgb: "B7D9D4" } } },
+          numFmt: "#,##0",
+        },
+      };
+    });
+  });
+
+  const supplierNameInputStyle = {
+    font: { color: { rgb: "243142" }, sz: 10, bold: true },
+    fill: { patternType: "solid", fgColor: { rgb: "FFF4CC" } },
+    alignment: { vertical: "top", wrapText: true },
+    border: { bottom: { style: "thin", color: { rgb: "D6A800" } } },
+  };
+  supplierSlots.forEach((_, index) => { comparison[`B${index + 2}`].s = supplierNameInputStyle; });
+  for (let row = 2; row <= responseRows.length + 1; row += 1) {
+    for (const column of ["D", "E", "F", "G", "H", "I"]) {
+      responses[`${column}${row}`].s = {
+        font: { color: { rgb: "243142" }, sz: 10 },
+        fill: { patternType: "solid", fgColor: { rgb: "FFFBEA" } },
+        alignment: { vertical: "top", wrapText: true },
+        border: { bottom: { style: "thin", color: { rgb: "E9D88A" } } },
+      };
+    }
+  }
+
+  const quoteScope = addDeliverySheet(wb, "Quote Scope", [[
+    "Supplier slot", "Supplier legal name", "Quote reference", "Currency", "Total quoted price", "Lead time days", "Installation and commissioning scope", "Qualification support", "Training", "Warranty", "Service response", "Quote validity date", "Explicit commercial exclusions", "Clarifications",
+  ], ...supplierSlots.map((slot, index) => [slot, { t: "s", f: `IF('Comparison Summary'!B${index + 2}="","",'Comparison Summary'!B${index + 2})`, v: "" }, "", "", "", "", "", "", "", "", "", "", "", ""])], [18, 30, 24, 14, 22, 18, 55, 45, 35, 28, 35, 22, 55, 55]);
+  supplierSlots.forEach((_, index) => {
+    const row = index + 2;
+    quoteScope[`B${row}`].s = {
+      font: { color: { rgb: "123C3A" }, sz: 10 },
+      fill: { patternType: "solid", fgColor: { rgb: "E7F4F2" } },
+      alignment: { vertical: "top", wrapText: true },
+      border: { bottom: { style: "thin", color: { rgb: "B7D9D4" } } },
+    };
+    for (const column of ["C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N"]) {
+      quoteScope[`${column}${row}`] ??= { t: "z", v: undefined };
+      quoteScope[`${column}${row}`].s = {
+        font: { color: { rgb: "243142" }, sz: 10 },
+        fill: { patternType: "solid", fgColor: { rgb: "FFFBEA" } },
+        alignment: { vertical: "top", wrapText: true, horizontal: ["E", "F"].includes(column) ? "right" : "left" },
+        border: { bottom: { style: "thin", color: { rgb: "E9D88A" } } },
+      };
+    }
+  });
+
+  addDeliverySheet(wb, "Instructions", [["Step", "Controlled instruction"],
+    [1, "Enter each supplier legal name once in Comparison Summary. Supplier Responses and Quote Scope reference those cells automatically."],
+    [2, "Record one declared response for every requirement ID: comply, deviation, clarification-required or not-offered."],
+    [3, "Require technical evidence for every comply declaration. Blank cells are open responses, not compliance."],
+    [4, "Record deviations, assumptions, dependencies, utilities, interfaces and exclusions verbatim enough for qualified review."],
+    [5, "Use Quote Scope for commercial terms. Do not mix price with technical compliance declarations."],
+    [6, "The workbook intentionally contains no score, rank, product-equivalence claim or automatic supplier recommendation."],
+    [7, "Qualified users must approve the URS, resolve clarifications and make any award decision under their procurement and quality systems."],
+  ], [12, 110]);
+
+  wb.Workbook = { Views: [{ RTL: false }] };
+  return XLSX.write(wb, { type: "buffer", bookType: "xlsx", cellStyles: true });
+}
+
 export function qualityLabDeliveryMarkdown(snapshot: QualityLabReviewedProjectSnapshot): string {
   if (!snapshot.engagement) throw new Error("A review engagement packet is required before delivery export");
   const project = qualityLabProjectFromReviewedSnapshot(snapshot);
   const delivery = createQualityLabDeliveryPackage(project, snapshot.engagement);
   const pilot = assessPaidPilotEvidence(snapshot.engagement, delivery.readiness);
   const blueprint = snapshot.blueprint;
+  const readiness = getQualityLabReadiness(blueprint);
   return [
     `# ${snapshot.projectName}`, "## Atlas Quality Lab Blueprint - Decision Brief",
     `Document: ${delivery.control.documentId || "Unassigned"} | Revision: ${delivery.control.revision} | Status: ${delivery.readiness.status}`,
@@ -228,7 +383,9 @@ export function qualityLabDeliveryMarkdown(snapshot: QualityLabReviewedProjectSn
     `- Current demand: ${blueprint.current.monthlyTests.toLocaleString("en-US")} modeled tests/month`,
     `- Current team basis: ${blueprint.current.totalTeamFte} FTE`, `- Current area basis: ${blueprint.current.estimatedAreaSqm} m2`,
     `- Current CAPEX allowance: USD ${blueprint.current.capexLowUsd.toLocaleString("en-US")} to ${blueprint.current.capexHighUsd.toLocaleString("en-US")}`,
-    `- Controlled-use evidence readiness: ${blueprint.dataQuality.completenessPercent}%`,
+    `- Model completeness: ${readiness.modelCompleteness.score}%`,
+    `- Evidence readiness: ${readiness.evidenceReadiness.score}%`,
+    `- Decision readiness: ${readiness.decisionReadiness.label} (${readiness.decisionReadiness.score}%)`,
     `- Controlled-use blockers: ${blueprint.dataQuality.blockingOpenCount}`, "", "## Project action register",
     ...project.actionPlan.actions.map((item) => `- [${item.status}] ${item.question} | Owner: ${item.ownerRole || "Unassigned"} | Due: ${item.dueDate || "Open"} | Evidence: ${item.evidenceNote || item.requiredEvidence}`),
     "", "## Paid-pilot evidence",

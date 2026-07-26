@@ -29,12 +29,42 @@ npm run db:push
 `DATABASE_URL` must be set (generate reads the config but does not connect;
 migrate connects and applies).
 
-## Baseline
+## Baseline status
 
-`migrations/0000_baseline.sql` captures the current schema (7 tables: `users`,
+`migrations/0000_baseline.sql` captures an early seven-table schema (`users`,
 `sessions`, `purchases`, `leads`, `quote_requests`, `processed_stripe_events`,
-`content_entries`). On a clean database, `npm run db:migrate` creates all of
-them.
+`content_entries`). It does **not** capture all tables currently declared in
+`shared/schema.ts` and `shared/models/auth.ts`, including current Quality Lab,
+Career, lifecycle and governance persistence.
+
+Do not assume a clean `db:migrate` currently creates the full application
+schema. Before the next physical schema change, capture the deployed schema,
+reconcile it with the Drizzle definitions and migration journal in staging,
+then generate additive catch-up migrations and rehearse backup/restore. Phase 1
+of the decision-intelligence work intentionally reuses the existing Quality Lab
+reviewed-project tables and makes no physical schema change.
+
+Phase 4 calibration observations also add no physical database objects.
+`quality-lab-calibration-observation/v1` and its append-only review events remain
+a browser-local working registry with portable export until the deployed schema
+and migration ledger are reconciled. Moving this registry server-side requires
+an additive rehearsed migration plus server-authoritative immutability and access
+controls; local application fingerprints are not a substitute for that work.
+
+Phase 5 commercial handoff also adds no physical database objects. The URS DOCX
+and RFQ XLSX are generated on demand from the authenticated reviewed-project
+snapshot and its existing engagement packet; generated files are not persisted
+as approval records or procurement system-of-record documents.
+
+Phase 6 operating-model analysis also adds no physical database objects.
+Application assumptions are a browser-local working record under
+`lsa:quality-lab-operating-model:v1`; analysis and JSON export are deterministically
+regenerated from that record plus the current compiled Blueprint. Moving these
+inputs into account or organization workspaces requires the same reconciled,
+additive migration path and explicit access/revision controls described above.
+The paid-diagnostic review bridge likewise keeps drafts and fingerprinted immutable
+snapshots under `lsa:quality-lab-operating-model-reviews:v1`; its portable registry
+is not a server audit log or client approval record.
 
 ## Workflow
 

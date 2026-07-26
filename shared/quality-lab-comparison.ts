@@ -1,4 +1,4 @@
-import type { QualityLabBlueprint, QualityLabInput, QualityLabProject } from "./quality-lab.js";
+import { getQualityLabReadiness, type QualityLabBlueprint, type QualityLabInput, type QualityLabProject } from "./quality-lab.js";
 
 export type ComparisonSignalSeverity = "critical" | "watch" | "positive" | "information";
 
@@ -152,7 +152,8 @@ export function compareQualityLabScenarios(baseline: QualityLabProject, alternat
     metric("area", "Concept area allowance", "sqm", baselineFuture.estimatedAreaSqm, alternativeFuture.estimatedAreaSqm),
     metric("capex-high", "CAPEX planning high", "usd", baselineFuture.capexHighUsd, alternativeFuture.capexHighUsd),
     metric("opex-high", "Annual OPEX planning high", "usd", baselineFuture.annualOpexHighUsd, alternativeFuture.annualOpexHighUsd),
-    metric("input-completeness", "Controlled-use evidence readiness", "percent", baseline.blueprint.dataQuality.completenessPercent, alternative.blueprint.dataQuality.completenessPercent),
+    metric("model-completeness", "Model completeness", "percent", getQualityLabReadiness(baseline.blueprint).modelCompleteness.score, getQualityLabReadiness(alternative.blueprint).modelCompleteness.score),
+    metric("evidence-readiness", "Evidence readiness", "percent", getQualityLabReadiness(baseline.blueprint).evidenceReadiness.score, getQualityLabReadiness(alternative.blueprint).evidenceReadiness.score),
   ];
 
   const inputChanges = trackedInputs.flatMap(({ id, label, unit }) => {

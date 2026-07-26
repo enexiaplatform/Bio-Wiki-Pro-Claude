@@ -183,8 +183,9 @@ export const quoteRequests = pgTable("quote_requests", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Server-side copies are reserved for authenticated projects entering expert
-// review. Concept projects remain browser-local by default.
+// Legacy physical store for explicitly account-saved Quality Lab projects.
+// The table name is retained for migration safety; snapshots may be concept or
+// review-stage records, while browser storage remains the resilient work copy.
 export const qualityLabReviewedProjects = pgTable(
   "quality_lab_reviewed_projects",
   {

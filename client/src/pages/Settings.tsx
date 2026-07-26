@@ -81,7 +81,7 @@ export default function Settings() {
           </div>
           <h2 className="text-xl font-bold">Connect this workspace to an account</h2>
           <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
-            Sign in to access reviewed Blueprint records, learning progress, downloads, and plan status. Draft Blueprint projects remain in this browser until you submit a review request.
+            Sign in to access account-saved Blueprint records, learning progress, downloads, and plan status. Blueprint projects remain in this browser until you explicitly save an account copy or submit a review request.
           </p>
           <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild data-testid="button-settings-login">
@@ -156,13 +156,13 @@ export default function Settings() {
           <section className="mt-6" aria-labelledby="workspace-heading">
             <h2 id="workspace-heading" className="mb-3 text-sm font-bold uppercase tracking-[0.16em] text-muted-foreground">Workspace</h2>
             <div className="overflow-hidden rounded-lg border border-white/10 bg-white/[0.035] shadow-lg shadow-black/10">
-              <SettingsLink href="/quality-lab/projects" icon={FolderKanban} label="Blueprint projects" description="Resume local drafts and review submitted project records." testId="link-settings-projects" />
+              <SettingsLink href="/quality-lab/projects" icon={FolderKanban} label="Blueprint projects" description="Resume browser drafts and explicitly saved account revisions." testId="link-settings-projects" />
               <SettingsLink href="/career/blueprint" icon={BriefcaseBusiness} label="Career Blueprint workspace" description="Resume the purchased 13-week evidence plan and synced progress." testId="link-settings-career-blueprint" />
               <SettingsLink href="/my-learning" icon={GraduationCap} label="Evidence learning" description="Continue lessons and learning paths that support your work." testId="link-settings-learning" />
               <SettingsLink href="/my-downloads" icon={Download} label="Available downloads" description="Open account-entitled templates and deliverables." testId="link-settings-downloads" />
             </div>
             <p className="mt-3 text-xs leading-5 text-muted-foreground">
-              Data boundary: draft Quality Lab projects stay in this browser unless submitted for review. Purchased Career Blueprint progress keeps a browser copy and syncs to your account when available.
+              Data boundary: Quality Lab projects stay in this browser unless you explicitly save an account copy or submit one for review. Purchased Career Blueprint progress keeps a browser copy and syncs to your account when available.
             </p>
           </section>
 

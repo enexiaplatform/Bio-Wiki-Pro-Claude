@@ -12,17 +12,20 @@ import {
   CheckCircle2,
   ClipboardList,
   CloudDownload,
+  CloudUpload,
   Copy,
   FileText,
   FlaskConical,
   GitCompareArrows,
   Plus,
+  Scale,
   Trash2,
   Users,
   Wrench,
 } from "lucide-react";
 import {
   priorityQualityLabActions,
+  getQualityLabReadiness,
   qualityLabActionPlanMetrics,
   qualityLabPortfolioQueueMetrics,
   qualityLabPortfolioWorkQueue,
@@ -33,14 +36,15 @@ import {
 } from "@shared/quality-lab";
 import {
   deleteQualityLabProject,
-  deleteQualityLabReviewedProjectSnapshot,
+  deleteQualityLabAccountProject,
   duplicateQualityLabProject,
-  fetchQualityLabReviewedProjectRevisions,
-  fetchQualityLabReviewedProjects,
+  fetchQualityLabAccountProjects,
   fetchQualityLabReminderPreference,
   listQualityLabProjects,
   restoreQualityLabReviewedProject,
   saveQualityLabReminderPreference,
+  syncQualityLabAccountProject,
+  QualityLabSyncConflictError,
   subscribeToQualityLabProjects,
   type QualityLabReminderCadence,
 } from "@/lib/quality-lab-projects";
@@ -91,14 +95,16 @@ export default function QualityLabProjectsPage() {
   const [reviewedProjectsLoaded, setReviewedProjectsLoaded] = useState(false);
   const [reviewedProjectStatuses, setReviewedProjectStatuses] = useState<Record<string, ReviewedProjectStatus>>({});
   const [deletingSnapshotId, setDeletingSnapshotId] = useState<string | null>(null);
+  const [syncingProjectId, setSyncingProjectId] = useState<string | null>(null);
   const [snapshotActionError, setSnapshotActionError] = useState("");
+  const [snapshotActionStatus, setSnapshotActionStatus] = useState("");
   const [reminderCadence, setReminderCadence] = useState<QualityLabReminderCadence>("off");
   const [reminderSaving, setReminderSaving] = useState(false);
   const [reminderStatus, setReminderStatus] = useState("");
   const reminderAttributionCaptured = useRef(false);
   const projectsWithBlockingInputs = projects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
-  const averageCompleteness = projects.length
-    ? Math.round(projects.reduce((sum, project) => sum + project.blueprint.dataQuality.completenessPercent, 0) / projects.length)
+  const averageEvidenceReadiness = projects.length
+    ? Math.round(projects.reduce((sum, project) => sum + getQualityLabReadiness(project.blueprint).evidenceReadiness.score, 0) / projects.length)
     : 0;
   const activeProjectActions = projects.reduce((sum, project) => sum + qualityLabActionPlanMetrics(project.actionPlan).activeCount, 0);
   const workQueue = qualityLabPortfolioWorkQueue(projects, localDateKey());
@@ -125,15 +131,11 @@ export default function QualityLabProjectsPage() {
     }
     setReviewedProjectsLoaded(false);
     let active = true;
-    fetchQualityLabReviewedProjects()
-      .then(async (snapshots) => {
-        const statuses = await Promise.all(snapshots.map(async (snapshot) => {
-          const revisions = await fetchQualityLabReviewedProjectRevisions(snapshot.localProjectId);
-          return [snapshot.localProjectId, { revisionCount: revisions.length, lastSyncedAt: revisions[revisions.length - 1]?.createdAt ?? null }] as const;
-        }));
+    fetchQualityLabAccountProjects()
+      .then((records) => {
         if (!active) return;
-        setReviewedProjects(snapshots);
-        setReviewedProjectStatuses(Object.fromEntries(statuses));
+        setReviewedProjects(records.map((record) => record.snapshot));
+        setReviewedProjectStatuses(Object.fromEntries(records.map((record) => [record.snapshot.localProjectId, { revisionCount: record.revisionCount, lastSyncedAt: record.updatedAt }])));
         setReviewedProjectsLoaded(true);
       })
       .catch(() => {
@@ -205,11 +207,11 @@ export default function QualityLabProjectsPage() {
 
   async function removeAccountSnapshot(project: QualityLabProject) {
     const revisionCount = reviewedProjectStatuses[project.id]?.revisionCount ?? 0;
-    if (!window.confirm(`Remove the securely saved review snapshot and its ${revisionCount} account revision(s) for "${project.name}"? This does not delete the browser-local project.`)) return;
+    if (!window.confirm(`Remove the account copy and its ${revisionCount} revision(s) for "${project.name}"? This does not delete the browser-local project.`)) return;
     setDeletingSnapshotId(project.id);
     setSnapshotActionError("");
     try {
-      await deleteQualityLabReviewedProjectSnapshot(project.id);
+      await deleteQualityLabAccountProject(project.id);
       setReviewedProjects((current) => current.filter((snapshot) => snapshot.localProjectId !== project.id));
       setReviewedProjectStatuses((current) => {
         const { [project.id]: _removed, ...remaining } = current;
@@ -217,9 +219,31 @@ export default function QualityLabProjectsPage() {
       });
       analytics.reviewedProjectSnapshotDeleted(project.id);
     } catch (error) {
-      setSnapshotActionError(error instanceof Error ? error.message : "Unable to remove the account-held review snapshot.");
+      setSnapshotActionError(error instanceof Error ? error.message : "Unable to remove the account copy.");
     } finally {
       setDeletingSnapshotId(null);
+    }
+  }
+
+  async function syncAccountProject(project: QualityLabProject) {
+    setSyncingProjectId(project.id);
+    setSnapshotActionError("");
+    setSnapshotActionStatus("");
+    try {
+      const record = await syncQualityLabAccountProject(project, reviewedProjectStatuses[project.id]?.lastSyncedAt ?? null);
+      setReviewedProjects((current) => [record.snapshot, ...current.filter((snapshot) => snapshot.localProjectId !== project.id)]);
+      setReviewedProjectStatuses((current) => ({ ...current, [project.id]: { revisionCount: record.revisionCount, lastSyncedAt: record.updatedAt } }));
+      setSnapshotActionStatus(`"${project.name}" is saved to your account with ${record.revisionCount} revision${record.revisionCount === 1 ? "" : "s"}.`);
+      analytics.projectSynced(project.id, record.revisionCount);
+    } catch (error) {
+      if (error instanceof QualityLabSyncConflictError) {
+        setSnapshotActionError(`"${project.name}" changed in another browser. Atlas kept this browser copy unchanged; recover or export the account copy before choosing which version to continue.`);
+        analytics.projectSyncConflict(project.id);
+      } else {
+        setSnapshotActionError(error instanceof Error ? error.message : "Unable to save the account project.");
+      }
+    } finally {
+      setSyncingProjectId(null);
     }
   }
 
@@ -268,6 +292,9 @@ export default function QualityLabProjectsPage() {
                 <Link href={`/quality-lab/sensitivity?project=${firstProject.id}`} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-sm font-bold text-violet-200 transition hover:bg-violet-300/10">
                   <Activity className="h-4 w-4" /> Sensitivity
                 </Link>
+                <Link href={`/quality-lab/operating-model?project=${firstProject.id}`} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200 transition hover:bg-sky-300/10">
+                  <Scale className="h-4 w-4" /> Insource / outsource
+                </Link>
                 <Link href={`/quality-lab/turnaround?project=${firstProject.id}`} className="inline-flex items-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-sm font-bold text-sky-200 transition hover:bg-sky-300/10">
                   <CalendarClock className="h-4 w-4" /> Queue feasibility
                 </Link>
@@ -292,7 +319,7 @@ export default function QualityLabProjectsPage() {
               </div>
               <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">Quality lab projects</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 md:leading-7">
-                Compare scenarios, resolve critical inputs and export the model basis. Projects stay local unless you explicitly attach a full Blueprint for review; signed-in users can recover an attached snapshot on another device.
+                Compare scenarios, resolve critical inputs and export the model basis. This browser remains the resilient working copy; signed-in users can explicitly save a revisioned account copy and recover it on another device.
               </p>
             </div>
             {projects.length > 0 && (
@@ -306,7 +333,7 @@ export default function QualityLabProjectsPage() {
                   <span className="text-[10px] text-slate-500">not controlled-use ready</span>
                 </div>
                 <div className="rounded-xl border border-teal-300/15 bg-teal-300/[0.04] p-3 text-center">
-                  <strong className="block text-lg text-teal-200">{averageCompleteness}%</strong>
+                  <strong className="block text-lg text-teal-200">{averageEvidenceReadiness}%</strong>
                   <span className="text-[10px] text-slate-500">avg evidence readiness</span>
                 </div>
                 <div className="rounded-xl border border-sky-300/15 bg-sky-300/[0.04] p-3 text-center">
@@ -319,11 +346,12 @@ export default function QualityLabProjectsPage() {
         </header>
 
         {snapshotActionError && <div role="alert" className="mb-6 rounded-xl border border-red-300/20 bg-red-300/10 p-4 text-sm text-red-100">{snapshotActionError}</div>}
+        {snapshotActionStatus && <div role="status" className="mb-6 rounded-xl border border-teal-300/20 bg-teal-300/10 p-4 text-sm text-teal-100">{snapshotActionStatus}</div>}
 
         {isAuthenticated && recoverableProjects.length > 0 && (
           <section className="mb-6 rounded-3xl border border-sky-300/20 bg-sky-300/[0.055] p-5 md:p-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Account recovery</p><h2 className="mt-1 text-xl font-bold">Securely saved review projects</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-slate-400">These review snapshots are attached to your account but are not yet available in this browser. Recovering creates a local copy; it does not change the account-held revision history.</p></div><span className="inline-flex items-center gap-2 self-start rounded-full border border-sky-300/20 px-3 py-1 text-xs font-bold text-sky-200"><CloudDownload className="h-3.5 w-3.5" /> {recoverableProjects.length} available</span></div>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">{recoverableProjects.map((snapshot) => <article key={snapshot.localProjectId} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><p className="font-bold">{snapshot.projectName}</p><p className="mt-1 text-xs text-slate-500">{snapshot.input.scenarioLabel} · {snapshot.input.country} · {reviewedProjectStatuses[snapshot.localProjectId]?.revisionCount ?? 0} account revisions{reviewedProjectStatuses[snapshot.localProjectId]?.lastSyncedAt ? ` · last saved ${new Date(reviewedProjectStatuses[snapshot.localProjectId].lastSyncedAt!).toLocaleDateString()}` : ""}</p><div className="mt-3 flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase text-amber-200">Review requested</span><button type="button" onClick={() => recover(snapshot)} className="inline-flex items-center gap-2 rounded-lg bg-sky-300 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-sky-200"><CloudDownload className="h-3.5 w-3.5" /> Recover here</button></div></article>)}</div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Account recovery</p><h2 className="mt-1 text-xl font-bold">Account-held projects</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-slate-400">These explicit account saves are not yet available in this browser. Recovering creates a local working copy without changing the account revision history.</p></div><span className="inline-flex items-center gap-2 self-start rounded-full border border-sky-300/20 px-3 py-1 text-xs font-bold text-sky-200"><CloudDownload className="h-3.5 w-3.5" /> {recoverableProjects.length} available</span></div>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">{recoverableProjects.map((snapshot) => <article key={snapshot.localProjectId} className="rounded-xl border border-white/10 bg-slate-950/35 p-4"><p className="font-bold">{snapshot.projectName}</p><p className="mt-1 text-xs text-slate-500">{snapshot.input.scenarioLabel} · {snapshot.input.country} · {reviewedProjectStatuses[snapshot.localProjectId]?.revisionCount ?? 0} account revisions{reviewedProjectStatuses[snapshot.localProjectId]?.lastSyncedAt ? ` · last saved ${new Date(reviewedProjectStatuses[snapshot.localProjectId].lastSyncedAt!).toLocaleDateString()}` : ""}</p><div className="mt-3 flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase text-amber-200">{snapshot.reviewRequestedAt ? "Review requested" : "Concept"}</span><button type="button" onClick={() => recover(snapshot)} className="inline-flex items-center gap-2 rounded-lg bg-sky-300 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-sky-200"><CloudDownload className="h-3.5 w-3.5" /> Recover here</button></div></article>)}</div>
           </section>
         )}
 
@@ -353,7 +381,7 @@ export default function QualityLabProjectsPage() {
               </div>
             </div>
             <div className="mt-4 flex flex-col gap-2 border-t border-white/8 pt-4 text-[11px] leading-5 text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-              <p>Only the {reviewedProjects.length} review snapshot{reviewedProjects.length === 1 ? "" : "s"} explicitly saved to your account can be included. Browser-local projects stay on this device.</p>
+              <p>Only the {reviewedProjects.length} project{reviewedProjects.length === 1 ? "" : "s"} explicitly saved to your account can be included. Browser-only projects stay on this device.</p>
               <p className="shrink-0">Scan: 09:00 UTC · weekly sends Monday</p>
             </div>
             {reminderStatus && <p role="status" className="mt-2 text-[11px] text-violet-200">{reminderStatus}</p>}
@@ -458,6 +486,9 @@ export default function QualityLabProjectsPage() {
               const actionMetrics = qualityLabActionPlanMetrics(project.actionPlan);
               const nextAction = priorityQualityLabActions(project.actionPlan)[0];
               const stage = qualityLabProjectStage(project.actionPlan, project.reviewRequestedAt);
+              const accountSnapshot = reviewedProjects.find((snapshot) => snapshot.localProjectId === project.id);
+              const accountStatus = reviewedProjectStatuses[project.id];
+              const readiness = getQualityLabReadiness(project.blueprint);
               return (
                 <article key={project.id} className="group rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/30 hover:bg-white/[0.05]">
                 <div className="flex items-start justify-between gap-4">
@@ -465,13 +496,16 @@ export default function QualityLabProjectsPage() {
                     <Building2 className="h-5 w-5" />
                   </div>
                   <span className={`rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${project.blueprint.dataQuality.blockingOpenCount > 0 ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-sky-300/20 bg-sky-300/10 text-sky-200"}`}>
-                    {project.blueprint.dataQuality.blockingOpenCount > 0 ? "Not ready for controlled use" : "Concept"}
+                    {readiness.decisionReadiness.label}
                   </span>
                 </div>
                 <h2 className="mt-5 text-xl font-bold">{project.name}</h2>
                 <p className="mt-1 text-sm font-semibold text-teal-200">{project.input.scenarioLabel}</p>
                 <p className="mt-1 text-xs text-slate-500">{project.input.companyName || "Company not specified"} - {project.input.country} - Updated {new Date(project.updatedAt).toLocaleDateString()}</p>
-                {project.reviewRequestedAt && <div className="mt-2 rounded-lg border border-sky-300/15 bg-sky-300/[0.04] px-3 py-2 text-[11px] leading-5 text-sky-100"><p>Account-held review snapshot {reviewedProjects.some((snapshot) => snapshot.localProjectId === project.id) ? `saved · ${reviewedProjectStatuses[project.id]?.revisionCount ?? 0} immutable revision${(reviewedProjectStatuses[project.id]?.revisionCount ?? 0) === 1 ? "" : "s"}${reviewedProjectStatuses[project.id]?.lastSyncedAt ? ` · last saved ${new Date(reviewedProjectStatuses[project.id].lastSyncedAt!).toLocaleDateString()}` : ""}` : "not confirmed in this session"}. Review request: {new Date(project.reviewRequestedAt).toLocaleDateString()}.</p>{reviewedProjects.some((snapshot) => snapshot.localProjectId === project.id) && <button type="button" disabled={deletingSnapshotId === project.id} onClick={() => void removeAccountSnapshot(project)} className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-sky-200 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><Trash2 className="h-3 w-3" /> {deletingSnapshotId === project.id ? "Removing secure copy…" : "Remove account-held snapshot"}</button>}</div>}
+                <div className="mt-2 rounded-lg border border-sky-300/15 bg-sky-300/[0.04] px-3 py-3 text-[11px] leading-5 text-sky-100">
+                  <p>{accountSnapshot ? `Account copy saved · ${accountStatus?.revisionCount ?? 0} revision${(accountStatus?.revisionCount ?? 0) === 1 ? "" : "s"}${accountStatus?.lastSyncedAt ? ` · last saved ${new Date(accountStatus.lastSyncedAt).toLocaleDateString()}` : ""}.` : isAuthenticated ? "Browser-only working copy. Save explicitly when you want cross-device recovery." : "Browser-only working copy. Sign in to save an account copy."}{project.reviewRequestedAt ? ` Review request: ${new Date(project.reviewRequestedAt).toLocaleDateString()}.` : ""}</p>
+                  {isAuthenticated && <div className="mt-2 flex flex-wrap gap-3"><button type="button" disabled={syncingProjectId === project.id} onClick={() => void syncAccountProject(project)} className="inline-flex items-center gap-1.5 font-bold text-sky-200 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><CloudUpload className="h-3 w-3" /> {syncingProjectId === project.id ? "Saving…" : accountSnapshot ? "Save latest revision" : "Save to account"}</button>{accountSnapshot && <button type="button" disabled={deletingSnapshotId === project.id} onClick={() => void removeAccountSnapshot(project)} className="inline-flex items-center gap-1.5 font-bold text-slate-400 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><Trash2 className="h-3 w-3" /> {deletingSnapshotId === project.id ? "Removing…" : "Remove account copy"}</button>}</div>}
+                </div>
                 <div className="mt-4 rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-3">
                   <div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-wider text-teal-200">{projectStageLabels[stage]}</span><span className="text-[10px] text-slate-500">{actionMetrics.activeCount} active</span></div>
                   <p className="mt-2 line-clamp-2 text-xs font-semibold leading-5 text-slate-200">{nextAction?.question ?? "No compiled input action remains open."}</p>
@@ -480,12 +514,13 @@ export default function QualityLabProjectsPage() {
                 </div>
                 <div className="mt-3 rounded-xl border border-white/8 bg-slate-950/30 p-3">
                   <div className="flex items-center justify-between gap-3 text-xs">
-                    <span className="font-semibold text-slate-300">Controlled-use evidence readiness</span>
-                    <span className="font-bold text-teal-200">{project.blueprint.dataQuality.completenessPercent}%</span>
+                    <span className="font-semibold text-slate-300">Evidence readiness</span>
+                    <span className="font-bold text-teal-200">{readiness.evidenceReadiness.score}%</span>
                   </div>
-                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`${project.name} controlled-use evidence readiness`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={project.blueprint.dataQuality.completenessPercent}>
-                    <div className="h-full rounded-full bg-teal-300" style={{ width: `${project.blueprint.dataQuality.completenessPercent}%` }} />
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-label={`${project.name} evidence readiness`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={readiness.evidenceReadiness.score}>
+                    <div className="h-full rounded-full bg-teal-300" style={{ width: `${readiness.evidenceReadiness.score}%` }} />
                   </div>
+                  <p className="mt-2 text-[10px] text-sky-200">Model completeness {readiness.modelCompleteness.score}% · Decision: {readiness.decisionReadiness.label}</p>
                   <p className="mt-2 text-[10px] text-slate-500">
                     <span className="font-bold text-red-200">{project.blueprint.dataQuality.blockingOpenCount} controlled-use blockers</span> - <span className="font-bold text-amber-200">{project.blueprint.dataQuality.importantOpenCount} important</span> inputs remain
                   </p>

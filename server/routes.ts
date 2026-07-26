@@ -15,7 +15,13 @@ import { isProActive } from "./entitlements.js";
 import { connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
 import { rateLimit } from "express-rate-limit";
-import { compareQualityLabReviewedSnapshots, qualityLabProjectFromReviewedSnapshot, qualityLabReviewedProjectSnapshotSchema } from "../shared/quality-lab-persistence.js";
+import {
+  compareQualityLabReviewedSnapshots,
+  qualityLabProjectFromReviewedSnapshot,
+  qualityLabProjectSyncRequestSchema,
+  qualityLabReviewedProjectSnapshotSchema,
+  qualityLabSyncHasConflict,
+} from "../shared/quality-lab-persistence.js";
 import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue, qualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
@@ -912,9 +918,62 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  // A full Blueprint snapshot is retained only for signed-in users who have
-  // deliberately entered the expert-review workflow. It is not a background
-  // sync channel for browser-local concept projects.
+  // Account project persistence is explicit and conflict-aware. The existing
+  // reviewed-project tables are reused as a legacy physical store so this
+  // rollout does not require a destructive or production-ambiguous migration.
+  app.get("/api/quality-lab/projects", isAuthenticated, async (req: any, res) => {
+    const rows = await storage.listQualityLabReviewedProjects(req.session.userId);
+    const records = await Promise.all(rows.map(async (row) => {
+      const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, row.localProjectId);
+      return {
+        snapshot: qualityLabReviewedProjectSnapshotSchema.parse(row.snapshot),
+        updatedAt: row.updatedAt?.toISOString() ?? row.createdAt?.toISOString() ?? new Date(0).toISOString(),
+        revisionCount: revisions.length,
+      };
+    }));
+    res.json(records);
+  });
+
+  app.put("/api/quality-lab/projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+    try {
+      const request = qualityLabProjectSyncRequestSchema.parse(req.body);
+      if (request.snapshot.localProjectId !== req.params.localProjectId) return res.status(400).json({ message: "Project identifier mismatch" });
+      const existing = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+      const currentUpdatedAt = existing?.updatedAt?.toISOString() ?? existing?.createdAt?.toISOString() ?? null;
+      if (qualityLabSyncHasConflict(request.expectedUpdatedAt, currentUpdatedAt)) {
+        const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
+        return res.status(409).json({
+          snapshot: qualityLabReviewedProjectSnapshotSchema.parse(existing!.snapshot),
+          updatedAt: currentUpdatedAt,
+          revisionCount: revisions.length,
+        });
+      }
+      const row = await storage.upsertQualityLabReviewedProject(req.session.userId, request.snapshot);
+      const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
+      res.status(existing ? 200 : 201).json({
+        snapshot: qualityLabReviewedProjectSnapshotSchema.parse(row.snapshot),
+        updatedAt: row.updatedAt?.toISOString() ?? row.createdAt?.toISOString() ?? new Date().toISOString(),
+        revisionCount: revisions.length,
+      });
+    } catch (err) {
+      if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
+      throw err;
+    }
+  });
+
+  app.delete("/api/quality-lab/projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+    const deleted = await storage.deleteQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!deleted) return res.status(404).json({ message: "Account project not found" });
+    res.status(204).end();
+  });
+
+  app.get("/api/quality-lab/projects/:localProjectId/revisions", isAuthenticated, async (req: any, res) => {
+    const rows = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
+    res.json(rows.map((row) => ({ revisionNumber: row.revisionNumber, reason: row.reason, createdAt: row.createdAt, generatedAt: row.snapshot.blueprint.generatedAt, blockingOpenCount: row.snapshot.blueprint.dataQuality.blockingOpenCount })));
+  });
+
+  // Backward-compatible expert-review routes remain available for existing
+  // delivery workflows and stored URLs.
   app.get("/api/quality-lab/reviewed-projects", isAuthenticated, async (req: any, res) => {
     const rows = await storage.listQualityLabReviewedProjects(req.session.userId);
     res.json(rows.map((row) => row.snapshot));
@@ -1049,6 +1108,28 @@ export async function registerRoutes(app: Express): Promise<void> {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(pdf);
+  });
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId/urs-document.docx", isAuthenticated, async (req: any, res) => {
+    const row = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!row) return res.status(404).json({ message: "Reviewed project not found" });
+    if (!row.snapshot.engagement) return res.status(409).json({ message: "Complete the review engagement workspace before exporting a URS drafting document" });
+    const { qualityLabUrsDocument } = await import("./quality-lab-urs-docx.js");
+    const filename = `${row.projectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atlas-quality-lab"}-vendor-neutral-urs.docx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(await qualityLabUrsDocument(row.snapshot));
+  });
+
+  app.get("/api/quality-lab/reviewed-projects/:localProjectId/rfq-workbook", isAuthenticated, async (req: any, res) => {
+    const row = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
+    if (!row) return res.status(404).json({ message: "Reviewed project not found" });
+    if (!row.snapshot.engagement) return res.status(409).json({ message: "Complete the review engagement workspace before exporting an RFQ comparison workbook" });
+    const { qualityLabRfqWorkbook } = await import("./generate.js");
+    const filename = `${row.projectName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "atlas-quality-lab"}-rfq-comparison.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(qualityLabRfqWorkbook(row.snapshot));
   });
 
   app.post("/api/leads/capture", async (req, res) => {

@@ -1,17 +1,21 @@
 import type { QualityLabInput, QualityLabProject, QualityLabProjectAction } from "@shared/quality-lab";
 import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema, reconcileQualityLabActionPlan } from "@shared/quality-lab";
 import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
-import { qualityLabProjectFromReviewedSnapshot, type QualityLabReviewedProjectSnapshot } from "@shared/quality-lab-persistence";
+import {
+  createQualityLabAccountSnapshot,
+  migrateQualityLabLocalStore,
+  qualityLabProjectFromReviewedSnapshot,
+  type QualityLabAccountProjectRecord,
+  type QualityLabReviewedProjectSnapshot,
+} from "@shared/quality-lab-persistence";
 
-const STORAGE_KEY = "lsa:quality-lab-projects:v1";
+const LEGACY_STORAGE_KEY = "lsa:quality-lab-projects:v1";
+const STORAGE_KEY = "lsa:quality-lab-projects:v2";
 const PROJECTS_CHANGED_EVENT = "atlas:quality-lab-projects-changed";
 
-function safeParse(raw: string | null): QualityLabProject[] {
-  if (!raw) return [];
-  try {
-    const values = JSON.parse(raw) as QualityLabProject[];
-    if (!Array.isArray(values)) return [];
-    return values.flatMap((project) => {
+function safeParse(values: unknown[]): QualityLabProject[] {
+  return values.flatMap((value) => {
+      const project = value as QualityLabProject;
       const parsed = qualityLabInputSchema.safeParse(project?.input);
       if (!project?.id || !parsed.success) return [];
       const blueprint = compileQualityLabBlueprint(parsed.data);
@@ -23,20 +27,23 @@ function safeParse(raw: string | null): QualityLabProject[] {
         actionPlan: reconcileQualityLabActionPlan(blueprint, project.actionPlan, project.updatedAt),
       }];
     });
-  } catch {
-    return [];
-  }
 }
 
 export function listQualityLabProjects(): QualityLabProject[] {
   if (typeof window === "undefined") return [];
-  return safeParse(window.localStorage.getItem(STORAGE_KEY))
+  const store = migrateQualityLabLocalStore(window.localStorage.getItem(STORAGE_KEY), window.localStorage.getItem(LEGACY_STORAGE_KEY));
+  if (!window.localStorage.getItem(STORAGE_KEY)) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  return safeParse(store.projects)
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 function write(projects: QualityLabProject[]) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    version: "quality-lab-local-store/v2",
+    migratedFrom: window.localStorage.getItem(LEGACY_STORAGE_KEY) ? LEGACY_STORAGE_KEY : null,
+    projects,
+  }));
   window.dispatchEvent(new Event(PROJECTS_CHANGED_EVENT));
 }
 
@@ -154,19 +161,12 @@ export function exportQualityLabEngagementPacket(project: QualityLabProject) {
 
 export async function syncQualityLabReviewedProject(project: QualityLabProject, engagement = createQualityLabEngagementPacket(project)) {
   if (!project.reviewRequestedAt) throw new Error("Only requested-review projects may be synced");
+  const snapshot = createQualityLabAccountSnapshot(project, engagement);
   const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(project.id)}`, {
     method: "PUT",
     headers: { "content-type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({
-      localProjectId: project.id,
-      projectName: project.name,
-      input: project.input,
-      blueprint: project.blueprint,
-      actionPlan: project.actionPlan,
-      engagement,
-      reviewRequestedAt: project.reviewRequestedAt,
-    }),
+    body: JSON.stringify(snapshot),
   });
   if (!response.ok) throw new Error("Unable to securely save this review project");
   return response.json() as Promise<{ localProjectId: string; projectName: string; updatedAt: string }>;
@@ -199,15 +199,18 @@ export async function fetchQualityLabReviewedProjectRevisions(localProjectId: st
   return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>>;
 }
 
-export async function downloadQualityLabDeliveryArtifact(localProjectId: string, artifact: "workbook" | "brief") {
-  const suffix = artifact === "workbook" ? "delivery-workbook" : "delivery-brief.pdf";
+export type QualityLabDeliveryArtifact = "workbook" | "brief" | "urs" | "rfq";
+
+export async function downloadQualityLabDeliveryArtifact(localProjectId: string, artifact: QualityLabDeliveryArtifact) {
+  const suffix = artifact === "workbook" ? "delivery-workbook" : artifact === "brief" ? "delivery-brief.pdf" : artifact === "urs" ? "urs-document.docx" : "rfq-workbook";
   const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(localProjectId)}/${suffix}`, { credentials: "include" });
   if (!response.ok) {
     const message = await response.json().then((value) => value?.message).catch(() => null);
     throw new Error(message || "Unable to prepare the Blueprint delivery file");
   }
   const disposition = response.headers.get("content-disposition") ?? "";
-  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? (artifact === "workbook" ? "atlas-blueprint-delivery.xlsx" : "atlas-blueprint-decision-brief.pdf");
+  const fallback = { workbook: "atlas-blueprint-delivery.xlsx", brief: "atlas-blueprint-decision-brief.pdf", urs: "atlas-vendor-neutral-urs.docx", rfq: "atlas-rfq-comparison.xlsx" }[artifact];
+  const filename = disposition.match(/filename="([^"]+)"/)?.[1] ?? fallback;
   const url = URL.createObjectURL(await response.blob());
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -226,6 +229,48 @@ export function subscribeToQualityLabProjects(listener: () => void) {
     window.removeEventListener("storage", handler);
     window.removeEventListener(PROJECTS_CHANGED_EVENT, listener);
   };
+}
+
+export class QualityLabSyncConflictError extends Error {
+  constructor(public readonly current: QualityLabAccountProjectRecord) {
+    super("This project changed in another browser. The local copy was not overwritten.");
+    this.name = "QualityLabSyncConflictError";
+  }
+}
+
+export async function fetchQualityLabAccountProjects() {
+  const response = await fetch("/api/quality-lab/projects", { credentials: "include" });
+  if (!response.ok) throw new Error("Unable to load account-held Quality Lab projects");
+  return response.json() as Promise<QualityLabAccountProjectRecord[]>;
+}
+
+export async function syncQualityLabAccountProject(project: QualityLabProject, expectedUpdatedAt: string | null) {
+  const response = await fetch(`/api/quality-lab/projects/${encodeURIComponent(project.id)}`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ snapshot: createQualityLabAccountSnapshot(project), expectedUpdatedAt }),
+  });
+  if (response.status === 409) {
+    const current = await response.json() as QualityLabAccountProjectRecord;
+    throw new QualityLabSyncConflictError(current);
+  }
+  if (!response.ok) throw new Error("Unable to save this project to the account");
+  return response.json() as Promise<QualityLabAccountProjectRecord>;
+}
+
+export async function deleteQualityLabAccountProject(localProjectId: string) {
+  const response = await fetch(`/api/quality-lab/projects/${encodeURIComponent(localProjectId)}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) throw new Error("Unable to remove the account-held project");
+}
+
+export async function fetchQualityLabAccountProjectRevisions(localProjectId: string) {
+  const response = await fetch(`/api/quality-lab/projects/${encodeURIComponent(localProjectId)}/revisions`, { credentials: "include" });
+  if (!response.ok) return [] as Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>;
+  return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>>;
 }
 
 export type QualityLabReminderCadence = "off" | "weekly" | "daily" | "weekdays";

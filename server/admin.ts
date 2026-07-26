@@ -177,7 +177,7 @@ export function registerAdminRoutes(app: Express, isAuthenticated: RequestHandle
       ]);
       res.json({
         leads: leadRows, requests: requestRows, purchases: purchaseRows,
-        projects: projectRows.map(({ snapshot, ...project }) => ({ ...project, reviewRequestedAt: snapshot.reviewRequestedAt ?? null, inputCompletenessPercent: snapshot.blueprint?.dataQuality?.completenessPercent ?? null })),
+        projects: projectRows.map(({ snapshot, ...project }) => ({ ...project, reviewRequestedAt: snapshot.reviewRequestedAt ?? null, inputCompletenessPercent: snapshot.blueprint?.readiness?.modelCompleteness?.score ?? snapshot.blueprint?.dataQuality?.completenessPercent ?? null })),
       });
     } catch (error) {
       console.error("[Admin] pipeline error:", error);

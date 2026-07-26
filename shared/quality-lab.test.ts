@@ -3,11 +3,15 @@ import {
   QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
   QUALITY_LAB_COMPILER_CORE_VERSION,
   QUALITY_LAB_INPUT_CONTRACT_VERSION,
+  QUALITY_LAB_LINEAGE_CONTRACT_VERSION,
+  QUALITY_LAB_READINESS_CONTRACT_VERSION,
   compileQualityLabBlueprint,
   createBlankQualityLabInput,
   defaultQualityLabInput,
   qualityLabBlueprintSchema,
   qualityLabInputSchema,
+  getQualityLabReadiness,
+  validateQualityLabLineageIntegrity,
 } from "./quality-lab";
 
 describe("quality lab compiler", () => {
@@ -77,6 +81,40 @@ describe("quality lab compiler", () => {
     for (const rule of result.ruleTrace) {
       for (const evidenceId of rule.evidenceIds) expect(evidenceIds.has(evidenceId)).toBe(true);
     }
+  });
+
+  it("gives every recommendation and sized equipment output an integrity-checked decision lineage", () => {
+    const result = compileQualityLabBlueprint(defaultQualityLabInput);
+    expect(validateQualityLabLineageIntegrity(result)).toEqual([]);
+    expect(result.decisionLineage.length).toBeGreaterThan(result.recommendations.length);
+    expect(result.decisionLineage.every((lineage) => lineage.contractVersion === QUALITY_LAB_LINEAGE_CONTRACT_VERSION)).toBe(true);
+    expect(result.decisionLineage.every((lineage) => lineage.ruleRefs.length > 0 && lineage.evidenceRefs.length > 0)).toBe(true);
+    for (const recommendation of result.recommendations) {
+      expect(result.decisionLineage.some((lineage) => lineage.outputKey === `recommendations.${recommendation.id}`)).toBe(true);
+    }
+    for (const equipment of result.equipment.filter((item) => item.quantityFuture > 0)) {
+      expect(result.decisionLineage.some((lineage) => lineage.outputKey === `equipment.${equipment.id}.quantityFuture`)).toBe(true);
+    }
+  });
+
+  it("keeps model completeness, evidence readiness and decision readiness separate", () => {
+    const result = compileQualityLabBlueprint(defaultQualityLabInput);
+    const readiness = getQualityLabReadiness(result);
+    expect(readiness.contractVersion).toBe(QUALITY_LAB_READINESS_CONTRACT_VERSION);
+    expect(readiness.modelCompleteness.dimensions).toHaveLength(6);
+    expect(readiness.evidenceReadiness.dimensions).toHaveLength(7);
+    expect(readiness.modelCompleteness.score).toBeGreaterThan(readiness.evidenceReadiness.score);
+    expect(readiness.decisionReadiness.score).toBe(Math.round(readiness.modelCompleteness.score * 0.4 + readiness.evidenceReadiness.score * 0.6));
+    expect(readiness.decisionReadiness.stage).toBe("concept-planning-only");
+    expect(readiness.decisionReadiness.blockingInputIds).toEqual(result.review.blockingInputIds);
+  });
+
+  it("derives readiness for a saved v1 Blueprint that predates the readiness field", () => {
+    const result = compileQualityLabBlueprint(defaultQualityLabInput);
+    const { readiness: _readiness, ...legacy } = result;
+    const parsed = qualityLabBlueprintSchema.parse(legacy);
+    expect(parsed.readiness).toBeUndefined();
+    expect(getQualityLabReadiness(parsed).contractVersion).toBe(QUALITY_LAB_READINESS_CONTRACT_VERSION);
   });
 
   it("creates a blank intake without example-site facts", () => {

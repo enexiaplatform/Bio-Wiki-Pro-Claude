@@ -58,9 +58,11 @@ const FaqPage = lazy(() => import("@/pages/FaqPage"));
 const QualityLabLandingPage = lazy(() => import("@/pages/QualityLabLandingPage"));
 const QualityLabPlannerPage = lazy(() => import("@/pages/QualityLabPlannerPage"));
 const QualityLabProjectsPage = lazy(() => import("@/pages/QualityLabProjectsPage"));
+const QualityLabDecisionLineagePage = lazy(() => import("@/pages/QualityLabDecisionLineagePage"));
 const QualityLabReviewPage = lazy(() => import("@/pages/QualityLabReviewPage"));
 const QualityLabSamplePage = lazy(() => import("@/pages/QualityLabSamplePage"));
 const QualityLabEngagementPage = lazy(() => import("@/pages/QualityLabEngagementPage"));
+const QualityLabCommercialHandoffPage = lazy(() => import("@/pages/QualityLabCommercialHandoffPage"));
 const QualityLabDiscoveryPackPage = lazy(() => import("@/pages/QualityLabDiscoveryPackPage"));
 const QualityLabCasebookPage = lazy(() => import("@/pages/QualityLabCasebookPage"));
 const QualityLabEvidenceGraphPage = lazy(() => import("@/pages/QualityLabEvidenceGraphPage"));
@@ -76,6 +78,8 @@ const QualityLabMethodApplicationsPage = lazy(() => import("@/pages/QualityLabMe
 const QualityLabScenarioComparePage = lazy(() => import("@/pages/QualityLabScenarioComparePage"));
 const QualityLabTurnaroundPage = lazy(() => import("@/pages/QualityLabTurnaroundPage"));
 const QualityLabSensitivityPage = lazy(() => import("@/pages/QualityLabSensitivityPage"));
+const QualityLabOperatingModelPage = lazy(() => import("@/pages/QualityLabOperatingModelPage"));
+const QualityLabOperatingModelReviewPage = lazy(() => import("@/pages/QualityLabOperatingModelReviewPage"));
 const QualityLabEquipmentResiliencePage = lazy(() => import("@/pages/QualityLabEquipmentResiliencePage"));
 const QualityLabNonRoutineLoadPage = lazy(() => import("@/pages/QualityLabNonRoutineLoadPage"));
 const QualityLabSkillShiftCoveragePage = lazy(() => import("@/pages/QualityLabSkillShiftCoveragePage"));
@@ -128,9 +132,11 @@ function Layout() {
           <Route path="/quality-lab/deliverables" component={DeliverablesPage} />
           <Route path="/quality-lab/planner" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/projects" component={QualityLabProjectsPage} />
+          <Route path="/quality-lab/projects/:id/lineage/:lineageId" component={QualityLabDecisionLineagePage} />
           <Route path="/quality-lab/compare" component={QualityLabScenarioComparePage} />
           <Route path="/quality-lab/turnaround" component={QualityLabTurnaroundPage} />
           <Route path="/quality-lab/sensitivity" component={QualityLabSensitivityPage} />
+          <Route path="/quality-lab/operating-model" component={QualityLabOperatingModelPage} />
           <Route path="/quality-lab/equipment-resilience" component={QualityLabEquipmentResiliencePage} />
           <Route path="/quality-lab/non-routine-load" component={QualityLabNonRoutineLoadPage} />
           <Route path="/quality-lab/skill-shift-coverage" component={QualityLabSkillShiftCoveragePage} />
@@ -149,6 +155,8 @@ function Layout() {
           <Route path="/quality-lab/governance-history">{() => <AdminOnlyRoute component={QualityLabGovernanceHistoryPage} />}</Route>
           <Route path="/quality-lab/rule-changes">{() => <AdminOnlyRoute component={QualityLabRuleChangesPage} />}</Route>
           <Route path="/quality-lab/method-applications">{() => <AdminOnlyRoute component={QualityLabMethodApplicationsPage} />}</Route>
+          <Route path="/quality-lab/engagements/:id/commercial-handoff">{() => <AdminOnlyRoute component={QualityLabCommercialHandoffPage} />}</Route>
+          <Route path="/quality-lab/engagements/:id/operating-model-review">{() => <AdminOnlyRoute component={QualityLabOperatingModelReviewPage} />}</Route>
           <Route path="/quality-lab/engagements/:id">{() => <AdminOnlyRoute component={QualityLabEngagementPage} />}</Route>
           <Route path="/academy" component={Academy} />
           <Route path="/academy/:slug" component={AcademyEntryPage} />

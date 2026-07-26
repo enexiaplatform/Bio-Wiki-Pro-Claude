@@ -16,6 +16,7 @@ import {
   Layers3,
   RotateCcw,
   Save,
+  Scale,
   ShieldCheck,
   Sparkles,
   Plus,
@@ -27,6 +28,7 @@ import {
   compileQualityLabBlueprint,
   createBlankQualityLabInput,
   defaultQualityLabInput,
+  getQualityLabReadiness,
   decisionOwnerRoleValues,
   decisionWindowValues,
   facilityTypeValues,
@@ -112,12 +114,27 @@ const scopeOptions: { key: keyof QualityLabInput["scope"]; title: string; detail
   { key: "growthPromotion", title: "Growth promotion", detail: "Media lot release and recovery evidence." },
 ];
 
-function NumberField({ label, value, onChange, suffix, hint, min = 0, max }: { label: string; value: number; onChange: (value: number) => void; suffix?: string; hint?: string; min?: number; max?: number }) {
+const sensitivityPlannerSteps: Record<string, number> = {
+  finishedBatchesPerMonth: 1,
+  rawMaterialLotsPerMonth: 1,
+  waterRoundsPerWeek: 1,
+  emRoundsPerWeek: 1,
+  mediaLotsPerMonth: 1,
+  growthRatePercent: 3,
+  outsourcePercent: 3,
+  productiveHoursPerShift: 3,
+  redundancyPercent: 3,
+  equipmentDowntimePercent: 3,
+  consumableWastePercent: 3,
+  analystAnnualCostUsd: 3,
+};
+
+function NumberField({ id, label, value, onChange, suffix, hint, min = 0, max }: { id?: string; label: string; value: number; onChange: (value: number) => void; suffix?: string; hint?: string; min?: number; max?: number }) {
   return (
-    <label className="block">
+    <label id={id ? `input-${id}` : undefined} className="block scroll-mt-28 rounded-xl transition target:bg-violet-300/[0.08] target:p-3 target:ring-2 target:ring-violet-300/35">
       <span className="mb-2 block text-xs font-semibold text-slate-300">{label}</span>
       <div className="relative">
-        <input type="number" min={min} max={max} step="any" value={Number.isFinite(value) ? value : ""} onChange={(event) => onChange(Number(event.target.value))} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 pr-16 text-sm text-white outline-none transition focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
+        <input data-quality-lab-input={id} type="number" min={min} max={max} step="any" value={Number.isFinite(value) ? value : ""} onChange={(event) => onChange(Number(event.target.value))} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 pr-16 text-sm text-white outline-none transition focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
         {suffix && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-[11px] text-slate-500">{suffix}</span>}
       </div>
       {hint && <span className="mt-1.5 block text-[11px] leading-4 text-slate-500">{hint}</span>}
@@ -180,7 +197,20 @@ export default function QualityLabPlannerPage() {
     if (saved) {
       setProject(saved);
       setInput(saved.input);
-      setView("report");
+      const search = new URLSearchParams(window.location.search);
+      const requestedField = search.get("edit") === "input" ? search.get("field") : null;
+      const editField = requestedField && requestedField in sensitivityPlannerSteps ? requestedField : null;
+      if (editField) {
+        setView("form");
+        setStep(sensitivityPlannerSteps[editField]);
+        setFurthestStep(steps.length - 1);
+        window.setTimeout(() => {
+          document.getElementById(`input-${editField}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+          document.querySelector<HTMLInputElement>(`[data-quality-lab-input="${editField}"]`)?.focus();
+        }, 50);
+      } else {
+        setView("report");
+      }
     } else {
       setError("This project was not found in this browser.");
       setView("form");
@@ -191,6 +221,7 @@ export default function QualityLabPlannerPage() {
     const parsed = qualityLabInputSchema.safeParse(input);
     return parsed.success ? compileQualityLabBlueprint(parsed.data) : null;
   }, [input]);
+  const previewReadiness = useMemo(() => preview ? getQualityLabReadiness(preview) : null, [preview]);
 
   const update = <K extends keyof QualityLabInput>(key: K, value: QualityLabInput[K]) => {
     setInput((current) => ({ ...current, [key]: value }));
@@ -446,7 +477,7 @@ export default function QualityLabPlannerPage() {
         {preview && <div className="mb-4 grid grid-cols-4 gap-2 rounded-2xl border border-white/10 bg-slate-950/55 p-3 xl:hidden">
           {[
             [`${furthestStep + 1}/${steps.length}`, "planner steps", "text-teal-200"],
-            [`${preview.dataQuality.completenessPercent}%`, "evidence ready", "text-amber-200"],
+            [`${previewReadiness?.evidenceReadiness.score ?? 0}%`, "evidence ready", "text-amber-200"],
             [formatInt(preview.current.monthlyTests), "tests / mo", "text-slate-100"],
             [String(preview.current.totalTeamFte), "team FTE", "text-slate-100"],
           ].map(([value, label, tone]) => <div key={label} className="min-w-0 text-center"><p className={`truncate text-sm font-bold ${tone}`}>{value}</p><p className="mt-0.5 truncate text-[9px] text-slate-500">{label}</p></div>)}
@@ -533,17 +564,17 @@ export default function QualityLabPlannerPage() {
                 <div>
                   <h3 className="text-sm font-bold">Release and incoming demand</h3><p className="mt-1 text-xs leading-5 text-slate-500">Use actual monthly lots/batches where possible — product count alone does not define workload.</p>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <NumberField label="Finished-product batches" value={input.finishedBatchesPerMonth} onChange={(value) => update("finishedBatchesPerMonth", value)} suffix="/ month" hint="Best source: production plan or batch-release log. Count batches, not SKUs." />
-                    <NumberField label="Raw-material lots received" value={input.rawMaterialLotsPerMonth} onChange={(value) => update("rawMaterialLotsPerMonth", value)} suffix="/ month" hint="Best source: ERP receipt history or incoming-sampling log." />
+                    <NumberField id="finishedBatchesPerMonth" label="Finished-product batches" value={input.finishedBatchesPerMonth} onChange={(value) => update("finishedBatchesPerMonth", value)} suffix="/ month" hint="Best source: production plan or batch-release log. Count batches, not SKUs." />
+                    <NumberField id="rawMaterialLotsPerMonth" label="Raw-material lots received" value={input.rawMaterialLotsPerMonth} onChange={(value) => update("rawMaterialLotsPerMonth", value)} suffix="/ month" hint="Best source: ERP receipt history or incoming-sampling log." />
                   </div>
                 </div>
                 <div className="border-t border-white/10 pt-6">
                   <h3 className="text-sm font-bold">Routine monitoring demand</h3>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <NumberField label="Water sampling points" value={input.waterPoints} onChange={(value) => update("waterPoints", value)} suffix="points" hint="Use the approved sampling plan; count active routine locations." />
-                    <NumberField label="Water sampling rounds" value={input.waterRoundsPerWeek} onChange={(value) => update("waterRoundsPerWeek", value)} suffix="/ week" hint="How often the full or representative route is sampled." />
+                    <NumberField id="waterRoundsPerWeek" label="Water sampling rounds" value={input.waterRoundsPerWeek} onChange={(value) => update("waterRoundsPerWeek", value)} suffix="/ week" hint="How often the full or representative route is sampled." />
                     <NumberField label="EM locations per round" value={input.emLocations} onChange={(value) => update("emLocations", value)} suffix="locations" hint="Count locations in one typical monitoring round." />
-                    <NumberField label="EM sampling rounds" value={input.emRoundsPerWeek} onChange={(value) => update("emRoundsPerWeek", value)} suffix="/ week" hint="Use the approved EM schedule; separate event-driven sampling later." />
+                    <NumberField id="emRoundsPerWeek" label="EM sampling rounds" value={input.emRoundsPerWeek} onChange={(value) => update("emRoundsPerWeek", value)} suffix="/ week" hint="Use the approved EM schedule; separate event-driven sampling later." />
                   </div>
                 </div>
                 <div className="border-t border-white/10 pt-6">
@@ -552,7 +583,7 @@ export default function QualityLabPlannerPage() {
                     <NumberField label="Sterility batches" value={input.sterilityBatchesPerMonth} onChange={(value) => update("sterilityBatchesPerMonth", value)} suffix="/ month" />
                     <NumberField label="Endotoxin samples" value={input.endotoxinSamplesPerMonth} onChange={(value) => update("endotoxinSamplesPerMonth", value)} suffix="/ month" />
                     <NumberField label="Bioburden samples" value={input.bioburdenSamplesPerMonth} onChange={(value) => update("bioburdenSamplesPerMonth", value)} suffix="/ month" />
-                    <NumberField label="Media lots for GPT" value={input.mediaLotsPerMonth} onChange={(value) => update("mediaLotsPerMonth", value)} suffix="/ month" />
+                    <NumberField id="mediaLotsPerMonth" label="Media lots for GPT" value={input.mediaLotsPerMonth} onChange={(value) => update("mediaLotsPerMonth", value)} suffix="/ month" />
                   </div>
                 </div>
               </div>
@@ -586,22 +617,22 @@ export default function QualityLabPlannerPage() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <NumberField label="Release target" value={input.targetTurnaroundDays} onChange={(value) => update("targetTurnaroundDays", value)} suffix="days" min={1} max={60} hint="Atlas will flag conflicts with conventional incubation." />
-                  <NumberField label="Growth over horizon" value={input.growthRatePercent} onChange={(value) => update("growthRatePercent", value)} suffix="%" min={-50} max={500} />
+                  <NumberField id="growthRatePercent" label="Growth over horizon" value={input.growthRatePercent} onChange={(value) => update("growthRatePercent", value)} suffix="%" min={-50} max={500} />
                   <NumberField label="Planning horizon" value={input.horizonYears} onChange={(value) => update("horizonYears", value)} suffix="years" min={1} max={10} />
                   <NumberField label="Working days" value={input.workingDaysPerMonth} onChange={(value) => update("workingDaysPerMonth", value)} suffix="/ month" min={10} max={31} />
                   <NumberField label="Operating shifts" value={input.shifts} onChange={(value) => update("shifts", value)} suffix="shifts" min={1} max={3} />
-                  <NumberField label="Productive analyst time" value={input.productiveHoursPerShift} onChange={(value) => update("productiveHoursPerShift", value)} suffix="h / day" min={2} max={12} hint="Excludes breaks, meetings, training and non-test work." />
+                  <NumberField id="productiveHoursPerShift" label="Productive analyst time" value={input.productiveHoursPerShift} onChange={(value) => update("productiveHoursPerShift", value)} suffix="h / day" min={2} max={12} hint="Excludes breaks, meetings, training and non-test work." />
                 </div>
                 <div className="border-t border-white/10 pt-6">
                   <h3 className="text-sm font-bold">Resilience and commercial assumptions</h3>
                   <div className="mt-4 grid gap-4 md:grid-cols-2">
-                    <NumberField label="Outsourced share" value={input.outsourcePercent} onChange={(value) => update("outsourcePercent", value)} suffix="%" max={95} />
-                    <NumberField label="People capacity reserve" value={input.redundancyPercent} onChange={(value) => update("redundancyPercent", value)} suffix="%" max={100} />
-                    <NumberField label="Equipment downtime" value={input.equipmentDowntimePercent} onChange={(value) => update("equipmentDowntimePercent", value)} suffix="%" max={50} />
-                    <NumberField label="Consumable waste allowance" value={input.consumableWastePercent} onChange={(value) => update("consumableWastePercent", value)} suffix="%" max={50} hint="Adds handling loss, expiry and non-routine use to the net run rate." />
+                    <NumberField id="outsourcePercent" label="Outsourced share" value={input.outsourcePercent} onChange={(value) => update("outsourcePercent", value)} suffix="%" max={95} />
+                    <NumberField id="redundancyPercent" label="People capacity reserve" value={input.redundancyPercent} onChange={(value) => update("redundancyPercent", value)} suffix="%" max={100} />
+                    <NumberField id="equipmentDowntimePercent" label="Equipment downtime" value={input.equipmentDowntimePercent} onChange={(value) => update("equipmentDowntimePercent", value)} suffix="%" max={50} />
+                    <NumberField id="consumableWastePercent" label="Consumable waste allowance" value={input.consumableWastePercent} onChange={(value) => update("consumableWastePercent", value)} suffix="%" max={50} hint="Adds handling loss, expiry and non-routine use to the net run rate." />
                     <NumberField label="Consumable lead time" value={input.consumableLeadTimeDays} onChange={(value) => update("consumableLeadTimeDays", value)} suffix="days" min={1} max={365} hint="End-to-end replenishment through quality release." />
                     <NumberField label="Consumable safety stock" value={input.consumableSafetyStockDays} onChange={(value) => update("consumableSafetyStockDays", value)} suffix="demand days" min={0} max={365} />
-                    <NumberField label="Loaded analyst cost" value={input.analystAnnualCostUsd} onChange={(value) => update("analystAnnualCostUsd", value)} suffix="USD / year" max={500000} hint="Used only for indicative OPEX planning." />
+                    <NumberField id="analystAnnualCostUsd" label="Loaded analyst cost" value={input.analystAnnualCostUsd} onChange={(value) => update("analystAnnualCostUsd", value)} suffix="USD / year" max={500000} hint="Used only for indicative OPEX planning." />
                   </div>
                 </div>
                 <div className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-4 text-xs leading-6 text-amber-100"><ShieldCheck className="mr-2 inline h-4 w-4 text-amber-300" />By compiling, you acknowledge that all capacity and cost outputs are concept estimates requiring method, regulatory, engineering and supplier verification.</div>
@@ -638,16 +669,17 @@ export default function QualityLabPlannerPage() {
                     <div className="flex justify-between gap-2"><span>Equipment classes</span><strong className="text-slate-200">{preview.equipment.length}</strong></div>
                     <div className="flex justify-between gap-2"><span>Future multiplier</span><strong className="text-slate-200">{preview.future.multiplier}×</strong></div>
                     <div className="flex justify-between gap-2 border-t border-white/10 pt-2"><span>Planner completion</span><strong className="text-teal-200">{furthestStep + 1}/{steps.length}</strong></div>
-                    <div className="flex justify-between gap-2"><span>Controlled-use evidence readiness</span><strong className="text-amber-200">{preview.dataQuality.completenessPercent}%</strong></div>
+                    <div className="flex justify-between gap-2"><span>Model completeness</span><strong className="text-sky-200">{previewReadiness?.modelCompleteness.score}%</strong></div>
+                    <div className="flex justify-between gap-2"><span>Evidence readiness</span><strong className="text-amber-200">{previewReadiness?.evidenceReadiness.score}%</strong></div>
                     <div className="flex justify-between gap-2"><span>Blocking inputs open</span><strong className="text-red-200">{preview.dataQuality.blockingOpenCount}</strong></div>
                     <div className="flex justify-between gap-2"><span>Versioned rules traced</span><strong className="text-sky-200">{preview.dataQuality.tracedRuleCount}</strong></div>
                   </div>
                   <details className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-[11px] leading-5 text-slate-400">
                     <summary className="cursor-pointer font-bold text-amber-100">Why can evidence readiness be low after 4/4 steps?</summary>
-                    <p className="mt-2">Planner completion means the concept can compile. Evidence readiness measures unresolved reliance: each blocking input reduces the score by 12 points and each important input by 5 points.</p>
+                    <p className="mt-2">Planner completion means the concept can compile. Evidence readiness separately checks seven evidence dimensions; a blocking gap scores that dimension at 0, an important gap at 40 and an advisory gap at 70.</p>
                     <p className="mt-2 text-slate-300">Raise it by confirming approved methods, replacing benchmark workload with site observations, and attaching qualified equipment, facility and governance evidence.</p>
                   </details>
-                  {params?.id && <div className="mt-4 grid gap-2"><Link href={`/quality-lab/skill-shift-coverage?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.06] px-4 py-2.5 text-xs font-bold text-cyan-200 transition hover:bg-cyan-300/10"><Users className="h-4 w-4" /> Test skill & shift coverage</Link><Link href={`/quality-lab/non-routine-load?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-4 py-2.5 text-xs font-bold text-amber-200 transition hover:bg-amber-300/10"><AlertTriangle className="h-4 w-4" /> Test exception workload</Link><Link href={`/quality-lab/equipment-resilience?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-2.5 text-xs font-bold text-emerald-200 transition hover:bg-emerald-300/10"><Wrench className="h-4 w-4" /> Test equipment resilience</Link><Link href={`/quality-lab/sensitivity?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-xs font-bold text-violet-200 transition hover:bg-violet-300/10"><Activity className="h-4 w-4" /> Test assumption sensitivity</Link></div>}
+                  {params?.id && <div className="mt-4 grid gap-2"><Link href={`/quality-lab/skill-shift-coverage?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-300/20 bg-cyan-300/[0.06] px-4 py-2.5 text-xs font-bold text-cyan-200 transition hover:bg-cyan-300/10"><Users className="h-4 w-4" /> Test skill & shift coverage</Link><Link href={`/quality-lab/non-routine-load?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] px-4 py-2.5 text-xs font-bold text-amber-200 transition hover:bg-amber-300/10"><AlertTriangle className="h-4 w-4" /> Test exception workload</Link><Link href={`/quality-lab/equipment-resilience?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-300/20 bg-emerald-300/[0.06] px-4 py-2.5 text-xs font-bold text-emerald-200 transition hover:bg-emerald-300/10"><Wrench className="h-4 w-4" /> Test equipment resilience</Link><Link href={`/quality-lab/sensitivity?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-xs font-bold text-violet-200 transition hover:bg-violet-300/10"><Activity className="h-4 w-4" /> Test assumption sensitivity</Link><Link href={`/quality-lab/operating-model?project=${params.id}`} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-sky-300/20 bg-sky-300/[0.06] px-4 py-2.5 text-xs font-bold text-sky-200 transition hover:bg-sky-300/10"><Scale className="h-4 w-4" /> Decide insource / outsource</Link></div>}
                 </>
               ) : <p className="mt-4 text-xs leading-5 text-slate-500">Complete the required fields to preview the model.</p>}
             </div>

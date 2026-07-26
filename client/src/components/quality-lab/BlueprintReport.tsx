@@ -14,12 +14,13 @@ import {
   Info,
   Network,
   Printer,
+  Scale,
   ShieldCheck,
   Users,
   ArrowRight,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import type { QualityLabBlueprint, QualityLabProject } from "@shared/quality-lab";
+import { getQualityLabReadiness, type QualityLabBlueprint, type QualityLabProject } from "@shared/quality-lab";
 import { analyzeQualityLabSensitivity } from "@shared/quality-lab-sensitivity";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
@@ -27,6 +28,7 @@ import { analytics } from "@/hooks/use-analytics";
 import { evidenceForRuleIds, ruleGuidanceForIds } from "@/data/atlasEvidenceGraph";
 import { ProjectActionCenter } from "@/components/quality-lab/ProjectActionCenter";
 import { BlueprintVisualDecisionLayer } from "@/components/quality-lab/BlueprintVisualDecisionLayer";
+import { DecisionTraceLink } from "@/components/quality-lab/DecisionLineagePanel";
 
 interface Props {
   project: QualityLabProject;
@@ -130,6 +132,7 @@ function DecisionEvidenceLinks({ ruleIds }: { ruleIds: string[] }) {
 
 function ExecutiveBriefPrint({ project }: { project: QualityLabProject }) {
   const { blueprint, input } = project;
+  const readiness = getQualityLabReadiness(blueprint);
   const packs = roleDecisionPack(blueprint);
   const roles = Object.keys(packs) as RoleLens[];
   return (
@@ -170,7 +173,8 @@ function ExecutiveBriefPrint({ project }: { project: QualityLabProject }) {
       </section>
 
       <section className="mt-6 break-inside-avoid border-t border-slate-300 pt-4 text-[10px] leading-5 text-slate-600">
-        <p><strong>Trace basis:</strong> {blueprint.dataQuality.tracedRuleCount} versioned rules · {blueprint.dataQuality.evidenceCount} evidence records · {blueprint.dataQuality.completenessPercent}% controlled-use evidence readiness.</p>
+        <p><strong>Readiness:</strong> {readiness.modelCompleteness.score}% model completeness · {readiness.evidenceReadiness.score}% evidence readiness · {readiness.decisionReadiness.label} ({readiness.decisionReadiness.score}%).</p>
+        <p><strong>Trace basis:</strong> {blueprint.dataQuality.tracedRuleCount} versioned rules · {blueprint.dataQuality.evidenceCount} evidence records · {blueprint.decisionLineage.length} decision lineage records.</p>
         <p><strong>Versions:</strong> {input.contractVersion} · {blueprint.contractVersion} · {blueprint.compilerCoreVersion} · {blueprint.domainPack.version}.</p>
         <p><strong>Generated:</strong> {new Date(blueprint.generatedAt).toLocaleString("en-US")} · Project ID {project.id}.</p>
         <p className="mt-2 font-semibold text-slate-800">Qualified QC, QA, engineering, procurement and client document-control review remain required before controlled use.</p>
@@ -191,12 +195,17 @@ function printBlueprint(mode: "executive" | "full") {
 export function BlueprintReport({ project, onEdit }: Props) {
   const { blueprint } = project;
   const { input, current, future } = blueprint;
+  const readiness = getQualityLabReadiness(blueprint);
+  const lineageFor = (outputKey: string) => blueprint.decisionLineage.find((item) => item.outputKey === outputKey);
   const highRisks = blueprint.risks.filter((risk) => risk.severity === "high").length;
-  const controlledUseBlocked = blueprint.dataQuality.blockingOpenCount > 0 || (blueprint.review.status as string) !== "expert-reviewed";
   const reviewStatusLabel = project.reviewRequestedAt ? "review requested" : blueprint.review.status.replaceAll("-", " ");
   const supportingEvidence = evidenceForRuleIds(blueprint.ruleTrace.map((rule) => rule.ruleId));
   const [roleLens, setRoleLens] = useState<RoleLens>(input.decisionOwnerRole === "cross-functional" ? "qc" : input.decisionOwnerRole);
-  const [reportMode, setReportMode] = useState<"executive" | "technical">("executive");
+  const [reportMode, setReportMode] = useState<"executive" | "technical">(() =>
+    typeof window !== "undefined" && ["#visual-decision-layer", "#project-action-center", "#demand-model", "#capability-plan", "#decision-risks", "#evidence-trace"].includes(window.location.hash)
+      ? "technical"
+      : "executive",
+  );
   const decisionPack = roleDecisionPack(blueprint)[roleLens];
   const activeActions = project.actionPlan.actions.filter((action) => action.status !== "resolved");
   const blockingActions = activeActions.filter((action) => action.severity === "blocking");
@@ -276,10 +285,10 @@ export function BlueprintReport({ project, onEdit }: Props) {
           </div>
           </div>
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-amber-200 print:text-slate-950">{blueprint.dataQuality.completenessPercent}%</p><p className="text-[10px] text-slate-500">controlled-use evidence readiness</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{readiness.modelCompleteness.score}%</p><p className="text-[10px] text-slate-500">model completeness</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-amber-200 print:text-slate-950">{readiness.evidenceReadiness.score}%</p><p className="text-[10px] text-slate-500">evidence readiness</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">controlled-use blockers</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{blueprint.dataQuality.tracedRuleCount}</p><p className="text-[10px] text-slate-500">versioned rules traced</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="truncate text-xs font-bold text-amber-200 print:text-slate-950">{reviewStatusLabel}</p><p className="mt-1 text-[10px] text-slate-500">review status</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-xs font-bold text-teal-200 print:text-slate-950">{readiness.decisionReadiness.label}</p><p className="mt-1 text-[10px] text-slate-500">decision readiness</p></div>
           </div>
         </div>
       </header>
@@ -313,10 +322,10 @@ export function BlueprintReport({ project, onEdit }: Props) {
         <div className="grid gap-5 lg:grid-cols-[1fr_1.25fr_auto] lg:items-start">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:text-slate-500">Decision brief</p>
-            <h2 className="mt-2 text-xl font-bold print:text-slate-950">{controlledUseBlocked ? "Not ready for controlled use." : "No controlled-use blocker is open."}</h2>
-            <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">The model is useful for discovery and scenario discussion. Resolve the blocking inputs and complete qualified review before using it for investment, URS or procurement decisions.</p>
-            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-teal-300" style={{ width: `${blueprint.dataQuality.completenessPercent}%` }} /></div>
-            <p className="mt-2 text-[10px] text-slate-500">{blueprint.dataQuality.completenessPercent}% controlled-use evidence readiness · {blueprint.dataQuality.blockingOpenCount} blockers · {reviewStatusLabel}</p>
+            <h2 className="mt-2 text-xl font-bold print:text-slate-950">{readiness.decisionReadiness.label}</h2>
+            <p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">{readiness.decisionReadiness.summary} {readiness.decisionReadiness.nextGate}</p>
+            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/10 print:bg-slate-200"><div className="h-full rounded-full bg-teal-300" style={{ width: `${readiness.decisionReadiness.score}%` }} /></div>
+            <p className="mt-2 text-[10px] text-slate-500">{readiness.decisionReadiness.score}% decision-readiness score · {blueprint.dataQuality.blockingOpenCount} blockers · {reviewStatusLabel}</p>
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Resolve first</p>
@@ -358,7 +367,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
         <div className="mt-4 rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white">
           <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Relationship between the counts</p>
           <p className="mt-2 text-sm font-semibold text-slate-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount} blockers → {blockingActions.length} blocker actions · {blueprint.dataQuality.importantOpenCount} important inputs → {importantActions.length} important actions</p>
-          <p className="mt-2 text-[11px] leading-5 text-slate-500 print:text-slate-700">Evidence readiness is a weighted gap indicator, not form completion: start at 100, deduct 12 points per blocker and 5 per important input, then clamp between 0–100. Raise it by resolving the listed evidence actions and completing qualified review.</p>
+          <p className="mt-2 text-[11px] leading-5 text-slate-500 print:text-slate-700">Model completeness ({readiness.modelCompleteness.score}%) measures input/model coverage. Evidence readiness ({readiness.evidenceReadiness.score}%) measures controlled support. Decision readiness ({readiness.decisionReadiness.score}%) combines them at 40/60, then caps the stage by blockers and review status.</p>
         </div>
 
         {reportMode === "executive" && <div className="mt-5 grid gap-4 lg:grid-cols-3">
@@ -366,6 +375,22 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-amber-300 print:text-slate-600">Three material uncertainties</p><ol className="mt-3 space-y-2 text-xs leading-5 text-slate-400 print:text-slate-700">{blueprint.unresolvedInputs.slice(0, 3).map((item, index) => <li key={item.id}><strong className="text-slate-200 print:text-slate-950">{index + 1}.</strong> {item.question}</li>)}</ol></div>
           <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300 print:text-slate-600">Next five actions</p><ol className="mt-3 space-y-2 text-xs leading-5 text-slate-400 print:text-slate-700">{activeActions.slice(0, 5).map((action, index) => <li key={action.id}><strong className="text-slate-200 print:text-slate-950">{index + 1}.</strong> {action.requiredEvidence}</li>)}</ol></div>
         </div>}
+      </section>
+
+      <section id="decision-readiness" data-testid="blueprint-readiness" className="mb-5 scroll-mt-32 rounded-2xl border border-sky-300/15 bg-sky-300/[0.035] p-5 md:p-6 print:border-slate-300 print:bg-white">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300 print:text-slate-500">Separate readiness measures</p><h2 className="mt-1 text-xl font-bold print:text-slate-950">Know what is complete, evidenced and safe to decide.</h2><p className="mt-2 max-w-3xl text-xs leading-5 text-slate-400 print:text-slate-700">These measures are intentionally separate. A complete model can still have weak evidence, and neither score grants approval.</p></div>
+          <span className="w-fit rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-200 print:border-slate-300 print:bg-white print:text-slate-700">{readiness.contractVersion}</span>
+        </div>
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          {[readiness.modelCompleteness, readiness.evidenceReadiness].map((measure) => <article key={measure.label} className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white"><div className="flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{measure.label}</p><p className="mt-2 text-3xl font-bold text-sky-100 print:text-slate-950">{measure.score}%</p></div><div className="h-14 w-14 rounded-full border-4 border-sky-300/30 p-1 text-center text-[9px] font-bold leading-10 text-sky-200 print:border-slate-300 print:text-slate-700">{measure.dimensions.filter((item) => item.status === "met" || item.status === "not-applicable").length}/{measure.dimensions.length}</div></div><p className="mt-3 text-xs leading-5 text-slate-400 print:text-slate-700">{measure.summary}</p><details className="mt-4 border-t border-white/8 pt-3 print:border-slate-200"><summary className="cursor-pointer text-[11px] font-bold text-sky-300 print:text-slate-700">Show formula and dimensions</summary><p className="mt-3 text-[10px] leading-5 text-slate-500">{measure.formula}</p><div className="mt-3 space-y-2">{measure.dimensions.map((item) => <div key={item.id} className="flex items-start justify-between gap-3 text-[10px]"><div><p className="font-semibold text-slate-300 print:text-slate-800">{item.label}</p><p className="mt-0.5 leading-4 text-slate-600">{item.summary}</p></div><strong className="shrink-0 text-sky-200 print:text-slate-800">{item.score}%</strong></div>)}</div></details></article>)}
+          <article className="rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300 print:text-slate-600">Decision readiness</p><p className="mt-2 text-3xl font-bold text-teal-100 print:text-slate-950">{readiness.decisionReadiness.score}%</p><p className="mt-2 text-sm font-bold text-white print:text-slate-950">{readiness.decisionReadiness.label}</p><p className="mt-3 text-xs leading-5 text-slate-400 print:text-slate-700">{readiness.decisionReadiness.summary}</p><p className="mt-3 text-[10px] leading-5 text-slate-500">{readiness.decisionReadiness.formula}</p><p className="mt-3 rounded-lg border border-white/8 bg-slate-950/25 p-3 text-[11px] leading-5 text-teal-100/80 print:border-slate-200 print:bg-white print:text-slate-700"><strong>Next gate:</strong> {readiness.decisionReadiness.nextGate}</p></article>
+        </div>
+      </section>
+
+      <section id="decision-lineage" data-testid="blueprint-lineage-summary" className="mb-5 scroll-mt-32 rounded-2xl border border-sky-300/20 bg-gradient-to-br from-sky-300/[0.06] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300 print:text-slate-500">Decision lineage</p><h2 className="mt-1 text-xl font-bold print:text-slate-950">Trace every material conclusion to its basis.</h2><p className="mt-2 max-w-3xl text-xs leading-5 text-slate-400 print:text-slate-700">Each trace preserves the output, calculation, contributing inputs, versioned rules, evidence, assumptions, limitations and open questions.</p></div><span className="w-fit rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-sky-200 print:border-slate-300 print:bg-white print:text-slate-700">{blueprint.decisionLineage.length} trace records</span></div>
+        <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">{blueprint.decisionLineage.filter((item) => ["current.totalTeamFte", "future.totalTeamFte", "future.estimatedAreaSqm", "future.capexHighUsd", "future.annualOpexHighUsd"].includes(item.outputKey)).map((lineage) => <article key={lineage.id} className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{lineage.decisionType}</p><p className="mt-2 text-lg font-bold text-slate-100 print:text-slate-950">{lineage.currentOutput}</p><p className="mt-2 min-h-10 text-[11px] leading-5 text-slate-500">{lineage.summary}</p><div className="mt-3"><DecisionTraceLink projectId={project.id} lineage={lineage} /></div></article>)}</div>
       </section>
 
       <section id="decision-sensitivity" data-testid="blueprint-sensitivity-summary" className="mb-5 scroll-mt-32 rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
@@ -402,7 +427,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
               </li>)}
             </ol>
             {dominantDriver && <p className="mt-4 rounded-lg border border-violet-300/15 bg-violet-300/[0.045] p-3 text-[11px] leading-5 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700"><strong className="text-violet-200 print:text-slate-950">Dominant tested driver:</strong> {dominantDriver.label}. {dominantDriver.decisionUse}</p>}
-            <Link data-print="hide" href={`/quality-lab/sensitivity?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_sensitivity", "open_full_analysis")} className="mt-4 inline-flex items-center gap-2 rounded-lg border border-violet-300/25 bg-violet-300/10 px-3 py-2 text-xs font-bold text-violet-200 transition hover:bg-violet-300/15">Open all drivers and output ranges <ArrowRight className="h-4 w-4" /></Link>
+            <div data-print="hide" className="mt-4 flex flex-wrap gap-2"><Link href={`/quality-lab/sensitivity?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_sensitivity", "open_full_analysis")} className="inline-flex items-center gap-2 rounded-lg border border-violet-300/25 bg-violet-300/10 px-3 py-2 text-xs font-bold text-violet-200 transition hover:bg-violet-300/15">Open all drivers and output ranges <ArrowRight className="h-4 w-4" /></Link><Link href={`/quality-lab/operating-model?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("operating_model", "open_application_analysis")} className="inline-flex items-center gap-2 rounded-lg border border-sky-300/25 bg-sky-300/10 px-3 py-2 text-xs font-bold text-sky-200 transition hover:bg-sky-300/15"><Scale className="h-4 w-4" /> Decide insource / outsource</Link></div>
           </div>
         </div>
         <p className="mt-4 text-[10px] leading-5 text-slate-500 print:text-slate-600">Method: {sensitivity.engineVersion} · one-at-a-time perturbation · interactions and probability distributions are outside this screen. Stable-in-range does not prove an input is correct.</p>
@@ -413,7 +438,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
       <div className={reportMode === "technical" ? "block" : "hidden"}>
       <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
         <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
-          {[["#decision-brief", "Decision brief"], ["#decision-sensitivity", "Sensitivity"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
+          {[["#decision-brief", "Decision brief"], ["#decision-readiness", "Readiness"], ["#decision-lineage", "Lineage"], ["#decision-sensitivity", "Sensitivity"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
         </div>
       </nav>
 
@@ -444,6 +469,10 @@ export function BlueprintReport({ project, onEdit }: Props) {
               ].map(([value, label]) => (
                 <div key={label}><p className="font-bold text-slate-100 print:text-slate-950">{value}</p><p className="mt-1 text-xs text-slate-500">{label}</p></div>
               ))}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/8 pt-3 print:hidden">
+              <DecisionTraceLink projectId={project.id} lineage={lineageFor(index === 0 ? "current.totalTeamFte" : "future.totalTeamFte")} label="Trace staffing" />
+              {index === 1 && <><DecisionTraceLink projectId={project.id} lineage={lineageFor("future.estimatedAreaSqm")} label="Trace area" /><DecisionTraceLink projectId={project.id} lineage={lineageFor("future.capexHighUsd")} label="Trace CAPEX" /><DecisionTraceLink projectId={project.id} lineage={lineageFor("future.annualOpexHighUsd")} label="Trace OPEX" /></>}
             </div>
           </div>
         ))}
@@ -587,7 +616,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
                     <td className="py-3 pr-4 text-lg font-bold text-teal-200 print:text-slate-950">{item.quantityFuture}</td>
                     <td className="py-3 pr-4 whitespace-nowrap print:text-slate-800">{money.format(item.unitCapexLowUsd)}–{money.format(item.unitCapexHighUsd)}</td>
                     <td className="py-3 pr-4"><span className={`rounded-full border px-2 py-1 text-[10px] font-bold uppercase ${confidenceClass[item.confidence]} print:border-slate-300 print:bg-white print:text-slate-700`}>{item.confidence}</span></td>
-                    <td className="max-w-xl py-3 text-xs leading-5 text-slate-400 print:text-slate-700"><p>{item.rationale}</p><p className="mt-1 text-slate-500 print:text-slate-600"><strong>URS seed:</strong> {item.specification}</p>{item.methodLoadBasis && item.methodLoadBasis.length > 0 && <p className="mt-2 text-sky-200/80 print:text-slate-600"><strong>Method / demand basis:</strong> {item.methodLoadBasis.join(" · ")}</p>}{item.methodRequirementIds && item.methodRequirementIds.length > 0 && <p className="mt-2 break-words font-mono text-[10px] text-sky-200/70 print:text-slate-600">Method links: {item.methodRequirementIds.join(" · ")}</p>}</td>
+                    <td className="max-w-xl py-3 text-xs leading-5 text-slate-400 print:text-slate-700"><p>{item.rationale}</p><p className="mt-1 text-slate-500 print:text-slate-600"><strong>URS seed:</strong> {item.specification}</p>{item.methodLoadBasis && item.methodLoadBasis.length > 0 && <p className="mt-2 text-sky-200/80 print:text-slate-600"><strong>Method / demand basis:</strong> {item.methodLoadBasis.join(" · ")}</p>}{item.methodRequirementIds && item.methodRequirementIds.length > 0 && <p className="mt-2 break-words font-mono text-[10px] text-sky-200/70 print:text-slate-600">Method links: {item.methodRequirementIds.join(" · ")}</p>}<div className="mt-2"><DecisionTraceLink projectId={project.id} lineage={lineageFor(`equipment.${item.id}.quantityFuture`)} /></div></td>
                   </tr>
                 ))}
               </tbody>
@@ -655,7 +684,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
           <Section icon={ClipboardCheck} eyebrow="Action plan" title="Recommended next decisions" collapsible defaultOpen={false} collapsedSummary={`${blueprint.recommendations.length} prioritized decisions are ready for review.`}>
             <ol className="space-y-3">
               {blueprint.recommendations.map((recommendation, index) => (
-                <li key={recommendation.id} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span><div className="min-w-0 flex-1"><div className="mb-1 flex flex-wrap items-center gap-2"><span>{recommendation.recommendation}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 print:border-slate-300">{recommendation.priority.replaceAll("-", " ")}</span></div><p className="text-xs leading-5 text-slate-500">{recommendation.rationale}</p><DecisionEvidenceLinks ruleIds={recommendation.relatedRuleIds} /></div></li>
+                <li key={recommendation.id} className="flex gap-3 text-sm leading-6 text-slate-300 print:text-slate-800"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-300/10 text-xs font-bold text-teal-200 print:bg-slate-100 print:text-slate-800">{index + 1}</span><div className="min-w-0 flex-1"><div className="mb-1 flex flex-wrap items-center gap-2"><span>{recommendation.recommendation}</span><span className="rounded-full border border-white/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 print:border-slate-300">{recommendation.priority.replaceAll("-", " ")}</span></div><p className="text-xs leading-5 text-slate-500">{recommendation.rationale}</p><div className="mt-2"><DecisionTraceLink projectId={project.id} lineage={lineageFor(`recommendations.${recommendation.id}`)} /></div><DecisionEvidenceLinks ruleIds={recommendation.relatedRuleIds} /></div></li>
               ))}
             </ol>
           </Section>

@@ -78,7 +78,7 @@ export function createQualityLabDeliveryPackage(
       { id: "decision-brief", title: "Executive decision brief", format: "PDF/XLSX", status: "included" },
       { id: "capacity-model", title: "Demand, capacity and resource model", format: "XLSX", status: "included" },
       { id: "method-portfolio", title: "Method portfolio and method BOM", format: "XLSX", status: "included" },
-      { id: "urs-basis", title: "Vendor-neutral URS drafting basis", format: "XLSX", status: "requires-qualified-review" },
+      { id: "urs-basis", title: "Vendor-neutral URS and RFQ drafting package", format: "DOCX/XLSX", status: "requires-qualified-review" },
       { id: "evidence-register", title: "Evidence, assumptions and open-input register", format: "XLSX", status: "included" },
       { id: "review-record", title: "Review, correction and decision record", format: "XLSX", status: "included" },
       { id: "calibration-record", title: "Estimate-to-actual calibration record", format: "XLSX/CSV", status: "included" },

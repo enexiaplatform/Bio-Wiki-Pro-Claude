@@ -5,6 +5,7 @@ import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { useUser } from "@/context/UserContext";
 import { useSEO } from "@/hooks/use-seo";
 import { listEngagements } from "@/lib/quality-lab-engagements";
+import { listCalibrationReviewCases } from "@/lib/quality-lab-calibration-observations";
 import { loadExpertOwnershipRegister } from "@/lib/quality-lab-expert-ownership";
 import { fetchAccountGovernanceRecord } from "@/lib/quality-lab-governance";
 import { loadSourceClosureRegister } from "@/lib/quality-lab-source-closures";
@@ -71,7 +72,8 @@ export default function QualityLabGate2ReleasePage() {
     return Array.from(byProject.values());
   }, [serverSnapshots]);
 
-  const validationRegistry = useMemo(() => assessValidationCaseRegistry(portfolioInputs.map((item) => item.packet)), [portfolioInputs]);
+  const calibrationCases = useMemo(listCalibrationReviewCases, []);
+  const validationRegistry = useMemo(() => assessValidationCaseRegistry(portfolioInputs.map((item) => item.packet), calibrationCases), [calibrationCases, portfolioInputs]);
   const paidPilotPortfolio = useMemo(() => assessPaidPilotPortfolio(portfolioInputs), [portfolioInputs]);
   const assessment = useMemo(() => assessGate2Release({ sourceCoverage, expertOwnership, validationRegistry, paidPilotPortfolio }), [sourceCoverage, expertOwnership, validationRegistry, paidPilotPortfolio]);
   const progress = Math.round((assessment.evidenceCompleteCount / assessment.totalControlCount) * 100);

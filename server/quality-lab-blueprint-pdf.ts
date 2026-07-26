@@ -2,6 +2,7 @@ import PDFDocument from "pdfkit";
 import {
   createQualityLabProject,
   defaultQualityLabInput,
+  getQualityLabReadiness,
   type QualityLabBlueprint,
   type QualityLabProject,
 } from "../shared/quality-lab.js";
@@ -256,6 +257,7 @@ function drawCover(doc: Doc, project: QualityLabProject, snapshot: QualityLabRev
 
 function drawExecutivePage(doc: Doc, project: QualityLabProject, sample: boolean) {
   const b = project.blueprint;
+  const readiness = getQualityLabReadiness(b);
   sectionPage(doc, 2, "01 / Executive decision", "Decision brief", "The decision, modeled signal, confidence boundary and immediate actions on one page.", sample);
   callout(doc, MARGIN, 132, CONTENT_WIDTH, "Decision mandate", project.input.primaryDecision, "teal", 82);
 
@@ -264,7 +266,7 @@ function drawExecutivePage(doc: Doc, project: QualityLabProject, sample: boolean
   kpi(doc, MARGIN, 229, cardWidth, "Current workload", number(b.current.monthlyTests), "modeled test units / month", "blue");
   kpi(doc, MARGIN + (cardWidth + gap), 229, cardWidth, "Team basis", number(b.current.totalTeamFte), "current concept FTE", "teal");
   kpi(doc, MARGIN + (cardWidth + gap) * 2, 229, cardWidth, "Space basis", `${number(b.current.estimatedAreaSqm)} m2`, "functional allowance", "neutral");
-  kpi(doc, MARGIN + (cardWidth + gap) * 3, 229, cardWidth, "Evidence ready", pct(b.dataQuality.completenessPercent), `${b.dataQuality.blockingOpenCount} blockers remain`, b.dataQuality.blockingOpenCount ? "gold" : "teal");
+  kpi(doc, MARGIN + (cardWidth + gap) * 3, 229, cardWidth, "Evidence ready", pct(readiness.evidenceReadiness.score), `${b.dataQuality.blockingOpenCount} blockers remain`, b.dataQuality.blockingOpenCount ? "gold" : "teal");
 
   label(doc, "Modeled decision signal", MARGIN, 329, 230);
   paragraph(
@@ -530,15 +532,16 @@ function drawControlsPage(doc: Doc, project: QualityLabProject, sample: boolean)
 
 function drawEvidencePage(doc: Doc, project: QualityLabProject, sample: boolean) {
   const b = project.blueprint;
-  sectionPage(doc, 12, "11 / Evidence readiness", "What must be true before controlled use?", "Readiness is a weighted evidence-gap indicator, not a completion badge or regulatory score.", sample);
-  const ready = b.dataQuality.completenessPercent;
-  label(doc, "Controlled-use evidence readiness", MARGIN, 143, 240, C.ink);
+  const readiness = getQualityLabReadiness(b);
+  sectionPage(doc, 12, "11 / Evidence readiness", "What must be true before controlled use?", "Model completeness, evidence readiness and decision readiness are separate measures; none is an approval badge or regulatory score.", sample);
+  const ready = readiness.evidenceReadiness.score;
+  label(doc, "Evidence readiness", MARGIN, 143, 240, C.ink);
   doc.roundedRect(MARGIN, 175, CONTENT_WIDTH, 30, 15).fill(C.panel2);
   doc.roundedRect(MARGIN, 175, Math.max(8, CONTENT_WIDTH * ready / 100), 30, 15).fill(ready >= 80 ? C.teal : ready >= 50 ? C.gold : C.red);
   doc.moveTo(MARGIN + CONTENT_WIDTH * 0.8, 168).lineTo(MARGIN + CONTENT_WIDTH * 0.8, 213).lineWidth(1).strokeColor(C.ink).stroke();
   doc.font("Helvetica-Bold").fontSize(18).fillColor(C.ink).text(`${ready}%`, MARGIN, 217);
-  paragraph(doc, "80% is a review threshold marker, not approval.", MARGIN + 66, 224, 250, { size: 7.5, color: C.muted });
-  callout(doc, 366, 217, 183, "Score logic", "100 - 12 per blocker - 5 per important input, clamped 0-100.", "neutral", 63);
+  paragraph(doc, `${readiness.modelCompleteness.score}% model completeness; ${readiness.decisionReadiness.label.toLowerCase()}.`, MARGIN + 66, 224, 250, { size: 7.5, color: C.muted });
+  callout(doc, 366, 217, 183, "Score logic", "Equal-weight evidence dimensions: 100 closed, 70 advisory, 40 important, 0 blocking.", "neutral", 63);
 
   label(doc, "Priority evidence gaps", MARGIN, 304, 220, C.ink);
   const gaps = b.unresolvedInputs.filter((item) => item.severity !== "advisory").slice(0, 6);
@@ -653,6 +656,7 @@ function drawRegistersPage(doc: Doc, b: QualityLabBlueprint, sample: boolean) {
 
 function drawHandoverPage(doc: Doc, project: QualityLabProject, snapshot: QualityLabReviewedProjectSnapshot, sample: boolean) {
   const b = project.blueprint;
+  const readiness = getQualityLabReadiness(b);
   const control = snapshot.engagement?.deliveryControl;
   sectionPage(doc, 17, "16 / Controlled handover", "Release, acceptance and next decision", "The final page states exactly what the artifact can support, what remains open and how the client records acceptance.", sample);
   const leftWidth = 241;
@@ -667,7 +671,8 @@ function drawHandoverPage(doc: Doc, project: QualityLabProject, snapshot: Qualit
     ["Prepared by", sample ? "Illustrative role pattern" : control?.preparedByRole || "Open"],
     ["Reviewed by", sample ? "Engagement-specific" : control?.reviewedByRole || "Open"],
     ["External approval", sample ? "Not applicable" : control?.externalApprovalReference || "Open"],
-    ["Evidence readiness", `${b.dataQuality.completenessPercent}% / ${b.dataQuality.blockingOpenCount} blockers`],
+    ["Model / evidence readiness", `${readiness.modelCompleteness.score}% / ${readiness.evidenceReadiness.score}%`],
+    ["Decision readiness", readiness.decisionReadiness.label],
   ];
   const bottom = table(doc, MARGIN, 307, ["Control", "Recorded value"], rows, [150, 353], { rowHeight: 37, fontSize: 7.6, emphasisColumn: 0 });
   callout(doc, MARGIN, bottom + 20, CONTENT_WIDTH, sample ? "What a paid engagement adds" : "Acceptance basis", sample ? "A scoped project replaces synthetic inputs with site evidence, names accountable reviewers, records corrections, supplies the editable workbook and issues one controlled revision after review." : "Record written acceptance or accepted-with-actions against this document ID and revision. Any material input change requires impact review and a controlled revision.", "blue", 92);

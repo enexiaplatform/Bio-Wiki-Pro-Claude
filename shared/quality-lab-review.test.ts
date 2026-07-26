@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { compileQualityLabBlueprint, defaultQualityLabInput } from "./quality-lab";
+import { compileQualityLabBlueprint, defaultQualityLabInput, getQualityLabReadiness } from "./quality-lab";
 import { assessQualityLabReviewBrief, formatQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, qualityLabReviewRequestSchema } from "./quality-lab-review";
 
 describe("Quality Lab review brief", () => {
   it("creates a versioned, deterministic triage brief from a Blueprint", () => {
     const blueprint = compileQualityLabBlueprint(defaultQualityLabInput);
+    const readiness = getQualityLabReadiness(blueprint);
     const request = qualityLabReviewRequestSchema.parse({
       briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
       contact: { name: "Quality Lead", email: "quality@example.com", company: "Example Pharma", role: "QC Manager" },
@@ -34,7 +35,7 @@ describe("Quality Lab review brief", () => {
         domainPackId: blueprint.domainPack.id,
         domainPackVersion: blueprint.domainPack.version,
         monthlyTests: blueprint.current.monthlyTests,
-        inputCompletenessPercent: blueprint.dataQuality.completenessPercent,
+        inputCompletenessPercent: readiness.modelCompleteness.score,
         blockingOpenCount: blueprint.dataQuality.blockingOpenCount,
         importantOpenCount: blueprint.dataQuality.importantOpenCount,
         unresolvedInputs: blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
@@ -45,7 +46,7 @@ describe("Quality Lab review brief", () => {
     expect(brief).toContain("[quality-lab-review-brief/v3]");
     expect(brief).toContain("Expert-reviewed Blueprint Pilot (from $990)");
     expect(brief).toContain("decision window=1–3 months");
-    expect(brief).toContain("controlled-use evidence readiness");
+    expect(brief).toContain("model completeness");
     expect(brief).toContain("controlled-use blockers");
     expect(brief).toContain("Open-input checklist:");
     expect(brief).toContain("Decision mandate:");

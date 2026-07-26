@@ -3,12 +3,19 @@ import {
   QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
   QUALITY_LAB_COMPILER_CORE_VERSION,
   QUALITY_LAB_INPUT_CONTRACT_VERSION,
+  QUALITY_LAB_LINEAGE_CONTRACT_VERSION,
+  QUALITY_LAB_READINESS_CONTRACT_VERSION,
   blueprintReviewSchema,
   dataQualitySummarySchema,
+  decisionLineageSchema,
   evidenceRecordSchema,
+  qualityLabReadinessSchema,
   ruleTraceSchema,
   unresolvedInputSchema,
+  type DecisionLineage,
   type EvidenceRecord,
+  type QualityLabReadiness,
+  type ReadinessDimension,
   type RuleTrace,
   type UnresolvedInput,
 } from "./quality-lab-contract.js";
@@ -334,6 +341,8 @@ export const qualityLabBlueprintSchema = z.object({
   evidence: z.array(evidenceRecordSchema),
   ruleTrace: z.array(ruleTraceSchema),
   unresolvedInputs: z.array(unresolvedInputSchema),
+  decisionLineage: z.array(decisionLineageSchema).default([]),
+  readiness: qualityLabReadinessSchema.optional(),
   dataQuality: dataQualitySummarySchema,
   review: blueprintReviewSchema,
   reviewStatus: z.literal("concept-only"),
@@ -963,6 +972,205 @@ function buildTraceability(workflows: WorkflowDemand[]): { evidence: EvidenceRec
   };
 }
 
+function uniqueStrings(values: string[]) {
+  return Array.from(new Set(values));
+}
+
+function buildDecisionLineage(args: {
+  workflows: WorkflowDemand[];
+  methodRequirements: MethodRequirement[];
+  equipment: EquipmentRecommendation[];
+  current: BlueprintScenario;
+  future: BlueprintScenario;
+  assumptions: BlueprintAssumption[];
+  recommendations: BlueprintRecommendation[];
+  unresolvedInputs: UnresolvedInput[];
+  evidence: EvidenceRecord[];
+  ruleTrace: RuleTrace[];
+}): DecisionLineage[] {
+  const ruleById = new Map(args.ruleTrace.map((rule) => [rule.ruleId, rule]));
+  const evidenceById = new Map(args.evidence.map((record) => [record.id, record]));
+  const fallbackRule = ruleById.get("core.capacity.people") ?? args.ruleTrace[0];
+  const workflowByRuleId = new Map(args.workflows.map((workflow) => [workflow.ruleId, workflow.id]));
+  const methodByRequirementId = new Map(args.methodRequirements.map((requirement) => [requirement.id, requirement.methodId]));
+
+  const create = (seed: Omit<DecisionLineage, "contractVersion" | "ruleRefs" | "evidenceRefs" | "unresolvedInputIds"> & { ruleIds: string[] }): DecisionLineage => {
+    const rules = uniqueStrings(seed.ruleIds).map((id) => ruleById.get(id)).filter((rule): rule is RuleTrace => Boolean(rule));
+    if (rules.length === 0 && fallbackRule) rules.push(fallbackRule);
+    const resolvedRuleIds = rules.map((rule) => rule.ruleId);
+    const { ruleIds: _ruleIds, ...lineage } = seed;
+    return {
+      ...lineage,
+      contractVersion: QUALITY_LAB_LINEAGE_CONTRACT_VERSION,
+      ruleRefs: rules.map((rule) => ({ id: rule.ruleId, version: rule.ruleVersion })),
+      evidenceRefs: uniqueStrings(rules.flatMap((rule) => rule.evidenceIds))
+        .map((id) => evidenceById.get(id))
+        .filter((record): record is EvidenceRecord => Boolean(record))
+        .map((record) => ({ id: record.id, version: record.version })),
+      unresolvedInputIds: args.unresolvedInputs
+        .filter((item) => item.relatedRuleIds.some((id) => resolvedRuleIds.includes(id)))
+        .map((item) => item.id),
+    };
+  };
+
+  const allWorkflowIds = args.workflows.map((workflow) => workflow.id);
+  const allMethodIds = uniqueStrings(args.methodRequirements.map((requirement) => requirement.methodId));
+  const workflowRuleIds = args.workflows.map((workflow) => workflow.ruleId);
+  const scenarioLineages: DecisionLineage[] = [
+    create({
+      id: "decision:staffing:current-total-team-fte",
+      decisionType: "staffing",
+      outputKey: "current.totalTeamFte",
+      summary: "Current total laboratory team demand",
+      currentOutput: `${args.current.totalTeamFte} FTE`,
+      calculation: "Workflow hands-on hours are divided by productive hours per FTE, then resilience reserve and technical-review capacity are added.",
+      contributingInputPaths: ["finishedBatchesPerMonth", "rawMaterialLotsPerMonth", "workingDaysPerMonth", "shifts", "productiveHoursPerShift", "redundancyPercent", "outsourcePercent"],
+      workflowIds: allWorkflowIds,
+      methodIds: allMethodIds,
+      ruleIds: ["core.capacity.people", ...workflowRuleIds],
+      assumptionIds: ["work-month", "redundancy", "workflow-times", "insource"],
+      confidence: "indicative",
+      limitations: ["Monthly-average capacity does not prove shift coverage, queue feasibility, investigation load or named-person qualification."],
+      materialChangeFactors: ["Observed method time", "Outsource allocation", "Productive hours", "Resilience policy", "Non-routine workload"],
+    }),
+    create({
+      id: "decision:staffing:future-total-team-fte",
+      decisionType: "staffing",
+      outputKey: "future.totalTeamFte",
+      summary: "Planning-horizon total laboratory team demand",
+      currentOutput: `${args.future.totalTeamFte} FTE`,
+      calculation: "Current workflow demand is scaled by the planning growth multiplier and compiled through the same staffing-capacity rules.",
+      contributingInputPaths: ["growthRatePercent", "horizonYears", "workingDaysPerMonth", "shifts", "productiveHoursPerShift", "redundancyPercent", "outsourcePercent"],
+      workflowIds: allWorkflowIds,
+      methodIds: allMethodIds,
+      ruleIds: ["core.capacity.people", ...workflowRuleIds],
+      assumptionIds: ["growth", "work-month", "redundancy", "workflow-times", "insource"],
+      confidence: "indicative",
+      limitations: ["The growth path is a planning assumption, not a demand forecast or approved headcount plan."],
+      materialChangeFactors: ["Growth rate", "Observed method time", "Outsource allocation", "Productive hours", "Resilience policy"],
+    }),
+    create({
+      id: "decision:space:future-area",
+      decisionType: "space",
+      outputKey: "future.estimatedAreaSqm",
+      summary: "Planning-horizon laboratory area allowance",
+      currentOutput: `${args.future.estimatedAreaSqm} m²`,
+      calculation: "Capability zones and future equipment allowances are summed with concept circulation and support-space factors.",
+      contributingInputPaths: ["facilityType", "scope", "growthRatePercent", "horizonYears", "redundancyPercent"],
+      workflowIds: allWorkflowIds,
+      methodIds: allMethodIds,
+      ruleIds: ["core.space.concept", "core.capacity.equipment"],
+      assumptionIds: ["growth", "redundancy"],
+      confidence: "indicative",
+      limitations: ["This is not room sizing, zoning, HVAC, biosafety, utility or architectural design."],
+      materialChangeFactors: ["Capability scope", "Equipment quantity", "Zoning basis", "Personnel and material flow", "Site constraints"],
+    }),
+    create({
+      id: "decision:capex:future-high",
+      decisionType: "capex",
+      outputKey: "future.capexHighUsd",
+      summary: "Planning-horizon CAPEX upper concept band",
+      currentOutput: `$${args.future.capexHighUsd.toLocaleString("en-US")} USD`,
+      calculation: "Future equipment quantities are multiplied by vendor-neutral concept unit bands.",
+      contributingInputPaths: ["scope", "growthRatePercent", "horizonYears", "redundancyPercent", "equipmentDowntimePercent"],
+      workflowIds: allWorkflowIds,
+      methodIds: allMethodIds,
+      ruleIds: ["core.cost.concept", "core.capacity.equipment"],
+      assumptionIds: ["costs", "growth", "redundancy", "downtime"],
+      confidence: "indicative",
+      limitations: ["The band excludes local quotations, installation, qualification, tax, freight, service, building work and commercial terms."],
+      materialChangeFactors: ["Local quotations", "Equipment quantity", "Redundancy", "Installation scope", "Currency and escalation"],
+    }),
+    create({
+      id: "decision:opex:future-high",
+      decisionType: "opex",
+      outputKey: "future.annualOpexHighUsd",
+      summary: "Planning-horizon annual OPEX upper concept band",
+      currentOutput: `$${args.future.annualOpexHighUsd.toLocaleString("en-US")} USD/year`,
+      calculation: "Compiled labor and consumable demand are valued using the selected annual analyst cost and vendor-neutral item bands.",
+      contributingInputPaths: ["analystAnnualCostUsd", "growthRatePercent", "outsourcePercent", "consumableWastePercent"],
+      workflowIds: allWorkflowIds,
+      methodIds: allMethodIds,
+      ruleIds: ["core.cost.concept", "core.capacity.people", "core.supply.consumables"],
+      assumptionIds: ["costs", "consumable-supply", "workflow-times", "insource"],
+      confidence: "indicative",
+      limitations: ["The band excludes local labor structure, service contracts, utilities, outsourcing fees, investigations and site overhead."],
+      materialChangeFactors: ["Local labor cost", "Observed method time", "Consumable price and waste", "Outsource allocation", "Non-routine workload"],
+    }),
+  ];
+
+  const recommendationLineages = args.recommendations.map((recommendation) => create({
+    id: `decision:recommendation:${recommendation.id}`,
+    decisionType: "recommendation",
+    outputKey: `recommendations.${recommendation.id}`,
+    summary: recommendation.recommendation,
+    currentOutput: recommendation.priority.replaceAll("-", " "),
+    calculation: recommendation.rationale,
+    contributingInputPaths: ["facilityType", "markets", "scope", "productProfiles", "primaryDecision"],
+    workflowIds: uniqueStrings(recommendation.relatedRuleIds.map((id) => workflowByRuleId.get(id)).filter((id): id is string => Boolean(id))),
+    methodIds: uniqueStrings(args.methodRequirements.filter((requirement) => recommendation.relatedRuleIds.includes(requirement.methodId)).map((requirement) => requirement.methodId)),
+    ruleIds: recommendation.relatedRuleIds,
+    assumptionIds: args.assumptions.filter((assumption) => assumption.confidence !== "high").map((assumption) => assumption.id),
+    confidence: "indicative",
+    limitations: ["This concept-stage action requires accountable project review before controlled use."],
+    materialChangeFactors: ["Approved methods", "Site evidence", "Accountable reviewer decision", "Demand basis", "Applicable standards"],
+  }));
+
+  const equipmentLineages = args.equipment.filter((item) => item.quantityFuture > 0).map((item) => create({
+    id: `decision:equipment:${item.id}:future-quantity`,
+    decisionType: "equipment",
+    outputKey: `equipment.${item.id}.quantityFuture`,
+    summary: `${item.name} planning-horizon quantity`,
+    currentOutput: `${item.quantityFuture} unit${item.quantityFuture === 1 ? "" : "s"}`,
+    calculation: item.rationale,
+    contributingInputPaths: ["scope", "growthRatePercent", "redundancyPercent", "equipmentDowntimePercent", "productProfiles"],
+    workflowIds: allWorkflowIds,
+    methodIds: uniqueStrings(item.methodRequirementIds.map((id) => methodByRequirementId.get(id)).filter((id): id is string => Boolean(id))),
+    ruleIds: ["core.capacity.equipment", ...workflowRuleIds],
+    assumptionIds: ["growth", "redundancy", "downtime", "workflow-times"],
+    confidence: item.confidence,
+    limitations: [item.specification, "Final quantity requires usable-capacity, cycle, load, downtime, redundancy, utility and qualification evidence."],
+    materialChangeFactors: ["Peak demand", "Usable capacity", "Cycle and load geometry", "Downtime", "Redundancy policy"],
+  }));
+
+  return [...scenarioLineages, ...recommendationLineages, ...equipmentLineages];
+}
+
+export function validateQualityLabLineageIntegrity(blueprint: QualityLabBlueprint): string[] {
+  const errors: string[] = [];
+  const lineageIds = new Set<string>();
+  const outputKeys = new Set<string>();
+  const rules = new Map(blueprint.ruleTrace.map((rule) => [rule.ruleId, rule.ruleVersion]));
+  const evidence = new Map(blueprint.evidence.map((record) => [record.id, record.version]));
+  const assumptionIds = new Set(blueprint.assumptions.map((assumption) => assumption.id));
+  const workflowIds = new Set(blueprint.workflows.map((workflow) => workflow.id));
+  const methodIds = new Set(blueprint.methodRequirements.map((requirement) => requirement.methodId));
+  for (const lineage of blueprint.decisionLineage) {
+    if (lineageIds.has(lineage.id)) errors.push(`Duplicate lineage ID: ${lineage.id}`);
+    lineageIds.add(lineage.id);
+    if (outputKeys.has(lineage.outputKey)) errors.push(`Duplicate lineage output key: ${lineage.outputKey}`);
+    outputKeys.add(lineage.outputKey);
+    for (const ref of lineage.ruleRefs) {
+      if (!rules.has(ref.id)) errors.push(`${lineage.id} references unknown rule ${ref.id}`);
+      else if (rules.get(ref.id) !== ref.version) errors.push(`${lineage.id} references mismatched rule version ${ref.id}@${ref.version}`);
+    }
+    for (const ref of lineage.evidenceRefs) {
+      if (!evidence.has(ref.id)) errors.push(`${lineage.id} references unknown evidence ${ref.id}`);
+      else if (evidence.get(ref.id) !== ref.version) errors.push(`${lineage.id} references mismatched evidence version ${ref.id}@${ref.version}`);
+    }
+    for (const id of lineage.assumptionIds) if (!assumptionIds.has(id)) errors.push(`${lineage.id} references unknown assumption ${id}`);
+    for (const id of lineage.workflowIds) if (!workflowIds.has(id)) errors.push(`${lineage.id} references unknown workflow ${id}`);
+    for (const id of lineage.methodIds) if (!methodIds.has(id)) errors.push(`${lineage.id} references unknown method ${id}`);
+  }
+  for (const recommendation of blueprint.recommendations) {
+    if (!blueprint.decisionLineage.some((lineage) => lineage.outputKey === `recommendations.${recommendation.id}`)) errors.push(`Recommendation ${recommendation.id} has no lineage`);
+  }
+  for (const equipment of blueprint.equipment.filter((item) => item.quantityFuture > 0)) {
+    if (!blueprint.decisionLineage.some((lineage) => lineage.outputKey === `equipment.${equipment.id}.quantityFuture`)) errors.push(`Equipment ${equipment.id} has no lineage`);
+  }
+  return errors;
+}
+
 function summarizeDataQuality(unresolvedInputs: UnresolvedInput[], evidence: EvidenceRecord[], ruleTrace: RuleTrace[]) {
   const blockingOpenCount = unresolvedInputs.filter((item) => item.severity === "blocking").length;
   const importantOpenCount = unresolvedInputs.filter((item) => item.severity === "important").length;
@@ -973,6 +1181,149 @@ function summarizeDataQuality(unresolvedInputs: UnresolvedInput[], evidence: Evi
     evidenceCount: evidence.length,
     tracedRuleCount: ruleTrace.length,
   };
+}
+
+function roundedWeightedScore(dimensions: ReadinessDimension[]) {
+  const weighted = dimensions.reduce((total, item) => total + item.score * item.weight, 0);
+  const weights = dimensions.reduce((total, item) => total + item.weight, 0);
+  return Math.round(weighted / Math.max(1, weights));
+}
+
+function dimension(
+  id: string,
+  label: string,
+  score: number,
+  summary: string,
+  relatedUnresolvedInputIds: string[] = [],
+  status?: ReadinessDimension["status"],
+): ReadinessDimension {
+  const normalized = Math.max(0, Math.min(100, Math.round(score)));
+  return {
+    id,
+    label,
+    score: normalized,
+    weight: 1,
+    status: status ?? (normalized >= 100 ? "met" : normalized > 0 ? "partial" : "open"),
+    summary,
+    relatedUnresolvedInputIds,
+  };
+}
+
+function evidenceDimension(
+  unresolvedInputs: UnresolvedInput[],
+  id: string,
+  label: string,
+  relatedIds: string[],
+  metSummary: string,
+) {
+  const open = unresolvedInputs.filter((item) => relatedIds.includes(item.id));
+  if (open.length === 0) return dimension(id, label, 100, metSummary);
+  const score = open.some((item) => item.severity === "blocking") ? 0 : open.some((item) => item.severity === "important") ? 40 : 70;
+  return dimension(id, label, score, open.map((item) => item.question).join(" "), open.map((item) => item.id));
+}
+
+/** Derives separate model, evidence and decision measures, including for older v1 snapshots. */
+export function deriveQualityLabReadiness(blueprint: QualityLabBlueprint): QualityLabReadiness {
+  const { input, unresolvedInputs } = blueprint;
+  const scopeDemandChecks = [
+    !input.scope.finishedProducts || input.finishedBatchesPerMonth > 0,
+    !input.scope.rawMaterials || input.rawMaterialLotsPerMonth > 0,
+    !input.scope.water || (input.waterPoints > 0 && input.waterRoundsPerWeek > 0),
+    !input.scope.environmentalMonitoring || (input.emLocations > 0 && input.emRoundsPerWeek > 0),
+    !input.scope.sterility || input.sterilityBatchesPerMonth > 0,
+    !input.scope.endotoxin || input.endotoxinSamplesPerMonth > 0,
+    !input.scope.bioburden || input.bioburdenSamplesPerMonth > 0,
+    !input.scope.growthPromotion || input.mediaLotsPerMonth > 0,
+  ];
+  const decisionChecks = [input.primaryDecision.trim().length >= 10, input.decisionWindow !== "not-set", Boolean(input.decisionOwnerRole)];
+  const siteChecks = [Boolean(input.companyName.trim()), Boolean(input.country.trim()), Object.values(input.scope).some(Boolean)];
+  const portfolioChecks = input.scope.finishedProducts
+    ? [input.productProfiles.length > 0, input.portfolioIsComplete, blueprint.finishedProductDemand.source !== "reconciliation-required"]
+    : [true, true, true];
+  const methodApplicable = input.facilityType === "nonsterile-pharma" && input.scope.finishedProducts;
+  const methodChecks = methodApplicable
+    ? [blueprint.methodRequirements.length > 0, blueprint.methodBom.length > 0, !unresolvedInputs.some((item) => ["method-suitability-status", "market-execution-allocation"].includes(item.id))]
+    : [true, true, true];
+  const modelDimensions = [
+    dimension("decision-mandate", "Decision mandate", decisionChecks.filter(Boolean).length / decisionChecks.length * 100, input.decisionWindow === "not-set" ? "Set the decision window to complete the mandate." : "Decision, owner and timing are defined."),
+    dimension("site-and-scope", "Site and scope", siteChecks.filter(Boolean).length / siteChecks.length * 100, input.companyName.trim() ? "Site identity, country and capability scope are present." : "Company or site identity is still missing.", input.companyName.trim() ? [] : ["site-identity"]),
+    dimension("portfolio", "Portfolio coverage", portfolioChecks.filter(Boolean).length / portfolioChecks.length * 100, input.scope.finishedProducts ? "Checks product profiles, declared completeness and demand reconciliation." : "Finished-product portfolio modeling is outside the selected scope.", ["product-profiles", "portfolio-demand-reconciliation", "market-execution-allocation"].filter((id) => unresolvedInputs.some((item) => item.id === id)), input.scope.finishedProducts ? undefined : "not-applicable"),
+    dimension("workload", "Workload coverage", scopeDemandChecks.filter(Boolean).length / scopeDemandChecks.length * 100, "Checks that every selected capability has a positive demand basis.", unresolvedInputs.filter((item) => ["finished-batch-demand", "raw-material-demand"].includes(item.id)).map((item) => item.id)),
+    dimension("method-application", "Method application", methodChecks.filter(Boolean).length / methodChecks.length * 100, methodApplicable ? "Checks that method requirements, method BOM and physical execution allocation compile." : "The selected scope does not use the current method-level Domain Pack.", ["method-suitability-status", "market-execution-allocation"].filter((id) => unresolvedInputs.some((item) => item.id === id)), methodApplicable ? undefined : "not-applicable"),
+    dimension("scenario-and-resources", "Scenario and resources", blueprint.workflows.length > 0 && blueprint.equipment.length > 0 && blueprint.current.totalTeamFte > 0 && blueprint.future.totalTeamFte > 0 ? 100 : 50, "Checks that current/future workload, workforce and equipment outputs compiled."),
+  ];
+  const modelScore = roundedWeightedScore(modelDimensions);
+
+  const evidenceDimensions = [
+    evidenceDimension(unresolvedInputs, "portfolio-evidence", "Approved portfolio", ["product-market-test-matrix", "product-profiles", "portfolio-demand-reconciliation", "market-execution-allocation"], "Approved portfolio evidence is recorded."),
+    evidenceDimension(unresolvedInputs, "method-evidence", "Approved methods and suitability", ["approved-method-detail", "method-suitability-status"], "Approved method and suitability evidence is recorded."),
+    evidenceDimension(unresolvedInputs, "workload-evidence", "Observed workload and coverage", ["arrival-calendar-and-queues", "site-time-study", "skill-shift-coverage", "finished-batch-demand", "raw-material-demand"], "Observed workload, queue and qualified coverage evidence is recorded."),
+    evidenceDimension(unresolvedInputs, "equipment-evidence", "Equipment and vendor basis", ["equipment-cycle-data"], "Usable-capacity and vendor evidence is recorded."),
+    evidenceDimension(unresolvedInputs, "facility-evidence", "Facility engineering basis", ["facility-engineering-basis"], "Qualified facility constraints and basis-of-design evidence is recorded."),
+    evidenceDimension(unresolvedInputs, "cost-and-supply-evidence", "Local cost and supply basis", ["local-cost-basis", "consumable-supply-evidence"], "Dated local cost and qualified supply evidence is recorded."),
+    evidenceDimension(unresolvedInputs, "governance-evidence", "Governance and review", ["quality-governance", "site-identity"], "Governance ownership and review evidence are recorded."),
+  ];
+  const governance = evidenceDimensions.find((item) => item.id === "governance-evidence")!;
+  if (blueprint.review.status === "review-requested") {
+    governance.score = Math.max(governance.score, 50);
+    governance.status = "partial";
+    governance.summary = "Qualified review is requested and still in progress.";
+  } else if (blueprint.review.status === "expert-reviewed") {
+    governance.score = Math.max(governance.score, 80);
+    governance.status = "partial";
+    governance.summary = "Expert review is recorded; external approval remains separate.";
+  } else if (blueprint.review.status === "approved-outside-atlas") {
+    governance.score = 100;
+    governance.status = "met";
+    governance.summary = "External controlled approval is recorded.";
+  }
+  const evidenceScore = roundedWeightedScore(evidenceDimensions);
+  const blockingInputIds = unresolvedInputs.filter((item) => item.severity === "blocking").map((item) => item.id);
+  const decisionScore = Math.round(modelScore * 0.4 + evidenceScore * 0.6);
+  let stage: QualityLabReadiness["decisionReadiness"]["stage"] = modelScore < 50 ? "not-ready" : "concept-planning-only";
+  if (blueprint.review.status === "review-requested") stage = "expert-review-in-progress";
+  else if (blockingInputIds.length === 0 && blueprint.review.status === "approved-outside-atlas" && evidenceScore >= 85) stage = "controlled-handoff-ready";
+  else if (blockingInputIds.length === 0 && blueprint.review.status === "expert-reviewed" && evidenceScore >= 70) stage = "procurement-basis-draft";
+  else if (blockingInputIds.length === 0 && modelScore >= 70) stage = "diagnostic-review-ready";
+  const stageCopy = {
+    "not-ready": { label: "Not ready", summary: "The model basis is too incomplete for reliable scenario discussion.", nextGate: "Complete the missing decision, scope, portfolio and workload inputs." },
+    "concept-planning-only": { label: "Concept planning only", summary: "Useful for discovery and scenario discussion; not suitable for controlled decisions.", nextGate: "Resolve controlled-use blockers and prepare qualified expert review." },
+    "diagnostic-review-ready": { label: "Diagnostic review ready", summary: "The model has no blocking input but still requires qualified evidence review.", nextGate: "Run a cross-functional diagnostic review and record evidence dispositions." },
+    "expert-review-in-progress": { label: "Expert review in progress", summary: "The review package is submitted; outputs remain uncontrolled until review is complete.", nextGate: "Close reviewer questions and record an expert-reviewed disposition." },
+    "procurement-basis-draft": { label: "Procurement basis draft", summary: "The reviewed model can frame vendor-neutral enquiries, subject to external approval controls.", nextGate: "Obtain controlled external approval and dated supplier/site evidence." },
+    "controlled-handoff-ready": { label: "Controlled handoff ready", summary: "Required external approval is recorded and no controlled-use blocker remains open.", nextGate: "Hand off under the client quality system and preserve the versioned evidence record." },
+  }[stage];
+  return qualityLabReadinessSchema.parse({
+    contractVersion: QUALITY_LAB_READINESS_CONTRACT_VERSION,
+    modelCompleteness: {
+      score: modelScore,
+      label: "Model completeness",
+      summary: "Coverage of decision, site, portfolio, workload, method and scenario inputs used by the compiler.",
+      formula: "Equal-weight average of six declared input/model dimensions; not a measure of evidence approval.",
+      dimensions: modelDimensions,
+    },
+    evidenceReadiness: {
+      score: evidenceScore,
+      label: "Evidence readiness",
+      summary: "Availability of controlled site, method, workload, equipment, facility, cost and governance evidence.",
+      formula: "Equal-weight average of seven evidence dimensions: 100 when closed, 70 advisory, 40 important, 0 blocking; review status can raise only the governance dimension.",
+      dimensions: evidenceDimensions,
+    },
+    decisionReadiness: {
+      score: decisionScore,
+      stage,
+      label: stageCopy.label,
+      summary: stageCopy.summary,
+      formula: "40% model completeness + 60% evidence readiness; stage is capped by open blockers and recorded review status.",
+      blockingInputIds,
+      nextGate: stageCopy.nextGate,
+    },
+  });
+}
+
+export function getQualityLabReadiness(blueprint: QualityLabBlueprint): QualityLabReadiness {
+  const stored = qualityLabReadinessSchema.safeParse(blueprint.readiness);
+  return stored.success ? stored.data : deriveQualityLabReadiness(blueprint);
 }
 
 export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLabBlueprint {
@@ -1000,6 +1351,20 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
   if (unresolvedMarketAllocation.length > 0) unresolvedInputs.push({ id: "market-execution-allocation", category: "workload", severity: "blocking", question: "Which market requirements share one physical test execution, and which require separate testing?", impact: "Method BOM and in-house capacity are intentionally excluded for multi-market products until the physical testing allocation is known.", resolution: `Set a shared or separate execution strategy for: ${unresolvedMarketAllocation.map((product) => product.name).join(", ")}.`, relatedRuleIds: unresolvedMarketAllocation.flatMap((product) => methodGraph.requirements.filter((item) => item.productId === product.id).map((item) => item.methodId)) });
   if (finishedProductDemand.source === "reconciliation-required") unresolvedInputs.push({ id: "portfolio-demand-reconciliation", category: "workload", severity: "blocking", question: "Can the complete product portfolio be reconciled to the finished-product demand used for sizing?", impact: finishedProductDemand.message, resolution: "Resolve portfolio batch demand and market execution allocation, then recompile using the portfolio-derived basis.", relatedRuleIds: ["micro.workflow.finished-products"] });
   const { evidence, ruleTrace } = buildTraceability(currentWorkflows);
+  const assumptions = buildAssumptions(input, growthMultiplier);
+  const recommendations = buildRecommendations(input, equipment, future);
+  const decisionLineage = buildDecisionLineage({
+    workflows: currentWorkflows,
+    methodRequirements: methodGraph.requirements,
+    equipment,
+    current,
+    future,
+    assumptions,
+    recommendations,
+    unresolvedInputs,
+    evidence,
+    ruleTrace,
+  });
   const blueprint: QualityLabBlueprint = {
     contractVersion: QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
     engineVersion: QUALITY_LAB_ENGINE_VERSION,
@@ -1018,8 +1383,8 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
     consumableSupply,
     spaces: futureSpaces,
     risks: buildRisks(input, current, future),
-    assumptions: buildAssumptions(input, growthMultiplier),
-    recommendations: buildRecommendations(input, equipment, future),
+    assumptions,
+    recommendations,
     procurementSequence: [
       { phase: "1 — Basis of design", timing: "0–4 weeks", items: ["Product/test matrix", "Approved demand forecast", "Insourcing strategy", "Site workflow time study"] },
       { phase: "2 — Critical path", timing: "1–3 months", items: equipment.filter((item) => ["sterility-isolator", "autoclave", "incubator-20-25", "incubator-30-35"].includes(item.id)).map((item) => item.name) },
@@ -1032,6 +1397,7 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
     evidence,
     ruleTrace,
     unresolvedInputs,
+    decisionLineage,
     dataQuality: summarizeDataQuality(unresolvedInputs, evidence, ruleTrace),
     review: {
       status: "concept-only",
@@ -1042,7 +1408,11 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
     },
     reviewStatus: "concept-only",
   };
-  return qualityLabBlueprintSchema.parse(blueprint);
+  blueprint.readiness = deriveQualityLabReadiness(blueprint);
+  const parsed = qualityLabBlueprintSchema.parse(blueprint);
+  const lineageErrors = validateQualityLabLineageIntegrity(parsed);
+  if (lineageErrors.length > 0) throw new Error(`Quality Lab lineage integrity failed: ${lineageErrors.join("; ")}`);
+  return parsed;
 }
 
 export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date.now().toString(36)}`): QualityLabProject {

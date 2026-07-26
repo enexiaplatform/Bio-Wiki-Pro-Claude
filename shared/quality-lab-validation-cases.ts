@@ -1,6 +1,7 @@
-import { assessCalibrationCandidate, summarizeCalibration, type QualityLabEngagementPacket } from "./quality-lab-engagement";
+import { summarizeCalibration, type QualityLabEngagementPacket } from "./quality-lab-engagement";
+import { acceptedCalibrationEvidenceForProject, type QualityLabCalibrationReviewCase } from "./quality-lab-calibration-observation";
 
-export const QUALITY_LAB_VALIDATION_CASE_REGISTRY_VERSION = "quality-lab-validation-case-registry/v1" as const;
+export const QUALITY_LAB_VALIDATION_CASE_REGISTRY_VERSION = "quality-lab-validation-case-registry/v2" as const;
 export const QUALITY_LAB_VALIDATION_CASE_TARGET = 3;
 
 export type ValidationCaseEligibility = "not-started" | "blocked" | "eligible-validation-case";
@@ -11,10 +12,11 @@ function recordedTime(value: string | null) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function assessValidationCase(packet: QualityLabEngagementPacket) {
+export function assessValidationCase(packet: QualityLabEngagementPacket, acceptedCalibrationEvidence: QualityLabCalibrationReviewCase | null = null) {
   const control = packet.validationControl;
   const calibration = summarizeCalibration(packet);
-  const learning = assessCalibrationCandidate(packet);
+  const frozenEvidence = acceptedCalibrationEvidence?.observation.source.projectId === packet.project.id ? acceptedCalibrationEvidence : null;
+  const frozenObservation = frozenEvidence?.observation ?? null;
   const started = control.status !== "draft"
     || control.confidentialityClass !== "not-classified"
     || control.learningUsePermission !== "not-assessed"
@@ -24,17 +26,18 @@ export function assessValidationCase(packet: QualityLabEngagementPacket) {
     return {
       eligibility: "not-started" as ValidationCaseEligibility,
       blockers: ["Validation-case acceptance has not started."],
-      observedMetricCount: calibration.observedCount,
-      applicableRuleIds: packet.calibration.applicableRuleIds,
+      observedMetricCount: frozenObservation?.metrics.length ?? calibration.observedCount,
+      applicableRuleIds: frozenObservation?.applicableRuleIds ?? packet.calibration.applicableRuleIds,
+      calibrationObservationId: frozenObservation?.observationId ?? null,
     };
   }
 
   const blockers: string[] = [];
   const baselineAt = recordedTime(control.baselineFrozenAt);
-  const observedStart = recordedTime(packet.calibration.observedPeriodStart);
-  const observedEnd = recordedTime(packet.calibration.observedPeriodEnd);
+  const observedStart = recordedTime(frozenObservation?.observedPeriod.start ?? packet.calibration.observedPeriodStart);
+  const observedEnd = recordedTime(frozenObservation?.observedPeriod.end ?? packet.calibration.observedPeriodEnd);
   const acceptedAt = recordedTime(control.acceptedAt);
-  const learningReviewedAt = recordedTime(packet.calibration.reviewedAt);
+  const learningReviewedAt = recordedTime(frozenEvidence?.events.at(-1)?.recordedAt ?? null);
   if (!control.caseId.trim()) blockers.push("A controlled validation case ID is required.");
   if (baselineAt === null) blockers.push("Record a valid frozen-baseline timestamp.");
   if (observedStart === null || observedEnd === null) blockers.push("Record a valid observed-period start and end.");
@@ -44,8 +47,8 @@ export function assessValidationCase(packet: QualityLabEngagementPacket) {
   if (control.learningUsePermission !== "internal-anonymized-learning") blockers.push("Document permission for internal anonymized Domain Pack learning.");
   if (control.scopeAlignment !== "yes") blockers.push("Confirm that the observed scope is aligned to the frozen estimate; partial or changed scope cannot validate the rule as-is.");
   if (control.qualificationEvidenceRefs.length === 0) blockers.push("Reference at least one controlled qualification or source-quality record.");
-  if (learning.eligibility !== "eligible-for-learning-review") blockers.push("The estimate-to-actual record must first be eligible for controlled learning review.");
-  if (calibration.observedCount === 0) blockers.push("At least one estimate-to-actual metric is required.");
+  if (!frozenObservation) blockers.push("An immutable calibration observation must be accepted as project evidence before validation-case acceptance.");
+  if ((frozenObservation?.metrics.length ?? 0) === 0) blockers.push("At least one frozen estimate-to-actual metric is required.");
   if (control.status !== "accepted") blockers.push("A qualified reviewer must accept the record as a validation case.");
   if (!control.acceptanceRationale.trim() || control.acceptanceRationale.trim().length < 20) blockers.push("Record a substantive case-acceptance rationale.");
   if (!control.acceptedByRole.trim()) blockers.push("Record the qualified role accepting the validation case.");
@@ -57,13 +60,14 @@ export function assessValidationCase(packet: QualityLabEngagementPacket) {
   return {
     eligibility: (blockers.length ? "blocked" : "eligible-validation-case") as ValidationCaseEligibility,
     blockers,
-    observedMetricCount: calibration.observedCount,
-    applicableRuleIds: packet.calibration.applicableRuleIds,
+    observedMetricCount: frozenObservation?.metrics.length ?? 0,
+    applicableRuleIds: frozenObservation?.applicableRuleIds ?? [],
+    calibrationObservationId: frozenObservation?.observationId ?? null,
   };
 }
 
-export function assessValidationCaseRegistry(packets: QualityLabEngagementPacket[]) {
-  const records = packets.map((packet) => ({ packet, assessment: assessValidationCase(packet) }));
+export function assessValidationCaseRegistry(packets: QualityLabEngagementPacket[], calibrationCases: QualityLabCalibrationReviewCase[] = []) {
+  const records = packets.map((packet) => ({ packet, assessment: assessValidationCase(packet, acceptedCalibrationEvidenceForProject(calibrationCases, packet.project.id)) }));
   const eligibleRecords = records.filter((record) => record.assessment.eligibility === "eligible-validation-case");
   const caseIds = eligibleRecords.map((record) => record.packet.validationControl.caseId);
   const projectIds = eligibleRecords.map((record) => record.packet.project.id);
@@ -95,8 +99,8 @@ export function assessValidationCaseRegistry(packets: QualityLabEngagementPacket
   };
 }
 
-export function createValidationCaseRegistry(packets: QualityLabEngagementPacket[], generatedAt = new Date().toISOString()) {
-  const registry = assessValidationCaseRegistry(packets);
+export function createValidationCaseRegistry(packets: QualityLabEngagementPacket[], generatedAt = new Date().toISOString(), calibrationCases: QualityLabCalibrationReviewCase[] = []) {
+  const registry = assessValidationCaseRegistry(packets, calibrationCases);
   return {
     registryVersion: registry.registryVersion,
     generatedAt,
@@ -121,6 +125,7 @@ export function createValidationCaseRegistry(packets: QualityLabEngagementPacket
       observedPeriod: { start: packet.calibration.observedPeriodStart, end: packet.calibration.observedPeriodEnd },
       observedMetricCount: assessment.observedMetricCount,
       applicableRuleIds: assessment.applicableRuleIds,
+      calibrationObservationId: assessment.calibrationObservationId,
       acceptedByRole: packet.validationControl.acceptedByRole,
       acceptedAt: packet.validationControl.acceptedAt,
       acceptanceRationale: packet.validationControl.acceptanceRationale,

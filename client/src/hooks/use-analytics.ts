@@ -230,6 +230,45 @@ export const analytics = {
   sensitivityExported: (criticalCount: number, queueCount: number) =>
     capture("blueprint_sensitivity_exported", { decision_critical_count: criticalCount, verification_queue_count: queueCount }),
 
+  sensitivityThresholdOpened: (projectId: string, driverId: string, metricId: string, direction: string) =>
+    capture("blueprint_sensitivity_threshold_opened", { project_id: projectId, driver_id: driverId, metric_id: metricId, direction }),
+
+  sensitivityInputEditOpened: (projectId: string, driverId: string, plannerStep: number) =>
+    capture("blueprint_sensitivity_input_edit_opened", { project_id: projectId, driver_id: driverId, planner_step: plannerStep }),
+
+  operatingModelAnalyzed: (projectId: string, applicationCount: number, evidenceRequiredCount: number) =>
+    capture("insource_outsource_analysis_run", { project_id: projectId, application_count: applicationCount, evidence_required_count: evidenceRequiredCount }),
+
+  operatingModelApplicationOpened: (projectId: string, applicationId: string, mode: string) =>
+    capture("insource_outsource_application_opened", { project_id: projectId, application_id: applicationId, mode }),
+
+  operatingModelInputUpdated: (field: string) =>
+    capture("insource_outsource_input_updated", { field }),
+
+  operatingModelExported: (applicationCount: number, evidenceRequiredCount: number) =>
+    capture("insource_outsource_analysis_exported", { application_count: applicationCount, evidence_required_count: evidenceRequiredCount }),
+
+  operatingModelReviewOpened: (projectId: string, applicationCount: number, blockerCount: number) =>
+    capture("operating_model_review_opened", { project_id: projectId, application_count: applicationCount, blocker_count: blockerCount }),
+
+  operatingModelReviewDraftUpdated: (field: string) =>
+    capture("operating_model_review_draft_updated", { field }),
+
+  operatingModelReviewFrozen: (projectId: string, snapshotId: string, changedCount: number) =>
+    capture("operating_model_review_frozen", { project_id: projectId, snapshot_id: snapshotId, changed_count: changedCount }),
+
+  operatingModelReviewRegistryExported: (snapshotCount: number) =>
+    capture("operating_model_review_registry_exported", { snapshot_count: snapshotCount }),
+
+  calibrationObservationFrozen: (projectId: string, observationId: string, metricCount: number, eligibility: string) =>
+    capture("calibration_observation_frozen", { project_id: projectId, observation_id: observationId, metric_count: metricCount, eligibility }),
+
+  calibrationReviewDecisionRecorded: (observationId: string, decision: string, priorStatus: string) =>
+    capture("calibration_review_decision_recorded", { observation_id: observationId, decision, prior_status: priorStatus }),
+
+  calibrationObservationRegistryExported: (caseCount: number, acceptedEvidenceCount: number) =>
+    capture("calibration_observation_registry_exported", { case_count: caseCount, accepted_evidence_count: acceptedEvidenceCount }),
+
   equipmentResilienceEvaluated: (projectId: string, horizon: string, status: string, nPlusOneGapUnits: number) =>
     capture("equipment_resilience_evaluated", { project_id: projectId, horizon, status, n_plus_one_gap_units: nPlusOneGapUnits }),
 
@@ -269,6 +308,18 @@ export const analytics = {
   reviewedProjectSnapshotDeleted: (projectId: string) =>
     capture("reviewed_project_snapshot_deleted", { project_id: projectId }),
 
+  projectSynced: (projectId: string, revisionCount: number) =>
+    capture("blueprint_project_synced", { project_id: projectId, revision_count: revisionCount }),
+
+  projectSyncConflict: (projectId: string) =>
+    capture("blueprint_project_sync_conflict", { project_id: projectId }),
+
+  decisionLineageOpened: (projectId: string, lineageId: string, decisionType: string) =>
+    capture("decision_lineage_opened", { project_id: projectId, lineage_id: lineageId, decision_type: decisionType }),
+
+  decisionLineageSourceOpened: (projectId: string, lineageId: string, sourceType: "rule" | "evidence", sourceId: string) =>
+    capture("decision_lineage_source_opened", { project_id: projectId, lineage_id: lineageId, source_type: sourceType, source_id: sourceId }),
+
   projectActionCenterViewed: (projectId: string, activeActions: number, blockingActions: number) =>
     capture("blueprint_action_center_viewed", { project_id: projectId, active_actions: activeActions, blocking_actions: blockingActions }),
 
@@ -292,4 +343,10 @@ export const analytics = {
 
   engagementPacketDownloaded: (placement: string, openItems: number) =>
     capture("engagement_packet_downloaded", { placement, open_items: openItems }),
+
+  commercialHandoffExported: (projectId: string, artifact: "urs" | "rfq", requirementCount: number, blockerCount: number) =>
+    capture("commercial_handoff_exported", { project_id: projectId, artifact, requirement_count: requirementCount, blocker_count: blockerCount }),
+
+  commercialHandoffLineageOpened: (projectId: string, requirementId: string, lineageId: string) =>
+    capture("commercial_handoff_lineage_opened", { project_id: projectId, requirement_id: requirementId, lineage_id: lineageId }),
 };

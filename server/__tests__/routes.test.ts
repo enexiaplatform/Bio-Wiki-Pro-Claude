@@ -48,6 +48,7 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     upsertQualityLabReminderPreference: vi.fn(),
     getQualityLabReminderCandidates: vi.fn(() => Promise.resolve([])),
     getQualityLabReviewedProject: vi.fn(),
+    upsertQualityLabReviewedProject: vi.fn(),
     listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
     listQualityLabReviewedProjectRevisions: vi.fn(() => Promise.resolve([])),
     deleteQualityLabReviewedProject: vi.fn(() => Promise.resolve(false)),
@@ -97,12 +98,13 @@ import { registerRoutes } from "../routes.js";
 import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
+import { createQualityLabAccountSnapshot } from "../../shared/quality-lab-persistence.js";
 import { defaultCareerProfile } from "../../shared/career-blueprint.js";
 import { createCareerExecutionRecord } from "../../shared/career-execution.js";
 
 async function buildApp() {
   const app = express();
-  app.use(express.json({ verify: (req: any, _res, buf) => { req.rawBody = buf; } }));
+  app.use(express.json({ limit: "1mb", verify: (req: any, _res, buf) => { req.rawBody = buf; } }));
   app.use(express.urlencoded({ extended: false }));
   await registerRoutes(app);
   return app;
@@ -244,8 +246,12 @@ describe("Quality Lab expert review", () => {
     const app = await buildApp();
     const workbook = await request(app).get("/api/quality-lab/reviewed-projects/qlp_private/delivery-workbook");
     const brief = await request(app).get("/api/quality-lab/reviewed-projects/qlp_private/delivery-brief.pdf");
+    const urs = await request(app).get("/api/quality-lab/reviewed-projects/qlp_private/urs-document.docx");
+    const rfq = await request(app).get("/api/quality-lab/reviewed-projects/qlp_private/rfq-workbook");
     expect(workbook.status).toBe(401);
     expect(brief.status).toBe(401);
+    expect(urs.status).toBe(401);
+    expect(rfq.status).toBe(401);
     expect(storageMock.getQualityLabReviewedProject).not.toHaveBeenCalled();
   });
 
@@ -478,6 +484,55 @@ describe("create-checkout-session", () => {
     expect(arg.mode).toBe("payment");
     expect(arg.line_items[0].price).toBe("price_gmp");
     expect(arg.subscription_data).toBeUndefined();
+  });
+
+  it("protects account-saved Blueprint projects and revisions behind authentication", async () => {
+    const app = await buildApp();
+    await request(app).get("/api/quality-lab/projects").expect(401);
+    await request(app).put("/api/quality-lab/projects/qlp_private").send({}).expect(401);
+    await request(app).get("/api/quality-lab/projects/qlp_private/revisions").expect(401);
+    await request(app).delete("/api/quality-lab/projects/qlp_private").expect(401);
+    expect(storageMock.listQualityLabReviewedProjects).not.toHaveBeenCalled();
+    expect(storageMock.deleteQualityLabReviewedProject).not.toHaveBeenCalled();
+  });
+
+  it("creates an authenticated account project with its first revision", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u-project-sync", email: "sync@example.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "sync@example.com", password: "pw123456" }).expect(201);
+
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_account_route");
+    const snapshot = createQualityLabAccountSnapshot(project);
+    const savedAt = new Date("2026-07-26T09:00:00.000Z");
+    storageMock.getQualityLabReviewedProject.mockResolvedValueOnce(undefined);
+    storageMock.upsertQualityLabReviewedProject.mockResolvedValueOnce({ id: 1, userId: "u-project-sync", localProjectId: project.id, projectName: project.name, snapshot, createdAt: savedAt, updatedAt: savedAt });
+    storageMock.listQualityLabReviewedProjectRevisions.mockResolvedValueOnce([{ id: 1, reviewedProjectId: 1, revisionNumber: 1, reason: "reviewed-project-sync", snapshot, createdAt: savedAt }]);
+
+    const response = await agent.put(`/api/quality-lab/projects/${project.id}`).send({ snapshot, expectedUpdatedAt: null });
+    expect(response.status).toBe(201);
+    expect(response.body).toMatchObject({ revisionCount: 1, updatedAt: savedAt.toISOString(), snapshot: { localProjectId: project.id } });
+    expect(storageMock.upsertQualityLabReviewedProject).toHaveBeenCalledWith("u-project-sync", expect.objectContaining({ localProjectId: project.id }));
+  });
+
+  it("returns the current account revision instead of overwriting a stale project", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u-project-conflict", email: "conflict@example.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "conflict@example.com", password: "pw123456" }).expect(201);
+
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_conflict_route");
+    const snapshot = createQualityLabAccountSnapshot(project);
+    const currentUpdatedAt = new Date("2026-07-26T09:00:00.000Z");
+    storageMock.getQualityLabReviewedProject.mockResolvedValueOnce({ id: 2, userId: "u-project-conflict", localProjectId: project.id, projectName: project.name, snapshot, createdAt: currentUpdatedAt, updatedAt: currentUpdatedAt });
+    storageMock.listQualityLabReviewedProjectRevisions.mockResolvedValueOnce([{ id: 2, reviewedProjectId: 2, revisionNumber: 1, reason: "reviewed-project-sync", snapshot, createdAt: currentUpdatedAt }]);
+
+    const response = await agent.put(`/api/quality-lab/projects/${project.id}`).send({ snapshot, expectedUpdatedAt: "2026-07-25T09:00:00.000Z" });
+    expect(response.status).toBe(409);
+    expect(response.body).toMatchObject({ revisionCount: 1, updatedAt: currentUpdatedAt.toISOString(), snapshot: { localProjectId: project.id } });
+    expect(storageMock.upsertQualityLabReviewedProject).not.toHaveBeenCalled();
   });
 
   it("syncs monthly quality reviews only for an active Pro member", async () => {

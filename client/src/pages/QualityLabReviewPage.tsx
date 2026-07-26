@@ -8,6 +8,7 @@ import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabR
 import { assessQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
 import { authPath } from "@shared/auth-return";
+import { getQualityLabReadiness } from "@shared/quality-lab";
 import {
   assessQualityLabDecisionFrame,
   formatQualityLabDecisionFrameReviewContext,
@@ -65,6 +66,7 @@ export default function QualityLabReviewPage() {
     return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || projectId ? "blueprint-pilot" : "unsure";
   }, [projectId]);
   const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
+  const readiness = useMemo(() => project ? getQualityLabReadiness(project.blueprint) : null, [project]);
   const transferredDecisionFrame = useMemo(() => project ? null : loadDecisionFrameHandoff(), [project]);
   const transferredDecisionFrameReadiness = useMemo(() => transferredDecisionFrame ? assessQualityLabDecisionFrame(transferredDecisionFrame) : null, [transferredDecisionFrame]);
   const request = useCreateQualityLabReview();
@@ -168,7 +170,7 @@ export default function QualityLabReviewPage() {
           domainPackId: project.blueprint.domainPack.id,
           domainPackVersion: project.blueprint.domainPack.version,
           monthlyTests: project.blueprint.current.monthlyTests,
-          inputCompletenessPercent: project.blueprint.dataQuality.completenessPercent,
+          inputCompletenessPercent: readiness?.modelCompleteness.score ?? 0,
           blockingOpenCount: project.blueprint.dataQuality.blockingOpenCount,
           importantOpenCount: project.blueprint.dataQuality.importantOpenCount,
           unresolvedInputs: project.blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
@@ -387,7 +389,7 @@ export default function QualityLabReviewPage() {
                 <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] text-slate-400">
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-red-200">{project.blueprint.dataQuality.blockingOpenCount}</strong>blocking</span>
                   <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.importantOpenCount}</strong>important</span>
-                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{project.blueprint.dataQuality.completenessPercent}%</strong>evidence ready</span>
+                  <span className="rounded-lg bg-black/20 p-2"><strong className="block text-sm text-amber-200">{readiness?.evidenceReadiness.score ?? 0}%</strong>evidence ready</span>
                 </div>
                 <div className="mt-4 grid gap-2">
                   <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 text-xs leading-5 ${attachMode === "brief-only" ? "border-teal-300/30 bg-teal-300/10 text-teal-50" : "border-white/10 bg-black/15 text-slate-400"}`}>

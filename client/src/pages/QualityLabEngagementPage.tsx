@@ -2,6 +2,7 @@ import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
 import { Link, useRoute } from "wouter";
 import {
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   ChevronDown,
   CircleAlert,
@@ -13,6 +14,7 @@ import {
   Gauge,
   History,
   ListChecks,
+  LockKeyhole,
   Plus,
   ShieldCheck,
 } from "lucide-react";
@@ -33,6 +35,10 @@ import {
   setEngagementActual,
 } from "@/lib/quality-lab-engagements";
 import {
+  freezeCalibrationObservation,
+  listCalibrationReviewCases,
+} from "@/lib/quality-lab-calibration-observations";
+import {
   assessPaidPilotEvidence,
   summarizeCalibration,
   varianceMagnitude,
@@ -44,6 +50,7 @@ import { assessValidationCase } from "@shared/quality-lab-validation-cases";
 import { useUser } from "@/context/UserContext";
 import type { QualityLabProject } from "@shared/quality-lab";
 import { qualityLabProjectFromReviewedSnapshot } from "@shared/quality-lab-persistence";
+import { acceptedCalibrationEvidenceForProject, calibrationReviewStatus, type QualityLabCalibrationReviewCase } from "@shared/quality-lab-calibration-observation";
 
 const inputClass = "w-full rounded-lg border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 const baselineLabels: Record<keyof QualityLabEngagementPacket["baseline"], string> = {
@@ -97,6 +104,9 @@ export default function QualityLabEngagementPage() {
   const [decision, setDecision] = useState({ decision: "", rationale: "", owner: "", downstreamImpact: "", options: "" });
   const [deliveryExport, setDeliveryExport] = useState<"workbook" | "brief" | null>(null);
   const [deliveryError, setDeliveryError] = useState("");
+  const [frozenCalibrationCases, setFrozenCalibrationCases] = useState<QualityLabCalibrationReviewCase[]>(() => localProject ? listCalibrationReviewCases(localProject.id) : []);
+  const [freezeNotice, setFreezeNotice] = useState("");
+  const [freezeError, setFreezeError] = useState("");
 
   useSEO({
     title: "Blueprint Engagement Workspace",
@@ -129,6 +139,11 @@ export default function QualityLabEngagementPage() {
     if (!isAuthenticated || !project?.reviewRequestedAt) return;
     fetchQualityLabReviewedProjectRevisions(project.id).then(setRevisions).catch(() => undefined);
   }, [isAuthenticated, project?.id, project?.reviewRequestedAt]);
+
+  useEffect(() => {
+    if (!project) return;
+    setFrozenCalibrationCases(listCalibrationReviewCases(project.id));
+  }, [project?.id]);
 
   if (!project || !packet) {
     return (
@@ -186,7 +201,7 @@ export default function QualityLabEngagementPage() {
   const calibrationSummary = summarizeCalibration(packet);
   const deliveryReadiness = assessQualityLabDeliveryReadiness(project, packet);
   const pilotEvidence = assessPaidPilotEvidence(packet, deliveryReadiness);
-  const validationCase = assessValidationCase(packet);
+  const validationCase = assessValidationCase(packet, acceptedCalibrationEvidenceForProject(frozenCalibrationCases, project.id));
   const selectedBaseline = packet.baseline[activeMetric];
   const selectedMetricNote = packet.calibration.metricNotes.find((row) => row.metric === activeMetric)!;
   const selectedVarianceBand = varianceMagnitude(selectedBaseline.variancePercent);
@@ -211,6 +226,23 @@ export default function QualityLabEngagementPage() {
 
   function updateValidationControl(patch: Partial<QualityLabEngagementPacket["validationControl"]>) {
     persist({ ...packet!, validationControl: { ...packet!.validationControl, ...patch } });
+  }
+
+  function freezeObservation() {
+    setFreezeError("");
+    setFreezeNotice("");
+    try {
+      const before = listCalibrationReviewCases(project!.id);
+      const reviewCase = freezeCalibrationObservation(project!, packet!);
+      const next = listCalibrationReviewCases(project!.id);
+      setFrozenCalibrationCases(next);
+      setFreezeNotice(next.length === before.length
+        ? `This exact observation is already frozen as ${reviewCase.observation.observationId}.`
+        : `Observation ${reviewCase.observation.observationId} is frozen and ready for controlled review.`);
+      analytics.calibrationObservationFrozen(project!.id, reviewCase.observation.observationId, reviewCase.observation.metrics.length, reviewCase.observation.eligibilityAtFreeze.status);
+    } catch (error) {
+      setFreezeError(error instanceof Error ? error.message : "Unable to freeze this calibration observation.");
+    }
   }
 
   async function exportDeliveryArtifact(artifact: "workbook" | "brief") {
@@ -239,7 +271,7 @@ export default function QualityLabEngagementPage() {
           <Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center gap-2 text-sm text-slate-400 transition hover:text-white">
             <ArrowLeft className="h-4 w-4" /> Back to blueprint
           </Link>
-          <div className="flex flex-wrap gap-4"><Link href="/quality-lab/pilots" className="text-sm font-bold text-teal-300 hover:text-teal-200">Open paid pilot portfolio</Link><Link href="/quality-lab/calibration" className="text-sm font-bold text-sky-300 hover:text-sky-200">Open learning review queue</Link><Link href="/quality-lab/validation-cases" className="text-sm font-bold text-violet-300 hover:text-violet-200">Open validation registry</Link></div>
+          <div className="flex flex-wrap gap-4"><Link href={`/quality-lab/engagements/${project.id}/commercial-handoff`} className="text-sm font-bold text-amber-200 hover:text-amber-100">Open URS/RFQ handoff</Link><Link href={`/quality-lab/engagements/${project.id}/operating-model-review`} className="text-sm font-bold text-teal-200 hover:text-teal-100">Open operating-model review</Link><Link href="/quality-lab/pilots" className="text-sm font-bold text-teal-300 hover:text-teal-200">Open paid pilot portfolio</Link><Link href="/quality-lab/calibration" className="text-sm font-bold text-sky-300 hover:text-sky-200">Open learning review queue</Link><Link href="/quality-lab/validation-cases" className="text-sm font-bold text-violet-300 hover:text-violet-200">Open validation registry</Link></div>
         </div>
 
         <header className="mt-5 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 to-slate-950 p-5 md:p-8">
@@ -512,6 +544,25 @@ export default function QualityLabEngagementPage() {
             <p className="text-[11px] leading-5 text-amber-200/70">{calibrationSummary.notice}</p>
             <Link href="/blog/how-to-validate-a-quality-lab-domain-pack" className="shrink-0 text-[11px] font-bold text-teal-300">Validation framework</Link>
           </div>
+          <div className="mt-5 rounded-xl border border-violet-300/20 bg-violet-300/[0.045] p-4 md:p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-violet-200"><LockKeyhole className="h-4 w-4" /> Immutable observation</p>
+                <h3 className="mt-2 text-base font-bold">Freeze the evidence before learning review.</h3>
+                <p className="mt-2 text-xs leading-5 text-slate-400">This creates a new read-only snapshot of the Blueprint revision, Compiler and rule versions, observed period, evidence references, actuals, recalculated variance and eligibility. Later edits create another observation; they never rewrite this one.</p>
+                <p className="mt-2 text-[11px] leading-5 text-amber-200/70">Freezing does not approve a benchmark, update an executable rule or validate the Domain Pack.</p>
+              </div>
+              <button type="button" disabled={!calibrationSummary.reviewReady} onClick={freezeObservation} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-violet-300 px-4 py-3 text-sm font-bold text-slate-950 disabled:cursor-not-allowed disabled:opacity-45"><LockKeyhole className="h-4 w-4" /> Freeze observation</button>
+            </div>
+            {!calibrationSummary.reviewReady && <p className="mt-3 text-[11px] leading-5 text-slate-500">Add at least one actual plus its basis and variance driver, then complete the observed period, data owner and controlled evidence references.</p>}
+            {freezeNotice && <p role="status" className="mt-3 rounded-lg border border-teal-300/20 bg-teal-300/[0.06] p-3 text-xs text-teal-100">{freezeNotice}</p>}
+            {freezeError && <p role="alert" className="mt-3 rounded-lg border border-red-300/20 bg-red-300/[0.07] p-3 text-xs text-red-100">{freezeError}</p>}
+            <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-white/8 pt-4 text-xs">
+              <span className="text-slate-400"><strong className="text-white">{frozenCalibrationCases.length}</strong> frozen observation{frozenCalibrationCases.length === 1 ? "" : "s"}</span>
+              {frozenCalibrationCases[0] && <span className="rounded-full border border-white/10 px-2.5 py-1 text-[9px] font-bold uppercase text-slate-300">Latest: {calibrationReviewStatus(frozenCalibrationCases[0]).replaceAll("-", " ")}</span>}
+              <Link href="/quality-lab/calibration" className="ml-auto inline-flex items-center gap-2 font-bold text-violet-200">Open controlled review queue</Link>
+            </div>
+          </div>
         </section>
 
         <WorkspaceDisclosure id="validation-case" title="Controlled validation-case acceptance" description="Promote reviewed project evidence only after baseline, scope, permission, evidence quality and reviewer acceptance are controlled." meta={validationCase.eligibility.replaceAll("-", " ")}>
@@ -579,6 +630,7 @@ export default function QualityLabEngagementPage() {
                 </article>
               ))}
             </div>
+            <Link href={`/quality-lab/engagements/${project.id}/commercial-handoff`} className="mt-5 inline-flex items-center gap-2 rounded-xl border border-amber-300/20 bg-amber-300/10 px-4 py-3 text-sm font-bold text-amber-100">Inspect controlled URS/RFQ handoff <ArrowRight className="h-4 w-4" /></Link>
           </WorkspaceDisclosure>
         )}
 

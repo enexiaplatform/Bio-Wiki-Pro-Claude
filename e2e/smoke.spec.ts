@@ -1,5 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
 import { createQualityLabProject, defaultQualityLabInput } from "../shared/quality-lab";
+import { calculateVariancePercent, createQualityLabEngagementPacket } from "../shared/quality-lab-engagement";
+import { createQualityLabOperatingModelInput } from "../shared/quality-lab-operating-model";
+import { createQualityLabOperatingModelReviewDraft } from "../shared/quality-lab-operating-model-review";
 import { CAREER_PROFILE_STORAGE_KEY, defaultCareerProfile } from "../shared/career-blueprint";
 import { createCareerExecutionRecord } from "../shared/career-execution";
 
@@ -60,6 +63,7 @@ test.describe("public smoke", () => {
     await page.goto("/quality-lab/review?offer=diagnostic");
     await page.getByLabel("Name *").fill("Diagnostic Lead");
     await page.getByLabel("Work email *").fill("lead@example.com");
+    await page.getByLabel(/Project context/i).fill("Decide the scope and evidence needed for a non-sterile microbiology capacity review before the next budget gate.");
     await page.getByLabel(/I confirm this submission contains no confidential/i).check();
     await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
     await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
@@ -96,7 +100,7 @@ test.describe("public smoke", () => {
   test("settings explain guest and account-connected data boundaries", async ({ page }) => {
     await page.goto("/settings");
     await expect(page.getByRole("heading", { name: /Account & access/i })).toBeVisible();
-    await expect(page.getByText(/Draft Blueprint projects remain in this browser/i)).toBeVisible();
+    await expect(page.getByText(/Blueprint projects remain in this browser until you explicitly save an account copy/i)).toBeVisible();
     await expect(page.getByTestId("button-settings-login")).toHaveAttribute("href", "/login?returnTo=/settings");
     await expect(page.getByRole("link", { name: /Create account/i })).toHaveAttribute("href", "/register?returnTo=/settings");
   });
@@ -121,7 +125,7 @@ test.describe("public smoke", () => {
     await page.goto("/settings");
     await expect(page.getByText(/Confirm your email/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Blueprint projects/i })).toHaveAttribute("href", "/quality-lab/projects");
-    await expect(page.getByText(/draft Blueprint projects are stored in this browser/i)).toBeVisible();
+    await expect(page.getByText(/Quality Lab projects stay in this browser unless you explicitly save an account copy/i)).toBeVisible();
   });
 
   test("signed-in Blueprint projects expose an explicit reminder cadence", async ({ page }) => {
@@ -130,7 +134,7 @@ test.describe("public smoke", () => {
       contentType: "application/json",
       body: JSON.stringify({ id: "e2e-user", email: "analyst@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }),
     }));
-    await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
     await page.route("**/api/quality-lab/reminder-preference", async (route) => {
       const cadence = route.request().method() === "PUT" ? "weekly" : "daily";
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence, updatedAt: new Date().toISOString() }) });
@@ -159,13 +163,13 @@ test.describe("public smoke", () => {
       };
     }, project);
     await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "e2e-user", email: "analyst@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }) }));
-    await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
     await page.route("**/api/quality-lab/reminder-preference", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence: "off", updatedAt: null }) }));
 
     await page.goto("/quality-lab/projects?source=work-queue-email");
     await expect(page.getByRole("heading", { name: /What changed in the last 7 days/i })).toBeVisible();
     await page.getByRole("link", { name: /Open action/i }).first().click();
-    await page.locator('select[aria-label^="Status for"]').first().selectOption("in-progress");
+    await page.locator('select[aria-label^="Status for"]:visible').first().selectOption("in-progress");
 
     const events = await page.evaluate(() => (window as any).__atlasEvents as Array<{ event: string; properties?: Record<string, unknown> }>);
     expect(events.map((item) => item.event)).toEqual(expect.arrayContaining([
@@ -344,6 +348,140 @@ test.describe("public smoke", () => {
     }
   });
 
+  test("a signed-in user explicitly saves a browser Blueprint as an account revision", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Account save proof" }, "qlp_account_save");
+    await page.addInitScript((savedProject) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+    }, project);
+    await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "e2e-user", email: "analyst@example.com", isPro: false, verifiedEmail: true, subscriptionStatus: "free" }) }));
+    await page.route("**/api/quality-lab/projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/projects/qlp_account_save", async (route) => {
+      const body = route.request().postDataJSON();
+      await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ snapshot: body.snapshot, updatedAt: "2026-07-26T09:00:00.000Z", revisionCount: 1 }) });
+    });
+    await page.route("**/api/quality-lab/reminder-preference", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ cadence: "off", updatedAt: null }) }));
+
+    await page.goto("/quality-lab/projects");
+    const card = page.getByRole("article").filter({ hasText: "Account save proof" });
+    await expect(card.getByText(/Browser-only working copy/i)).toBeVisible();
+    await card.getByRole("button", { name: /Save to account/i }).click();
+    await expect(page.getByRole("status").filter({ hasText: /saved to your account with 1 revision/i })).toBeVisible();
+    await expect(card.getByRole("button", { name: /Save latest revision/i })).toBeVisible();
+  });
+
+  test("sensitivity thresholds connect the decision back to the exact planner input", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Threshold navigation proof" }, "qlp_threshold_navigation");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript((savedProject) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+    }, project);
+
+    await page.goto(`/quality-lab/sensitivity?project=${project.id}`);
+    await expect(page.getByRole("heading", { name: /Sensitivity & Evidence Confidence/i })).toBeVisible();
+    await expect(page.getByText("Fragile drivers", { exact: true })).toBeVisible();
+    await expect(page.getByText("Robust drivers", { exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+
+    const driver = page.locator("details").filter({ hasText: "Finished-product batches" }).first();
+    await driver.locator("summary").click();
+    await expect(driver.getByText(/Decision-change criterion/i)).toBeVisible();
+    await expect(driver.getByText(/Nearest threshold/i)).toBeVisible();
+    await expect(driver.getByRole("link", { name: /Trace affected decision/i })).toBeVisible();
+    await driver.getByRole("link", { name: /Edit this input/i }).click();
+
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_threshold_navigation\?edit=input&field=finishedBatchesPerMonth/);
+    await expect(page.getByRole("heading", { name: /Testing demand/i })).toBeVisible();
+    await expect(page.locator('[data-quality-lab-input="finishedBatchesPerMonth"]')).toBeFocused();
+  });
+
+  test("calibration evidence freezes before an append-only review decision", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Immutable calibration proof" }, "qlp_immutable_calibration");
+    const packet = createQualityLabEngagementPacket(project, "2026-07-01T00:00:00.000Z");
+    packet.baseline.monthlyTests.actual = packet.baseline.monthlyTests.estimate * 1.2;
+    packet.baseline.monthlyTests.variancePercent = calculateVariancePercent(packet.baseline.monthlyTests.estimate, packet.baseline.monthlyTests.actual);
+    Object.assign(packet.calibration, {
+      status: "reviewed",
+      observedPeriodStart: "2026-04-01",
+      observedPeriodEnd: "2026-06-30",
+      dataOwner: "QC Operations",
+      evidenceRefs: ["QC-Q2-OBSERVED-REGISTER"],
+      learningDisposition: "candidate-rule-update",
+      applicableRuleIds: ["micro.workflow.finished-products"],
+      dispositionRationale: "Observed demand should enter controlled cross-case review.",
+      reviewedByRole: "Microbiology SME",
+      reviewedAt: "2026-07-10T00:00:00.000Z",
+    });
+    Object.assign(packet.calibration.metricNotes.find((item) => item.metric === "monthlyTests")!, {
+      actualBasis: "Approved monthly test register",
+      varianceDriver: "scope-change",
+      reviewerNote: "Additional routine product scope was introduced.",
+    });
+    await page.addInitScript(({ savedProject, savedPacket }) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+      window.localStorage.setItem("lsa:quality-lab-engagements:v1", JSON.stringify([savedPacket]));
+    }, { savedProject: project, savedPacket: packet });
+    await mockAdmin(page);
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    await page.goto(`/quality-lab/engagements/${project.id}#calibration`);
+    const freeze = page.getByRole("button", { name: /Freeze observation/i });
+    await expect(freeze).toBeEnabled();
+    await freeze.click();
+    await expect(page.getByRole("status").filter({ hasText: /is frozen and ready for controlled review/i })).toBeVisible();
+    await expect(page.getByText(/1 frozen observation/i)).toBeVisible();
+    await page.getByRole("link", { name: /Open controlled review queue/i }).click();
+
+    await expect(page.getByRole("heading", { name: /Calibration Evidence Review Queue/i })).toBeVisible();
+    await expect(page.getByText("eligible", { exact: true }).first()).toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+    const history = page.getByText(/Controlled review history/i).locator("..");
+    await history.click();
+    await page.getByLabel(/Reviewed by role for calobs_/i).fill("Domain Pack review board");
+    await page.getByLabel(/External review reference for calobs_/i).fill("CAL-BOARD-2026-07-12");
+    await page.getByLabel(/Review rationale for calobs_/i).fill("Accepted as project calibration evidence for controlled cross-case review only.");
+    await page.getByRole("button", { name: /Append review decision/i }).click();
+
+    await expect(page.getByText("accepted evidence", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/does not update an executable rule/i)).toBeVisible();
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export frozen registry/i }).click();
+    expect((await download).suggestedFilename()).toBe("atlas-frozen-calibration-observation-registry.json");
+  });
+
+  test("commercial handoff traces one requirement basis into URS and RFQ exports", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Controlled handoff proof" }, "qlp_commercial_handoff");
+    project.reviewRequestedAt = "2026-07-20T00:00:00.000Z";
+    const packet = createQualityLabEngagementPacket(project, "2026-07-20T00:00:00.000Z");
+    await page.addInitScript(({ savedProject, savedPacket }) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+      window.localStorage.setItem("lsa:quality-lab-engagements:v1", JSON.stringify([savedPacket]));
+    }, { savedProject: project, savedPacket: packet });
+    await mockAdmin(page);
+    await page.route("**/api/quality-lab/reviewed-projects/qlp_commercial_handoff", async (route) => {
+      if (route.request().method() === "PUT") return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ localProjectId: project.id, projectName: project.name, updatedAt: "2026-07-26T00:00:00.000Z" }) });
+      return route.continue();
+    });
+    await page.route("**/api/quality-lab/reviewed-projects/qlp_commercial_handoff/urs-document.docx", (route) => route.fulfill({ status: 200, contentType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", headers: { "content-disposition": "attachment; filename=\"controlled-handoff-proof-vendor-neutral-urs.docx\"" }, body: "PK-test-docx" }));
+    await page.route("**/api/quality-lab/reviewed-projects/qlp_commercial_handoff/rfq-workbook", (route) => route.fulfill({ status: 200, contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers: { "content-disposition": "attachment; filename=\"controlled-handoff-proof-rfq-comparison.xlsx\"" }, body: "PK-test-xlsx" }));
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    await page.goto(`/quality-lab/engagements/${project.id}/commercial-handoff`);
+    await expect(page.getByRole("heading", { name: /One controlled requirement basis/i })).toBeVisible();
+    await expect(page.getByText(/quality-lab-commercial-handoff\/v1/)).toBeVisible();
+    await expect(page.getByText(/No vendor selection/i)).toBeVisible();
+    await expect(page.getByText(/without score, rank or award recommendation/i)).toBeVisible();
+    const firstRequirement = page.getByRole("article").filter({ hasText: /URS-001-/ }).first();
+    await expect(firstRequirement.getByRole("link", { name: /Open Decision Lineage/i })).toHaveAttribute("href", /\/quality-lab\/projects\/qlp_commercial_handoff\/lineage\/decision%3Aequipment%3A/);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+
+    const ursDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Generate URS DOCX/i }).click();
+    expect((await ursDownload).suggestedFilename()).toBe("controlled-handoff-proof-vendor-neutral-urs.docx");
+    const rfqDownload = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Generate RFQ XLSX/i }).click();
+    expect((await rfqDownload).suggestedFilename()).toBe("controlled-handoff-proof-rfq-comparison.xlsx");
+  });
+
   test("Pro member can save, reopen and roll forward a monthly quality review", async ({ page }) => {
     await mockAdmin(page);
     await page.goto("/pro/monthly-review");
@@ -426,6 +564,15 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: "Engineering", exact: true }).click();
     await expect(page.locator("#decision-brief").getByText(/Use the capability and area allowances to frame a qualified basis-of-design workshop/i)).toBeVisible();
     await expect(page.getByTestId("blueprint-sensitivity-summary")).toBeVisible();
+    await expect(page.getByTestId("blueprint-readiness")).toContainText(/Model completeness/i);
+    await expect(page.getByTestId("blueprint-readiness")).toContainText(/Evidence readiness/i);
+    await expect(page.getByTestId("blueprint-lineage-summary")).toBeVisible();
+    await page.getByTestId("blueprint-lineage-summary").getByRole("link", { name: /Trace this decision/i }).first().click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_.*\/lineage\/decision%3A/);
+    await expect(page.getByRole("heading", { name: /How Atlas reached it/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Versioned rule and evidence trace/i })).toBeVisible();
+    await page.getByRole("link", { name: /Back to Blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByRole("heading", { name: /Verify the assumptions that can move the decision most/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Open all drivers and output ranges/i })).toHaveAttribute("href", /\/quality-lab\/sensitivity\?project=qlp_/);
     await page.getByRole("button", { name: "technical mode", exact: true }).click();
@@ -540,7 +687,8 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/reconciliation required|portfolio derived|aggregate input/i).first()).toBeVisible();
     await page.getByRole("button", { name: /Open as editable project/i }).first().click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
-    await expect(page.getByText(/Illustrative case — reconciled in-house portfolio/i).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Illustrative case — reconciled in-house portfolio/i })).toBeVisible();
+    await page.getByRole("button", { name: /Open technical detail/i }).click();
     await expect(page.getByRole("heading", { name: /Finished-product sizing basis/i })).toBeVisible();
     await page.getByRole("button", { name: /Show Sources and missing site evidence detail/i }).click();
     await expect(page.getByRole("link", { name: /Open Evidence Graph/i })).toBeVisible();
@@ -566,6 +714,82 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Skill Coverage & Shift Feasibility/i })).toBeVisible();
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
     expect(horizontalOverflow).toBe(false);
+  });
+
+  test("application operating-model analysis withholds then traces a bounded recommendation", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Operating model evidence" }, "qlp_operating_model_e2e");
+    await page.addInitScript((savedProject) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+    }, project);
+
+    await page.goto(`/quality-lab/operating-model?project=${project.id}`);
+    await expect(page.getByRole("heading", { name: /Insource \/ Outsource Decision/i })).toBeVisible();
+    await expect(page.getByTestId("operating-model-mode")).toContainText("Evidence required");
+    await expect(page.getByText(/What is the comparable external price per reportable test/i)).toBeVisible();
+
+    await page.getByLabel("External price per reportable test (USD)").fill("100");
+    await page.getByLabel("External end-to-end turnaround (days)").fill("2");
+    await page.getByLabel("Sample hold-time limit (days)").fill("5");
+    await page.getByLabel("Internal capability").selectOption("confirmed");
+    await page.getByLabel("Method readiness").selectOption("ready");
+    await page.getByLabel("External laboratory qualified").selectOption("no");
+    await page.getByLabel("Qualified backup external coverage").selectOption("no");
+    await page.getByLabel("External data access").selectOption("full");
+    await page.getByLabel("Investigation responsiveness").selectOption("internal-faster");
+    await page.getByLabel("Qualified surge capacity").selectOption("internal");
+
+    await expect(page.getByTestId("operating-model-mode")).toContainText("Insource");
+    await expect(page.getByTestId("operating-model-evidence")).toHaveCount(0);
+    const lineageLink = page.getByRole("link", { name: /Open operating-model lineage/i });
+    await expect(lineageLink).toBeVisible();
+    await lineageLink.click();
+    await expect(page.getByRole("heading", { name: /is the current bounded operating-model conclusion/i })).toBeVisible();
+    await page.getByRole("link", { name: /Back to operating-model analysis/i }).click();
+    await expect(page.getByText(/does not qualify an external laboratory/i)).toBeVisible();
+
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export analysis/i }).click();
+    expect((await download).suggestedFilename()).toBe("atlas-application-operating-model.json");
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+    expect(horizontalOverflow).toBe(false);
+  });
+
+  test("paid-diagnostic operating-model review freezes a cross-functional comparison", async ({ page }) => {
+    await mockAdmin(page);
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Stakeholder operating review" }, "qlp_operating_review_e2e");
+    project.reviewRequestedAt = "2026-07-26T01:00:00.000Z";
+    const input = createQualityLabOperatingModelInput(project, undefined, "2026-07-26T02:00:00.000Z");
+    input.applications = input.applications.map((application) => ({ ...application, externalPricePerTestUsd: 100, externalTurnaroundDays: 2, sampleHoldTimeDays: 5, methodTransferCostUsd: 0, internalCapability: "confirmed", methodReadiness: "ready", externalLabQualified: "no", backupExternalCoverage: "no", dataAccess: "full", investigationResponsiveness: "internal-faster", surgeCapacity: "internal" }));
+    const engagement = createQualityLabEngagementPacket(project, "2026-07-26T03:00:00.000Z");
+    engagement.pilotControl.engagementClass = "blueprint";
+    engagement.pilotControl.commercialStatus = "paid";
+    engagement.pilotControl.commercialEvidenceReference = "INVOICE-STATUS-E2E";
+    const draft = createQualityLabOperatingModelReviewDraft(project, input, undefined, "2026-07-26T04:00:00.000Z");
+    draft.facilitatorRole = "Blueprint engagement lead";
+    draft.stakeholders = draft.stakeholders.map((stakeholder) => ({ ...stakeholder, reviewerRole: `${stakeholder.stakeholder} reviewer`, status: "reviewed-no-objection", externalReviewReference: `REVIEW-${stakeholder.stakeholder}` }));
+    draft.applications = draft.applications.map((application) => ({ ...application, outcome: "agree", reviewedMode: "insource", rationale: "The controlled review supports the bounded application conclusion.", evidenceRefs: [`EVIDENCE-${application.applicationId}`] }));
+    await page.addInitScript(({ savedProject, savedInput, savedEngagement, savedDraft }) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+      window.localStorage.setItem("lsa:quality-lab-operating-model:v1", JSON.stringify({ [savedProject.id]: savedInput }));
+      window.localStorage.setItem("lsa:quality-lab-engagements:v1", JSON.stringify([savedEngagement]));
+      window.localStorage.setItem("lsa:quality-lab-operating-model-reviews:v1", JSON.stringify({ drafts: { [savedProject.id]: savedDraft }, snapshots: [] }));
+    }, { savedProject: project, savedInput: input, savedEngagement: engagement, savedDraft: draft });
+
+    await page.goto(`/quality-lab/engagements/${project.id}/operating-model-review`);
+    await expect(page.getByRole("heading", { name: /Model conclusion vs stakeholder review/i })).toBeVisible();
+    await expect(page.getByText("0", { exact: true }).first()).toBeVisible();
+    await expect(page.getByTestId("freeze-operating-model-review")).toBeEnabled();
+    await page.getByTestId("freeze-operating-model-review").click();
+    await expect(page.getByRole("status")).toContainText(/is frozen/i);
+    await expect(page.getByRole("heading", { name: /Immutable review history/i })).toBeVisible();
+
+    const download = page.waitForEvent("download");
+    await page.getByRole("button", { name: /Export review registry/i }).click();
+    expect((await download).suggestedFilename()).toBe("atlas-operating-model-review-registry.json");
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
   });
 
   test("Atlas Evidence Graph connects domains to Blueprint decisions", async ({ page }) => {
@@ -725,7 +949,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /A calibration record is not automatically a validation case/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /0\/3 accepted validation cases/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Synthetic case" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Calibration candidate" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Accepted calibration evidence" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Accepted validation case", exact: true })).toBeVisible();
     await expect(page.getByRole("heading", { name: /No validation-case acceptance has started/i })).toBeVisible();
     const registryDownload = page.waitForEvent("download");
@@ -781,7 +1005,7 @@ test.describe("public smoke", () => {
 
   test("Gate 2 uses the newest exact-version account governance basis", async ({ page }) => {
     await page.route("**/api/auth/me", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "gate2-user", email: "gate2@example.com", isPro: false, isAdmin: true, verifiedEmail: true, subscriptionStatus: "free" }) }));
-    await page.route("**/api/quality-lab/reviewed-projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+    await page.route("**/api/quality-lab/projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
     await page.route("**/api/quality-lab/governance/expert-ownership", (route) => route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ message: "not found" }) }));
     await page.route("**/api/quality-lab/governance/source-closures", (route) => {
       const types: Record<string, string> = { "project-inputs": "controlled-project-revision", "atlas-microbiology-benchmarks-v1": "calibrated-benchmark-replacement", "usp-61-context": "confirmed-public-edition", "usp-62-context": "confirmed-public-edition", "site-approved-methods": "controlled-site-record", "vendor-budget-evidence": "controlled-site-record" };
