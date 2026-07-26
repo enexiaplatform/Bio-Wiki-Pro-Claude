@@ -248,64 +248,354 @@ export function qualityLabDeliveryMarkdown(snapshot: QualityLabReviewedProjectSn
   ].join("\n");
 }
 
+// ── Markdown → PDF (designed renderer — Atlas house style) ─────────────────
+// Matches the design system of server/quality-lab-blueprint-pdf.ts: same
+// palette, page furniture, callouts and styled tables. All text passes through
+// pdfClean() because core PDF fonts are latin-1 (prevents mojibake).
+const PDF_PAGE_W = 595.28;
+const PDF_PAGE_H = 841.89;
+const PDF_MARGIN = 46;
+const PDF_CONTENT_W = PDF_PAGE_W - PDF_MARGIN * 2;
+const PDF_BOTTOM = PDF_PAGE_H - 78;
+
+const PDF_C = {
+  navy: "#071526",
+  navy2: "#0D2238",
+  ink: "#102033",
+  slate: "#526579",
+  muted: "#7C8A9B",
+  line: "#D9E2EA",
+  panel: "#F3F7FA",
+  panel2: "#EAF2F6",
+  white: "#FFFFFF",
+  teal: "#0F9D8A",
+  tealDark: "#0B6F65",
+  tealLight: "#CFF4ED",
+  gold: "#C58B24",
+  goldLight: "#F8EBCB",
+  goldBorder: "#ECD49A",
+};
+
+function pdfClean(value: unknown): string {
+  return String(value ?? "")
+    .replace(/[‐-―]/g, "-")
+    .replace(/[‘’]/g, "'")
+    .replace(/[“”]/g, '"')
+    .replace(/×/g, "x")
+    .replace(/÷/g, "/")
+    .replace(/²/g, "2")
+    .replace(/³/g, "3")
+    .replace(/°/g, " deg ")
+    .replace(/≤/g, "<=")
+    .replace(/≥/g, ">=")
+    .replace(/µ|μ/g, "u")
+    .replace(/•/g, "-")
+    .replace(/ /g, " ")
+    .replace(/[^ -~]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function stripInline(s: string): string {
   return s
     .replace(/\*\*(.+?)\*\*/g, "$1")
     .replace(/\*(.+?)\*/g, "$1")
-    .replace(/`(.+?)`/g, "$1")
-    .replace(/^\s*[-*]\s+\[[ x]\]\s*/i, "☐ "); // checkbox bullets
+    .replace(/`(.+?)`/g, "$1");
 }
 
-/** Render a markdown string to a PDF Buffer. */
+type MdBlock =
+  | { type: "h1" | "h2" | "h3"; text: string }
+  | { type: "p"; text: string }
+  | { type: "ul"; items: { text: string; checked: boolean | null }[] }
+  | { type: "ol"; items: string[] }
+  | { type: "quote"; text: string }
+  | { type: "table"; rows: string[][] }
+  | { type: "code"; lines: string[] }
+  | { type: "hr" };
+
+function parseMarkdownBlocks(md: string): MdBlock[] {
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  const blocks: MdBlock[] = [];
+  let para: string[] = [];
+  let bullets: { text: string; checked: boolean | null }[] = [];
+  let numbered: string[] = [];
+  let quote: string[] = [];
+  let tableRows: string[][] = [];
+  let code: string[] | null = null;
+
+  const flushPara = () => { if (para.length) { blocks.push({ type: "p", text: stripInline(para.join(" ")) }); para = []; } };
+  const flushBullets = () => { if (bullets.length) { blocks.push({ type: "ul", items: bullets }); bullets = []; } };
+  const flushNumbered = () => { if (numbered.length) { blocks.push({ type: "ol", items: numbered }); numbered = []; } };
+  const flushQuote = () => { if (quote.length) { blocks.push({ type: "quote", text: quote.join(" ") }); quote = []; } };
+  const flushTable = () => { if (tableRows.length) { blocks.push({ type: "table", rows: tableRows }); tableRows = []; } };
+  const flushAll = () => { flushPara(); flushBullets(); flushNumbered(); flushQuote(); flushTable(); };
+
+  for (const line of lines) {
+    if (line.trim().startsWith("```")) {
+      if (code) { blocks.push({ type: "code", lines: code }); code = null; } else { flushAll(); code = []; }
+      continue;
+    }
+    if (code) { code.push(line); continue; }
+    const t = line.trim();
+    if (t === "") { flushAll(); continue; }
+    if (t === "---") { flushAll(); blocks.push({ type: "hr" }); continue; }
+    if (line.startsWith("### ")) { flushAll(); blocks.push({ type: "h3", text: stripInline(line.slice(4)) }); continue; }
+    if (line.startsWith("## ")) { flushAll(); blocks.push({ type: "h2", text: stripInline(line.slice(3)) }); continue; }
+    if (line.startsWith("# ")) { flushAll(); blocks.push({ type: "h1", text: stripInline(line.slice(2)) }); continue; }
+    if (t.startsWith("|")) {
+      if (/^\|[\s:|-]+\|$/.test(t)) continue;
+      flushPara(); flushBullets(); flushNumbered(); flushQuote();
+      tableRows.push(t.split("|").slice(1, -1).map((c) => stripInline(c.trim())));
+      continue;
+    }
+    if (t.startsWith(">")) {
+      flushPara(); flushBullets(); flushNumbered(); flushTable();
+      quote.push(stripInline(t.replace(/^>\s?/, "")));
+      continue;
+    }
+    if (/^\s*[-*]\s+/.test(line)) {
+      flushPara(); flushNumbered(); flushQuote(); flushTable();
+      let item = line.replace(/^\s*[-*]\s+/, "");
+      let checked: boolean | null = null;
+      const m = item.match(/^\[([ xX])\]\s*/);
+      if (m) { checked = m[1].toLowerCase() === "x"; item = item.slice(m[0].length); }
+      bullets.push({ text: stripInline(item), checked });
+      continue;
+    }
+    if (/^\s*\d+\.\s+/.test(line)) {
+      flushPara(); flushBullets(); flushQuote(); flushTable();
+      numbered.push(stripInline(line.replace(/^\s*\d+\.\s+/, "")));
+      continue;
+    }
+    flushBullets(); flushNumbered(); flushQuote(); flushTable();
+    para.push(t);
+  }
+  flushAll();
+  if (code && code.length) blocks.push({ type: "code", lines: code });
+  return blocks;
+}
+
+/** Render a markdown string to a designed, branded PDF Buffer. */
 export function markdownToPdf(md: string, title: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A4", margin: 54, info: { Title: title } });
+    const blocks = parseMarkdownBlocks(md);
+    const h1 = blocks.find((b) => b.type === "h1");
+    const docTitle = pdfClean(title.replace(/\s*\(PDF\)\s*$/i, "")) || (h1 && "text" in h1 ? pdfClean(h1.text) : "Atlas Pro working document");
+    const doc = new PDFDocument({
+      size: "A4",
+      margins: { top: 66, bottom: 72, left: PDF_MARGIN, right: PDF_MARGIN },
+      bufferPages: true,
+      autoFirstPage: false,
+      info: { Title: docTitle, Author: "Life Science Atlas" },
+    });
     const chunks: Buffer[] = [];
     doc.on("data", (c) => chunks.push(c as Buffer));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    const lines = md.replace(/\r\n/g, "\n").split("\n");
-    let inCode = false;
-    for (const raw of lines) {
-      const line = raw;
-      if (line.trim().startsWith("```")) {
-        inCode = !inCode;
-        doc.moveDown(0.3);
-        continue;
-      }
-      if (inCode) {
-        doc.font("Courier").fontSize(9).fillColor("#333").text(line, { lineGap: 1 });
-        continue;
-      }
-      if (line.trim() === "" || line.trim() === "---") {
-        doc.moveDown(0.5);
-        continue;
-      }
-      if (line.startsWith("# ")) {
-        doc.moveDown(0.4).font("Helvetica-Bold").fontSize(18).fillColor("#0f2420").text(stripInline(line.slice(2)));
-        doc.moveDown(0.3);
-      } else if (line.startsWith("## ")) {
-        doc.moveDown(0.4).font("Helvetica-Bold").fontSize(13).fillColor("#10b981").text(stripInline(line.slice(3)));
-        doc.moveDown(0.2);
-      } else if (line.startsWith("### ")) {
-        doc.moveDown(0.3).font("Helvetica-Bold").fontSize(11).fillColor("#222").text(stripInline(line.slice(4)));
-      } else if (/^\s*[-*]\s+/.test(line)) {
-        const text = stripInline(line.replace(/^\s*[-*]\s+/, ""));
-        doc.font("Helvetica").fontSize(10.5).fillColor("#222").text("•  " + text, { indent: 12, lineGap: 1 });
-      } else if (/^\s*\d+\.\s+/.test(line)) {
-        doc.font("Helvetica").fontSize(10.5).fillColor("#222").text(stripInline(line.trim()), { indent: 12, lineGap: 1 });
-      } else if (line.startsWith(">")) {
-        doc.font("Helvetica-Oblique").fontSize(10).fillColor("#555").text(stripInline(line.replace(/^>\s?/, "")), { indent: 12 });
-      } else if (line.trim().startsWith("|")) {
-        // Render table rows as monospace text (skip separator rows).
-        if (!/^\s*\|[\s:|-]+\|\s*$/.test(line)) {
-          const cells = line.split("|").map((c) => stripInline(c.trim())).filter((_, i, a) => i > 0 && i < a.length - 1 || a.length <= 2);
-          doc.font("Courier").fontSize(9).fillColor("#333").text(cells.join("   |   "), { lineGap: 1 });
+    let kicker = docTitle;
+    // Drawing inside pageAdded corrupts pdfkit's line wrapper when a text flow
+    // spans a page break — so we only RECORD the active kicker per page here
+    // and paint all header furniture in the final buffered pass instead.
+    const pageKickers: string[] = [];
+    doc.on("pageAdded", () => { pageKickers.push(kicker); });
+
+    // ── Cover ────────────────────────────────────────────────────────────
+    doc.addPage();
+    doc.rect(0, 0, PDF_PAGE_W, PDF_PAGE_H).fill(PDF_C.navy);
+    doc.rect(0, PDF_PAGE_H - 190, PDF_PAGE_W, 190).fill(PDF_C.navy2);
+    // network motif
+    doc.lineWidth(1).strokeColor("#1E4A5F");
+    const nodes: [number, number][] = [[86, 210], [150, 268], [96, 340], [168, 410], [104, 488], [176, 556]];
+    for (let i = 0; i < nodes.length - 1; i += 1) {
+      doc.moveTo(nodes[i][0], nodes[i][1]).lineTo(nodes[i + 1][0], nodes[i + 1][1]).stroke();
+    }
+    nodes.forEach(([nx, ny], i) => {
+      doc.circle(nx, ny, 9).fill(i === 3 ? PDF_C.gold : PDF_C.teal);
+      doc.circle(nx, ny, 12).lineWidth(1.2).strokeColor(PDF_C.white).stroke();
+    });
+    // pill
+    doc.roundedRect(284, 84, 176, 26, 13).fill("#12333A");
+    doc.font("Helvetica-Bold").fontSize(9).fillColor(PDF_C.tealLight)
+      .text("ATLAS PRO TOOLKIT", 284, 93, { width: 176, align: "center", characterSpacing: 1.1, lineBreak: false });
+    doc.font("Helvetica-Bold").fontSize(30).fillColor(PDF_C.white)
+      .text(docTitle, 284, 150, { width: 268, lineGap: 3 });
+    doc.font("Helvetica").fontSize(10.5).fillColor("#9FB1C5")
+      .text("A working document for regulated quality professionals — guide plus register, built to be used at the bench and in audits.", 284, 240, { width: 268, lineGap: 3 });
+    // document control panel
+    doc.roundedRect(284, 330, 268, 150, 10).fillAndStroke(PDF_C.navy2, "#1E3A4F");
+    doc.font("Helvetica-Bold").fontSize(8).fillColor(PDF_C.tealLight)
+      .text("DOCUMENT CONTROL", 300, 346, { characterSpacing: 1, lineBreak: false });
+    const controlRows: [string, string][] = [
+      ["Document", docTitle],
+      ["Format", "PDF guide + Excel register"],
+      ["Access", "Atlas Pro membership"],
+      ["Publisher", "Life Science Atlas"],
+    ];
+    controlRows.forEach(([k, v], i) => {
+      const ry = 370 + i * 26;
+      doc.font("Helvetica").fontSize(8.5).fillColor("#8EA3B8").text(k, 300, ry, { width: 80, lineBreak: false });
+      doc.font("Helvetica-Bold").fontSize(8.5).fillColor("#E2E8F0").text(pdfClean(v), 384, ry, { width: 152, lineBreak: false });
+    });
+    // educational boundary callout
+    doc.roundedRect(284, 506, 268, 96, 9).fillAndStroke(PDF_C.goldLight, PDF_C.goldBorder);
+    doc.rect(284, 506, 5, 96).fill(PDF_C.gold);
+    doc.font("Helvetica-Bold").fontSize(8).fillColor(PDF_C.gold)
+      .text("EDUCATIONAL USE", 300, 518, { characterSpacing: 1, lineBreak: false });
+    doc.font("Helvetica").fontSize(8.6).fillColor(PDF_C.ink)
+      .text("Working support only. Verify against your approved SOPs, current compendia editions and site quality system. Not QA approval, a validated method or regulatory advice.", 300, 534, { width: 236, lineGap: 2 });
+    doc.font("Helvetica-Bold").fontSize(9.5).fillColor(PDF_C.tealLight)
+      .text("LIFE SCIENCE ATLAS", 284, PDF_PAGE_H - 120, { characterSpacing: 1.2, lineBreak: false });
+    doc.font("Helvetica").fontSize(8.5).fillColor("#8EA3B8")
+      .text("Decision intelligence for regulated manufacturing quality", 284, PDF_PAGE_H - 102, { lineBreak: false });
+
+    // ── Content ──────────────────────────────────────────────────────────
+    doc.addPage();
+    doc.y = 66;
+    doc.font("Helvetica-Bold").fontSize(21).fillColor(PDF_C.ink).text(docTitle, PDF_MARGIN, doc.y, { width: PDF_CONTENT_W, lineGap: 1 });
+    doc.moveDown(0.4);
+    doc.font("Helvetica").fontSize(9).fillColor(PDF_C.slate)
+      .text("Atlas Pro working document. Educational use — verify against approved SOPs and current compendia before relying on it.", { width: PDF_CONTENT_W, lineGap: 2 });
+    doc.moveTo(PDF_MARGIN, doc.y + 6).lineTo(PDF_PAGE_W - PDF_MARGIN, doc.y + 6).lineWidth(0.7).strokeColor(PDF_C.line).stroke();
+    doc.y += 16;
+
+    const ensure = (needed: number) => { if (doc.y + needed > PDF_BOTTOM) doc.addPage(); };
+
+    const renderTable = (rows: string[][]) => {
+      const colCount = Math.max(...rows.map((r) => r.length));
+      const norm = rows.map((r) => Array.from({ length: colCount }, (_, i) => pdfClean(r[i] ?? "")));
+      doc.font("Helvetica").fontSize(7.5);
+      const natural = Array.from({ length: colCount }, () => 30);
+      for (const row of norm) row.forEach((cell, c) => { natural[c] = Math.max(natural[c], Math.min(doc.widthOfString(cell) + 12, 240)); });
+      const total = natural.reduce((a, b) => a + b, 0);
+      const widths = natural.map((w) => Math.max(36, (w / total) * PDF_CONTENT_W));
+      const pad = 5;
+      const drawRow = (cells: string[], header: boolean, zebra: boolean) => {
+        doc.font(header ? "Helvetica-Bold" : "Helvetica").fontSize(7.5);
+        const heights = cells.map((cell, c) => doc.heightOfString(cell || " ", { width: widths[c] - pad * 2, lineGap: 1 }));
+        const rowH = Math.max(...heights) + pad * 2;
+        if (doc.y + rowH > PDF_BOTTOM) {
+          doc.addPage();
+          if (!header) drawRow(norm[0], true, false);
         }
-      } else {
-        doc.font("Helvetica").fontSize(10.5).fillColor("#222").text(stripInline(line), { lineGap: 1 });
+        const y = doc.y;
+        let x = PDF_MARGIN;
+        cells.forEach((cell, c) => {
+          const fill = header ? PDF_C.tealDark : zebra ? PDF_C.panel : PDF_C.white;
+          doc.rect(x, y, widths[c], rowH).fillAndStroke(fill, header ? PDF_C.tealDark : PDF_C.line);
+          doc.font(header ? "Helvetica-Bold" : "Helvetica").fontSize(7.5).fillColor(header ? PDF_C.white : PDF_C.ink)
+            .text(cell, x + pad, y + pad, { width: widths[c] - pad * 2, lineGap: 1 });
+          x += widths[c];
+        });
+        doc.y = y + rowH;
+        doc.x = PDF_MARGIN;
+      };
+      norm.forEach((row, i) => drawRow(row, i === 0, i % 2 === 0));
+      doc.moveDown(0.8);
+    };
+
+    let skippedH1 = false;
+    for (const block of blocks) {
+      if (block.type === "h1" && !skippedH1) { skippedH1 = true; continue; }
+      if (block.type === "h1" || block.type === "h2") {
+        kicker = block.text;
+        ensure(64);
+        doc.moveDown(0.6);
+        const hy = doc.y;
+        doc.rect(PDF_MARGIN, hy + 1, 5, 15).fill(PDF_C.teal);
+        doc.font("Helvetica-Bold").fontSize(13).fillColor(PDF_C.ink)
+          .text(pdfClean(block.text), PDF_MARGIN + 12, hy, { width: PDF_CONTENT_W - 12, lineGap: 1 });
+        doc.moveDown(0.5);
+      } else if (block.type === "h3") {
+        ensure(40);
+        doc.moveDown(0.4);
+        doc.font("Helvetica-Bold").fontSize(11).fillColor(PDF_C.ink).text(pdfClean(block.text), { width: PDF_CONTENT_W, lineGap: 1 });
+        doc.moveDown(0.2);
+      } else if (block.type === "p") {
+        ensure(28);
+        doc.font("Helvetica").fontSize(9.5).fillColor(PDF_C.slate).text(pdfClean(block.text), { width: PDF_CONTENT_W, lineGap: 2 });
+        doc.moveDown(0.45);
+      } else if (block.type === "ul") {
+        for (const item of block.items) {
+          ensure(24);
+          const iy = doc.y + 1;
+          if (item.checked === null) {
+            doc.circle(PDF_MARGIN + 3, iy + 4, 2).fill(PDF_C.teal);
+          } else {
+            doc.rect(PDF_MARGIN, iy, 7, 7).lineWidth(0.9).strokeColor(PDF_C.tealDark).stroke();
+            if (item.checked) {
+              doc.moveTo(PDF_MARGIN + 1.5, iy + 3.5).lineTo(PDF_MARGIN + 3, iy + 5.5).lineTo(PDF_MARGIN + 6, iy + 1.5)
+                .lineWidth(1).strokeColor(PDF_C.tealDark).stroke();
+            }
+          }
+          doc.font("Helvetica").fontSize(9.5).fillColor(PDF_C.ink)
+            .text(pdfClean(item.text), PDF_MARGIN + 14, doc.y, { width: PDF_CONTENT_W - 14, lineGap: 1.5 });
+          doc.moveDown(0.25);
+        }
+        doc.moveDown(0.3);
+      } else if (block.type === "ol") {
+        block.items.forEach((item, i) => {
+          ensure(24);
+          doc.font("Helvetica-Bold").fontSize(9.5).fillColor(PDF_C.tealDark)
+            .text(`${i + 1}.`, PDF_MARGIN, doc.y, { width: 18, lineBreak: false });
+          doc.font("Helvetica").fontSize(9.5).fillColor(PDF_C.ink)
+            .text(pdfClean(item), PDF_MARGIN + 20, doc.y, { width: PDF_CONTENT_W - 20, lineGap: 1.5 });
+          doc.moveDown(0.25);
+        });
+        doc.moveDown(0.3);
+      } else if (block.type === "quote") {
+        const body = pdfClean(block.text);
+        doc.font("Helvetica").fontSize(8.6);
+        const boxH = doc.heightOfString(body, { width: PDF_CONTENT_W - 34, lineGap: 2 }) + 36;
+        ensure(boxH + 12);
+        const qy = doc.y;
+        doc.roundedRect(PDF_MARGIN, qy, PDF_CONTENT_W, boxH, 9).fillAndStroke(PDF_C.goldLight, PDF_C.goldBorder);
+        doc.rect(PDF_MARGIN, qy, 5, boxH).fill(PDF_C.gold);
+        doc.font("Helvetica-Bold").fontSize(7.5).fillColor(PDF_C.gold)
+          .text("NOTE", PDF_MARGIN + 16, qy + 10, { characterSpacing: 0.8, lineBreak: false });
+        doc.font("Helvetica").fontSize(8.6).fillColor(PDF_C.ink)
+          .text(body, PDF_MARGIN + 16, qy + 25, { width: PDF_CONTENT_W - 34, lineGap: 2 });
+        doc.y = qy + boxH + 10;
+        doc.x = PDF_MARGIN;
+      } else if (block.type === "table") {
+        ensure(40);
+        renderTable(block.rows);
+      } else if (block.type === "code") {
+        ensure(30);
+        doc.font("Courier").fontSize(8.5).fillColor(PDF_C.ink);
+        for (const codeLine of block.lines) {
+          ensure(14);
+          doc.text(pdfClean(codeLine), { width: PDF_CONTENT_W, lineGap: 1 });
+        }
+        doc.moveDown(0.4);
+      } else if (block.type === "hr") {
+        ensure(20);
+        doc.moveDown(0.4);
+        doc.moveTo(PDF_MARGIN, doc.y).lineTo(PDF_PAGE_W - PDF_MARGIN, doc.y).lineWidth(0.5).strokeColor(PDF_C.line).stroke();
+        doc.moveDown(0.6);
       }
+    }
+
+    // ── Page furniture (header + footer, painted after content is final) ──
+    const range = doc.bufferedPageRange();
+    for (let i = range.start + 1; i < range.start + range.count; i += 1) {
+      doc.switchToPage(i);
+      const bottom = doc.page.margins.bottom;
+      doc.page.margins.bottom = 0;
+      // header
+      doc.rect(0, 0, PDF_PAGE_W, 8).fill(PDF_C.teal);
+      doc.font("Helvetica-Bold").fontSize(8).fillColor(PDF_C.tealDark)
+        .text(pdfClean(pageKickers[i] ?? kicker).toUpperCase(), PDF_MARGIN, 28, { characterSpacing: 1.2, lineBreak: false });
+      doc.font("Helvetica-Bold").fontSize(7.5).fillColor(PDF_C.gold)
+        .text("ATLAS PRO", PDF_PAGE_W - PDF_MARGIN - 90, 29, { width: 90, align: "right", characterSpacing: 0.8, lineBreak: false });
+      doc.moveTo(PDF_MARGIN, 48).lineTo(PDF_PAGE_W - PDF_MARGIN, 48).lineWidth(0.7).strokeColor(PDF_C.line).stroke();
+      // footer
+      const fy = PDF_PAGE_H - 36;
+      doc.moveTo(PDF_MARGIN, fy - 8).lineTo(PDF_PAGE_W - PDF_MARGIN, fy - 8).lineWidth(0.5).strokeColor(PDF_C.line).stroke();
+      doc.font("Helvetica").fontSize(7.5).fillColor(PDF_C.muted)
+        .text(`Life Science Atlas | ${docTitle} | Atlas Pro working document`, PDF_MARGIN, fy, { width: PDF_CONTENT_W - 70, lineBreak: false });
+      doc.text(`${i + 1} / ${range.count}`, PDF_PAGE_W - PDF_MARGIN - 46, fy, { width: 46, align: "right", lineBreak: false });
+      doc.page.margins.bottom = bottom;
     }
     doc.end();
   });
