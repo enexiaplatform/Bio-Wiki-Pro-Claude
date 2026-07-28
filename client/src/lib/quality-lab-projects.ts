@@ -1,5 +1,6 @@
 import type { QualityLabInput, QualityLabProject, QualityLabProjectAction } from "@shared/quality-lab";
-import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema, reconcileQualityLabActionPlan, reconcileQualityLabDecisionRegister, type QualityLabDecisionRecord } from "@shared/quality-lab";
+import { compileQualityLabBlueprint, createQualityLabProject, createEmptyQualityLabEvidenceRegister, qualityLabActionPlanSchema, qualityLabBlueprintSchema, qualityLabDecisionRegisterSchema, qualityLabInputSchema, reconcileQualityLabActionPlan, reconcileQualityLabDecisionRegister, validateQualityLabDecisionRecord, QualityLabDecisionValidationError, type QualityLabDecisionRecord, type QualityLabEvidenceRecord } from "@shared/quality-lab";
+import { ensureQualityLabProjectHistory, freezeQualityLabProjectRevision, recompileQualityLabProject } from "@shared/quality-lab-revisions";
 import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 import {
   createQualityLabAccountSnapshot,
@@ -18,16 +19,21 @@ function safeParse(values: unknown[]): QualityLabProject[] {
       const project = value as QualityLabProject;
       const parsed = qualityLabInputSchema.safeParse(project?.input);
       if (!project?.id || !parsed.success) return [];
-      const blueprint = compileQualityLabBlueprint(parsed.data);
-      const actionPlan = reconcileQualityLabActionPlan(blueprint, project.actionPlan, project.updatedAt);
-      return [{
+      const storedBlueprint = qualityLabBlueprintSchema.safeParse(project.blueprint);
+      const blueprint = storedBlueprint.success ? storedBlueprint.data : compileQualityLabBlueprint(parsed.data);
+      const storedActionPlan = qualityLabActionPlanSchema.safeParse(project.actionPlan);
+      const actionPlan = storedActionPlan.success ? storedActionPlan.data : reconcileQualityLabActionPlan(blueprint, undefined, blueprint.generatedAt);
+      const storedDecisionRegister = qualityLabDecisionRegisterSchema.safeParse(project.decisionRegister);
+      const decisionRegister = storedDecisionRegister.success ? storedDecisionRegister.data : reconcileQualityLabDecisionRegister(blueprint, actionPlan, undefined, blueprint.generatedAt);
+      return [ensureQualityLabProjectHistory({
         ...project,
         name: parsed.data.projectName,
         input: parsed.data,
         blueprint,
         actionPlan,
-        decisionRegister: reconcileQualityLabDecisionRegister(blueprint, actionPlan, project.decisionRegister, project.updatedAt),
-      }];
+        decisionRegister,
+        evidenceRegister: project.evidenceRegister ?? createEmptyQualityLabEvidenceRegister(project.updatedAt ?? blueprint.generatedAt),
+      })];
     });
 }
 
@@ -57,22 +63,12 @@ export function saveQualityLabProject(input: QualityLabInput, id?: string): Qual
   const projects = listQualityLabProjects();
   const existing = id ? projects.find((project) => project.id === id) : undefined;
   const project = existing
-    ? (() => {
-        const parsedInput = qualityLabInputSchema.parse(input);
-        const blueprint = compileQualityLabBlueprint(parsedInput);
-        const updatedAt = new Date().toISOString();
-        const actionPlan = reconcileQualityLabActionPlan(blueprint, existing.actionPlan, updatedAt);
-        return {
-          ...existing,
-          name: parsedInput.projectName,
-          input: parsedInput,
-          blueprint,
-          actionPlan,
-          decisionRegister: reconcileQualityLabDecisionRegister(blueprint, actionPlan, existing.decisionRegister, updatedAt),
-          updatedAt,
-        };
-      })()
-    : createQualityLabProject(input);
+    ? recompileQualityLabProject(existing, input)
+    : (() => {
+        const created = { ...createQualityLabProject(input), evidenceRegister: createEmptyQualityLabEvidenceRegister() };
+        const revision = freezeQualityLabProjectRevision(created, 1, created.updatedAt);
+        return { ...created, revisions: [revision], activeRevisionId: revision.revisionId };
+      })();
   write([project, ...projects.filter((item) => item.id !== project.id)]);
   return project;
 }
@@ -146,10 +142,12 @@ export function updateQualityLabProjectDecision(projectId: string, decisionId: s
   const updatedDecision: QualityLabDecisionRecord = {
     ...decision,
     ...patch,
-    decidedAt: ["decided", "closed"].includes(patch.status ?? decision.status) ? (patch.decidedAt || decision.decidedAt || now.slice(0, 10)) : (patch.decidedAt ?? decision.decidedAt),
+    decidedAt: patch.decidedAt ?? decision.decidedAt,
     updatedAt: now,
     activity: [...decision.activity, { id: `${decision.id}:${type}:${now}`, recordedAt: now, type, summary }],
   };
+  const validationErrors = validateQualityLabDecisionRecord(updatedDecision);
+  if (validationErrors.length > 0) throw new QualityLabDecisionValidationError(validationErrors);
   const updated: QualityLabProject = {
     ...project,
     updatedAt: now,
@@ -157,6 +155,49 @@ export function updateQualityLabProjectDecision(projectId: string, decisionId: s
       ...project.decisionRegister,
       updatedAt: now,
       decisions: project.decisionRegister.decisions.map((item) => item.id === decisionId ? updatedDecision : item),
+    },
+  };
+  write([updated, ...projects.filter((item) => item.id !== projectId)]);
+  return updated;
+}
+
+export type QualityLabEvidenceRecordInput = Omit<QualityLabEvidenceRecord, "contractVersion" | "id" | "projectId" | "createdAt" | "updatedAt" | "confirmedByUser" | "confirmedAt">;
+
+export function addQualityLabProjectEvidence(projectId: string, input: QualityLabEvidenceRecordInput): QualityLabProject | undefined {
+  const projects = listQualityLabProjects();
+  const project = projects.find((item) => item.id === projectId);
+  if (!project) return undefined;
+  const now = new Date().toISOString();
+  const record: QualityLabEvidenceRecord = {
+    ...input,
+    contractVersion: "quality-lab-evidence-record/v1",
+    id: `qle_${Date.now().toString(36)}`,
+    projectId,
+    status: input.status === "confirmed" ? "candidate" : input.status,
+    confirmedByUser: false,
+    confirmedAt: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+  const register = project.evidenceRegister ?? createEmptyQualityLabEvidenceRegister(now);
+  const updated = { ...project, updatedAt: now, evidenceRegister: { ...register, updatedAt: now, records: [...register.records, record] } };
+  write([updated, ...projects.filter((item) => item.id !== projectId)]);
+  return updated;
+}
+
+export function confirmQualityLabProjectEvidence(projectId: string, evidenceId: string): QualityLabProject | undefined {
+  const projects = listQualityLabProjects();
+  const project = projects.find((item) => item.id === projectId);
+  const register = project?.evidenceRegister;
+  if (!project || !register?.records.some((record) => record.id === evidenceId)) return undefined;
+  const now = new Date().toISOString();
+  const updated = {
+    ...project,
+    updatedAt: now,
+    evidenceRegister: {
+      ...register,
+      updatedAt: now,
+      records: register.records.map((record) => record.id === evidenceId ? { ...record, status: "confirmed" as const, confirmedByUser: true, confirmedAt: now, updatedAt: now } : record),
     },
   };
   write([updated, ...projects.filter((item) => item.id !== projectId)]);

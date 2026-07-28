@@ -37,12 +37,15 @@ import {
 } from "./quality-lab-method-graph.js";
 import { reconcileQualityLabActionPlan, type QualityLabActionPlan } from "./quality-lab-actions.js";
 import { reconcileQualityLabDecisionRegister, type QualityLabDecisionRegister } from "./quality-lab-decisions.js";
+import type { QualityLabEvidenceRegister } from "./quality-lab-evidence.js";
+import type { QualityLabFrozenRevision } from "./quality-lab-revisions.js";
 
 export * from "./quality-lab-contract.js";
 export * from "./quality-lab-microbiology-pack.js";
 export * from "./quality-lab-method-graph.js";
 export * from "./quality-lab-actions.js";
 export * from "./quality-lab-decisions.js";
+export * from "./quality-lab-evidence.js";
 
 export const QUALITY_LAB_ENGINE_VERSION = `${QUALITY_LAB_COMPILER_CORE_VERSION}+${MICROBIOLOGY_DOMAIN_PACK.version}`;
 
@@ -361,6 +364,9 @@ export interface QualityLabProject {
   blueprint: QualityLabBlueprint;
   actionPlan: QualityLabActionPlan;
   decisionRegister: QualityLabDecisionRegister;
+  evidenceRegister?: QualityLabEvidenceRegister;
+  revisions?: QualityLabFrozenRevision[];
+  activeRevisionId?: string;
   reviewRequestedAt?: string;
 }
 
@@ -929,16 +935,17 @@ function buildAssumptions(input: QualityLabInput, multiplier: number): Blueprint
   ];
 }
 
-function buildRecommendations(input: QualityLabInput, equipment: EquipmentRecommendation[], future: BlueprintScenario): BlueprintRecommendation[] {
+function buildRecommendations(input: QualityLabInput, equipment: EquipmentRecommendation[], future: BlueprintScenario, workflows: WorkflowDemand[]): BlueprintRecommendation[] {
+  const activeWorkflowRuleIds = workflows.map((workflow) => workflow.ruleId);
   const recommendations: BlueprintRecommendation[] = [
-    { id: "turnaround-feasibility", priority: "before-design-freeze", recommendation: "Build a method-level turnaround calendar that separates touch, wait, incubation, queue, handoff and review time.", rationale: "Aggregate workload and nominal method duration cannot prove that release-critical work meets its deadline under real arrivals, shifts, weekends, peaks and resource conflicts.", relatedRuleIds: ["core.turnaround.feasibility", ...Object.values(MICROBIOLOGY_WORKFLOW_RULES).map((rule) => rule.ruleId)] },
+    { id: "turnaround-feasibility", priority: "before-design-freeze", recommendation: "Build a method-level turnaround calendar that separates touch, wait, incubation, queue, handoff and review time.", rationale: "Aggregate workload and nominal method duration cannot prove that release-critical work meets its deadline under real arrivals, shifts, weekends, peaks and resource conflicts.", relatedRuleIds: ["core.turnaround.feasibility", ...activeWorkflowRuleIds] },
     { id: "product-test-matrix", priority: "before-design-freeze", recommendation: "Create and approve a product × market × test matrix before fixing the equipment list.", rationale: "The concept compiler models aggregate demand, not registered specifications or product-specific methods.", relatedRuleIds: ["micro.workflow.finished-products", "micro.workflow.raw-materials"] },
-    { id: "workflow-time-study", priority: "before-design-freeze", recommendation: "Validate workflow standard times with a site time study covering preparation, execution, incubation handling, reading, review and investigations.", rationale: "Hands-on benchmarks are the main driver of staffing and several equipment allowances.", relatedRuleIds: ["core.capacity.people", ...Object.values(MICROBIOLOGY_WORKFLOW_RULES).map((rule) => rule.ruleId)] },
+    { id: "workflow-time-study", priority: "before-design-freeze", recommendation: "Validate workflow standard times with a site time study covering preparation, execution, incubation handling, reading, review and investigations.", rationale: "Hands-on benchmarks are the main driver of staffing and several equipment allowances.", relatedRuleIds: ["core.capacity.people", ...activeWorkflowRuleIds] },
     { id: "vendor-neutral-budget", priority: "before-budget-approval", recommendation: "Treat every cost as a planning range and issue reviewed vendor-neutral requirements before requesting quotations.", rationale: "Concept bands exclude site, vendor, installation, validation, tax, freight, service and commercial-term effects.", relatedRuleIds: ["core.cost.concept", "core.capacity.equipment"] },
     { id: "qualified-engineering", priority: "before-design-freeze", recommendation: "Approve zoning, HVAC, utilities and personnel/material flows through qualified laboratory engineering review.", rationale: "Atlas provides a capability and space basis, not architectural or engineering design.", relatedRuleIds: ["core.space.concept", "core.capacity.equipment"] },
     { id: "consumable-supply-basis", priority: "before-budget-approval", recommendation: "Convert class-level consumable allowances into an approved item × supplier × pack-size × shelf-life supply plan.", rationale: "Average demand and generic lead-time assumptions cannot establish purchase quantities, storage capacity or continuity for critical media and reagents.", relatedRuleIds: ["core.supply.consumables"] },
   ];
-  if (input.outsourcePercent > 0) recommendations.push({ id: "outsource-strategy", priority: "before-design-freeze", recommendation: "Document the insource/outsource decision per test, including sample stability, transport, queue time, data ownership and backup capacity.", rationale: "A global outsource percentage cannot represent method-specific operational and continuity risk.", relatedRuleIds: ["core.capacity.people", ...Object.values(MICROBIOLOGY_WORKFLOW_RULES).map((rule) => rule.ruleId)] });
+  if (input.outsourcePercent > 0) recommendations.push({ id: "outsource-strategy", priority: "before-design-freeze", recommendation: "Document the insource/outsource decision per test, including sample stability, transport, queue time, data ownership and backup capacity.", rationale: "A global outsource percentage cannot represent method-specific operational and continuity risk.", relatedRuleIds: ["core.capacity.people", ...activeWorkflowRuleIds] });
   if (equipment.some((item) => item.quantityFuture > item.quantityNow)) recommendations.push({ id: "future-capacity-triggers", priority: "before-budget-approval", recommendation: "Reserve utilities and floor space for future equipment now; release purchases against approved demand triggers.", rationale: "The future scenario requires additional equipment classes or quantities, but demand growth may not be linear.", relatedRuleIds: ["core.capacity.equipment", "core.space.concept"] });
   if (future.analystFte >= 6) recommendations.push({ id: "role-separation", priority: "improvement", recommendation: "Separate routine execution, media/EM support and technical review responsibilities.", rationale: "At the modeled team size, reviewer and specialist capacity can become a bottleneck hidden by aggregate FTE.", relatedRuleIds: ["core.capacity.people"] });
   return recommendations;
@@ -963,10 +970,14 @@ function buildUnresolvedInputs(input: QualityLabInput, workflows: WorkflowDemand
   return unresolved;
 }
 
-function buildTraceability(workflows: WorkflowDemand[]): { evidence: EvidenceRecord[]; ruleTrace: RuleTrace[] } {
-  const workflowKeys = Object.entries(MICROBIOLOGY_WORKFLOW_RULES)
-    .filter(([, rule]) => workflows.some((row) => row.ruleId === rule.ruleId))
-    .map(([key]) => key as MicrobiologyWorkflowKey);
+function buildTraceability(workflows: WorkflowDemand[], input: QualityLabInput): { evidence: EvidenceRecord[]; ruleTrace: RuleTrace[] } {
+  const workflowKeys = Array.from(new Set<MicrobiologyWorkflowKey>([
+    "finishedProducts",
+    "rawMaterials",
+    ...Object.entries(MICROBIOLOGY_WORKFLOW_RULES)
+      .filter(([key, rule]) => workflows.some((row) => row.ruleId === rule.ruleId) || input.scope[key as MicrobiologyWorkflowKey])
+      .map(([key]) => key as MicrobiologyWorkflowKey),
+  ]));
   const ruleTrace = [...workflowRuleTrace(workflowKeys), ...MICROBIOLOGY_SHARED_RULE_TRACE];
   const evidenceIds = new Set(ruleTrace.flatMap((rule) => rule.evidenceIds));
   return {
@@ -993,13 +1004,15 @@ function buildDecisionLineage(args: {
 }): DecisionLineage[] {
   const ruleById = new Map(args.ruleTrace.map((rule) => [rule.ruleId, rule]));
   const evidenceById = new Map(args.evidence.map((record) => [record.id, record]));
-  const fallbackRule = ruleById.get("core.capacity.people") ?? args.ruleTrace[0];
   const workflowByRuleId = new Map(args.workflows.map((workflow) => [workflow.ruleId, workflow.id]));
   const methodByRequirementId = new Map(args.methodRequirements.map((requirement) => [requirement.id, requirement.methodId]));
 
   const create = (seed: Omit<DecisionLineage, "contractVersion" | "ruleRefs" | "evidenceRefs" | "unresolvedInputIds"> & { ruleIds: string[] }): DecisionLineage => {
-    const rules = uniqueStrings(seed.ruleIds).map((id) => ruleById.get(id)).filter((rule): rule is RuleTrace => Boolean(rule));
-    if (rules.length === 0 && fallbackRule) rules.push(fallbackRule);
+    const requestedRuleIds = uniqueStrings(seed.ruleIds);
+    const unresolvedRuleIds = requestedRuleIds.filter((id) => !ruleById.has(id));
+    if (unresolvedRuleIds.length > 0) throw new Error(`Unresolved material rule trace for ${seed.id}: ${unresolvedRuleIds.join(", ")}`);
+    const rules = requestedRuleIds.map((id) => ruleById.get(id)).filter((rule): rule is RuleTrace => Boolean(rule));
+    if (rules.length === 0) throw new Error(`Unresolved material rule trace for ${seed.id}: no valid rule reference`);
     const resolvedRuleIds = rules.map((rule) => rule.ruleId);
     const { ruleIds: _ruleIds, ...lineage } = seed;
     return {
@@ -1102,7 +1115,10 @@ function buildDecisionLineage(args: {
     }),
   ];
 
-  const recommendationLineages = args.recommendations.map((recommendation) => create({
+  const recommendationLineages = args.recommendations.map((recommendation) => {
+    const linkedWorkflowIds = uniqueStrings(recommendation.relatedRuleIds.map((id) => workflowByRuleId.get(id)).filter((id): id is string => Boolean(id)));
+    const linkedMethodIds = linkedWorkflowIds.includes("finished-product-mlt") ? allMethodIds : [];
+    return create({
     id: `decision:recommendation:${recommendation.id}`,
     decisionType: "recommendation",
     outputKey: `recommendations.${recommendation.id}`,
@@ -1110,14 +1126,15 @@ function buildDecisionLineage(args: {
     currentOutput: recommendation.priority.replaceAll("-", " "),
     calculation: recommendation.rationale,
     contributingInputPaths: ["facilityType", "markets", "scope", "productProfiles", "primaryDecision"],
-    workflowIds: uniqueStrings(recommendation.relatedRuleIds.map((id) => workflowByRuleId.get(id)).filter((id): id is string => Boolean(id))),
-    methodIds: uniqueStrings(args.methodRequirements.filter((requirement) => recommendation.relatedRuleIds.includes(requirement.methodId)).map((requirement) => requirement.methodId)),
+    workflowIds: linkedWorkflowIds,
+    methodIds: linkedMethodIds,
     ruleIds: recommendation.relatedRuleIds,
     assumptionIds: args.assumptions.filter((assumption) => assumption.confidence !== "high").map((assumption) => assumption.id),
     confidence: "indicative",
     limitations: ["This concept-stage action requires accountable project review before controlled use."],
     materialChangeFactors: ["Approved methods", "Site evidence", "Accountable reviewer decision", "Demand basis", "Applicable standards"],
-  }));
+    });
+  });
 
   const equipmentLineages = args.equipment.filter((item) => item.quantityFuture > 0).map((item) => create({
     id: `decision:equipment:${item.id}:future-quantity`,
@@ -1166,7 +1183,15 @@ export function validateQualityLabLineageIntegrity(blueprint: QualityLabBlueprin
     for (const id of lineage.methodIds) if (!methodIds.has(id)) errors.push(`${lineage.id} references unknown method ${id}`);
   }
   for (const recommendation of blueprint.recommendations) {
-    if (!blueprint.decisionLineage.some((lineage) => lineage.outputKey === `recommendations.${recommendation.id}`)) errors.push(`Recommendation ${recommendation.id} has no lineage`);
+    const lineage = blueprint.decisionLineage.find((item) => item.outputKey === `recommendations.${recommendation.id}`);
+    if (!lineage) {
+      errors.push(`Recommendation ${recommendation.id} has no lineage`);
+      continue;
+    }
+    for (const ruleId of recommendation.relatedRuleIds) {
+      if (!rules.has(ruleId)) errors.push(`Recommendation ${recommendation.id} references unknown material rule ${ruleId}`);
+      else if (!lineage.ruleRefs.some((ref) => ref.id === ruleId && ref.version === rules.get(ruleId))) errors.push(`Recommendation ${recommendation.id} is missing exact lineage for rule ${ruleId}`);
+    }
   }
   for (const equipment of blueprint.equipment.filter((item) => item.quantityFuture > 0)) {
     if (!blueprint.decisionLineage.some((lineage) => lineage.outputKey === `equipment.${equipment.id}.quantityFuture`)) errors.push(`Equipment ${equipment.id} has no lineage`);
@@ -1353,9 +1378,9 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
   const unresolvedMarketAllocation = input.productProfiles.filter((product) => product.markets.length > 1 && product.marketExecutionStrategy === "unknown");
   if (unresolvedMarketAllocation.length > 0) unresolvedInputs.push({ id: "market-execution-allocation", category: "workload", severity: "blocking", question: "Which market requirements share one physical test execution, and which require separate testing?", impact: "Method BOM and in-house capacity are intentionally excluded for multi-market products until the physical testing allocation is known.", resolution: `Set a shared or separate execution strategy for: ${unresolvedMarketAllocation.map((product) => product.name).join(", ")}.`, relatedRuleIds: unresolvedMarketAllocation.flatMap((product) => methodGraph.requirements.filter((item) => item.productId === product.id).map((item) => item.methodId)) });
   if (finishedProductDemand.source === "reconciliation-required") unresolvedInputs.push({ id: "portfolio-demand-reconciliation", category: "workload", severity: "blocking", question: "Can the complete product portfolio be reconciled to the finished-product demand used for sizing?", impact: finishedProductDemand.message, resolution: "Resolve portfolio batch demand and market execution allocation, then recompile using the portfolio-derived basis.", relatedRuleIds: ["micro.workflow.finished-products"] });
-  const { evidence, ruleTrace } = buildTraceability(currentWorkflows);
+  const { evidence, ruleTrace } = buildTraceability(currentWorkflows, input);
   const assumptions = buildAssumptions(input, growthMultiplier);
-  const recommendations = buildRecommendations(input, equipment, future);
+  const recommendations = buildRecommendations(input, equipment, future, currentWorkflows);
   const decisionLineage = buildDecisionLineage({
     workflows: currentWorkflows,
     methodRequirements: methodGraph.requirements,

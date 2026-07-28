@@ -12,18 +12,23 @@ import {
   GitBranch,
   History,
   ListChecks,
+  Plus,
+  RefreshCw,
   Save,
+  ShieldCheck,
   Target,
 } from "lucide-react";
 import {
   getQualityLabReadiness,
   priorityQualityLabActions,
   qualityLabDecisionMetrics,
+  QUALITY_LAB_ENGINE_VERSION,
   type QualityLabDecisionRecord,
   type QualityLabDecisionStatus,
+  type QualityLabEvidenceType,
   type QualityLabProject,
 } from "@shared/quality-lab";
-import { getQualityLabProject, subscribeToQualityLabProjects, updateQualityLabProjectDecision } from "@/lib/quality-lab-projects";
+import { addQualityLabProjectEvidence, confirmQualityLabProjectEvidence, getQualityLabProject, saveQualityLabProject, subscribeToQualityLabProjects, updateQualityLabProjectDecision } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
 
 const statusLabels: Record<QualityLabDecisionStatus, string> = {
@@ -59,8 +64,12 @@ function DecisionEditor({ decision, onSave }: { decision: QualityLabDecisionReco
   useEffect(() => { setDraft(decision); setNotice(""); }, [decision]);
 
   const save = () => {
-    onSave(draft);
-    setNotice("Decision record saved in this project working copy.");
+    try {
+      onSave(draft);
+      setNotice("Decision record saved in this project working copy.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "This decision state is inconsistent and was not saved.");
+    }
   };
 
   return (
@@ -79,10 +88,11 @@ function DecisionEditor({ decision, onSave }: { decision: QualityLabDecisionReco
         <p className="mt-2 text-xs leading-5 text-slate-500">{draft.rationale}</p>
       </div>
 
-      <div className="mt-5 grid gap-4 md:grid-cols-3">
+      <div className="mt-5 grid gap-4 md:grid-cols-4">
         <label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Owner role</span><input value={draft.ownerRole} onChange={(event) => setDraft({ ...draft, ownerRole: event.target.value })} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm outline-none focus:border-teal-300/40" /></label>
         <label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Target date</span><input type="date" value={draft.targetDate} onChange={(event) => setDraft({ ...draft, targetDate: event.target.value })} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm outline-none focus:border-teal-300/40" /></label>
         <label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Status</span><select value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as QualityLabDecisionStatus })} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm outline-none focus:border-teal-300/40">{Object.entries(statusLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label>
+        <label className="block"><span className="mb-2 block text-xs font-semibold text-slate-300">Decision date</span><input type="date" value={draft.decidedAt} onChange={(event) => setDraft({ ...draft, decidedAt: event.target.value })} className="h-11 w-full rounded-xl border border-white/10 bg-slate-950/60 px-3 text-sm outline-none focus:border-teal-300/40" /></label>
       </div>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -116,6 +126,36 @@ function DecisionEditor({ decision, onSave }: { decision: QualityLabDecisionReco
   );
 }
 
+const evidenceTypeLabels: Record<QualityLabEvidenceType, string> = {
+  "product-portfolio": "Product portfolio", "approved-method": "Approved method", sop: "SOP", "production-forecast": "Production forecast", "equipment-master": "Equipment master", "vendor-quotation": "Vendor quotation", "facility-constraint": "Facility constraint", "cost-basis": "Cost basis", "supplier-record": "Supplier record", "qualification-record": "Qualification record", "governance-record": "Governance record", "outcome-evidence": "Outcome evidence", other: "Other",
+};
+
+function EvidenceRegister({ project, onUpdated }: { project: QualityLabProject; onUpdated: (project: QualityLabProject) => void }) {
+  const [title, setTitle] = useState("");
+  const [sourceReference, setSourceReference] = useState("");
+  const [evidenceType, setEvidenceType] = useState<QualityLabEvidenceType>("other");
+  const [decisionId, setDecisionId] = useState("");
+  const [actionId, setActionId] = useState("");
+  const records = project.evidenceRegister?.records ?? [];
+
+  const add = () => {
+    if (!title.trim()) return;
+    const updated = addQualityLabProjectEvidence(project.id, {
+      title: title.trim(), evidenceType, sourceType: "client-record", sourceReference: sourceReference.trim(), documentDate: "", versionOrRevision: "", status: "candidate",
+      relatedDecisionIds: decisionId ? [decisionId] : [], relatedActionIds: actionId ? [actionId] : [], relatedRuleIds: [], relatedMethodIds: [], notes: "",
+    });
+    if (updated) onUpdated(updated);
+    setTitle(""); setSourceReference(""); setDecisionId(""); setActionId("");
+  };
+
+  return <div className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.035] p-4">
+    <div className="flex flex-wrap items-start justify-between gap-3"><div><h3 className="text-sm font-bold text-sky-100">Evidence Register</h3><p className="mt-1 text-[11px] leading-5 text-slate-500">Available project evidence. Candidate records remain unconfirmed until a user explicitly confirms them.</p></div><span className="rounded-full border border-sky-300/20 px-2.5 py-1 text-[9px] font-bold text-sky-200">{records.filter((record) => record.status === "confirmed" && record.confirmedByUser).length} confirmed</span></div>
+    <div className="mt-4 grid gap-2 md:grid-cols-2">{records.map((record) => <article key={record.id} className="rounded-lg border border-white/8 bg-slate-950/35 p-3"><div className="flex items-start justify-between gap-2"><div><p className="text-xs font-bold text-slate-200">{record.title}</p><p className="mt-1 text-[10px] text-slate-500">{evidenceTypeLabels[record.evidenceType]} · {record.sourceReference || "Source reference not recorded"}</p></div><span className={`shrink-0 text-[9px] font-bold uppercase ${record.status === "confirmed" ? "text-teal-200" : record.status === "superseded" || record.status === "expired" ? "text-amber-200" : "text-sky-200"}`}>{record.status.replaceAll("-", " ")}</span></div><p className="mt-2 text-[9px] text-slate-600">{record.relatedDecisionIds.length} decisions · {record.relatedActionIds.length} actions · {record.versionOrRevision || "revision not recorded"}</p>{record.status === "candidate" && <button type="button" onClick={() => { const updated = confirmQualityLabProjectEvidence(project.id, record.id); if (updated) onUpdated(updated); }} className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-teal-300/25 px-2.5 py-1.5 text-[10px] font-bold text-teal-200"><ShieldCheck className="h-3.5 w-3.5" /> Confirm as project evidence</button>}</article>)}</div>
+    {records.length === 0 && <p className="mt-4 rounded-lg border border-dashed border-white/10 p-4 text-center text-xs text-slate-500">No project evidence records have been added. Atlas does not infer them from unresolved requests.</p>}
+    <details className="mt-4 rounded-lg border border-white/8 bg-slate-950/25 p-3"><summary className="cursor-pointer text-xs font-bold text-sky-100">Add candidate evidence</summary><div className="mt-3 grid gap-2 md:grid-cols-2"><input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Evidence title" className="h-10 rounded-lg border border-white/10 bg-slate-950/60 px-3 text-xs outline-none focus:border-sky-300/40" /><input value={sourceReference} onChange={(event) => setSourceReference(event.target.value)} placeholder="Controlled record ID or source locator" className="h-10 rounded-lg border border-white/10 bg-slate-950/60 px-3 text-xs outline-none focus:border-sky-300/40" /><select value={evidenceType} onChange={(event) => setEvidenceType(event.target.value as QualityLabEvidenceType)} className="h-10 rounded-lg border border-white/10 bg-slate-950/60 px-2 text-xs">{Object.entries(evidenceTypeLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select><div className="grid grid-cols-2 gap-2"><select value={decisionId} onChange={(event) => setDecisionId(event.target.value)} className="h-10 min-w-0 rounded-lg border border-white/10 bg-slate-950/60 px-2 text-[10px]"><option value="">No decision link</option>{project.decisionRegister.decisions.map((decision) => <option key={decision.id} value={decision.id}>{decision.question}</option>)}</select><select value={actionId} onChange={(event) => setActionId(event.target.value)} className="h-10 min-w-0 rounded-lg border border-white/10 bg-slate-950/60 px-2 text-[10px]"><option value="">No action link</option>{project.actionPlan.actions.map((action) => <option key={action.id} value={action.id}>{action.question}</option>)}</select></div></div><button type="button" onClick={add} className="mt-3 inline-flex items-center gap-2 rounded-lg bg-sky-300 px-3 py-2 text-[10px] font-bold text-slate-950"><Plus className="h-3.5 w-3.5" /> Add as candidate</button></details>
+  </div>;
+}
+
 export default function QualityLabDecisionWorkspacePage() {
   const [, params] = useRoute("/quality-lab/projects/:id/workspace");
   const projectId = params?.id ?? "";
@@ -135,6 +175,8 @@ export default function QualityLabDecisionWorkspacePage() {
       ...project.actionPlan.actions.flatMap((action) => action.activity.map((event) => ({ ...event, subject: action.question, source: "Action" }))),
     ].sort((a, b) => b.recordedAt.localeCompare(a.recordedAt));
   }, [project]);
+  const activeRevision = project?.revisions?.find((revision) => revision.revisionId === project.activeRevisionId) ?? project?.revisions?.at(-1);
+  const newerEngineAvailable = Boolean(activeRevision && activeRevision.engineVersion !== QUALITY_LAB_ENGINE_VERSION);
 
   if (!project || !readiness || !metrics) return <div className="mx-auto max-w-4xl px-4 py-16"><Link href="/quality-lab/projects" className="inline-flex items-center gap-2 text-sm font-bold text-teal-200"><ArrowLeft className="h-4 w-4" /> Back to projects</Link><div className="mt-8 rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] p-6"><h1 className="text-xl font-bold">Project not found in this browser</h1><p className="mt-2 text-sm text-slate-400">Recover the account copy from the projects page, then open its decision workspace.</p></div></div>;
 
@@ -143,13 +185,14 @@ export default function QualityLabDecisionWorkspacePage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab/projects" className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white"><ArrowLeft className="h-4 w-4" /> All Quality Lab projects</Link>
-          <Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Edit model inputs <ArrowRight className="h-3.5 w-3.5" /></Link>
+          <div className="flex flex-wrap gap-2"><Link href={`/quality-lab/projects/${project.id}`} className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/5">Edit model inputs <ArrowRight className="h-3.5 w-3.5" /></Link><button type="button" onClick={() => { const updated = saveQualityLabProject(project.input, project.id); setProject(updated); }} className="inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/[0.06] px-3 py-2 text-xs font-bold text-teal-100"><RefreshCw className="h-3.5 w-3.5" /> Recompile with current Atlas engine</button></div>
         </div>
 
         <header className="mt-6 rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/[0.08] via-white/[0.035] to-transparent p-6 md:p-8">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-200">Quality Lab Decision Workspace</p>
           <h1 className="mt-2 text-3xl font-bold md:text-4xl">{project.name}</h1>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{project.input.primaryDecision}</p>
+          {activeRevision && <div className="mt-4 flex flex-wrap items-center gap-2 text-[10px]"><span className="rounded-full border border-white/10 bg-slate-950/35 px-3 py-1.5 font-bold text-slate-300">Revision {activeRevision.revisionNumber} · frozen model</span><span className="text-slate-500">{activeRevision.compilerVersion} · {activeRevision.domainPack.version} · generated {prettyDate(activeRevision.generatedAt)}</span>{activeRevision.provenanceStatus === "legacy-incomplete" && <span className="text-amber-200">Legacy provenance incomplete</span>}{newerEngineAvailable && <span className="text-sky-200">Newer engine available</span>}</div>}
           <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-5">
             {[[`${readiness.evidenceReadiness.score}%`, "evidence ready"], [String(metrics.openCount), "open decisions"], [String(metrics.evidenceRequiredCount), "need evidence"], [String(project.actionPlan.actions.filter((action) => action.status !== "resolved").length), "active actions"], [String(metrics.outcomeCount), "outcomes recorded"]].map(([value, label]) => <div key={label} className="rounded-xl border border-white/10 bg-slate-950/30 p-3"><strong className="text-xl text-teal-200">{value}</strong><p className="mt-1 text-[10px] text-slate-500">{label}</p></div>)}
           </div>
@@ -163,7 +206,7 @@ export default function QualityLabDecisionWorkspacePage() {
           <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.045] p-5 md:p-6"><div className="flex items-center gap-2 text-sky-200"><ListChecks className="h-5 w-5" /><h2 className="font-bold">Next best thing to resolve</h2></div>{nextAction ? <><p className="mt-4 text-sm font-bold leading-6">{nextAction.question}</p><p className="mt-2 text-xs leading-5 text-slate-400">{nextAction.requiredEvidence}</p><p className="mt-3 text-[10px] text-slate-500">Owner: {nextAction.ownerRole || "Unassigned"} · {nextAction.dueDate ? `due ${prettyDate(nextAction.dueDate)}` : "due date not set"}</p><Link href={`/quality-lab/projects/${project.id}#project-action-center`} className="mt-4 inline-flex items-center gap-2 text-xs font-bold text-sky-200">Open action center <ArrowRight className="h-3.5 w-3.5" /></Link></> : <div className="mt-4 flex gap-3"><CheckCircle2 className="h-5 w-5 text-teal-300" /><p className="text-sm text-slate-300">No compiled-input action remains open. Qualified review is still required.</p></div>}</div>
         </section>
 
-        <section id="evidence" className="scroll-mt-32 mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 md:p-6"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="flex gap-3"><FileSearch className="mt-0.5 h-5 w-5 text-amber-300" /><div><h2 className="font-bold">Evidence readiness</h2><p className="mt-1 text-xs text-slate-500">What Atlas has, what remains unresolved, and the action that will close each gap.</p></div></div><span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-bold text-amber-100">{project.blueprint.unresolvedInputs.length} requests</span></div><div className="mt-5 grid gap-3 md:grid-cols-2">{project.blueprint.unresolvedInputs.slice(0, 6).map((input) => { const action = project.actionPlan.actions.find((item) => item.sourceInputId === input.id); return <article key={input.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><div className="flex items-center justify-between gap-2"><span className={`text-[9px] font-bold uppercase ${input.severity === "blocking" ? "text-red-200" : input.severity === "important" ? "text-amber-200" : "text-slate-400"}`}>{input.severity}</span><span className="text-[9px] text-slate-600">{input.category}</span></div><p className="mt-2 text-sm font-bold leading-5">{input.question}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">Needed: {input.resolution}</p><p className="mt-2 text-[10px] text-sky-200">Action: {action?.status.replaceAll("-", " ") ?? "not linked"}</p></article>; })}</div>{project.blueprint.unresolvedInputs.length > 6 && <p className="mt-3 text-[11px] text-slate-500">Showing 6 highest-level requests. The action center retains all {project.blueprint.unresolvedInputs.length} items.</p>}</section>
+        <section id="evidence" className="scroll-mt-32 mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 md:p-6"><div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"><div className="flex gap-3"><FileSearch className="mt-0.5 h-5 w-5 text-amber-300" /><div><h2 className="font-bold">Evidence</h2><p className="mt-1 text-xs text-slate-500">Available records and unresolved requests remain separate. Atlas never turns a missing-evidence request into a document record.</p></div></div><span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-bold text-amber-100">{project.blueprint.unresolvedInputs.length} unresolved requests</span></div><EvidenceRegister project={project} onUpdated={setProject} /><div className="mt-5"><h3 className="text-sm font-bold text-amber-100">Unresolved evidence requests</h3><div className="mt-3 grid gap-3 md:grid-cols-2">{project.blueprint.unresolvedInputs.slice(0, 6).map((input) => { const action = project.actionPlan.actions.find((item) => item.sourceInputId === input.id); return <article key={input.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><div className="flex items-center justify-between gap-2"><span className={`text-[9px] font-bold uppercase ${input.severity === "blocking" ? "text-red-200" : input.severity === "important" ? "text-amber-200" : "text-slate-400"}`}>{input.severity}</span><span className="text-[9px] text-slate-600">{input.category}</span></div><p className="mt-2 text-sm font-bold leading-5">{input.question}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">Needed: {input.resolution}</p><p className="mt-2 text-[10px] text-sky-200">Action: {action?.status.replaceAll("-", " ") ?? "not linked"}</p></article>; })}</div>{project.blueprint.unresolvedInputs.length > 6 && <p className="mt-3 text-[11px] text-slate-500">Showing 6 highest-level requests. The action center retains all {project.blueprint.unresolvedInputs.length} items.</p>}</div></section>
 
         <section id="decisions" className="scroll-mt-32 mt-6"><div className="mb-4 flex items-center gap-3"><ClipboardCheck className="h-6 w-6 text-teal-300" /><div><h2 className="text-xl font-bold">Decision register</h2><p className="text-xs text-slate-500">Recommendations become reviewable records with evidence, ownership, disposition and outcomes.</p></div></div><div className="grid gap-5 lg:grid-cols-[0.38fr_0.62fr]"><div className="space-y-2">{project.decisionRegister.decisions.map((decision) => <button key={decision.id} type="button" onClick={() => setSelectedDecisionId(decision.id)} className={`w-full rounded-xl border p-4 text-left transition ${selectedDecision?.id === decision.id ? "border-teal-300/35 bg-teal-300/[0.07]" : "border-white/10 bg-white/[0.025] hover:border-white/20"}`}><div className="flex items-center justify-between gap-2"><span className={`rounded-full border px-2 py-1 text-[8px] font-bold uppercase ${statusStyles[decision.status]}`}>{statusLabels[decision.status]}</span><span className="text-[9px] text-slate-600">{decision.blockerActionIds.length} blockers</span></div><p className="mt-2 text-xs font-bold leading-5">{decision.question}</p><p className="mt-2 text-[10px] text-slate-500">Owner: {decision.ownerRole || "Unassigned"}</p></button>)}</div>{selectedDecision && <DecisionEditor decision={selectedDecision} onSave={(draft) => { const updated = updateQualityLabProjectDecision(project.id, selectedDecision.id, { ownerRole: draft.ownerRole, targetDate: draft.targetDate, status: draft.status, alternative: draft.alternative, finalDisposition: draft.finalDisposition, decidedAt: draft.decidedAt, outcome: draft.outcome }); if (updated) setProject(updated); }} />}</div></section>
 

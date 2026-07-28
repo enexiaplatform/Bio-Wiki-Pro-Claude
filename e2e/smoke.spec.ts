@@ -369,6 +369,32 @@ test.describe("public smoke", () => {
     await expect(card.getByRole("button", { name: /Save latest revision/i })).toBeVisible();
   });
 
+  test("Decision Workspace preserves revision provenance and confirms project evidence explicitly", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Decision memory proof" }, "qlp_decision_memory");
+    await page.addInitScript((savedProject) => {
+      window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject]));
+    }, project);
+
+    await page.goto(`/quality-lab/projects/${project.id}/workspace`);
+    await expect(page.getByRole("heading", { name: "Decision memory proof" })).toBeVisible();
+    await expect(page.getByText(/Revision 1 · frozen model/i)).toBeVisible();
+    await expect(page.getByText(/Legacy provenance incomplete/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Evidence Register" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Unresolved evidence requests" })).toBeVisible();
+
+    await page.getByText("Add candidate evidence", { exact: true }).click();
+    await page.getByPlaceholder("Evidence title").fill("Production Forecast FY27");
+    await page.getByPlaceholder("Controlled record ID or source locator").first().fill("FORECAST-FY27-R2");
+    await page.getByRole("button", { name: "Add as candidate" }).click();
+    const evidence = page.getByRole("article").filter({ hasText: "Production Forecast FY27" });
+    await expect(evidence.getByText("candidate", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Confirm as project evidence" }).click();
+    await expect(page.getByText("1 confirmed", { exact: true })).toBeVisible();
+
+    await page.getByRole("button", { name: "Recompile with current Atlas engine" }).click();
+    await expect(page.getByText(/Revision 2 · frozen model/i)).toBeVisible();
+  });
+
   test("sensitivity thresholds connect the decision back to the exact planner input", async ({ page }) => {
     const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Threshold navigation proof" }, "qlp_threshold_navigation");
     await page.setViewportSize({ width: 390, height: 844 });

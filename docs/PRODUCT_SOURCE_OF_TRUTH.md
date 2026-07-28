@@ -251,6 +251,7 @@ The current Compiler has a first executable non-sterile microbiology vertical sl
 - a consolidated Gate 2 release control that evaluates source closure, qualified ownership, accepted validation cases and paid qualified demand against the same Domain Pack version, exports the evidence dossier, and treats a complete result only as eligibility for qualified release review.
 - an account-connected governance revision trail plus a controlled rule-change candidate register that requires trigger projects, evidence, validation cases, impact assessment and external approval references while never editing executable rules directly.
 - a private, email-allowlisted Admin Control Center for user access, paid-document release QA, content publish/tier controls and visibility across leads, purchases, commercial requests and account-held reviewed Blueprint projects.
+- a hardened Quality Lab Decision Workspace with immutable application-level model revisions, explicit-only recompilation, deterministic decision lifecycle validation, a separately confirmed project Evidence Register and fail-closed recommendation-to-rule-to-workflow/method lineage integrity.
 
 This is still not the authoritative production Compiler. Material limitations remain:
 

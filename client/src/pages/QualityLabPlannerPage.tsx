@@ -646,7 +646,7 @@ export default function QualityLabPlannerPage() {
               {step < steps.length - 1 ? (
                 <button onClick={next} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200">Continue <ArrowRight className="h-4 w-4" /></button>
               ) : (
-                <button onClick={generate} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-teal-500/20 transition hover:bg-teal-200"><Sparkles className="h-4 w-4" /> Compile blueprint</button>
+                <button onClick={generate} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-teal-500/20 transition hover:bg-teal-200"><Sparkles className="h-4 w-4" /> {project ? "Recompile as new revision" : "Compile blueprint"}</button>
               )}
             </div>
           </section>
@@ -699,7 +699,7 @@ export default function QualityLabPlannerPage() {
           <button onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(null); }} disabled={step === 0} className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-slate-400 disabled:invisible"><ArrowLeft className="h-4 w-4" /> Back</button>
           <div className="text-right">
             <p className="text-[9px] font-bold uppercase tracking-wider text-slate-500">Step {step + 1} of {steps.length}</p>
-            {step < steps.length - 1 ? <button onClick={next} className="mt-1 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950">Continue <ArrowRight className="h-4 w-4" /></button> : <button onClick={generate} className="mt-1 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950"><Sparkles className="h-4 w-4" /> Compile blueprint</button>}
+            {step < steps.length - 1 ? <button onClick={next} className="mt-1 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950">Continue <ArrowRight className="h-4 w-4" /></button> : <button onClick={generate} className="mt-1 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-2.5 text-sm font-bold text-slate-950"><Sparkles className="h-4 w-4" /> {project ? "Recompile as new revision" : "Compile blueprint"}</button>}
           </div>
         </div>
       </div>

@@ -1,7 +1,9 @@
 # Decision Intelligence Architecture Alignment
 
-Last audited: 2026-07-26  
-Repository baseline: `main` at `c23b583` before this change set  
+Last audited: 2026-07-28
+
+Repository baseline: `main` before the Quality Lab Decision Workspace hardening sprint
+
 Production surface audited: current public Vercel alias supplied for this repository
 
 This document records the architecture lock and phased implementation path for Life Science Atlas. `PRODUCT_SOURCE_OF_TRUTH.md` remains canonical for product direction.
@@ -33,7 +35,7 @@ Career contracts remain separate from Quality Lab method and resource contracts.
 | --- | --- | --- |
 | Accounts, sessions, purchases, leads, commercial requests | PostgreSQL through Drizzle schemas in `shared/models/auth.ts` and `shared/schema.ts` | Server-authoritative when configured |
 | Account-saved Quality Lab projects and revisions | PostgreSQL `quality_lab_reviewed_projects` and `quality_lab_reviewed_project_revisions` | Phase 1 deliberately reuses these legacy physical tables for explicit concept saves and review-stage snapshots; the validated JSON contract distinguishes state |
-| Anonymous and resilient Quality Lab working projects | `localStorage` envelope `lsa:quality-lab-projects:v2` | Migrates from v1 without deleting the legacy key; invalid records are skipped, not rewritten over the source |
+| Anonymous and resilient Quality Lab working projects | `localStorage` envelope `lsa:quality-lab-projects:v2` | Migrates from v1 without deleting the legacy key; stored Blueprints are preserved and never recompiled during reads |
 | Compiler rules, Domain Pack, Method Graph and evidence catalog | Typed TypeScript registries under `shared/quality-lab*.ts` | Executable source; exact compiler, pack, rule and evidence versions are carried into outputs |
 | Academy, blog and toolkit long-form content | MDX under `content/` | MDX remains the authoring source |
 | Searchable/gating metadata | Generated `client/src/data/content-manifest.json` | Derived artifact; not an authoring source |
@@ -62,7 +64,7 @@ The service-assisted review bridge adds `quality-lab-operating-model-review-draf
 
 Phase 1 keeps browser storage as the working copy and makes account persistence an explicit user action. Account writes carry an expected server timestamp. A stale timestamp returns `409` with the current account record; the browser project is not silently overwritten. Every changed accepted account snapshot uses the existing append-only revision path. Cross-device recovery recreates a local working copy.
 
-The snapshot contract `quality-lab-account-project/v1` includes project timestamps plus an extensible workspace foundation: project status, decision owner, review state, evidence requests, unresolved assumptions, action-owner roles and revision history. Old review snapshots remain readable because all additions have compatibility defaults or are optional.
+The snapshot contract is now `quality-lab-account-project/v2`. It adds embedded frozen model revisions, the active revision ID and the project Evidence Register while continuing to accept `quality-lab-account-project/v1`. `quality-lab-frozen-revision/v1` freezes the exact inputs, Blueprint, Decision Register, Action Plan, Decision Lineage, readiness, compiler/engine/Domain Pack versions, rule and evidence versions, timestamps and review state. Legacy projects with a stored Blueprint receive a compatibility revision marked `legacy-incomplete`; their stored output is not regenerated. Explicit recompilation is the only path that compiles working inputs and appends revision N+1.
 
 ### Migration risk
 
@@ -88,9 +90,15 @@ The production homepage already presents Quality Lab as flagship while retaining
 
 ## Atlas layer vertical slice
 
-The project working copy now carries `quality-lab-decision-register/v1`. It is a Quality Lab-specific decision contract, not a universal cross-product schema. The register reconciles the project mandate and compiler recommendations into stable decision IDs, then links each decision to the existing unresolved-input actions, evidence references and Decision Lineage records. Recompilation refreshes the Atlas recommendation while preserving human owner, target date, review status, alternatives, final disposition and observed outcome.
+The project working copy now carries `quality-lab-decision-register/v1`. It is a Quality Lab-specific decision contract, not a universal cross-product schema. The register reconciles the project mandate and compiler recommendations into stable decision IDs, then links each decision to the existing unresolved-input actions, evidence references and Decision Lineage records. Explicit recompilation refreshes the Atlas recommendation in a new frozen revision while preserving the previous revision unchanged and carrying forward human owner, target date, review status, alternatives, final disposition and observed outcome.
 
-The project Decision Workspace presents the existing model as one continuous loop: Evidence → Decisions → Actions → Review → Outcomes → governed Learning. It deliberately reuses the existing action plan and account snapshot/revision path. No generic task system, document store, approval workflow or new physical database table was introduced. Old browser projects and account snapshots are upgraded in memory through reconciliation; Career and Atlas Pro contracts remain separate.
+The project Decision Workspace presents the existing model as one continuous loop: Evidence → Model → Decisions → Actions → Review → Outcomes → governed Learning. It shows the active frozen revision, compiler and Domain Pack provenance and whether the current engine differs. It deliberately reuses the existing action plan and account snapshot/revision path. No generic task system, document store, approval workflow or new physical database table was introduced. Old browser projects and account snapshots are upgraded in memory without recompiling their stored Blueprint; Career and Atlas Pro contracts remain separate.
+
+`quality-lab-evidence-record/v1` and `quality-lab-evidence-register/v1` add a bounded project inventory for available evidence. Candidate evidence is never counted as confirmed until the user explicitly confirms it. Superseded, expired and rejected records remain historically visible. Records can link to existing decisions, actions, rules and methods. Compiler unresolved-input requests remain a separate list and are never fabricated into evidence records.
+
+Decision lifecycle saves now fail closed. `decided` and `closed` require an owner, final disposition and decision date. Material outcomes are accepted only for those final states. `governed-change-proposed` additionally requires the observed result, variance explanation, evidence reference and observed date; it remains a proposal for the existing controlled rule-change process and cannot mutate rules, benchmarks, Domain Packs or evidence status.
+
+Recommendation lineage now resolves `relatedRuleIds` through compiled workflow rules and then maps the finished-product workflow to its explicit Method Graph method IDs. Rule IDs are never compared directly with method IDs. Material lineage construction has no fallback rule: an unknown or missing rule fails integrity validation instead of receiving plausible-looking attribution.
 
 Outcome records retain prediction, observation, variance explanation, source reference and learning state. Marking a learning candidate never edits the Domain Pack, benchmark registry or executable rules; those changes still require the existing governed calibration and rule-change controls.
 

@@ -62,6 +62,37 @@ export const qualityLabDecisionRegisterSchema = z.object({
 });
 export type QualityLabDecisionRegister = z.infer<typeof qualityLabDecisionRegisterSchema>;
 
+export function validateQualityLabDecisionRecord(decision: QualityLabDecisionRecord): string[] {
+  const errors: string[] = [];
+  const finalState = decision.status === "decided" || decision.status === "closed";
+  if (finalState && !decision.ownerRole.trim()) errors.push("Owner role is required before a decision can be decided or closed.");
+  if (finalState && !decision.finalDisposition.trim()) errors.push("Final disposition is required before a decision can be decided or closed.");
+  if (finalState && !decision.decidedAt.trim()) errors.push("Decision date is required before a decision can be decided or closed.");
+
+  const hasMaterialOutcome = [
+    decision.outcome.observed,
+    decision.outcome.varianceExplanation,
+    decision.outcome.evidenceReference,
+    decision.outcome.observedAt,
+  ].some((value) => value.trim().length > 0) || decision.outcome.learningStatus !== "not-assessed";
+  if (hasMaterialOutcome && !finalState) errors.push("Observed outcomes may only be recorded for decided or closed decisions.");
+
+  if (decision.outcome.learningStatus === "governed-change-proposed") {
+    if (!decision.outcome.observed.trim()) errors.push("A governed-change proposal requires an observed outcome.");
+    if (!decision.outcome.varianceExplanation.trim()) errors.push("A governed-change proposal requires a variance explanation.");
+    if (!decision.outcome.evidenceReference.trim()) errors.push("A governed-change proposal requires an outcome evidence reference.");
+    if (!decision.outcome.observedAt.trim()) errors.push("A governed-change proposal requires an observed date.");
+  }
+  return errors;
+}
+
+export class QualityLabDecisionValidationError extends Error {
+  constructor(public readonly errors: string[]) {
+    super(errors.join(" "));
+    this.name = "QualityLabDecisionValidationError";
+  }
+}
+
 const recommendationQuestions: Record<string, string> = {
   "turnaround-feasibility": "Can the proposed operating model meet the required release turnaround?",
   "product-test-matrix": "Is the product × market × test basis ready for design freeze?",
@@ -215,4 +246,3 @@ export function qualityLabDecisionMetrics(register: QualityLabDecisionRegister) 
     learningCandidateCount: register.decisions.filter((decision) => decision.outcome.learningStatus === "learning-candidate").length,
   };
 }
-

@@ -3,8 +3,11 @@ import { getQualityLabReadiness, qualityLabBlueprintSchema, qualityLabInputSchem
 import { qualityLabEngagementPacketSchema } from "./quality-lab-engagement.js";
 import { qualityLabActionPlanSchema, reconcileQualityLabActionPlan } from "./quality-lab-actions.js";
 import { qualityLabDecisionRegisterSchema, reconcileQualityLabDecisionRegister } from "./quality-lab-decisions.js";
+import { createEmptyQualityLabEvidenceRegister, qualityLabEvidenceRegisterSchema } from "./quality-lab-evidence.js";
+import { ensureQualityLabProjectHistory, qualityLabFrozenRevisionSchema } from "./quality-lab-revisions.js";
 
-export const QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v1" as const;
+export const QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v2" as const;
+export const QUALITY_LAB_LEGACY_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v1" as const;
 export const QUALITY_LAB_LOCAL_STORE_VERSION = "quality-lab-local-store/v2" as const;
 
 /**
@@ -12,7 +15,7 @@ export const QUALITY_LAB_LOCAL_STORE_VERSION = "quality-lab-local-store/v2" as c
  * saves a project. Browser-local storage remains the resilient working copy.
  */
 export const qualityLabReviewedProjectSnapshotSchema = z.object({
-  snapshotVersion: z.literal(QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION).optional(),
+  snapshotVersion: z.union([z.literal(QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION), z.literal(QUALITY_LAB_LEGACY_ACCOUNT_SNAPSHOT_VERSION)]).optional(),
   localProjectId: z.string().min(1).max(160),
   projectName: z.string().min(1).max(200),
   projectCreatedAt: z.string().datetime().optional(),
@@ -21,6 +24,9 @@ export const qualityLabReviewedProjectSnapshotSchema = z.object({
   blueprint: qualityLabBlueprintSchema,
   actionPlan: qualityLabActionPlanSchema.optional(),
   decisionRegister: qualityLabDecisionRegisterSchema.optional(),
+  evidenceRegister: qualityLabEvidenceRegisterSchema.optional(),
+  frozenRevisions: z.array(qualityLabFrozenRevisionSchema).optional(),
+  activeRevisionId: z.string().optional(),
   engagement: qualityLabEngagementPacketSchema.nullable(),
   reviewRequestedAt: z.string().datetime().nullable(),
   workspace: z.object({
@@ -58,15 +64,20 @@ export const qualityLabLocalStoreSchema = z.object({
 export type QualityLabLocalStore = z.infer<typeof qualityLabLocalStoreSchema>;
 
 export function createQualityLabAccountSnapshot(project: QualityLabProject, engagement: QualityLabReviewedProjectSnapshot["engagement"] = null): QualityLabReviewedProjectSnapshot {
+  const historical = ensureQualityLabProjectHistory(project);
   return qualityLabReviewedProjectSnapshotSchema.parse({
     snapshotVersion: QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION,
-    localProjectId: project.id,
-    projectName: project.name,
-    projectCreatedAt: project.createdAt,
-    projectUpdatedAt: project.updatedAt,
-    input: project.input,
-    blueprint: project.blueprint,
-    actionPlan: project.actionPlan,
+    localProjectId: historical.id,
+    projectName: historical.name,
+    projectCreatedAt: historical.createdAt,
+    projectUpdatedAt: historical.updatedAt,
+    input: historical.input,
+    blueprint: historical.blueprint,
+    actionPlan: historical.actionPlan,
+    decisionRegister: historical.decisionRegister,
+    evidenceRegister: historical.evidenceRegister,
+    frozenRevisions: historical.revisions,
+    activeRevisionId: historical.activeRevisionId,
     engagement,
     reviewRequestedAt: project.reviewRequestedAt ?? null,
     workspace: {
@@ -76,7 +87,7 @@ export function createQualityLabAccountSnapshot(project: QualityLabProject, enga
       evidenceRequestIds: project.blueprint.unresolvedInputs.map((item) => item.id),
       unresolvedAssumptionIds: project.blueprint.assumptions.filter((item) => item.confidence !== "high").map((item) => item.id),
       actionOwnerRoles: Array.from(new Set(project.actionPlan.actions.map((action) => action.ownerRole).filter(Boolean))),
-      decisionRegister: project.decisionRegister,
+      decisionRegister: historical.decisionRegister,
     },
   });
 }
@@ -108,18 +119,23 @@ export function migrateQualityLabLocalStore(rawV2: string | null, rawV1: string 
 }
 
 export function qualityLabProjectFromReviewedSnapshot(snapshot: QualityLabReviewedProjectSnapshot): QualityLabProject {
-  const actionPlan = reconcileQualityLabActionPlan(snapshot.blueprint, snapshot.actionPlan, snapshot.blueprint.generatedAt);
-  return {
+  const storedActionPlan = qualityLabActionPlanSchema.safeParse(snapshot.actionPlan);
+  const actionPlan = storedActionPlan.success ? storedActionPlan.data : reconcileQualityLabActionPlan(snapshot.blueprint, undefined, snapshot.blueprint.generatedAt);
+  const storedDecisionRegister = qualityLabDecisionRegisterSchema.safeParse(snapshot.decisionRegister ?? snapshot.workspace?.decisionRegister);
+  return ensureQualityLabProjectHistory({
     id: snapshot.localProjectId,
     name: snapshot.projectName,
     input: snapshot.input,
     blueprint: snapshot.blueprint,
     actionPlan,
-    decisionRegister: reconcileQualityLabDecisionRegister(snapshot.blueprint, actionPlan, snapshot.decisionRegister ?? snapshot.workspace?.decisionRegister, snapshot.blueprint.generatedAt),
+    decisionRegister: storedDecisionRegister.success ? storedDecisionRegister.data : reconcileQualityLabDecisionRegister(snapshot.blueprint, actionPlan, undefined, snapshot.blueprint.generatedAt),
+    evidenceRegister: snapshot.evidenceRegister ?? createEmptyQualityLabEvidenceRegister(snapshot.projectUpdatedAt ?? snapshot.blueprint.generatedAt),
+    revisions: snapshot.frozenRevisions,
+    activeRevisionId: snapshot.activeRevisionId,
     createdAt: snapshot.projectCreatedAt ?? snapshot.blueprint.generatedAt,
     updatedAt: snapshot.projectUpdatedAt ?? snapshot.blueprint.generatedAt,
     reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
-  };
+  });
 }
 
 export function compareQualityLabReviewedSnapshots(
