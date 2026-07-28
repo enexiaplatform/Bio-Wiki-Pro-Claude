@@ -86,6 +86,14 @@ The production homepage already presents Quality Lab as flagship while retaining
 | 5 — commercial handoff | Complete in code | Versioned vendor-neutral requirement contract; internal traceability page; authenticated controlled URS DOCX and six-sheet RFQ XLSX from one source; supplier declaration completeness without scoring, ranking, equivalence or vendor selection |
 | 6 — operating-model decision | Complete in code | Versioned application-level inputs and analysis; transparent break-even range and first-year transfer basis; operational/quality/control factors; evidence-required fail-closed behavior; sensitivity triggers, export, analytics and Decision Lineage; paid-diagnostic cross-functional review gate with immutable model-versus-review snapshots |
 
+## Atlas layer vertical slice
+
+The project working copy now carries `quality-lab-decision-register/v1`. It is a Quality Lab-specific decision contract, not a universal cross-product schema. The register reconciles the project mandate and compiler recommendations into stable decision IDs, then links each decision to the existing unresolved-input actions, evidence references and Decision Lineage records. Recompilation refreshes the Atlas recommendation while preserving human owner, target date, review status, alternatives, final disposition and observed outcome.
+
+The project Decision Workspace presents the existing model as one continuous loop: Evidence → Decisions → Actions → Review → Outcomes → governed Learning. It deliberately reuses the existing action plan and account snapshot/revision path. No generic task system, document store, approval workflow or new physical database table was introduced. Old browser projects and account snapshots are upgraded in memory through reconciliation; Career and Atlas Pro contracts remain separate.
+
+Outcome records retain prediction, observation, variance explanation, source reference and learning state. Marking a learning candidate never edits the Domain Pack, benchmark registry or executable rules; those changes still require the existing governed calibration and rule-change controls.
+
 ## Exact continuation points
 
 1. Use the completed Phase 6 worksheet and review bridge in the first controlled paid diagnostic; capture comparable provider quotations, actual end-to-end turnaround, sample stability, qualification scope, data package, investigation response and continuity evidence without relabeling the frozen stakeholder record as an approval or award decision.

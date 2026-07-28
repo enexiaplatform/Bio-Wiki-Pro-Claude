@@ -59,6 +59,7 @@ const QualityLabLandingPage = lazy(() => import("@/pages/QualityLabLandingPage")
 const QualityLabPlannerPage = lazy(() => import("@/pages/QualityLabPlannerPage"));
 const QualityLabProjectsPage = lazy(() => import("@/pages/QualityLabProjectsPage"));
 const QualityLabDecisionLineagePage = lazy(() => import("@/pages/QualityLabDecisionLineagePage"));
+const QualityLabDecisionWorkspacePage = lazy(() => import("@/pages/QualityLabDecisionWorkspacePage"));
 const QualityLabReviewPage = lazy(() => import("@/pages/QualityLabReviewPage"));
 const QualityLabSamplePage = lazy(() => import("@/pages/QualityLabSamplePage"));
 const QualityLabEngagementPage = lazy(() => import("@/pages/QualityLabEngagementPage"));
@@ -133,6 +134,7 @@ function Layout() {
           <Route path="/quality-lab/planner" component={QualityLabPlannerPage} />
           <Route path="/quality-lab/projects" component={QualityLabProjectsPage} />
           <Route path="/quality-lab/projects/:id/lineage/:lineageId" component={QualityLabDecisionLineagePage} />
+          <Route path="/quality-lab/projects/:id/workspace" component={QualityLabDecisionWorkspacePage} />
           <Route path="/quality-lab/compare" component={QualityLabScenarioComparePage} />
           <Route path="/quality-lab/turnaround" component={QualityLabTurnaroundPage} />
           <Route path="/quality-lab/sensitivity" component={QualityLabSensitivityPage} />

@@ -36,11 +36,13 @@ import {
   type ProductProfile,
 } from "./quality-lab-method-graph.js";
 import { reconcileQualityLabActionPlan, type QualityLabActionPlan } from "./quality-lab-actions.js";
+import { reconcileQualityLabDecisionRegister, type QualityLabDecisionRegister } from "./quality-lab-decisions.js";
 
 export * from "./quality-lab-contract.js";
 export * from "./quality-lab-microbiology-pack.js";
 export * from "./quality-lab-method-graph.js";
 export * from "./quality-lab-actions.js";
+export * from "./quality-lab-decisions.js";
 
 export const QUALITY_LAB_ENGINE_VERSION = `${QUALITY_LAB_COMPILER_CORE_VERSION}+${MICROBIOLOGY_DOMAIN_PACK.version}`;
 
@@ -358,6 +360,7 @@ export interface QualityLabProject {
   input: QualityLabInput;
   blueprint: QualityLabBlueprint;
   actionPlan: QualityLabActionPlan;
+  decisionRegister: QualityLabDecisionRegister;
   reviewRequestedAt?: string;
 }
 
@@ -1419,6 +1422,7 @@ export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date
   const now = new Date().toISOString();
   const parsedInput = qualityLabInputSchema.parse(input);
   const blueprint = compileQualityLabBlueprint(parsedInput);
+  const actionPlan = reconcileQualityLabActionPlan(blueprint, undefined, now);
   return {
     id,
     name: parsedInput.projectName,
@@ -1426,6 +1430,7 @@ export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date
     updatedAt: now,
     input: parsedInput,
     blueprint,
-    actionPlan: reconcileQualityLabActionPlan(blueprint, undefined, now),
+    actionPlan,
+    decisionRegister: reconcileQualityLabDecisionRegister(blueprint, actionPlan, undefined, now),
   };
 }

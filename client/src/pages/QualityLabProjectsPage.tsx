@@ -510,7 +510,7 @@ export default function QualityLabProjectsPage() {
                   <div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-wider text-teal-200">{projectStageLabels[stage]}</span><span className="text-[10px] text-slate-500">{actionMetrics.activeCount} active</span></div>
                   <p className="mt-2 line-clamp-2 text-xs font-semibold leading-5 text-slate-200">{nextAction?.question ?? "No compiled input action remains open."}</p>
                   {nextAction && <p className="mt-1 text-[10px] text-slate-500">Owner: {nextAction.ownerRole || "Unassigned"}{nextAction.dueDate ? ` · due ${new Date(`${nextAction.dueDate}T00:00:00`).toLocaleDateString()}` : " · no due date"}</p>}
-                  <Link href={`/quality-lab/projects/${project.id}#project-action-center`} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-teal-200 hover:text-white">Manage actions <ArrowRight className="h-3.5 w-3.5" /></Link>
+                  <Link href={`/quality-lab/projects/${project.id}/workspace`} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-teal-200 hover:text-white">Open decision workspace <ArrowRight className="h-3.5 w-3.5" /></Link>
                 </div>
                 <div className="mt-3 rounded-xl border border-white/8 bg-slate-950/30 p-3">
                   <div className="flex items-center justify-between gap-3 text-xs">

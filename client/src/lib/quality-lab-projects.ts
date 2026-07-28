@@ -1,5 +1,5 @@
 import type { QualityLabInput, QualityLabProject, QualityLabProjectAction } from "@shared/quality-lab";
-import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema, reconcileQualityLabActionPlan } from "@shared/quality-lab";
+import { compileQualityLabBlueprint, createQualityLabProject, qualityLabInputSchema, reconcileQualityLabActionPlan, reconcileQualityLabDecisionRegister, type QualityLabDecisionRecord } from "@shared/quality-lab";
 import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 import {
   createQualityLabAccountSnapshot,
@@ -19,12 +19,14 @@ function safeParse(values: unknown[]): QualityLabProject[] {
       const parsed = qualityLabInputSchema.safeParse(project?.input);
       if (!project?.id || !parsed.success) return [];
       const blueprint = compileQualityLabBlueprint(parsed.data);
+      const actionPlan = reconcileQualityLabActionPlan(blueprint, project.actionPlan, project.updatedAt);
       return [{
         ...project,
         name: parsed.data.projectName,
         input: parsed.data,
         blueprint,
-        actionPlan: reconcileQualityLabActionPlan(blueprint, project.actionPlan, project.updatedAt),
+        actionPlan,
+        decisionRegister: reconcileQualityLabDecisionRegister(blueprint, actionPlan, project.decisionRegister, project.updatedAt),
       }];
     });
 }
@@ -59,12 +61,14 @@ export function saveQualityLabProject(input: QualityLabInput, id?: string): Qual
         const parsedInput = qualityLabInputSchema.parse(input);
         const blueprint = compileQualityLabBlueprint(parsedInput);
         const updatedAt = new Date().toISOString();
+        const actionPlan = reconcileQualityLabActionPlan(blueprint, existing.actionPlan, updatedAt);
         return {
           ...existing,
           name: parsedInput.projectName,
           input: parsedInput,
           blueprint,
-          actionPlan: reconcileQualityLabActionPlan(blueprint, existing.actionPlan, updatedAt),
+          actionPlan,
+          decisionRegister: reconcileQualityLabDecisionRegister(blueprint, actionPlan, existing.decisionRegister, updatedAt),
           updatedAt,
         };
       })()
@@ -118,6 +122,41 @@ export function updateQualityLabProjectAction(projectId: string, actionId: strin
       ...project.actionPlan,
       updatedAt: now,
       actions: project.actionPlan.actions.map((item) => item.id === actionId ? updatedAction : item),
+    },
+  };
+  updated.decisionRegister = reconcileQualityLabDecisionRegister(updated.blueprint, updated.actionPlan, updated.decisionRegister, now);
+  write([updated, ...projects.filter((item) => item.id !== projectId)]);
+  return updated;
+}
+
+export type QualityLabDecisionPatch = Partial<Pick<QualityLabDecisionRecord, "ownerRole" | "targetDate" | "status" | "alternative" | "finalDisposition" | "decidedAt" | "outcome">>;
+
+export function updateQualityLabProjectDecision(projectId: string, decisionId: string, patch: QualityLabDecisionPatch): QualityLabProject | undefined {
+  const projects = listQualityLabProjects();
+  const project = projects.find((item) => item.id === projectId);
+  const decision = project?.decisionRegister.decisions.find((item) => item.id === decisionId);
+  if (!project || !decision) return undefined;
+  const now = new Date().toISOString();
+  const outcomeChanged = patch.outcome !== undefined && JSON.stringify(patch.outcome) !== JSON.stringify(decision.outcome);
+  const dispositionChanged = patch.finalDisposition !== undefined && patch.finalDisposition !== decision.finalDisposition;
+  const changed = Object.entries(patch).some(([key, value]) => JSON.stringify(value) !== JSON.stringify(decision[key as keyof QualityLabDecisionRecord]));
+  if (!changed) return project;
+  const type = outcomeChanged ? "outcome-recorded" as const : dispositionChanged ? "disposition-recorded" as const : "updated" as const;
+  const summary = outcomeChanged ? "Observed outcome or learning status updated." : dispositionChanged ? "Final disposition updated." : "Decision owner, timing, status or alternative updated.";
+  const updatedDecision: QualityLabDecisionRecord = {
+    ...decision,
+    ...patch,
+    decidedAt: ["decided", "closed"].includes(patch.status ?? decision.status) ? (patch.decidedAt || decision.decidedAt || now.slice(0, 10)) : (patch.decidedAt ?? decision.decidedAt),
+    updatedAt: now,
+    activity: [...decision.activity, { id: `${decision.id}:${type}:${now}`, recordedAt: now, type, summary }],
+  };
+  const updated: QualityLabProject = {
+    ...project,
+    updatedAt: now,
+    decisionRegister: {
+      ...project.decisionRegister,
+      updatedAt: now,
+      decisions: project.decisionRegister.decisions.map((item) => item.id === decisionId ? updatedDecision : item),
     },
   };
   write([updated, ...projects.filter((item) => item.id !== projectId)]);

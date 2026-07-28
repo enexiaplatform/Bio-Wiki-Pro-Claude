@@ -2,6 +2,7 @@ import { z } from "zod";
 import { getQualityLabReadiness, qualityLabBlueprintSchema, qualityLabInputSchema, type QualityLabProject } from "./quality-lab.js";
 import { qualityLabEngagementPacketSchema } from "./quality-lab-engagement.js";
 import { qualityLabActionPlanSchema, reconcileQualityLabActionPlan } from "./quality-lab-actions.js";
+import { qualityLabDecisionRegisterSchema, reconcileQualityLabDecisionRegister } from "./quality-lab-decisions.js";
 
 export const QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v1" as const;
 export const QUALITY_LAB_LOCAL_STORE_VERSION = "quality-lab-local-store/v2" as const;
@@ -19,6 +20,7 @@ export const qualityLabReviewedProjectSnapshotSchema = z.object({
   input: qualityLabInputSchema,
   blueprint: qualityLabBlueprintSchema,
   actionPlan: qualityLabActionPlanSchema.optional(),
+  decisionRegister: qualityLabDecisionRegisterSchema.optional(),
   engagement: qualityLabEngagementPacketSchema.nullable(),
   reviewRequestedAt: z.string().datetime().nullable(),
   workspace: z.object({
@@ -28,6 +30,7 @@ export const qualityLabReviewedProjectSnapshotSchema = z.object({
     evidenceRequestIds: z.array(z.string()),
     unresolvedAssumptionIds: z.array(z.string()),
     actionOwnerRoles: z.array(z.string()),
+    decisionRegister: qualityLabDecisionRegisterSchema.optional(),
   }).optional(),
 });
 
@@ -73,6 +76,7 @@ export function createQualityLabAccountSnapshot(project: QualityLabProject, enga
       evidenceRequestIds: project.blueprint.unresolvedInputs.map((item) => item.id),
       unresolvedAssumptionIds: project.blueprint.assumptions.filter((item) => item.confidence !== "high").map((item) => item.id),
       actionOwnerRoles: Array.from(new Set(project.actionPlan.actions.map((action) => action.ownerRole).filter(Boolean))),
+      decisionRegister: project.decisionRegister,
     },
   });
 }
@@ -104,12 +108,14 @@ export function migrateQualityLabLocalStore(rawV2: string | null, rawV1: string 
 }
 
 export function qualityLabProjectFromReviewedSnapshot(snapshot: QualityLabReviewedProjectSnapshot): QualityLabProject {
+  const actionPlan = reconcileQualityLabActionPlan(snapshot.blueprint, snapshot.actionPlan, snapshot.blueprint.generatedAt);
   return {
     id: snapshot.localProjectId,
     name: snapshot.projectName,
     input: snapshot.input,
     blueprint: snapshot.blueprint,
-    actionPlan: reconcileQualityLabActionPlan(snapshot.blueprint, snapshot.actionPlan, snapshot.blueprint.generatedAt),
+    actionPlan,
+    decisionRegister: reconcileQualityLabDecisionRegister(snapshot.blueprint, actionPlan, snapshot.decisionRegister ?? snapshot.workspace?.decisionRegister, snapshot.blueprint.generatedAt),
     createdAt: snapshot.projectCreatedAt ?? snapshot.blueprint.generatedAt,
     updatedAt: snapshot.projectUpdatedAt ?? snapshot.blueprint.generatedAt,
     reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
