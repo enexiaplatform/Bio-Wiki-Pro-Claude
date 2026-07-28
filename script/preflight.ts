@@ -14,8 +14,8 @@ const readiness = runtimeReadiness();
 const allowTestStripe = process.argv.includes("--allow-test-stripe");
 const stripeKey = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
 
-record(readiness.database ? "ok" : "fail", "Database", readiness.database
-  ? "persistent sessions, requests and purchases can be recorded"
+record(readiness.database ? "ok" : "fail", "Database connection", readiness.database
+  ? "persistent records can be stored; separately confirm the current schema with npm run db:push"
   : "set DATABASE_URL (or a supported Postgres integration variable)");
 record(readiness.sessions ? "ok" : "fail", "Session security", readiness.sessions
   ? "strong SESSION_SECRET detected"
@@ -50,8 +50,8 @@ record(siteUrl && siteUrl === readiness.publicOrigin ? "ok" : "fail", "Canonical
   ? "VITE_SITE_URL matches BASE_URL; redeploy after any build-time URL change"
   : "set VITE_SITE_URL to the same custom origin as BASE_URL and redeploy");
 record(readiness.analytics ? "ok" : "warn", "Commercial analytics", readiness.analytics
-  ? "VITE_POSTHOG_KEY is configured"
-  : "VITE_POSTHOG_KEY is missing; paid conversion can operate, but Gate 1 funnel metrics will be incomplete");
+  ? "PostHog plus the first-party Blueprint funnel are available after schema deployment"
+  : "VITE_POSTHOG_KEY is missing; the first-party Blueprint funnel remains available after db:push, but advanced path analysis is disabled");
 record(readiness.cron ? "ok" : "warn", "Lifecycle cron", readiness.cron
   ? "CRON_SECRET is configured"
   : "CRON_SECRET is missing; lifecycle and portfolio reminder jobs remain disabled");

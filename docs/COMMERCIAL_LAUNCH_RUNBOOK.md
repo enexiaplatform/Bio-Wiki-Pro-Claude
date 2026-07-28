@@ -21,6 +21,12 @@ This checklist is the operational gate for accepting unattended public payment. 
 15. **Migration and compatibility risks:** No database migration. New environment variables are optional at runtime but required for commercial readiness. Existing checkout falls back safely; placeholder configuration must remain non-ready.
 16. **Test and validation strategy:** Runtime configuration and safe-return unit tests, route tests for request routing and public PDF delivery, PDF generation tests, repository validation, production build and public desktop/mobile smoke coverage including guest intake → account creation → payment handoff. A real Stripe acceptance test remains an external launch step.
 
+### Subsequent schema and measurement note — 28 July 2026
+
+The commercial journey now has a strict, privacy-minimal first-party funnel receipt and an Admin 30-day report. It stores stage and limited operational attribution only; it rejects project identifiers, project inputs, contact details and evidence content. The Stripe webhook carries the anonymous journey identifier so a successful Scope Diagnostic purchase remains attributable even when the buyer does not return to the success page.
+
+Run `npm run db:push` against the intended environment before launch to create the current `quality_lab_funnel_events` and `regulatory_alert_preferences` tables. A configured `DATABASE_URL` proves connectivity shape only; it does not prove that the current schema has been deployed. PostHog is now an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
+
 ## Required production configuration
 
 - `BASE_URL`: active public origin used by Stripe, account and email links.
@@ -30,7 +36,7 @@ This checklist is the operational gate for accepting unattended public payment. 
 - `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`: USD 149 one-time Price for `Atlas Paid Scope Diagnostic`.
 - `RESEND_API_KEY` and `EMAIL_FROM`: verified sender for buyer acknowledgements and operational alerts.
 - `COMMERCIAL_NOTIFICATION_EMAILS` or `ADMIN_EMAILS`: monitored inboxes for the two-business-day response SLA.
-- `VITE_POSTHOG_KEY`: production project key for the Blueprint commercial funnel.
+- `VITE_POSTHOG_KEY`: optional advanced product/path analytics; the core Blueprint stage funnel is first-party.
 - `CRON_SECRET`: long random value protecting lifecycle jobs.
 
 `GET /api/health` reports operational readiness and a separate `commerceReady` flag without returning secret values. `commerceReady` remains false for placeholder credentials, localhost, and temporary `*.vercel.app` origins; attach and configure the intended public domain before accepting unattended payment.
