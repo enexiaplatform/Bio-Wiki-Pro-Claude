@@ -26,6 +26,16 @@ async function mockAdmin(page: Page) {
 // E2E_BASE_URL). They cover routing, content rendering, and that server-side
 // Pro gating does not leak bodies to guests.
 test.describe("public smoke", () => {
+  test.beforeEach(async ({ page }) => {
+    // Public smoke runs without a database. Funnel delivery has focused API
+    // coverage below, so keep unrelated browser tests write-free and quiet.
+    await page.route("**/api/quality-lab/funnel-events", (route) => route.fulfill({
+      status: 202,
+      contentType: "application/json",
+      body: JSON.stringify({ accepted: true, recorded: true }),
+    }));
+  });
+
   test("home renders", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: /Life Science Atlas/i }).first()).toBeVisible();
@@ -573,7 +583,46 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: "No real engagement records yet" })).toBeVisible();
   });
 
+  test("admin can inspect the privacy-minimal Blueprint funnel", async ({ page }) => {
+    await mockAdmin(page);
+    const responses: Record<string, unknown> = {
+      "/api/admin/overview": { users: { total: 0, pro: 0, verified: 0 }, leads: 0, commercialRequests: 0, purchases: { total: 0, completed: 0, revenueCents: 0 }, reviewedProjects: 0, content: { total: 0, published: 0, paid: 0 }, documents: { products: 0, files: 0 } },
+      "/api/admin/users": { users: [] },
+      "/api/admin/documents": { products: [] },
+      "/api/admin/content": { content: [] },
+      "/api/admin/pipeline": { leads: [], requests: [], purchases: [], projects: [] },
+      "/api/admin/quality-lab-funnel?days=30": {
+        generatedAt: "2026-07-28T00:00:00.000Z",
+        windowDays: 30,
+        uniqueJourneys: 3,
+        stages: [
+          { stage: "planner_started", journeys: 3, percentOfPlannerStarts: 100 },
+          { stage: "model_compiled", journeys: 2, percentOfPlannerStarts: 66.7 },
+          { stage: "review_requested", journeys: 1, percentOfPlannerStarts: 33.3 },
+        ],
+      },
+    };
+    await page.route("**/api/admin/**", (route) => {
+      const url = new URL(route.request().url());
+      const key = `${url.pathname}${url.search}`;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(responses[key] ?? {}) });
+    });
+
+    await page.goto("/admin");
+    await page.getByRole("tab", { name: "Blueprint funnel" }).click();
+    await expect(page.getByRole("heading", { name: /Blueprint funnel · last 30 days/i })).toBeVisible();
+    await expect(page.getByText("Unique Blueprint journeys observed")).toBeVisible();
+    await expect(page.getByText("Initial model compiled")).toBeVisible();
+    await expect(page.getByText("66.7% of starts")).toBeVisible();
+    await expect(page.getByText(/No project inputs, contact details or evidence content are stored/i)).toBeVisible();
+  });
+
   test("quality lab funnel reaches planner and expert review intake", async ({ page }) => {
+    const funnelReceipts: Array<{ stage: string; journeyId: string }> = [];
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
     await page.goto("/quality-lab");
     await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
     await page.getByRole("link", { name: /Build a blueprint/i }).click();
@@ -652,6 +701,14 @@ test.describe("public smoke", () => {
     await expect(page.getByText("2. Commercial fit", { exact: true })).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a Blueprint scope/i })).toBeVisible();
+    await expect.poll(() => funnelReceipts.map((receipt) => receipt.stage)).toEqual(expect.arrayContaining([
+      "cta_clicked",
+      "planner_started",
+      "start_mode_selected",
+      "model_compiled",
+      "review_viewed",
+    ]));
+    expect(new Set(funnelReceipts.map((receipt) => receipt.journeyId)).size).toBe(1);
   });
 
   test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {

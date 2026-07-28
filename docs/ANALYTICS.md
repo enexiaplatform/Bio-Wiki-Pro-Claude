@@ -1,8 +1,13 @@
-# Life Science Atlas — Analytics Events (PostHog)
+# Life Science Atlas — Analytics and Blueprint Funnel
 
-> Client analytics via PostHog. Snippet in `client/index.html`; helpers in
-> `client/src/hooks/use-analytics.ts`. Needs `VITE_POSTHOG_KEY` set at **build
-> time** on Vercel (VITE_* is inlined — redeploy after changing).
+Client analytics uses PostHog when configured. The commercial Blueprint funnel
+also writes privacy-minimal first-party stage receipts so Gate 0 measurement
+does not disappear when PostHog is unavailable.
+
+- PostHog snippet: `client/index.html`
+- Event helpers: `client/src/hooks/use-analytics.ts`
+- First-party contract: `shared/quality-lab-funnel.ts`
+- Admin report: Admin control center → Blueprint funnel
 
 ## Safety guard
 
@@ -12,7 +17,38 @@ unset, `init()` never runs and the stub methods don't exist — the guard makes
 those calls no-ops instead of throwing (this previously caused a full blank-page
 crash; see commit `111c67b`). **Keep this guard.**
 
-## Conversion funnel (4 steps)
+## Blueprint commercial funnel
+
+The first-party endpoint accepts only a strict whitelist. It stores generated
+event and journey identifiers, stage, timestamps and limited operational
+context such as CTA placement, start mode and offer. It rejects arbitrary
+fields and must never receive project identifiers, project inputs, contact
+details, product data, evidence text or other confidential content.
+
+Journeys rotate after 24 hours of browser inactivity. The Admin report counts
+unique journeys per stage over 30 days and shows reach relative to planner
+starts. Direct route entry is allowed, so later-stage reach can exceed CTA reach.
+
+| Stage | Trigger |
+|---|---|
+| `cta_clicked` | Blueprint CTA from a measured placement |
+| `planner_started` | New planner opened |
+| `start_mode_selected` | Guided, example, blank or import selected |
+| `model_compiled` | Initial model or revision compiled |
+| `review_viewed` | Commercial review intake opened |
+| `review_started` | Review submission attempted |
+| `review_requested` | Review request accepted |
+| `diagnostic_checkout_started` | Scope Diagnostic checkout opened |
+| `diagnostic_purchased` | Checkout success page observed |
+
+The purchase receipt remains a client-side funnel proxy. Stripe webhook and
+purchase records remain authoritative for payment and revenue.
+
+Run `npm run db:push` in the target environment before relying on the report.
+If the receipt table is temporarily absent, the API deliberately returns an
+accepted/no-record response so analytics cannot break the customer journey.
+
+## General conversion funnel (legacy/supporting)
 
 | Step | Event | Fired from | Properties |
 |---|---|---|---|

@@ -50,6 +50,7 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     getRegulatoryAlertPreference: vi.fn(() => Promise.resolve(undefined)),
     upsertRegulatoryAlertPreference: vi.fn(),
     getRegulatoryDigestCandidates: vi.fn(() => Promise.resolve([])),
+    recordQualityLabFunnelEvent: vi.fn(),
     getQualityLabReviewedProject: vi.fn(),
     upsertQualityLabReviewedProject: vi.fn(),
     listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
@@ -169,6 +170,42 @@ describe("auth", () => {
     const app = await buildApp();
     const res = await request(app).get("/api/auth/me");
     expect(res.status).toBe(401);
+  });
+});
+
+describe("Quality Lab funnel receipts", () => {
+  const event = {
+    eventId: "5ce422d1-34f8-4a5d-a121-14d4339f323c",
+    journeyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
+    stage: "model_compiled",
+    occurredAt: "2026-07-28T00:00:00.000Z",
+  };
+
+  it("accepts a privacy-scoped anonymous event", async () => {
+    const app = await buildApp();
+    storageMock.recordQualityLabFunnelEvent.mockResolvedValueOnce({ id: 1, ...event });
+    const res = await request(app).post("/api/quality-lab/funnel-events").send(event);
+    expect(res.status).toBe(202);
+    expect(res.body).toEqual({ accepted: true, recorded: true });
+    expect(storageMock.recordQualityLabFunnelEvent).toHaveBeenCalledWith(null, expect.objectContaining({
+      ...event,
+      occurredAt: expect.any(String),
+    }));
+  });
+
+  it("rejects fields that could smuggle project content", async () => {
+    const app = await buildApp();
+    const res = await request(app).post("/api/quality-lab/funnel-events").send({ ...event, projectName: "Secret project" });
+    expect(res.status).toBe(400);
+    expect(storageMock.recordQualityLabFunnelEvent).not.toHaveBeenCalled();
+  });
+
+  it("never blocks the journey when persistence is unavailable", async () => {
+    const app = await buildApp();
+    storageMock.recordQualityLabFunnelEvent.mockRejectedValueOnce(new Error("table missing"));
+    const res = await request(app).post("/api/quality-lab/funnel-events").send(event);
+    expect(res.status).toBe(202);
+    expect(res.body).toEqual({ accepted: true, recorded: false });
   });
 });
 
@@ -398,6 +435,39 @@ describe("stripe webhook", () => {
     expect(storageMock.markStripeEventProcessed).toHaveBeenCalledTimes(1);
   });
 
+  it("records an authoritative Diagnostic conversion against its anonymous journey", async () => {
+    const app = await buildApp();
+    const diagnosticEvent = {
+      id: "evt_diagnostic",
+      type: "checkout.session.completed",
+      data: { object: {
+        id: "cs_diagnostic",
+        created: 1785196800,
+        metadata: {
+          userId: "u1",
+          productType: "scope_diagnostic",
+          blueprintJourneyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
+        },
+        amount_total: 14900,
+        customer_email: "buyer@example.com",
+      } },
+    };
+    constructEvent.mockReturnValue(diagnosticEvent);
+    storageMock.isStripeEventProcessed.mockResolvedValueOnce(false);
+    storageMock.createPurchase.mockResolvedValueOnce(undefined);
+    storageMock.recordQualityLabFunnelEvent.mockResolvedValueOnce({ id: 1 });
+    storageMock.markStripeEventProcessed.mockResolvedValueOnce(undefined);
+
+    const res = await request(app).post("/api/stripe/webhook").set("stripe-signature", "sig").send(diagnosticEvent);
+    expect(res.status).toBe(200);
+    expect(storageMock.recordQualityLabFunnelEvent).toHaveBeenCalledWith("u1", expect.objectContaining({
+      journeyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
+      stage: "diagnostic_purchased",
+      source: "stripe_webhook",
+      offer: "scope_diagnostic",
+    }));
+  });
+
   it("rejects missing signature", async () => {
     const app = await buildApp();
     const res = await request(app).post("/api/stripe/webhook").send(purchaseEvent);
@@ -574,13 +644,20 @@ describe("create-checkout-session", () => {
     storageMock.getUser.mockResolvedValueOnce(user);
     checkoutCreate.mockResolvedValueOnce({ url: "https://checkout.stripe.test/diagnostic" });
 
-    const res = await agent.post("/api/stripe/create-checkout-session").send({ productType: "scope_diagnostic" });
+    const res = await agent.post("/api/stripe/create-checkout-session").send({
+      productType: "scope_diagnostic",
+      blueprintJourneyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
+    });
     expect(res.status).toBe(200);
     const arg = checkoutCreate.mock.calls[0][0];
     expect(arg.mode).toBe("payment");
     expect(arg.line_items[0].price).toBe("price_diagnostic");
     expect(arg.cancel_url).toContain("/quality-lab/review?offer=diagnostic");
-    expect(arg.metadata).toMatchObject({ userId: "u1", productType: "scope_diagnostic" });
+    expect(arg.metadata).toMatchObject({
+      userId: "u1",
+      productType: "scope_diagnostic",
+      blueprintJourneyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
+    });
   });
 
   it("creates the $20 Career Blueprint checkout with a Career cancel route", async () => {

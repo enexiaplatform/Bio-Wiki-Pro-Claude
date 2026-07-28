@@ -12,6 +12,7 @@ import {
   nurtureSends,
   lifecycleSends,
   regulatoryAlertPreferences,
+  qualityLabFunnelEvents,
   checkoutAttempts,
   qualityLabReviewedProjects,
   qualityLabReviewedProjectRevisions,
@@ -30,6 +31,7 @@ import {
   type CareerBlueprintExecutionRow,
   type CareerBlueprintProfileRow,
   type RegulatoryAlertPreferenceRow,
+  type QualityLabFunnelEventRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
@@ -37,6 +39,7 @@ import type { AtlasProMonthlyReviewRecord } from "../shared/atlas-pro-monthly.js
 import type { CareerExecutionRecord } from "../shared/career-execution.js";
 import type { CareerProfile } from "../shared/career-blueprint.js";
 import type { RegulatoryDigestPreferenceInput } from "../shared/regulatory-monitor.js";
+import type { QualityLabFunnelEventInput } from "../shared/quality-lab-funnel.js";
 import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
 
 export type QualityLabReminderPreference = {
@@ -101,6 +104,7 @@ export interface IStorage {
   getRegulatoryAlertPreference(userId: string): Promise<RegulatoryAlertPreferenceRow | undefined>;
   upsertRegulatoryAlertPreference(userId: string, input: RegulatoryDigestPreferenceInput): Promise<RegulatoryAlertPreferenceRow>;
   getRegulatoryDigestCandidates(): Promise<Array<{ id: string; email: string | null; firstName: string | null; cadence: string; domains: RegulatoryDigestPreferenceInput["domains"]; sources: RegulatoryDigestPreferenceInput["sources"] }>>;
+  recordQualityLabFunnelEvent(userId: string | null, input: QualityLabFunnelEventInput): Promise<QualityLabFunnelEventRow | undefined>;
   upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
   listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
@@ -112,6 +116,22 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  async recordQualityLabFunnelEvent(userId: string | null, input: QualityLabFunnelEventInput): Promise<QualityLabFunnelEventRow | undefined> {
+    const [row] = await db.insert(qualityLabFunnelEvents).values({
+      eventId: input.eventId,
+      journeyId: input.journeyId,
+      userId,
+      stage: input.stage,
+      source: input.source,
+      placement: input.placement,
+      destination: input.destination,
+      offer: input.offer,
+      startMode: input.startMode,
+      occurredAt: new Date(input.occurredAt),
+    }).onConflictDoNothing({ target: qualityLabFunnelEvents.eventId }).returning();
+    return row;
+  }
+
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;

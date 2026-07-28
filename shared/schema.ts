@@ -1,4 +1,4 @@
-import { pgTable, text, serial, boolean, timestamp, jsonb, integer, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, boolean, timestamp, jsonb, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import type { QualityLabReviewedProjectSnapshot } from "./quality-lab-persistence";
@@ -7,6 +7,7 @@ import type { AtlasProMonthlyReviewRecord } from "./atlas-pro-monthly";
 import type { CareerExecutionRecord } from "./career-execution";
 import type { CareerProfile } from "./career-blueprint";
 import type { RegulatoryDigestPreferenceInput } from "./regulatory-monitor";
+import type { QualityLabFunnelStage } from "./quality-lab-funnel";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -173,6 +174,33 @@ export const regulatoryAlertPreferences = pgTable(
   (t) => [uniqueIndex("regulatory_alert_preferences_user_idx").on(t.userId)],
 );
 export type RegulatoryAlertPreferenceRow = typeof regulatoryAlertPreferences.$inferSelect;
+
+// Privacy-minimal first-party receipt for the commercial Blueprint funnel.
+// Only whitelisted operational context is accepted by the API; project inputs,
+// contact details and regulated evidence must never be written here.
+export const qualityLabFunnelEvents = pgTable(
+  "quality_lab_funnel_events",
+  {
+    id: serial("id").primaryKey(),
+    eventId: text("event_id").notNull(),
+    journeyId: text("journey_id").notNull(),
+    userId: text("user_id"),
+    stage: text("stage").$type<QualityLabFunnelStage>().notNull(),
+    source: text("source"),
+    placement: text("placement"),
+    destination: text("destination"),
+    offer: text("offer"),
+    startMode: text("start_mode"),
+    occurredAt: timestamp("occurred_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("quality_lab_funnel_events_event_idx").on(t.eventId),
+    index("quality_lab_funnel_events_occurred_idx").on(t.occurredAt),
+    index("quality_lab_funnel_events_stage_journey_idx").on(t.stage, t.journeyId),
+  ],
+);
+export type QualityLabFunnelEventRow = typeof qualityLabFunnelEvents.$inferSelect;
 
 // Checkout attempts — recorded when a Stripe Checkout session is created, so the
 // daily cron can email an abandoned-checkout reminder to users who started but

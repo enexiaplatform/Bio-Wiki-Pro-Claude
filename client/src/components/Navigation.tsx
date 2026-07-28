@@ -25,6 +25,7 @@ import { prefetchRoute } from "@/lib/route-prefetch";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { analytics } from "@/hooks/use-analytics";
 
 // Life Science Atlas "Knowledge Lattice" mark (molecule + knowledge graph).
 function AtlasMark({ className }: { className?: string }) {
@@ -371,7 +372,7 @@ export function DesktopNav() {
             <LogIn className="h-4 w-4" /> {t("signIn")}
           </Link>
         )}
-        <Link href="/quality-lab/planner" className="inline-flex min-h-10 items-center justify-center rounded-lg bg-teal-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-teal-200" data-testid="nav-desktop-start-free">
+        <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("desktop_nav", "planner")} className="inline-flex min-h-10 items-center justify-center rounded-lg bg-teal-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-teal-200" data-testid="nav-desktop-start-free">
           Start free
         </Link>
       </div>

@@ -32,6 +32,7 @@ import { careerBlueprintPdf, careerBlueprintSamplePdf, careerProfileFilename } f
 import { atlasProMonthlyReviewRecordSchema } from "../shared/atlas-pro-monthly.js";
 import { filterRegulatoryUpdates, regulatoryDigestPreferenceSchema } from "../shared/regulatory-monitor.js";
 import { fetchRegulatoryMonitor } from "./regulatory-monitor.js";
+import { qualityLabFunnelEventSchema } from "../shared/quality-lab-funnel.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -66,6 +67,16 @@ const publicSampleLimiter = rateLimit({
   legacyHeaders: false,
   validate: false,
   message: { message: "Too many requests. Please wait a few minutes and try again." },
+  skip: () => process.env.NODE_ENV === "test",
+});
+
+const funnelEventLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+  message: { message: "Too many funnel events. Please try again later." },
   skip: () => process.env.NODE_ENV === "test",
 });
 
@@ -185,7 +196,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
-        const { userId, productType } = session.metadata ?? {};
+        const { userId, productType, blueprintJourneyId } = session.metadata ?? {};
         if (!userId || !productType) {
           return res.status(400).json({ message: "Missing metadata" });
         }
@@ -208,6 +219,17 @@ export async function registerRoutes(app: Express): Promise<void> {
             amount: session.amount_total ?? undefined,
             status: "completed",
           });
+
+          if (productType === "scope_diagnostic" && z.string().uuid().safeParse(blueprintJourneyId).success) {
+            await storage.recordQualityLabFunnelEvent(userId, {
+              eventId: crypto.randomUUID(),
+              journeyId: blueprintJourneyId!,
+              stage: "diagnostic_purchased",
+              occurredAt: new Date((session.created ?? Math.floor(Date.now() / 1000)) * 1000).toISOString(),
+              source: "stripe_webhook",
+              offer: productType,
+            }).catch((error) => console.error("[Webhook] Blueprint funnel receipt failed:", error));
+          }
 
           // Purchase confirmation email (one-time products only)
           const customerEmail = session.customer_email ?? session.customer_details?.email;
@@ -650,7 +672,12 @@ export async function registerRoutes(app: Express): Promise<void> {
       const user = await storage.getUser(req.session.userId);
       if (!user) return res.status(401).json({ message: "Unauthorized" });
 
-        const { productType } = req.body;
+      const checkoutInput = z.object({
+        productType: z.string().min(1).max(80),
+        blueprintJourneyId: z.string().uuid().optional(),
+      }).safeParse(req.body);
+      if (!checkoutInput.success) return res.status(400).json({ message: "Invalid checkout request" });
+      const { productType, blueprintJourneyId } = checkoutInput.data;
       const priceId = getPriceId(productType);
       if (!priceId) {
         return res.status(400).json({ message: "Invalid productType or missing price configuration" });
@@ -676,7 +703,7 @@ export async function registerRoutes(app: Express): Promise<void> {
               : productType === "career_blueprint"
                 ? `${baseUrl}/career`
                 : `${baseUrl}/pricing`,
-        metadata: { userId: user.id, productType },
+        metadata: { userId: user.id, productType, ...(blueprintJourneyId ? { blueprintJourneyId } : {}) },
         // Propagate userId onto the subscription so subscription.*/invoice.*
         // webhook events can resolve the user even before the customer id is stored.
         ...(subscription
@@ -867,6 +894,23 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // ── Other routes ─────────────────────────────────────────────────────────
+
+  app.post("/api/quality-lab/funnel-events", funnelEventLimiter, async (req: any, res) => {
+    const parsed = qualityLabFunnelEventSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Invalid Blueprint funnel event" });
+    try {
+      const row = await storage.recordQualityLabFunnelEvent(req.session?.userId ?? null, {
+        ...parsed.data,
+        occurredAt: new Date().toISOString(),
+      });
+      return res.status(202).json({ accepted: true, recorded: Boolean(row) });
+    } catch (error) {
+      // Analytics must never interrupt the user journey. The admin endpoint will
+      // expose a missing table clearly until db:push is run.
+      console.error("[Quality Lab funnel] receipt error:", error);
+      return res.status(202).json({ accepted: true, recorded: false });
+    }
+  });
 
   app.post(api.quoteRequests.create.path, async (req, res) => {
     try {

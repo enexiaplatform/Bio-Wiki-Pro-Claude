@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import {
-  Activity, BadgeDollarSign, BookOpenCheck, Building2, CheckCircle2, Database,
+  Activity, BadgeDollarSign, BarChart3, BookOpenCheck, Building2, CheckCircle2, Database,
   Download, FileArchive, FileCheck2, FolderKanban, LayoutDashboard, Loader2,
   Mail, Search, ShieldCheck, ShoppingCart, Users, XCircle,
 } from "lucide-react";
@@ -11,6 +11,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useSEO } from "@/hooks/use-seo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
+import type { QualityLabFunnelSnapshot, QualityLabFunnelStage } from "@shared/quality-lab-funnel";
 
 type Overview = {
   users: { total: number; pro: number; verified: number };
@@ -55,6 +56,17 @@ type Pipeline = {
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const date = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString("en-GB") : "—";
+const funnelLabels: Record<QualityLabFunnelStage, string> = {
+  cta_clicked: "Blueprint CTA clicked",
+  planner_started: "Planner started",
+  start_mode_selected: "Start mode selected",
+  model_compiled: "Initial model compiled",
+  review_viewed: "Expert review viewed",
+  review_started: "Review submission started",
+  review_requested: "Review requested",
+  diagnostic_checkout_started: "Diagnostic checkout started",
+  diagnostic_purchased: "Diagnostic purchased",
+};
 
 export default function AdminDashboardPage() {
   useSEO({ title: "Admin Control Center", description: "Operational control center for Life Science Atlas." });
@@ -74,6 +86,7 @@ export default function AdminDashboardPage() {
   const documents = useQuery<{ products: DocumentProduct[] }>({ queryKey: ["/api/admin/documents"], enabled: isAdmin, staleTime: 60_000 });
   const content = useQuery<{ content: ContentControl[] }>({ queryKey: ["/api/admin/content"], enabled: isAdmin, staleTime: 30_000 });
   const pipeline = useQuery<Pipeline>({ queryKey: ["/api/admin/pipeline"], enabled: isAdmin, staleTime: 30_000 });
+  const funnel = useQuery<QualityLabFunnelSnapshot>({ queryKey: ["/api/admin/quality-lab-funnel?days=30"], enabled: isAdmin, staleTime: 30_000 });
 
   const accessMutation = useMutation({
     mutationFn: async ({ userId, isPro }: { userId: string; isPro: boolean }) => (await apiRequest("PATCH", `/api/admin/users/${userId}/access`, { isPro })).json(),
@@ -111,7 +124,7 @@ export default function AdminDashboardPage() {
 
   if (isLoading || !isAdmin) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-teal-300" /></div>;
 
-  const loading = overview.isLoading || users.isLoading || documents.isLoading || content.isLoading || pipeline.isLoading;
+  const loading = overview.isLoading || users.isLoading || documents.isLoading || content.isLoading || pipeline.isLoading || funnel.isLoading;
 
   return (
     <div className="min-h-screen bg-[#07111f] px-4 pb-24 pt-6 text-slate-100 md:pt-10">
@@ -126,7 +139,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link href="/quality-lab/projects" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-teal-300/30">Open Blueprint workspace</Link>
-              <button onClick={() => { void Promise.all([overview.refetch(), users.refetch(), documents.refetch(), content.refetch(), pipeline.refetch()]); }} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200"><Activity className="h-4 w-4" /> Refresh data</button>
+              <button onClick={() => { void Promise.all([overview.refetch(), users.refetch(), documents.refetch(), content.refetch(), pipeline.refetch(), funnel.refetch()]); }} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200"><Activity className="h-4 w-4" /> Refresh data</button>
             </div>
           </div>
         </header>
@@ -139,6 +152,7 @@ export default function AdminDashboardPage() {
             <AdminTab value="users" icon={Users} label="Users" />
             <AdminTab value="documents" icon={FileArchive} label="Paid documents" />
             <AdminTab value="pipeline" icon={FolderKanban} label="Pipeline" />
+            <AdminTab value="funnel" icon={BarChart3} label="Blueprint funnel" />
             <AdminTab value="content" icon={BookOpenCheck} label="Content" />
           </TabsList>
 
@@ -171,6 +185,29 @@ export default function AdminDashboardPage() {
           <TabsContent value="pipeline" className="mt-5 space-y-5">
             <Panel title="Blueprint and commercial requests" description="Move every request to a clear owner, next action and outcome. Request context is commercial intake, not confidential project evidence."><div className="space-y-3">{(pipeline.data?.requests ?? []).map((request) => <CommercialRequestCard key={request.id} request={request} saving={pipelineMutation.isPending} onSave={(patch) => pipelineMutation.mutate({ id: request.id, patch })} />)}</div></Panel>
             <div className="grid gap-5 lg:grid-cols-2"><Panel title="Reviewed Blueprint projects" description="Account-held projects that entered expert review."><CompactRows rows={(pipeline.data?.projects ?? []).map((project) => ({ title: project.projectName, detail: `${project.inputCompletenessPercent ?? 0}% model completeness`, meta: date(project.updatedAt) }))} /></Panel><Panel title="Purchase records" description="Recent Stripe and manual purchase records."><CompactRows rows={(pipeline.data?.purchases ?? []).map((purchase) => ({ title: purchase.productType, detail: purchase.status || "pending", meta: purchase.amount ? money.format(purchase.amount / 100) : date(purchase.createdAt) }))} /></Panel></div>
+          </TabsContent>
+
+          <TabsContent value="funnel" className="mt-5">
+            <Panel title="Blueprint funnel · last 30 days" description="First-party stage receipts remain available when PostHog is absent. Counts are unique browser journeys; direct entry can make later-stage reach exceed earlier CTA reach.">
+              {funnel.isError ? (
+                <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-100">Funnel receipts are unavailable in this environment. Run the current database schema push before launch.</div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+                    <div><p className="text-3xl font-bold text-white">{funnel.data?.uniqueJourneys ?? 0}</p><p className="mt-1 text-xs text-slate-500">Unique Blueprint journeys observed</p></div>
+                    <p className="text-xs text-slate-600">No project inputs, contact details or evidence content are stored.</p>
+                  </div>
+                  {(funnel.data?.stages ?? []).map((stage) => {
+                    const width = Math.min(100, stage.percentOfPlannerStarts ?? (stage.journeys > 0 ? 100 : 0));
+                    return <div key={stage.stage} className="grid gap-2 border-b border-white/8 py-3 last:border-0 sm:grid-cols-[15rem_1fr_8.5rem] sm:items-center">
+                      <div><p className="text-sm font-semibold text-slate-200">{funnelLabels[stage.stage]}</p><p className="mt-0.5 font-mono text-[10px] text-slate-600">{stage.stage}</p></div>
+                      <div className="h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-teal-300" style={{ width: `${width}%` }} /></div>
+                      <div className="text-right"><span className="text-lg font-bold text-white">{stage.journeys}</span><span className="ml-2 text-xs text-slate-500">{stage.percentOfPlannerStarts === null ? "journeys" : `${stage.percentOfPlannerStarts}% of starts`}</span></div>
+                    </div>;
+                  })}
+                </div>
+              )}
+            </Panel>
           </TabsContent>
 
           <TabsContent value="content" className="mt-5">
