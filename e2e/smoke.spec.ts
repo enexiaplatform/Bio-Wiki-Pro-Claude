@@ -1616,6 +1616,43 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
   });
 
+  test("method navigator exposes bounded coverage and explicit no-result state", async ({ page }) => {
+    await page.goto("/methods");
+    await expect(page.getByRole("heading", { name: /Find what Atlas covers/i })).toBeVisible();
+    await page.getByLabel("Search methods and standards").fill("USP-85");
+    await expect(page.getByRole("heading", { name: /Bacterial endotoxins/i }).first()).toBeVisible();
+    await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
+    await expect(page.getByRole("heading", { name: "Not yet covered" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request scoped review/i })).toHaveAttribute("href", /method=impossible-unmapped-method-xyz/);
+  });
+
+  test("regulatory monitor renders official-source impact triage on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.route("**/api/regulatory-updates", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({
+      generatedAt: "2026-07-28T00:00:00.000Z",
+      sources: [{ id: "ema-inspections", ok: true, itemCount: 1 }],
+      items: [{ id: "reg_test", sourceId: "ema-inspections", publisher: "EMA", sourceLabel: "Inspections", market: "European Union", title: "Final GMP inspection guidance for microbiology laboratories", url: "https://example.test/official", publishedAt: "2026-07-28T00:00:00.000Z", domains: ["nonsterile-microbiology", "quality-systems"], documentStatus: "final-or-current", impactLevel: "priority-review", impactNote: "Confirm applicability before changing a Blueprint.", triageStatus: "machine-triaged" }],
+    }) }));
+    await page.goto("/monitor");
+    await expect(page.getByRole("heading", { name: /Changes mapped to quality decisions/i })).toBeVisible();
+    await expect(page.getByText(/Final GMP inspection guidance/i)).toBeVisible();
+    await expect(page.getByText(/machine triaged/i)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test("Pro Lab Workbench reuses a saved Blueprint basis on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockAdmin(page);
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_mobile_workbench");
+    await page.addInitScript((savedProject) => window.localStorage.setItem("lsa:quality-lab-projects:v1", JSON.stringify([savedProject])), project);
+    await page.goto("/pro/lab-workbench");
+    await expect(page.getByRole("heading", { name: /One mobile workbench/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Test demand pulse" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Method resource load" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Consumable replenishment scenario" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test("the legacy /qc-hub redirects into the unified Learn hub", async ({ page }) => {
     await page.goto("/qc-hub");
     await expect(page).toHaveURL(/\/academy$/);

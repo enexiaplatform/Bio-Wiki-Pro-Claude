@@ -47,6 +47,9 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     getQualityLabReminderPreference: vi.fn(() => Promise.resolve(undefined)),
     upsertQualityLabReminderPreference: vi.fn(),
     getQualityLabReminderCandidates: vi.fn(() => Promise.resolve([])),
+    getRegulatoryAlertPreference: vi.fn(() => Promise.resolve(undefined)),
+    upsertRegulatoryAlertPreference: vi.fn(),
+    getRegulatoryDigestCandidates: vi.fn(() => Promise.resolve([])),
     getQualityLabReviewedProject: vi.fn(),
     upsertQualityLabReviewedProject: vi.fn(),
     listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
@@ -59,6 +62,7 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
   portalCreate: vi.fn(),
 }));
 vi.mock("../storage.js", () => ({ storage: storageMock }));
+vi.mock("../regulatory-monitor.js", () => ({ fetchRegulatoryMonitor: vi.fn(() => Promise.resolve({ generatedAt: "2026-07-20T00:00:00.000Z", items: [], sources: [] })) }));
 
 vi.mock("google-auth-library", () => ({
   OAuth2Client: class {
@@ -91,6 +95,7 @@ vi.mock("../email.js", () => ({
   sendReEngagementEmail: vi.fn(() => Promise.resolve()),
   sendQualityLabWorkQueueEmail: vi.fn(() => Promise.resolve(true)),
   sendQualityLabWeeklyReviewEmail: vi.fn(() => Promise.resolve(true)),
+  sendRegulatoryDigestEmail: vi.fn(() => Promise.resolve(true)),
   sendCommercialRequestEmails: vi.fn(() => Promise.resolve()),
 }));
 
@@ -1102,6 +1107,41 @@ describe("Blueprint reminder preference", () => {
     const agent = await authedAgent(app);
     const res = await agent.put("/api/quality-lab/reminder-preference").send({ cadence: "hourly" });
     expect(res.status).toBe(400);
+  });
+});
+
+describe("regulatory impact monitor", () => {
+  async function authedAgent(app: express.Express) {
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "pro@example.com", isPro: true, subscriptionStatus: "active" });
+    await agent.post("/api/auth/register").send({ email: "pro@example.com", password: "pw123456" });
+    return agent;
+  }
+
+  it("exposes official-source metadata publicly but keeps preferences authenticated", async () => {
+    const app = await buildApp();
+    const monitor = await request(app).get("/api/regulatory-updates");
+    expect(monitor.status).toBe(200);
+    expect(monitor.body.items).toEqual([]);
+    await request(app).get("/api/regulatory-preference").expect(401);
+  });
+
+  it("saves an explicit Pro opt-in watchlist", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getUser.mockResolvedValue({ id: "u1", email: "pro@example.com", isPro: true, subscriptionStatus: "active" });
+    storageMock.upsertRegulatoryAlertPreference.mockResolvedValueOnce({ cadence: "weekly", domains: ["nonsterile-microbiology"], sources: ["fda-drugs"], updatedAt: new Date() });
+    const response = await agent.put("/api/regulatory-preference").send({ cadence: "weekly", domains: ["nonsterile-microbiology"], sources: ["fda-drugs"] });
+    expect(response.status).toBe(200);
+    expect(storageMock.upsertRegulatoryAlertPreference).toHaveBeenCalledWith("u1", { cadence: "weekly", domains: ["nonsterile-microbiology"], sources: ["fda-drugs"] });
+  });
+
+  it("rejects digest preferences for a free account", async () => {
+    const app = await buildApp();
+    const agent = await authedAgent(app);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "free@example.com", isPro: false, subscriptionStatus: "free" });
+    await agent.put("/api/regulatory-preference").send({ cadence: "daily", domains: [], sources: [] }).expect(403);
   });
 });
 

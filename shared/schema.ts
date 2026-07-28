@@ -6,6 +6,7 @@ import type { QualityLabGovernanceSnapshot } from "./quality-lab-governance";
 import type { AtlasProMonthlyReviewRecord } from "./atlas-pro-monthly";
 import type { CareerExecutionRecord } from "./career-execution";
 import type { CareerProfile } from "./career-blueprint";
+import type { RegulatoryDigestPreferenceInput } from "./regulatory-monitor";
 
 // === AUTH MODELS ===
 // Auth/billing tables live in ./models/auth.ts. They are intentionally NOT
@@ -154,6 +155,24 @@ export const lifecycleSends = pgTable(
   (t) => [uniqueIndex("lifecycle_sends_user_kind_idx").on(t.userId, t.kind)],
 );
 export type LifecycleSend = typeof lifecycleSends.$inferSelect;
+
+// Explicit Pro opt-in for regulatory impact digests. The watchlist stores only
+// Atlas taxonomy/source identifiers; it is not a regulatory applicability or
+// controlled-change record.
+export const regulatoryAlertPreferences = pgTable(
+  "regulatory_alert_preferences",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id").notNull(),
+    cadence: text("cadence").notNull().default("off"),
+    domains: jsonb("domains").$type<RegulatoryDigestPreferenceInput["domains"]>().notNull().default([]),
+    sources: jsonb("sources").$type<RegulatoryDigestPreferenceInput["sources"]>().notNull().default([]),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (t) => [uniqueIndex("regulatory_alert_preferences_user_idx").on(t.userId)],
+);
+export type RegulatoryAlertPreferenceRow = typeof regulatoryAlertPreferences.$inferSelect;
 
 // Checkout attempts — recorded when a Stripe Checkout session is created, so the
 // daily cron can email an abandoned-checkout reminder to users who started but

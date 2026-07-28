@@ -11,6 +11,7 @@ import {
   careerBlueprintProfiles,
   nurtureSends,
   lifecycleSends,
+  regulatoryAlertPreferences,
   checkoutAttempts,
   qualityLabReviewedProjects,
   qualityLabReviewedProjectRevisions,
@@ -28,12 +29,14 @@ import {
   type AtlasProMonthlyReviewRow,
   type CareerBlueprintExecutionRow,
   type CareerBlueprintProfileRow,
+  type RegulatoryAlertPreferenceRow,
 } from "../shared/schema.js";
 import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
 import type { AtlasProMonthlyReviewRecord } from "../shared/atlas-pro-monthly.js";
 import type { CareerExecutionRecord } from "../shared/career-execution.js";
 import type { CareerProfile } from "../shared/career-blueprint.js";
+import type { RegulatoryDigestPreferenceInput } from "../shared/regulatory-monitor.js";
 import { and, desc, eq, gt, inArray, lt, sql } from "drizzle-orm";
 
 export type QualityLabReminderPreference = {
@@ -95,6 +98,9 @@ export interface IStorage {
   getQualityLabReminderPreference(userId: string): Promise<QualityLabReminderPreference | undefined>;
   upsertQualityLabReminderPreference(userId: string, cadence: QualityLabReminderPreference["cadence"]): Promise<QualityLabReminderPreference>;
   getQualityLabReminderCandidates(): Promise<{ id: string; email: string | null; firstName: string | null; cadence: string }[]>;
+  getRegulatoryAlertPreference(userId: string): Promise<RegulatoryAlertPreferenceRow | undefined>;
+  upsertRegulatoryAlertPreference(userId: string, input: RegulatoryDigestPreferenceInput): Promise<RegulatoryAlertPreferenceRow>;
+  getRegulatoryDigestCandidates(): Promise<Array<{ id: string; email: string | null; firstName: string | null; cadence: string; domains: RegulatoryDigestPreferenceInput["domains"]; sources: RegulatoryDigestPreferenceInput["sources"] }>>;
   upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
   listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
@@ -444,6 +450,34 @@ export class DatabaseStorage implements IStorage {
       firstName: row.firstName,
       cadence: qualityLabReminderCadenceFromKind(row.kind),
     }));
+  }
+
+  async getRegulatoryAlertPreference(userId: string): Promise<RegulatoryAlertPreferenceRow | undefined> {
+    const [row] = await db.select().from(regulatoryAlertPreferences).where(eq(regulatoryAlertPreferences.userId, userId));
+    return row;
+  }
+
+  async upsertRegulatoryAlertPreference(userId: string, input: RegulatoryDigestPreferenceInput): Promise<RegulatoryAlertPreferenceRow> {
+    const [row] = await db.insert(regulatoryAlertPreferences).values({ userId, ...input, updatedAt: new Date() })
+      .onConflictDoUpdate({
+        target: regulatoryAlertPreferences.userId,
+        set: { cadence: input.cadence, domains: input.domains, sources: input.sources, updatedAt: new Date() },
+      })
+      .returning();
+    return row;
+  }
+
+  async getRegulatoryDigestCandidates() {
+    const rows = await db.select({
+      id: users.id,
+      email: users.email,
+      firstName: users.firstName,
+      cadence: regulatoryAlertPreferences.cadence,
+      domains: regulatoryAlertPreferences.domains,
+      sources: regulatoryAlertPreferences.sources,
+    }).from(regulatoryAlertPreferences)
+      .innerJoin(users, eq(users.id, regulatoryAlertPreferences.userId));
+    return rows.filter((row) => row.cadence !== "off");
   }
 
   async upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow> {

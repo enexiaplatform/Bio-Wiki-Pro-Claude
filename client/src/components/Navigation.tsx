@@ -69,6 +69,8 @@ const productLinks = [
 ];
 
 const resourceLinks = [
+  { name: "Methods & standards", description: "Coverage-aware evidence navigation", icon: Search, path: "/methods" },
+  { name: "Change monitor", description: "Official-source impact watch", icon: TrendingUp, path: "/monitor" },
   { name: "Workflows", description: "Step-by-step quality processes", icon: Workflow, path: "/workflows" },
   { name: "Academy", description: "Evidence-backed learning", icon: BookOpen, path: "/academy" },
   { name: "Tools", description: "Focused calculators and models", icon: Calculator, path: "/tools" },
@@ -85,6 +87,9 @@ const moreLinks = [
   { name: "Blueprint deliverables", icon: FileCheck2, path: "/quality-lab/deliverables" },
   { name: "Atlas Pro", icon: Crown, path: "/pro" },
   { name: "Pro Monthly Review", icon: CalendarDays, path: "/pro/monthly-review" },
+  { name: "Pro Lab Workbench", icon: Calculator, path: "/pro/lab-workbench" },
+  { name: "Methods & Standards", icon: Search, path: "/methods" },
+  { name: "Regulatory Monitor", icon: TrendingUp, path: "/monitor" },
   { name: "Workflows", icon: Workflow, path: "/workflows" },
   { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Toolkits", icon: Package, path: "/toolkits" },
@@ -105,6 +110,7 @@ const moreLinks = [
 // primary tab bar so the top nav stays content-focused.
 const accountLinks = [
   { name: "Pro Monthly Review", icon: CalendarDays, path: "/pro/monthly-review" },
+  { name: "Pro Lab Workbench", icon: Calculator, path: "/pro/lab-workbench" },
   { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
   { name: "My Downloads", icon: Download, path: "/my-downloads" },
   { name: "Vault", icon: NotebookPen, path: "/vault" },

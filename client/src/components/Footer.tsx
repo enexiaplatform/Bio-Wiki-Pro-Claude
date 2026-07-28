@@ -24,6 +24,8 @@ const footerGroups = [
     title: "Resources",
     links: [
       { label: "Evidence library", href: "/academy" },
+      { label: "Methods & standards", href: "/methods" },
+      { label: "Regulatory monitor", href: "/monitor" },
       { label: "Workflows", href: "/workflows" },
       { label: "Decision tools", href: "/tools" },
       { label: "Toolkits", href: "/toolkits" },
