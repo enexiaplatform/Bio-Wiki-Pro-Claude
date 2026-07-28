@@ -16,6 +16,7 @@ import {
   QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY,
   type QualityLabDecisionFrameInput,
 } from "@shared/quality-lab-decision-frame";
+import { getQualityLabFunnelJourneyId } from "@/lib/quality-lab-funnel";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -132,7 +133,7 @@ export default function QualityLabReviewPage() {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productType: "scope_diagnostic" }),
+        body: JSON.stringify({ productType: "scope_diagnostic", blueprintJourneyId: getQualityLabFunnelJourneyId() }),
       });
       const result = await response.json();
       if (!response.ok || !result.url) throw new Error(result.message ?? "Unable to start secure checkout.");

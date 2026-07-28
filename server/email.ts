@@ -3,6 +3,7 @@ import { getProductName } from "./products.js";
 import { deliverablesForPurchase } from "./deliverables.js";
 import { commercialNotificationRecipients, getPublicOrigin } from "./runtime-config.js";
 import type { QualityLabPortfolioActionItem, QualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
+import type { RegulatoryCadence, RegulatoryUpdate } from "../shared/regulatory-monitor.js";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -566,6 +567,51 @@ export async function sendNurtureEmail(to: string, step: number, firstName?: str
     });
   } catch (err) {
     console.error(`[Email] Failed to send nurture step ${step}:`, err);
+  }
+}
+
+/** Opt-in Pro digest of official-source items with deterministic, unreviewed impact triage. */
+export async function sendRegulatoryDigestEmail(
+  to: string,
+  firstName: string | undefined,
+  cadence: Exclude<RegulatoryCadence, "off">,
+  items: RegulatoryUpdate[],
+): Promise<boolean> {
+  if (!resend) {
+    console.log(`[Email] Would send ${cadence} regulatory impact digest to ${to} (Resend not configured)`);
+    return false;
+  }
+  if (items.length === 0) return false;
+  const name = escapeHtml(firstName ?? "there");
+  const rows = items.slice(0, 8).map((item) => `<div style="padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <p style="margin:0 0 4px;color:#5eead4;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;">${escapeHtml(item.publisher)} · ${escapeHtml(item.market)} · ${escapeHtml(item.impactLevel.replaceAll("-", " "))}</p>
+    <p style="margin:0 0 6px;color:#f8fafc;font-weight:700;">${escapeHtml(item.title)}</p>
+    <p style="margin:0 0 7px;font-size:13px;">${escapeHtml(item.impactNote)}</p>
+    <a href="${escapeHtml(item.url)}" style="color:#7dd3fc;font-size:12px;font-weight:700;">Open official source →</a>
+  </div>`).join("");
+  const html = htmlWrapper(`
+    <h1>Your ${cadence} regulatory impact watch, ${name}</h1>
+    <p>These items come from the official FDA and EMA feeds selected in your Atlas Pro watchlist.</p>
+    <div class="box"><p><strong>${items.length}</strong> matching source update${items.length === 1 ? "" : "s"}. Impact labels are deterministic machine triage and have not been accepted as regulatory interpretation or a change-control decision.</p></div>
+    ${rows}
+    <a href="${BASE_URL}/monitor?source=regulatory-digest" class="cta">Open the impact monitor →</a>
+    <p style="font-size:13px;color:#64748b;">Confirm the official text, effective status, market and site applicability before changing a method, Blueprint or controlled process. Change or turn off this opt-in digest from the monitor.</p>
+  `);
+  try {
+    const response = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `${cadence === "daily" ? "Daily" : "Weekly"} regulatory impact watch — Life Science Atlas`,
+      html,
+    });
+    if (response.error) {
+      console.error("[Email] Regulatory digest rejected:", response.error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[Email] Failed to send regulatory digest:", err);
+    return false;
   }
 }
 

@@ -252,6 +252,9 @@ The current Compiler has a first executable non-sterile microbiology vertical sl
 - an account-connected governance revision trail plus a controlled rule-change candidate register that requires trigger projects, evidence, validation cases, impact assessment and external approval references while never editing executable rules directly.
 - a private, email-allowlisted Admin Control Center for user access, paid-document release QA, content publish/tier controls and visibility across leads, purchases, commercial requests and account-held reviewed Blueprint projects.
 - a hardened Quality Lab Decision Workspace with immutable application-level model revisions, explicit-only recompilation, deterministic decision lifecycle validation, a separately confirmed project Evidence Register and fail-closed recommendation-to-rule-to-workflow/method lineage integrity.
+- a public Method & Standards Navigator that exposes the current bounded eight-application microbiology coverage, source/licensing boundaries, unresolved evidence and explicit `not covered` outcomes without reproducing licensed compendial text or implying universal applicability;
+- a public official-source Regulatory Change Monitor that reads focused FDA and EMA feeds, applies visibly machine-triaged domain/impact labels, and supports explicit Pro weekly or daily watchlist opt-in through the existing lifecycle cron;
+- a mobile-first Atlas Pro Lab Workbench that reuses saved Blueprint inputs and the same Compiler outputs for demand, method-resource load and consumable-supply scenarios, with assumption changes saved through Blueprint revision history rather than a parallel lab-record system.
 
 This is still not the authoritative production Compiler. Material limitations remain:
 
@@ -273,6 +276,9 @@ This is still not the authoritative production Compiler. Material limitations re
 - The consolidated Gate 2 control currently remains at zero of four evidence-complete controls. Reaching four of four would start a qualified release review; it would not itself verify the Domain Pack, approve a rule change, or authorize client use.
 - Rule-change workflow infrastructure now exists, but the repository contains no approved real rule change. A candidate or external approval record still requires regression review and a separate controlled Domain Pack version release.
 - Admin v1 manages the existing database and repository-backed deliverable registry; it is not yet a general browser-upload CMS, immutable administrator audit log, CRM workflow, support desk or document-control system. New paid files still require a controlled repository release, and production access requires an explicit `ADMIN_EMAILS` allowlist.
+- Navigator coverage remains intentionally narrow and no current application is presented as site-approved or fully evidence-closed; search demand is a prioritization signal, not proof that Atlas can answer every method or standards query.
+- Regulatory Monitor impact labels are deterministic machine triage over official-source metadata. They are not human-reviewed regulatory interpretation, applicability decisions, effective-date verification or automatic Method Graph/rule changes; feed availability and publisher metadata quality remain external dependencies.
+- The Pro Lab Workbench is a Blueprint companion, not LIMS, QMS, inventory control, sample/result management or a controlled purchasing record. Its current supply and capacity values remain concept outputs subject to the same evidence and review limitations as the source Blueprint.
 
 The next stage is controlled service-assisted validation: use the slice in real discovery work, capture corrections and estimate-to-actual variance, then replace concept assumptions with reviewed Domain Pack rules.
 

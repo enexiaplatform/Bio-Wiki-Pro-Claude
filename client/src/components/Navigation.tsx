@@ -25,6 +25,7 @@ import { prefetchRoute } from "@/lib/route-prefetch";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { analytics } from "@/hooks/use-analytics";
 
 // Life Science Atlas "Knowledge Lattice" mark (molecule + knowledge graph).
 function AtlasMark({ className }: { className?: string }) {
@@ -69,6 +70,8 @@ const productLinks = [
 ];
 
 const resourceLinks = [
+  { name: "Methods & standards", description: "Coverage-aware evidence navigation", icon: Search, path: "/methods" },
+  { name: "Change monitor", description: "Official-source impact watch", icon: TrendingUp, path: "/monitor" },
   { name: "Workflows", description: "Step-by-step quality processes", icon: Workflow, path: "/workflows" },
   { name: "Academy", description: "Evidence-backed learning", icon: BookOpen, path: "/academy" },
   { name: "Tools", description: "Focused calculators and models", icon: Calculator, path: "/tools" },
@@ -85,6 +88,9 @@ const moreLinks = [
   { name: "Blueprint deliverables", icon: FileCheck2, path: "/quality-lab/deliverables" },
   { name: "Atlas Pro", icon: Crown, path: "/pro" },
   { name: "Pro Monthly Review", icon: CalendarDays, path: "/pro/monthly-review" },
+  { name: "Pro Lab Workbench", icon: Calculator, path: "/pro/lab-workbench" },
+  { name: "Methods & Standards", icon: Search, path: "/methods" },
+  { name: "Regulatory Monitor", icon: TrendingUp, path: "/monitor" },
   { name: "Workflows", icon: Workflow, path: "/workflows" },
   { name: "Tools", icon: Calculator, path: "/tools" },
   { name: "Toolkits", icon: Package, path: "/toolkits" },
@@ -105,6 +111,7 @@ const moreLinks = [
 // primary tab bar so the top nav stays content-focused.
 const accountLinks = [
   { name: "Pro Monthly Review", icon: CalendarDays, path: "/pro/monthly-review" },
+  { name: "Pro Lab Workbench", icon: Calculator, path: "/pro/lab-workbench" },
   { name: "My Learning", icon: GraduationCap, path: "/my-learning" },
   { name: "My Downloads", icon: Download, path: "/my-downloads" },
   { name: "Vault", icon: NotebookPen, path: "/vault" },
@@ -365,7 +372,7 @@ export function DesktopNav() {
             <LogIn className="h-4 w-4" /> {t("signIn")}
           </Link>
         )}
-        <Link href="/quality-lab/planner" className="inline-flex min-h-10 items-center justify-center rounded-lg bg-teal-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-teal-200" data-testid="nav-desktop-start-free">
+        <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("desktop_nav", "planner")} className="inline-flex min-h-10 items-center justify-center rounded-lg bg-teal-300 px-4 text-sm font-bold text-slate-950 transition hover:bg-teal-200" data-testid="nav-desktop-start-free">
           Start free
         </Link>
       </div>

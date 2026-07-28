@@ -35,11 +35,11 @@ const proLibrary = [
   {
     icon: Calculator,
     number: "02",
-    title: "Premium decision tools",
-    body: "Use focused calculators and models that keep formulas, inputs, assumptions, and limits visible.",
-    example: "Calculators and planning models",
-    href: "/tools",
-    linkLabel: "Explore public tools",
+    title: "Blueprint-connected Lab Workbench",
+    body: "Review recurring test demand, method resource load, and consumable replenishment assumptions from the same Blueprint basis on desktop or mobile.",
+    example: "Demand, capacity, and supply views",
+    href: "/pro/lab-workbench",
+    linkLabel: "Open the Lab Workbench",
   },
   {
     icon: FileSpreadsheet,
@@ -71,7 +71,8 @@ const workflow = [
 const comparisonRows = [
   ["Monthly operating review", "Illustrative preview only", "Editable workspace, account sync, portfolio pulse, carryover, and export"],
   ["Evidence", "Public orientation and selected guides", "30+ deep-dive lessons with decision tables, inspector findings, worked examples, and quizzes"],
-  ["Tools", "Selected public calculators", "Available premium calculators and planning tools"],
+  ["Tools", "30 focused public calculators", "Blueprint-connected Lab Workbench with saved assumptions, revisions, and export"],
+  ["Regulatory updates", "Public official-source monitor", "Opt-in weekly impact digest or narrow daily watchlist"],
   ["Working files", "Limited public samples", "7 complete working packs (PDF guides + Excel registers) plus the GMP Audit Readiness Kit"],
   ["Audit readiness", "Public orientation resources", "GMP Audit Readiness Kit included"],
   ["Expert project review", "Not included", "Not included — use Quality Lab for scoped review"],

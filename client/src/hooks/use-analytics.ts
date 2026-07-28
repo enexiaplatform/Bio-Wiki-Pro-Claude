@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { recordQualityLabFunnelEvent } from "@/lib/quality-lab-funnel";
 
 declare global {
   interface Window {
@@ -88,8 +89,10 @@ export const analytics = {
   activated: (lessonId: string) =>
     capture("activated", { lesson_id: lessonId }),
 
-  checkoutStarted: (productType: string, priceUsd?: number) =>
-    capture("checkout_started", { product_type: productType, price_usd: priceUsd }),
+  checkoutStarted: (productType: string, priceUsd?: number) => {
+    capture("checkout_started", { product_type: productType, price_usd: priceUsd });
+    if (productType === "scope_diagnostic") recordQualityLabFunnelEvent({ stage: "diagnostic_checkout_started", offer: productType });
+  },
 
   careerAssessmentStarted: () => capture("career_assessment_started"),
 
@@ -143,8 +146,10 @@ export const analytics = {
   proMonthlyReviewRolledForward: (focus: string) =>
     capture("pro_monthly_review_rolled_forward", { focus }),
 
-  purchaseCompleted: (productType: string, amountCents?: number) =>
-    capture("purchase_completed", { product_type: productType, amount_cents: amountCents }),
+  purchaseCompleted: (productType: string, amountCents?: number) => {
+    capture("purchase_completed", { product_type: productType, amount_cents: amountCents });
+    if (productType === "scope_diagnostic") recordQualityLabFunnelEvent({ stage: "diagnostic_purchased", offer: productType });
+  },
 
   onboardingStarted: () => capture("onboarding_started"),
 
@@ -172,8 +177,10 @@ export const analytics = {
   workflowClicked: (workflowName: string) =>
     capture("workflow_clicked", { workflow_name: workflowName }),
 
-  blueprintCtaClicked: (placement: string, destination: string) =>
-    capture("blueprint_cta_clicked", { placement, destination }),
+  blueprintCtaClicked: (placement: string, destination: string) => {
+    capture("blueprint_cta_clicked", { placement, destination });
+    recordQualityLabFunnelEvent({ stage: "cta_clicked", placement, destination });
+  },
 
   blueprintDecisionFrameCopied: (detailPercent: number, describedInputs: number) =>
     capture("blueprint_decision_frame_copied", { detail_percent: detailPercent, described_inputs: describedInputs }),
@@ -190,23 +197,32 @@ export const analytics = {
 
   sampleBlueprintDownloaded: () => capture("sample_blueprint_downloaded", { format: "pdf" }),
 
-  commercialIntakeViewed: (offer: string) => capture("commercial_intake_viewed", { offer }),
+  commercialIntakeViewed: (offer: string) => {
+    capture("commercial_intake_viewed", { offer });
+    recordQualityLabFunnelEvent({ stage: "review_viewed", offer });
+  },
 
-  blueprintStarted: (source = "planner") =>
-    capture("blueprint_started", { source }),
+  blueprintStarted: (source = "planner") => {
+    capture("blueprint_started", { source });
+    recordQualityLabFunnelEvent({ stage: "planner_started", source });
+  },
 
-  blueprintStartModeSelected: (mode: "guided" | "example" | "blank" | "import") =>
-    capture("blueprint_start_mode_selected", { mode }),
+  blueprintStartModeSelected: (mode: "guided" | "example" | "blank" | "import") => {
+    capture("blueprint_start_mode_selected", { mode });
+    recordQualityLabFunnelEvent({ stage: "start_mode_selected", startMode: mode });
+  },
 
   blueprintImported: (source: "input" | "project") =>
     capture("blueprint_imported", { source }),
 
-  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number) =>
+  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number) => {
     capture("blueprint_compiled", {
       project_id: projectId,
       facility_type: facilityType,
       scope_count: scopeCount,
-    }),
+    });
+    recordQualityLabFunnelEvent({ stage: "model_compiled" });
+  },
 
   scenarioCompared: (baselineId: string, alternativeId: string, changedInputs: number) =>
     capture("blueprint_scenarios_compared", {
@@ -293,11 +309,15 @@ export const analytics = {
   crossTrainingPriorityExported: (allocatedPeople: number, deferredPeople: number) =>
     capture("cross_training_priority_exported", { allocated_people: allocatedPeople, deferred_people: deferredPeople }),
 
-  expertReviewStarted: (source: string, engagementIntent?: string) =>
-    capture("expert_review_started", { source, engagement_intent: engagementIntent }),
+  expertReviewStarted: (source: string, engagementIntent?: string) => {
+    capture("expert_review_started", { source, engagement_intent: engagementIntent });
+    recordQualityLabFunnelEvent({ stage: "review_started", source, offer: engagementIntent });
+  },
 
-  expertReviewRequested: (hasProject: boolean, engagementIntent?: string) =>
-    capture("expert_review_requested", { has_project: hasProject, engagement_intent: engagementIntent }),
+  expertReviewRequested: (hasProject: boolean, engagementIntent?: string) => {
+    capture("expert_review_requested", { has_project: hasProject, engagement_intent: engagementIntent });
+    recordQualityLabFunnelEvent({ stage: "review_requested", source: hasProject ? "blueprint" : "standalone", offer: engagementIntent });
+  },
 
   reviewedProjectSync: (outcome: "success" | "failed" | "retry", projectId: string) =>
     capture("reviewed_project_sync", { outcome, project_id: projectId }),

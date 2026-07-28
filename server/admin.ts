@@ -1,10 +1,11 @@
 import type { Express, RequestHandler } from "express";
 import { access } from "fs/promises";
 import path from "path";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, gte, sql } from "drizzle-orm";
 import { z } from "zod";
 import { users, purchases } from "../shared/models/auth.js";
-import { contentEntries, leads, qualityLabReviewedProjects, quoteRequests } from "../shared/schema.js";
+import { contentEntries, leads, qualityLabFunnelEvents, qualityLabReviewedProjects, quoteRequests } from "../shared/schema.js";
+import { buildQualityLabFunnelSnapshot } from "../shared/quality-lab-funnel.js";
 import { db } from "./db.js";
 import { DELIVERABLES } from "./deliverables.js";
 import { storage } from "./storage.js";
@@ -182,6 +183,21 @@ export function registerAdminRoutes(app: Express, isAuthenticated: RequestHandle
     } catch (error) {
       console.error("[Admin] pipeline error:", error);
       res.status(500).json({ message: "Failed to load operational pipeline" });
+    }
+  });
+
+  app.get("/api/admin/quality-lab-funnel", ...adminOnly, async (req, res) => {
+    const days = z.coerce.number().int().min(1).max(365).catch(30).parse(req.query.days);
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+    try {
+      const events = await db.select({
+        journeyId: qualityLabFunnelEvents.journeyId,
+        stage: qualityLabFunnelEvents.stage,
+      }).from(qualityLabFunnelEvents).where(gte(qualityLabFunnelEvents.occurredAt, since));
+      res.json(buildQualityLabFunnelSnapshot(events, days));
+    } catch (error) {
+      console.error("[Admin] Quality Lab funnel error:", error);
+      res.status(503).json({ message: "Funnel receipts unavailable; run db:push for this environment" });
     }
   });
 

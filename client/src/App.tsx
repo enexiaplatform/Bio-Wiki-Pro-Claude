@@ -42,6 +42,9 @@ const DeliverablesPage = lazy(() => import("@/pages/DeliverablesPage"));
 const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const ProPage = lazy(() => import("@/pages/ProPage"));
 const AtlasProMonthlyReviewPage = lazy(() => import("@/pages/AtlasProMonthlyReviewPage"));
+const ProLabWorkbenchPage = lazy(() => import("@/pages/ProLabWorkbenchPage"));
+const MethodStandardsNavigatorPage = lazy(() => import("@/pages/MethodStandardsNavigatorPage"));
+const RegulatoryMonitorPage = lazy(() => import("@/pages/RegulatoryMonitorPage"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const Welcome = lazy(() => import("@/pages/Welcome"));
@@ -126,6 +129,9 @@ function Layout() {
           <Route path="/products" component={ProductsPage} />
           <Route path="/pro" component={ProPage} />
           <Route path="/pro/monthly-review" component={AtlasProMonthlyReviewPage} />
+          <Route path="/pro/lab-workbench" component={ProLabWorkbenchPage} />
+          <Route path="/methods" component={MethodStandardsNavigatorPage} />
+          <Route path="/monitor" component={RegulatoryMonitorPage} />
           <Route path="/how-it-works" component={PlatformHowItWorksPage} />
           <Route path="/deliverables"><Redirect to="/quality-lab/deliverables" replace /></Route>
           <Route path="/quality-lab" component={QualityLabLandingPage} />
