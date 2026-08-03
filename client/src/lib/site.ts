@@ -3,6 +3,6 @@
 // goes live, then redeploy. Falls back to the Vercel preview domain.
 export const SITE_URL =
   (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, "") ??
-  "https://lifescienceatlas.com";
+  "https://life-science-atlas-enexiaplatforms-projects.vercel.app";
 
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.svg`;

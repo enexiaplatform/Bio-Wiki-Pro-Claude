@@ -45,6 +45,14 @@ describe("Quality Lab frozen revision integrity", () => {
     expect(updated.revisions?.[1].ruleReferences).toEqual(updated.blueprint.ruleTrace.map((rule) => ({ id: rule.ruleId, version: rule.ruleVersion })));
   });
 
+  it("numbers the next revision from the highest stored revision rather than the array length", () => {
+    const project = projectWithHistory();
+    const fifth = freezeQualityLabProjectRevision(project, 5, "2026-07-28T00:30:00.000Z");
+    const sparseHistory = { ...project, revisions: [project.revisions![0], fifth], activeRevisionId: fifth.revisionId };
+    const updated = recompileQualityLabProject(sparseHistory, project.input, "2026-07-28T01:00:00.000Z");
+    expect(updated.revisions?.at(-1)?.revisionNumber).toBe(6);
+  });
+
   it("preserves legacy stored output and marks incomplete provenance", () => {
     const project = createQualityLabProject(defaultQualityLabInput, "qlp_legacy");
     const loaded = ensureQualityLabProjectHistory(project);

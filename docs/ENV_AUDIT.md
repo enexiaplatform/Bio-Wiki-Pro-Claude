@@ -2,6 +2,8 @@
 
 > **Strategic status (2026-07-18):** the inventory below contains useful legacy Pro and digital-goods references, but the Gate 1 launch baseline is `COMMERCIAL_LAUNCH_RUNBOOK.md`. The current commercial path additionally requires `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, a monitored `COMMERCIAL_NOTIFICATION_EMAILS` or `ADMIN_EMAILS` recipient, and `CRON_SECRET`; `npm run preflight` is the executable readiness check.
 
+> **P0 runtime update (2026-08-03):** `COMMERCE_MODE` now defaults to `disabled`; preview test checkout requires `COMMERCE_MODE=test`, and live checkout requires `COMMERCE_MODE=live` plus a custom domain and matching live Stripe configuration. `PUBLIC_APP_URL` is the preferred runtime origin; `BASE_URL` remains only as a one-release fallback. Production and preview have no session-secret fallback and fail closed unless `SESSION_SECRET` is a non-placeholder value of at least 32 characters. Any older fallback or variable-count statements below are historical inventory.
+
 > **Mục đích:** Checklist kiểm kê toàn bộ biến môi trường app cần, để đối chiếu giá trị thật trên Vercel (real vs placeholder).
 > **Ngày:** 2026-05-29 · **Phương pháp:** quét mọi `process.env.*` trong `server/` và `import.meta.env.*` trong `client/`, đối chiếu `.env.example`.
 

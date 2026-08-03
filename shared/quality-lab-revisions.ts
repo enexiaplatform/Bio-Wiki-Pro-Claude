@@ -112,6 +112,7 @@ export function recompileQualityLabProject(
     decisionRegister,
     updatedAt: now,
   };
-  const next = freezeQualityLabProjectRevision(working, historical.revisions!.length + 1, now);
+  const highestRevisionNumber = historical.revisions!.reduce((highest, revision) => Math.max(highest, revision.revisionNumber), 0);
+  const next = freezeQualityLabProjectRevision(working, highestRevisionNumber + 1, now);
   return { ...working, revisions: [...historical.revisions!, next], activeRevisionId: next.revisionId };
 }

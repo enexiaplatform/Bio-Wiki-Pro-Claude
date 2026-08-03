@@ -4,7 +4,9 @@ import path from "path";
 import matter from "gray-matter";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
-const SITE_URL = (process.env.BASE_URL ?? "https://lifescienceatlas.com").replace(/\/$/, "");
+const SITE_URL = (process.env.PUBLIC_APP_URL
+  ?? process.env.BASE_URL
+  ?? "https://life-science-atlas-enexiaplatforms-projects.vercel.app").replace(/\/$/, "");
 
 // Per-tool social/SEO meta for the standalone /tools/:slug pages. Most crawlers
 // and social-card scrapers don't run the client JS that sets these, so we inject

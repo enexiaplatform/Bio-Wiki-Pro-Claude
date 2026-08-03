@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, NextFunction, Request, Response } from "express";
 import { storage } from "./storage.js";
 import { api } from "../shared/routes.js";
 import { z } from "zod";
@@ -8,11 +8,11 @@ import bcrypt from "bcryptjs";
 import Stripe from "stripe";
 import { sendWelcomeEmail, sendPurchaseConfirmation, sendLeadMagnetEmail, sendDunningEmail, sendPasswordResetEmail, sendVerificationEmail, sendNurtureEmail, sendTrialEndingEmail, sendAbandonedCheckoutEmail, sendReEngagementEmail, sendQualityLabWorkQueueEmail, sendQualityLabWeeklyReviewEmail, sendRegulatoryDigestEmail, sendCommercialRequestEmails } from "./email.js";
 import crypto from "crypto";
-import { getPriceId, isSubscription, isProductAvailable } from "./products.js";
+import { getPriceId, getProduct, isSubscription, isProductAvailable } from "./products.js";
 import { DELIVERABLES, getDeliverable, getDeliverableFile } from "./deliverables.js";
 import { gapAnalysisWorkbook, markdownToPdf, qualityLabSampleBlueprintPdf } from "./generate.js";
 import { isProActive } from "./entitlements.js";
-import { connectionString } from "./db.js";
+import { checkRuntimeSchema, connectionString } from "./db.js";
 import { OAuth2Client } from "google-auth-library";
 import { rateLimit } from "express-rate-limit";
 import {
@@ -20,7 +20,6 @@ import {
   qualityLabProjectFromReviewedSnapshot,
   qualityLabProjectSyncRequestSchema,
   qualityLabReviewedProjectSnapshotSchema,
-  qualityLabSyncHasConflict,
 } from "../shared/quality-lab-persistence.js";
 import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue, qualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
@@ -33,6 +32,7 @@ import { atlasProMonthlyReviewRecordSchema } from "../shared/atlas-pro-monthly.j
 import { filterRegulatoryUpdates, regulatoryDigestPreferenceSchema } from "../shared/regulatory-monitor.js";
 import { fetchRegulatoryMonitor } from "./regulatory-monitor.js";
 import { qualityLabFunnelEventSchema } from "../shared/quality-lab-funnel.js";
+import { fulfillStripeEventOnce, type StripeFulfillment } from "./stripe-fulfillment.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -92,30 +92,52 @@ const stripe = process.env.STRIPE_SECRET_KEY
     })
   : null;
 
+function usesSecureCookies() {
+  return process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL_ENV);
+}
+
 // Add session middleware
 export function setupSession(app: Express) {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1000;
+  const sessionTtlSeconds = 7 * 24 * 60 * 60;
+  const sessionTtlMs = sessionTtlSeconds * 1000;
+  const readiness = runtimeReadiness();
+  if ((process.env.NODE_ENV === "production" || process.env.VERCEL_ENV) && !readiness.sessions) {
+    throw new Error("A non-placeholder SESSION_SECRET of at least 32 characters is required");
+  }
   const sessionStore = connectionString
     ? new (connectPg(session))({
         conString: connectionString,
         createTableIfMissing: false,
-        ttl: sessionTtl,
+        ttl: sessionTtlSeconds,
         tableName: "sessions",
       })
     : undefined;
 
   app.set("trust proxy", 1);
   app.use(session({
-    secret: process.env.SESSION_SECRET || "default_secret",
+    name: "lsa.sid",
+    secret: process.env.SESSION_SECRET || "life-science-atlas-development-session-only",
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: sessionTtl,
+      secure: usesSecureCookies(),
+      sameSite: "lax",
+      path: "/",
+      maxAge: sessionTtlMs,
     },
   }));
+}
+
+function establishSession(req: any, userId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    req.session.regenerate((regenerateError: unknown) => {
+      if (regenerateError) return reject(regenerateError);
+      req.session.userId = userId;
+      req.session.save((saveError: unknown) => saveError ? reject(saveError) : resolve());
+    });
+  });
 }
 
 export const isAuthenticated = (req: any, res: any, next: any) => {
@@ -159,6 +181,25 @@ export async function registerRoutes(app: Express): Promise<void> {
     next();
   });
 
+  app.use((req: any, res, next) => {
+    if (!["POST", "PUT", "PATCH", "DELETE"].includes(req.method) || req.path === "/api/stripe/webhook") return next();
+    const origin = typeof req.headers.origin === "string" ? req.headers.origin : "";
+    const fetchSite = typeof req.headers["sec-fetch-site"] === "string" ? req.headers["sec-fetch-site"] : "";
+    const allowedOrigins = new Set([
+      getPublicOrigin(),
+      "http://localhost:5000",
+      "http://127.0.0.1:5000",
+    ]);
+    const forwardedProtocol = typeof req.headers["x-forwarded-proto"] === "string"
+      ? req.headers["x-forwarded-proto"].split(",")[0].trim()
+      : req.protocol;
+    if (req.headers.host) allowedOrigins.add(`${forwardedProtocol}://${req.headers.host}`);
+    if (fetchSite === "cross-site" || (origin && !allowedOrigins.has(origin))) {
+      return res.status(403).json({ message: "Cross-origin request rejected", code: "ORIGIN_NOT_ALLOWED", requestId: req.requestId ?? "unavailable" });
+    }
+    next();
+  });
+
   // ── Stripe webhook must be registered BEFORE session/json middleware
   // but express.json verify already saves req.rawBody so we can verify here.
   app.post("/api/stripe/webhook", async (req: any, res) => {
@@ -181,67 +222,37 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.status(400).json({ message: `Webhook Error: ${err.message}` });
     }
 
-    // Idempotency: Stripe retries deliver the same event.id. If we've already
-    // processed it, ack immediately so we never fulfill twice.
-    const alreadyProcessed = await storage
-      .isStripeEventProcessed(event.id)
-      .catch((e) => {
-        console.error("[Webhook] Idempotency check failed:", e);
-        return false; // fail-open: better to risk a guarded retry than drop the event
-      });
-    if (alreadyProcessed) {
-      return res.status(200).json({ received: true, duplicate: true });
-    }
-
     try {
+      let fulfillment: StripeFulfillment = { kind: "noop" };
+      let purchaseEmail: { to: string; productType: string; amount?: number; userId: string } | undefined;
+      let dunningEmail: { to?: string; graceUntil: Date } | undefined;
+
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
         const { userId, productType, blueprintJourneyId } = session.metadata ?? {};
-        if (!userId || !productType) {
+        if (!userId || !productType || !getProduct(productType)) {
           return res.status(400).json({ message: "Missing metadata" });
         }
 
         if (isSubscription(productType)) {
-          // Pro (monthly or annual). Provisional unlock; subscription.created/
-          // updated sets the period end.
-          await storage.updateUserStripe(userId, {
-            isPro: true,
-            subscriptionStatus: "active",
-            stripeCustomerId: session.customer as string,
-            stripeSubscriptionId: session.subscription as string,
-            proGraceUntil: null,
-          });
+          fulfillment = {
+            kind: "checkout-subscription",
+            userId,
+            customerId: typeof session.customer === "string" ? session.customer : null,
+            subscriptionId: typeof session.subscription === "string" ? session.subscription : null,
+          };
         } else {
-          await storage.createPurchase({
+          fulfillment = {
+            kind: "checkout-payment",
             userId,
             productType,
-            stripeSessionId: session.id,
-            amount: session.amount_total ?? undefined,
-            status: "completed",
-          });
-
-          if (productType === "scope_diagnostic" && z.string().uuid().safeParse(blueprintJourneyId).success) {
-            await storage.recordQualityLabFunnelEvent(userId, {
-              eventId: crypto.randomUUID(),
-              journeyId: blueprintJourneyId!,
-              stage: "diagnostic_purchased",
-              occurredAt: new Date((session.created ?? Math.floor(Date.now() / 1000)) * 1000).toISOString(),
-              source: "stripe_webhook",
-              offer: productType,
-            }).catch((error) => console.error("[Webhook] Blueprint funnel receipt failed:", error));
-          }
-
-          // Purchase confirmation email (one-time products only)
+            sessionId: session.id,
+            amount: session.amount_total,
+            blueprintJourneyId: z.string().uuid().safeParse(blueprintJourneyId).success ? blueprintJourneyId : undefined,
+            occurredAt: new Date((session.created ?? Math.floor(Date.now() / 1000)) * 1000),
+          };
           const customerEmail = session.customer_email ?? session.customer_details?.email;
-          if (customerEmail) {
-            const user = await storage.getUser(userId).catch(() => null);
-            sendPurchaseConfirmation(
-              customerEmail,
-              productType,
-              session.amount_total ?? undefined,
-              user?.firstName ?? undefined
-            ).catch((err) => console.error("[Webhook] Purchase email error:", err));
-          }
+          if (customerEmail) purchaseEmail = { to: customerEmail, productType, amount: session.amount_total ?? undefined, userId };
         }
       } else if (
         event.type === "customer.subscription.created" ||
@@ -249,71 +260,48 @@ export async function registerRoutes(app: Express): Promise<void> {
       ) {
         const sub = event.data.object as Stripe.Subscription;
         const userId = sub.metadata?.userId;
-        const user = userId
-          ? await storage.getUser(userId).catch(() => undefined)
-          : await storage.getUserByStripeCustomerId(sub.customer as string);
-        if (user) {
-          const periodEnd = (sub as any).current_period_end as number | undefined;
-          const active = sub.status === "active" || sub.status === "trialing";
-          await storage.updateUserStripe(user.id, {
-            isPro: active || sub.status === "past_due", // keep Pro during dunning grace
-            subscriptionStatus: sub.status,
-            stripeCustomerId: sub.customer as string,
-            stripeSubscriptionId: sub.id,
-            proExpiresAt: periodEnd ? new Date(periodEnd * 1000) : undefined,
-            ...(active ? { proGraceUntil: null } : {}),
-          });
-        }
+        const periodEnd = (sub as any).current_period_end as number | undefined;
+        const active = sub.status === "active" || sub.status === "trialing";
+        fulfillment = {
+          kind: "subscription-state",
+          userId,
+          customerId: String(sub.customer),
+          subscriptionId: sub.id,
+          status: sub.status,
+          active,
+          periodEnd: periodEnd ? new Date(periodEnd * 1000) : undefined,
+        };
       } else if (event.type === "customer.subscription.deleted") {
         const sub = event.data.object as Stripe.Subscription;
-        const user = await storage.getUserByStripeCustomerId(sub.customer as string);
-        if (user) {
-          await storage.updateUserStripe(user.id, {
-            isPro: false,
-            subscriptionStatus: "canceled",
-            proGraceUntil: null,
-          });
-        }
+        fulfillment = { kind: "subscription-deleted", customerId: String(sub.customer) };
       } else if (event.type === "invoice.payment_failed") {
-        // Dunning: start a 3-day grace window, keep Pro, email the customer.
         const invoice = event.data.object as Stripe.Invoice;
-        const user = await storage.getUserByStripeCustomerId(invoice.customer as string);
-        if (user) {
-          const graceUntil = new Date(Date.now() + GRACE_PERIOD_MS);
-          await storage.updateUserStripe(user.id, {
-            isPro: true,
-            subscriptionStatus: "past_due",
-            proGraceUntil: graceUntil,
-          });
-          const email = invoice.customer_email ?? user.email ?? undefined;
-          if (email) {
-            sendDunningEmail(email, graceUntil, user.firstName ?? undefined).catch((err) =>
-              console.error("[Webhook] Dunning email error:", err)
-            );
-          }
-        }
+        const graceUntil = new Date(Date.now() + GRACE_PERIOD_MS);
+        fulfillment = { kind: "invoice-failed", customerId: String(invoice.customer), graceUntil };
+        dunningEmail = { to: invoice.customer_email ?? undefined, graceUntil };
       } else if (event.type === "invoice.payment_succeeded") {
-        // Recovered (or normal renewal): clear grace, restore Pro.
         const invoice = event.data.object as Stripe.Invoice;
-        const user = await storage.getUserByStripeCustomerId(invoice.customer as string);
-        if (user) {
-          const periodEnd = (invoice as any).lines?.data?.[0]?.period?.end as number | undefined;
-          await storage.updateUserStripe(user.id, {
-            isPro: true,
-            subscriptionStatus: "active",
-            proGraceUntil: null,
-            ...(periodEnd ? { proExpiresAt: new Date(periodEnd * 1000) } : {}),
-          });
-        }
+        const periodEnd = (invoice as any).lines?.data?.[0]?.period?.end as number | undefined;
+        fulfillment = { kind: "invoice-succeeded", customerId: String(invoice.customer), periodEnd: periodEnd ? new Date(periodEnd * 1000) : undefined };
       }
 
-      // Mark processed only after fulfillment succeeded. A throw above skips
-      // this and returns 500 → Stripe retries → the idempotency check still
-      // prevents double-fulfill once a later attempt succeeds.
-      await storage.markStripeEventProcessed(event.id, event.type);
+      const result = await fulfillStripeEventOnce(event.id, event.type, fulfillment);
+      if (result.duplicate) return res.status(200).json({ received: true, duplicate: true });
+
+      if (purchaseEmail) {
+        const user = await storage.getUser(purchaseEmail.userId).catch(() => null);
+        sendPurchaseConfirmation(purchaseEmail.to, purchaseEmail.productType, purchaseEmail.amount, user?.firstName ?? undefined)
+          .catch((error) => console.error("[Webhook] Purchase email failed", { eventId: event.id, message: error instanceof Error ? error.message : String(error) }));
+      }
+      if (dunningEmail && result.userId) {
+        const user = await storage.getUser(result.userId).catch(() => null);
+        const email = dunningEmail.to ?? user?.email ?? undefined;
+        if (email) sendDunningEmail(email, dunningEmail.graceUntil, user?.firstName ?? undefined)
+          .catch((error) => console.error("[Webhook] Dunning email failed", { eventId: event.id, message: error instanceof Error ? error.message : String(error) }));
+      }
     } catch (err) {
-      console.error("Webhook handler error:", err);
-      return res.status(500).json({ message: "Webhook handler failed" });
+      console.error("Webhook handler error", { eventId: event.id, message: err instanceof Error ? err.message : String(err) });
+      return res.status(500).json({ message: "Webhook handler failed", code: "WEBHOOK_FULFILLMENT_FAILED", requestId: req.requestId ?? "unavailable" });
     }
 
     res.status(200).json({ received: true });
@@ -321,31 +309,34 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   setupSession(app);
 
-  app.get("/api/health", (_req, res) => {
+  app.get("/api/health", async (_req, res) => {
     const readiness = runtimeReadiness();
-    const operational = readiness.database && readiness.sessions;
-    const commerceReady = readiness.stripe
-      && readiness.scopeDiagnostic
-      && readiness.email
-      && readiness.commercialNotifications
-      && readiness.publicOriginConfigured;
+    const schema = await checkRuntimeSchema();
+    const operational = readiness.database && readiness.sessions && schema;
+    const diagnosticTestReady = readiness.diagnosticTestReady && schema;
+    const commerceReady = readiness.commerceReady && schema;
     res.status(operational ? 200 : 503).json({
       status: operational ? "ok" : "degraded",
+      commerceMode: readiness.commerceMode,
       commerceReady,
+      diagnosticTestReady,
       service: "life-science-atlas",
       timestamp: new Date().toISOString(),
-      readiness,
+      readiness: { ...readiness, schema, commerceReady, diagnosticTestReady },
     });
   });
 
   // Which billing plans are sellable (have a configured Stripe price). Lets the
   // client show/hide the annual option without leaking price IDs.
-  app.get("/api/billing/plans", (_req, res) => {
+  app.get("/api/billing/plans", async (_req, res) => {
+      const readiness = runtimeReadiness();
+      const checkoutEnabled = (readiness.commerceReady || readiness.diagnosticTestReady) && await checkRuntimeSchema();
       res.json({
-        monthly: isProductAvailable("pro_subscription"),
-        annual: isProductAvailable("pro_subscription_annual"),
-        scopeDiagnostic: isProductAvailable("scope_diagnostic"),
-        careerBlueprint: isProductAvailable("career_blueprint"),
+        monthly: checkoutEnabled && isProductAvailable("pro_subscription"),
+        annual: checkoutEnabled && isProductAvailable("pro_subscription_annual"),
+        scopeDiagnostic: checkoutEnabled && isProductAvailable("scope_diagnostic"),
+        careerBlueprint: checkoutEnabled && isProductAvailable("career_blueprint"),
+        commerceMode: readiness.commerceMode,
       // Configured free-trial length for new Pro subscribers (0 = disabled).
       trialDays: parseInt(process.env.PRO_TRIAL_DAYS ?? "7", 10),
     });
@@ -373,7 +364,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       const passwordHash = await bcrypt.hash(password, 12);
       const user = await storage.createUser({ email, passwordHash, firstName, lastName });
 
-      req.session.userId = user.id;
+      await establishSession(req, user.id);
 
       // Fire-and-forget welcome email
       sendWelcomeEmail(email, firstName).catch((err) =>
@@ -386,7 +377,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         const vToken = crypto.randomBytes(32).toString("hex");
         const vExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
         await storage.setVerificationToken(user.id, vToken, vExpiry);
-        const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+        const baseUrl = getPublicOrigin();
         sendVerificationEmail(email, `${baseUrl}/verify-email?token=${vToken}`, firstName ?? undefined).catch((err) =>
           console.error("[Register] Verification email error:", err)
         );
@@ -424,7 +415,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      req.session.userId = user.id;
+      await establishSession(req, user.id);
       return res.json({
         id: user.id,
         email: user.email,
@@ -452,7 +443,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
         await storage.setResetToken(user.id, token, expiry);
 
-        const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+        const baseUrl = getPublicOrigin();
         const resetUrl = `${baseUrl}/reset-password?token=${token}`;
         sendPasswordResetEmail(email, resetUrl, user.firstName ?? undefined).catch((err) =>
           console.error("[ForgotPassword] Email error:", err)
@@ -486,7 +477,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       await storage.updatePassword(user.id, passwordHash);
 
       // Log the user in after a successful reset.
-      req.session.userId = user.id;
+      await establishSession(req, user.id);
       return res.json({ id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, isPro: isProActive(user) });
     } catch (err) {
       console.error(err);
@@ -568,7 +559,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         );
       }
 
-      req.session.userId = user.id;
+      await establishSession(req, user.id);
       return res.json({
         id: user.id,
         email: user.email,
@@ -586,6 +577,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.post("/api/auth/logout", (req, res) => {
     req.session.destroy(() => {
+      res.clearCookie("lsa.sid", { httpOnly: true, secure: usesSecureCookies(), sameSite: "lax", path: "/" });
       res.status(200).json({ message: "Logged out" });
     });
   });
@@ -664,6 +656,13 @@ export async function registerRoutes(app: Express): Promise<void> {
   registerAdminRoutes(app, isAuthenticated);
 
   app.post("/api/stripe/create-checkout-session", isAuthenticated, async (req: any, res) => {
+    const readiness = runtimeReadiness();
+    if (process.env.NODE_ENV !== "test" && !readiness.commerceReady && !readiness.diagnosticTestReady) {
+      return res.status(503).json({ message: "Checkout is currently disabled", code: "COMMERCE_DISABLED", requestId: req.requestId ?? "unavailable" });
+    }
+    if (process.env.NODE_ENV !== "test" && !(await checkRuntimeSchema())) {
+      return res.status(503).json({ message: "Checkout storage is not ready", code: "SCHEMA_NOT_READY", requestId: req.requestId ?? "unavailable" });
+    }
     if (!stripe) {
       return res.status(503).json({ message: "Stripe is not configured" });
     }
@@ -678,6 +677,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       }).safeParse(req.body);
       if (!checkoutInput.success) return res.status(400).json({ message: "Invalid checkout request" });
       const { productType, blueprintJourneyId } = checkoutInput.data;
+      if (!getProduct(productType)) return res.status(400).json({ message: "Invalid productType" });
       const priceId = getPriceId(productType);
       if (!priceId) {
         return res.status(400).json({ message: "Invalid productType or missing price configuration" });
@@ -880,7 +880,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         return res.status(400).json({ message: "No Stripe customer found for this account" });
       }
 
-      const baseUrl = process.env.BASE_URL ?? "http://localhost:5000";
+      const baseUrl = getPublicOrigin();
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: user.stripeCustomerId,
         return_url: `${baseUrl}/settings`,
@@ -967,39 +967,45 @@ export async function registerRoutes(app: Express): Promise<void> {
   // Account project persistence is explicit and conflict-aware. The existing
   // reviewed-project tables are reused as a legacy physical store so this
   // rollout does not require a destructive or production-ambiguous migration.
-  app.get("/api/quality-lab/projects", isAuthenticated, async (req: any, res) => {
+  const requireAccountProjectSchema = async (req: Request, res: Response, next: NextFunction) => {
+    if (await checkRuntimeSchema()) return next();
+    return res.status(503).json({
+      message: "Account project storage is not ready",
+      code: "SCHEMA_NOT_READY",
+      requestId: req.requestId ?? "unavailable",
+    });
+  };
+
+  app.get("/api/quality-lab/projects", isAuthenticated, requireAccountProjectSchema, async (req: any, res) => {
     const rows = await storage.listQualityLabReviewedProjects(req.session.userId);
     const records = await Promise.all(rows.map(async (row) => {
-      const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, row.localProjectId);
+      const revisionCount = await storage.countQualityLabReviewedProjectRevisions(req.session.userId, row.localProjectId);
       return {
         snapshot: qualityLabReviewedProjectSnapshotSchema.parse(row.snapshot),
         updatedAt: row.updatedAt?.toISOString() ?? row.createdAt?.toISOString() ?? new Date(0).toISOString(),
-        revisionCount: revisions.length,
+        revisionCount,
       };
     }));
     res.json(records);
   });
 
-  app.put("/api/quality-lab/projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+  app.put("/api/quality-lab/projects/:localProjectId", isAuthenticated, requireAccountProjectSchema, async (req: any, res) => {
     try {
       const request = qualityLabProjectSyncRequestSchema.parse(req.body);
       if (request.snapshot.localProjectId !== req.params.localProjectId) return res.status(400).json({ message: "Project identifier mismatch" });
-      const existing = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
-      const currentUpdatedAt = existing?.updatedAt?.toISOString() ?? existing?.createdAt?.toISOString() ?? null;
-      if (qualityLabSyncHasConflict(request.expectedUpdatedAt, currentUpdatedAt)) {
-        const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
+      const result = await storage.syncQualityLabReviewedProject(req.session.userId, request.snapshot, request.expectedUpdatedAt);
+      if (result.status === "conflict") {
+        const currentUpdatedAt = result.row.updatedAt?.toISOString() ?? result.row.createdAt?.toISOString() ?? null;
         return res.status(409).json({
-          snapshot: qualityLabReviewedProjectSnapshotSchema.parse(existing!.snapshot),
+          snapshot: qualityLabReviewedProjectSnapshotSchema.parse(result.row.snapshot),
           updatedAt: currentUpdatedAt,
-          revisionCount: revisions.length,
+          revisionCount: result.revisionCount,
         });
       }
-      const row = await storage.upsertQualityLabReviewedProject(req.session.userId, request.snapshot);
-      const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
-      res.status(existing ? 200 : 201).json({
-        snapshot: qualityLabReviewedProjectSnapshotSchema.parse(row.snapshot),
-        updatedAt: row.updatedAt?.toISOString() ?? row.createdAt?.toISOString() ?? new Date().toISOString(),
-        revisionCount: revisions.length,
+      res.status(result.status === "created" ? 201 : 200).json({
+        snapshot: qualityLabReviewedProjectSnapshotSchema.parse(result.row.snapshot),
+        updatedAt: result.row.updatedAt?.toISOString() ?? result.row.createdAt?.toISOString() ?? new Date().toISOString(),
+        revisionCount: result.revisionCount,
       });
     } catch (err) {
       if (err instanceof z.ZodError) return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
@@ -1007,15 +1013,28 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.delete("/api/quality-lab/projects/:localProjectId", isAuthenticated, async (req: any, res) => {
+  app.delete("/api/quality-lab/projects/:localProjectId", isAuthenticated, requireAccountProjectSchema, async (req: any, res) => {
     const deleted = await storage.deleteQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
     if (!deleted) return res.status(404).json({ message: "Account project not found" });
     res.status(204).end();
   });
 
-  app.get("/api/quality-lab/projects/:localProjectId/revisions", isAuthenticated, async (req: any, res) => {
+  app.get("/api/quality-lab/projects/:localProjectId/revisions", isAuthenticated, requireAccountProjectSchema, async (req: any, res) => {
     const rows = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
     res.json(rows.map((row) => ({ revisionNumber: row.revisionNumber, reason: row.reason, createdAt: row.createdAt, generatedAt: row.snapshot.blueprint.generatedAt, blockingOpenCount: row.snapshot.blueprint.dataQuality.blockingOpenCount })));
+  });
+
+  app.get("/api/quality-lab/projects/:localProjectId/revisions/:revisionNumber", isAuthenticated, requireAccountProjectSchema, async (req: any, res) => {
+    const revisionNumber = Number(req.params.revisionNumber);
+    if (!Number.isInteger(revisionNumber) || revisionNumber < 1) return res.status(400).json({ message: "Invalid revision number" });
+    const row = await storage.getQualityLabReviewedProjectRevision(req.session.userId, req.params.localProjectId, revisionNumber);
+    if (!row) return res.status(404).json({ message: "Project revision not found" });
+    res.json({
+      revisionNumber: row.revisionNumber,
+      reason: row.reason,
+      createdAt: row.createdAt,
+      snapshot: qualityLabReviewedProjectSnapshotSchema.parse(row.snapshot),
+    });
   });
 
   // Backward-compatible expert-review routes remain available for existing
@@ -1125,8 +1144,7 @@ export async function registerRoutes(app: Express): Promise<void> {
   app.get("/api/quality-lab/reviewed-projects/:localProjectId/revisions/:revisionNumber/compare-current", isAuthenticated, async (req: any, res) => {
     const current = await storage.getQualityLabReviewedProject(req.session.userId, req.params.localProjectId);
     if (!current) return res.status(404).json({ message: "Reviewed project not found" });
-    const revisions = await storage.listQualityLabReviewedProjectRevisions(req.session.userId, req.params.localProjectId);
-    const baseline = revisions.find((row) => row.revisionNumber === Number(req.params.revisionNumber));
+    const baseline = await storage.getQualityLabReviewedProjectRevision(req.session.userId, req.params.localProjectId, Number(req.params.revisionNumber));
     if (!baseline) return res.status(404).json({ message: "Revision not found" });
     res.json(compareQualityLabReviewedSnapshots(baseline.snapshot, current.snapshot));
   });
@@ -1196,7 +1214,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       // Send checklist email only for new leads. Fire-and-forget: a mail failure
       // must NOT fail the request — the lead is already saved.
       if (isNew) {
-        const base = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://lifescienceatlas.com").replace(/\/$/, "");
+        const base = getPublicOrigin();
         const downloadUrl = process.env.DOWNLOAD_GMP_CHECKLIST || `${base}/api/lead-magnet/gmp-checklist`;
         sendLeadMagnetEmail(normalizedEmail, downloadUrl).catch((err) =>
           console.error("[Leads] Email error:", err)
@@ -1612,7 +1630,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // ── Dynamic sitemap (core pages + all English MDX blog/academy) ────────────
   app.get("/sitemap.xml", async (_req, res) => {
-    const baseUrl = (process.env.VITE_SITE_URL || process.env.BASE_URL || "https://lifescienceatlas.com").replace(/\/$/, "");
+    const baseUrl = getPublicOrigin();
 
     // Distinct slugs per collection from the MDX files on disk.
     async function slugsIn(collection: string): Promise<string[]> {
@@ -1697,7 +1715,7 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // ── Blog RSS feed ─────────────────────────────────────────────────────────
   app.get("/blog/rss.xml", async (_req, res) => {
-    const baseUrl = process.env.BASE_URL ?? "https://lifescienceatlas.com";
+    const baseUrl = getPublicOrigin();
     const dir = path.resolve(process.cwd(), "content", "blog");
     const esc = (s: string) =>
       s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");

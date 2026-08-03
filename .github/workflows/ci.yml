@@ -14,17 +14,29 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Type-check
-        run: npm run check
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Build
+      - name: Validate
+        run: npm run validate
+
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Production build
         run: npm run build
 
-      - name: Test
-        run: npm test
+      - name: Verify generated files are committed
+        run: git diff --exit-code
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Critical browser journeys
+        run: npm run test:e2e:critical
