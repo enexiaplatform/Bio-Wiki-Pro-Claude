@@ -318,6 +318,20 @@ export class QualityLabSyncConflictError extends Error {
   }
 }
 
+type QualityLabApiErrorBody = { message?: string; code?: string; requestId?: string };
+
+export class QualityLabSyncRequestError extends Error {
+  constructor(
+    message: string,
+    public readonly code: string,
+    public readonly requestId?: string,
+    public readonly retryable = false,
+  ) {
+    super(message);
+    this.name = "QualityLabSyncRequestError";
+  }
+}
+
 export async function fetchQualityLabAccountProjects() {
   const response = await fetch("/api/quality-lab/projects", { credentials: "include" });
   if (!response.ok) throw new Error("Unable to load account-held Quality Lab projects");
@@ -335,7 +349,25 @@ export async function syncQualityLabAccountProject(project: QualityLabProject, e
     const current = await response.json() as QualityLabAccountProjectRecord;
     throw new QualityLabSyncConflictError(current);
   }
-  if (!response.ok) throw new Error("Unable to save this project to the account");
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({})) as QualityLabApiErrorBody;
+    if (response.status === 413 || error.code === "PAYLOAD_TOO_LARGE") {
+      throw new QualityLabSyncRequestError(
+        "This Blueprint is too large to sync. Your browser copy is safe; export it and contact support with the request ID.",
+        "PAYLOAD_TOO_LARGE",
+        error.requestId,
+      );
+    }
+    const retryable = response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500;
+    throw new QualityLabSyncRequestError(
+      retryable
+        ? "Account sync is temporarily unavailable. Your browser copy is safe; please retry."
+        : error.message ?? "Unable to save this project to the account",
+      error.code ?? (retryable ? "TEMPORARY_FAILURE" : "SYNC_FAILED"),
+      error.requestId,
+      retryable,
+    );
+  }
   return response.json() as Promise<QualityLabAccountProjectRecord>;
 }
 
@@ -351,6 +383,17 @@ export async function fetchQualityLabAccountProjectRevisions(localProjectId: str
   const response = await fetch(`/api/quality-lab/projects/${encodeURIComponent(localProjectId)}/revisions`, { credentials: "include" });
   if (!response.ok) return [] as Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>;
   return response.json() as Promise<Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>>;
+}
+
+export async function fetchQualityLabAccountProjectRevision(localProjectId: string, revisionNumber: number) {
+  const response = await fetch(`/api/quality-lab/projects/${encodeURIComponent(localProjectId)}/revisions/${revisionNumber}`, { credentials: "include" });
+  if (!response.ok) throw new Error("Unable to load this account revision");
+  return response.json() as Promise<{
+    revisionNumber: number;
+    reason: string;
+    createdAt: string;
+    snapshot: QualityLabReviewedProjectSnapshot;
+  }>;
 }
 
 export type QualityLabReminderCadence = "off" | "weekly" | "daily" | "weekdays";

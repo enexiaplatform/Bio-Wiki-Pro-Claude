@@ -2,9 +2,10 @@
 
 **Working template for out-of-specification (OOS) laboratory investigations in pharmaceutical, biotech, and life-science QC laboratories.**
 
-> Educational tool — not a validated procedure. This template reflects the phased
-> approach in the FDA OOS guidance (2006, updated 2022), MHRA expectations, and
-> GMP principles, but it is a starting point only. Before use, verify every step
+> Educational tool — not a validated procedure. This template uses the phased
+> approach in FDA's May 2022 Revision 1 OOS guidance within that document's
+> stated chemistry-testing scope, with EU GMP Chapter 6 and ICH Q9(R1)/Q10 as
+> supporting governance sources. Before use, verify every step
 > against your approved OOS SOP, your site's quality system, current compendia
 > editions (USP–NF, Ph. Eur.), and the product's registered specification. This
 > template is not a substitute for QA approval, regulatory advice, or your
@@ -17,48 +18,44 @@
 
 ### 1.1 Purpose
 
-This template gives you a complete, inspection-ready structure for investigating
-a confirmed out-of-specification result: what to do in the first hours, how to
+This template gives you structured evidence and decision prompts for an
+out-of-specification result: what to preserve promptly, how to
 run the Phase I laboratory assessment, when (and when not) you may invalidate a
 result, how to design hypothesis testing, how to extend into a Phase II
 full-scale investigation, and how to reach a defensible disposition with CAPA.
 
 ### 1.2 Scope
 
-- Applies to chemical, physical, and microbiological QC testing of raw
-  materials, in-process samples, intermediates, finished product, and stability
-  samples.
-- Applies to OOS, out-of-trend (OOT), out-of-expectation (OOE), and atypical /
-  aberrant results.
+- Primary applicability: chemistry-based testing of drug materials and products
+  within the stated scope of FDA's May 2022 guidance.
+- Physical, microbiological, biological, sterility, OOT, OOE, and atypical
+  results require method- and jurisdiction-specific adaptation and qualified
+  review; this template supplies only a reasoning structure for those cases.
 - Does not replace your deviation system: every OOS investigation must run
   inside a numbered deviation / investigation record in your QMS.
 
 ### 1.3 Regulatory and compendial basis
 
-- FDA Guidance for Industry, *Investigating Out-of-Specification (OOS) Test
-  Results for Pharmaceutical Production* (2006; updated May 2022) — the core
-  two-phase model used here.
-- MHRA guidance and GXP Data Integrity Guidance (2018) — expectations on
-  evidence, audit trails, and retesting.
+- `FDA-OOS-2022`: FDA Guidance for Industry, *Investigating
+  Out-of-Specification (OOS) Test Results for Pharmaceutical Production*, May
+  2022 Revision 1 — the primary phased model used here. It is nonbinding and
+  states a chemistry-based CDER drug-testing scope.
 - EU GMP Part I, Chapter 1 (Pharmaceutical Quality System) and Chapter 6
   (Quality Control, esp. 6.35 on OOS results).
-- ICH Q7 (GMP for APIs), ICH Q9 (Quality Risk Management), ICH Q10
-  (Pharmaceutical Quality System).
-- USP general chapters: `<1010>` Analytical Data — Interpretation and Treatment
-  (reportable result, averaging, outlier treatment); `<61>`, `<62>`, `<1111>`
-  (microbiological examination); `<85>`, `<1227>` (endotoxins / method
-  suitability, as applicable).
-- Ph. Eur. 2.6.1, 2.6.12, 2.6.13 (sterility / microbial enumeration / specified
-  organisms) for compendial microbiology.
+- `ICH-Q9-R1` and `ICH-Q10`: risk, uncertainty, monitoring, CAPA, management
+  review, and continual improvement. Neither supplies a batch-disposition rule.
+- `USP-CURRENT`: licensed current compendial text must be verified by a
+  qualified reviewer. This template intentionally does not reproduce limits,
+  incubation conditions, invalidation criteria, or repeat-test rules.
 
 ### 1.4 Key definitions — use them precisely
 
 - **OOS result**: a test result that falls outside the established
   specification or acceptance criteria in the dossier, registered filing, or
   approved specification.
-- **Reportable result**: the final value compared against the specification.
-  Per USP `<1010>`, it is usually the average of the individual determinations
-  defined in the method — not a single injection or reading.
+- **Reportable result**: the result defined by the current approved method and
+  specification for comparison to the acceptance criterion. Do not infer its
+  replicate or averaging rule from this template.
 - **Individual determination**: one replicate, injection, or reading that feeds
   the reportable result. A single determination outside limits is not
   automatically an OOS — but the full replicate set must be defined in the
@@ -74,17 +71,15 @@ full-scale investigation, and how to reach a defensible disposition with CAPA.
 
 ### 1.5 Averaging rules — read before you average
 
-- Averaging individual determinations into a reportable result is acceptable
-  **only** when the method or specification predefines the number of replicates
-  and the averaging rule (per USP `<1010>` and the FDA OOS guidance).
-- Averaging is **prohibited** when it hides variability that matters: content
-  uniformity, dissolution, and results that are themselves measures of
-  variability must never be averaged away.
+- Use only the replicate, calculation, variability, and reportable-result rules
+  defined in the current approved method and specification.
+- Do not use averaging to hide variability or to replace the required
+  evaluation of an original OOS result.
 - Never average an OOS result with passing retest results to bring the
   reportable result into specification. That is "testing into compliance" and
   is a leading cause of FDA 483 observations.
-- If the method is silent on replicates, treat each full preparation's result
-  as reportable — do not improvise averaging after the fact.
+- If the method is silent or ambiguous, record a blocking question and obtain
+  authorized clarification before additional testing or data disposition.
 
 ---
 
@@ -234,25 +229,24 @@ not attribution. Suggested script:
 
 ### 3.6 Microbiology-specific Phase I assessment
 
-Microbiological OOS results rarely have an assignable laboratory cause — the
-FDA OOS guidance and USP `<61>`/`<62>`/`<1111>` practice recognize that
-contamination found in a product is usually real. You must still run a rigorous
-lab assessment, but set the invalidation bar high: only clear, objective
-laboratory error justifies invalidation.
+FDA's May 2022 guidance states a chemistry-testing scope. For microbiological,
+biological, or sterility-related results, use this section only to organize
+evidence. Obtain the actual criteria from the current approved method, licensed
+compendial text, site procedure, and qualified reviewer.
 
-- [ ] Media: correct media per method (e.g. SCD, SDA per USP `<61>`/`<62>` or
-      Ph. Eur. 2.6.12/2.6.13), in date, correct lot, growth promotion test
-      (GPT) passed for the lot in use, sterility and pH checks acceptable.
-- [ ] Incubation: correct temperatures and durations per the compendial method
-      (e.g. SCD 30–35 °C for 3–5 days, SDA 20–25 °C for 5–7 days for USP
-      `<61>`/`62` — verify against the current edition), incubator mapping and
-      daily records reviewed for excursions.
+- [ ] Media and reagents: record identity, lot, preparation, storage, use-by,
+      and the growth-promotion, suitability, sterility, pH, or other controls
+      required by the applicable current method.
+- [ ] Incubation and equipment: compare the actual conditions and monitoring
+      records with the approved method; do not copy temperatures or durations
+      from this template.
 - [ ] Plate reading: counts re-read by a second analyst; spreader vs discrete
       colonies distinguished; counting within the method's countable range;
       dilution factor applied correctly.
-- [ ] Negative controls: media, diluent, and environmental/personnel controls
-      from the test session — any growth invalidates the *test*, not the
-      product result, and points to lab contamination.
+- [ ] Controls: record every applicable negative, positive, media, diluent,
+      environment, and personnel control. Route unexpected control behavior to
+      the method-defined validity and investigation decision; do not infer
+      automatic invalidation.
 - [ ] Cross-contamination controls: biosafety cabinet / isolator checks,
       session layout, other organisms handled in the same session, disinfectant
       in date and contact time respected.
@@ -262,10 +256,11 @@ laboratory error justifies invalidation.
       it informs root cause.
 - [ ] Aseptic technique: analyst qualification, media-fill/simulation history,
       glove and gowning monitoring from the session.
-- [ ] For sterility tests (USP `<71>`, Ph. Eur. 2.6.1): invalidation is
-      permitted only under the strict conditions of the chapter (documented
-      lab error, or identifiable contamination from the test environment with
-      supporting data). A repeat sterility test is otherwise not allowed.
+- [ ] For sterility or other compendial tests: identify the current licensed
+      chapter and edition, quote no criteria from memory, and record the exact
+      controlled locator governing validity, investigation, and any repeat test.
+- [ ] If the current source or qualified reviewer is unavailable: mark the
+      conclusion blocked and retain the material-status control.
 
 Findings: ______________________
 
@@ -535,10 +530,11 @@ OOT record:
 
 ---
 
-## 9. What Inspectors Look For — Top 10 OOS Deficiencies
+## 9. Internal Review Challenge — Ten Failure Modes
 
-These are the most commonly cited OOS failures in FDA 483 observations and
-warning letters, and how using this template defends against each.
+Use these prompts to challenge a draft record. They are not a ranked inspection
+benchmark, do not predict an authority's focus, and do not demonstrate
+inspection readiness.
 
 1. **Invalidation without objective evidence.** Defense: Section 4 forces a
    documented cause with independent evidence before any invalidation; the
@@ -554,9 +550,9 @@ warning letters, and how using this template defends against each.
 5. **Failure to extend into Phase II when no lab cause is found.** Defense:
    Section 3.7 routes a "No" conclusion directly into Section 6; the log tracks
    "phase reached" per investigation.
-6. **No audit-trail or integration review.** Defense: Section 3.3 makes
-   audit-trail and manual-integration review an explicit checklist item —
-   exactly what MHRA/FDA data-integrity inspections ask for.
+6. **No audit-trail or integration review where applicable.** Defense: Section
+   3.3 prompts a review against the applicable system, procedure, data flow,
+   user roles, and authorized audit-trail-review scope.
 7. **Resampling used to escape the result.** Defense: Section 4.3 defines
    retest vs resample and the narrow conditions for a new sample.
 8. **Microbiological OOS casually invalidated.** Defense: Section 3.6 sets a
@@ -569,10 +565,11 @@ warning letters, and how using this template defends against each.
     tracks days open, target dates, disposition, CAPA references, and closure
     per investigation.
 
-Expect inspectors to ask: show me your OOS SOP; show me all OOS investigations
-in the last 2–3 years and their closure times; show me one invalidation and its
-objective evidence; show me how you review audit trails; how many retests does
-your SOP allow and why.
+Internal reviewer prompts: identify the approved OOS procedure; retrieve the
+relevant investigation population and trend period; challenge one invalidation
+against its objective evidence; verify applicable electronic-data review; and
+confirm that additional-testing rules, stop points, and data handling were
+defined before results were known.
 
 ---
 

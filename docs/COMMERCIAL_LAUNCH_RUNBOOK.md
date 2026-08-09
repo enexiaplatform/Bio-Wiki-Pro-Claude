@@ -25,11 +25,12 @@ This checklist is the operational gate for accepting unattended public payment. 
 
 The commercial journey now has a strict, privacy-minimal first-party funnel receipt and an Admin 30-day report. It stores stage and limited operational attribution only; it rejects project identifiers, project inputs, contact details and evidence content. The Stripe webhook carries the anonymous journey identifier so a successful Scope Diagnostic purchase remains attributable even when the buyer does not return to the success page.
 
-Run `npm run db:push` against the intended environment before launch to create the current `quality_lab_funnel_events` and `regulatory_alert_preferences` tables. A configured `DATABASE_URL` proves connectivity shape only; it does not prove that the current schema has been deployed. PostHog is now an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
+During P0, do not run `db:push` or alter the production schema. `GET /api/health` performs a cached, read-only check for the existing account, revision, funnel, session, purchase and Stripe-event tables and publishes only `readiness.schema: boolean`. If it is false, account sync and checkout stay fail-closed until a separately approved schema operation is completed. PostHog is an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
 
 ## Required production configuration
 
-- `BASE_URL`: active public origin used by Stripe, account and email links.
+- `COMMERCE_MODE`: `disabled`, `test`, or `live`; omitted or invalid values become `disabled`.
+- `PUBLIC_APP_URL`: active public origin used by Stripe, account and email links. `BASE_URL` is a one-release compatibility fallback.
 - `VITE_SITE_URL`: same active origin until a custom domain is attached.
 - `STRIPE_SECRET_KEY`: valid Stripe key for the intended live or test environment.
 - `STRIPE_WEBHOOK_SECRET`: signing secret for `/api/stripe/webhook` from the same Stripe environment.
@@ -39,7 +40,9 @@ Run `npm run db:push` against the intended environment before launch to create t
 - `VITE_POSTHOG_KEY`: optional advanced product/path analytics; the core Blueprint stage funnel is first-party.
 - `CRON_SECRET`: long random value protecting lifecycle jobs.
 
-`GET /api/health` reports operational readiness and a separate `commerceReady` flag without returning secret values. `commerceReady` remains false for placeholder credentials, localhost, and temporary `*.vercel.app` origins; attach and configure the intended public domain before accepting unattended payment.
+`GET /api/health` reports `commerceMode`, `diagnosticTestReady`, `commerceReady`, and boolean schema/origin readiness without returning connection details or secrets. `diagnosticTestReady` means a preview can complete a Stripe test-mode acceptance journey. `commerceReady` remains false unless `COMMERCE_MODE=live`, the Stripe key is live, all email/inbox/database/session requirements are ready, the schema check passes, and the origin is a custom domain. Production stays `COMMERCE_MODE=disabled` for this pilot cycle.
+
+The interim public/canonical origin is `https://life-science-atlas-enexiaplatforms-projects.vercel.app`. Preview deployments in `COMMERCE_MODE=test` derive Stripe redirect URLs from their own `VERCEL_URL` so they cannot redirect a test buyer to production.
 
 ### Production name-only audit — 18 July 2026
 
@@ -73,4 +76,4 @@ No public page may imply a reviewer appointment, client outcome, validation, reg
 
 ## Domain cutover
 
-When the custom domain is attached, update `BASE_URL`, `VITE_SITE_URL`, Stripe webhook/portal settings, Resend domain verification and any Google OAuth origin in one release. Then rerun the Stripe acceptance test and public E2E suite.
+When the custom domain is attached, update `PUBLIC_APP_URL`, `VITE_SITE_URL`, Stripe webhook/portal settings, Resend domain verification and any Google OAuth origin in one release. Keep `BASE_URL` only through the compatibility window, then remove it. Rerun the Stripe acceptance test and public E2E suite before considering `COMMERCE_MODE=live`.

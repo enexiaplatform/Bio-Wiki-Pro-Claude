@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, afterAll, vi } from "vitest";
 import express from "express";
 import request from "supertest";
+import bcrypt from "bcryptjs";
 import { ATLAS_PRO_MONTHLY_REVIEW_VERSION, exampleAtlasProMonthlyInput } from "../../shared/atlas-pro-monthly";
 
 // ── Mocks (vi.hoisted so the vi.mock factories can reference them) ────────────
-const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate } = vi.hoisted(() => ({
+const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate, fulfillStripeEventOnce, checkRuntimeSchema } = vi.hoisted(() => ({
   storageMock: {
     getUser: vi.fn(),
     getUserByEmail: vi.fn(),
@@ -53,16 +54,23 @@ const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate
     recordQualityLabFunnelEvent: vi.fn(),
     getQualityLabReviewedProject: vi.fn(),
     upsertQualityLabReviewedProject: vi.fn(),
+    syncQualityLabReviewedProject: vi.fn(),
     listQualityLabReviewedProjects: vi.fn(() => Promise.resolve([])),
+    countQualityLabReviewedProjectRevisions: vi.fn(() => Promise.resolve(0)),
     listQualityLabReviewedProjectRevisions: vi.fn(() => Promise.resolve([])),
+    getQualityLabReviewedProjectRevision: vi.fn(() => Promise.resolve(undefined)),
     deleteQualityLabReviewedProject: vi.fn(() => Promise.resolve(false)),
   },
   constructEvent: vi.fn(),
   verifyIdToken: vi.fn(),
   checkoutCreate: vi.fn(),
   portalCreate: vi.fn(),
+  fulfillStripeEventOnce: vi.fn(() => Promise.resolve({ duplicate: false, userId: "u1" })),
+  checkRuntimeSchema: vi.fn(() => Promise.resolve(true)),
 }));
 vi.mock("../storage.js", () => ({ storage: storageMock }));
+vi.mock("../db.js", () => ({ connectionString: undefined, checkRuntimeSchema }));
+vi.mock("../stripe-fulfillment.js", () => ({ fulfillStripeEventOnce }));
 vi.mock("../regulatory-monitor.js", () => ({ fetchRegulatoryMonitor: vi.fn(() => Promise.resolve({ generatedAt: "2026-07-20T00:00:00.000Z", items: [], sources: [] })) }));
 
 vi.mock("google-auth-library", () => ({
@@ -100,7 +108,7 @@ vi.mock("../email.js", () => ({
   sendCommercialRequestEmails: vi.fn(() => Promise.resolve()),
 }));
 
-import { registerRoutes } from "../routes.js";
+import { createApiApp } from "../app.js";
 import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
@@ -109,15 +117,13 @@ import { defaultCareerProfile } from "../../shared/career-blueprint.js";
 import { createCareerExecutionRecord } from "../../shared/career-execution.js";
 
 async function buildApp() {
-  const app = express();
-  app.use(express.json({ limit: "1mb", verify: (req: any, _res, buf) => { req.rawBody = buf; } }));
-  app.use(express.urlencoded({ extended: false }));
-  await registerRoutes(app);
-  return app;
+  return createApiApp({ requestLogging: false });
 }
 
 beforeEach(() => {
   vi.clearAllMocks();
+  fulfillStripeEventOnce.mockResolvedValue({ duplicate: false, userId: "u1" });
+  checkRuntimeSchema.mockResolvedValue(true);
 });
 
 describe("auth", () => {
@@ -170,6 +176,52 @@ describe("auth", () => {
     const app = await buildApp();
     const res = await request(app).get("/api/auth/me");
     expect(res.status).toBe(401);
+  });
+
+  it("regenerates the session on authentication and emits the seven-day cookie contract", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    const passwordHash = await bcrypt.hash("pw123456", 4);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    const registered = await agent.post("/api/auth/register").send({ email: "a@b.com", password: "pw123456" });
+    const registerCookie = registered.headers["set-cookie"]?.[0];
+
+    storageMock.getUserByEmail.mockResolvedValueOnce({ id: "u1", email: "a@b.com", passwordHash, isPro: false });
+    const loggedIn = await agent.post("/api/auth/login").send({ email: "a@b.com", password: "pw123456" });
+    const loginCookie = loggedIn.headers["set-cookie"]?.[0];
+
+    expect(registerCookie).toContain("lsa.sid=");
+    expect(registerCookie).toContain("Path=/");
+    expect(registerCookie).toContain("HttpOnly");
+    expect(registerCookie).toContain("SameSite=Lax");
+    const expiry = /Expires=([^;]+)/.exec(registerCookie ?? "")?.[1];
+    expect(expiry).toBeTruthy();
+    expect(new Date(expiry!).getTime() - Date.now()).toBeGreaterThan(6.9 * 24 * 60 * 60 * 1000);
+    expect(loginCookie).toContain("lsa.sid=");
+    expect(loginCookie?.split(";")[0]).not.toBe(registerCookie?.split(";")[0]);
+
+    const loggedOut = await agent.post("/api/auth/logout");
+    expect(loggedOut.status).toBe(200);
+    expect(loggedOut.headers["set-cookie"]?.[0]).toContain("lsa.sid=;");
+  });
+
+  it("blocks cross-origin cookie mutations while allowing the deployment origin", async () => {
+    const app = await buildApp();
+    const blocked = await request(app)
+      .post("/api/auth/forgot-password")
+      .set("origin", "https://evil.example")
+      .send({ email: "a@b.com" });
+    expect(blocked.status).toBe(403);
+
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    const allowed = await request(app)
+      .post("/api/auth/forgot-password")
+      .set("host", "feature-123.vercel.app")
+      .set("x-forwarded-proto", "https")
+      .set("origin", "https://feature-123.vercel.app")
+      .send({ email: "a@b.com" });
+    expect(allowed.status).toBe(200);
   });
 });
 
@@ -382,6 +434,23 @@ describe("admin access", () => {
 });
 
 describe("content API", () => {
+  it("returns public quality metadata while keeping a Pro lesson body locked", async () => {
+    const app = await buildApp();
+    storageMock.getContentEntry.mockResolvedValueOnce(undefined);
+    const res = await request(app).get("/api/content/academy/batch-record-review");
+
+    expect(res.status).toBe(200);
+    expect(res.body.locked).toBe(true);
+    expect(res.body).not.toHaveProperty("body");
+    expect(res.body.quality).toMatchObject({
+      contentVersion: "2.0.0-review",
+      reviewStatus: "under-review",
+      sourceCount: 3,
+      promoted: false,
+    });
+    expect(res.body.quality.limitations.length).toBeGreaterThan(0);
+  });
+
   it("rejects legacy non-English content language requests", async () => {
     const app = await buildApp();
     const res = await request(app).get("/api/content/academy/sterility-testing-basics?lang=vi");
@@ -410,19 +479,15 @@ describe("stripe webhook", () => {
     const app = await buildApp();
     constructEvent.mockReturnValue(purchaseEvent);
     storageMock.getUser.mockResolvedValue({ id: "u1", firstName: "A" });
-    storageMock.createPurchase.mockResolvedValue(undefined);
-    storageMock.markStripeEventProcessed.mockResolvedValue(undefined);
-
-    // 1st delivery: not processed yet
-    storageMock.isStripeEventProcessed.mockResolvedValueOnce(false);
+    fulfillStripeEventOnce
+      .mockResolvedValueOnce({ duplicate: false, userId: "u1" })
+      .mockResolvedValueOnce({ duplicate: true });
     const first = await request(app)
       .post("/api/stripe/webhook")
       .set("stripe-signature", "sig")
       .send(purchaseEvent);
     expect(first.status).toBe(200);
 
-    // 2nd delivery (retry): already processed
-    storageMock.isStripeEventProcessed.mockResolvedValueOnce(true);
     const second = await request(app)
       .post("/api/stripe/webhook")
       .set("stripe-signature", "sig")
@@ -430,9 +495,8 @@ describe("stripe webhook", () => {
     expect(second.status).toBe(200);
     expect(second.body.duplicate).toBe(true);
 
-    // Fulfillment happened exactly once
-    expect(storageMock.createPurchase).toHaveBeenCalledTimes(1);
-    expect(storageMock.markStripeEventProcessed).toHaveBeenCalledTimes(1);
+    expect(fulfillStripeEventOnce).toHaveBeenCalledTimes(2);
+    expect(fulfillStripeEventOnce).toHaveBeenNthCalledWith(1, "evt_1", "checkout.session.completed", expect.objectContaining({ kind: "checkout-payment", sessionId: "cs_1" }));
   });
 
   it("records an authoritative Diagnostic conversion against its anonymous journey", async () => {
@@ -453,18 +517,12 @@ describe("stripe webhook", () => {
       } },
     };
     constructEvent.mockReturnValue(diagnosticEvent);
-    storageMock.isStripeEventProcessed.mockResolvedValueOnce(false);
-    storageMock.createPurchase.mockResolvedValueOnce(undefined);
-    storageMock.recordQualityLabFunnelEvent.mockResolvedValueOnce({ id: 1 });
-    storageMock.markStripeEventProcessed.mockResolvedValueOnce(undefined);
-
     const res = await request(app).post("/api/stripe/webhook").set("stripe-signature", "sig").send(diagnosticEvent);
     expect(res.status).toBe(200);
-    expect(storageMock.recordQualityLabFunnelEvent).toHaveBeenCalledWith("u1", expect.objectContaining({
-      journeyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
-      stage: "diagnostic_purchased",
-      source: "stripe_webhook",
-      offer: "scope_diagnostic",
+    expect(fulfillStripeEventOnce).toHaveBeenCalledWith("evt_diagnostic", "checkout.session.completed", expect.objectContaining({
+      kind: "checkout-payment",
+      productType: "scope_diagnostic",
+      blueprintJourneyId: "03bb1889-35b8-487a-a8ab-f447aaec3b31",
     }));
   });
 
@@ -472,6 +530,18 @@ describe("stripe webhook", () => {
     const app = await buildApp();
     const res = await request(app).post("/api/stripe/webhook").send(purchaseEvent);
     expect(res.status).toBe(400);
+  });
+
+  it("exempts a signed Stripe webhook from the browser origin guard", async () => {
+    const app = await buildApp();
+    constructEvent.mockReturnValue(purchaseEvent);
+    const response = await request(app)
+      .post("/api/stripe/webhook")
+      .set("origin", "https://stripe.example")
+      .set("stripe-signature", "sig")
+      .send(purchaseEvent);
+    expect(response.status).toBe(200);
+    expect(fulfillStripeEventOnce).toHaveBeenCalledOnce();
   });
 });
 
@@ -571,6 +641,22 @@ describe("create-checkout-session", () => {
     expect(storageMock.deleteQualityLabReviewedProject).not.toHaveBeenCalled();
   });
 
+  it("fails account project sync closed when the required schema is incomplete", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u-schema", email: "schema@example.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "schema@example.com", password: "pw123456" }).expect(201);
+    checkRuntimeSchema.mockResolvedValueOnce(false);
+
+    const response = await agent.get("/api/quality-lab/projects");
+
+    expect(response.status).toBe(503);
+    expect(response.body).toMatchObject({ code: "SCHEMA_NOT_READY" });
+    expect(response.body.requestId).toEqual(expect.any(String));
+    expect(storageMock.listQualityLabReviewedProjects).not.toHaveBeenCalled();
+  });
+
   it("creates an authenticated account project with its first revision", async () => {
     const app = await buildApp();
     const agent = request.agent(app);
@@ -581,14 +667,13 @@ describe("create-checkout-session", () => {
     const project = createQualityLabProject(defaultQualityLabInput, "qlp_account_route");
     const snapshot = createQualityLabAccountSnapshot(project);
     const savedAt = new Date("2026-07-26T09:00:00.000Z");
-    storageMock.getQualityLabReviewedProject.mockResolvedValueOnce(undefined);
-    storageMock.upsertQualityLabReviewedProject.mockResolvedValueOnce({ id: 1, userId: "u-project-sync", localProjectId: project.id, projectName: project.name, snapshot, createdAt: savedAt, updatedAt: savedAt });
-    storageMock.listQualityLabReviewedProjectRevisions.mockResolvedValueOnce([{ id: 1, reviewedProjectId: 1, revisionNumber: 1, reason: "reviewed-project-sync", snapshot, createdAt: savedAt }]);
+    const row = { id: 1, userId: "u-project-sync", localProjectId: project.id, projectName: project.name, snapshot, createdAt: savedAt, updatedAt: savedAt };
+    storageMock.syncQualityLabReviewedProject.mockResolvedValueOnce({ status: "created", row, revisionCount: 1 });
 
     const response = await agent.put(`/api/quality-lab/projects/${project.id}`).send({ snapshot, expectedUpdatedAt: null });
     expect(response.status).toBe(201);
     expect(response.body).toMatchObject({ revisionCount: 1, updatedAt: savedAt.toISOString(), snapshot: { localProjectId: project.id } });
-    expect(storageMock.upsertQualityLabReviewedProject).toHaveBeenCalledWith("u-project-sync", expect.objectContaining({ localProjectId: project.id }));
+    expect(storageMock.syncQualityLabReviewedProject).toHaveBeenCalledWith("u-project-sync", expect.objectContaining({ localProjectId: project.id }), null);
   });
 
   it("returns the current account revision instead of overwriting a stale project", async () => {
@@ -601,13 +686,46 @@ describe("create-checkout-session", () => {
     const project = createQualityLabProject(defaultQualityLabInput, "qlp_conflict_route");
     const snapshot = createQualityLabAccountSnapshot(project);
     const currentUpdatedAt = new Date("2026-07-26T09:00:00.000Z");
-    storageMock.getQualityLabReviewedProject.mockResolvedValueOnce({ id: 2, userId: "u-project-conflict", localProjectId: project.id, projectName: project.name, snapshot, createdAt: currentUpdatedAt, updatedAt: currentUpdatedAt });
-    storageMock.listQualityLabReviewedProjectRevisions.mockResolvedValueOnce([{ id: 2, reviewedProjectId: 2, revisionNumber: 1, reason: "reviewed-project-sync", snapshot, createdAt: currentUpdatedAt }]);
+    const row = { id: 2, userId: "u-project-conflict", localProjectId: project.id, projectName: project.name, snapshot, createdAt: currentUpdatedAt, updatedAt: currentUpdatedAt };
+    storageMock.syncQualityLabReviewedProject.mockResolvedValueOnce({ status: "conflict", row, revisionCount: 1 });
 
     const response = await agent.put(`/api/quality-lab/projects/${project.id}`).send({ snapshot, expectedUpdatedAt: "2026-07-25T09:00:00.000Z" });
     expect(response.status).toBe(409);
     expect(response.body).toMatchObject({ revisionCount: 1, updatedAt: currentUpdatedAt.toISOString(), snapshot: { localProjectId: project.id } });
-    expect(storageMock.upsertQualityLabReviewedProject).not.toHaveBeenCalled();
+    expect(storageMock.syncQualityLabReviewedProject).toHaveBeenCalledTimes(1);
+  });
+
+  it("loads revision counts and individual history content on demand", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u-project-history", email: "history@example.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "history@example.com", password: "pw123456" }).expect(201);
+
+    const project = createQualityLabProject(defaultQualityLabInput, "qlp_history_route");
+    const snapshot = createQualityLabAccountSnapshot(project);
+    const savedAt = new Date("2026-07-26T09:00:00.000Z");
+    const projectRow = { id: 3, userId: "u-project-history", localProjectId: project.id, projectName: project.name, snapshot, createdAt: savedAt, updatedAt: savedAt };
+    storageMock.listQualityLabReviewedProjects.mockResolvedValueOnce([projectRow]);
+    storageMock.countQualityLabReviewedProjectRevisions.mockResolvedValueOnce(6);
+
+    const projects = await agent.get("/api/quality-lab/projects");
+    expect(projects.status).toBe(200);
+    expect(projects.body[0].revisionCount).toBe(6);
+    expect(storageMock.listQualityLabReviewedProjectRevisions).not.toHaveBeenCalled();
+
+    storageMock.getQualityLabReviewedProjectRevision.mockResolvedValueOnce({
+      id: 9,
+      reviewedProjectId: projectRow.id,
+      revisionNumber: 1,
+      reason: "reviewed-project-sync",
+      snapshot,
+      createdAt: savedAt,
+    });
+    const revision = await agent.get(`/api/quality-lab/projects/${project.id}/revisions/1`);
+    expect(revision.status).toBe(200);
+    expect(revision.body).toMatchObject({ revisionNumber: 1, snapshot: { localProjectId: project.id } });
+    expect(storageMock.getQualityLabReviewedProjectRevision).toHaveBeenCalledWith("u-project-history", project.id, 1);
   });
 
   it("syncs monthly quality reviews only for an active Pro member", async () => {

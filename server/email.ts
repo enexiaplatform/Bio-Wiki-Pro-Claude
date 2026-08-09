@@ -12,6 +12,17 @@ const resend = process.env.RESEND_API_KEY
 const FROM_EMAIL = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
 const BASE_URL = getPublicOrigin();
 
+function logEmailDisabled(kind: string) {
+  console.warn(`[Email] ${kind} skipped because transactional email is not configured`);
+}
+
+function logEmailFailure(kind: string, error?: unknown) {
+  console.error("[Email] delivery failed", {
+    kind,
+    errorType: error instanceof Error ? error.name : "provider-error",
+  });
+}
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>'"]/g, (character) => ({
     "&": "&amp;",
@@ -65,7 +76,7 @@ function htmlWrapper(content: string): string {
 
 export async function sendWelcomeEmail(to: string, firstName?: string): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send welcome email to ${to} (Resend not configured)`);
+    logEmailDisabled("welcome");
     return;
   }
 
@@ -91,7 +102,7 @@ export async function sendWelcomeEmail(to: string, firstName?: string): Promise<
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send welcome email:", err);
+    logEmailFailure("welcome", err);
   }
 }
 
@@ -102,7 +113,7 @@ export async function sendPurchaseConfirmation(
   firstName?: string
 ): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send purchase confirmation to ${to} (Resend not configured)`);
+    logEmailDisabled("purchase confirmation");
     return;
   }
 
@@ -127,7 +138,7 @@ export async function sendPurchaseConfirmation(
       ` : isCareerBlueprint ? `
       <div class="box">
         <p><strong style="color:#10b981;">Your Personal Career Blueprint is unlocked</strong></p>
-        <p>Open your personalized 13-week workspace to track evidence and reviewer feedback, then generate the named 38-page Career Operating Blueprint whenever your profile changes.</p>
+        <p>Open your personalized 13-week workspace to track evidence and reviewer feedback, then regenerate your Career Operating Blueprint whenever your profile changes.</p>
       </div>
       <a href="${BASE_URL}/career/blueprint" class="cta">Open my Career Blueprint workspace →</a>
       ` : hasDownloads ? `
@@ -154,13 +165,13 @@ export async function sendPurchaseConfirmation(
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send purchase confirmation:", err);
+    logEmailFailure("purchase confirmation", err);
   }
 }
 
 export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send lead magnet to ${to} (Resend not configured)`);
+    logEmailDisabled("lead magnet");
     return;
   }
 
@@ -183,7 +194,7 @@ export async function sendLeadMagnetEmail(to: string, downloadUrl: string): Prom
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send lead magnet email:", err);
+    logEmailFailure("lead magnet", err);
   }
 }
 
@@ -193,7 +204,7 @@ export async function sendVerificationEmail(
   firstName?: string
 ): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send verification to ${to} (Resend not configured): ${verifyUrl}`);
+    logEmailDisabled("email verification");
     return;
   }
 
@@ -211,7 +222,7 @@ export async function sendVerificationEmail(
   try {
     await resend.emails.send({ from: FROM_EMAIL, to, subject: "Confirm your Life Science Atlas email", html });
   } catch (err) {
-    console.error("[Email] Failed to send verification email:", err);
+    logEmailFailure("email verification", err);
   }
 }
 
@@ -221,7 +232,7 @@ export async function sendPasswordResetEmail(
   firstName?: string
 ): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send password reset to ${to} (Resend not configured): ${resetUrl}`);
+    logEmailDisabled("password reset");
     return;
   }
 
@@ -244,7 +255,7 @@ export async function sendPasswordResetEmail(
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send password reset email:", err);
+    logEmailFailure("password reset", err);
   }
 }
 
@@ -254,7 +265,7 @@ export async function sendDunningEmail(
   firstName?: string
 ): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send dunning email to ${to} (Resend not configured)`);
+    logEmailDisabled("dunning");
     return;
   }
 
@@ -279,7 +290,7 @@ export async function sendDunningEmail(
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send dunning email:", err);
+    logEmailFailure("dunning", err);
   }
 }
 
@@ -325,7 +336,7 @@ export async function sendTrialEndingEmail(
   firstName?: string,
 ): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send trial-ending (${daysLeft}d) to ${to} (Resend not configured)`);
+    logEmailDisabled("trial ending");
     return;
   }
   const name = firstName ?? "there";
@@ -349,7 +360,7 @@ export async function sendTrialEndingEmail(
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send trial-ending email:", err);
+    logEmailFailure("trial ending", err);
   }
 }
 
@@ -371,7 +382,7 @@ export async function sendAbandonedCheckoutEmail(
   firstName?: string,
 ): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send abandoned-checkout (${productType}) to ${to} (Resend not configured)`);
+    logEmailDisabled("abandoned checkout");
     return;
   }
   const name = firstName ?? "there";
@@ -394,14 +405,14 @@ export async function sendAbandonedCheckoutEmail(
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send abandoned-checkout email:", err);
+    logEmailFailure("abandoned checkout", err);
   }
 }
 
 // Re-engagement nudge for a learner who went quiet (last lesson 7–14 days ago).
 export async function sendReEngagementEmail(to: string, firstName?: string): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would send re-engagement to ${to} (Resend not configured)`);
+    logEmailDisabled("re-engagement");
     return;
   }
   const name = firstName ?? "there";
@@ -422,7 +433,7 @@ export async function sendReEngagementEmail(to: string, firstName?: string): Pro
       html,
     });
   } catch (err) {
-    console.error("[Email] Failed to send re-engagement email:", err);
+    logEmailFailure("re-engagement", err);
   }
 }
 
@@ -455,7 +466,7 @@ export async function sendQualityLabWorkQueueEmail(
   metrics: { overdueCount: number; dueSoonCount: number; unscheduledBlockingCount: number; readyForReviewCount: number },
 ): Promise<boolean> {
   if (!resend) {
-    console.log(`[Email] Would send Blueprint work queue to ${to} (Resend not configured)`);
+    logEmailDisabled("Blueprint work queue");
     return false;
   }
   const name = escapeEmailText(firstName ?? "there");
@@ -487,12 +498,12 @@ export async function sendQualityLabWorkQueueEmail(
       html,
     });
     if (response.error) {
-      console.error("[Email] Blueprint work queue rejected:", response.error);
+      logEmailFailure("Blueprint work queue", response.error);
       return false;
     }
     return true;
   } catch (err) {
-    console.error("[Email] Failed to send Blueprint work queue:", err);
+    logEmailFailure("Blueprint work queue", err);
     return false;
   }
 }
@@ -511,7 +522,7 @@ export async function sendQualityLabWeeklyReviewEmail(
   review: QualityLabWeeklyPortfolioReview,
 ): Promise<boolean> {
   if (!resend) {
-    console.log(`[Email] Would send weekly Blueprint review to ${to} (Resend not configured)`);
+    logEmailDisabled("weekly Blueprint review");
     return false;
   }
   const name = escapeEmailText(firstName ?? "there");
@@ -540,12 +551,12 @@ export async function sendQualityLabWeeklyReviewEmail(
       html,
     });
     if (response.error) {
-      console.error("[Email] Weekly Blueprint review rejected:", response.error);
+      logEmailFailure("weekly Blueprint review", response.error);
       return false;
     }
     return true;
   } catch (err) {
-    console.error("[Email] Failed to send weekly Blueprint review:", err);
+    logEmailFailure("weekly Blueprint review", err);
     return false;
   }
 }
@@ -554,7 +565,7 @@ export async function sendNurtureEmail(to: string, step: number, firstName?: str
   const content = NURTURE_CONTENT[step];
   if (!content) return;
   if (!resend) {
-    console.log(`[Email] Would send nurture step ${step} to ${to} (Resend not configured)`);
+    logEmailDisabled("nurture");
     return;
   }
   const name = firstName ?? "there";
@@ -566,7 +577,7 @@ export async function sendNurtureEmail(to: string, step: number, firstName?: str
       html: htmlWrapper(content.body(name)),
     });
   } catch (err) {
-    console.error(`[Email] Failed to send nurture step ${step}:`, err);
+    logEmailFailure(`nurture step ${step}`, err);
   }
 }
 
@@ -578,7 +589,7 @@ export async function sendRegulatoryDigestEmail(
   items: RegulatoryUpdate[],
 ): Promise<boolean> {
   if (!resend) {
-    console.log(`[Email] Would send ${cadence} regulatory impact digest to ${to} (Resend not configured)`);
+    logEmailDisabled("regulatory digest");
     return false;
   }
   if (items.length === 0) return false;
@@ -605,12 +616,12 @@ export async function sendRegulatoryDigestEmail(
       html,
     });
     if (response.error) {
-      console.error("[Email] Regulatory digest rejected:", response.error);
+      logEmailFailure("regulatory digest", response.error);
       return false;
     }
     return true;
   } catch (err) {
-    console.error("[Email] Failed to send regulatory digest:", err);
+    logEmailFailure("regulatory digest", err);
     return false;
   }
 }
@@ -627,7 +638,7 @@ export interface CommercialRequestEmailInput {
 /** Sends the buyer acknowledgement and the internal work-queue alert together. */
 export async function sendCommercialRequestEmails(input: CommercialRequestEmailInput): Promise<void> {
   if (!resend) {
-    console.log(`[Email] Would acknowledge commercial request ${input.requestId} to ${input.email} (Resend not configured)`);
+    logEmailDisabled("commercial request acknowledgement");
     return;
   }
 
@@ -672,6 +683,6 @@ export async function sendCommercialRequestEmails(input: CommercialRequestEmailI
 
   const results = await Promise.allSettled(messages);
   results.forEach((result) => {
-    if (result.status === "rejected") console.error("[Email] Commercial request notification failed:", result.reason);
+    if (result.status === "rejected") logEmailFailure("commercial request notification", result.reason);
   });
 }

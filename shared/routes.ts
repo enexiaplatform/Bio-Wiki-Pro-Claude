@@ -4,16 +4,23 @@ import { users } from './models/auth.js';
 import { qualityLabReviewRequestSchema } from './quality-lab-review.js';
 
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
+const errorEnvelope = {
+  code: z.string(),
+  requestId: z.string(),
+};
 export const errorSchemas = {
   validation: z.object({
     message: z.string(),
     field: z.string().optional(),
+    ...errorEnvelope,
   }),
   notFound: z.object({
     message: z.string(),
+    ...errorEnvelope,
   }),
   internal: z.object({
     message: z.string(),
+    ...errorEnvelope,
   }),
 };
 

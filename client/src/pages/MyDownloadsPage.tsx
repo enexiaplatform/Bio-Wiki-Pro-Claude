@@ -15,6 +15,11 @@ interface DeliverableFile {
 interface DeliverableProduct {
   id: string;
   name: string;
+  quality?: {
+    version: string;
+    reviewStatus: "under-review" | "editorial-reviewed" | "sme-reviewed";
+    limitations: string[];
+  };
   files: DeliverableFile[];
 }
 
@@ -144,12 +149,23 @@ export default function MyDownloadsPage() {
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4 text-teal-300" />
                     <h2 className="font-bold">{product.name}</h2>
+                    {product.quality && (
+                      <span className="rounded-full border border-amber-300/25 bg-amber-300/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-200">
+                        {product.quality.reviewStatus.replaceAll("-", " ")} · {product.quality.version}
+                      </span>
+                    )}
                   </div>
                   <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-foreground">
                     {product.files.length} files
                   </span>
                 </div>
               </div>
+
+              {product.quality?.limitations?.length ? (
+                <div className="border-b border-amber-300/15 bg-amber-300/[0.04] px-5 py-3 text-xs leading-5 text-amber-100/80">
+                  {product.quality.limitations.join(" ")}
+                </div>
+              ) : null}
 
               <ul className="divide-y divide-white/10">
                 {product.files.map((file) => (
@@ -197,7 +213,7 @@ export default function MyDownloadsPage() {
           </div>
           <div className="flex flex-col gap-4 px-5 py-4 sm:flex-row sm:items-center">
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold">13-week execution workspace + 38-page Blueprint PDF</p>
+              <p className="text-sm font-semibold">Personalized Career Operating Blueprint + 13-week execution workspace</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                 Your purchased workspace keeps weekly evidence and reviewer feedback. Regenerate the named PDF from the Career results panel whenever your profile changes.
               </p>

@@ -53,7 +53,7 @@ export default function PaymentSuccessPage() {
       ? [
           "Open the personalized 13-week workspace built from your saved Career Snapshot.",
           "Track weekly evidence, sanitized artifacts, and reviewer feedback.",
-          "Download the 38-page Blueprint and export your execution brief whenever your evidence changes.",
+          "Download the Career Operating Blueprint and export your execution brief whenever your evidence changes.",
         ]
     : isKit
       ? [

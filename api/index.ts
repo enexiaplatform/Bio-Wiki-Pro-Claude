@@ -1,50 +1,11 @@
-import express, { type NextFunction, type Request, type Response } from "express";
-import { registerRoutes } from "../server/routes.js";
-import { serveStatic } from "../server/static.js";
+import type { Express, Request, Response } from "express";
+import { createApiApp } from "../server/app.js";
 
-declare module "http" {
-  interface IncomingMessage {
-    rawBody: unknown;
-  }
-}
-
-let appPromise: Promise<express.Express> | null = null;
-
-async function createApp() {
-  const app = express();
-
-  app.use(
-    express.json({
-      verify: (req, _res, buf) => {
-        req.rawBody = buf;
-      },
-    }),
-  );
-  app.use(express.urlencoded({ extended: false }));
-
-  await registerRoutes(app);
-  serveStatic(app);
-
-  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    // Surface in Vercel runtime logs for monitoring.
-    console.error("[server error]", status, err?.stack || message);
-
-    if (res.headersSent) {
-      return next(err);
-    }
-
-    return res.status(status).json({ message });
-  });
-
-  return app;
-}
+let appPromise: Promise<Express> | null = null;
 
 async function getApp() {
   if (!appPromise) {
-    appPromise = createApp().catch((error) => {
+    appPromise = createApiApp({ serveStaticFiles: true, requestLogging: true }).catch((error) => {
       // A rejected promise stays rejected forever. Reset it so a transient
       // cold-start failure does not poison every later request handled by the
       // same warm serverless instance.
@@ -73,8 +34,7 @@ export default async function handler(req: Request, res: Response) {
     console.error("[server startup failed]", {
       requestId,
       path: requestUrl,
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
+      errorType: error instanceof Error ? error.name : "unknown-error",
     });
 
     if (res.headersSent) return;
@@ -85,6 +45,8 @@ export default async function handler(req: Request, res: Response) {
     if (requestPath.startsWith("/api/")) {
       return res.status(503).json({
         message: "Service temporarily unavailable. Please retry in a few seconds.",
+        code: "SERVICE_UNAVAILABLE",
+        requestId: String(requestId),
       });
     }
 

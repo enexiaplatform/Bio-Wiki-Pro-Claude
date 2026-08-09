@@ -1,6 +1,8 @@
 import type { ComponentType } from "react";
 import type { Lng } from "@/i18n";
 import manifest from "@/data/content-manifest.json";
+import { getContentQuality, getQuizV2 } from "@shared/content-quality-registry";
+import { toPublicContentQuality, type PublicContentQuality } from "@shared/content-quality";
 
 export type ContentTier = "free" | "pro" | "paid";
 export type ContentCollection = "academy" | "blog" | "toolkits";
@@ -10,6 +12,10 @@ export interface QuizQuestion {
   options: string[];
   /** Index into `options` of the correct answer. */
   answer: number;
+  type?: "concept" | "applicability" | "scenario" | "evidence-action";
+  rationale?: string;
+  sourceIds?: string[];
+  difficulty?: "foundation" | "intermediate" | "advanced";
 }
 
 export interface ContentFrontmatter {
@@ -32,11 +38,16 @@ export interface ContentEntry extends ContentFrontmatter {
   Component?: ComponentType<Record<string, unknown>>;
   /** Estimated reading time in minutes, precomputed in the manifest. */
   readMinutes: number;
+  quality: PublicContentQuality;
 }
 
 type MdxModule = { default: ComponentType<Record<string, unknown>> };
 
-const entries = manifest as ContentEntry[];
+const entries = (manifest as Array<Omit<ContentEntry, "quality">>).map((entry) => ({
+  ...entry,
+  quiz: getQuizV2(entry.collection, entry.slug) ?? entry.quiz,
+  quality: toPublicContentQuality(getContentQuality(entry.collection, entry.slug, entry.title, entry.tier)),
+}));
 
 const blogModules = import.meta.glob<MdxModule>("../../../content/blog/**/*.mdx");
 const BLOG_RE = /\/content\/blog\/(.+)\.(en)\.mdx$/;

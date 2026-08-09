@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "tsx script/gen-content-manifest.ts && cross-env NODE_ENV=development tsx server/index.ts",
     "build": "tsx script/build.ts",
@@ -14,15 +17,18 @@
     "db:migrate": "drizzle-kit migrate",
     "seed:content": "tsx script/seed-content.ts",
     "gen:content": "tsx script/gen-content-manifest.ts",
+    "report:content-quality": "tsx script/generate-content-quality-baseline.ts",
     "validate:content": "tsx script/validate-content.ts",
+    "validate:content-quality": "tsx script/validate-content-quality.ts",
     "validate:paths": "tsx script/validate-paths.ts",
     "validate:links": "tsx script/validate-links.ts",
     "validate:tool-meta": "tsx script/validate-tool-meta.ts",
     "validate:brand": "tsx script/validate-brand.ts",
-    "validate": "npm run validate:content && npm run validate:paths && npm run validate:links && npm run validate:tool-meta && npm run validate:brand && npm run check",
+    "validate": "npm run validate:content && npm run validate:content-quality && npm run validate:paths && npm run validate:links && npm run validate:tool-meta && npm run validate:brand && npm run check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:critical": "playwright test --grep \"homepage leads|quality lab funnel|signed-in user explicitly saves|Decision Workspace preserves|commercial handoff traces|illustrative Blueprint sample|method navigator|regulatory monitor|Pro Lab Workbench\""
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -68,10 +74,10 @@
     "date-fns": "^3.6.0",
     "docx": "^9.6.1",
     "dotenv": "^17.3.1",
-    "drizzle-orm": "^0.39.3",
-    "drizzle-zod": "^0.7.0",
+    "drizzle-orm": "^0.45.2",
+    "drizzle-zod": "^0.7.1",
     "embla-carousel-react": "^8.6.0",
-    "express": "^5.0.1",
+    "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "express-session": "^1.19.0",
     "framer-motion": "^11.18.2",
@@ -106,7 +112,6 @@
     "vaul": "^1.1.2",
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
-    "xlsx": "^0.18.5",
     "xlsx-js-style": "^1.2.0",
     "zod": "^3.24.2",
     "zod-validation-error": "^3.4.0"
@@ -122,7 +127,7 @@
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.2",
-    "@types/node": "20.19.27",
+    "@types/node": "^24.13.3",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
     "@types/supertest": "^7.2.0",
@@ -130,17 +135,23 @@
     "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.20",
     "cross-env": "^10.1.0",
-    "drizzle-kit": "^0.31.8",
+    "drizzle-kit": "^0.31.10",
     "esbuild": "^0.25.0",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.25",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0",
     "supertest": "^7.2.2",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.5",
     "typescript": "5.6.3",
     "vite": "^7.3.0",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.7",
+    "xlsx": "^0.18.5"
   },
   "overrides": {
+    "body-parser": "2.3.0",
+    "brace-expansion": "2.1.4",
+    "js-yaml": "3.15.1",
     "drizzle-kit": {
       "@esbuild-kit/esm-loader": "npm:tsx@^4.20.4"
     }

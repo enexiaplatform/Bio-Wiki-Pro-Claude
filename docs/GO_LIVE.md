@@ -2,6 +2,8 @@
 
 > **Strategic status (2026-07-18):** this document is retained for the secondary Pro subscription and legacy digital-goods operations. It is not the launch authority for the current flagship offer. Gate 1 commercial launch is governed by `PRODUCT_SOURCE_OF_TRUTH.md` and `COMMERCIAL_LAUNCH_RUNBOOK.md`; `npm run preflight` now validates the Paid Scope Diagnostic path rather than requiring Pro as the primary revenue product.
 
+> **P0 checkout safety update (2026-08-03):** production remains `COMMERCE_MODE=disabled`. Use `COMMERCE_MODE=test` only on preview with Stripe test credentials. `COMMERCE_MODE=live` is valid only after a custom domain, verified email sender, monitored operations inbox, Diagnostic Price, database/session configuration, and the read-only `/api/health` schema check are all ready. Prefer `PUBLIC_APP_URL`; `BASE_URL` is a temporary compatibility fallback. There is no production session-secret fallback.
+
 The single, ordered checklist to take Life Science Atlas from staging to a revenue-ready
 production deployment on Vercel. Sibling docs cover slices in depth:
 

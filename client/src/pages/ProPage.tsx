@@ -27,8 +27,8 @@ const proLibrary = [
     icon: BookOpenCheck,
     number: "01",
     title: "Evidence with more context",
-    body: "Move beyond public orientation into 30+ deep-dive lessons with full workflows, decision tables, inspector findings, worked examples, and quizzes.",
-    example: "30+ in-depth lessons with quizzes",
+      body: "Follow 36 strategic core lessons across five decision workflows, including the full Pharma API route-to-routine chain, Biopharma potency/reference depth, and decision-led DoE. The Monthly Quality Review turns one recurring signal into an evidence note, applied workflow, reviewer challenge, and owned carryover.",
+      example: "36 core lessons · five decision workflows",
     href: "/academy",
     linkLabel: "Browse public evidence",
   },
@@ -45,8 +45,8 @@ const proLibrary = [
     icon: FileSpreadsheet,
     number: "03",
     title: "Reusable working files",
-    body: "Download 7 complete working packs — OOS investigation, environmental monitoring, biological indicators, culture media, lab water, data integrity, and micro onboarding — each with a full guide (PDF) and a working register (Excel).",
-    example: "7 working packs: guide (PDF) + register (Excel)",
+      body: "Use thirteen upgraded working packs with a guide, blank validated workbook, fictional completed example, source boundary, and sign-off fields. Other legacy packs remain accessible under review.",
+      example: "13 upgraded packs · legacy packs under review",
     href: "/toolkits",
     linkLabel: "Preview the toolkit library",
   },
@@ -70,10 +70,10 @@ const workflow = [
 
 const comparisonRows = [
   ["Monthly operating review", "Illustrative preview only", "Editable workspace, account sync, portfolio pulse, carryover, and export"],
-  ["Evidence", "Public orientation and selected guides", "30+ deep-dive lessons with decision tables, inspector findings, worked examples, and quizzes"],
+    ["Evidence", "Public orientation and selected guides", "36 core lessons in five workflows spanning the full Pharma API route, reaction/work-up, isolation/solid-state, impurity, analytical, validation and lifecycle chain plus the full Biopharma product-process lifecycle, potency/reference depth and decision-led DoE, with a Monthly Quality Review and visible review status, sources, limitations, scenario, and rationale-based quiz"],
   ["Tools", "30 focused public calculators", "Blueprint-connected Lab Workbench with saved assumptions, revisions, and export"],
   ["Regulatory updates", "Public official-source monitor", "Opt-in weekly impact digest or narrow daily watchlist"],
-  ["Working files", "Limited public samples", "7 complete working packs (PDF guides + Excel registers) plus the GMP Audit Readiness Kit"],
+    ["Working files", "Limited public samples", "Thirteen upgraded working packs with validated XLSX and fictional examples; legacy packs stay accessible under review"],
   ["Audit readiness", "Public orientation resources", "GMP Audit Readiness Kit included"],
   ["Expert project review", "Not included", "Not included — use Quality Lab for scoped review"],
 ];
@@ -174,7 +174,7 @@ export default function ProPage() {
             <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Monthly Quality Review</p>
             <h2 className="mt-3 text-3xl font-bold leading-tight">A reason to return every month.</h2>
             <p className="mt-4 text-sm leading-7 text-slate-400">Run one recurring quality priority through a visible Frame → Verify → Decide → Close cycle, then carry unresolved work into the next month.</p>
-            <Link href="/pro/monthly-review" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Open the monthly workspace <ArrowRight className="h-4 w-4" /></Link>
+            <div className="mt-6 flex flex-wrap gap-3"><Link href="/pro/monthly-review" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Open the monthly workspace <ArrowRight className="h-4 w-4" /></Link><Link href="/library/atlas-pro-monthly-quality-review" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold text-white">Read the operating lesson</Link></div>
           </div>
           <div className="grid gap-px bg-sky-100 sm:grid-cols-2">
             {[
@@ -271,21 +271,29 @@ export default function ProPage() {
       <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-16 md:py-20">
         <div className="mx-auto max-w-7xl">
           <div className="max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Three repeatable playbooks</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Four repeatable playbooks</p>
             <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Start with work to be done, then pull the right depth.</h2>
             <p className="mt-4 text-sm leading-7 text-slate-600">These examples show how the Pro layers connect. Availability still depends on the published lesson, tool and file catalog at the time you use it.</p>
           </div>
-          <div className="mt-9 grid gap-4 lg:grid-cols-3">
+          <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {ATLAS_PRO_WORKFLOWS.map((playbook, index) => {
               const selected = playbook.id === selectedWorkflowId;
               return (
                 <article key={playbook.question} className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm shadow-sky-950/5 transition ${selected ? "border-sky-500 ring-2 ring-sky-200" : "border-sky-200"}`}>
-                <div className="flex items-center justify-between gap-4"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">0{index + 1}</span><BadgeCheck className="h-5 w-5 text-sky-700" /></div>
+                <div className="flex items-center justify-between gap-4"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">0{index + 1}</span><span className="rounded-full border border-amber-300/40 bg-amber-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-amber-800">Under review</span></div>
                 <h3 className="mt-5 text-xl font-bold text-slate-950">{playbook.question}</h3>
                 <div className="mt-5 flex-1 space-y-4 border-t border-slate-200 pt-5">
                   {[["Evidence", playbook.evidence], ["Tool", playbook.tool], ["Working file", playbook.workingFile]].map(([label, body]) => (
                     <div key={label} className="grid grid-cols-[5.5rem_1fr] gap-3 text-sm leading-6"><strong className="text-sky-900">{label}</strong><span className="text-slate-600">{body}</span></div>
                   ))}
+                </div>
+                <div className="mt-5 border-t border-slate-200 pt-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{playbook.lessonSlugs.length} core lessons</p>
+                  <ul className="mt-2 space-y-1.5">
+                    {playbook.lessonSlugs.map((slug) => (
+                      <li key={slug}><Link href={`/academy/${slug}`} className="text-xs font-semibold text-sky-800 hover:text-sky-950">{slug.replaceAll("-", " ")}</Link></li>
+                    ))}
+                  </ul>
                 </div>
                 <button type="button" aria-pressed={selected} onClick={() => selectWorkflow(playbook.id)} className={`mt-6 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${selected ? "bg-sky-900 text-white" : "border border-sky-200 text-sky-900 hover:bg-sky-50"}`}>{selected ? <CheckCircle2 className="h-4 w-4" /> : null}{selected ? "Selected for my brief" : `Build ${playbook.question} brief`}</button>
                 <Link href={playbook.href} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{playbook.cta} <ArrowRight className="h-4 w-4" /></Link>

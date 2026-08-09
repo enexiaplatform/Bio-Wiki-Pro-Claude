@@ -215,49 +215,49 @@
     "collection": "academy",
     "slug": "analytical-method-validation",
     "lang": "en",
-    "title": "Analytical Method Validation (ICH Q2)",
+    "title": "Analytical Method Validation (ICH Q2(R2) & ICH Q14)",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "ICH Q2(R2) method validation: which characteristics apply to each test type, how to design the experiments and acceptance criteria, what the validation report must contain, and common audit findings.",
-    "updatedAt": "2026-07-25",
+    "seoDescription": "Master ICH Q2(R2) and ICH Q14 method validation: Analytical Target Profile (ATP), LOD/LOQ formulas, forced degradation studies, and acceptance criteria.",
+    "updatedAt": "2026-07-29",
     "quiz": [
       {
-        "q": "Which characteristic describes closeness between the measured value and the true value?",
+        "q": "Which ICH guideline covers the lifecycle development of analytical procedures (ATP concept)?",
         "options": [
-          "Precision",
-          "Accuracy",
-          "Linearity",
-          "Specificity"
+          "ICH Q2(R2)",
+          "ICH Q14",
+          "ICH Q9",
+          "ICH Q1A"
         ],
         "answer": 1
       },
       {
-        "q": "Repeatability and intermediate precision are both measures of what?",
+        "q": "What is the standard signal-to-noise (S/N) ratio required to establish a Limit of Quantitation (LOQ)?",
         "options": [
-          "Accuracy",
-          "Precision",
-          "Robustness",
-          "Range"
+          "3:1",
+          "5:1",
+          "10:1",
+          "100:1"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "For an API chromatographic assay, what is the standard repeatability precision (%RSD) acceptance criterion for n = 6 replicate injections?",
+        "options": [
+          "%RSD <= 1.0%",
+          "%RSD <= 2.0%",
+          "%RSD <= 5.0%",
+          "%RSD <= 10.0%"
         ],
         "answer": 1
       },
       {
-        "q": "For a quantitative impurity assay, which is typically required?",
+        "q": "Which forced degradation stress condition is required to prove a method is stability-indicating under ICH Q1B?",
         "options": [
-          "LOD only",
-          "Accuracy, precision, specificity, linearity, range, LOQ",
-          "Specificity only",
-          "No validation needed"
-        ],
-        "answer": 1
-      },
-      {
-        "q": "When should validation acceptance criteria be defined?",
-        "options": [
-          "After reviewing the data",
-          "Before the study, justified from the method's intended purpose",
-          "Only if results look bad",
-          "During the first OOS"
+          "pH 7 buffer only",
+          "Photolytic stress (1.2 million lux hours / 200 watt-hours/m2 UV)",
+          "Cold storage at 4°C",
+          "Dissolution testing"
         ],
         "answer": 1
       }
@@ -427,54 +427,54 @@
     "collection": "academy",
     "slug": "antimicrobial-effectiveness-test",
     "lang": "en",
-    "title": "Antimicrobial Effectiveness Testing (USP 51)",
+    "title": "Antimicrobial Effectiveness Testing (USP <51> & Ph. Eur. 5.1.3)",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Antimicrobial effectiveness testing per USP <51> and Ph. Eur. 5.1.3: the five challenge organisms, product categories 1-4, log-reduction criteria, neutralization, and when AET is required.",
-    "updatedAt": "2026-07-25",
+    "seoDescription": "Master Antimicrobial Effectiveness Testing (AET): USP <51> Categories 1-4, Ph. Eur. 5.1.3 Criteria A & B, log-reduction formulas, and chemical neutralizer validation.",
+    "updatedAt": "2026-07-29",
     "quiz": [
       {
-        "q": "What does Antimicrobial Effectiveness Testing (USP 51) demonstrate?",
+        "q": "What is the required final inoculum concentration per mL of product for USP <51> AET?",
         "options": [
-          "Product sterility",
-          "That the preservative system controls microbial growth over the product's life",
-          "Endotoxin level",
-          "Tablet hardness"
+          "1 x 10^2 to 1 x 10^3 CFU/mL",
+          "1 x 10^5 to 1 x 10^6 CFU/mL",
+          "1 x 10^8 to 1 x 10^9 CFU/mL",
+          "Exact 1 CFU/mL"
         ],
         "answer": 1
       },
       {
-        "q": "The USP 51 challenge panel includes:",
+        "q": "For Category 1 parenteral/ophthalmic products, what is the USP <51> bacterial log reduction requirement at Day 14?",
         "options": [
-          "Only S. aureus",
-          "S. aureus, P. aeruginosa, E. coli, C. albicans, A. brasiliensis",
-          "Any environmental isolate the lab prefers",
-          "Only spores"
+          "Not less than 1.0 log reduction",
+          "Not less than 2.0 log reduction",
+          "Not less than 3.0 log reduction",
+          "Complete sterile elimination"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "In compendial AET terminology, 'no increase' from a previous timepoint is defined as:",
+        "options": [
+          "Strictly 0 colonies",
+          "Not more than 0.5 log10 higher than the previous value",
+          "Not more than 2.0 log10 higher",
+          "Any count under 100 CFU"
         ],
         "answer": 1
       },
       {
-        "q": "Acceptance criteria (log reductions and time points) depend on:",
+        "q": "Which chemical neutralizer combination is most effective for neutralizing quaternary ammonium compounds (e.g., Benzalkonium Chloride)?",
         "options": [
-          "The product category / route of administration",
-          "The day of the week",
-          "The analyst",
-          "The price"
-        ],
-        "answer": 0
-      },
-      {
-        "q": "Before counting survivors, the preservative must be neutralized because:",
-        "options": [
-          "It stains the plates",
-          "Otherwise continued preservative action during recovery falsely inflates the apparent kill",
-          "Neutralization grows more organisms",
-          "It is a tradition with no technical basis"
+          "Water alone",
+          "Polysorbate 80 + Lecithin",
+          "Sodium Thiosulfate alone",
+          "Dilute Hydrochloric Acid"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 6
   },
   {
     "collection": "academy",
@@ -515,6 +515,59 @@
           "Monitor it"
         ],
         "answer": 1
+      }
+    ],
+    "readMinutes": 4
+  },
+  {
+    "collection": "academy",
+    "slug": "atlas-pro-monthly-quality-review",
+    "lang": "en",
+    "title": "Atlas Pro Monthly Quality Review: move one signal to owned carryover",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "A Pro workflow for turning one recurring quality question into an evidence review, a bounded application, a reusable work note and a reviewed carryover decision each month.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What is the correct starting point for a Monthly Quality Review?",
+        "options": [
+          "A broad reading list",
+          "One decision or quality signal with a named owner and boundary",
+          "A new spreadsheet for every issue",
+          "A list of every open task in the department"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as the final decision?",
+        "options": [
+          "When the evidence is incomplete",
+          "When an authorized QA, regulatory, batch or site decision is required",
+          "When the question crosses two functions",
+          "When the review takes less than one hour"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A review finds a recurring potency trend but no verified causal link. What is the best next move?",
+        "options": [
+          "Record the trend as the cause",
+          "Separate observation from hypothesis and define the evidence needed to test it",
+          "Ignore the trend until it becomes an OOS",
+          "Copy a control from another product"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What makes a monthly cycle reusable?",
+        "options": [
+          "A longer lesson catalogue",
+          "A dated evidence note, applied decision aid, reviewer challenge and explicit carryover",
+          "A score without a supporting record",
+          "A completed task list with no owner"
+        ],
+        "answer": 3
       }
     ],
     "readMinutes": 4
@@ -667,6 +720,642 @@
       }
     ],
     "readMinutes": 5
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-cell-line-cell-bank-genetic-stability",
+    "lang": "en",
+    "title": "Biopharma Cell Line Development, Cell Bank Lifecycle and Genetic Stability",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a traceable cell-substrate decision across lineage, expression construct, clone development, cell banks, characterization, genetic and phenotypic stability, production age and lifecycle change.",
+    "updatedAt": "2026-08-04",
+    "quiz": [
+      {
+        "q": "What makes a cell-substrate decision defensible?",
+        "options": [
+          "A defined lineage, construct, clone and bank version linked to history, characterization, stability, process/product evidence, change controls and accountable review",
+          "A passing identity test",
+          "A high-producing clone",
+          "An intact coding sequence alone"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as authorization to manufacture from a bank?",
+        "options": [
+          "When the bank is cryopreserved",
+          "When more than one analytical method is used",
+          "Whenever approved bank-use procedures, product commitments, biosafety controls or authorized reviewers have not approved the applicable decision",
+          "When a working cell bank is used"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "An end-of-production-age sample retains the expected coding sequence but a product-quality profile shifts. What is the strongest interpretation?",
+        "options": [
+          "Genetic stability is proven",
+          "Preserve construct, genomic, transcriptional, phenotypic, process, analytical and product hypotheses until the total evidence is reviewed",
+          "The shift cannot involve the cell substrate",
+          "The batch must be rejected"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is the strongest evidence action before accepting a new working cell bank?",
+        "options": [
+          "Confirm only the bank label",
+          "Count vials",
+          "Repeat one identity test",
+          "Reconcile lineage, manufacture, storage, identity/purity, adventitious-agent, stability, process/product bridge, comparability and authorized-use evidence"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 8
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-downstream-purification-clearance",
+    "lang": "en",
+    "title": "Biopharma Downstream Purification & Clearance",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a traceable downstream purification strategy that connects unit operations, product quality, impurity clearance, viral safety, recovery, evidence strength, scale-down models, and lifecycle controls.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What makes a downstream clearance claim defensible?",
+        "options": [
+          "A traceable claim linking a defined target, unit operation, process and analytical evidence, studied scope, limitations, controls, and qualified review",
+          "A platform statement that the step usually clears the impurity",
+          "A final release result without step evidence",
+          "A vendor's typical resin performance"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this protein-biologics downstream workflow not be applied unchanged?",
+        "options": [
+          "When the process has more than one chromatography step",
+          "When the modality, product, process, or viral-safety strategy falls outside the cited scope",
+          "When recovery is measured at each step",
+          "When the site uses disposable equipment"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Host-cell protein load increases at capture while the final result remains within specification. What is the best response?",
+        "options": [
+          "Ignore the shift because release passed",
+          "Tighten the final specification immediately",
+          "Assess upstream load, step capacity and variability, assay coverage, downstream contribution, trend, and potential product impact",
+          "Attribute the change to the capture resin automatically"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A manufacturing change may affect a viral-clearance step. What evidence action is strongest?",
+        "options": [
+          "Reuse a published reduction factor",
+          "Add the reduction factors from any similar steps",
+          "Rely on a routine impurity-clearance trend",
+          "Assess the change against the controlled viral-safety strategy, representative scale-down model, step mechanism, robustness evidence, and qualified virology review"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 10
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-formulation-fill-finish-stability",
+    "lang": "en",
+    "title": "Biopharma Formulation, Fill-Finish & Stability",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a traceable biologics formulation and stability strategy connecting degradation pathways, formulation hypotheses, process and fill-finish exposure, container interfaces, stability-indicating methods, studies, changes, and qualified review.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What makes a biologics stability claim defensible?",
+        "options": [
+          "A traceable link among the product and presentation, degradation risk, representative material, stability-indicating methods, controlled study, limitations, and qualified conclusion",
+          "A passing release assay at the initial time point",
+          "A platform formulation used for a related molecule",
+          "A chamber condition copied from another product"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this protein-biologics workflow not be applied unchanged?",
+        "options": [
+          "When more than one presentation is planned",
+          "When the modality, route, presentation, process, or region falls outside the cited evidence and reviewer competence",
+          "When the product has both release and stability methods",
+          "When transport simulation is included"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A proposed stopper and line-hold change coincides with a low-level particle trend. What is the best response?",
+        "options": [
+          "Accept the change because release tests pass",
+          "Attribute the trend to agitation immediately",
+          "Map material, process, handling, analytical, container, and stability evidence and preserve competing hypotheses until reviewed",
+          "Set a new particle limit from the observed lots"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "What is the strongest evidence action before assigning shelf life after a formulation or presentation change?",
+        "options": [
+          "Reuse the legacy shelf life",
+          "Use accelerated data as a direct substitute for all long-term evidence",
+          "Rely on the excipient supplier certificate",
+          "Assess the change against a controlled, product-specific stability protocol, representative batches and presentation, stability-indicating methods, relevant long-term and supporting data, limitations, and qualified regulatory review"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 11
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-full-lifecycle-product-process-orchestration",
+    "lang": "en",
+    "title": "Biopharma full-lifecycle product and process orchestration",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Connect biopharma cell substrate, materials, upstream, downstream, formulation, fill-finish, analytics, validation, comparability, transfer and lifecycle evidence in one reviewable product-process decision chain.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What does a full-lifecycle Biopharma control chain connect?",
+        "options": [
+          "Product quality intent to substrate, materials, process, analytics, formulation, validation, transfer and lifecycle evidence",
+          "Only final-product release tests",
+          "Only the upstream process",
+          "Only the regulatory submission"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as product approval?",
+        "options": [
+          "When it includes multiple functions",
+          "When a product-specific specification, comparability conclusion, validation decision or filing authorization is required",
+          "When the process changes",
+          "When an evidence gap is visible"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A downstream change shows no change in release results but a new upstream trend and reference transition occur together. What is the best next move?",
+        "options": [
+          "Declare no product impact",
+          "Separate product, process, method, reference and data signals, then define the evidence needed to resolve interactions",
+          "Ignore the upstream trend",
+          "Use a platform conclusion without a bridge"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What makes a cross-functional Biopharma decision package defensible?",
+        "options": [
+          "A longer list of assays",
+          "A platform claim that applies to every product",
+          "A final specification table",
+          "A frozen scope, product-process links, evidence strength, contradictions, reviewers, limitations and authorized actions"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 5
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-integrated-analytical-control-strategy",
+    "lang": "en",
+    "title": "Biopharma Integrated Analytical Control Strategy",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build an evidence-linked analytical control strategy connecting product attributes, characterization, potency, impurities, reference materials, specifications, analytical procedure capability, lifecycle use, and qualified decisions.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What makes a biopharma analytical control strategy defensible?",
+        "options": [
+          "A traceable link among product attributes, intended decisions, complementary analytical capability, reference materials, control placement, evidence, limitations, and accountable review",
+          "A long release specification",
+          "One high-resolution characterization method",
+          "A platform panel copied from another molecule"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this protein-biologics workflow not be applied unchanged?",
+        "options": [
+          "When both drug substance and drug product are tested",
+          "When a method is used at more than one site",
+          "When the modality, product, lifecycle stage, region, or decision falls outside the cited evidence and reviewer competence",
+          "When more than one quality attribute is measured"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A post-change lot passes release tests but shows a new charge profile and a shifted bioassay trend while the reference lot is being replaced. What is the best response?",
+        "options": [
+          "Release conformance proves no relevant change",
+          "Separate product, method, reference-material, sample, and process hypotheses; assess orthogonal and lifecycle evidence before a qualified conclusion",
+          "Average the old and new reference responses",
+          "Widen the specification from the observed lots"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is the strongest evidence action before adding or removing a release test?",
+        "options": [
+          "Follow the platform panel",
+          "Use development batches only",
+          "Copy a limit from a related product",
+          "Trace the attribute's relevance, process and analytical coverage, method capability, batch and stability data, reference system, regional commitments, residual risk, and qualified specification decision"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 12
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-integrated-technology-transfer",
+    "lang": "en",
+    "title": "Biopharma Integrated Technology Transfer",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a controlled biologics technology-transfer evidence package connecting knowledge, materials, facilities, equipment, process, analytical methods, comparability, validation, commitments, and acceptance.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What makes a biologics technology transfer decision defensible?",
+        "options": [
+          "A frozen scope linked to product and process knowledge, receiving-unit capability, analytical readiness, validation and comparability evidence, commitments, open risks, and accountable acceptance",
+          "A completed transfer protocol",
+          "Three successful batches at the receiving site",
+          "Equipment with the same model number"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as authorization to execute or release?",
+        "options": [
+          "When the sending and receiving units use different software",
+          "When the transfer includes both process and analytical work",
+          "Whenever site procedures, product commitments, regional requirements, or authorized reviewers have not approved the applicable execution and disposition decisions",
+          "When more than one function owns an action"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A receiving site uses a different bioreactor and chromatography skid, while engineering material meets release tests. What is the best conclusion?",
+        "options": [
+          "The transfer is complete because release tests passed",
+          "Map equipment and control differences to process performance, product attributes, analytical sensitivity, comparability, validation, and unresolved commitments before qualified acceptance",
+          "Require literal equipment identity",
+          "Treat the differences as documentation-only"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is the strongest evidence action before transfer acceptance?",
+        "options": [
+          "Archive the sending-unit documents",
+          "Count completed training records",
+          "Close deviations with interim wording",
+          "Reconcile every acceptance criterion to representative execution evidence, deviations, validation and comparability outcomes, commitments, and named decision owners"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 11
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-manufacturing-comparability",
+    "lang": "en",
+    "title": "Biopharma Manufacturing Comparability After Change",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Plan a risk-based ICH Q5E comparability assessment after a biologics manufacturing change, linking the change to quality attributes, analytical evidence, stability, and escalation decisions.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What is the goal of an ICH Q5E comparability exercise?",
+        "options": [
+          "To determine whether process-change differences adversely affect product quality, safety, or efficacy",
+          "To prove pre-change and post-change material are analytically identical",
+          "To avoid all nonclinical or clinical evidence",
+          "To reuse existing release specifications without review"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Which situation is outside the direct purpose of ICH Q5E?",
+        "options": [
+          "A scale change by the same manufacturer",
+          "A biosimilar sponsor comparing its product with another manufacturer's reference product",
+          "A purification-process change",
+          "A manufacturing-site change with direct access to pre-change material"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Release tests pass, but an orthogonal method shows a new product-related variant. What is the best response?",
+        "options": [
+          "Ignore it because release specifications passed",
+          "Conclude non-comparability immediately",
+          "Confirm and evaluate the difference using process, analytical, stability, and relevance evidence",
+          "Remove the orthogonal method from the panel"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "What should be frozen before executing a comparability study?",
+        "options": [
+          "Only the final report format",
+          "Only the post-change process description",
+          "A vendor's standard method list",
+          "The change definition, risk hypotheses, representative materials, methods, criteria or decision rules, and governance"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 8
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-potency-reference-and-orthogonal-characterization",
+    "lang": "en",
+    "title": "Biopharma potency, reference systems and orthogonal characterization",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Connect biopharma potency, reference materials, orthogonal characterization, charge and size variants, residual DNA, stability and lifecycle changes without publishing a product-specific assay or specification.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What is the correct starting point for a biopharma potency and characterization strategy?",
+        "options": [
+          "The intended biological and quality decision, followed by attribute, sample, reference and method evidence",
+          "The instrument already installed",
+          "A universal panel of assays",
+          "The release specification only"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as a potency or specification conclusion?",
+        "options": [
+          "When orthogonal methods are used",
+          "When product-specific assay suitability, reference qualification, specification or regulatory review is required",
+          "When a reference is changed",
+          "When stability is included"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A potency trend moves after a reference transition while the process and product profile are still being reviewed. What is the best interpretation?",
+        "options": [
+          "The product potency changed",
+          "Separate reference, assay, sample, product, process and data signals before attributing the trend",
+          "Ignore the trend because the method is validated",
+          "Change the specification"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What most strengthens an orthogonal characterization claim?",
+        "options": [
+          "More assays without decision linkage",
+          "A traceable link between attribute, intended use, sample, method capability, reference, limitations and reviewer decision",
+          "One passing release result",
+          "A platform statement from another product"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 4
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-process-validation-continued-verification",
+    "lang": "en",
+    "title": "Biopharma Process Validation and Continued Process Verification",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a traceable biologics process-validation lifecycle across process knowledge, qualification, PPQ, continued verification, statistical signals, deviations, changes and accountable decisions.",
+    "updatedAt": "2026-08-04",
+    "quiz": [
+      {
+        "q": "What is the strongest basis for a biologics process-validation decision?",
+        "options": [
+          "A lifecycle evidence chain connecting process knowledge, qualified systems, representative execution, predefined evaluation, routine monitoring, changes and accountable review",
+          "Three completed batches alone",
+          "Release-specification conformance alone",
+          "A process-capability index alone"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as authorization for routine manufacture?",
+        "options": [
+          "When a process has more than one unit operation",
+          "When CPV uses statistical methods",
+          "Whenever applicable qualification, validation, regulatory, quality-system or authorized-release decisions remain open",
+          "When historical development data are used"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A CPV point crosses an approved statistical threshold but remains within specification. What is the strongest interpretation?",
+        "options": [
+          "The batch automatically fails",
+          "Treat it as a signal requiring the predefined review path while keeping process-state assessment and batch disposition separate",
+          "The signal can be ignored because the result is within specification",
+          "The process is no longer validated"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is the strongest evidence action after a material process change?",
+        "options": [
+          "Restart every validation activity",
+          "Run one additional release test",
+          "Compare the new batch only with the previous batch",
+          "Assess the exact change against process knowledge, control strategy, qualification, validation, comparability, filing and continued-verification evidence before authorized implementation"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 10
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-product-process-control-strategy",
+    "lang": "en",
+    "title": "Biopharma Product & Process Control Strategy",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build an evidence map from cell substrate and process parameters to biologic quality attributes, analytical controls, stability, comparability, and lifecycle decisions.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What is the strongest starting point for a biopharma control strategy?",
+        "options": [
+          "A product-process evidence map tied to intended quality and patient risk",
+          "A release-test list copied from another product",
+          "An equipment inventory",
+          "A vendor platform comparison"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When does this lesson require modality-specific adaptation?",
+        "options": [
+          "Only when the site changes country",
+          "For cell and gene therapies, vaccines, plasma-derived products, and other products outside the cited guideline scope",
+          "Only after commercial launch",
+          "Never"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A process change shifts a glycan distribution while release tests still pass. What is the best next decision?",
+        "options": [
+          "Ignore the shift because specifications passed",
+          "Reject the batch automatically",
+          "Assess comparability using product, process, analytical, and clinical relevance evidence",
+          "Widen the release limit"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "Which action best strengthens a weak product-process link?",
+        "options": [
+          "Add another generic SOP",
+          "Increase final-product testing only",
+          "Rename the parameter as critical",
+          "Record the proposed mechanism, supporting data, uncertainty, and responsible reviewer"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 8
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-raw-ancillary-materials-control",
+    "lang": "en",
+    "title": "Biopharma Raw & Ancillary Materials, Single-Use Systems and Supplier Change Control",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a traceable biologics material-control decision across intended use, supplier chain, functional attributes, single-use systems, evidence, qualification and change control.",
+    "updatedAt": "2026-08-04",
+    "quiz": [
+      {
+        "q": "What makes a biologics material-control decision defensible?",
+        "options": [
+          "A defined material and use linked to supplier-chain, functional, process/product, contamination, single-use, qualification and change evidence",
+          "An approved supplier",
+          "A passing CoA",
+          "The same commercial material name"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as material approval?",
+        "options": [
+          "When more than one supplier is involved",
+          "When the material is non-animal-derived",
+          "Whenever product-specific specifications, studies, limits, procedures or authorized reviewers have not approved the applicable decision",
+          "When a single-use assembly is sterilized"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A supplier changes a media-component manufacturing site but retains the name and release specification. What is the strongest next step?",
+        "options": [
+          "Accept it because the specification is unchanged",
+          "Map the exact change to identity, composition, functional variability, supply-chain, process performance, product quality, contamination and comparability evidence before qualified acceptance",
+          "Reject every site change",
+          "Rely only on the supplier audit"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is the strongest evidence action for a changed single-use assembly?",
+        "options": [
+          "File the new drawing",
+          "Confirm only the part number",
+          "Check only the sterilization certificate",
+          "Reconcile component and process changes with intended use, integrity, sterilization, compatibility, extractables/leachables, process/product impact and accountable review"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 9
+  },
+  {
+    "collection": "academy",
+    "slug": "biopharma-upstream-process-control",
+    "lang": "en",
+    "title": "Biopharma Upstream Process Control",
+    "tier": "pro",
+    "category": "Biopharma Product & Process Quality",
+    "seoDescription": "Build a traceable upstream control strategy that links cell substrate, raw materials, process parameters, performance indicators, product quality attributes, evidence strength, and lifecycle decisions.",
+    "updatedAt": "2026-08-03",
+    "quiz": [
+      {
+        "q": "What makes an upstream parameter relevant to a product control strategy?",
+        "options": [
+          "Evidence that links it to process performance or a product-quality attribute within a defined scope",
+          "It appears on the bioreactor control screen",
+          "A platform process monitors it",
+          "The parameter has a narrow engineering range"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should a platform upstream relationship not be treated as product-specific evidence?",
+        "options": [
+          "When the platform uses the same host cell",
+          "When molecule, process, scale, materials, or study scope differ materially",
+          "When the source is an internal report",
+          "When the relationship is biologically plausible"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A process signal shifts while release attributes remain unchanged. What is the best response?",
+        "options": [
+          "Ignore the process signal",
+          "Change the release specification",
+          "Assess the signal, process linkage, measurement system, trend, and potential delayed or unmeasured product impact",
+          "Label the parameter critical automatically"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "What should a CQA-parameter evidence map preserve?",
+        "options": [
+          "Only confirmed relationships",
+          "Only numeric operating ranges",
+          "Only parameters controlled automatically",
+          "Hypotheses, supporting and contradictory evidence, scope, uncertainty, control, trigger, and accountable review"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 9
   },
   {
     "collection": "academy",
@@ -937,34 +1626,34 @@
     "collection": "academy",
     "slug": "cleaning-validation",
     "lang": "en",
-    "title": "Cleaning Validation",
+    "title": "Cleaning Validation - Lifecycle Program & HBEL-Based MACO",
     "tier": "pro",
     "category": "Validation",
-    "seoDescription": "Cleaning validation for shared pharmaceutical equipment: HBEL/PDE-based MACO with a worked example, worst-case product matrixing, swab and rinse recovery studies, and campaign approaches.",
-    "updatedAt": "2026-07-25",
+    "seoDescription": "Master pharmaceutical cleaning validation: EMA/FDA HBEL/PDE-based MACO calculations, swab recovery coupons, TOC & HPLC methods, matrixing, and hold time studies.",
+    "updatedAt": "2026-07-29",
     "quiz": [
       {
-        "q": "Modern cleaning-validation acceptance limits are primarily based on:",
+        "q": "Modern cleaning-validation acceptance limits are primarily derived from:",
         "options": [
           "The 10-ppm rule alone",
-          "Health-Based Exposure Limits (HBEL/PDE) per the EMA guideline",
+          "Health-Based Exposure Limits (HBEL/PDE) per EMA and EU Annex 15",
           "Visual inspection only",
           "The detergent supplier's recommendation"
         ],
         "answer": 1
       },
       {
-        "q": "A swab recovery study is needed to:",
+        "q": "What is the primary purpose of a swab recovery coupon study?",
         "options": [
-          "Speed up the cleaning cycle",
-          "Correct results for incomplete analyte recovery from the sampled surface",
-          "Replace swabbing entirely",
-          "Set the production schedule"
+          "To speed up the cleaning cycle",
+          "To quantify incomplete analyte recovery from specific equipment surface materials",
+          "To replace swab sampling with rinse sampling",
+          "To establish the production schedule"
         ],
         "answer": 1
       },
       {
-        "q": "MACO stands for:",
+        "q": "What does MACO stand for in cleaning validation?",
         "options": [
           "Maximum Allowable Carryover",
           "Mean Average Cleaning Output",
@@ -974,17 +1663,17 @@
         "answer": 0
       },
       {
-        "q": "In a product-grouping (worst-case) approach, the representative product is chosen mainly by:",
+        "q": "In a worst-case product matrixing approach, how is the representative product selected?",
         "options": [
-          "The largest batch size",
-          "A documented matrix of toxicity (PDE), solubility, cleanability, and equipment contact",
-          "The newest product",
-          "Alphabetical order"
+          "The product with the largest batch size",
+          "A documented matrix evaluating PDE toxicity, solubility, cleanability, and surface contact",
+          "The newest product introduced to the facility",
+          "Alphabetical order by trade name"
         ],
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 6
   },
   {
     "collection": "academy",
@@ -1250,6 +1939,59 @@
       }
     ],
     "readMinutes": 9
+  },
+  {
+    "collection": "academy",
+    "slug": "decision-led-doe-and-multivariate-process-evidence",
+    "lang": "en",
+    "title": "Decision-led DoE and multivariate process evidence",
+    "tier": "pro",
+    "category": "Process Understanding",
+    "seoDescription": "Frame design of experiments and multivariate process evidence around a real quality decision, measurement system, causal question, model boundary and reviewer action without inventing universal model thresholds.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What should determine a DoE before factors and runs are chosen?",
+        "options": [
+          "The decision, response, causal question, measurement system and practical boundary",
+          "The largest possible factor list",
+          "The software default design",
+          "A target copied from another process"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as a process or regulatory conclusion?",
+        "options": [
+          "When a model includes interactions",
+          "When product-specific acceptance, validation, filing or process authorization is required",
+          "When data are collected over time",
+          "When a reviewer asks for limitations"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A model shows an association between a process parameter and a product attribute, but the measurement system changed mid-study. What is the best next step?",
+        "options": [
+          "Treat the association as causal",
+          "Separate measurement, data lineage, process and product evidence before interpreting the model",
+          "Remove the affected points silently",
+          "Increase the model order"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What makes multivariate evidence decision-ready?",
+        "options": [
+          "A high R-squared alone",
+          "A frozen data basis, defined response, model assumptions, validation boundaries, residuals, reviewer challenge and action rule",
+          "A dashboard without raw-data lineage",
+          "A platform model from another product"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 4
   },
   {
     "collection": "academy",
@@ -2828,11 +3570,11 @@
     "title": "OOS Investigation — Deep Dive",
     "tier": "pro",
     "category": "Quality Investigation",
-    "seoDescription": "A professional deep dive into the two-phase OOS investigation: Phase I hypothesis testing, retest/resample/averaging rules, Phase II manufacturing review, microbiology OOS specifics, inspector Q&A, and a worked example.",
-    "updatedAt": "2026-07-25",
+    "seoDescription": "Decision-focused OOS investigation guidance: applicability, evidence boundaries, Phase I and Phase II decisions, retest and resample controls, worked scenario, and a reusable working asset.",
+    "updatedAt": "2026-08-03",
     "quiz": [
       {
-        "q": "Under the FDA OOS Guidance (2006), an OOS result is presumed:",
+        "q": "Under the FDA OOS Guidance (May 2022 revision), an OOS result should be:",
         "options": [
           "Invalid until retested",
           "Valid until a scientifically sound, documented assignable cause is demonstrated",
@@ -2872,7 +3614,7 @@
         "answer": 1
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 13
   },
   {
     "collection": "academy",
@@ -2979,6 +3721,377 @@
       }
     ],
     "readMinutes": 9
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-analytical-specification-lifecycle",
+    "lang": "en",
+    "title": "Pharma API Analytical Control, Specifications, Stability and Lifecycle",
+    "tier": "pro",
+    "category": "Pharma API Development & Quality",
+    "seoDescription": "Connect API quality attributes to analytical procedure capability, specification rationale, stability, validation, transfer and lifecycle change without inventing product-specific criteria.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What is the correct starting point for an API analytical procedure lifecycle decision?",
+        "options": [
+          "The intended decision and attribute, followed by the required measurement performance and product/process context",
+          "The instrument already installed at the site",
+          "The historical specification copied from a related API",
+          "The lowest achievable reporting limit"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When must this workflow not be used unchanged?",
+        "options": [
+          "When an analytical procedure has more than one parameter",
+          "When product, attribute, method use, lifecycle stage, market or reviewer scope falls outside the cited evidence",
+          "When stability samples are tested by a contract laboratory",
+          "When a method has system suitability"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A method is precise and the API batches meet specification. What remains unresolved?",
+        "options": [
+          "Nothing; precision and conformance prove the method and specification",
+          "Only instrument maintenance",
+          "Whether the method is fit for the intended attribute/decision, stability-indicating where needed, representative, and controlled through its lifecycle",
+          "Whether more decimal places should be reported"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A method transfer changes sample preparation and column technology. What is the strongest next step?",
+        "options": [
+          "Treat it as equivalent because the final result is within specification",
+          "Repeat only system suitability",
+          "Use the new method immediately and compare the first routine batch later",
+          "Assess the exact change against intended use, performance characteristics, reference/material, comparability, validation, stability, filing and authorized implementation evidence"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 7
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-full-lifecycle-drug-substance-control",
+    "lang": "en",
+    "title": "Pharma API full-lifecycle drug-substance control",
+    "tier": "pro",
+    "category": "Pharma API Development",
+    "seoDescription": "Integrate Pharma API route, starting materials, reaction, work-up, isolation, solid-state, impurity, analytical, validation, transfer and routine-manufacture evidence into one reviewable drug-substance control chain.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What is the purpose of a full-lifecycle API control chain?",
+        "options": [
+          "Connect route and input knowledge to unit operations, material attributes, analytics, validation, transfer and routine decisions",
+          "Replace all specialist reviews",
+          "Set one universal API specification",
+          "Reduce the process to final release testing"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as a manufacturing conclusion?",
+        "options": [
+          "When the route has several unit operations",
+          "When a product-specific process, specification, validation, filing or batch decision is required",
+          "When a supplier changes",
+          "When an analytical method is transferred"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A process change leaves final assay unchanged but alters isolation and impurity observations. What is the best next step?",
+        "options": [
+          "Declare no impact",
+          "Trace the change through material attributes, sampling, analytical capability, downstream use and lifecycle evidence",
+          "Average the observations",
+          "Remove the impurity observation because assay passed"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What makes an API capstone package reusable?",
+        "options": [
+          "A generic process recipe",
+          "A frozen decision basis, evidence objects, contradictions, reviewers, limitations and owned next actions",
+          "A single final result",
+          "A copied batch record"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 5
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-isolation-solid-state-control",
+    "lang": "en",
+    "title": "Pharma API isolation, solid-state and bulk-material control",
+    "tier": "pro",
+    "category": "Pharma API Development",
+    "seoDescription": "Build an evidence chain from API crystallization and isolation through drying, milling, solid form, particle attributes, residual solvent, bulk handling and lifecycle controls without publishing a universal recipe.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "Why is isolation part of the API control strategy rather than a downstream afterthought?",
+        "options": [
+          "It can change material attributes, impurity carryover, solvent and manufacturability evidence",
+          "It only changes the batch size",
+          "It replaces analytical testing",
+          "It is independent of the route"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When is this workflow insufficient on its own?",
+        "options": [
+          "When the API is filtered",
+          "When a solid form, particle, residual-solvent, formulation or release decision needs product-specific specialist review",
+          "When the process has a drying step",
+          "When the material is stored"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A new milling screen gives a similar assay but a different particle-size distribution. What should happen first?",
+        "options": [
+          "Accept it because assay is unchanged",
+          "Link the attribute change to flow, dissolution, handling, sampling and intended-use evidence",
+          "Discard the particle data",
+          "Set a universal particle-size limit"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What is the best evidence for a downstream change decision?",
+        "options": [
+          "A supplier brochure",
+          "A final release result only",
+          "A dated chain from crystallization/isolation conditions to solid form, impurities, material attributes, analytical capability and review",
+          "A copied batch record"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 5
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-process-development-impurity-control",
+    "lang": "en",
+    "title": "Pharma API Process Development, Impurity Fate and Control Strategy",
+    "tier": "pro",
+    "category": "Pharma API Development & Quality",
+    "seoDescription": "Build a traceable small-molecule API evidence chain from route and inputs through unit operations, impurity origin and observed fate, analytical capability, control placement and lifecycle change.",
+    "updatedAt": "2026-08-04",
+    "quiz": [
+      {
+        "q": "What makes an API impurity-control strategy defensible?",
+        "options": [
+          "A traceable chain from impurity origin and process knowledge through applicable analytical evidence, observed fate, control placement, uncertainty and accountable review",
+          "A high observed reduction ratio in one experiment",
+          "A final API result below a reporting threshold",
+          "A specification copied from a related molecule"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When must this workflow not be used unchanged?",
+        "options": [
+          "When the synthesis contains more than one isolation",
+          "When the product, route, impurity class, lifecycle stage, market or decision falls outside the cited evidence and reviewer scope",
+          "When both in-process and release tests exist",
+          "When development data include laboratory-scale experiments"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "A potential impurity is not detected after isolation. What is the strongest interpretation?",
+        "options": [
+          "The impurity is eliminated",
+          "The final specification can omit the impurity",
+          "The observation is bounded by sampling, method capability, reporting boundary, material balance and process applicability; fate and control remain evidence questions",
+          "The process has a transferable purge factor"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "What most directly strengthens a control-placement decision?",
+        "options": [
+          "More decimal places in the chromatographic result",
+          "A vendor statement that the reagent is high purity",
+          "One commercial batch within specification",
+          "Reconcile origin/pathway, stage-specific data, method capability, variability, downstream fate, safety/qualification context, lifecycle change and qualified review"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 9
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-process-validation-commercial-lifecycle",
+    "lang": "en",
+    "title": "Pharma API process validation, routine manufacture and lifecycle control",
+    "tier": "pro",
+    "category": "Pharma API Development",
+    "seoDescription": "Connect Pharma API process knowledge, qualification, PPQ, continued verification, routine manufacture, change control, transfer, stability and regulatory CMC evidence without inventing batch counts or validation conclusions.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What is the purpose of a lifecycle process-validation view?",
+        "options": [
+          "Connect process knowledge, qualification, PPQ, routine monitoring and change decisions",
+          "Replace the batch record",
+          "Set a universal number of validation batches",
+          "Use final testing as the only process evidence"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as authorization?",
+        "options": [
+          "When continued verification is planned",
+          "When a product-specific validation conclusion, filing decision or batch disposition is required",
+          "When a change is documented",
+          "When QA is involved"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A routine API trend shifts while all results remain within specification. What is the best first response?",
+        "options": [
+          "Declare process failure",
+          "Separate signal, measurement, process, material and specification evidence before deciding the response",
+          "Ignore it until an OOS occurs",
+          "Change the specification to remove the signal"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What should a transfer or lifecycle package preserve?",
+        "options": [
+          "Only the latest approved SOP",
+          "Only the final analytical result",
+          "Only the receiving site's training record",
+          "The frozen basis, differences, evidence, deviations, residual obligations, reviewers and authorized decision"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 5
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-reaction-workup-scale-up",
+    "lang": "en",
+    "title": "Pharma API reaction, work-up and scale-up control",
+    "tier": "pro",
+    "category": "Pharma API Development",
+    "seoDescription": "Connect a small-molecule API route to reaction, work-up, sampling, scale-up, equipment, hold-time, process-control and technology-transfer evidence without inventing a universal recipe or operating range.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What should be frozen before a scale-up decision is compared?",
+        "options": [
+          "The route, process version, intended decision and evidence basis",
+          "The largest available vessel",
+          "A universal batch count",
+          "The final specification only"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When should this workflow not be used as a process instruction?",
+        "options": [
+          "When the route has more than one unit operation",
+          "When a product-specific operating parameter or manufacturing authorization is required",
+          "When scale-up evidence is incomplete",
+          "When engineering is involved"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A reaction conversion is similar at two scales but the work-up phase shows a different impurity profile. What is the best interpretation?",
+        "options": [
+          "The process is equivalent because conversion matches",
+          "Preserve the difference and investigate mixing, quench, phase split, sampling and analytical comparability",
+          "Average the two profiles",
+          "Remove the work-up result from the comparison"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Which action creates the strongest transfer basis?",
+        "options": [
+          "Copy the development batch record",
+          "Link process knowledge, equipment differences, sampling, hold steps, evidence, deviations and receiving-site review",
+          "Transfer only the final test method",
+          "Use a vendor capacity statement as proof"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 5
+  },
+  {
+    "collection": "academy",
+    "slug": "pharma-api-starting-materials-input-control",
+    "lang": "en",
+    "title": "Pharma API Starting Materials, Supplier Chain and Input Control",
+    "tier": "pro",
+    "category": "Pharma API Development & Quality",
+    "seoDescription": "Build a traceable API starting-material and input-control argument across route boundary, supplier chain, material attributes, impurity linkage, incoming controls and lifecycle change.",
+    "updatedAt": "2026-08-09",
+    "quiz": [
+      {
+        "q": "What makes a proposed API starting-material boundary defensible?",
+        "options": [
+          "An integrated route-specific argument covering the material's structure, synthesis, impurity fate, control opportunities, supplier chain and downstream process understanding",
+          "Availability from two suppliers",
+          "A supplier certificate of analysis",
+          "The number of isolated steps after the material"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "When must this workflow not be used unchanged?",
+        "options": [
+          "When a material has more than one supplier",
+          "When the route, material class, lifecycle stage, market or decision falls outside the cited evidence and reviewer scope",
+          "When incoming testing is outsourced",
+          "When a quality agreement exists"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "Two suppliers offer a custom-synthesized intermediate. What is the strongest conclusion?",
+        "options": [
+          "It is commercially available and acceptable as a starting material",
+          "Supplier qualification is complete",
+          "Multiple supply offers are evidence about supply, not by themselves proof of commodity status or an acceptable regulatory starting-material boundary",
+          "Incoming identity testing can be waived"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "A supplier changes a sub-tier manufacturing site. What action is most defensible?",
+        "options": [
+          "Accept the change when the CoA remains unchanged",
+          "Repeat only identity testing",
+          "Wait for the next annual supplier review",
+          "Reopen the affected route-boundary, synthesis, impurity, specification, method, qualification, filing and inventory-impact evidence with accountable review"
+        ],
+        "answer": 3
+      }
+    ],
+    "readMinutes": 7
   },
   {
     "collection": "academy",
@@ -3726,14 +4839,14 @@
     "collection": "academy",
     "slug": "sterility-testing-basics",
     "lang": "en",
-    "title": "Sterility Testing - Foundations",
+    "title": "Sterility Testing - Foundations (USP <71> & Ph. Eur. 2.6.1)",
     "tier": "free",
     "category": "Microbiology QC",
-    "seoDescription": "Compendial sterility testing under USP <71> and EP 2.6.1: membrane filtration, direct inoculation, media, method suitability, controls, and result interpretation.",
-    "updatedAt": "2026-07-03",
+    "seoDescription": "Master compendial sterility testing under USP <71> and Ph. Eur. 2.6.1: membrane filtration vs direct inoculation, isolator controls, B/F suitability, and test invalidation rules.",
+    "updatedAt": "2026-07-29",
     "quiz": [
       {
-        "q": "What is the minimum incubation time for the compendial sterility test?",
+        "q": "What is the minimum incubation duration for compendial sterility testing per USP <71>?",
         "options": [
           "7 days",
           "14 days",
@@ -3743,37 +4856,37 @@
         "answer": 1
       },
       {
-        "q": "Which sterility test method is generally preferred for filterable products?",
+        "q": "Which sterility test technique is mandated whenever a liquid product is filterable?",
         "options": [
           "Direct inoculation",
           "Membrane filtration",
-          "Pour plate",
-          "Spread plate"
+          "Pour plate method",
+          "Most Probable Number (MPN)"
         ],
         "answer": 1
       },
       {
-        "q": "What does method suitability demonstrate?",
+        "q": "What is the maximum allowable pink (oxidized) upper layer in Fluid Thioglycollate Medium (FTM) before use?",
         "options": [
-          "The product does not inhibit recovery of low-level contamination under the test conditions",
-          "The batch is commercially successful",
-          "The incubator is new",
-          "The analyst is exempt from training"
+          "Top 10%",
+          "Top 30%",
+          "Top 50%",
+          "Entire bottle"
         ],
-        "answer": 0
+        "answer": 1
       },
       {
-        "q": "A positive sterility test result should be:",
+        "q": "Under FDA and EU Annex 1 rules, a positive sterility test result can be invalidated ONLY if:",
         "options": [
-          "Ignored if the batch looks normal",
-          "Automatically invalidated",
-          "Investigated with strict evidence before any invalidation",
-          "Converted into a bioburden result"
+          "The production batch looks visually clear",
+          "Conclusive laboratory evidence proves an assignable lab error occurred",
+          "The analyst felt tired during testing",
+          "The batch is re-tested and passes"
         ],
-        "answer": 2
+        "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 6
   },
   {
     "collection": "academy",
@@ -4100,51 +5213,51 @@
     "title": "Pharmaceutical Water System Validation - Lifecycle Qualification",
     "tier": "pro",
     "category": "Microbiology QC",
-    "seoDescription": "Lifecycle validation of Purified Water and WFI systems: URS/DQ/IQ/OQ/PQ, the three-phase sampling approach, point-of-use rationale, operating ranges, biofilm control, continued verification, and change control.",
-    "updatedAt": "2026-07-07",
+    "seoDescription": "Master Purified Water (PW) and Water for Injection (WFI) system validation: USP <1231> / Ph. Eur. standards, 3-Phase sampling protocols, biofilm kinetics, and POU monitoring.",
+    "updatedAt": "2026-07-29",
     "quiz": [
       {
-        "q": "During Phase 1 of water-system validation, the usual focus is to:",
+        "q": "What is the compendial bioburden specification limit for Water for Injection (WFI) per USP <1231> and Ph. Eur.?",
         "options": [
-          "Release all water for production immediately",
-          "Sample intensively while establishing operating and sanitization procedures",
-          "Sample only the return loop once",
-          "Skip microbial testing"
+          "< 100 CFU/mL",
+          "< 10 CFU/100 mL (0.1 CFU/mL)",
+          "< 500 CFU/mL",
+          "Strictly zero CFU in 1,000 L"
         ],
         "answer": 1
       },
       {
-        "q": "Why does Phase 3 usually extend across a long routine period?",
+        "q": "During Phase 1 of water system validation, how is generated water handled regarding commercial production?",
         "options": [
-          "To avoid sampling",
-          "To capture seasonal/feedwater variation and routine operating behavior",
-          "To replace IQ",
-          "To eliminate alert levels"
+          "Released for commercial manufacturing immediately",
+          "Held and NOT released for production while baseline capability is established",
+          "Sold as non-sterile solvent",
+          "Tested only once per month"
         ],
         "answer": 1
       },
       {
-        "q": "Point-of-use sampling should reflect:",
+        "q": "What minimum turbulent flow velocity (Reynolds number Re > 4,000) is required in WFI distribution loops to inhibit biofilm attachment?",
         "options": [
-          "How production or QC actually draws the water",
-          "Only the cleanest possible sample",
-          "Only the generation skid",
-          "Only an engineering preference"
+          "0.1 m/s",
+          "0.5 m/s",
+          "> 1.5 m/s",
+          "10 m/s"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "What is the bacterial endotoxin limit for Water for Injection (WFI)?",
+        "options": [
+          "< 0.25 EU/mL",
+          "< 10 EU/mL",
+          "< 100 EU/mL",
+          "No limit exists"
         ],
         "answer": 0
-      },
-      {
-        "q": "A validated water system remains validated only when:",
-        "options": [
-          "The original protocol is archived",
-          "Continued monitoring, maintenance, sanitization, review, and change control keep it in control",
-          "The tank is large enough",
-          "Conductivity always passes"
-        ],
-        "answer": 1
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 6
   },
   {
     "collection": "blog",
@@ -4194,11 +5307,11 @@
     "collection": "blog",
     "slug": "annex-1-cleanroom-classification",
     "lang": "en",
-    "title": "Cleanroom classification under Annex 1 (2022)",
+    "title": "Cleanroom classification & limits under EU GMP Annex 1 (2022) & ISO 14644",
     "tier": "free",
     "category": "Sterile Manufacturing",
-    "seoDescription": "How EU GMP Annex 1 uses Grade A-D cleanroom classification, at-rest and in-operation states, CCS risk logic, and monitoring evidence for sterile manufacturing.",
-    "updatedAt": "2026-07-02",
+    "seoDescription": "Examine EU GMP Annex 1 (2022) cleanroom classification: Grade A-D airborne particle limits (at-rest & in-operation), microbial limits, and ISO 14644-1 sampling formulas.",
+    "updatedAt": "2026-07-29",
     "readMinutes": 5
   },
   {
@@ -4238,12 +5351,12 @@
     "collection": "blog",
     "slug": "bacterial-endotoxin-test-what-lal-actually-measures",
     "lang": "en",
-    "title": "The bacterial endotoxin test: what LAL actually measures",
+    "title": "The bacterial endotoxin test: what LAL actually measures and how to avoid interference",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "The endotoxin test doesn't detect bacteria — it detects a molecule. Why LAL reacts to Gram-negative lipopolysaccharide, the three method formats, and the interference problem that trips up labs.",
-    "updatedAt": "2026-06-24",
-    "readMinutes": 3
+    "seoDescription": "Master the Bacterial Endotoxin Test (BET): LAL cascade biochemistry, K/M calculation formulas, Maximum Valid Dilution (MVD), rFC alternatives, and Low Endotoxin Recovery (LER) troubleshooting.",
+    "updatedAt": "2026-07-29",
+    "readMinutes": 7
   },
   {
     "collection": "blog",
@@ -4313,6 +5426,17 @@
   },
   {
     "collection": "blog",
+    "slug": "career-blueprint-route-to-evidence",
+    "lang": "en",
+    "title": "Career Blueprint: turn a route hypothesis into evidence",
+    "tier": "free",
+    "category": "Career",
+    "seoDescription": "A practical Career Blueprint guide for testing a life-science career route with requirement evidence, reviewer-confirmed proof, visible gaps and a 13-week continue-adjust-pivot decision.",
+    "updatedAt": "2026-08-09",
+    "readMinutes": 4
+  },
+  {
+    "collection": "blog",
     "slug": "cell-banks-the-foundation-of-a-biologic",
     "lang": "en",
     "title": "Cell banks: the foundation everything in a biologic rests on",
@@ -4348,11 +5472,11 @@
     "collection": "blog",
     "slug": "cleaning-validation-hbel-shift",
     "lang": "en",
-    "title": "Cleaning Validation: From 10 ppm to HBEL",
+    "title": "Cleaning validation: the paradigm shift from 10 ppm & 1/1,000th dose to HBEL / PDE",
     "tier": "free",
     "category": "Validation",
-    "seoDescription": "A practical guide to the shift from legacy 10 ppm cleaning limits to HBEL/PDE-based cleaning validation: MACO, swab limits, recovery, worst-case selection, and audit evidence.",
-    "updatedAt": "2026-07-03",
+    "seoDescription": "Examine the regulatory transition from legacy 10 ppm rules to Health-Based Exposure Limits (HBEL/PDE): toxicological derivation formulas (NOAEL & safety factors F1-F5) and MACO.",
+    "updatedAt": "2026-07-29",
     "readMinutes": 5
   },
   {
@@ -4456,6 +5580,17 @@
   },
   {
     "collection": "blog",
+    "slug": "disinfectant-efficacy-testing-usp-1072",
+    "lang": "en",
+    "title": "Disinfectant efficacy testing per USP <1072> and EU GMP Annex 1: coupon studies & log reductions",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Master Disinfectant Efficacy Testing per USP <1072> and EU Annex 1: coupon studies, log-reduction criteria for bactericides, fungicides, and sporicides, and hold-times.",
+    "updatedAt": "2026-07-29",
+    "readMinutes": 5
+  },
+  {
+    "collection": "blog",
     "slug": "disinfectant-qualification-proving-the-clean",
     "lang": "en",
     "title": "Disinfectant qualification: proving the clean actually works",
@@ -4491,12 +5626,12 @@
     "collection": "blog",
     "slug": "environmental-monitoring-gaps-inspectors-find",
     "lang": "en",
-    "title": "Environmental monitoring: 5 gaps inspectors find",
+    "title": "Environmental monitoring: 5 critical gaps inspectors find and how to close them",
     "tier": "free",
     "category": "Microbiology",
-    "seoDescription": "The five environmental monitoring gaps that draw inspection findings — convenience sampling, ignored trends, sampling contamination, no isolate ID, and slow excursion closure — and how to close them.",
-    "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "seoDescription": "Examine the 5 environmental monitoring gaps that trigger FDA 483s and EU Annex 1 observations — convenience sampling, ignored trends, sampling contamination, lack of isolate ID, and slow excursion closure.",
+    "updatedAt": "2026-07-29",
+    "readMinutes": 8
   },
   {
     "collection": "blog",
@@ -4874,6 +6009,17 @@
   },
   {
     "collection": "blog",
+    "slug": "microbiology-qc-lab-capacity-modelling",
+    "lang": "en",
+    "title": "Microbiology QC laboratory capacity modelling: sizing autoclaves, incubators, and analyst workload",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Learn how to model microbiology QC laboratory capacity — converting sample testing demand into exact autoclave cycles, incubator shelf space, analyst hours, and consumable buffers.",
+    "updatedAt": "2026-07-29",
+    "readMinutes": 7
+  },
+  {
+    "collection": "blog",
     "slug": "microbiology-reference-culture-lifecycle-and-capacity-planning",
     "lang": "en",
     "title": "Microbiology reference-culture lifecycle and capacity planning",
@@ -4915,6 +6061,17 @@
     "seoDescription": "Turn microbiology workflows into a controlled waste and decontamination capability covering segregation, containment, hold, treatment, clean/dirty flow, capacity, evidence and continuity.",
     "updatedAt": "2026-07-14",
     "readMinutes": 7
+  },
+  {
+    "collection": "blog",
+    "slug": "mycoplasma-testing-biologics-usp-63",
+    "lang": "en",
+    "title": "Mycoplasma testing & control in biologics per USP 63 & Ph. Eur. 2.6.7: Culture, NAT/qPCR, and clearance",
+    "tier": "free",
+    "category": "Biologics QC",
+    "seoDescription": "Master Mycoplasma testing for biologics under USP 63 and Ph. Eur. 2.6.7: agar/broth culture, indicator cell line, NAT/qPCR validation, and contamination control.",
+    "updatedAt": "2026-07-29",
+    "readMinutes": 4
   },
   {
     "collection": "blog",
@@ -5138,6 +6295,17 @@
   },
   {
     "collection": "blog",
+    "slug": "quality-lab-demand-to-capacity-decision",
+    "lang": "en",
+    "title": "From testing demand to a challengeable Quality Lab capacity decision",
+    "tier": "free",
+    "category": "Quality Lab Planning",
+    "seoDescription": "A practical Quality Lab decision guide for connecting product and process demand to methods, people, equipment, space, cost, resilience and reviewable capacity scenarios across Pharma API and Biopharma.",
+    "updatedAt": "2026-08-09",
+    "readMinutes": 6
+  },
+  {
+    "collection": "blog",
     "slug": "quality-lab-startup-commissioning-and-operational-readiness",
     "lang": "en",
     "title": "Quality laboratory startup, commissioning and operational readiness",
@@ -5157,6 +6325,17 @@
     "seoDescription": "A practical guide to pharmaceutical quality metrics: leading vs lagging indicators, lot acceptance, RFT, invalidated OOS, CAPA effectiveness, complaints, backlog, APR/PQR, management review, and how to avoid KPI gaming.",
     "updatedAt": "2026-07-05",
     "readMinutes": 13
+  },
+  {
+    "collection": "blog",
+    "slug": "rapid-microbial-methods-validation-usp-1223",
+    "lang": "en",
+    "title": "Validating Rapid Microbial Methods (RMM) per USP 1223 & Ph. Eur. 5.1.6: ATP, Cytometry, and PCR",
+    "tier": "free",
+    "category": "Microbiology",
+    "seoDescription": "Master Rapid Microbial Methods (RMM) validation under USP 1223 and Ph. Eur. 5.1.6: equivalence testing, LOD/LOQ, accuracy, repeatability, and comparability to traditional growth assays.",
+    "updatedAt": "2026-07-29",
+    "readMinutes": 4
   },
   {
     "collection": "blog",

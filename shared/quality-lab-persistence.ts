@@ -6,7 +6,8 @@ import { qualityLabDecisionRegisterSchema, reconcileQualityLabDecisionRegister }
 import { createEmptyQualityLabEvidenceRegister, qualityLabEvidenceRegisterSchema } from "./quality-lab-evidence.js";
 import { ensureQualityLabProjectHistory, qualityLabFrozenRevisionSchema } from "./quality-lab-revisions.js";
 
-export const QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v2" as const;
+export const QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v3" as const;
+export const QUALITY_LAB_V2_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v2" as const;
 export const QUALITY_LAB_LEGACY_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v1" as const;
 export const QUALITY_LAB_LOCAL_STORE_VERSION = "quality-lab-local-store/v2" as const;
 
@@ -14,8 +15,12 @@ export const QUALITY_LAB_LOCAL_STORE_VERSION = "quality-lab-local-store/v2" as c
  * Versioned account snapshot used only after an authenticated user explicitly
  * saves a project. Browser-local storage remains the resilient working copy.
  */
-export const qualityLabReviewedProjectSnapshotSchema = z.object({
-  snapshotVersion: z.union([z.literal(QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION), z.literal(QUALITY_LAB_LEGACY_ACCOUNT_SNAPSHOT_VERSION)]).optional(),
+const qualityLabReviewedProjectSnapshotBaseSchema = z.object({
+  snapshotVersion: z.union([
+    z.literal(QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION),
+    z.literal(QUALITY_LAB_V2_ACCOUNT_SNAPSHOT_VERSION),
+    z.literal(QUALITY_LAB_LEGACY_ACCOUNT_SNAPSHOT_VERSION),
+  ]).optional(),
   localProjectId: z.string().min(1).max(160),
   projectName: z.string().min(1).max(200),
   projectCreatedAt: z.string().datetime().optional(),
@@ -38,6 +43,17 @@ export const qualityLabReviewedProjectSnapshotSchema = z.object({
     actionOwnerRoles: z.array(z.string()),
     decisionRegister: qualityLabDecisionRegisterSchema.optional(),
   }).optional(),
+});
+
+export const qualityLabReviewedProjectSnapshotSchema = qualityLabReviewedProjectSnapshotBaseSchema.superRefine((snapshot, context) => {
+  if (snapshot.snapshotVersion !== QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION) return;
+  if (!snapshot.frozenRevisions || snapshot.frozenRevisions.length !== 1) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["frozenRevisions"], message: "A v3 account snapshot must contain exactly the active frozen revision" });
+    return;
+  }
+  if (snapshot.frozenRevisions[0].revisionId !== snapshot.activeRevisionId) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["activeRevisionId"], message: "The v3 active revision must match its frozen revision" });
+  }
 });
 
 export type QualityLabReviewedProjectSnapshot = z.infer<typeof qualityLabReviewedProjectSnapshotSchema>;
@@ -65,6 +81,9 @@ export type QualityLabLocalStore = z.infer<typeof qualityLabLocalStoreSchema>;
 
 export function createQualityLabAccountSnapshot(project: QualityLabProject, engagement: QualityLabReviewedProjectSnapshot["engagement"] = null): QualityLabReviewedProjectSnapshot {
   const historical = ensureQualityLabProjectHistory(project);
+  const activeRevision = historical.revisions?.find((revision) => revision.revisionId === historical.activeRevisionId)
+    ?? historical.revisions?.at(-1);
+  if (!activeRevision) throw new Error("An account snapshot requires an active frozen revision");
   return qualityLabReviewedProjectSnapshotSchema.parse({
     snapshotVersion: QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION,
     localProjectId: historical.id,
@@ -76,8 +95,8 @@ export function createQualityLabAccountSnapshot(project: QualityLabProject, enga
     actionPlan: historical.actionPlan,
     decisionRegister: historical.decisionRegister,
     evidenceRegister: historical.evidenceRegister,
-    frozenRevisions: historical.revisions,
-    activeRevisionId: historical.activeRevisionId,
+    frozenRevisions: [activeRevision],
+    activeRevisionId: activeRevision.revisionId,
     engagement,
     reviewRequestedAt: project.reviewRequestedAt ?? null,
     workspace: {
@@ -90,6 +109,17 @@ export function createQualityLabAccountSnapshot(project: QualityLabProject, enga
       decisionRegister: historical.decisionRegister,
     },
   });
+}
+
+/**
+ * Normalizes legacy cumulative snapshots before persistence. Existing v1/v2
+ * payloads remain readable, while every subsequent save becomes bounded v3.
+ */
+export function compactQualityLabAccountSnapshot(rawSnapshot: QualityLabReviewedProjectSnapshot): QualityLabReviewedProjectSnapshot {
+  const snapshot = qualityLabReviewedProjectSnapshotSchema.parse(rawSnapshot);
+  if (snapshot.snapshotVersion === QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION) return snapshot;
+  const project = ensureQualityLabProjectHistory(qualityLabProjectFromReviewedSnapshot(snapshot));
+  return createQualityLabAccountSnapshot(project, snapshot.engagement);
 }
 
 export function qualityLabSyncHasConflict(expectedUpdatedAt: string | null, currentUpdatedAt: string | null) {

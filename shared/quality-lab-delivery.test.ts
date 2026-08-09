@@ -17,7 +17,8 @@ describe("Quality Lab delivery package", () => {
     const project = createQualityLabProject(defaultQualityLabInput, "qlp_manifest");
     const packet = createQualityLabEngagementPacket(project, "2026-07-14T00:00:00.000Z");
     const delivery = createQualityLabDeliveryPackage(project, packet, "2026-07-14T01:00:00.000Z");
-    expect(delivery.packageVersion).toBe("quality-lab-delivery-package/v1");
+    expect(delivery.packageVersion).toBe("quality-lab-delivery-package/v2");
+    expect(delivery.manifest).toHaveLength(10);
     expect(delivery.manifest.map((item) => item.id)).toContain("urs-basis");
     expect(delivery.controlNotice).toContain("Not a validated design");
   });
@@ -36,6 +37,9 @@ describe("Quality Lab delivery package", () => {
 
     packet.deliveryControl.reviewedByRole = "Qualified microbiology SME";
     packet.deliveryControl.externalApprovalReference = "CLIENT-DOC-001 Rev 1";
+    project.blueprint.evidence.forEach((item) => {
+      if (item.status === "site-evidence-required") item.status = "user-supplied";
+    });
     expect(assessQualityLabDeliveryReadiness(project, packet).status).toBe("recorded-external-release");
   });
 });

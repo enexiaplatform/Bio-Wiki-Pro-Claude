@@ -1,0 +1,137 @@
+---
+title: "Decision-led DoE and multivariate process evidence"
+slug: "decision-led-doe-and-multivariate-process-evidence"
+lang: "en"
+tier: "pro"
+category: "Process Understanding"
+seoDescription: "Frame design of experiments and multivariate process evidence around a real quality decision, measurement system, causal question, model boundary and reviewer action without inventing universal model thresholds."
+updatedAt: "2026-08-09"
+quiz:
+  - q: "What should determine a DoE before factors and runs are chosen?"
+    options: ["The decision, response, causal question, measurement system and practical boundary", "The largest possible factor list", "The software default design", "A target copied from another process"]
+    answer: 0
+  - q: "When should this workflow not be used as a process or regulatory conclusion?"
+    options: ["When a model includes interactions", "When product-specific acceptance, validation, filing or process authorization is required", "When data are collected over time", "When a reviewer asks for limitations"]
+    answer: 2
+  - q: "A model shows an association between a process parameter and a product attribute, but the measurement system changed mid-study. What is the best next step?"
+    options: ["Treat the association as causal", "Separate measurement, data lineage, process and product evidence before interpreting the model", "Remove the affected points silently", "Increase the model order"]
+    answer: 1
+  - q: "What makes multivariate evidence decision-ready?"
+    options: ["A high R-squared alone", "A frozen data basis, defined response, model assumptions, validation boundaries, residuals, reviewer challenge and action rule", "A dashboard without raw-data lineage", "A platform model from another product"]
+    answer: 3
+---
+
+# Decision-led DoE and multivariate process evidence
+
+DoE and multivariate analysis create value when they answer a decision that a team
+must make. They are not a license to search every variable until a convenient
+relationship appears. A defensible analysis starts with the decision, the data-
+generating process and the measurement system, then states what the model can and
+cannot support.
+
+## Decision question
+
+> What process or quality decision is being tested, which evidence can distinguish
+> the competing explanations, and what action would follow if the evidence changes?
+
+## Applicability and do-not-use boundary
+
+Use this lesson for API process development, Biopharma upstream or downstream
+understanding, analytical lifecycle, CPV signal review, investigation support and
+cross-functional process decisions.
+
+Do not use it as a universal DoE design, model acceptance threshold, CPP list,
+process limit, validation conclusion, specification, filing assessment or batch
+disposition. A product-specific analysis may require applied statistics, process
+science, analytical, data-integrity, manufacturing, quality and regulatory review.
+
+## Controlled source map
+
+| Source | Decision use | Boundary |
+| --- | --- | --- |
+| ICH Q8(R2) | Process understanding and development knowledge | It does not select a product-specific design or parameter range |
+| ICH Q9(R1) | Risk-based prioritization of questions and evidence | Risk ranking cannot establish causality |
+| FDA Process Validation guidance | Lifecycle process evidence and continued verification | It does not prescribe a universal model rule |
+| FDA data-integrity guidance | Data lifecycle, attribution and review controls | It does not validate a statistical model |
+| ICH Q10 | Knowledge, change and quality-system governance | Governance cannot replace data or measurement evidence |
+
+## Separate six analysis objects
+
+1. **Decision and consequence** - what action depends on the analysis, owner,
+   stage, product/process scope and change trigger.
+2. **Causal question and response** - response definition, mechanism, expected
+   direction, confounders, practical boundary and evidence that would disprove it.
+3. **Factors and design** - factor definition, feasible region, randomization or
+   blocking, replication, sample size rationale and safety or material limits.
+4. **Measurement and data lineage** - method version, sampling, missingness,
+   transformations, reference, data integrity, exclusions and timestamp.
+5. **Model and uncertainty** - assumptions, interactions, residuals, overfitting,
+   extrapolation, sensitivity and applicability boundary.
+6. **Action and review** - scenario, evidence strength, reviewer challenge,
+   change trigger, next data request and authorized decision.
+
+## Build the decision-led analysis chain
+
+### 1. Start with the decision, not the algorithm
+
+State what will change if the evidence supports or weakens the hypothesis. A model
+that cannot change an action is exploratory context, not a controlled decision
+basis.
+
+### 2. Protect the measurement system
+
+Confirm method, instrument, sample, reference, analyst, data capture and process
+versions before interpreting relationships. A measurement change can look like a
+process change.
+
+### 3. Design within the real operating boundary
+
+Record feasible factor ranges and why they are feasible. Do not turn a development
+range, one campaign or a software default into a universal process limit.
+
+### 4. Challenge the model
+
+Keep assumptions, residuals, interactions, missingness, sensitivity, extrapolation
+and conflicting evidence visible. A high fit statistic does not prove causality,
+robustness or product quality.
+
+### 5. Convert evidence into a review action
+
+State the current inference, what remains unknown, which experiment or record would
+resolve it, and who can authorize the next step. Keep exploratory and confirmatory
+use distinct.
+
+## Decision table
+
+| Evidence condition | Defensible action | Do not claim |
+| --- | --- | --- |
+| Model fit is high | Review residuals, data lineage, assumptions, sensitivity and decision relevance | Causality or robustness from fit alone |
+| Measurement system changes mid-study | Reconcile versions and assess comparability before pooling | Process effect from an unexamined data shift |
+| Factor range is from development | Keep it as scoped knowledge and plan confirmation | Universal operating range or CPP |
+| Model extrapolates outside observed data | Flag the boundary and request representative evidence | Prediction is valid in the new region |
+| Statistical signal conflicts with product evidence | Preserve both and define a decision-led investigation | Automatically reject or dismiss one signal |
+| Reviewer or evidence coverage remains open | Mark `Evidence required` or `Qualified review required` | Validated model or authorized process decision |
+
+## Worked example: fictional upstream and API questions
+
+A fictional Biopharma upstream study links a media attribute and process indicator
+to a product-quality response. At the same time, a Pharma API campaign uses a small
+DoE to examine work-up factors and an impurity response. Both analyses show an
+association, but the sample preparation changed during the studies. The package
+separates measurement, process and product evidence, preserves the feasible design
+boundary, records model assumptions and assigns a reviewer question. It does not
+declare a CPP, causal mechanism, impurity purge or process validation conclusion.
+
+## Working asset
+
+Use a **Decision-led DoE & Multivariate Evidence Brief** to maintain the decision,
+causal question, data and measurement lineage, design basis, model assumptions,
+uncertainty, reviewer challenge, limitations and next action. It is a statistical
+review record, not an automated process optimizer.
+
+## Limitations
+
+This lesson does not establish a DoE, model, causal relationship, CPP, process
+range, specification, validation status, filing, batch disposition or regulatory
+conclusion. Product-, process-, method-, data- and market-specific analyses
+require current controlled data and qualified review.

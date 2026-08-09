@@ -14,6 +14,10 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { TOOLS } from "./registry";
 import { EditorialImage } from "@/components/EditorialImage";
+import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { getConnectionsForSelection, getResourceStage, getResourceSystem, getResourceLocationContexts } from "@/data/resourceConnections";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
+import { analytics } from "@/hooks/use-analytics";
 
 /**
  * /tools - a scannable index of the free interactive QC/QA tools. Each card
@@ -24,6 +28,7 @@ export default function ToolsPage() {
   const { t } = useTranslation("sections");
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const { selection, hrefWithSelection } = useResourceSelection();
 
   useSEO({ title: t("tools.seoTitle"), description: t("tools.seoDesc") });
 
@@ -46,7 +51,10 @@ export default function ToolsPage() {
     });
   }, [activeCategory, query]);
 
-  const starterTools = TOOLS.filter((tool) => tool.relatedWorkflow).slice(0, 3);
+  const connectedToolSlugs = useMemo(() => new Set(getConnectionsForSelection(selection, "tools").map((connection) => connection.slug)), [selection]);
+  const connectedTools = TOOLS.filter((tool) => connectedToolSlugs.has(tool.slug));
+  const selectedSystem = getResourceSystem(selection.systemId);
+  const selectedStage = getResourceStage(selection);
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
@@ -89,6 +97,8 @@ export default function ToolsPage() {
         </div>
       </section>
 
+      <ResourceSystemNavigator area="tools" />
+
       <section className="mb-6 grid gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-3 md:grid-cols-[1fr_auto]">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -122,27 +132,28 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {starterTools.length > 0 && (
+      {selectedSystem && (
         <section className="mb-8">
           <div className="mb-3 flex items-center justify-between gap-3">
             <div>
               <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-teal-300">
                 <Sparkles className="h-3.5 w-3.5" />
-                Good starting points
+                Connected to your system
               </p>
-              <h2 className="mt-1 text-lg font-bold">Start from a workflow-backed tool</h2>
+              <h2 className="mt-1 text-lg font-bold">{selectedStage ? selectedStage.title : selectedSystem.shortTitle} tools</h2>
             </div>
-            <Link href="/workflows" className="hidden text-sm font-semibold text-teal-300 hover:underline sm:inline-flex">
-              Browse workflows
+            <Link href={hrefWithSelection("/workflows", "tools-connected")} className="hidden text-sm font-semibold text-teal-300 hover:underline sm:inline-flex">
+              Open system map
             </Link>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            {starterTools.map((tool) => {
+          {connectedTools.length > 0 ? <div className="grid gap-3 md:grid-cols-3">
+            {connectedTools.slice(0, 6).map((tool) => {
               const Icon = tool.icon;
               return (
                 <Link
                   key={tool.slug}
-                  href={`/tools/${tool.slug}`}
+                  href={hrefWithSelection(`/tools/${tool.slug}`, "system-recommendation")}
+                  onClick={() => analytics.resourceConnectionOpened("/tools", selectedSystem.id, selectedStage?.id ?? "all-stages", "tool")}
                   className="group rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:border-teal-400/35 hover:bg-white/[0.07]"
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
@@ -161,12 +172,12 @@ export default function ToolsPage() {
                 </Link>
               );
             })}
-          </div>
+          </div> : <div className="rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-slate-400"><strong className="text-amber-200">Coverage gap:</strong> no focused calculator is mapped to this stage yet. Use the full catalog below without treating an unrelated tool as applicable.</div>}
         </section>
       )}
 
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-bold">All tools</h2>
+        <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Browse full catalog</p><h2 className="mt-1 text-xl font-bold">All tools</h2></div>
         <span className="text-sm text-muted-foreground">
           {filteredTools.length} of {TOOLS.length}
         </span>
@@ -197,16 +208,14 @@ export default function ToolsPage() {
             return (
               <Link
                 key={tool.slug}
-                href={`/tools/${tool.slug}`}
+                href={hrefWithSelection(`/tools/${tool.slug}`, "full-catalog")}
                 className="group flex flex-col rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-1 hover:border-primary/40 hover:bg-white/[0.07]"
               >
                 <div className="mb-3 flex items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                     <Icon className="h-5 w-5" />
                   </div>
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                    {tool.category}
-                  </span>
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{getResourceLocationContexts(`/tools/${tool.slug}`).length ? `${getResourceLocationContexts(`/tools/${tool.slug}`).length} system links` : "General reference"}</span>
                 </div>
                 <h3 className="mb-1.5 text-base font-bold leading-snug">{tool.title}</h3>
                 <p className="flex-1 text-sm leading-relaxed text-muted-foreground">{tool.blurb}</p>

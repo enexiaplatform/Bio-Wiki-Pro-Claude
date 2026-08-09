@@ -80,6 +80,18 @@ export interface CareerRecommendation {
   firstAction?: string;
   proof?: string;
   effortHours?: number;
+  influencedBy: string[];
+  assumptions: string[];
+  confidence: "low" | "medium" | "high";
+  evidenceMissing: string[];
+  changeSignals: string[];
+}
+
+export interface CareerEvidenceClassification {
+  requirement: string;
+  selfRating: string;
+  observedEvidence: string;
+  reviewerConfirmedEvidence: string;
 }
 
 export interface CareerMilestone {
@@ -92,6 +104,7 @@ export interface CareerMilestone {
 }
 
 export interface CareerAnalysis {
+  contractVersion: "career-analysis/v2";
   routes: CareerRoute[];
   selectedRoute: CareerRoute;
   competencies: CareerCompetency[];
@@ -103,7 +116,10 @@ export interface CareerAnalysis {
   readinessIndex: number;
   decisionConfidence: "Exploratory" | "Directional" | "Strong direction";
   confidenceReasons: string[];
+  requirementEvidence: CareerEvidenceClassification[];
 }
+
+export const CAREER_ANALYSIS_CONTRACT_VERSION = "career-analysis/v2" as const;
 
 export interface CareerProofExperiment {
   duration: "30 days";
@@ -334,7 +350,9 @@ const targetByTrack: Record<CareerTrack, Record<CompetencyKey, number>> = {
   other: { technicalExecution: 65, gmpEvidence: 75, investigationOwnership: 68, documentation: 80, leadership: 62, english: 76 },
 };
 
-const recommendationLibrary: Record<CompetencyKey, CareerRecommendation> = {
+type CareerRecommendationTemplate = Omit<CareerRecommendation, "influencedBy" | "assumptions" | "confidence" | "evidenceMissing" | "changeSignals">;
+
+const recommendationLibrary: Record<CompetencyKey, CareerRecommendationTemplate> = {
   technicalExecution: {
     competency: "technicalExecution",
     title: "Convert routine execution into method-ownership evidence",
@@ -490,6 +508,27 @@ export function buildCareerAnalysis(profile: CareerProfile, selectedRouteId?: st
       : `Schedule one ${item.label.toLowerCase()} practice block and record the evidence boundary before starting.`,
     proof: `A sanitized artifact or outcome note, reviewer feedback, and one explicit lesson tied to ${selectedRoute.title}.`,
     effortHours: Math.max(2, Math.round(profile.weeklyHours * (index === 0 ? 1.5 : 1))),
+    influencedBy: [
+      `${item.label} self-rating and calculated gap (${item.current}/${item.target})`,
+      `${profile.weeklyHours} available hours per week`,
+      `${profile.yearsExperience} years of experience in ${profile.sector}`,
+      `Selected route: ${selectedRoute.title}`,
+      `Primary constraint: ${constraintLabels[profile.primaryConstraint]}`,
+    ],
+    assumptions: [
+      "The self-rating is directionally accurate.",
+      "The proposed artifact can be created without exposing controlled or confidential records.",
+    ],
+    confidence: (evidenceCount >= 7 && profile.proudAchievement && profile.targetRole ? "high" : evidenceCount >= 3 ? "medium" : "low") as "low" | "medium" | "high",
+    evidenceMissing: [
+      `Reviewer-confirmed evidence for ${item.label.toLowerCase()}`,
+      `A current target-role requirement that validates this priority`,
+    ],
+    changeSignals: [
+      `A reviewer confirms the gap is already closed`,
+      `Current role descriptions rank a different requirement higher`,
+      `The selected route changes from ${selectedRoute.title}`,
+    ],
   }));
   const ranges = phaseRanges(profile.targetHorizonMonths);
   const readinessIndex = Math.round(baseline.competencies.reduce((sum, item) => sum + Math.min(100, (item.current / item.target) * 100), 0) / baseline.competencies.length);
@@ -499,6 +538,7 @@ export function buildCareerAnalysis(profile: CareerProfile, selectedRouteId?: st
 
   return {
     ...baseline,
+    contractVersion: CAREER_ANALYSIS_CONTRACT_VERSION,
     routes,
     selectedRoute,
     recommendations,
@@ -545,6 +585,12 @@ export function buildCareerAnalysis(profile: CareerProfile, selectedRouteId?: st
       profile.proudAchievement ? "A concrete achievement was supplied and can anchor proof-building." : "No concrete achievement was supplied; add one before applying.",
       profile.managerSupport === "yes" ? "Manager or sponsor support is available." : `Manager or sponsor support is ${profile.managerSupport}.`,
     ],
+    requirementEvidence: ranked.map((item) => ({
+      requirement: item.label,
+      selfRating: item.key === "english" ? profile.englishLevel : `${profile.ratings[item.key]}/5`,
+      observedEvidence: profile.evidenceActivities.find((entry) => new RegExp(item.label.split(" ")[0], "i").test(entry)) ?? "No directly mapped observed evidence",
+      reviewerConfirmedEvidence: "Not yet reviewer-confirmed",
+    })),
   };
 }
 

@@ -1,0 +1,123 @@
+---
+title: "Mycoplasma testing & control in biologics per USP 63 & Ph. Eur. 2.6.7: Culture, NAT/qPCR, and clearance"
+slug: "mycoplasma-testing-biologics-usp-63"
+lang: "en"
+tier: "free"
+category: "Biologics QC"
+seoDescription: "Master Mycoplasma testing for biologics under USP 63 and Ph. Eur. 2.6.7: agar/broth culture, indicator cell line, NAT/qPCR validation, and contamination control."
+updatedAt: "2026-07-29"
+---
+
+# Mycoplasma testing & control in biologics per USP &lt;63&gt; & Ph. Eur. 2.6.7: Culture, NAT/qPCR, and clearance
+
+**Mycoplasma** species — wall-less, extremely small ($0.2\text{--}0.8 \:\mu\text{m}$) bacteria — are among the most insidious contamination threats in cell culture, monoclonal antibody manufacturing, viral vector production, and advanced cell therapies.
+
+Unlike typical bacteria, Mycoplasma lack a rigid peptidoglycan cell wall. This structural feature makes them **resistant to $\beta$-lactam antibiotics** (penicillins, cephalosporins) and allows them to deform and pass through standard $0.22 \:\mu\text{m}$ sterilizing-grade filters.
+
+Compendial control is mandated under **USP &lt;63&gt; Mycoplasma Tests**, **Ph. Eur. 2.6.7 Mycoplasmas**, and **JP 14**.
+
+---
+
+## 1. Primary Mycoplasma Contamination Sources & Risks
+
+In biopharmaceutical bioreactors, Mycoplasma contamination alters cell metabolism, reduces protein yields, causes chromosome aberrations, and poses severe immunogenicity hazards for parenteral products.
+
+| Common Species | Natural Origin / Source | Contamination Pathway |
+| --- | --- | --- |
+| ***Mycoplasma orale*** | Human oral cavity & upper respiratory tract | Operator coughing, improper aseptic technique, unmasked operator |
+| ***Mycoplasma hyorhinis*** | Porcine origin | Porcine trypsin raw materials used in cell culture passaging |
+| ***Mycoplasma bovis / M. arginini*** | Bovine origin | Fetal Bovine Serum (FBS) or bovine serum albumin reagents |
+| ***Acholeplasma laidlawii*** | Sewage, soil, environment | Water systems, plant-derived media peptones |
+| ***Mycoplasma pneumoniae*** | Human pathogen | Infected personnel entering cleanroom processing areas |
+
+---
+
+## 2. Compendial Test Methodologies: Culture vs. NAT / qPCR
+
+Compendia define three testing methodologies for Master Cell Banks (MCB), Working Cell Banks (WCB), Harvest Bulk, and final cell therapy products.
+
+```text
+                                     Mycoplasma Test Sample
+                                               │
+           ┌───────────────────────────────────┼───────────────────────────────────┐
+           ▼                                   ▼                                   ▼
+   1. Culture Method                  2. Indicator Cell Culture             3. Nucleic Acid Test (NAT/qPCR)
+   • Agar & Broth (USP &lt;63&gt;)          • Vero cell line + DNA Stain          • Real-time qPCR (Ph. Eur. 2.6.7)
+   • Incubation: 28 Days              • Incubation: 3–7 Days                • Time-to-Result: &lt; 4-24 Hours
+   • Compendial Gold Standard         • Detects non-culturable species      • Essential for Short Life ATMPs
+```
+
+---
+
+## 3. Method 1: The Traditional Compendial Culture Method (28 Days)
+
+The traditional compendial test requires inoculating samples into both **liquid broth** and **solid agar plates**, incubated under microaerophilic conditions ($5\%\text{--}10\% \text{ CO}_2$ in nitrogen) at $35\text{--}38^\circ\text{C}$.
+
+### Compendial Culture Schedule (USP &lt;63&gt;)
+
+- **Agar Plates:** Sub-cultured from broth on **Day 7, 14, and 21**.
+- **Total Incubation Duration:** **28 days**.
+- **Observation:** Examined under inverted microscope for characteristic **"fried-egg" colony morphology** ($10\text{--}100 \:\mu\text{m}$ diameter).
+- **Control Strains ($\le 100 \text{ CFU}$ Inoculum):**
+  - *Mycoplasma hyorhinis* (ATCC 17981) — Fastidious strain.
+  - *Mycoplasma pneumoniae* (ATCC 15531).
+  - *Acholeplasma laidlawii* (ATCC 23206).
+
+---
+
+## 4. Method 2: Indicator Cell Line Method (Hoechst / DAPI Staining)
+
+Certain fastidious Mycoplasma strains fail to grow on cell-free agar media. The indicator cell method inoculates the test sample onto a monolayer of **Vero cells** (or 3T3 cells).
+
+- **Incubation:** $3\text{--}7 \text{ days}$ at $35\text{--}38^\circ\text{C}$ in $5\% \text{ CO}_2$.
+- **Staining & Detection:** Cells are fixed and stained with a DNA-binding fluorochrome (**Hoechst 33258** or **DAPI**).
+- **Evaluation under Fluorescence Microscope:**
+  - *Uncontaminated:* Fluorescence restricted exclusively to the Vero cell nucleus.
+  - *Contaminated:* Pinpoint extra-nuclear fluorescent specks scattered across the cell cytoplasm.
+
+---
+
+## 5. Method 3: Nucleic Acid Amplification Testing (NAT / qPCR)
+
+For short shelf-life biologics (CAR-T cell therapies, autologous cell products), waiting 28 days for compendial culture release is clinically impossible. **Ph. Eur. 2.6.7** and **USP &lt;63&gt;** permit **NAT / qPCR** as an alternative release method, provided validation demonstrates equivalence.
+
+### NAT Validation Criteria (Ph. Eur. 2.6.7)
+
+$$\text{Required LOD} \le 10 \text{ Genomic Copies / mL (or } 10 \text{ CFU/mL)}$$
+
+| Validation Attribute | Requirement & Acceptance Limit |
+| --- | --- |
+| **Limit of Detection (LOD)** | Must detect $\le 10 \text{ CFU/mL}$ (or $\le 10 \text{ copies/mL}$) for all 10 compendial species listed in Ph. Eur. 2.6.7. |
+| **Specificity** | Must amplify target Mycoplasma DNA without cross-reacting with host cell DNA (CHO, HEK293) or bacterial/fungal DNA. |
+| **Inhibition Control** | Every qPCR reaction must include an **Internal Control (IC)** DNA sequence to prove the sample matrix does not inhibit Taq polymerase. |
+
+---
+
+## 6. Filtration Barrier Control: $0.1 \:\mu\text{m}$ vs. $0.22 \:\mu\text{m}$
+
+Because Mycoplasma lack a cell wall, they can squeeze through standard $0.22 \:\mu\text{m}$ sterilizing-grade filters during media preparation.
+
+*Engineering Mitigation:* All high-risk serum-containing media, cell culture feeds, and biological buffers must be filtered through validated **$0.1 \:\mu\text{m}$ Mycoplasma-retentive filters** (e.g., Polyethersulfone PES membrane rated for Mycoplasma retention with $10^7 \text{ CFU/cm}^2$ challenge of *Acholeplasma laidlawii*).
+
+---
+
+## 7. Mycoplasma Testing & Quality Lab Capacity Integration
+
+Managing 28-day compendial culture vs. rapid qPCR testing impacts laboratory operations:
+- **Culture Method:** Requires dedicated microaerophilic $5\% \text{ CO}_2$ incubators reserved exclusively for Mycoplasma to prevent cross-contaminating routine bioburden areas.
+- **qPCR Method:** Requires segregated cleanroom PCR setup areas (Pre-PCR cleanroom, Amplification room, Post-PCR analysis) to eliminate aerosol amplicon contamination.
+
+Model your Mycoplasma testing turnaround, incubator footprint, and qPCR capacity using the [Atlas Quality Lab Compiler](/quality-lab/planner).
+
+---
+
+## Related Standards & Resources
+
+- [Biologics QC Overview](/library/biologics-qc-overview)
+- [Viral Safety Testing of Biologics](/library/viral-safety-testing)
+- [Cell Bank Characterization](/library/cell-bank-characterization)
+- **USP &lt;63&gt;** *Mycoplasma Tests*
+- **Ph. Eur. 2.6.7** *Mycoplasmas*
+- **FDA 21 CFR 610.30** *Test for Mycoplasma*
+
+*General educational content. Verify against USP &lt;63&gt;, Ph. Eur. 2.6.7, site SOPs, and approved regulatory submission filings.*

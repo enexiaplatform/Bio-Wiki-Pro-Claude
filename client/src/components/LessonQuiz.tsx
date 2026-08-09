@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { CheckCircle2, XCircle, RotateCcw, GraduationCap } from "lucide-react";
+import { CheckCircle2, XCircle, RotateCcw, GraduationCap, BookOpenCheck } from "lucide-react";
 import clsx from "clsx";
 import type { QuizQuestion } from "@/lib/content";
+import { analytics } from "@/hooks/use-analytics";
 
 /** End-of-lesson multiple-choice comprehension check. */
-export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
+export function LessonQuiz({ quiz, lessonId = "unknown" }: { quiz: QuizQuestion[]; lessonId?: string }) {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -16,6 +17,11 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
   function reset() {
     setAnswers({});
     setSubmitted(false);
+  }
+
+  function submit() {
+    setSubmitted(true);
+    analytics.lessonQuizCompleted(lessonId, score, quiz.length, quiz.every((item) => Boolean(item.rationale)) ? "v2" : "legacy");
   }
 
   return (
@@ -61,6 +67,15 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
                 );
               })}
             </div>
+            {submitted && q.rationale && (
+              <div className="mt-3 rounded-lg border border-sky-400/20 bg-sky-400/5 p-3 text-sm text-muted-foreground">
+                <p className="mb-1 inline-flex items-center gap-1.5 font-semibold text-sky-300">
+                  <BookOpenCheck className="h-4 w-4" /> Why this answer
+                </p>
+                <p>{q.rationale}</p>
+                {q.sourceIds?.length ? <p className="mt-2 text-xs">Sources: {q.sourceIds.join(", ")}</p> : null}
+              </div>
+            )}
           </li>
         ))}
       </ol>
@@ -75,7 +90,7 @@ export function LessonQuiz({ quiz }: { quiz: QuizQuestion[] }) {
           </button>
         ) : (
           <button
-            onClick={() => setSubmitted(true)}
+            onClick={submit}
             disabled={!allAnswered}
             className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50"
           >

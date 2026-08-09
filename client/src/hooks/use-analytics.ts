@@ -168,6 +168,24 @@ export const analytics = {
   lessonOpened: (lessonId: string, lessonTitle: string) =>
     capture("lesson_opened", { lesson_id: lessonId, lesson_title: lessonTitle }),
 
+  contentQualityStatusViewed: (contentId: string, version: string, status: string, score: number) =>
+    capture("content_quality_status_viewed", { content_id: contentId, version, status, score }),
+
+  lessonQuizCompleted: (lessonId: string, score: number, questionCount: number, contract: "v2" | "legacy") =>
+    capture("lesson_quiz_completed", { lesson_id: lessonId, score, question_count: questionCount, contract }),
+
+  proWorkflowCycleCompleted: (workflowId: string, version: string) =>
+    capture("pro_workflow_cycle_completed", { workflow_id: workflowId, version }),
+
+  workingAssetDownloaded: (assetId: string, version: string, status: string) =>
+    capture("working_asset_downloaded", { asset_id: assetId, version, status }),
+
+  assetUsefulnessSubmitted: (assetId: string, version: string, score: number) =>
+    capture("asset_usefulness_submitted", { asset_id: assetId, version, score }),
+
+  careerWeekCompleted: (week: number, version: string, status: string) =>
+    capture("career_week_completed", { week, version, status }),
+
   downloadClicked: (productId: string, filename: string) =>
     capture("download_clicked", { product_id: productId, filename }),
 
@@ -176,6 +194,12 @@ export const analytics = {
 
   workflowClicked: (workflowName: string) =>
     capture("workflow_clicked", { workflow_name: workflowName }),
+
+  resourceConnectionOpened: (sourceHref: string, systemId: string, stageId: string, destinationKind: string) =>
+    capture("resource_connection_opened", { source_href: sourceHref, system_id: systemId, stage_id: stageId, destination_kind: destinationKind }),
+
+  resourceCatalogOpened: (area: string, systemId?: string, stageId?: string) =>
+    capture("resource_catalog_opened", { area, system_id: systemId, stage_id: stageId }),
 
   blueprintCtaClicked: (placement: string, destination: string) => {
     capture("blueprint_cta_clicked", { placement, destination });

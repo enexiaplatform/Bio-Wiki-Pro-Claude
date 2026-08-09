@@ -31,3 +31,37 @@ export const db = pool
         },
       },
     ) as ReturnType<typeof drizzle<typeof schema>>;
+
+const REQUIRED_RUNTIME_TABLES = [
+  "users",
+  "sessions",
+  "purchases",
+  "processed_stripe_events",
+  "quality_lab_reviewed_projects",
+  "quality_lab_reviewed_project_revisions",
+  "quality_lab_funnel_events",
+] as const;
+
+let schemaReadinessCache: { ready: boolean; expiresAt: number } | undefined;
+
+/** Read-only, cached production guard. Public callers receive only a boolean. */
+export async function checkRuntimeSchema(): Promise<boolean> {
+  if (!pool) return false;
+  if (schemaReadinessCache && schemaReadinessCache.expiresAt > Date.now()) return schemaReadinessCache.ready;
+  try {
+    const result = await pool.query<{ table_name: string }>(
+      "select table_name from information_schema.tables where table_schema = 'public' and table_name = any($1::text[])",
+      [[...REQUIRED_RUNTIME_TABLES]],
+    );
+    const present = new Set(result.rows.map((row) => row.table_name));
+    const missing = REQUIRED_RUNTIME_TABLES.filter((table) => !present.has(table));
+    const ready = missing.length === 0;
+    if (!ready) console.error("[schema readiness] required runtime tables are missing", { missingCount: missing.length });
+    schemaReadinessCache = { ready, expiresAt: Date.now() + 60_000 };
+    return ready;
+  } catch (error) {
+    console.error("[schema readiness] check failed", { errorType: error instanceof Error ? error.name : "unknown-error" });
+    schemaReadinessCache = { ready: false, expiresAt: Date.now() + 15_000 };
+    return false;
+  }
+}

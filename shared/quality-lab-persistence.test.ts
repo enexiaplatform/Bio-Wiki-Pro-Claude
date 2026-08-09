@@ -3,13 +3,16 @@ import { createQualityLabProject, defaultQualityLabInput } from "./quality-lab";
 import { createQualityLabEngagementPacket } from "./quality-lab-engagement";
 import {
   QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION,
+  QUALITY_LAB_V2_ACCOUNT_SNAPSHOT_VERSION,
   QUALITY_LAB_LOCAL_STORE_VERSION,
   compareQualityLabReviewedSnapshots,
   createQualityLabAccountSnapshot,
+  compactQualityLabAccountSnapshot,
   migrateQualityLabLocalStore,
   qualityLabReviewedProjectSnapshotSchema,
   qualityLabSyncHasConflict,
 } from "./quality-lab-persistence";
+import { recompileQualityLabProject } from "./quality-lab-revisions";
 
 describe("reviewed Blueprint persistence contract", () => {
   it("accepts a complete review snapshot without adding contact data", () => {
@@ -42,6 +45,43 @@ describe("reviewed Blueprint persistence contract", () => {
     expect(snapshot.reviewRequestedAt).toBeNull();
     expect(snapshot.workspace?.projectStatus).toBe("concept");
     expect(snapshot.workspace?.evidenceRequestIds).toEqual(project.blueprint.unresolvedInputs.map((item) => item.id));
+    expect(snapshot.frozenRevisions).toHaveLength(1);
+    expect(snapshot.frozenRevisions?.[0].revisionId).toBe(snapshot.activeRevisionId);
+  });
+
+  it("keeps the account sync payload bounded after twenty recompiles", () => {
+    let project = createQualityLabProject(defaultQualityLabInput, "qlp_bounded_sync");
+    for (let revision = 2; revision <= 20; revision += 1) {
+      project = recompileQualityLabProject(
+        project,
+        { ...project.input, finishedBatchesPerMonth: project.input.finishedBatchesPerMonth + 1 },
+        `2026-07-${String(revision).padStart(2, "0")}T00:00:00.000Z`,
+      );
+    }
+
+    const snapshot = createQualityLabAccountSnapshot(project);
+    expect(project.revisions).toHaveLength(20);
+    expect(snapshot.frozenRevisions).toHaveLength(1);
+    expect(snapshot.frozenRevisions?.[0].revisionNumber).toBe(20);
+    expect(Buffer.byteLength(JSON.stringify({ snapshot, expectedUpdatedAt: null }), "utf8")).toBeLessThan(512 * 1024);
+  });
+
+  it("reads a cumulative v2 snapshot and compacts it on the next save", () => {
+    const first = createQualityLabProject(defaultQualityLabInput, "qlp_v2_compaction");
+    const project = recompileQualityLabProject(first, { ...first.input, finishedBatchesPerMonth: 48 }, "2026-07-20T00:00:00.000Z");
+    const current = createQualityLabAccountSnapshot(project);
+    const legacyV2 = {
+      ...current,
+      snapshotVersion: QUALITY_LAB_V2_ACCOUNT_SNAPSHOT_VERSION,
+      frozenRevisions: project.revisions,
+    };
+
+    expect(qualityLabReviewedProjectSnapshotSchema.safeParse(legacyV2).success).toBe(true);
+    const compacted = compactQualityLabAccountSnapshot(legacyV2);
+    expect(compacted.snapshotVersion).toBe(QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION);
+    expect(compacted.frozenRevisions).toHaveLength(1);
+    expect(compacted.activeRevisionId).toBe(project.activeRevisionId);
+    expect(compacted.frozenRevisions?.[0].provenanceStatus).toBe(project.revisions?.[1].provenanceStatus);
   });
 
   it("migrates the v1 browser array into a versioned envelope without deleting the source", () => {

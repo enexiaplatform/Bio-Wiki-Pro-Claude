@@ -1,4 +1,5 @@
 import { db } from "./db.js";
+import crypto from "crypto";
 import { users, purchases, type User, type UpsertUser } from "../shared/models/auth.js";
 import {
   quoteRequests,
@@ -33,7 +34,11 @@ import {
   type RegulatoryAlertPreferenceRow,
   type QualityLabFunnelEventRow,
 } from "../shared/schema.js";
-import type { QualityLabReviewedProjectSnapshot } from "../shared/quality-lab-persistence.js";
+import {
+  compactQualityLabAccountSnapshot,
+  qualityLabSyncHasConflict,
+  type QualityLabReviewedProjectSnapshot,
+} from "../shared/quality-lab-persistence.js";
 import type { QualityLabGovernanceKey, QualityLabGovernanceSnapshot } from "../shared/quality-lab-governance.js";
 import type { AtlasProMonthlyReviewRecord } from "../shared/atlas-pro-monthly.js";
 import type { CareerExecutionRecord } from "../shared/career-execution.js";
@@ -48,6 +53,12 @@ export type QualityLabReminderPreference = {
   updatedAt: Date | null;
 };
 
+export type QualityLabProjectSyncStorageResult = {
+  status: "created" | "updated" | "unchanged" | "conflict";
+  row: QualityLabReviewedProjectRow;
+  revisionCount: number;
+};
+
 const QUALITY_LAB_REMINDER_KINDS = ["quality_lab_reminder_daily", "quality_lab_reminder_weekdays", "quality_lab_reminder_weekly"] as const;
 
 function qualityLabReminderCadenceFromKind(kind: string): QualityLabReminderPreference["cadence"] {
@@ -55,6 +66,10 @@ function qualityLabReminderCadenceFromKind(kind: string): QualityLabReminderPref
   if (kind === "quality_lab_reminder_weekdays") return "weekdays";
   if (kind === "quality_lab_reminder_weekly") return "weekly";
   return "off";
+}
+
+export function hashAuthToken(token: string): string {
+  return crypto.createHash("sha256").update(token, "utf8").digest("hex");
 }
 
 export interface IStorage {
@@ -106,9 +121,12 @@ export interface IStorage {
   getRegulatoryDigestCandidates(): Promise<Array<{ id: string; email: string | null; firstName: string | null; cadence: string; domains: RegulatoryDigestPreferenceInput["domains"]; sources: RegulatoryDigestPreferenceInput["sources"] }>>;
   recordQualityLabFunnelEvent(userId: string | null, input: QualityLabFunnelEventInput): Promise<QualityLabFunnelEventRow | undefined>;
   upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow>;
+  syncQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot, expectedUpdatedAt: string | null | undefined): Promise<QualityLabProjectSyncStorageResult>;
   getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined>;
   listQualityLabReviewedProjects(userId: string): Promise<QualityLabReviewedProjectRow[]>;
+  countQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<number>;
   listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]>;
+  getQualityLabReviewedProjectRevision(userId: string, localProjectId: string, revisionNumber: number): Promise<QualityLabReviewedProjectRevisionRow | undefined>;
   deleteQualityLabReviewedProject(userId: string, localProjectId: string): Promise<boolean>;
   upsertQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey, snapshot: QualityLabGovernanceSnapshot): Promise<QualityLabGovernanceRecordRow>;
   getQualityLabGovernanceRecord(userId: string, recordKey: QualityLabGovernanceKey): Promise<QualityLabGovernanceRecordRow | undefined>;
@@ -153,14 +171,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByResetToken(token: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.resetToken, token));
+    const [user] = await db.select().from(users).where(eq(users.resetToken, hashAuthToken(token)));
     return user;
   }
 
   async setResetToken(userId: string, token: string, expiry: Date): Promise<void> {
     await db
       .update(users)
-      .set({ resetToken: token, resetTokenExpiry: expiry, updatedAt: new Date() })
+      .set({ resetToken: hashAuthToken(token), resetTokenExpiry: expiry, updatedAt: new Date() })
       .where(eq(users.id, userId));
   }
 
@@ -174,12 +192,12 @@ export class DatabaseStorage implements IStorage {
   async setVerificationToken(userId: string, token: string, expiry: Date): Promise<void> {
     await db
       .update(users)
-      .set({ verificationToken: token, verificationTokenExpiry: expiry, updatedAt: new Date() })
+      .set({ verificationToken: hashAuthToken(token), verificationTokenExpiry: expiry, updatedAt: new Date() })
       .where(eq(users.id, userId));
   }
 
   async getUserByVerificationToken(token: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.verificationToken, token));
+    const [user] = await db.select().from(users).where(eq(users.verificationToken, hashAuthToken(token)));
     return user;
   }
 
@@ -501,15 +519,90 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertQualityLabReviewedProject(userId: string, snapshot: QualityLabReviewedProjectSnapshot): Promise<QualityLabReviewedProjectRow> {
-    const existing = await this.getQualityLabReviewedProject(userId, snapshot.localProjectId);
-    if (existing && JSON.stringify(existing.snapshot) === JSON.stringify(snapshot)) return existing;
-    const [row] = existing
-      ? await db.update(qualityLabReviewedProjects).set({ projectName: snapshot.projectName, snapshot, updatedAt: new Date() }).where(eq(qualityLabReviewedProjects.id, existing.id)).returning()
-      : await db.insert(qualityLabReviewedProjects).values({ userId, localProjectId: snapshot.localProjectId, projectName: snapshot.projectName, snapshot }).returning();
-    const revisions = await db.select({ revisionNumber: qualityLabReviewedProjectRevisions.revisionNumber }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, row.id));
-    const revisionNumber = revisions.reduce((highest, revision) => Math.max(highest, revision.revisionNumber), 0) + 1;
-    await db.insert(qualityLabReviewedProjectRevisions).values({ reviewedProjectId: row.id, revisionNumber, snapshot });
-    return row;
+    return (await this.syncQualityLabReviewedProject(userId, snapshot, undefined)).row;
+  }
+
+  async syncQualityLabReviewedProject(
+    userId: string,
+    rawSnapshot: QualityLabReviewedProjectSnapshot,
+    expectedUpdatedAt: string | null | undefined,
+  ): Promise<QualityLabProjectSyncStorageResult> {
+    const snapshot = compactQualityLabAccountSnapshot(rawSnapshot);
+    const activeRevision = snapshot.frozenRevisions?.[0];
+    if (!activeRevision) throw new Error("A synced Quality Lab project requires an active frozen revision");
+
+    return db.transaction(async (tx) => {
+      let created = false;
+      let [existing] = await tx
+        .select()
+        .from(qualityLabReviewedProjects)
+        .where(and(eq(qualityLabReviewedProjects.userId, userId), eq(qualityLabReviewedProjects.localProjectId, snapshot.localProjectId)))
+        .for("update");
+
+      const currentUpdatedAt = existing?.updatedAt?.toISOString() ?? existing?.createdAt?.toISOString() ?? null;
+      if (existing && JSON.stringify(existing.snapshot) === JSON.stringify(snapshot)) {
+        const revisions = await tx.select({ id: qualityLabReviewedProjectRevisions.id }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, existing.id));
+        return { status: "unchanged" as const, row: existing, revisionCount: revisions.length };
+      }
+      if (existing && expectedUpdatedAt !== undefined && qualityLabSyncHasConflict(expectedUpdatedAt, currentUpdatedAt)) {
+        const revisions = await tx.select({ id: qualityLabReviewedProjectRevisions.id }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, existing.id));
+        return { status: "conflict" as const, row: existing, revisionCount: revisions.length };
+      }
+
+      if (!existing) {
+        const [inserted] = await tx
+          .insert(qualityLabReviewedProjects)
+          .values({ userId, localProjectId: snapshot.localProjectId, projectName: snapshot.projectName, snapshot })
+          .onConflictDoNothing({ target: [qualityLabReviewedProjects.userId, qualityLabReviewedProjects.localProjectId] })
+          .returning();
+        if (!inserted) {
+          [existing] = await tx
+            .select()
+            .from(qualityLabReviewedProjects)
+            .where(and(eq(qualityLabReviewedProjects.userId, userId), eq(qualityLabReviewedProjects.localProjectId, snapshot.localProjectId)))
+            .for("update");
+          if (!existing) throw new Error("Unable to recover the concurrently created Quality Lab project");
+          const revisions = await tx.select({ id: qualityLabReviewedProjectRevisions.id }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, existing.id));
+          return { status: "conflict" as const, row: existing, revisionCount: revisions.length };
+        }
+        existing = inserted;
+        created = true;
+      }
+
+      const [storedRevision] = await tx
+        .select()
+        .from(qualityLabReviewedProjectRevisions)
+        .where(and(
+          eq(qualityLabReviewedProjectRevisions.reviewedProjectId, existing.id),
+          eq(qualityLabReviewedProjectRevisions.revisionNumber, activeRevision.revisionNumber),
+        ))
+        .for("update");
+      const storedFrozenRevision = storedRevision?.snapshot.frozenRevisions?.find((revision) => revision.revisionNumber === activeRevision.revisionNumber);
+      if (storedFrozenRevision && JSON.stringify(storedFrozenRevision) !== JSON.stringify(activeRevision)) {
+        const revisions = await tx.select({ id: qualityLabReviewedProjectRevisions.id }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, existing.id));
+        return { status: "conflict" as const, row: existing, revisionCount: revisions.length };
+      }
+
+      let row = existing;
+      if (!created) {
+        [row] = await tx
+          .update(qualityLabReviewedProjects)
+          .set({ projectName: snapshot.projectName, snapshot, updatedAt: new Date() })
+          .where(eq(qualityLabReviewedProjects.id, existing.id))
+          .returning();
+      }
+
+      if (!storedRevision) {
+        await tx.insert(qualityLabReviewedProjectRevisions).values({
+          reviewedProjectId: row.id,
+          revisionNumber: activeRevision.revisionNumber,
+          snapshot,
+        });
+      }
+      const revisions = await tx.select({ id: qualityLabReviewedProjectRevisions.id }).from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, row.id));
+      const status = created ? "created" : "updated";
+      return { status, row, revisionCount: revisions.length };
+    });
   }
 
   async getQualityLabReviewedProject(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRow | undefined> {
@@ -521,10 +614,33 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(qualityLabReviewedProjects).where(eq(qualityLabReviewedProjects.userId, userId)).orderBy(desc(qualityLabReviewedProjects.updatedAt));
   }
 
+  async countQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<number> {
+    const project = await this.getQualityLabReviewedProject(userId, localProjectId);
+    if (!project) return 0;
+    const [result] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(qualityLabReviewedProjectRevisions)
+      .where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id));
+    return result?.count ?? 0;
+  }
+
   async listQualityLabReviewedProjectRevisions(userId: string, localProjectId: string): Promise<QualityLabReviewedProjectRevisionRow[]> {
     const project = await this.getQualityLabReviewedProject(userId, localProjectId);
     if (!project) return [];
     return db.select().from(qualityLabReviewedProjectRevisions).where(eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id)).orderBy(qualityLabReviewedProjectRevisions.revisionNumber);
+  }
+
+  async getQualityLabReviewedProjectRevision(userId: string, localProjectId: string, revisionNumber: number): Promise<QualityLabReviewedProjectRevisionRow | undefined> {
+    const project = await this.getQualityLabReviewedProject(userId, localProjectId);
+    if (!project) return undefined;
+    const [revision] = await db
+      .select()
+      .from(qualityLabReviewedProjectRevisions)
+      .where(and(
+        eq(qualityLabReviewedProjectRevisions.reviewedProjectId, project.id),
+        eq(qualityLabReviewedProjectRevisions.revisionNumber, revisionNumber),
+      ));
+    return revision;
   }
 
   async deleteQualityLabReviewedProject(userId: string, localProjectId: string): Promise<boolean> {

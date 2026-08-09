@@ -4,10 +4,10 @@ slug: "oos-investigation-deep-dive"
 lang: "en"
 tier: "pro"
 category: "Quality Investigation"
-seoDescription: "A professional deep dive into the two-phase OOS investigation: Phase I hypothesis testing, retest/resample/averaging rules, Phase II manufacturing review, microbiology OOS specifics, inspector Q&A, and a worked example."
-updatedAt: "2026-07-25"
+seoDescription: "Decision-focused OOS investigation guidance: applicability, evidence boundaries, Phase I and Phase II decisions, retest and resample controls, worked scenario, and a reusable working asset."
+updatedAt: "2026-08-03"
 quiz:
-  - q: "Under the FDA OOS Guidance (2006), an OOS result is presumed:"
+  - q: "Under the FDA OOS Guidance (May 2022 revision), an OOS result should be:"
     options: ["Invalid until retested", "Valid until a scientifically sound, documented assignable cause is demonstrated", "A lab error by default", "Averageable with passing results"]
     answer: 1
   - q: "Retesting the original sample is acceptable only when:"
@@ -23,19 +23,60 @@ quiz:
 
 # OOS Investigation — Deep Dive
 
-An out-of-specification (OOS) result is any test result that falls outside
-the specification or acceptance criteria in the approved application, the
-compendia, or the manufacturer's own limits. How you investigate it is one
-of the most scrutinised parts of a GMP quality system - because it sits
-directly on the line between sound science and *testing into compliance*.
-The framework below follows the **FDA Guidance for Industry: Investigating
-Out-of-Specification Test Results (2006)** and the legal precedent set in
-**United States v. Barr Laboratories (1993)**, executed under
-**21 CFR 211.192** (and 211.165(f) for rejected batches).
+An out-of-specification (OOS) result falls outside an established
+specification or acceptance criterion. This lesson helps you decide what
+evidence must be preserved, when a laboratory hypothesis is testable, when
+the investigation must expand, and what remains for the authorized quality
+unit to decide.
 
-The single most important principle: an OOS result is presumed valid until
-an investigation demonstrates otherwise. You do not get to make it
-disappear by re-testing until you like the answer.
+The primary US source is FDA's **May 2022 Revision 1** OOS guidance. Its stated
+scope is chemistry-based testing of drugs regulated by CDER; it is nonbinding
+guidance, not a universal procedure for every biological or microbiological
+assay. EU GMP Chapter 6 separately requires procedures and records for OOS and
+OOT investigation and requires significant atypical trends to be addressed.
+
+## Decision question
+
+**What evidence supports keeping, invalidating, or escalating the original
+result, and who has authority to make the next controlled decision?**
+
+The output of this lesson is not a batch disposition. It is an evidence map:
+the original result and raw-data boundary, tested hypotheses, unresolved
+questions, affected scope, accountable owner, and the next authorized review.
+
+## Applicability and do-not-use boundary
+
+| Use this lesson when | Do not use it as |
+| --- | --- |
+| A chemistry-based release, stability, raw-material, or in-process result is outside an established criterion. | A substitute for the approved OOS SOP, registered specification, validated method, or quality-unit disposition. |
+| You need to distinguish Phase I laboratory assessment from a full-scale Phase II investigation. | A universal microbiology, sterility, biological-assay, medical-device, or clinical-laboratory procedure. |
+| You need to frame retest, resample, averaging, scope, and CAPA questions before approval. | Permission to invalidate data, repeat testing, release product, report to an authority, or close an investigation. |
+
+For microbiology and sterility-related results, use this only as a reasoning
+frame. Confirm the current licensed compendial chapter, approved method,
+jurisdiction, organism context, negative controls, product impact, and site
+procedure with qualified reviewers.
+
+## Controlled source map
+
+| Source ID | What it supports here | Boundary |
+| --- | --- | --- |
+| `FDA-OOS-2022` | US CDER chemistry-test OOS scope, Phase I/II structure, retesting, resampling, averaging, documentation, and conclusion cautions. | Nonbinding guidance; verify current FDA page and applicable CFR requirements. |
+| `EU-GMP-CH6-2014` | QC documentation, trend evaluation, OOS/OOT procedures, investigation, and market-impact consideration. | Apply within the relevant EU GMP and authorization context. |
+| `ICH-Q9-R1` | Risk-based scope, uncertainty, formality, and review proportional to risk. | Does not supply a batch-disposition rule. |
+| `ICH-Q10` | CAPA, monitoring, management review, knowledge management, and continual improvement. | Complements rather than replaces regional GMP requirements. |
+
+Source locators and licensing boundaries are maintained in the Atlas Evidence
+Source Catalog. Verify current editions before controlled use.
+
+## Decision table
+
+| Evidence state | Working conclusion | Required next action |
+| --- | --- | --- |
+| Clear, documented laboratory error with evidence that explains the result | Invalidation may be proposed | Preserve all original data; route the evidence and replacement-testing plan to the authorized quality unit. |
+| Laboratory hypothesis remains plausible but unproven | Original result remains unresolved | Use a pre-defined or specifically approved protocol with a stated hypothesis, stop rule, data handling, and reviewer. |
+| No clearly causative laboratory error | Do not invalidate on assumption | Expand to a full-scale investigation, including production, sampling, other batches/products, and distributed-product impact as applicable. |
+| Passing additional result without a supported cause for the original OOS | Passing result does not erase the OOS | Report and evaluate all results under the approved procedure; do not test or average into compliance. |
 
 ## The architecture at a glance
 
@@ -45,10 +86,10 @@ disappear by re-testing until you like the answer.
 | Phase II - full-scale investigation | If the result stands, what caused it and what is the batch's fate? | QA-led, cross-functional | Root cause + disposition + CAPA |
 | Extension | Are other batches/products/sites affected? | QA | Scope closed, trend captured |
 
-Timelines should be defined in the SOP - FDA expects investigations to be
-timely (30 days is common industry practice for completing the
-investigation record - confirm against your SOP), and the batch must stay
-in quarantine throughout.
+Timelines, material status, escalation, reporting, and release controls must be
+defined by the approved procedure and applicable requirements. The FDA source
+calls for a timely, thorough, unbiased, well-documented, scientifically sound
+investigation; it does not establish a universal 30-day closure rule.
 
 ## Phase I — Laboratory investigation
 
@@ -61,9 +102,9 @@ assignable laboratory cause explains the result.
 Mature labs run Phase I as a structured, hypothesis-driven protocol, not a
 fishing expedition:
 
-1. **Open the record immediately.** The analyst reports the OOS to the
-   supervisor the same day; the investigation number, date, analyst, and
-   result are logged contemporaneously. Preserve everything: sample
+1. **Open the record promptly.** Follow the approved notification timeline;
+   record the investigation number, date, analyst, result, and material status
+   contemporaneously. Preserve, where stable and practical: sample
    preparations, dilutions, standard preparations, the column and
    instrument state, glassware, and the electronic data as-acquired.
 2. **State the candidate hypotheses before touching anything.** Typical
@@ -85,9 +126,8 @@ fishing expedition:
    - Re-inject the *retained original preparation* where the method and
      stability of the preparation permit - this tests instrument and
      integration, not the preparation itself.
-   - Interview the analyst promptly and document it - memory decays and
-     the Barr ruling made contemporaneous reconstruction a baseline
-     expectation.
+   - Interview the analyst promptly and document the factual reconstruction
+     while the work, observations, and retained preparations can still be examined.
 4. **Judge on evidence.** You may only invalidate the original result when
    there is a *scientifically sound, documented* assignable cause - a
    failed system suitability, a demonstrably degraded standard confirmed
@@ -107,8 +147,9 @@ These are where investigations most often go wrong:
 - **Retesting** (re-analysing the *original* sample) requires a
   predefined, scientifically justified plan - how many retests, by whom,
   and the decision rule - written **before** the retests are run.
-  Open-ended "test until it passes" was exactly what the Barr ruling
-  prohibited.
+  The May 2022 FDA guidance describes repeated testing until a passing result
+  is obtained and the OOS is disregarded without scientific justification as
+  unscientific and objectionable under CGMP.
 - **Resampling** (taking a *new* sample) is only justified when the
   original sample is shown to be non-representative or compromised - not
   as a second bite at the apple.
@@ -120,17 +161,18 @@ These are where investigations most often go wrong:
   uniformity (content uniformity, dissolution), the compendial decision
   rules already build in the legitimate averaging - do not invent your
   own.
-- **Outlier tests** may support a microbiological or biological assay
-  where the method allows them, but a chemical assay outlier cannot be
-  used to discard an OOS result. An outlier test explains variability; it
-  does not invalidate a result.
+- **Outlier tests** do not create an assignable cause by themselves. Use them
+  only when the approved method and data-generating process make them
+  applicable, and preserve the original result and rationale for authorized
+  review.
 
 ## Phase II — Full-scale investigation
 
-When Phase I finds no assignable laboratory cause, the OOS result stands
-and the investigation expands beyond the lab, under **21 CFR 211.192**,
-which requires the review to extend to other batches that may be
-associated with the failure.
+When Phase I finds no clearly causative laboratory error, there is no
+scientific basis to invalidate the initial result in favor of a passing retest.
+The investigation expands beyond the laboratory and evaluates associated
+batches or products as applicable. US-regulated operations must interpret the
+specific CFR obligations with the authorized quality and regulatory functions.
 
 ### The manufacturing review in depth
 
@@ -161,37 +203,40 @@ analysis) - and the cause it lands on must be one the *evidence* supports.
   the basis of a passing retest that merely overrides an unexplained OOS.
 - **Widen the scope.** Where a cause is confirmed (manufacturing or
   laboratory), assess every batch, product, and site that could share it;
-  where no cause is found, the OOS stands and the batch is rejected -
-  with the uncertainty documented, not resolved by optimism.
-- **Close with CAPA.** The corrective action maps to the verified cause,
-  and its effectiveness is verified later - a corrective action that is
-  never checked is not a corrective action. Recurring OOS events with the
-  same signature mean the CAPA system, not just the batch, has failed.
+  where no cause is found, document the uncertainty and route all results,
+  specification requirements, product impact, and applicable obligations to
+  the authorized disposition owner. Do not convert an unexplained result into
+  a passing result by assumption.
+- **Close with proportionate follow-up.** Corrective or preventive action
+  should map to the investigation evidence and include an effectiveness
+  decision where applicable. Recurrence is a signal to reassess the original
+  cause, scope, action, and monitoring strategy.
 
 ## Microbiology OOS: a different animal
 
-Microbiological OOS investigations follow the same logic but with harder
-constraints:
+Do not transpose the FDA chemistry-testing procedure directly onto a
+microbiological or sterility result. Use the same evidence disciplines—preserve
+facts, state hypotheses, test them, retain all data, assess broader impact—but
+derive the actual invalidation, repeat-test, method-suitability, recovery,
+incubation, identification, and disposition rules from the current approved
+method and licensed compendial chapter.
 
-- **Sterility test (USP &lt;71&gt;):** a positive sterility test may only
-  be invalidated and repeated when the investigation documents that the
-  test itself was invalid - defined conditions such as demonstrable
-  contamination of the test environment or materials during testing,
-  supported by concurrent monitoring data, or a documented error in test
-  performance. "No growth in the room that day" is not evidence; the
-  invalidation case must be built from environmental and procedural data
-  captured *during the test*.
-- **Microbial limits / bioburden:** investigate method suitability
-  (neutralisation, recovery), media growth-promotion status, incubation,
-  and sampling - then manufacturing: water systems, equipment
-  cleanliness, hold times, raw-material bioburden.
-- **No retesting into compliance:** replicate plates from the retained
-  sample can characterise variability but cannot average away a failing
-  result.
-- **The organism matters:** identification of the contaminant often
-  decides between a laboratory artefact (organism matching the test
-  environment flora) and a genuine product event (organism matching the
-  manufacturing environment or water system).
+At minimum, ask whether the record contains:
+
+- the exact method, version, sample plan, preparation and reportable-result rule;
+- media and reagent identity, lot, preparation, storage, use-by, growth-promotion
+  or suitability evidence required by that method;
+- incubator, equipment, environmental and negative-control evidence from the
+  relevant test period;
+- analyst qualification and contemporaneous observations;
+- organism identification and comparison to laboratory, facility, raw-material,
+  water, process, and product context, without treating a match as proof by itself;
+- product and batch impact, affected scope, uncertainty, qualified reviewers,
+  and the controlled source that governs any repeat test.
+
+If the current licensed source or qualified reviewer is unavailable, record a
+blocking evidence gap. Do not allow the worksheet to produce a controlled-use
+conclusion.
 
 ## Inspector Q&A: the questions that decide inspections
 
@@ -201,9 +246,10 @@ Strong answer: the record names the hypothesis, the check that proved it
 that permitted invalidation - written before the repeat test.
 
 **"Show me an OOS where you found no cause. What happened to the batch?"**
-Strong answer: rejected, with the scope assessment (other batches
-reviewed) and the trend entry documented. A site with zero unexplained
-OOS rejections in five years is not credible; it is lucky or dishonest.
+Strong answer: the record shows how every result, affected batch or product,
+uncertainty, scope decision, material status, and follow-up was evaluated by
+the authorized quality unit. The outcome must come from the approved
+specification and applicable requirements, not from a generic lesson.
 
 **"How many retests does your SOP allow, and who decides?"**
 Strong answer: a defined number with a predefined decision rule, approved
@@ -282,11 +328,13 @@ blend-uniformity data untrended.
   [Out-of-Trend Investigation](/library/out-of-trend-investigation) and
   keep the method side clean with
   [HPLC System Suitability](/library/hplc-system-suitability).
-- The Pro **OOS Investigation Template** toolkit pack structures Phase I
-  and Phase II records for direct site adaptation.
+- The Pro **OOS Investigation Template v2** includes a blank validated workbook
+  and a fictional completed example. Use them to separate observation,
+  hypothesis, evidence, decision, owner, and review status before transferring
+  anything into the controlled site system.
 
-> General educational content - verify against the current FDA OOS
-> Guidance, **21 CFR 211**, the applicable pharmacopeia (including USP
-> &lt;71&gt; and &lt;1010&gt; for outlier and sterility-test logic), and
-> your approved SOPs. This is not a substitute for QA judgement or your
-> validated quality system.
+> Educational decision support. Verify the current FDA source, applicable
+> regional requirements, current licensed pharmacopeial text, registered
+> specification, validated method, and approved SOP. Atlas does not authorize
+> invalidation, retesting, batch disposition, authority reporting, CAPA closure,
+> or release.
