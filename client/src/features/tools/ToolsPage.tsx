@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { TOOLS } from "./registry";
 import { EditorialImage } from "@/components/EditorialImage";
+import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
 
 /**
  * /tools - a scannable index of the free interactive QC/QA tools. Each card
@@ -88,6 +89,8 @@ export default function ToolsPage() {
           </div>
         </div>
       </section>
+
+      <ResourceFlowStrip area="tools" />
 
       <section className="mb-6 grid gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-3 md:grid-cols-[1fr_auto]">
         <div className="relative">

@@ -19,6 +19,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { toolkits } from "@/data/toolkits";
 import { EditorialImage } from "@/components/EditorialImage";
+import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
 import { PAID_ASSET_QUALITY } from "@shared/paid-asset-quality";
 import { totalQualityScore } from "@shared/content-quality";
 
@@ -113,6 +114,8 @@ export default function ToolkitsPage() {
           </div>
         </div>
       </motion.section>
+
+      <ResourceFlowStrip area="toolkits" />
 
       {!isPro && (
         <section className="mb-6 rounded-lg border border-teal-400/20 bg-gradient-to-r from-teal-400/10 via-emerald-400/5 to-transparent p-5 shadow-lg shadow-black/10 md:p-6">

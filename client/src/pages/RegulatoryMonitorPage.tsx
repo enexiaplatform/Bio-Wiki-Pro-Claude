@@ -4,6 +4,7 @@ import { AlertTriangle, ArrowRight, BellRing, Check, ExternalLink, RefreshCw, Rs
 import { useUser } from "@/context/UserContext";
 import { capture } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
 import {
   REGULATORY_SOURCES,
   filterRegulatoryUpdates,
@@ -93,6 +94,8 @@ export default function RegulatoryMonitorPage() {
 
   return <div className="min-h-screen bg-[#07182d] px-4 pb-24 pt-8 text-slate-100 md:pt-14"><div className="mx-auto max-w-7xl">
     <header className="rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/10 via-slate-950 to-teal-300/5 p-6 md:p-9"><div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between"><div><p className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200"><Rss className="h-4 w-4" /> Official-source monitor</p><h1 className="mt-5 max-w-4xl text-4xl font-bold leading-tight md:text-6xl">Changes mapped to quality decisions—not a generic news feed.</h1><p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400">Atlas checks focused FDA and EMA feeds, then applies deterministic topic and impact triage. The official publication remains authoritative and every impact label still requires human applicability review.</p></div><button type="button" onClick={() => void loadMonitor()} disabled={loading} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh sources</button></div><div className="mt-6 rounded-xl border border-amber-300/15 bg-amber-300/[0.05] p-4 text-xs leading-6 text-slate-400"><AlertTriangle className="mr-2 inline h-4 w-4 text-amber-200" />Machine triage is not regulatory advice, an approved interpretation, a change-control trigger, or proof that a publication applies to your product, market or site.</div></header>
+
+    <div className="mt-6"><ResourceFlowStrip area="monitor" /></div>
 
     <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{REGULATORY_SOURCES.map((source) => { const status=monitor?.sources.find((candidate) => candidate.id === source.id); return <a key={source.id} href={source.landingUrl} target="_blank" rel="noreferrer" className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:border-sky-300/25"><div className="flex items-center justify-between"><p className="text-[9px] font-bold uppercase tracking-wider text-slate-500">{source.publisher} · {source.market}</p><span className={`h-2.5 w-2.5 rounded-full ${status?.ok ? "bg-teal-300" : status ? "bg-rose-300" : "bg-slate-600"}`} /></div><p className="mt-2 text-xs font-bold leading-5 text-slate-200">{source.label}</p><p className="mt-2 text-[10px] text-slate-600">{status ? `${status.itemCount} current feed items` : "Awaiting refresh"}</p></a>; })}</section>
 

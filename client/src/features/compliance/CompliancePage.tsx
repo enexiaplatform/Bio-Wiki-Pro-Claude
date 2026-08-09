@@ -4,6 +4,7 @@ import { AuditQuestionBank } from "./AuditQuestionBank";
 import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
 import { EditorialImage } from "@/components/EditorialImage";
+import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
 
 const pillClass =
   "inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200";
@@ -56,6 +57,8 @@ export default function CompliancePage() {
           </div>
         </div>
       </section>
+
+      <ResourceFlowStrip area="compliance" />
 
       <section className="mb-6">
         <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">

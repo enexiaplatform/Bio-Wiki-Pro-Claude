@@ -15,6 +15,7 @@ import { learningPaths } from "@/data/learningPaths";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import { EditorialImage } from "@/components/EditorialImage";
+import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
 
 const all = "All";
 const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
@@ -75,6 +76,8 @@ export default function AcademyPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
+      <ResourceFlowStrip area="academy" />
+
       {libraryEntries.length > 0 && (
         <JsonLd
           id="academy-itemlist"
@@ -327,7 +330,7 @@ export default function AcademyPage() {
 
 function FilterBar({ label, values, active, onChange, labelFor }: { label: string; values: string[]; active: string; onChange: (value: string) => void; labelFor?: (value: string) => string }) {
   return (
-    <div>
+    <div className="min-w-0">
       <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
         <Filter className="w-3.5 h-3.5" />
         {label}

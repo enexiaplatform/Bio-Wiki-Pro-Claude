@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { ArrowRight, BookOpenCheck, CircleAlert, ExternalLink, Filter, FlaskConical, Search, ShieldCheck } from "lucide-react";
 import { analytics, capture } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
 import {
   METHOD_NAVIGATOR_RECORDS,
   NAVIGATOR_STANDARDS,
@@ -57,6 +58,8 @@ export default function MethodStandardsNavigatorPage() {
       </div>
       <div className="mt-7 rounded-2xl border border-amber-300/15 bg-amber-300/[0.05] p-4 text-xs leading-6 text-slate-400"><CircleAlert className="mr-2 inline h-4 w-4 text-amber-200" />A result is a navigation and planning record, not a site-approved method, registered specification, compliance determination, or replacement for the current official source.</div>
     </header>
+
+    <div className="mt-6"><ResourceFlowStrip area="methods" /></div>
 
     <section className="sticky top-16 z-20 mt-6 grid gap-3 rounded-2xl border border-white/10 bg-[#081628]/95 p-3 shadow-2xl shadow-black/20 backdrop-blur md:grid-cols-[1fr_auto]">
       <label className="relative block"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /><span className="sr-only">Search methods and standards</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Try: bioburden, USP <85>, water, environmental monitoring…" className="h-12 w-full rounded-xl border border-white/10 bg-black/20 pl-10 pr-3 text-sm outline-none placeholder:text-slate-600 focus:border-teal-300/40 focus:ring-2 focus:ring-teal-300/10" /></label>

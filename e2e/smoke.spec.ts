@@ -1275,7 +1275,8 @@ test.describe("public smoke", () => {
 
   test("workflow atlas lists workflows", async ({ page }) => {
     await page.goto("/workflows");
-    await expect(page.getByRole("heading", { name: /What workflow are you working on/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Biopharma Manufacturing System/i })).toBeVisible();
+    await expect(page.getByRole("combobox", { name: /Select workflow system/i })).toHaveValue("biopharma");
     await expect(page.locator('a[href^="/workflows/"]').first()).toBeVisible();
   });
 
@@ -1304,6 +1305,7 @@ test.describe("public smoke", () => {
   test("toolkit library lists toolkits with downloads available", async ({ page }) => {
     await page.goto("/toolkits");
     await expect(page.getByRole("heading", { name: /Checklists & toolkits/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Use working files where they belong/i })).toBeVisible();
     await expect(page.getByText(/GMP Audit Readiness Kit/i).first()).toBeVisible();
     // Toolkits are real, gated downloads — guests see a View/Open kit CTA.
     await expect(page.getByRole("link", { name: /View kit|Open kit/i }).first()).toBeVisible();
@@ -1311,6 +1313,7 @@ test.describe("public smoke", () => {
 
   test("tools index lists the tools, each linking to its own page", async ({ page }) => {
     await page.goto("/tools");
+    await expect(page.getByRole("region", { name: /Move from task to usable result/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Audit Readiness Scorecard/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Sterility Test Method Selector/i })).toBeVisible();
     // Each card links to a standalone, indexable tool page.
@@ -1676,6 +1679,7 @@ test.describe("public smoke", () => {
   test("method navigator exposes bounded coverage and explicit no-result state", async ({ page }) => {
     await page.goto("/methods");
     await expect(page.getByRole("heading", { name: /Find what Atlas covers/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Navigate evidence with boundaries/i })).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("USP-85");
     await expect(page.getByRole("heading", { name: /Bacterial endotoxins/i }).first()).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
@@ -1692,6 +1696,7 @@ test.describe("public smoke", () => {
     }) }));
     await page.goto("/monitor");
     await expect(page.getByRole("heading", { name: /Changes mapped to quality decisions/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Turn updates into reviewable impact/i })).toBeVisible();
     await expect(page.getByText(/Final GMP inspection guidance/i)).toBeVisible();
     await expect(page.getByText(/machine triaged/i)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);

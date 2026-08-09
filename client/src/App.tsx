@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType } from "react";
-import { Switch, Route, Redirect } from "wouter";
+import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -9,6 +9,7 @@ import { BottomNav, DesktopNav, MobileHeader } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { LazyCommandPalette } from "@/components/LazyCommandPalette";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { isResourceLocation, ResourceRail } from "@/components/ResourceRail";
 import { usePageTracking } from "@/hooks/use-analytics";
 import { useUser } from "@/context/UserContext";
 import LandingPage from "@/pages/LandingPage";
@@ -107,6 +108,8 @@ function AdminOnlyRoute({ component: Component }: { component: ComponentType }) 
 
 function Layout() {
   usePageTracking();
+  const [location] = useLocation();
+  const resourceLocation = isResourceLocation(location);
   return (
     <div className="min-h-screen bg-background text-foreground pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16">
       <a
@@ -118,9 +121,11 @@ function Layout() {
       <DesktopNav />
       <MobileHeader />
 
-      <main id="main">
-        <Suspense fallback={<PageFallback />}>
-        <Switch>
+      <main id="main" className={resourceLocation ? "md:flex md:items-start" : undefined}>
+        {resourceLocation && <ResourceRail />}
+        <div className={resourceLocation ? "min-w-0 flex-1" : undefined}>
+          <Suspense fallback={<PageFallback />}>
+          <Switch>
           {/* Backward-compat: old /en|/vi prefixed URLs → clean English-only URLs */}
           <Route path="/en/:rest*" component={LegacyLangRedirect} />
           <Route path="/vi/:rest*" component={LegacyLangRedirect} />
@@ -210,8 +215,9 @@ function Layout() {
           <Route path="/faq" component={FaqPage} />
           <Route path="/" component={LandingPage} />
           <Route component={NotFound} />
-        </Switch>
-        </Suspense>
+          </Switch>
+          </Suspense>
+        </div>
       </main>
 
       <BottomNav />
