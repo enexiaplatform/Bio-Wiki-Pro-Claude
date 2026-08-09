@@ -1706,7 +1706,7 @@ test.describe("public smoke", () => {
   test("method navigator exposes bounded coverage and explicit no-result state", async ({ page }) => {
     await page.goto("/methods");
     await expect(page.getByRole("heading", { name: /Find what Atlas covers/i })).toBeVisible();
-    await expect(page.getByRole("region", { name: /Navigate evidence with boundaries/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("USP-85");
     await expect(page.getByRole("heading", { name: /Bacterial endotoxins/i }).first()).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
@@ -1723,7 +1723,7 @@ test.describe("public smoke", () => {
     }) }));
     await page.goto("/monitor");
     await expect(page.getByRole("heading", { name: /Changes mapped to quality decisions/i })).toBeVisible();
-    await expect(page.getByRole("region", { name: /Turn updates into reviewable impact/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
     await expect(page.getByText(/Final GMP inspection guidance/i)).toBeVisible();
     await expect(page.getByText(/machine triaged/i)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
