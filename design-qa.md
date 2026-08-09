@@ -144,6 +144,50 @@ No actionable P0, P1, or P2 findings remain.
 
 final result: passed
 
+## Source-faithful Process Blueprint recreation
+
+### Comparison target
+
+- Source visual truth: `C:\Users\PC\AppData\Local\Temp\codex-clipboard-cb602a34-9f3b-4321-936c-a86880fd66f1.png`.
+- Final implementation: `artifacts/18-blueprint-source-faithful-final.png`.
+- Full-view comparison: `artifacts/19-blueprint-final-full-comparison.png`.
+- Process-map focus comparison: `artifacts/20-blueprint-final-map-comparison.png`.
+- Detail-panel focus comparison: `artifacts/21-blueprint-final-detail-comparison.png`.
+- Mobile evidence: `artifacts/11-blueprint-faithful-mobile.png`.
+- Source pixels: 1488 x 1059. Implementation pixels: 1488 x 1059. CSS viewport: 1488 x 1059 at device scale 1.
+- State: Biopharma system, stage 4 `formulation-fill` selected, guest navigation.
+
+### Findings
+
+No actionable P0, P1, or P2 differences remain.
+
+- Fonts and typography use the product's existing Inter and Space Grotesk families with matching hierarchy, compact labels, two-line process summaries, and selected-stage emphasis.
+- Spacing and layout rhythm now follow the source composition: four upper stages, three lower stages in reverse visual order, a right-side application branch, and a full-width stage detail panel beginning at the same vertical position.
+- Colors retain the source navy technical canvas, teal process flow, slate information links, coral critical controls, and teal selected-state treatment.
+- The fill-finish image is a dedicated, high-resolution sterile-vial production asset generated for the exact card slot and cool-blue art direction.
+- Copy matches the source where it describes the process. Application names and counts intentionally come from the explicit Resource registry rather than the mock's illustrative values.
+- Desktop interactions update the selected stage, linked applications, counts, CTA, URL parameters, and detail image state. Mobile keeps the active stage visible inside the horizontal stage strip with no document overflow.
+
+### Comparison history
+
+- Pass 1 (`artifacts/07-blueprint-source-faithful-pass1.png`) identified P2 spacing drift, a solid selected-stage badge, and doubled critical-control symbols.
+- Pass 2 (`artifacts/08-blueprint-source-faithful-pass2.png`) corrected node spacing and critical symbols, then identified a P2 missing lower process line and a weak stage-4 equipment symbol.
+- Final passes added the continuous 5-to-6-to-7 line, moved critical controls off stage labels, replaced the stage-4 glyph with a three-vial Phosphor composition, aligned the detail panel to the source, and verified the final result in the full and focused comparisons.
+
+### Residual P3 differences
+
+- Bespoke equipment illustrations from the mock are represented with the closest production Phosphor icons so the app retains one accessible icon system.
+- The source contains illustrative application titles and counts; the implementation preserves truthful registry content and exposes additional mapped resources through the existing expansion control.
+- The source's decorative return routing is simplified to a clearer continuous stage-4-to-stage-5 curve while preserving the same two-row visual rhythm.
+
+### Validation
+
+- `npm run validate`: passed.
+- `npm test`: 73 files and 452 tests passed.
+- `npm run build`: passed.
+
+final result: passed
+
 ## Workflow sequence correction
 
 ### Evidence

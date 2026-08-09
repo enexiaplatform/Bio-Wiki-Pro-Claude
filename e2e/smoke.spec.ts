@@ -1285,7 +1285,9 @@ test.describe("public smoke", () => {
     const stages = page.getByRole("group", { name: /Connected system stages/i });
     await expect(stages.getByRole("button")).toHaveCount(7);
     await expect(stages.getByRole("button").nth(0)).toContainText("1");
-    await expect(stages.getByRole("button").nth(6)).toContainText("7");
+    await expect(stages.getByRole("button").nth(3)).toContainText("4");
+    await expect(stages.getByRole("button").nth(4)).toContainText("7");
+    await expect(stages.getByRole("button").nth(6)).toContainText("5");
     await expect(page).toHaveURL(/system=biopharma&stage=cell-source-materials/);
   });
 
