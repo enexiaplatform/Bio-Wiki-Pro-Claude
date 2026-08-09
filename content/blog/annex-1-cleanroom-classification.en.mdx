@@ -42,17 +42,17 @@ Grade D: Lower Risk Background Support (Washing, Component Staging)
 
 ## 2. Maximum Permitted Airborne Particle Limits (Annex 1 Table 1)
 
-Classification requires measuring non-viable airborne particles at two particle sizes: $\ge 0.5 \:\mu\text{m}$ and $\ge 5.0 \:\mu\text{m}$, in both **At-Rest** and **In-Operation** states.
+Classification requires measuring non-viable airborne particles at two particle sizes: ≥ 0.5 µm and ≥ 5.0 µm, in both **At-Rest** and **In-Operation** states.
 
-| Grade | At Rest: $\ge 0.5 \:\mu\text{m} / \text{m}^3$ | At Rest: $\ge 5.0 \:\mu\text{m} / \text{m}^3$ | In Operation: $\ge 0.5 \:\mu\text{m} / \text{m}^3$ | In Operation: $\ge 5.0 \:\mu\text{m} / \text{m}^3$ | ISO Equivalent (At Rest / In Op) |
+| Grade | At Rest: ≥ 0.5 µm/m³ | At Rest: ≥ 5.0 µm/m³ | In Operation: ≥ 0.5 µm/m³ | In Operation: ≥ 5.0 µm/m³ | ISO Equivalent (At Rest / In Op) |
 | --- | --- | --- | --- | --- | --- |
-| **Grade A** | $3,520$ | $29$ | $3,520$ | $29$ | ISO 5 / ISO 5 |
-| **Grade B** | $3,520$ | $29$ | $352,000$ | $2,900$ | ISO 5 / ISO 7 |
-| **Grade C** | $352,000$ | $2,900$ | $3,520,000$ | $29,000$ | ISO 7 / ISO 8 |
-| **Grade D** | $3,520,000$ | $29,000$ | Not Defined | Not Defined | ISO 8 / Unclassified |
+| **Grade A** | 3,520 | 29 | 3,520 | 29 | ISO 5 / ISO 5 |
+| **Grade B** | 3,520 | 29 | 352,000 | 2,900 | ISO 5 / ISO 7 |
+| **Grade C** | 352,000 | 2,900 | 3,520,000 | 29,000 | ISO 7 / ISO 8 |
+| **Grade D** | 3,520,000 | 29,000 | Not Defined | Not Defined | ISO 8 / Unclassified |
 
-### Key Technical Rule for $\ge 5.0 \:\mu\text{m}$ Particles in Grade A:
-The limit for $\ge 5.0 \:\mu\text{m}$ particles in Grade A is **29 particles/$\text{m}^3$** during classification. In the 2022 revision, a single count of a $\ge 5.0 \:\mu\text{m}$ particle is no longer an automatic failure, but consecutive counts require immediate engineering investigation because Macro-particles ($\ge 5.0 \:\mu\text{m}$) are primary vectors for microbial spores.
+### Key Technical Rule for ≥ 5.0 µm Particles in Grade A:
+The limit for ≥ 5.0 µm particles in Grade A is **29 particles/m³** during classification. In the 2022 revision, a single count of a ≥ 5.0 µm particle is no longer an automatic failure, but consecutive counts require immediate engineering investigation because macro-particles (≥ 5.0 µm) are primary vectors for microbial spores.
 
 ---
 
@@ -60,40 +60,44 @@ The limit for $\ge 5.0 \:\mu\text{m}$ particles in Grade A is **29 particles/$\t
 
 Microbiological limits apply during dynamic operational state and media fill qualification.
 
-| Grade | Air Sample ($\text{CFU/m}^3$) | Settle Plates ($\varnothing 90\text{mm}$, $\text{CFU/4 hr}$) | Contact Plates ($\varnothing 55\text{mm}$, $\text{CFU/plate}$) | Glove Print (5 Fingers, $\text{CFU/glove}$) |
+| Grade | Air Sample (CFU/m³) | Settle Plates (Ø 90 mm, CFU/4 hr) | Contact Plates (Ø 55 mm, CFU/plate) | Glove Print (5 Fingers, CFU/glove) |
 | --- | --- | --- | --- | --- |
 | **Grade A** | &lt; 1 | &lt; 1 | &lt; 1 | &lt; 1 |
-| **Grade B** | $10$ | $5$ | $5$ | $5$ |
-| **Grade C** | $50$ | $50$ | $25$ | N/A |
-| **Grade D** | $100$ | $100$ | $50$ | N/A |
+| **Grade B** | 10 | 5 | 5 | 5 |
+| **Grade C** | 50 | 50 | 25 | N/A |
+| **Grade D** | 100 | 100 | 50 | N/A |
 
-*Acceptance Rule:* In Grade A, any growth ($\ge 1 \text{ CFU}$) anywhere on settle plates, contact plates, or operator gloves triggers an immediate formal **Action Level Excursion Investigation** and species-level identification.
+*Acceptance Rule:* In Grade A, any growth (≥ 1 CFU) anywhere on settle plates, contact plates, or operator gloves triggers an immediate formal **Action Level Excursion Investigation** and species-level identification.
 
 ---
 
 ## 4. Minimum Sampling Locations (ISO 14644-1:2015 Formula)
 
-During cleanroom qualification, the minimum number of airborne particle sampling locations ($N_L$) is calculated directly from the floor area of the cleanroom suite:
+During cleanroom qualification, the minimum number of airborne particle sampling locations (`N_L`) is calculated directly from the floor area of the cleanroom suite:
 
-$$N_L = \left\lceil \sqrt{A} \right\rceil$$
+```text
+N_L = ceil(sqrt(A))
+```
 
 Where:
-- $A$ = Surface area of the cleanroom in square metres ($\text{m}^2$).
-- $\lceil \cdot \rceil$ = Ceiling function (round up to next whole integer).
+- `A` = Surface area of the cleanroom in square metres (m²).
+- `ceil()` = Ceiling function (round up to next whole integer).
 
 #### Example Calculation:
-For a Grade B filling suite measuring $12 \text{ m} \times 8 \text{ m} = 96 \text{ m}^2$:
+For a Grade B filling suite measuring 12 m × 8 m = 96 m²:
 
-$$N_L = \lceil \sqrt{96} \rceil = \lceil 9.79 \rceil = 10 \text{ sampling locations}$$
+```text
+N_L = ceil(sqrt(96)) = ceil(9.79) = 10 sampling locations
+```
 
-*Sample Volume Rule:* At each location, a minimum sample volume of **$1,000 \text{ Litres}$ ($1.0 \text{ m}^3$)** must be sampled for Grade A areas to reliably quantify the $\ge 5.0 \:\mu\text{m}$ particle limit ($29/\text{m}^3$).
+*Sample Volume Rule:* At each location, a minimum sample volume of **1,000 litres (1.0 m³)** must be sampled for Grade A areas to reliably quantify the ≥ 5.0 µm particle limit (29/m³).
 
 ---
 
 ## 5. Airflow Velocity & Recovery Time Parameters
 
 ### Airflow Velocity (Grade A Unidirectional Airflow)
-- Grade A zones must maintain continuous unidirectional laminar airflow at a homogenous velocity of **$0.36 \text{ to } 0.54 \text{ m/s}$ ($70\text{--}100 \text{ ft/min}$)** at the working position.
+- Grade A zones must maintain continuous unidirectional laminar airflow at a homogenous velocity of **0.36 to 0.54 m/s (70–100 ft/min)** at the working position.
 - Smoke pattern studies (airflow visualization) must demonstrate laminar flow without turbulence or eddying over open containers.
 
 ### Cleanroom Recovery Time (Clean-Up Period)
@@ -105,7 +109,7 @@ $$N_L = \lceil \sqrt{96} \rceil = \lceil 9.79 \rceil = 10 \text{ sampling locati
 
 Managing cleanroom classification and routine EM for a sterile filling site creates significant laboratory plate-reading and particle counter calibration demands:
 - 10 Grade A/B rooms sampled daily generates over **150 contact/settle plates per shift**.
-- Incubation involves $20\text{--}25^\circ\text{C}$ (SDA/TSA for fungi, 3–5 days) followed by $30\text{--}35^\circ\text{C}$ (TSA for bacteria, 2–3 days).
+- Incubation involves 20–25 °C (SDA/TSA for fungi, 3–5 days) followed by 30–35 °C (TSA for bacteria, 2–3 days).
 
 Model your cleanroom plate reads, species ID sub-cultures, and incubator footprint using the [Atlas Quality Lab Compiler](/quality-lab/planner).
 
