@@ -29,6 +29,7 @@ import { listContent } from "@/lib/content";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 import { EditorialImage } from "@/components/EditorialImage";
 import { getContentVisual } from "@/data/contentVisuals";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
 
 const panelClass = "rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10";
 
@@ -52,6 +53,7 @@ export default function WorkflowDetailPage() {
   const { read } = useReadLessons();
   const slug = params?.slug ?? "";
   const workflow = getWorkflow(slug);
+  const { hrefWithSelection } = useResourceSelection();
 
   useSEO({
     title: workflow ? workflow.title : "Workflow",
@@ -63,7 +65,7 @@ export default function WorkflowDetailPage() {
       <div className="mx-auto max-w-2xl px-4 py-24 text-center">
         <h1 className="mb-3 text-2xl font-bold">Workflow not found</h1>
         <p className="mb-6 text-sm text-muted-foreground">This workflow does not exist yet. Browse the full atlas instead.</p>
-        <Link href="/workflows" className="font-semibold text-teal-300 hover:underline">
+        <Link href={hrefWithSelection("/workflows", "detail-back")} className="font-semibold text-teal-300 hover:underline">
           Back to the Workflow Atlas
         </Link>
       </div>
@@ -109,7 +111,7 @@ export default function WorkflowDetailPage() {
         }}
       />
 
-      <Link href="/workflows" className="mb-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+      <Link href={hrefWithSelection("/workflows", "detail-back")} className="mb-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
         <ArrowLeft className="h-3.5 w-3.5" />
         Workflow Atlas
       </Link>
@@ -164,7 +166,7 @@ export default function WorkflowDetailPage() {
             <p className="text-sm text-muted-foreground">Use the workflow now, then deepen with lessons and templates below.</p>
             {availableToolkit ? (
               <Link
-                href={availableToolkit.href ?? "/toolkits"}
+                href={hrefWithSelection(availableToolkit.href ?? "/toolkits", "workflow-toolkit")}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-5 py-2.5 text-sm font-bold text-teal-950 transition-colors hover:bg-teal-300"
               >
                 <Package className="h-4 w-4" />
@@ -300,7 +302,7 @@ export default function WorkflowDetailPage() {
 
             {nextLesson ? (
               <Link
-                href={`/library/${nextLesson.slug}`}
+                href={hrefWithSelection(`/library/${nextLesson.slug}`, "workflow-next-lesson")}
                 className="group mb-4 flex items-center gap-3 rounded-lg border border-teal-400/25 bg-teal-400/10 p-4 transition-colors hover:border-teal-400/45"
               >
                 <ArrowRight className="h-4 w-4 shrink-0 text-teal-300" />
@@ -324,7 +326,7 @@ export default function WorkflowDetailPage() {
                 return (
                   <Link
                     key={lesson.slug}
-                    href={`/library/${lesson.slug}`}
+                    href={hrefWithSelection(`/library/${lesson.slug}`, "workflow-lesson")}
                     className="group flex items-center gap-3 rounded-lg border border-white/10 bg-background/35 p-4 transition-colors hover:border-teal-400/35"
                   >
                     {done ? (
@@ -350,7 +352,7 @@ export default function WorkflowDetailPage() {
         <Section icon={Wrench} title="Try the free tools">
           <div className="grid gap-3 sm:grid-cols-2">
             {relatedTools.map((tool) => (
-              <Link key={tool.slug} href={`/tools/${tool.slug}`} className="block h-full">
+              <Link key={tool.slug} href={hrefWithSelection(`/tools/${tool.slug}`, "workflow-tool")} className="block h-full">
                 <div className="flex h-full flex-col rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-colors hover:border-teal-400/35">
                   <div className="mb-2 flex items-center justify-between">
                     <Wrench className="h-4 w-4 text-teal-300" />
@@ -388,7 +390,7 @@ export default function WorkflowDetailPage() {
                 </div>
               );
               return toolkit.status === "available" && toolkit.href ? (
-                <Link key={toolkit.slug} href={toolkit.href} className="block h-full">{inner}</Link>
+                <Link key={toolkit.slug} href={hrefWithSelection(toolkit.href, "workflow-toolkit")} className="block h-full">{inner}</Link>
               ) : (
                 <div key={toolkit.slug} className="opacity-80">{inner}</div>
               );

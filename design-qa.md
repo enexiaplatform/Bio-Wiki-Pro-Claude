@@ -72,7 +72,7 @@ No actionable P0, P1, or P2 findings remain.
 ## Validation
 
 - `npm run validate`: passed.
-- `npm test`: 72 files and 443 tests passed.
+- `npm test`: 73 files and 452 tests passed.
 - `npm run build`: passed.
 
 ## Remaining Resource organization QA
@@ -102,5 +102,44 @@ No actionable P0, P1, or P2 findings remain.
 ## Follow-up polish
 
 - A bespoke seven-symbol bioprocess icon family could move the final P3 asset difference closer to the generated mock.
+
+## Blueprint Connected System extension
+
+### Comparison target
+
+- Source process reference: `C:\Users\PC\AppData\Local\Temp\codex-clipboard-7df46ac7-5c19-4d47-9008-738956ded3fc.png`.
+- Overview implementation: `artifacts/resource-connected-overview-desktop-viewport.png`.
+- Guided selector state: `artifacts/resource-connected-guide-desktop.png`.
+- Selected seven-stage system: `artifacts/resource-connected-system-desktop.png`.
+- System-first Tools surface: `artifacts/resource-connected-tools-desktop.png`.
+- Responsive evidence: `artifacts/resource-connected-overview-mobile.png`.
+- Combined comparison input: `artifacts/resource-connected-system-comparison.png`.
+- Viewports: desktop 1440 Ã— 1000 CSS px; mobile 390 Ã— 844 CSS px.
+
+### Result
+
+No actionable P0, P1, or P2 findings remain.
+
+- The default `/workflows` state now presents five peer systems instead of implying one default process. Each card uses a consistent scientific symbol, system description, seven-stage count, and truthful Resource coverage count.
+- The optional three-question selector is compact, keyboard reachable, and keeps the full-system path available through “Skip â€” view all systems”.
+- Selecting a system reveals the existing seven-stage Process Blueprint. The combined comparison confirms the implementation retains the source reference's directional process rhythm, connected-node model, scientific symbol language, and upstream/downstream reading logic while using the product's dark technical palette.
+- System and stage context remains visible when moving from Workflows to Tools and Academy. Browser Back restores the prior selected Resource state.
+- A connected Tool detail displays system position, previous/current/next stages, sibling resources, Blueprint relevance, and an “Apply this reasoning in a Blueprint” action.
+- Unmapped stage coverage is stated explicitly, while “Browse full catalog” remains accessible and marks unrelated items as “General reference”.
+
+### Interaction, accessibility, and responsive checks
+
+- Completed the guided route `QC laboratory â†’ Investigate â†’ Calculate`; the browser reached `/tools?system=qc-laboratory&stage=lab-investigations` and showed two explicitly connected tools.
+- Moved through the Resource rail to Academy and back to Tools; `system` and `stage` persisted in both directions.
+- Opened the OOS Investigation Decision Tree and confirmed multi-system context plus adjacent-stage navigation.
+- Verified the zero-tool state for Biopharma / Cell source & materials and the continued availability of the full catalog.
+- Desktop and mobile document widths match their viewports with no page-level horizontal overflow. The selected seven-stage row intentionally scrolls within its own container on smaller screens.
+- Keyboard focus is visible on the guided selector and stage controls. Headings, regions, labels, pressed states, and navigation landmarks are exposed semantically.
+- The in-app browser console reported no warnings or errors after the overview, selector, cross-Resource navigation, detail, coverage-gap, desktop, and mobile passes.
+
+### Residual P3 differences
+
+- The source reference is a single Biopharma manufacturing sequence, while the product entry state must compare five systems. The implementation preserves the linear sequence only after system selection so the information architecture stays truthful.
+- The implementation uses production Phosphor symbols rather than custom equipment illustrations. This keeps icon weight consistent across all five systems and seven Resource areas.
 
 final result: passed

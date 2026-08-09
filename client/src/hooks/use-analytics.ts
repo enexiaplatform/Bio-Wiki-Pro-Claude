@@ -195,6 +195,12 @@ export const analytics = {
   workflowClicked: (workflowName: string) =>
     capture("workflow_clicked", { workflow_name: workflowName }),
 
+  resourceConnectionOpened: (sourceHref: string, systemId: string, stageId: string, destinationKind: string) =>
+    capture("resource_connection_opened", { source_href: sourceHref, system_id: systemId, stage_id: stageId, destination_kind: destinationKind }),
+
+  resourceCatalogOpened: (area: string, systemId?: string, stageId?: string) =>
+    capture("resource_catalog_opened", { area, system_id: systemId, stage_id: stageId }),
+
   blueprintCtaClicked: (placement: string, destination: string) => {
     capture("blueprint_cta_clicked", { placement, destination });
     recordQualityLabFunnelEvent({ stage: "cta_clicked", placement, destination });

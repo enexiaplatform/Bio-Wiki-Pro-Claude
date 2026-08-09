@@ -6,11 +6,13 @@ import { useSEO } from "@/hooks/use-seo";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
 
 export default function ToolDetailPage() {
   const [, params] = useRoute("/tools/:slug");
   const slug = params?.slug ?? "";
   const tool = getToolBySlug(slug);
+  const { hrefWithSelection } = useResourceSelection();
 
   useSEO({
     title: tool ? tool.title : "Tool",
@@ -24,7 +26,7 @@ export default function ToolDetailPage() {
         <p className="mb-6 text-sm text-muted-foreground">
           This tool does not exist. Browse all the free QC/QA tools instead.
         </p>
-        <Link href="/tools" className="font-semibold text-teal-300 hover:underline">
+        <Link href={hrefWithSelection("/tools", "detail-back")} className="font-semibold text-teal-300 hover:underline">
           Back to all tools
         </Link>
       </div>
@@ -65,7 +67,7 @@ export default function ToolDetailPage() {
         }}
       />
 
-      <Link href="/tools" className="mb-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
+      <Link href={hrefWithSelection("/tools", "detail-back")} className="mb-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground">
         <ArrowLeft className="h-3.5 w-3.5" />
         All tools
       </Link>
@@ -85,7 +87,7 @@ export default function ToolDetailPage() {
             </p>
             {tool.relatedWorkflow && (
               <Link
-                href={`/workflows/${tool.relatedWorkflow.slug}`}
+                href={hrefWithSelection(`/workflows/${tool.relatedWorkflow.slug}`, "tool-related-workflow")}
                 className="mt-5 inline-flex items-center gap-2 rounded-lg border border-teal-400/25 bg-teal-400/10 px-4 py-2 text-sm font-semibold text-teal-200 transition-colors hover:border-teal-400/45"
               >
                 <Workflow className="h-4 w-4" />
@@ -136,7 +138,7 @@ export default function ToolDetailPage() {
             return (
               <Link
                 key={candidate.slug}
-                href={`/tools/${candidate.slug}`}
+                href={hrefWithSelection(`/tools/${candidate.slug}`, "more-tools")}
                 className="group flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.045] p-4 shadow-lg shadow-black/10 transition-colors hover:border-teal-400/35"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-200">

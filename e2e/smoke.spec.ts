@@ -1275,9 +1275,36 @@ test.describe("public smoke", () => {
 
   test("workflow atlas lists workflows", async ({ page }) => {
     await page.goto("/workflows");
-    await expect(page.getByRole("heading", { name: /Biopharma Manufacturing System/i })).toBeVisible();
-    await expect(page.getByRole("combobox", { name: /Select workflow system/i })).toHaveValue("biopharma");
-    await expect(page.locator('a[href^="/workflows/"]').first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Start from the full quality system/i })).toBeVisible();
+    const overview = page.getByRole("region", { name: /Connected quality systems/i });
+    for (const system of ["Biopharma", "Sterile product", "QC laboratory", "Pharma (?:&|/) API", "Quality lifecycle"]) {
+      await expect(overview.getByRole("button", { name: new RegExp(system, "i") })).toBeVisible();
+    }
+  });
+
+  test("guided Resource selector keeps system and stage context across areas", async ({ page }) => {
+    await page.goto("/workflows");
+    await page.getByRole("button", { name: /Help me choose/i }).click();
+    const guide = page.getByRole("group", { name: /Resource guided selector/i });
+    await guide.getByLabel(/Which system/i).selectOption("qc-laboratory");
+    await guide.getByLabel(/Where is the work/i).selectOption("investigate");
+    await guide.getByLabel(/What do you need/i).selectOption("calculate");
+    await guide.getByRole("button", { name: /Show my route/i }).click();
+
+    await expect(page).toHaveURL(/\/tools\?system=qc-laboratory&stage=lab-investigations/);
+    await expect(page.getByRole("region", { name: /QC laboratory resource context/i })).toBeVisible();
+    await page.getByRole("complementary", { name: /Resource areas/i }).getByRole("link", { name: /Academy/i }).click();
+    await expect(page).toHaveURL(/\/academy\?system=qc-laboratory&stage=lab-investigations/);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/tools\?system=qc-laboratory&stage=lab-investigations/);
+  });
+
+  test("connected Resource overview remains usable on a mobile viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/workflows");
+    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Quality lifecycle/i })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 
   test("workflow detail renders the operational template", async ({ page }) => {
@@ -1305,7 +1332,7 @@ test.describe("public smoke", () => {
   test("toolkit library lists toolkits with downloads available", async ({ page }) => {
     await page.goto("/toolkits");
     await expect(page.getByRole("heading", { name: /Checklists & toolkits/i })).toBeVisible();
-    await expect(page.getByRole("region", { name: /Use working files where they belong/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
     await expect(page.getByText(/GMP Audit Readiness Kit/i).first()).toBeVisible();
     // Toolkits are real, gated downloads — guests see a View/Open kit CTA.
     await expect(page.getByRole("link", { name: /View kit|Open kit/i }).first()).toBeVisible();
@@ -1313,7 +1340,7 @@ test.describe("public smoke", () => {
 
   test("tools index lists the tools, each linking to its own page", async ({ page }) => {
     await page.goto("/tools");
-    await expect(page.getByRole("region", { name: /Move from task to usable result/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Audit Readiness Scorecard/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Sterility Test Method Selector/i })).toBeVisible();
     // Each card links to a standalone, indexable tool page.

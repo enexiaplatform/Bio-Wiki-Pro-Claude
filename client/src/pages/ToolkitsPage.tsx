@@ -19,7 +19,9 @@ import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { toolkits } from "@/data/toolkits";
 import { EditorialImage } from "@/components/EditorialImage";
-import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
+import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { getConnectionsForSelection, getResourceLocationContexts, getResourceStage, getResourceSystem } from "@/data/resourceConnections";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
 import { PAID_ASSET_QUALITY } from "@shared/paid-asset-quality";
 import { totalQualityScore } from "@shared/content-quality";
 
@@ -38,6 +40,7 @@ export default function ToolkitsPage() {
   const [query, setQuery] = useState("");
   const [format, setFormat] = useState(all);
   const [access, setAccess] = useState(all);
+  const { selection, hrefWithSelection } = useResourceSelection();
 
   function handleUnlock() {
     analytics.upgradePromptClicked(PLACEMENT);
@@ -60,6 +63,10 @@ export default function ToolkitsPage() {
       return queryMatch && formatMatch && accessMatch;
     });
   }, [access, format, query]);
+  const connectedToolkitSlugs = useMemo(() => new Set(getConnectionsForSelection(selection, "toolkits").map((connection) => connection.slug)), [selection]);
+  const connectedToolkits = toolkits.filter((toolkit) => connectedToolkitSlugs.has(toolkit.slug));
+  const selectedSystem = getResourceSystem(selection.systemId);
+  const selectedStage = getResourceStage(selection);
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
@@ -115,7 +122,14 @@ export default function ToolkitsPage() {
         </div>
       </motion.section>
 
-      <ResourceFlowStrip area="toolkits" />
+      <ResourceSystemNavigator area="toolkits" />
+
+      {selectedSystem && (
+        <section className="mb-7">
+          <div className="mb-3 flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Connected working files</p><h2 className="mt-1 text-lg font-bold">{selectedStage ? selectedStage.title : selectedSystem.shortTitle} toolkits</h2></div><Link href={hrefWithSelection("/workflows", "toolkits-connected")} className="text-xs font-bold text-teal-300">Open system map</Link></div>
+          {connectedToolkits.length > 0 ? <div className="grid gap-3 md:grid-cols-3">{connectedToolkits.map((toolkit) => <Link key={toolkit.slug} href={hrefWithSelection(toolkit.href ?? "/toolkits", "system-recommendation")} onClick={() => analytics.resourceConnectionOpened("/toolkits", selectedSystem.id, selectedStage?.id ?? "all-stages", "toolkit")} className="group rounded-xl border border-white/10 bg-white/[0.04] p-4 hover:border-teal-300/30"><div className="flex items-center justify-between"><Package className="h-5 w-5 text-teal-300" /><span className="text-[9px] font-bold uppercase tracking-wider text-slate-500">{toolkit.format}</span></div><h3 className="mt-3 text-sm font-bold group-hover:text-teal-200">{toolkit.title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{toolkit.problemSolved}</p></Link>)}</div> : <div className="rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-slate-400"><strong className="text-amber-200">Coverage gap:</strong> no controlled working file is mapped to this stage yet. Browse the catalog below without assuming applicability.</div>}
+        </section>
+      )}
 
       {!isPro && (
         <section className="mb-6 rounded-lg border border-teal-400/20 bg-gradient-to-r from-teal-400/10 via-emerald-400/5 to-transparent p-5 shadow-lg shadow-black/10 md:p-6">
@@ -160,6 +174,7 @@ export default function ToolkitsPage() {
             <Sparkles className="h-3.5 w-3.5" />
             Downloadable assets
           </p>
+          <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Browse full catalog</p>
           <h2 className="mt-1 text-xl font-bold">Toolkits</h2>
         </div>
         <span className="text-sm text-muted-foreground">
@@ -228,6 +243,7 @@ export default function ToolkitsPage() {
                 </div>
 
                 <h3 className="mb-1.5 text-base font-bold">{toolkit.title}</h3>
+                <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">{getResourceLocationContexts(`/toolkits/${toolkit.slug}`).length ? `${getResourceLocationContexts(`/toolkits/${toolkit.slug}`).length} system links` : "General reference"}</p>
                 <p className="mb-4 text-xs leading-relaxed text-muted-foreground">{toolkit.problemSolved}</p>
                 {quality?.limitations[0] && <p className="mb-4 rounded-lg border border-amber-300/15 bg-amber-300/[0.04] p-2 text-[11px] leading-5 text-amber-100/75">{quality.limitations[0]}</p>}
 
@@ -245,7 +261,7 @@ export default function ToolkitsPage() {
                 <div className="mt-auto">
                   {isAvailable && toolkit.href ? (
                     <Link
-                      href={toolkit.href}
+                      href={hrefWithSelection(toolkit.href, "full-catalog")}
                       className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-400 py-2.5 text-sm font-bold text-teal-950 transition-all hover:-translate-y-0.5 hover:bg-teal-300"
                     >
                       {isPro ? <CheckCircle2 className="h-4 w-4" /> : <Package className="h-4 w-4" />}

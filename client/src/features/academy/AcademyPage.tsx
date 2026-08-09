@@ -15,7 +15,10 @@ import { learningPaths } from "@/data/learningPaths";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/site";
 import { EditorialImage } from "@/components/EditorialImage";
-import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
+import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { getConnectionsForSelection, getResourceLocationContexts, getResourceStage, getResourceSystem } from "@/data/resourceConnections";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
+import { analytics } from "@/hooks/use-analytics";
 
 const all = "All";
 const pillClass = "inline-flex items-center gap-2 rounded-full border border-teal-400/20 bg-teal-400/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest text-teal-300";
@@ -34,6 +37,7 @@ export default function AcademyPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(all);
   const [level, setLevel] = useState(all);
+  const { selection, hrefWithSelection } = useResourceSelection();
 
   // Library (MDX) filters — independent from the legacy lesson filters below.
   // Initialized from (and synced back to) the URL so category/tier views are shareable.
@@ -42,7 +46,10 @@ export default function AcademyPage() {
   const [libTier, setLibTier] = useState(() => new URLSearchParams(window.location.search).get("tier") ?? all);
 
   useEffect(() => {
-    const p = new URLSearchParams();
+    const p = new URLSearchParams(window.location.search);
+    p.delete("q");
+    p.delete("category");
+    p.delete("tier");
     if (libQuery.trim()) p.set("q", libQuery.trim());
     if (libCategory !== all) p.set("category", libCategory);
     if (libTier !== all) p.set("tier", libTier);
@@ -73,11 +80,13 @@ export default function AcademyPage() {
     const matchesLevel = level === all || lesson.level === level;
     return matchesSearch && matchesCategory && matchesLevel;
   });
+  const connectedLessonSlugs = useMemo(() => new Set(getConnectionsForSelection(selection, "academy").map((connection) => connection.slug)), [selection]);
+  const connectedLessons = libraryEntries.filter((entry) => connectedLessonSlugs.has(entry.slug));
+  const selectedSystem = getResourceSystem(selection.systemId);
+  const selectedStage = getResourceStage(selection);
 
   return (
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-4 md:pt-8">
-      <ResourceFlowStrip area="academy" />
-
       {libraryEntries.length > 0 && (
         <JsonLd
           id="academy-itemlist"
@@ -130,6 +139,15 @@ export default function AcademyPage() {
           </div>
         </div>
       </section>
+
+      <ResourceSystemNavigator area="academy" />
+
+      {selectedSystem && (
+        <section className="mb-8">
+          <div className="mb-3 flex items-end justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Connected learning</p><h2 className="mt-1 text-lg font-bold">{selectedStage ? selectedStage.title : selectedSystem.shortTitle} lessons</h2></div><Link href={hrefWithSelection("/workflows", "academy-connected")} className="text-xs font-bold text-teal-300">Open system map</Link></div>
+          {connectedLessons.length > 0 ? <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{connectedLessons.slice(0, 6).map((entry) => <Link key={entry.slug} href={hrefWithSelection(`/library/${entry.slug}`, "system-recommendation")} onClick={() => analytics.resourceConnectionOpened("/academy", selectedSystem.id, selectedStage?.id ?? "all-stages", "lesson")} className={`group block p-4 ${hubCardClass}`}><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300">{entry.category}</p><h3 className="mt-2 text-sm font-bold group-hover:text-teal-200">{entry.title}</h3><p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{entry.seoDescription}</p></Link>)}</div> : <div className="rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-slate-400"><strong className="text-amber-200">Coverage gap:</strong> no focused lesson is mapped to this stage yet. The full library remains available below as general reference.</div>}
+        </section>
+      )}
 
       {libraryEntries.length > 0 && (
         <div className="mb-8">
@@ -186,7 +204,8 @@ export default function AcademyPage() {
         <section className="mb-8">
           <div className="mb-3 flex items-end justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold">{t("academy.libraryHeading")}</h2>
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Browse full catalog</p>
+              <h2 className="mt-1 text-lg font-bold">{t("academy.libraryHeading")}</h2>
               <p className="text-sm text-muted-foreground">{t("academy.librarySubtitle")}</p>
             </div>
             <span className="hidden text-sm text-muted-foreground sm:inline">{filteredLibrary.length} shown</span>
@@ -236,11 +255,12 @@ export default function AcademyPage() {
             {filteredLibrary.map((e) => (
               <Link
                 key={e.slug}
-                href={`/library/${e.slug}`}
+                href={hrefWithSelection(`/library/${e.slug}`, "full-catalog")}
                 className={`group block p-4 ${hubCardClass}`}
               >
                 <div className="flex items-center gap-2 text-[11px] mb-2">
                   <span className="rounded-md bg-primary/10 text-primary px-2 py-0.5 font-semibold">{e.category}</span>
+                  <span className="rounded-md border border-white/10 px-2 py-0.5 font-semibold text-slate-500">{getResourceLocationContexts(`/library/${e.slug}`).length ? `${getResourceLocationContexts(`/library/${e.slug}`).length} system links` : "General reference"}</span>
                   <span
                     className={clsx(
                       "rounded-md px-2 py-0.5 font-semibold inline-flex items-center gap-1",

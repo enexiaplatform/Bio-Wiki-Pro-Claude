@@ -9,6 +9,7 @@ import {
   PiToolbox,
   PiWrench,
 } from "react-icons/pi";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
 
 interface ResourceDestination {
   href: string;
@@ -29,11 +30,16 @@ export const RESOURCE_DESTINATIONS: ResourceDestination[] = [
 ];
 
 export function isResourceLocation(location: string) {
-  return RESOURCE_DESTINATIONS.some(({ href }) => location === href || location.startsWith(`${href}/`));
+  return location.startsWith("/library/") || RESOURCE_DESTINATIONS.some(({ href }) => location === href || location.startsWith(`${href}/`));
+}
+
+function isDestinationActive(location: string, href: string) {
+  return location === href || location.startsWith(`${href}/`) || (href === "/academy" && location.startsWith("/library/"));
 }
 
 export function ResourceRail() {
   const [location] = useLocation();
+  const { hrefWithSelection } = useResourceSelection();
   const compact = location === "/workflows" || location.startsWith("/workflows/");
 
   return (
@@ -45,11 +51,11 @@ export function ResourceRail() {
         </p>
         <nav className={`mt-3 flex min-h-0 flex-1 flex-col gap-1 ${compact ? "justify-around" : "justify-around xl:flex-none xl:justify-start xl:gap-2"}`}>
           {RESOURCE_DESTINATIONS.map(({ href, label, description, icon: Icon }) => {
-            const active = location === href || location.startsWith(`${href}/`);
+            const active = isDestinationActive(location, href);
             return (
               <Link
                 key={href}
-                href={href}
+                href={hrefWithSelection(href, "resource-rail")}
                 aria-current={active ? "page" : undefined}
                 className={`group flex min-h-[4.5rem] flex-col items-center justify-center gap-2 rounded-xl px-1.5 py-2 text-center text-[11px] font-medium leading-4 outline-none transition focus-visible:ring-2 focus-visible:ring-teal-300/50 ${!compact ? "xl:min-h-[3.9rem] xl:flex-row xl:justify-start xl:gap-3 xl:px-3 xl:py-1.5 xl:text-left xl:text-xs" : ""} ${
                   active
@@ -71,11 +77,11 @@ export function ResourceRail() {
       <nav className="border-b border-white/[0.08] bg-[#071426]/95 px-3 py-2 md:hidden" aria-label="Resource areas">
         <div className="flex gap-1 overflow-x-auto pb-1">
           {RESOURCE_DESTINATIONS.map(({ href, shortLabel, icon: Icon }) => {
-            const active = location === href || location.startsWith(`${href}/`);
+            const active = isDestinationActive(location, href);
             return (
               <Link
                 key={href}
-                href={href}
+                href={hrefWithSelection(href, "resource-rail")}
                 aria-current={active ? "page" : undefined}
                 className={`flex min-w-[4.6rem] shrink-0 flex-col items-center gap-1.5 rounded-lg px-2 py-2 text-[10px] font-semibold outline-none transition focus-visible:ring-2 focus-visible:ring-teal-300/50 ${
                   active ? "bg-teal-300/[0.12] text-teal-200" : "text-slate-400"

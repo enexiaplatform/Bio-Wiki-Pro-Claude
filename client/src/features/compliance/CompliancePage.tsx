@@ -4,13 +4,19 @@ import { AuditQuestionBank } from "./AuditQuestionBank";
 import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
 import { EditorialImage } from "@/components/EditorialImage";
-import { ResourceFlowStrip } from "@/components/ResourceFlowStrip";
+import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { COMPLIANCE_SYSTEM_MAP, getResourceStage, getResourceSystem } from "@/data/resourceConnections";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
 
 const pillClass =
   "inline-flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-teal-200";
 
 export default function CompliancePage() {
   const { t } = useTranslation("sections");
+  const { selection } = useResourceSelection();
+  const selectedSystem = getResourceSystem(selection.systemId);
+  const selectedStage = getResourceStage(selection);
+  const connectedTopics = complianceTopics.filter((topic) => (COMPLIANCE_SYSTEM_MAP[topic.id] ?? []).some((mapping) => mapping.systemId === selection.systemId && (!selection.stageId || mapping.stageId === selection.stageId)));
   useSEO({ title: t("compliance.seoTitle"), description: t("compliance.seoDesc") });
 
   return (
@@ -58,12 +64,19 @@ export default function CompliancePage() {
         </div>
       </section>
 
-      <ResourceFlowStrip area="compliance" />
+      <ResourceSystemNavigator area="compliance" />
+
+      {selectedSystem && (
+        <section className="mb-7">
+          <div className="mb-3"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Connected inspection themes</p><h2 className="mt-1 text-lg font-bold">{selectedStage ? selectedStage.title : selectedSystem.shortTitle} evidence review</h2></div>
+          {connectedTopics.length > 0 ? <div className="grid gap-3 md:grid-cols-2">{connectedTopics.map((topic) => <article key={topic.id} className="rounded-xl border border-teal-300/20 bg-teal-300/[0.05] p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300">Mapped review theme</p><h3 className="mt-2 text-sm font-bold">{topic.title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{topic.focus}</p></article>)}</div> : <div className="rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-slate-400"><strong className="text-amber-200">Coverage gap:</strong> no focused inspection theme is mapped to this stage. The question bank remains available as general rehearsal material.</div>}
+        </section>
+      )}
 
       <section className="mb-6">
         <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Inspection themes</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Browse full catalog</p>
             <h2 className="mt-2 text-2xl font-bold">Start from the evidence inspectors ask for</h2>
           </div>
           <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -82,6 +95,7 @@ export default function CompliancePage() {
               <ClipboardCheck className="h-5 w-5" />
               <h2 className="font-bold">{topic.title}</h2>
             </div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-slate-500">{(COMPLIANCE_SYSTEM_MAP[topic.id] ?? []).length} explicit system links</p>
             <p className="mb-2 text-sm font-semibold">{topic.focus}</p>
             <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{topic.whyItMatters}</p>
             <div className="mb-4 flex flex-wrap gap-2">

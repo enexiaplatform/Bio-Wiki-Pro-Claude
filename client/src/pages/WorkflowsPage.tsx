@@ -33,9 +33,11 @@ import {
 
 import { EditorialImage } from "@/components/EditorialImage";
 import { JsonLd } from "@/components/JsonLd";
+import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
 import { getToolMeta } from "@/data/tools/catalog";
 import { getToolkit } from "@/data/toolkits";
 import { getWorkflow } from "@/data/workflows";
+import { buildResourceContextHref, getResourceStage, getResourceSystem } from "@/data/resourceConnections";
 import {
   workflowSystems,
   type ConnectedApplicationKind,
@@ -44,6 +46,8 @@ import {
   type WorkflowSystemStage,
 } from "@/data/workflowSystems";
 import { useSEO } from "@/hooks/use-seo";
+import { capture } from "@/hooks/use-analytics";
+import { useResourceSelection } from "@/hooks/use-resource-selection";
 import { listContent } from "@/lib/content";
 
 const SYSTEM_ICONS: Record<string, IconType> = {
@@ -260,10 +264,12 @@ function StageApplications({
   applications,
   expanded,
   onToggle,
+  onOpen,
 }: {
   applications: ResolvedApplication[];
   expanded: boolean;
   onToggle: () => void;
+  onOpen: (application: ResolvedApplication) => void;
 }) {
   const visibleApplications = expanded ? applications : applications.slice(0, 4);
 
@@ -278,6 +284,7 @@ function StageApplications({
             <Link
               key={application.key}
               href={application.href}
+              onClick={() => onOpen(application)}
               className="group flex min-w-0 items-center gap-3 border-b border-white/[0.08] px-1 py-3 outline-none transition hover:bg-white/[0.025] focus-visible:ring-2 focus-visible:ring-teal-300/40"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-600/70 text-slate-300 transition group-hover:border-teal-300/60 group-hover:text-teal-300">
@@ -316,24 +323,37 @@ function Legend() {
 
 export default function WorkflowsPage() {
   useSEO({
-    title: "Biopharma Process Blueprint | Life Science Atlas",
-    description: "Explore connected manufacturing and quality systems with stage-linked workflows, tools, lessons, and toolkits.",
+    title: "Connected Quality Systems | Life Science Atlas",
+    description: "Explore five connected manufacturing and quality systems with stage-linked workflows, tools, lessons, and toolkits.",
   });
 
   const academy = useMemo(() => listContent({ collection: "academy", lang: "en" }), []);
   const lessonBySlug = useMemo(() => new Map(academy.map((lesson) => [lesson.slug, lesson])), [academy]);
-  const [activeSystemId, setActiveSystemId] = useState(workflowSystems[0].id);
-  const activeSystem = workflowSystems.find((system) => system.id === activeSystemId) ?? workflowSystems[0];
-  const [activeStageId, setActiveStageId] = useState(activeSystem.stages[3].id);
+  const { selection, setSelection, clearSelection } = useResourceSelection();
+  const activeSystem = getResourceSystem(selection.systemId);
   const [showAllApplications, setShowAllApplications] = useState(false);
-  const activeStage = activeSystem.stages.find((stage) => stage.id === activeStageId) ?? activeSystem.stages[3];
+  const activeStage = getResourceStage(selection) ?? activeSystem?.stages[0];
+  if (!activeSystem || !activeStage) {
+    return (
+      <div className="min-h-[calc(100vh-4rem)] bg-[#071426] px-4 pb-20 pt-5 lg:px-7">
+        <header className="mx-auto mb-6 max-w-7xl rounded-3xl border border-white/[0.09] bg-[#08172a] p-6 [background-image:radial-gradient(rgba(94,234,212,0.10)_0.8px,transparent_0.8px)] [background-size:18px_18px] md:p-8">
+          <p className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-teal-300"><PiFlowArrow className="h-4 w-4" /> Connected Resource Blueprint</p>
+          <h1 className="mt-4 max-w-4xl font-display text-3xl font-bold leading-tight text-slate-50 md:text-5xl">Start from the full quality system.</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">See how five manufacturing and quality systems organize the same evidence, workflows, tools, lessons, and working files. Choose a system—or answer three quick questions—to enter at the right decision stage.</p>
+        </header>
+        <div className="mx-auto max-w-7xl"><ResourceSystemNavigator area="workflows" showGuide /></div>
+      </div>
+    );
+  }
   const activeStageIndex = activeSystem.stages.indexOf(activeStage);
+  const activeSystemId = activeSystem.id;
 
   const stageApplications = useMemo(
     () => activeStage.applications
       .map((reference) => resolveApplication(reference, activeStage, lessonBySlug))
-      .filter((application): application is ResolvedApplication => Boolean(application)),
-    [activeStage, lessonBySlug],
+      .filter((application): application is ResolvedApplication => Boolean(application))
+      .map((application) => ({ ...application, href: buildResourceContextHref(application.href, selection, "stage-application") })),
+    [activeStage, lessonBySlug, selection],
   );
 
   const counts = stageApplications.reduce<Record<ConnectedApplicationKind, number>>(
@@ -346,14 +366,15 @@ export default function WorkflowsPage() {
 
   function selectSystem(systemId: string) {
     const nextSystem = workflowSystems.find((system) => system.id === systemId) ?? workflowSystems[0];
-    setActiveSystemId(nextSystem.id);
-    setActiveStageId(nextSystem.stages[3].id);
+    setSelection({ systemId: nextSystem.id, stageId: nextSystem.stages[0].id });
     setShowAllApplications(false);
+    capture("resource_system_selected", { system_id: nextSystem.id, area: "workflows" });
   }
 
   function selectStage(stageId: string) {
-    setActiveStageId(stageId);
+    setSelection({ systemId: activeSystemId, stageId });
     setShowAllApplications(false);
+    capture("resource_stage_selected", { system_id: activeSystemId, stage_id: stageId, area: "workflows" });
   }
 
   return (
@@ -393,6 +414,9 @@ export default function WorkflowsPage() {
                 {workflowSystems.map((system) => <option key={system.id} value={system.id}>{system.shortTitle}</option>)}
               </select>
               </label>
+              <button type="button" onClick={() => { clearSelection(); capture("resource_system_overview_opened", { area: "workflows" }); }} className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-white/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 hover:border-teal-300/30 hover:text-teal-200">
+                All systems
+              </button>
             </div>
             <h1 className="mt-3 font-display text-2xl font-bold leading-tight text-slate-50 sm:text-3xl">{displayTitle}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Explore the connected end-to-end system. Select any stage to see the exact resources attached to that decision point.</p>
@@ -403,7 +427,7 @@ export default function WorkflowsPage() {
         <div className="grid gap-6 px-4 py-6 lg:px-7 xl:grid-cols-[minmax(0,1fr)_17rem]">
           <DesktopBlueprint system={activeSystem} activeStageId={activeStage.id} onSelect={selectStage} />
           <MobileBlueprint system={activeSystem} activeStageId={activeStage.id} onSelect={selectStage} />
-          <StageApplications applications={stageApplications} expanded={showAllApplications} onToggle={() => setShowAllApplications((value) => !value)} />
+          <StageApplications applications={stageApplications} expanded={showAllApplications} onToggle={() => setShowAllApplications((value) => !value)} onOpen={(application) => capture("resource_connection_opened", { source_href: "/workflows", system_id: activeSystem.id, stage_id: activeStage.id, destination_kind: application.kind, destination_href: application.href })} />
         </div>
 
         <section className="m-3 mt-0 overflow-hidden rounded-xl border border-white/[0.09] bg-[#0a1a2e]/95 lg:m-5 lg:mt-0" aria-live="polite">
@@ -447,7 +471,7 @@ export default function WorkflowsPage() {
             <div className="border-t border-white/[0.08] p-5 lg:border-r lg:border-t-0">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Primary action</p>
                 {primaryWorkflow ? (
-                  <Link href={primaryWorkflow.href} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-teal-300 px-4 text-center text-sm font-bold text-slate-950 transition hover:bg-teal-200">
+                  <Link href={primaryWorkflow.href} onClick={() => capture("resource_connection_opened", { source_href: "/workflows", system_id: activeSystem.id, stage_id: activeStage.id, destination_kind: primaryWorkflow.kind, destination_href: primaryWorkflow.href })} className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-teal-300 px-4 text-center text-sm font-bold text-slate-950 transition hover:bg-teal-200">
                     Open stage workflow <PiArrowRight className="h-4 w-4" />
                   </Link>
                 ) : (
