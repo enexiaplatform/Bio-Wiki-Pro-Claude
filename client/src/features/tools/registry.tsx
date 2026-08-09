@@ -156,6 +156,18 @@ const VISUALS: Record<string, { icon: LucideIcon; Component: LazyExoticComponent
     icon: ClipboardCheck,
     Component: lazy(() => import("./CapaEffectivenessPlanner").then((m) => ({ default: m.CapaEffectivenessPlanner }))),
   },
+  "cell-bank-evidence-readiness-planner": {
+    icon: Dna,
+    Component: lazy(() => import("./ConnectedEvidencePlanners").then((m) => ({ default: m.CellBankEvidenceReadinessPlanner }))),
+  },
+  "impurity-fate-purge-evidence-mapper": {
+    icon: GitBranch,
+    Component: lazy(() => import("./ConnectedEvidencePlanners").then((m) => ({ default: m.ImpurityFatePurgeEvidenceMapper }))),
+  },
+  "routine-control-signal-planner": {
+    icon: Activity,
+    Component: lazy(() => import("./ConnectedEvidencePlanners").then((m) => ({ default: m.RoutineControlSignalPlanner }))),
+  },
 };
 
 // Single source of truth for the /tools index and the /tools/:slug pages.

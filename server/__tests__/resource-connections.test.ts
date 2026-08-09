@@ -8,12 +8,15 @@ import {
   getConnectionsForSelection,
   getGuidedDestination,
   getResourceLocationContexts,
+  getStageResourceCoverage,
   parseResourceSelection,
   resolveExplicitSystemStages,
   resourceConnections,
 } from "../../client/src/data/resourceConnections";
-import { TOOL_CATALOG } from "../../client/src/data/tools/catalog";
+import { RESOURCE_COVERAGE_CONTRACT_VERSION, STAGE_COVERAGE_RULES, stageCoverageProfiles } from "../../client/src/data/resourceCoverage";
 import { workflowSystems } from "../../client/src/data/workflowSystems";
+import contentManifest from "../../client/src/data/content-manifest.json";
+import { EVIDENCE_SOURCE_CATALOG } from "../../shared/content-quality-registry";
 
 describe("resource connection registry", () => {
   it("keeps system, stage, and connection identifiers unique", () => {
@@ -69,11 +72,11 @@ describe("resource connection registry", () => {
   });
 
   it("keeps unmapped catalog items available as general references", () => {
-    const mappedToolSlugs = new Set(resourceConnections.filter((connection) => connection.kind === "tool").map((connection) => connection.slug));
-    const generalReference = TOOL_CATALOG.find((tool) => !mappedToolSlugs.has(tool.slug));
+    const mappedLessonSlugs = new Set(resourceConnections.filter((connection) => connection.kind === "lesson").map((connection) => connection.slug));
+    const generalReference = contentManifest.find((item) => item.collection === "academy" && !mappedLessonSlugs.has(item.slug));
 
     expect(generalReference).toBeDefined();
-    expect(getResourceLocationContexts(`/tools/${generalReference!.slug}`)).toEqual([]);
+    expect(getResourceLocationContexts(`/library/${generalReference!.slug}`)).toEqual([]);
   });
 
   it("builds a deterministic guided destination", () => {
@@ -92,5 +95,36 @@ describe("resource connection registry", () => {
 
     expect(mappingGroups.length).toBeGreaterThan(0);
     expect(mappingGroups.every((mappings) => resolveExplicitSystemStages(mappings).length === mappings.length)).toBe(true);
+  });
+
+  it("provides all seven Resource areas for every system stage", () => {
+    const expectedAreas = ["workflows", "academy", "tools", "toolkits", "methods", "compliance", "monitor"];
+    const coverage = workflowSystems.flatMap((system) => system.stages.map((stage) => getStageResourceCoverage({ systemId: system.id, stageId: stage.id })));
+
+    expect(coverage).toHaveLength(35);
+    expect(coverage.every(Boolean)).toBe(true);
+    expect(coverage.every((entry) => entry?.contractVersion === RESOURCE_COVERAGE_CONTRACT_VERSION)).toBe(true);
+    expect(coverage.flatMap((entry) => expectedAreas.filter((area) => !entry?.areas[area as keyof typeof entry.areas]?.connections.length))).toEqual([]);
+  });
+
+  it("keeps every coverage rule explicit, unique, review-gated, and source-backed", () => {
+    const stageKeys = workflowSystems.flatMap((system) => system.stages.map((stage) => `${system.id}:${stage.id}`));
+    const ruleKeys = STAGE_COVERAGE_RULES.map((entry) => `${entry.systemId}:${entry.stageId}`);
+    const sourceIds = new Set(EVIDENCE_SOURCE_CATALOG.sources.map((source) => source.id));
+
+    expect(ruleKeys).toHaveLength(35);
+    expect(new Set(ruleKeys).size).toBe(35);
+    expect(new Set(ruleKeys)).toEqual(new Set(stageKeys));
+    expect(stageCoverageProfiles).toHaveLength(105);
+    expect(stageCoverageProfiles.every((profile) => profile.reviewRequired && profile.applicability && profile.limitations && profile.reviewerRole)).toBe(true);
+    expect(stageCoverageProfiles.flatMap((profile) => profile.sourceIds.filter((sourceId) => !sourceIds.has(sourceId)))).toEqual([]);
+  });
+
+  it("marks system packs without controlled deliverables as evidence required", () => {
+    const systemPackSlugs = new Set(["sterile-product-control-pack", "qc-laboratory-operating-pack", "pharma-api-lifecycle-control-pack", "quality-lifecycle-control-pack"]);
+    const connections = resourceConnections.filter((connection) => connection.kind === "toolkit" && systemPackSlugs.has(connection.slug));
+
+    expect(connections.length).toBeGreaterThan(0);
+    expect(connections.every((connection) => connection.coverageStatus === "evidence-required")).toBe(true);
   });
 });

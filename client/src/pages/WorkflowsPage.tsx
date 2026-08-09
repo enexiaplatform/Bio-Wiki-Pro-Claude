@@ -32,6 +32,7 @@ import {
 import { EditorialImage } from "@/components/EditorialImage";
 import { JsonLd } from "@/components/JsonLd";
 import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { StageCoverageDashboard } from "@/components/StageCoverageDashboard";
 import { getToolMeta } from "@/data/tools/catalog";
 import { getToolkit } from "@/data/toolkits";
 import { getWorkflow } from "@/data/workflows";
@@ -353,6 +354,13 @@ export default function WorkflowsPage() {
   const activeSystem = getResourceSystem(selection.systemId);
   const [showAllApplications, setShowAllApplications] = useState(false);
   const activeStage = getResourceStage(selection) ?? activeSystem?.stages[0];
+  const stageApplications = useMemo(
+    () => activeStage ? activeStage.applications
+      .map((reference) => resolveApplication(reference, activeStage, lessonBySlug))
+      .filter((application): application is ResolvedApplication => Boolean(application))
+      .map((application) => ({ ...application, href: buildResourceContextHref(application.href, selection, "stage-application") })) : [],
+    [activeStage, lessonBySlug, selection],
+  );
   if (!activeSystem || !activeStage) {
     return (
       <div className="min-h-[calc(100vh-4rem)] bg-[#071426] px-4 pb-20 pt-5 lg:px-7">
@@ -367,14 +375,6 @@ export default function WorkflowsPage() {
   }
   const activeStageIndex = activeSystem.stages.indexOf(activeStage);
   const activeSystemId = activeSystem.id;
-
-  const stageApplications = useMemo(
-    () => activeStage.applications
-      .map((reference) => resolveApplication(reference, activeStage, lessonBySlug))
-      .filter((application): application is ResolvedApplication => Boolean(application))
-      .map((application) => ({ ...application, href: buildResourceContextHref(application.href, selection, "stage-application") })),
-    [activeStage, lessonBySlug, selection],
-  );
 
   const counts = stageApplications.reduce<Record<ConnectedApplicationKind, number>>(
     (result, application) => ({ ...result, [application.kind]: result[application.kind] + 1 }),
@@ -492,6 +492,8 @@ export default function WorkflowsPage() {
               />
             </div>
           </div>
+
+          <StageCoverageDashboard selection={{ systemId: activeSystem.id, stageId: activeStage.id }} />
 
         </section>
       </motion.section>

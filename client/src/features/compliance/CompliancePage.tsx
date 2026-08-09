@@ -5,6 +5,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useTranslation } from "react-i18next";
 import { EditorialImage } from "@/components/EditorialImage";
 import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { StageCoverageProfileCard } from "@/components/StageCoverageProfileCard";
 import { COMPLIANCE_SYSTEM_MAP, getResourceStage, getResourceSystem } from "@/data/resourceConnections";
 import { useResourceSelection } from "@/hooks/use-resource-selection";
 
@@ -65,11 +66,12 @@ export default function CompliancePage() {
       </section>
 
       <ResourceSystemNavigator area="compliance" />
+      <StageCoverageProfileCard area="compliance" />
 
       {selectedSystem && (
         <section className="mb-7">
           <div className="mb-3"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Connected inspection themes</p><h2 className="mt-1 text-lg font-bold">{selectedStage ? selectedStage.title : selectedSystem.shortTitle} evidence review</h2></div>
-          {connectedTopics.length > 0 ? <div className="grid gap-3 md:grid-cols-2">{connectedTopics.map((topic) => <article key={topic.id} className="rounded-xl border border-teal-300/20 bg-teal-300/[0.05] p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300">Mapped review theme</p><h3 className="mt-2 text-sm font-bold">{topic.title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{topic.focus}</p></article>)}</div> : <div className="rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-slate-400"><strong className="text-amber-200">Coverage gap:</strong> no focused inspection theme is mapped to this stage. The question bank remains available as general rehearsal material.</div>}
+          {connectedTopics.length > 0 ? <div className="grid gap-3 md:grid-cols-2">{connectedTopics.map((topic) => <article key={topic.id} className="rounded-xl border border-teal-300/20 bg-teal-300/[0.05] p-4"><p className="text-[10px] font-bold uppercase tracking-wider text-teal-300">Mapped review theme</p><h3 className="mt-2 text-sm font-bold">{topic.title}</h3><p className="mt-2 text-xs leading-5 text-slate-500">{topic.focus}</p></article>)}</div> : <div className="rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-slate-400"><strong className="text-amber-200">Stage profile only:</strong> no specialist-reviewed inspection theme is claimed for this stage. Use the profile above to scope applicability and evidence review.</div>}
         </section>
       )}
 

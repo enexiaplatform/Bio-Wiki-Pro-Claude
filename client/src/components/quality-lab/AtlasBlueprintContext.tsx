@@ -1,7 +1,7 @@
 import { ArrowRight, FlaskConical, GitBranch, Network, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 import { evidenceContextForHref } from "@/data/atlasEvidenceGraph";
-import { buildResourceContextHref, getResourceLocationContexts } from "@/data/resourceConnections";
+import { buildResourceContextHref, getResourceLocationContexts, type ResourceKind } from "@/data/resourceConnections";
 import { getToolMeta } from "@/data/tools/catalog";
 import { getToolkit } from "@/data/toolkits";
 import { getWorkflow } from "@/data/workflows";
@@ -23,11 +23,14 @@ export function AtlasBlueprintContext({ href }: { href: string }) {
   const systemContexts = getResourceLocationContexts(href).sort((a, b) => Number(b.system.id === selection.systemId && (!selection.stageId || b.stage.id === selection.stageId)) - Number(a.system.id === selection.systemId && (!selection.stageId || a.stage.id === selection.stageId)));
   if (contexts.length === 0 && systemContexts.length === 0) return null;
 
-  function connectionTitle(kind: "workflow" | "tool" | "lesson" | "toolkit", slug: string) {
+  function connectionTitle(kind: ResourceKind, slug: string) {
     if (kind === "workflow") return getWorkflow(slug)?.title ?? slug;
     if (kind === "tool") return getToolMeta(slug)?.title ?? slug;
     if (kind === "toolkit") return getToolkit(slug)?.title ?? slug;
-    return lessonBySlug.get(slug)?.title ?? slug;
+    if (kind === "lesson") return lessonBySlug.get(slug)?.title ?? slug;
+    if (kind === "method") return "Method profile";
+    if (kind === "compliance") return "Compliance profile";
+    return "Regulatory watch context";
   }
 
   return <aside data-print="hide" aria-label="Atlas Blueprint relevance" className="my-8 overflow-hidden rounded-2xl border border-sky-300/20 bg-gradient-to-br from-sky-300/[0.08] via-teal-300/[0.035] to-transparent p-5 md:p-6">

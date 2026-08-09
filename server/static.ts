@@ -162,6 +162,18 @@ const TOOL_META: Record<string, { title: string; description: string }> = {
     description:
       "Free CAPA effectiveness check planner - score whether your CAPA is ready for closure, define a verification window, and build evidence that the root cause is controlled.",
   },
+  "cell-bank-evidence-readiness-planner": {
+    title: "Cell Bank Evidence Readiness Planner",
+    description: "Organize cell-substrate lineage, bank lifecycle, characterization, stability, custody, change, and review evidence without inventing tests or criteria.",
+  },
+  "impurity-fate-purge-evidence-mapper": {
+    title: "Impurity Fate & Purge Evidence Mapper",
+    description: "Connect API impurity origin, observed fate, analytical capability, control placement, uncertainty, and specialist review without fictional purge factors.",
+  },
+  "routine-control-signal-planner": {
+    title: "Routine Control Signal Planner",
+    description: "Organize routine quality signals with their intended decision, evidence basis, escalation path, open gaps, and accountable review.",
+  },
 };
 
 function escapeHtml(s: string): string {

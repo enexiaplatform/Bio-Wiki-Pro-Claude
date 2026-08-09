@@ -251,6 +251,7 @@ test.describe("public smoke", () => {
       "analytical-instrument-qualification",
       "hvac-qualification",
       "process-validation-stages",
+      "decision-led-doe-and-multivariate-process-evidence",
       "cleaning-validation",
       "analytical-method-validation",
       "analytical-procedure-lifecycle-q14",
@@ -1316,6 +1317,24 @@ test.describe("public smoke", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 
+  test("Resource coverage v2 exposes all areas and keeps stage profiles honest", async ({ page }) => {
+    await page.goto("/workflows?system=pharma-api&stage=api-process");
+    const dashboard = page.getByRole("region", { name: /Resource coverage dashboard/i });
+    await expect(dashboard.getByRole("link")).toHaveCount(7);
+    await expect(dashboard.getByRole("link", { name: /methods/i })).toContainText(/Evidence required/i);
+    await expect(dashboard.getByRole("link", { name: /compliance/i })).toContainText(/Specialist review/i);
+    await expect(dashboard.getByRole("link", { name: /monitor/i })).toContainText(/Watch active/i);
+
+    await dashboard.getByRole("link", { name: /methods/i }).click();
+    await expect(page).toHaveURL(/\/methods\?system=pharma-api&stage=api-process/);
+    await expect(page.getByRole("region", { name: /Process & impurities methods profile/i })).toContainText(/impurity/i);
+    await expect(page.getByText(/Stage profile only:/i)).toBeVisible();
+
+    await page.getByRole("complementary", { name: /Resource areas/i }).getByRole("link", { name: /Compliance/i }).click();
+    await expect(page).toHaveURL(/\/compliance\?system=pharma-api&stage=api-process/);
+    await expect(page.getByRole("region", { name: /Process & impurities compliance profile/i })).toContainText(/specialist review required/i);
+  });
+
   test("workflow detail renders the operational template", async ({ page }) => {
     await page.goto("/workflows/environmental-monitoring");
     await expect(page.getByRole("heading", { name: /^Environmental Monitoring$/i })).toBeVisible();
@@ -1327,15 +1346,15 @@ test.describe("public smoke", () => {
   test("Deviation & CAPA workflow links to the CAPA planner", async ({ page }) => {
     await page.goto("/workflows/deviation-capa");
     await expect(page.getByRole("heading", { name: /^Deviation & CAPA$/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /CAPA Effectiveness Check Planner/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "CAPA Effectiveness Check Planner", exact: true })).toBeVisible();
   });
 
   test("water system workflow links monitoring lessons and tools", async ({ page }) => {
     await page.goto("/workflows/water-system-monitoring");
     await expect(page.getByRole("heading", { name: /^Pharmaceutical Water System Monitoring$/i })).toBeVisible();
     await expect(page.getByText(/Step-by-step workflow/i)).toBeVisible();
-    await expect(page.getByRole("link", { name: /Lab Water Type Selector/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Endotoxin Limit & MVD Calculator/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Lab Water Type Selector", exact: true })).toBeVisible();
+    await expect(page.locator('a[href^="/tools/endotoxin-limit-calculator"]').first()).toBeVisible();
   });
 
   test("toolkit library lists toolkits with downloads available", async ({ page }) => {
@@ -1353,9 +1372,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /Audit Readiness Scorecard/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: /Sterility Test Method Selector/i })).toBeVisible();
     // Each card links to a standalone, indexable tool page.
-    await expect(page.locator('a[href="/tools/sterility-test-method-selector"]').first()).toBeVisible();
-    await expect(page.locator('a[href="/tools/endotoxin-limit-calculator"]').first()).toBeVisible();
-    await expect(page.locator('a[href="/tools/stability-trend-shelf-life-planner"]').first()).toBeVisible();
+    await expect(page.locator('a[href^="/tools/sterility-test-method-selector"]').first()).toBeVisible();
+    await expect(page.locator('a[href^="/tools/endotoxin-limit-calculator"]').first()).toBeVisible();
+    await expect(page.locator('a[href^="/tools/stability-trend-shelf-life-planner"]').first()).toBeVisible();
   });
 
   test("a tool detail page runs the interactive tool", async ({ page }) => {

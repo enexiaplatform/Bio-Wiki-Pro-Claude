@@ -287,6 +287,32 @@ export const TOOL_CATALOG: ToolMeta[] = [
       "Free CAPA effectiveness check planner - score whether your CAPA is ready for closure, define a verification window, and build evidence that the root cause is controlled.",
     relatedWorkflow: { slug: "deviation-capa", title: "Deviation & CAPA" },
   },
+  {
+    slug: "cell-bank-evidence-readiness-planner",
+    title: "Cell Bank Evidence Readiness Planner",
+    category: "Biopharma",
+    blurb: "Expose open lineage, characterization, custody, stability, and change evidence before review.",
+    description:
+      "Free cell bank evidence readiness planner - organize lineage, construct, bank hierarchy, characterization, storage, production-age, change, and accountable-review evidence without inventing tests or acceptance criteria.",
+    relatedWorkflow: { slug: "biopharma-control-strategy", title: "Biopharma Product & Process Control Strategy" },
+  },
+  {
+    slug: "impurity-fate-purge-evidence-mapper",
+    title: "Impurity Fate & Purge Evidence Mapper",
+    category: "Pharma & API",
+    blurb: "Map impurity origin, observed fate, analytical capability, and unresolved control decisions.",
+    description:
+      "Free impurity fate and purge evidence mapper - connect a defined process version to impurity origin, observations, analytical capability, control placement, uncertainty, and specialist review without calculating fictional purge factors.",
+    relatedWorkflow: { slug: "pharma-api-impurity-control", title: "Pharma API Process & Impurity Control" },
+  },
+  {
+    slug: "routine-control-signal-planner",
+    title: "Routine Control Signal Planner",
+    category: "Quality systems",
+    blurb: "Separate routine signals, decision limits, escalation evidence, and accountable review.",
+    description:
+      "Free routine control signal planner - organize method, process, environmental, utility, data, and trend signals with their decision basis, escalation path, evidence gaps, and review owner.",
+  },
 ];
 
 export function getToolMeta(slug: string): ToolMeta | undefined {
