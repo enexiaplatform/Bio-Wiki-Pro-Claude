@@ -174,7 +174,8 @@ function profilePageData(profile: CareerProfile, analysis: CareerAnalysis): Blue
     const signal = analysis.competencies.find((item) => item.key === competencyKey)!;
     const ratio = signal.current / signal.target;
     const action = ratio >= 0.85 ? `Verify: ${playbook.artifacts[index % playbook.artifacts.length].name}` : ratio >= 0.65 ? `Build: ${playbook.artifacts[index % playbook.artifacts.length].name}` : `Priority: ${signal.label}`;
-    return [requirement, index < 3 ? "Critical" : "Important", `${signal.label}: ${signal.current}/${signal.target}`, action];
+    const evidence = analysis.requirementEvidence.find((item) => item.requirement === signal.label);
+    return [requirement, evidence?.selfRating ?? "Not collected", evidence?.observedEvidence ?? "None mapped", evidence?.reviewerConfirmedEvidence ?? "Not confirmed", action];
   });
   const sprintFocus = [
     "Define target-role scorecard", "Validate requirements with one real source", "Name reviewer and evidence boundary", "Select the highest-value proof point",
@@ -259,8 +260,8 @@ function profilePageData(profile: CareerProfile, analysis: CareerAnalysis): Blue
       intro: "This matrix converts the role into evidence decisions. Replace concept signals with requirements from real target-role descriptions.",
       visual: "table",
       table: {
-        headers: ["Target requirement", "Priority", "Current signal", "Action"],
-        widths: [218, 62, 122, 98],
+        headers: ["Target requirement", "Self", "Observed evidence", "Reviewer-confirmed", "Action"],
+        widths: [170, 42, 120, 112, 56],
         rows: requirementRows,
       },
       sections: [],

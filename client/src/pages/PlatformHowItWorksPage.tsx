@@ -80,7 +80,7 @@ const products = [
     job: "Make a more evidence-based next career move.",
     process: "Describe your profile → compare credible routes → inspect gaps → unlock a named execution plan.",
     price: "Free snapshot · personalized PDF for $20",
-    finish: "A named 38-page career execution plan",
+    finish: "A personalized Career Operating Blueprint",
     href: "/career",
     cta: "See the Career product",
     tone: "border-amber-200 bg-amber-50 text-amber-900",

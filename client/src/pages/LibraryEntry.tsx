@@ -17,6 +17,7 @@ import NotFound from "@/pages/not-found";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 import { ContentArticleHero } from "@/components/ContentArticleHero";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { ContentQualityNotice } from "@/components/ContentQualityNotice";
 
 export default function LibraryEntry() {
   const { slug = "" } = useParams();
@@ -97,13 +98,15 @@ export default function LibraryEntry() {
 
       <ContentArticleHero title={entry.title} description={entry.seoDescription} category={entry.category} readMinutes={entry.readMinutes} label="Structured lesson" />
 
+      <ContentQualityNotice contentId={`academy/${entry.slug}`} quality={entry.quality} />
+
       {/* Server-gated body (free → full, pro/paid → teaser + paywall).
           Quiz is rendered only when unlocked (passed as footer). */}
       <GatedContent
         collection="academy"
         slug={slug}
         hideBodyTitle
-        footer={entry.quiz?.length ? <LessonQuiz quiz={entry.quiz} /> : null}
+        footer={entry.quiz?.length ? <LessonQuiz quiz={entry.quiz} lessonId={entry.slug} /> : null}
       />
 
       <AtlasBlueprintContext href={`/library/${slug}`} />

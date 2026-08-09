@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   ArrowRight,
   BarChart3,
@@ -251,13 +251,24 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
             </div>
 
             <div className="rounded-xl border border-amber-300/30 bg-[#061326] p-5 shadow-xl shadow-black/25">
-            <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Optional after your free result</p><h2 className="mt-2 text-xl font-bold">Your named Career Blueprint</h2><p className="mt-1 text-xs text-slate-400">One-time purchase · generated from your selected route</p></div><span className="rounded-full bg-amber-300/10 px-3 py-1 text-sm font-bold text-amber-200">$20</span></div>
+            <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-200">Under review · optional after your free result</p><h2 className="mt-2 text-xl font-bold">Your named Career Blueprint</h2><p className="mt-1 text-xs text-slate-400">One-time purchase · generated from your selected route</p></div><span className="rounded-full bg-amber-300/10 px-3 py-1 text-sm font-bold text-amber-200">$20</span></div>
             <img src="/images/career/personal-career-blueprint-preview.webp" alt="Preview of a Personal Career Blueprint report and evidence comparison page" width="1421" height="1107" loading="eager" decoding="async" className="mt-4 aspect-[9/7] w-full rounded-lg object-cover" />
             <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-slate-300">
-              {["38 personalized pages", "Target-role requirement matrix", "Lifetime 13-week workspace", "Proof portfolio and interview drills"].map((item) => <span key={item} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" />{item}</span>)}
+              {["Profile-specific route rationale", "Target-role evidence matrix", "Lifetime 13-week workspace", "Proof portfolio and interview drills"].map((item) => <span key={item} className="flex items-center gap-2"><Check className="h-3.5 w-3.5 text-teal-300" />{item}</span>)}
             </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-8 max-w-7xl px-4 md:mt-10">
+        <div className="flex flex-col gap-4 rounded-2xl border border-amber-300/30 bg-amber-50 p-5 text-slate-950 md:flex-row md:items-center md:justify-between md:p-6">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-amber-700">Decision guide</p>
+            <h2 className="mt-2 text-xl font-bold">Turn a route hypothesis into evidence</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Learn how the Blueprint separates self-rating, observed work and reviewer-confirmed evidence before the 13-week decision gate.</p>
+          </div>
+          <Link href="/blog/career-blueprint-route-to-evidence" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-amber-700 bg-white px-4 py-3 text-sm font-bold text-amber-900 transition hover:bg-amber-100">Read the Career guide <ArrowRight className="h-4 w-4" /></Link>
         </div>
       </section>
 

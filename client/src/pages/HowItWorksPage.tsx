@@ -177,6 +177,17 @@ export default function HowItWorksPage() {
           </div>
         </div>
       </section>
+
+      <section className="border-t border-slate-200 bg-white px-4 py-12">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 rounded-2xl border border-teal-200 bg-teal-50/60 p-6 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">Decision note</p>
+            <h2 className="mt-2 text-xl font-bold text-slate-950">See how demand becomes a capacity decision</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">The guide follows one basis across Pharma API and Biopharma demand, methods, people, equipment, scenarios and review boundaries.</p>
+          </div>
+          <Link href="/blog/quality-lab-demand-to-capacity-decision" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-teal-700 bg-white px-4 py-3 text-sm font-bold text-teal-900 transition hover:bg-teal-50">Read the decision guide <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </section>
     </div>
   );
 }

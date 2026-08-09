@@ -253,6 +253,12 @@ export default function AcademyPage() {
                       <GraduationCap className="w-3 h-3" /> Quiz
                     </span>
                   )}
+                  <span className={clsx(
+                    "rounded-md px-2 py-0.5 font-semibold",
+                    e.quality.reviewStatus === "under-review" ? "bg-amber-400/10 text-amber-300" : "bg-emerald-400/10 text-emerald-300",
+                  )}>
+                    {e.quality.reviewStatus === "under-review" ? "Under review" : "Reviewed"}
+                  </span>
                 </div>
                 <p className="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{e.title}</p>
                 {e.seoDescription && <p className="text-xs text-muted-foreground line-clamp-2">{e.seoDescription}</p>}

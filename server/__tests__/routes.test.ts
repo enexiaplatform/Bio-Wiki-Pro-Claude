@@ -434,6 +434,23 @@ describe("admin access", () => {
 });
 
 describe("content API", () => {
+  it("returns public quality metadata while keeping a Pro lesson body locked", async () => {
+    const app = await buildApp();
+    storageMock.getContentEntry.mockResolvedValueOnce(undefined);
+    const res = await request(app).get("/api/content/academy/batch-record-review");
+
+    expect(res.status).toBe(200);
+    expect(res.body.locked).toBe(true);
+    expect(res.body).not.toHaveProperty("body");
+    expect(res.body.quality).toMatchObject({
+      contentVersion: "2.0.0-review",
+      reviewStatus: "under-review",
+      sourceCount: 3,
+      promoted: false,
+    });
+    expect(res.body.quality.limitations.length).toBeGreaterThan(0);
+  });
+
   it("rejects legacy non-English content language requests", async () => {
     const app = await buildApp();
     const res = await request(app).get("/api/content/academy/sterility-testing-basics?lang=vi");

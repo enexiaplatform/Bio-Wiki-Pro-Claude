@@ -1,0 +1,144 @@
+---
+title: "Pharma API reaction, work-up and scale-up control"
+slug: "pharma-api-reaction-workup-scale-up"
+lang: "en"
+tier: "pro"
+category: "Pharma API Development"
+seoDescription: "Connect a small-molecule API route to reaction, work-up, sampling, scale-up, equipment, hold-time, process-control and technology-transfer evidence without inventing a universal recipe or operating range."
+updatedAt: "2026-08-09"
+quiz:
+  - q: "What should be frozen before a scale-up decision is compared?"
+    options: ["The route, process version, intended decision and evidence basis", "The largest available vessel", "A universal batch count", "The final specification only"]
+    answer: 0
+  - q: "When should this workflow not be used as a process instruction?"
+    options: ["When the route has more than one unit operation", "When a product-specific operating parameter or manufacturing authorization is required", "When scale-up evidence is incomplete", "When engineering is involved"]
+    answer: 2
+  - q: "A reaction conversion is similar at two scales but the work-up phase shows a different impurity profile. What is the best interpretation?"
+    options: ["The process is equivalent because conversion matches", "Preserve the difference and investigate mixing, quench, phase split, sampling and analytical comparability", "Average the two profiles", "Remove the work-up result from the comparison"]
+    answer: 1
+  - q: "Which action creates the strongest transfer basis?"
+    options: ["Copy the development batch record", "Link process knowledge, equipment differences, sampling, hold steps, evidence, deviations and receiving-site review", "Transfer only the final test method", "Use a vendor capacity statement as proof"]
+    answer: 3
+---
+
+# Pharma API reaction, work-up and scale-up control
+
+Small-molecule API development becomes a manufacturing decision when route
+knowledge must survive a different vessel, scale, mixing pattern, work-up,
+isolation sequence, operator group or site. A reaction result that looks similar
+at two scales is not, by itself, evidence that the process, impurity profile or
+downstream material attributes will behave the same way.
+
+## Decision question
+
+> For this API process version and scale or site change, what product, process,
+> equipment, sampling and analytical evidence is needed before a qualified team can
+> decide whether the next development, transfer, validation or manufacturing step
+> is justified?
+
+## Applicability and do-not-use boundary
+
+Use this lesson to structure route-boundary, reaction, quench, extraction, phase
+split, filtration, solvent exchange, hold, sampling, scale-up and receiving-site
+questions for chemically synthesized drug substance.
+
+Do not use it as a reaction recipe, process parameter recommendation, batch record,
+process validation conclusion, impurity limit, specification, filing assessment or
+manufacturing authorization. A product-specific bridge may require process
+chemistry, chemical engineering, solid-state, analytical, manufacturing, quality
+and regulatory CMC review.
+
+## Controlled source map
+
+| Source | Decision use | Boundary |
+| --- | --- | --- |
+| ICH Q8(R2) | Link process understanding, material attributes and process parameters | It does not supply an API-specific operating range |
+| ICH Q11 | Connect development knowledge to drug-substance manufacture and control | It does not approve a route boundary or starting material |
+| ICH Q7 | GMP context for API manufacturing, records, deviations and change | It does not establish scale-up equivalence |
+| ICH Q9(R1) and Q10 | Risk, knowledge and change governance | Risk ranking cannot replace process evidence |
+| FDA Process Validation guidance | Lifecycle view of process design, qualification and continued verification | It does not specify a universal validation design |
+
+## Separate six evidence objects
+
+1. **Route and process version** - reaction sequence, input boundary, intended use,
+   scale, site, market and decision owner.
+2. **Material and equipment basis** - input attributes, vessel geometry, mixing,
+   heat transfer, addition, containment, utilities and equipment differences.
+3. **Reaction and work-up knowledge** - transformation, endpoint evidence, quench,
+   extraction, phase split, wash, solvent exchange and known failure modes.
+4. **Sampling and hold basis** - sample location, timing, representativeness,
+   hold, transport, test method, data lineage and review.
+5. **Scale-up and manufacturing evidence** - model assumptions, observed outcome,
+   deviations, variability, recovery, impurity and material-attribute impact.
+6. **Transfer and lifecycle decision** - receiving-site readiness, training,
+   unresolved gaps, change triggers, actions and authorized conclusion.
+
+## Build the route-to-scale evidence chain
+
+### 1. Freeze the decision baseline
+
+Name the API form, route and process version, scale or site change, intended use,
+market, evidence cutoff and accountable owner. Preserve the pre-change basis so a
+later revision does not silently rewrite the original comparison.
+
+### 2. Connect the chemistry to equipment and materials
+
+Record which input attributes, addition rates, mixing, heat transfer, phase
+behavior, filtration, solvent exchange and hold conditions can change the result.
+Do not treat a unit-operation name as a transferable process description.
+
+### 3. Make sampling part of the process model
+
+For every key observation, retain location, timing, material state, method version,
+reporting boundary, sample preparation and reviewer. A different sample basis can
+create an apparent scale effect or hide a real one.
+
+### 4. Challenge work-up and isolation effects
+
+Track impurity carryover, phase split, wash efficiency, solvent exchange, filter
+behavior, hold exposure and intermediate quality. Link each observation to the
+analytical capability that can support it; do not call an impurity absent because
+the method could not recover or distinguish it.
+
+### 5. Stage receiving-site readiness
+
+Before transfer or routine manufacture, identify equipment and automation
+differences, local materials, analyst and operator training, sampling, deviations,
+data review, residual actions and the decision that remains with the authorized
+site function.
+
+## Decision table
+
+| Evidence condition | Defensible action | Do not claim |
+| --- | --- | --- |
+| Conversion is similar at two scales | Compare work-up, impurity, recovery, material and sampling evidence | Equivalent process from conversion alone |
+| Mixing or heat-transfer basis differs | Define the affected mechanism and evidence plan | A copied parameter is transferable |
+| An intermediate result is below a reporting boundary | Preserve capability and sample basis | Zero impurity or complete purge |
+| A hold is longer at the receiving site | Assess material, impurity, stability, equipment and analytical impact | Hold-time acceptance from elapsed time alone |
+| A deviation occurs during scale-up | Record impact, hypothesis, evidence and disposition owner | Ignore it because final API testing passes |
+| Evidence or reviewer coverage remains open | Keep `Evidence required` or `Qualified review required` | Scale-up approval or manufacturing authorization |
+
+## Worked example: fictional late-phase work-up change
+
+A fictional API route moves a quench and phase-split operation from a development
+vessel to a production vessel. Conversion remains similar, but an intermediate
+sample shows a changed unknown response after a longer hold. The package records
+the vessel and mixing differences, sample locations, method versions, competing
+carryover hypotheses, five evidence requests and the accountable reviewers. It
+does not conclude equivalence, impurity fate, specification compliance or batch
+acceptance.
+
+## Working asset
+
+Use a **Pharma API Reaction, Work-up & Scale-up Decision Brief** to maintain the
+frozen baseline, material/equipment basis, unit-operation map, sampling and hold
+record, scale-up observations, deviations, open evidence, transfer readiness and
+qualified review actions. The brief is a decision record, not a process recipe.
+
+## Limitations
+
+This lesson does not establish chemistry, process parameters, equipment sizing,
+scale-up criteria, hold limits, impurity conclusions, validation status,
+technology-transfer acceptance, filing classification or batch disposition. Every
+route-, site-, scale-, equipment-, material-, method- and market-specific claim
+requires current controlled evidence and qualified review.

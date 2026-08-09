@@ -107,7 +107,7 @@ const commercialPaths = [
     eyebrow: "For your next career move",
     icon: BriefcaseBusiness,
     title: "Personal Career Blueprint",
-    body: "Build a free snapshot, then unlock a named 38-page plan based on your role, evidence, constraints, and target route.",
+    body: "Build a free snapshot, then unlock a Career Operating Blueprint based on your role, evidence, constraints, and target route.",
     price: "$20 one time",
     note: "Personalized · one time",
     href: "/career",

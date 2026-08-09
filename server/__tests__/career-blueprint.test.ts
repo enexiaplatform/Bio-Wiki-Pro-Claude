@@ -14,6 +14,7 @@ describe("Personal Career Blueprint", () => {
 
   it("turns profile evidence into ranked routes and explicit gaps", () => {
     const analysis = buildCareerAnalysis(profile);
+    expect(analysis.contractVersion).toBe("career-analysis/v2");
     expect(analysis.routes).toHaveLength(3);
     expect(analysis.selectedRoute.title).toBe("Senior QC Microbiologist");
     expect(analysis.competencies).toHaveLength(6);
@@ -22,6 +23,42 @@ describe("Personal Career Blueprint", () => {
     expect(analysis.readinessIndex).toBeGreaterThan(0);
     expect(analysis.routes.every((route) => typeof route.fitScore === "number")).toBe(true);
     expect(analysis.competencies.every((item) => item.current >= 20 && item.current <= 96)).toBe(true);
+    expect(analysis.recommendations.every((item) => item.influencedBy.length >= 4 && item.evidenceMissing.length >= 1)).toBe(true);
+    expect(analysis.requirementEvidence.every((item) => item.selfRating && item.observedEvidence && item.reviewerConfirmedEvidence)).toBe(true);
+  });
+
+  it("keeps a 20-profile golden set materially differentiated", () => {
+    const tracks = ["qc-microbiology", "quality-assurance", "regulatory-affairs", "manufacturing-quality", "other"] as const;
+    const signatures = Array.from({ length: 20 }, (_, index) => {
+      const level = (index % 5) + 1;
+      const candidate = {
+        ...profile,
+        fullName: `Golden Profile ${index + 1}`,
+        careerTrack: tracks[index % tracks.length],
+        yearsExperience: 1 + index,
+        targetRole: index % 2 ? "Quality Systems Manager" : "Technical Specialist",
+        primaryConstraint: (["limited-ownership", "time", "english", "experience", "manager-support"] as const)[index % 5],
+        methods: [`Method ${index + 1}`],
+        qualityActivities: [`Quality activity ${index + 1}`],
+        evidenceActivities: [`Observed evidence ${index + 1}`],
+        ratings: {
+          technicalExecution: level,
+          gmpEvidence: ((index + 1) % 5) + 1,
+          investigationOwnership: ((index + 2) % 5) + 1,
+          documentation: ((index + 3) % 5) + 1,
+          leadership: ((index + 4) % 5) + 1,
+        },
+      };
+      const analysis = buildCareerAnalysis(candidate);
+      return JSON.stringify({
+        route: analysis.selectedRoute.title,
+        rationale: analysis.selectedRoute.fitReason,
+        gap: analysis.biggestGap,
+        action: analysis.recommendations[0].firstAction,
+        inputTrace: analysis.recommendations[0].influencedBy,
+      });
+    });
+    expect(new Set(signatures).size).toBe(20);
   });
 
   it("respects the user's selected route", () => {

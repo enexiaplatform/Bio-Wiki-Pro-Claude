@@ -19,6 +19,8 @@ import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { toolkits } from "@/data/toolkits";
 import { EditorialImage } from "@/components/EditorialImage";
+import { PAID_ASSET_QUALITY } from "@shared/paid-asset-quality";
+import { totalQualityScore } from "@shared/content-quality";
 
 const PLACEMENT = "toolkits_index";
 const all = "All";
@@ -185,6 +187,7 @@ export default function ToolkitsPage() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredToolkits.map((toolkit, index) => {
             const isAvailable = toolkit.status === "available";
+            const quality = PAID_ASSET_QUALITY.find((asset) => asset.id === toolkit.slug);
             return (
               <motion.div
                 key={toolkit.slug}
@@ -208,6 +211,11 @@ export default function ToolkitsPage() {
                     >
                       {toolkit.accessTier === "pro" ? "Pro" : "Free"}
                     </span>
+                    {quality && (
+                      <span className="rounded bg-amber-400/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                        Under review · {totalQualityScore(quality.score)}/100
+                      </span>
+                    )}
                     {!isAvailable && (
                       <span className="inline-flex items-center gap-1 rounded bg-white/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         <Clock className="h-3 w-3" /> Soon
@@ -218,6 +226,7 @@ export default function ToolkitsPage() {
 
                 <h3 className="mb-1.5 text-base font-bold">{toolkit.title}</h3>
                 <p className="mb-4 text-xs leading-relaxed text-muted-foreground">{toolkit.problemSolved}</p>
+                {quality?.limitations[0] && <p className="mb-4 rounded-lg border border-amber-300/15 bg-amber-300/[0.04] p-2 text-[11px] leading-5 text-amber-100/75">{quality.limitations[0]}</p>}
 
                 <dl className="mb-4 space-y-2 text-[11px] text-muted-foreground">
                   <div className="rounded-lg border border-white/10 bg-white/[0.035] p-2">
@@ -259,7 +268,7 @@ export default function ToolkitsPage() {
       )}
 
       <p className="mt-10 text-center text-xs text-muted-foreground">
-        Every toolkit here is a real, downloadable Pro resource. New toolkits are added as they ship.
+        Existing access is preserved. Under-review toolkits are excluded from featured product evidence until they pass the quality gate.
       </p>
     </div>
   );

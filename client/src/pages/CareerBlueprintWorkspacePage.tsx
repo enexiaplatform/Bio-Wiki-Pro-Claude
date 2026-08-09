@@ -127,7 +127,14 @@ export default function CareerBlueprintWorkspacePage() {
   const activeDefinition = record.plan.find((item) => item.week === activeWeek)!;
   const activeState = record.weeks.find((item) => item.week === activeWeek)!;
 
-  function patchWeek(patch: Partial<typeof activeState>) { setRecord((current) => current ? { ...current, weeks: current.weeks.map((item) => item.week === activeWeek ? { ...item, ...patch } : item) } : current); setNotice(""); setDirty(true); }
+  function patchWeek(patch: Partial<typeof activeState>) {
+    if (patch.status === "complete" && activeState.status !== "complete") {
+      analytics.careerWeekCompleted(activeWeek, "career-analysis/v2", "complete");
+    }
+    setRecord((current) => current ? { ...current, weeks: current.weeks.map((item) => item.week === activeWeek ? { ...item, ...patch } : item) } : current);
+    setNotice("");
+    setDirty(true);
+  }
   async function save(options?: { automatic?: boolean }) {
     if (!record) return;
     const automatic = options?.automatic ?? false;

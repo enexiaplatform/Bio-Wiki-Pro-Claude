@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { QualityLabProject } from "./quality-lab.js";
 import type { QualityLabEngagementPacket } from "./quality-lab-engagement.js";
 
-export const QUALITY_LAB_DELIVERY_PACKAGE_VERSION = "quality-lab-delivery-package/v1" as const;
+export const QUALITY_LAB_DELIVERY_PACKAGE_VERSION = "quality-lab-delivery-package/v2" as const;
 
 export const deliveryReadinessSchema = z.object({
   status: z.enum(["working-draft", "ready-for-qualified-review", "recorded-external-release"]),
@@ -36,6 +36,9 @@ export function assessQualityLabDeliveryReadiness(
   if (completedReviewItems < packet.checklist.length) blockers.push(`Complete or disposition ${packet.checklist.length - completedReviewItems} evidence-review item(s).`);
   if (methodEvidenceReady < packet.methodEvidenceMatrix.length) blockers.push(`Move ${packet.methodEvidenceMatrix.length - methodEvidenceReady} method-evidence item(s) to qualified-review readiness.`);
   if (ursItemsReady < packet.ursBasis.length) blockers.push(`Move ${packet.ursBasis.length - ursItemsReady} URS basis item(s) to qualified-review readiness.`);
+  const evidenceRequiredIds = new Set(project.blueprint.evidence.filter((item) => item.status === "site-evidence-required").map((item) => item.id));
+  const rulesWithRequiredEvidence = project.blueprint.ruleTrace.filter((rule) => rule.evidenceIds.some((id) => evidenceRequiredIds.has(id)));
+  if (rulesWithRequiredEvidence.length > 0) blockers.push(`Resolve site evidence for ${rulesWithRequiredEvidence.length} material rule(s) before controlled release.`);
 
   if (packet.decisions.length === 0) cautions.push("No project decisions have been recorded in the engagement log.");
   if (packet.corrections.length === 0) cautions.push("No corrections have been recorded; confirm whether the concept baseline was accepted without change.");
@@ -75,13 +78,16 @@ export function createQualityLabDeliveryPackage(
     sourceVersions: packet.sourceVersions,
     readiness,
     manifest: [
-      { id: "decision-brief", title: "Executive decision brief", format: "PDF/XLSX", status: "included" },
-      { id: "capacity-model", title: "Demand, capacity and resource model", format: "XLSX", status: "included" },
-      { id: "method-portfolio", title: "Method portfolio and method BOM", format: "XLSX", status: "included" },
+      { id: "decision-brief", title: "Executive decision brief", format: "PDF", status: "included" },
+      { id: "scope-basis", title: "Scope and basis of design", format: "PDF/XLSX", status: "included" },
+      { id: "method-portfolio", title: "Product, test and method portfolio", format: "XLSX", status: "included" },
+      { id: "capacity-model", title: "Workload, staffing, equipment and space basis", format: "XLSX", status: "included" },
+      { id: "scenario-comparison", title: "Baseline and alternative scenario", format: "PDF/XLSX", status: "included" },
+      { id: "cost-sensitivity", title: "CAPEX/OPEX assumptions and sensitivity", format: "XLSX", status: "included" },
+      { id: "evidence-register", title: "Evidence, assumptions, exclusions and open-question register", format: "XLSX", status: "included" },
+      { id: "decision-action-register", title: "Risks, decisions, actions and ownership", format: "XLSX", status: "included" },
       { id: "urs-basis", title: "Vendor-neutral URS and RFQ drafting package", format: "DOCX/XLSX", status: "requires-qualified-review" },
-      { id: "evidence-register", title: "Evidence, assumptions and open-input register", format: "XLSX", status: "included" },
-      { id: "review-record", title: "Review, correction and decision record", format: "XLSX", status: "included" },
-      { id: "calibration-record", title: "Estimate-to-actual calibration record", format: "XLSX/CSV", status: "included" },
+      { id: "acceptance-calibration-record", title: "Review, correction, acceptance and estimate-to-actual record", format: "XLSX/CSV", status: "included" },
     ] as const,
     controlNotice: readiness.status === "recorded-external-release"
       ? "Atlas records the external release reference only. Approval remains under the client quality system."

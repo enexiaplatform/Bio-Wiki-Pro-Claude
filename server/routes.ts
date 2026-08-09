@@ -2,6 +2,8 @@ import type { Express, NextFunction, Request, Response } from "express";
 import { storage } from "./storage.js";
 import { api } from "../shared/routes.js";
 import { z } from "zod";
+import { getContentQuality } from "../shared/content-quality-registry.js";
+import { toPublicContentQuality } from "../shared/content-quality.js";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
@@ -1262,6 +1264,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     const tier = (data.tier as string) ?? "free";
     const title = (data.title as string) ?? slug;
     const teaser = (data.seoDescription as string) ?? "";
+    const quality = toPublicContentQuality(getContentQuality(collection, slug, title, tier));
 
     // Publish gate — DB is the source of truth; default published if DB is
     // unconfigured or the entry hasn't been seeded yet.
@@ -1294,9 +1297,9 @@ export async function registerRoutes(app: Express): Promise<void> {
       (tier === "paid" && (purchased || isPro));
 
     if (!allowed) {
-      return res.json({ locked: true, tier, title, teaser });
+      return res.json({ locked: true, tier, title, teaser, quality });
     }
-    return res.json({ locked: false, tier, title, body: content });
+    return res.json({ locked: false, tier, title, body: content, quality });
   });
 
   // Official-source metadata plus deterministic impact triage. No feed item is
@@ -1570,6 +1573,7 @@ export async function registerRoutes(app: Express): Promise<void> {
         owned.push({
           id: product.id,
           name: product.name,
+          quality: product.quality,
           files: product.files.map((f) => ({
             filename: f.filename,
             label: f.label,
@@ -1660,6 +1664,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "microbiology-qc-fundamentals", "sterile-aseptic-manufacturing",
       "validation-essentials", "quality-systems",
       "investigations-data-integrity", "laboratory-controls-stability",
+      "pharma-api-development-quality",
       "biologics-biopharmaceutical-qc",
     ].map((s) => `/paths/${s}`);
     // Workflow detail pages. Kept in sync with client/src/data/workflows.ts.
@@ -1672,7 +1677,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "cleaning-validation-program", "change-control-workflow",
       "supplier-qualification-workflow", "batch-record-review-release",
       "hplc-system-suitability-workflow", "dissolution-testing-workflow",
-      "stability-program", "cell-based-potency-assay",
+      "stability-program", "pharma-api-impurity-control", "biopharma-control-strategy", "cell-based-potency-assay",
       "host-cell-protein-testing-workflow", "viral-safety-testing-workflow",
     ].map((s) => `/workflows/${s}`);
     // Standalone tool pages. Kept in sync with client/src/features/tools/registry.tsx.

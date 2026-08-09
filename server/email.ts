@@ -138,7 +138,7 @@ export async function sendPurchaseConfirmation(
       ` : isCareerBlueprint ? `
       <div class="box">
         <p><strong style="color:#10b981;">Your Personal Career Blueprint is unlocked</strong></p>
-        <p>Open your personalized 13-week workspace to track evidence and reviewer feedback, then generate the named 38-page Career Operating Blueprint whenever your profile changes.</p>
+        <p>Open your personalized 13-week workspace to track evidence and reviewer feedback, then regenerate your Career Operating Blueprint whenever your profile changes.</p>
       </div>
       <a href="${BASE_URL}/career/blueprint" class="cta">Open my Career Blueprint workspace →</a>
       ` : hasDownloads ? `

@@ -3,7 +3,7 @@ import { ATLAS_PRO_WORKFLOWS, formatAtlasProWorkflowBrief, getAtlasProWorkflow }
 
 describe("Atlas Pro workflow briefs", () => {
   it("provides a reusable evidence-to-action brief for every supported workflow", () => {
-    expect(ATLAS_PRO_WORKFLOWS).toHaveLength(3);
+    expect(ATLAS_PRO_WORKFLOWS).toHaveLength(5);
     for (const workflow of ATLAS_PRO_WORKFLOWS) {
       const brief = formatAtlasProWorkflowBrief(workflow.id);
       expect(brief).toContain(workflow.question);
@@ -16,5 +16,7 @@ describe("Atlas Pro workflow briefs", () => {
 
   it("resolves a selected workflow deterministically", () => {
     expect(getAtlasProWorkflow("quality-signal").href).toBe("/workflows");
+    expect(getAtlasProWorkflow("pharma-api-impurity-control").href).toBe("/workflows/pharma-api-impurity-control");
+    expect(getAtlasProWorkflow("biopharma-control-strategy").href).toBe("/workflows/biopharma-control-strategy");
   });
 });

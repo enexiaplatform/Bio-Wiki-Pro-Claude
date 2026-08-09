@@ -1,79 +1,83 @@
 # OOS Investigation Template — Start Here
 
-A complete, inspection-ready working template for investigating
-out-of-specification (OOS) test results in pharmaceutical, biotech, and
-life-science QC laboratories. It follows the two-phase model in the FDA OOS
-guidance (2006, updated 2022): a Phase I laboratory assessment, hypothesis
-testing only under a pre-approved protocol, a Phase II full-scale
-investigation when no assignable laboratory cause is found, and a QA-owned
-disposition with CAPA.
+A site-adaptation package for structuring out-of-specification (OOS)
+investigation evidence and decisions. It uses the May 2022 FDA OOS guidance as
+the primary source for chemistry-based testing within that guidance's stated
+scope, and EU GMP Chapter 6, ICH Q9(R1), and ICH Q10 as supporting governance
+sources. It is not an inspection-readiness certificate or an approved OOS SOP.
+
+**Package version:** 2.1.0-review
+
+**Review status:** Under review
+
+**Decision owner:** The authorized site quality unit, not Atlas
 
 ## Who this pack is for
 
-- QC analysts and lab supervisors handling a failing result right now
-- QA professionals reviewing, approving, or auditing OOS investigations
-- QC/QA managers who want a defensible structure to adapt into their SOPs
-- Microbiologists — the pack includes a dedicated microbiology Phase I section
+- QC analysts and laboratory supervisors preserving and organizing evidence
+- QA or quality-unit personnel reviewing an investigation under an approved SOP
+- QC/QA managers adapting a working structure into their controlled system
+- Teams assessing microbiological results only after identifying the current
+  approved method, licensed compendial source, and qualified reviewer
 
 ## What's inside
 
-1. **OOS Investigation Template (PDF)** — `oos-investigation-template.md`,
-   rendered as your downloadable PDF. Eleven sections: regulatory basis and
-   definitions; same-day immediate actions; an exhaustive Phase I checklist
-   (chemistry and microbiology); invalidation rules; a pre-approved hypothesis
-   testing protocol; the Phase II full-scale investigation; OOT and trend
-   handling; disposition and CAPA with effectiveness checks; the top 10
-   inspection deficiencies and how the template defends against each; a fully
-   worked fictional example; and sign-off / revision blocks. Print it or copy
-   sections into your QMS.
-2. **OOS Investigation Log (CSV/Excel)** — `oos-investigation-log.csv`. A
-   register for tracking every OOS/OOT across your lab: OOS ID, product,
-   batch, test/method, spec limit, result, dates, phase reached, assignable
-   cause, root cause category, retest count, disposition, CAPA reference,
-   days open, owner, and QA approver. Opens directly in Excel; five fictional
-   example rows show you how to fill it.
+1. **OOS Investigation Guide (PDF)** — `oos-investigation-template.md`, rendered
+   as a reference guide. It provides questions, evidence prompts, decision
+   boundaries, a fictional example, and control blocks for site adaptation.
+2. **Blank Working File v2 (XLSX)** — `oos-investigation-v2.xlsx`. A reusable
+   evidence register with controlled lists, validation, formula-driven attention
+   checks, source boundaries, limitations, and sign-off fields.
+3. **Fictional Completed Example v2 (XLSX)** —
+   `oos-investigation-v2-fictional-example.xlsx`. It demonstrates how to keep
+   observation, hypothesis, evidence, decision, owner, and review status
+   separate. It contains no client data and is not a benchmark.
+4. **Legacy OOS Investigation Log (CSV)** — `oos-investigation-log.csv`. It
+   remains available for compatibility; use the v2 XLSX for new working records.
 
 ## Recommended order of use
 
-1. Read Sections 1–2 of the template before you ever need them — the same-day
-   actions (retain solutions, quarantine data, notify QA) are the ones you
-   cannot recover later.
-2. The moment a confirmed OOS occurs: open a numbered investigation record,
-   complete the triggering-result block, and work Section 3 top to bottom
-   before any retesting.
-3. Only invalidate with objective evidence (Section 4). Only retest under a
-   QA pre-approved hypothesis protocol (Section 5).
-4. No assignable cause? Escalate to Phase II (Section 6) — including batch
-   impact, stability, and distributed-product assessment.
-5. Record disposition and CAPA with a defined effectiveness check
-   (Section 8), then log the investigation in the CSV and keep the "days
-   open" column honest.
-6. Before an inspection, self-audit against Section 9's top-10 deficiency
-   list.
+1. Confirm the applicable method, specification, jurisdiction, approved OOS
+   procedure, material-status control, and accountable quality-unit owner.
+2. Use the guide to frame the decision and the blank workbook to record facts,
+   hypotheses, evidence references, ownership, status, and unresolved gaps.
+3. Do not begin additional testing from Atlas instructions. Record the proposed
+   hypothesis, purpose, stop rule, data handling, and required approval under
+   the controlled site procedure.
+4. If no clearly causative laboratory error is established, route the record
+   for the full-scale investigation and affected-scope assessment required by
+   the approved procedure.
+5. Compare your working record with the fictional example for structure only;
+   never reuse its facts, conclusions, limits, or timing as site evidence.
+6. Transfer only reviewed, authorized content into the controlled QMS record.
 
-## How it connects to the other Atlas Pro packs
+## Controlled source map
 
-- **Environmental Monitoring Checklist** — EM excursions during manufacture
-  feed the Phase II people/environment review, and micro OOS root-cause work
-  leans on your EM trends.
-- **BI Workflow Checklist** — biological indicator failures and sterility
-  assurance events are investigated with the same phased discipline.
-- **Culture Media Selection Guide** — supports the microbiology Phase I media
-  and growth-promotion-test review.
-- **Lab Water Selection Checklist** — water quality underpins both reagent
-  prep (Section 3.2) and utility investigations in Phase II.
-- **Data Integrity Self-Check** — audit-trail and integration review
-  expectations in Section 3.3 map directly to that pack.
-- **Microbiology QC Starter Pack** — the broader micro context for Section
-  3.6's media, GPT, and incubation checks.
+| Source ID | Use in this pack | Boundary |
+| --- | --- | --- |
+| `FDA-OOS-2022` | Phase I/II structure, additional testing, data evaluation and conclusion cautions | Final nonbinding FDA guidance; stated scope is chemistry-based CDER drug testing |
+| `EU-GMP-CH6-2014` | QC records, OOS/OOT procedures, trend review and significant-trend investigation | Confirm current EU GMP applicability and authorization context |
+| `ICH-Q9-R1` | Risk, uncertainty, formality and review proportionality | Does not provide a batch-disposition rule |
+| `ICH-Q10` | Monitoring, CAPA, management review and continual improvement | Complements rather than replaces regional GMP |
 
-The free Academy at Life Science Atlas covers the underlying concepts —
-OOS/OOT theory, data integrity, and compendial microbiology — if you want the
-background behind any section.
+Official locators and licensing boundaries are maintained in the Atlas Evidence
+Source Catalog. Licensed pharmacopeial text is not reproduced in this pack.
 
-## Important
+## How it connects to Atlas Pro
 
-Educational working template — not a validated procedure and not
-regulator-approved. Verify every step against your approved OOS SOP, current
-compendia editions (USP–NF, Ph. Eur.), and your site's quality system before
-use. Where this template and your approved SOP differ, your SOP governs.
+- Read **OOS Investigation — Deep Dive** to frame evidence and decision boundaries.
+- Use **Out-of-Trend Investigation** and **Statistical Process Control** to
+  distinguish a trend signal from a specification failure.
+- Use **Microbial Excursion Investigation** only with the applicable current
+  method, compendial source, facility context, and qualified review.
+- Record the completed Evidence → Tool → Working file cycle in the Monthly
+  Quality Review without uploading controlled data to analytics.
+
+## Important limitation
+
+Educational working package — not a validated procedure, controlled record,
+regulatory interpretation, or regulator-approved template. FDA's May 2022 OOS
+guidance is nonbinding and states a chemistry-testing scope; microbiology,
+sterility, biological assays, and other jurisdictions require their own current
+approved and licensed sources. Where Atlas differs from the controlled site
+system, the controlled system and accountable authority govern.

@@ -235,7 +235,7 @@ export default function ProductsPage() {
               </div>
             </div>
             <h2 className="mt-7 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl lg:text-5xl">Personal Career Blueprint</h2>
-            <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">A named 38-page operating plan plus a lifetime 13-week workspace built from your evidence, constraints, timeline, and target route.</p>
+            <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">A personalized Career Operating Blueprint plus a lifetime 13-week workspace built from your evidence, constraints, timeline, and target route.</p>
             <div className="mt-6 space-y-3">
               {[
                 [Gauge, "See your current position", "A free snapshot makes the first diagnosis visible before purchase."],
