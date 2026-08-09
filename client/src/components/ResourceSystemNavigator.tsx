@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
 import type { IconType } from "react-icons";
 import {
@@ -24,10 +24,8 @@ import {
   getGuidedDestination,
   getResourceSystem,
   getResourceStage,
+  getStageResourceCoverage,
   RESOURCE_AREA_PATHS,
-  COMPLIANCE_SYSTEM_MAP,
-  METHOD_SYSTEM_MAP,
-  REGULATORY_DOMAIN_SYSTEM_MAP,
   type GuidedOutcome,
   type GuidedWorkPhase,
   type ResourceArea,
@@ -35,6 +33,7 @@ import {
 import { workflowSystems } from "@/data/workflowSystems";
 import { capture } from "@/hooks/use-analytics";
 import { useResourceSelection } from "@/hooks/use-resource-selection";
+import { StageCoverageDashboard } from "@/components/StageCoverageDashboard";
 
 const SYSTEM_ICONS: Record<string, IconType> = {
   biopharma: PiDna,
@@ -70,11 +69,7 @@ const OUTCOME_OPTIONS: Array<{ value: GuidedOutcome; label: string; icon: IconTy
 ];
 
 function areaConnectionCount(area: ResourceArea, systemId: string, stageId?: string) {
-  const selection = { systemId, stageId };
-  if (area === "methods") return Object.values(METHOD_SYSTEM_MAP).filter((mappings) => mappings.some((mapping) => mapping.systemId === systemId && (!stageId || mapping.stageId === stageId))).length;
-  if (area === "compliance") return Object.values(COMPLIANCE_SYSTEM_MAP).filter((mappings) => mappings.some((mapping) => mapping.systemId === systemId && (!stageId || mapping.stageId === stageId))).length;
-  if (area === "monitor") return Object.values(REGULATORY_DOMAIN_SYSTEM_MAP).filter((mappings) => mappings.some((mapping) => mapping.systemId === systemId && (!stageId || mapping.stageId === stageId))).length;
-  return getConnectionsForSelection(selection, area).length;
+  return getConnectionsForSelection({ systemId, stageId }, area).length;
 }
 
 export function ResourceSystemNavigator({ area, showGuide = false }: { area: ResourceArea; showGuide?: boolean }) {
@@ -87,9 +82,16 @@ export function ResourceSystemNavigator({ area, showGuide = false }: { area: Res
   const system = getResourceSystem(selection.systemId);
   const stage = getResourceStage(selection);
   const connectionCount = useMemo(() => selection.systemId ? areaConnectionCount(area, selection.systemId, selection.stageId) : 0, [area, selection]);
+  const stageCoverage = useMemo(() => getStageResourceCoverage(selection), [selection]);
+
+  useEffect(() => {
+    if (!stageCoverage) return;
+    capture("resource_coverage_viewed", { system_id: stageCoverage.system.id, stage_id: stageCoverage.stage.id, area_count: Object.keys(stageCoverage.areas).length });
+  }, [stageCoverage]);
 
   function chooseSystem(systemId: string) {
-    setSelection({ systemId });
+    const selectedSystem = workflowSystems.find((item) => item.id === systemId);
+    setSelection(area === "workflows" && selectedSystem ? { systemId, stageId: selectedSystem.stages[0].id } : { systemId });
     capture("resource_system_selected", { system_id: systemId, area });
   }
 
@@ -191,6 +193,7 @@ export function ResourceSystemNavigator({ area, showGuide = false }: { area: Res
           })}
         </div>
       </div>
+      {stageCoverage && <StageCoverageDashboard selection={selection} className="border-b" />}
       <div className="flex flex-col gap-2 px-4 py-3 text-[11px] sm:flex-row sm:items-center sm:justify-between">
         <span className={connectionCount ? "text-teal-200" : "text-amber-200"}>{stage ? (connectionCount ? `${connectionCount} connected ${AREA_LABELS[area]} for this stage.` : `No focused ${AREA_LABELS[area]} mapped to this stage yet.`) : `${connectionCount} connected ${AREA_LABELS[area]} across this system.`}</span>
         <span className="inline-flex items-center gap-1.5 text-slate-500"><PiCheckCircle className="h-4 w-4" /> Navigation context only · applicability review required</span>

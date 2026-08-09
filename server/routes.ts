@@ -1698,6 +1698,8 @@ export async function registerRoutes(app: Express): Promise<void> {
       "oos-investigation-decision-tree",
       "em-scenario-decision-tree", "contamination-control-strategy-builder",
       "investigation-template-viewer", "capa-effectiveness-check-planner",
+      "cell-bank-evidence-readiness-planner", "impurity-fate-purge-evidence-mapper",
+      "routine-control-signal-planner",
     ].map((s) => `/tools/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);

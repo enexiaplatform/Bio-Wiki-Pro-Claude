@@ -2,6 +2,14 @@ import type { RegulatoryDomain } from "@shared/regulatory-monitor";
 
 import { atlasEvidenceDomains, type BlueprintDecisionId, type EvidenceDomainId } from "./atlasEvidenceGraph";
 import {
+  RESOURCE_COVERAGE_CONTRACT_VERSION,
+  STAGE_COVERAGE_RULES,
+  stageCoverageProfiles,
+  type ResourceArea,
+  type ResourceCoverageStatus,
+  type ResourceKind,
+} from "./resourceCoverage";
+import {
   getWorkflowSystem,
   workflowSystems,
   type ConnectedApplicationKind,
@@ -10,8 +18,7 @@ import {
   type WorkflowSystemStage,
 } from "./workflowSystems";
 
-export type ResourceArea = "methods" | "monitor" | "workflows" | "academy" | "tools" | "toolkits" | "compliance";
-export type ResourceKind = ConnectedApplicationKind | "method" | "monitor" | "compliance";
+export type { ResourceArea, ResourceCoverageStatus, ResourceKind } from "./resourceCoverage";
 export type GuidedWorkPhase = "prepare" | "execute" | "investigate" | "release";
 export type GuidedOutcome = "learn" | "calculate" | "workflow" | "toolkit" | "verify";
 
@@ -22,8 +29,9 @@ export interface ResourceSelection {
 
 export interface ResourceConnection {
   key: string;
-  kind: ConnectedApplicationKind;
+  kind: ResourceKind;
   slug: string;
+  title: string;
   href: string;
   systemId: string;
   stageId: string;
@@ -31,6 +39,26 @@ export interface ResourceConnection {
   stage: WorkflowSystemStage;
   evidenceDomainIds: EvidenceDomainId[];
   decisionIds: BlueprintDecisionId[];
+  coverageStatus: ResourceCoverageStatus;
+  sourceIds: string[];
+  reviewRequired: boolean;
+  reviewerRole: string;
+  purpose: string;
+  applicability: string;
+  limitations: string;
+}
+
+export interface StageAreaCoverage {
+  area: ResourceArea;
+  status: ResourceCoverageStatus;
+  connections: ResourceConnection[];
+}
+
+export interface StageResourceCoverage {
+  contractVersion: typeof RESOURCE_COVERAGE_CONTRACT_VERSION;
+  system: WorkflowSystem;
+  stage: WorkflowSystemStage;
+  areas: Record<ResourceArea, StageAreaCoverage>;
 }
 
 export interface ResourceLocationContext {
@@ -52,11 +80,14 @@ export const RESOURCE_AREA_PATHS: Record<ResourceArea, string> = {
   compliance: "/compliance",
 };
 
-export const RESOURCE_KIND_AREAS: Record<ConnectedApplicationKind, ResourceArea> = {
+export const RESOURCE_KIND_AREAS: Record<ResourceKind, ResourceArea> = {
   workflow: "workflows",
   lesson: "academy",
   tool: "tools",
   toolkit: "toolkits",
+  method: "methods",
+  monitor: "monitor",
+  compliance: "compliance",
 };
 
 export const GUIDED_OUTCOME_AREAS: Record<GuidedOutcome, ResourceArea> = {
@@ -91,21 +122,64 @@ function evidenceForHref(href: string) {
   };
 }
 
-export const resourceConnections: ResourceConnection[] = workflowSystems.flatMap((system) => system.stages.flatMap((stage) => stage.applications.map((reference) => {
+const EVIDENCE_REQUIRED_TOOLKITS = new Set([
+  "sterile-product-control-pack",
+  "qc-laboratory-operating-pack",
+  "pharma-api-lifecycle-control-pack",
+  "quality-lifecycle-control-pack",
+]);
+
+const applicationConnections: ResourceConnection[] = workflowSystems.flatMap((system) => system.stages.flatMap((stage) => stage.applications.map((reference) => {
   const href = applicationHref(reference);
   const evidence = evidenceForHref(href);
   return {
     key: `${system.id}:${stage.id}:${reference.kind}:${reference.slug}`,
     kind: reference.kind,
     slug: reference.slug,
+    title: reference.slug,
     href,
     systemId: system.id,
     stageId: stage.id,
     system,
     stage,
     ...evidence,
+    coverageStatus: reference.kind === "toolkit" && EVIDENCE_REQUIRED_TOOLKITS.has(reference.slug) ? "evidence-required" : "mapped",
+    sourceIds: [],
+    reviewRequired: true,
+    reviewerRole: "Applicable system owner and qualified reviewer",
+    purpose: `Support the ${stage.title} decision stage with a connected ${reference.kind}.`,
+    applicability: `Confirm product, market, site, method, and effective-version applicability for ${system.shortTitle} / ${stage.title}.`,
+    limitations: "A catalog connection is navigation evidence only; it does not approve applicability, method use, validation, compliance, or disposition.",
   };
 })));
+
+const profileConnections: ResourceConnection[] = stageCoverageProfiles.flatMap((profile) => {
+  const system = getWorkflowSystem(profile.systemId);
+  const stage = system?.stages.find((candidate) => candidate.id === profile.stageId);
+  if (!system || !stage) return [];
+  return [{
+    key: profile.key,
+    kind: profile.kind,
+    slug: profile.slug,
+    title: profile.title,
+    href: profile.href,
+    systemId: profile.systemId,
+    stageId: profile.stageId,
+    system,
+    stage,
+    evidenceDomainIds: [],
+    decisionIds: profile.decisionIds,
+    coverageStatus: profile.coverageStatus,
+    sourceIds: profile.sourceIds,
+    reviewRequired: profile.reviewRequired,
+    reviewerRole: profile.reviewerRole,
+    purpose: profile.purpose,
+    applicability: profile.applicability,
+    limitations: profile.limitations,
+  }];
+});
+
+export const resourceConnections: ResourceConnection[] = [...applicationConnections, ...profileConnections];
 
 export function parseResourceSelection(search: string): ResourceSelection {
   const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
@@ -133,6 +207,23 @@ export function getConnectionsForSelection(selection: ResourceSelection, area?: 
   return resourceConnections.filter((connection) => connection.systemId === selection.systemId
     && (!selection.stageId || connection.stageId === selection.stageId)
     && (!area || RESOURCE_KIND_AREAS[connection.kind] === area));
+}
+
+const RESOURCE_AREAS: ResourceArea[] = ["workflows", "academy", "tools", "toolkits", "methods", "compliance", "monitor"];
+
+export function getStageResourceCoverage(selection: ResourceSelection): StageResourceCoverage | undefined {
+  const system = getResourceSystem(selection.systemId);
+  const stage = system?.stages.find((candidate) => candidate.id === selection.stageId);
+  if (!system || !stage) return undefined;
+  const areas = Object.fromEntries(RESOURCE_AREAS.map((area) => {
+    const connections = getConnectionsForSelection({ systemId: system.id, stageId: stage.id }, area);
+    const status = connections.some((connection) => connection.coverageStatus === "mapped") ? "mapped"
+      : connections.some((connection) => connection.coverageStatus === "specialist-review-required") ? "specialist-review-required"
+      : connections.some((connection) => connection.coverageStatus === "evidence-required") ? "evidence-required"
+      : "no-current-change";
+    return [area, { area, status, connections } satisfies StageAreaCoverage];
+  })) as Record<ResourceArea, StageAreaCoverage>;
+  return { contractVersion: RESOURCE_COVERAGE_CONTRACT_VERSION, system, stage, areas };
 }
 
 export function getResourceLocationContexts(href: string): ResourceLocationContext[] {
@@ -197,12 +288,12 @@ export const COMPLIANCE_SYSTEM_MAP: Record<string, ExplicitSystemStageMap[]> = {
 };
 
 export const REGULATORY_DOMAIN_SYSTEM_MAP: Record<RegulatoryDomain, ExplicitSystemStageMap[]> = {
-  "nonsterile-microbiology": [{ systemId: "qc-laboratory", stageId: "microbiology-controls" }],
-  "water-environmental-monitoring": [{ systemId: "qc-laboratory", stageId: "media-utilities" }, { systemId: "sterile-product", stageId: "monitor-investigate" }],
-  "sterile-biologics": [{ systemId: "sterile-product", stageId: "aseptic-process" }, { systemId: "biopharma", stageId: "formulation-fill" }],
-  "analytical-chemistry": [{ systemId: "qc-laboratory", stageId: "analytical-testing" }, { systemId: "pharma-api", stageId: "api-analytical" }],
-  "quality-systems": [{ systemId: "quality-lifecycle", stageId: "quality-review-release" }, { systemId: "quality-lifecycle", stageId: "capa-change" }],
-  "data-integrity": [{ systemId: "qc-laboratory", stageId: "lab-readiness" }, { systemId: "quality-lifecycle", stageId: "quality-signals" }],
+  "nonsterile-microbiology": STAGE_COVERAGE_RULES.filter((entry) => entry.monitorDomains.includes("nonsterile-microbiology")).map(({ systemId, stageId }) => ({ systemId, stageId })),
+  "water-environmental-monitoring": STAGE_COVERAGE_RULES.filter((entry) => entry.monitorDomains.includes("water-environmental-monitoring")).map(({ systemId, stageId }) => ({ systemId, stageId })),
+  "sterile-biologics": STAGE_COVERAGE_RULES.filter((entry) => entry.monitorDomains.includes("sterile-biologics")).map(({ systemId, stageId }) => ({ systemId, stageId })),
+  "analytical-chemistry": STAGE_COVERAGE_RULES.filter((entry) => entry.monitorDomains.includes("analytical-chemistry")).map(({ systemId, stageId }) => ({ systemId, stageId })),
+  "quality-systems": STAGE_COVERAGE_RULES.filter((entry) => entry.monitorDomains.includes("quality-systems")).map(({ systemId, stageId }) => ({ systemId, stageId })),
+  "data-integrity": STAGE_COVERAGE_RULES.filter((entry) => entry.monitorDomains.includes("data-integrity")).map(({ systemId, stageId }) => ({ systemId, stageId })),
 };
 
 export function resolveExplicitSystemStages(mappings: ExplicitSystemStageMap[] | undefined) {
