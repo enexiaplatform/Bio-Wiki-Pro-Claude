@@ -143,3 +143,23 @@ No actionable P0, P1, or P2 findings remain.
 - The implementation uses production Phosphor symbols rather than custom equipment illustrations. This keeps icon weight consistent across all five systems and seven Resource areas.
 
 final result: passed
+
+## Workflow sequence correction
+
+### Evidence
+
+- Reported zig-zag state: `artifacts/01-workflow-flow-before.png`.
+- Stage-selection inspection: `artifacts/02-workflow-stage-five-before-fix.png`.
+- First linear pass: `artifacts/03-workflow-linear-flow-after.png`.
+- Final wide layout: `artifacts/04-workflow-linear-final-wide.png`.
+- Final selected-stage mobile layout: `artifacts/05-workflow-linear-final-mobile.png`.
+
+### Result
+
+- Replaced the split 1-4 / 7-5 snake with one unambiguous left-to-right sequence from stage 1 through stage 7.
+- On narrower desktop and mobile viewports, only the stage strip scrolls horizontally; the document itself does not overflow.
+- Direct links and stage changes keep the active stage inside the visible strip without moving the page vertically.
+- Desktop at 1900 x 900 shows all seven stages simultaneously. Mobile at 390 x 844 centers the selected stage and retains the adjacent-process cue.
+- Type checking passed after the interaction change.
+
+final result: passed

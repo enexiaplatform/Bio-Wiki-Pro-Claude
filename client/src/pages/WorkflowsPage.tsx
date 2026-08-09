@@ -1,10 +1,9 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import type { IconType } from "react-icons";
 import {
   PiArrowDown,
-  PiArrowLeft,
   PiArrowRight,
   PiBookOpenText,
   PiBooks,
@@ -183,12 +182,11 @@ function StageNode({
   );
 }
 
-function FlowArrow({ direction = "right" }: { direction?: "right" | "left" | "down" }) {
-  const Icon = direction === "left" ? PiArrowLeft : direction === "down" ? PiArrowDown : PiArrowRight;
+function FlowArrow() {
   return (
     <div className="flex min-w-8 items-center justify-center text-teal-300/75" aria-hidden="true">
       <span className="h-px flex-1 bg-teal-300/45" />
-      <Icon className="-ml-1 h-5 w-5 shrink-0" />
+      <PiArrowRight className="-ml-1 h-5 w-5 shrink-0" />
     </div>
   );
 }
@@ -202,34 +200,34 @@ function DesktopBlueprint({
   activeStageId: string;
   onSelect: (stageId: string) => void;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    const activeStage = container?.querySelector<HTMLElement>(`[data-stage-id="${activeStageId}"]`);
+    if (!container || !activeStage) return;
+
+    const centeredLeft = activeStage.offsetLeft - (container.clientWidth - activeStage.offsetWidth) / 2;
+    container.scrollTo({ left: Math.max(0, centeredLeft), behavior: "auto" });
+  }, [activeStageId]);
+
   return (
     <div className="hidden min-w-0 xl:block">
-      <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-start gap-x-2">
-        {system.stages.slice(0, 4).map((stage, index) => (
-          <div key={stage.id} className="contents">
-            <StageNode stage={stage} index={index} active={stage.id === activeStageId} onSelect={() => onSelect(stage.id)} />
-            {index < 3 && <FlowArrow />}
-          </div>
-        ))}
+      <div className="mb-4 flex items-center justify-between gap-4 px-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-600">
+        <span>Continuous system sequence</span>
+        <span className="text-teal-300/70">Stages 1–7</span>
       </div>
-
-      <div className="my-3 flex justify-end pr-[10%] text-teal-300/75" aria-hidden="true">
-        <div className="flex w-[74%] items-center">
-          <span className="h-px flex-1 bg-teal-300/45" />
-          <PiArrowDown className="h-5 w-5" />
-        </div>
-      </div>
-
-      <div className="grid w-[75%] grid-cols-[1fr_auto_1fr_auto_1fr] items-start gap-x-2">
-        {[6, 5, 4].map((index, position) => {
-          const stage = system.stages[index];
-          return (
-            <div key={stage.id} className="contents">
-              <StageNode stage={stage} index={index} active={stage.id === activeStageId} onSelect={() => onSelect(stage.id)} />
-              {position < 2 && <FlowArrow direction="left" />}
+      <div ref={scrollRef} className="overflow-x-auto pb-4" role="group" aria-label="Connected system stages">
+        <div className="flex min-w-max items-start px-1">
+          {system.stages.map((stage, index) => (
+            <div key={stage.id} className="flex items-start" data-stage-id={stage.id}>
+              <div className="w-36 shrink-0">
+                <StageNode stage={stage} index={index} active={stage.id === activeStageId} onSelect={() => onSelect(stage.id)} />
+              </div>
+              {index < system.stages.length - 1 && <div className="mt-[5.1rem] w-10 shrink-0"><FlowArrow /></div>}
             </div>
-          );
-        })}
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -244,11 +242,22 @@ function MobileBlueprint({
   activeStageId: string;
   onSelect: (stageId: string) => void;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    const activeStage = container?.querySelector<HTMLElement>(`[data-stage-id="${activeStageId}"]`);
+    if (!container || !activeStage) return;
+
+    const centeredLeft = activeStage.offsetLeft - (container.clientWidth - activeStage.offsetWidth) / 2;
+    container.scrollTo({ left: Math.max(0, centeredLeft), behavior: "auto" });
+  }, [activeStageId]);
+
   return (
-    <div className="overflow-x-auto pb-4 xl:hidden">
+    <div ref={scrollRef} className="overflow-x-auto pb-4 xl:hidden" role="group" aria-label="Connected system stages">
       <div className="flex min-w-max items-center px-1">
         {system.stages.map((stage, index) => (
-          <div key={stage.id} className="flex items-center">
+          <div key={stage.id} className="flex items-center" data-stage-id={stage.id}>
             <div className="w-44">
               <StageNode stage={stage} index={index} active={stage.id === activeStageId} onSelect={() => onSelect(stage.id)} />
             </div>

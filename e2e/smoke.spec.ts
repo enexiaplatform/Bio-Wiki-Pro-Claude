@@ -1280,6 +1280,13 @@ test.describe("public smoke", () => {
     for (const system of ["Biopharma", "Sterile product", "QC laboratory", "Pharma (?:&|/) API", "Quality lifecycle"]) {
       await expect(overview.getByRole("button", { name: new RegExp(system, "i") })).toBeVisible();
     }
+
+    await overview.getByRole("button", { name: /Biopharma/i }).click();
+    const stages = page.getByRole("group", { name: /Connected system stages/i });
+    await expect(stages.getByRole("button")).toHaveCount(7);
+    await expect(stages.getByRole("button").nth(0)).toContainText("1");
+    await expect(stages.getByRole("button").nth(6)).toContainText("7");
+    await expect(page).toHaveURL(/system=biopharma&stage=cell-source-materials/);
   });
 
   test("guided Resource selector keeps system and stage context across areas", async ({ page }) => {
