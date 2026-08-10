@@ -10,6 +10,13 @@ import { PAID_ASSET_QUALITY } from "../shared/paid-asset-quality.js";
 import { passesQualityGate, totalQualityScore } from "../shared/content-quality.js";
 import { BIOPHARMA_CONTENT_MAP } from "../shared/biopharma-content-map.js";
 import { MANUFACTURING_QUALITY_PORTFOLIO } from "../shared/manufacturing-quality-portfolio.js";
+import { DECISION_PACKAGES, validateDecisionPackages } from "../shared/decision-packages.js";
+import { CAREER_DOMAIN_TRACKS, validateCareerDomainTracks } from "../shared/career-domain-tracks.js";
+import { workflowSystems } from "../client/src/data/workflowSystems.js";
+import { workflows } from "../client/src/data/workflows.js";
+import { TOOL_CATALOG } from "../client/src/data/tools/catalog.js";
+import { toolkits } from "../client/src/data/toolkits.js";
+import { DELIVERABLES } from "../server/deliverables.js";
 
 const root = process.cwd();
 const errors: string[] = [];
@@ -27,6 +34,72 @@ function validateSourceIds(owner: string, sourceIds: string[]) {
 }
 
 async function validateRegistry() {
+  for (const error of validateDecisionPackages()) errors.push(error);
+  for (const error of validateCareerDomainTracks()) errors.push(error);
+  if (CAREER_DOMAIN_TRACKS.length !== 3) errors.push(`career domain tracks: expected three lifecycle tracks, found ${CAREER_DOMAIN_TRACKS.length}`);
+  const packageIds = new Set(DECISION_PACKAGES.map((item) => item.id));
+  const stageKeys = new Set(workflowSystems.flatMap((system) => system.stages.map((stage) => `${system.id}:${stage.id}`)));
+  const workflowSlugs = new Set(workflows.map((item) => item.slug));
+  const toolSlugs = new Set(TOOL_CATALOG.map((item) => item.slug));
+  const toolkitSlugs = new Set(toolkits.map((item) => item.slug));
+  const toolkitBySlug = new Map(toolkits.map((item) => [item.slug, item]));
+  const deliverableDirs = new Set(Object.values(DELIVERABLES).map((item) => item.dir));
+  const blogSlugs = new Set((await readdir(path.join(root, "content", "blog"))).filter((file) => file.endsWith(".en.mdx")).map((file) => file.replace(/\.en\.mdx$/, "")));
+  const academySlugs = new Set((await readdir(path.join(root, "content", "academy"))).filter((file) => file.endsWith(".en.mdx")).map((file) => file.replace(/\.en\.mdx$/, "")));
+  for (const item of DECISION_PACKAGES) {
+    validateSourceIds(`decision package ${item.id}`, item.sourceIds);
+    for (const stage of item.stageRefs) if (!stageKeys.has(`${stage.systemId}:${stage.stageId}`)) errors.push(`decision package ${item.id}: unknown stage ${stage.systemId}:${stage.stageId}`);
+    if (!item.applicability.trim()) errors.push(`decision package ${item.id}: applicability is required`);
+    if (item.limitations.length === 0) errors.push(`decision package ${item.id}: limitations are required`);
+    if (item.reviewerRoles.length === 0) errors.push(`decision package ${item.id}: reviewer roles are required`);
+    for (const destination of ["public", "pro", "quality-lab", "career"] as const) {
+      if (!item.productDestinations.includes(destination)) errors.push(`decision package ${item.id}: missing product binding ${destination}`);
+    }
+    const assetSlugs = new Set(item.assetRefs.map((asset) => asset.slug));
+    for (const asset of item.assetRefs) {
+      const exists = asset.kind === "guide" ? blogSlugs.has(asset.slug)
+        : asset.kind === "academy" ? academySlugs.has(asset.slug)
+          : asset.kind === "workflow" ? workflowSlugs.has(asset.slug)
+            : asset.kind === "tool" ? toolSlugs.has(asset.slug)
+                : asset.kind === "toolkit" ? toolkitSlugs.has(asset.slug)
+                : false;
+      if (!exists) errors.push(`decision package ${item.id}: orphan ${asset.kind} asset ${asset.slug}`);
+      if (asset.kind === "toolkit") {
+        const toolkit = toolkitBySlug.get(asset.slug);
+        if (toolkit?.status !== "available") errors.push(`decision package ${item.id}: toolkit ${asset.slug} must be available for an existing asset reference`);
+        if (!deliverableDirs.has(asset.slug)) errors.push(`decision package ${item.id}: toolkit ${asset.slug} has no repository deliverable directory`);
+      }
+    }
+    try {
+      const reviewPacket = await readFile(path.join(root, item.reviewPacketPath), "utf8");
+      for (const required of ["editorial-reviewed", "reviewer", "source", "bound"]) {
+        if (!reviewPacket.toLowerCase().includes(required.toLowerCase())) errors.push(`decision package ${item.id}: review packet missing ${required}`);
+      }
+    } catch {
+      errors.push(`decision package ${item.id}: review packet not found at ${item.reviewPacketPath}`);
+    }
+    for (const artifact of item.artifactPlan) if (artifact.assetRef && !assetSlugs.has(artifact.assetRef)) errors.push(`decision package ${item.id}: artifact ${artifact.kind} references orphan asset ${artifact.assetRef}`);
+    const artifactKinds = new Set(item.artifactPlan.map((artifact) => artifact.kind));
+    for (const kind of ["public-guide", "pro-lesson", "workflow-or-tool", "working-asset", "fictional-example", "review-packet"] as const) {
+      if (!artifactKinds.has(kind)) errors.push(`decision package ${item.id}: artifact plan is missing ${kind}`);
+    }
+    const proLessonRef = item.artifactPlan.find((artifact) => artifact.kind === "pro-lesson")?.assetRef;
+    if (!proLessonRef) {
+      errors.push(`decision package ${item.id}: Pro lesson artifact must reference an academy slug`);
+    } else {
+      const lessonQuality = CONTENT_QUALITY_REGISTRY[`academy/${proLessonRef}`];
+      if (!lessonQuality) errors.push(`decision package ${item.id}: Pro lesson ${proLessonRef} has no content quality record`);
+      else if (lessonQuality.reviewStatus !== item.reviewStatus) errors.push(`decision package ${item.id}: Pro lesson ${proLessonRef} review status does not match package status`);
+    }
+    const workingAssetRef = item.artifactPlan.find((artifact) => artifact.kind === "working-asset")?.assetRef;
+    if (!workingAssetRef) {
+      errors.push(`decision package ${item.id}: working asset artifact must reference an asset id`);
+    } else {
+      const assetQuality = PAID_ASSET_QUALITY.find((asset) => asset.id === workingAssetRef);
+      if (!assetQuality) errors.push(`decision package ${item.id}: working asset ${workingAssetRef} has no paid-asset quality record`);
+      else if (assetQuality.reviewStatus !== item.reviewStatus) errors.push(`decision package ${item.id}: working asset ${workingAssetRef} review status does not match package status`);
+    }
+  }
   const sourceIds = new Set<string>();
   for (const source of EVIDENCE_SOURCE_CATALOG.sources) {
     if (sourceIds.has(source.id)) errors.push(`source catalog: duplicate id ${source.id}`);
@@ -42,6 +115,9 @@ async function validateRegistry() {
     }
     if (quality.promoted && (!passesQualityGate(quality.score, "pro") || quality.reviewStatus === "under-review")) {
       errors.push(`${key}: promoted Pro content must pass 85 with no critical fail and recorded review`);
+    }
+    if (quality.promoted && quality.riskLevel === "high" && quality.reviewStatus !== "sme-reviewed") {
+      errors.push(`${key}: high-risk content cannot be promoted before SME review`);
     }
     if (quality.strategicCore) {
       const questions = CONTENT_QUIZ_V2_REGISTRY[key];
@@ -63,7 +139,8 @@ async function validateRegistry() {
   for (const asset of PAID_ASSET_QUALITY) {
     const score = totalQualityScore(asset.score);
     if (asset.reviewStatus === "under-review" && asset.strategicPriority === "core") warnings.push(`${asset.id}: core paid asset remains under review (${score}/100)`);
-    if (asset.reviewStatus !== "under-review" && !passesQualityGate(asset.score, asset.assetClass)) errors.push(`${asset.id}: reviewed asset does not pass its ${asset.assetClass} gate`);
+    if (asset.reviewStatus === "editorial-reviewed" && !passesQualityGate(asset.score, asset.assetClass)) warnings.push(`${asset.id}: editorially reviewed but release gate remains open (${score}/100)`);
+    if (asset.reviewStatus === "sme-reviewed" && !passesQualityGate(asset.score, asset.assetClass)) errors.push(`${asset.id}: SME-reviewed asset does not pass its ${asset.assetClass} gate`);
   }
 
   const lessonKeys = new Set(Object.keys(CONTENT_QUALITY_REGISTRY).map((key) => key.replace(/^academy\//, "")));
@@ -91,6 +168,8 @@ async function validateRegistry() {
       if (portfolioAreaIds.has(areaKey)) errors.push(`manufacturing portfolio: duplicate area ${areaKey}`);
       portfolioAreaIds.add(areaKey);
       validateSourceIds(`manufacturing portfolio ${areaKey}`, area.sourceIds);
+      for (const packageId of area.decisionPackageIds) if (!packageIds.has(packageId)) errors.push(`manufacturing portfolio ${areaKey}: unknown decision package ${packageId}`);
+      if (area.status !== "not-covered" && area.decisionPackageIds.length === 0) errors.push(`manufacturing portfolio ${areaKey}: covered or reviewable area requires a decision package link`);
       if (area.materialGaps.length === 0) errors.push(`manufacturing portfolio ${areaKey}: material gaps must be explicit`);
       if (area.requiredReviewerRoles.length === 0) errors.push(`manufacturing portfolio ${areaKey}: reviewer roles must be explicit`);
       if (area.status === "not-covered" && (area.currentLessonSlugs.length > 0 || area.currentAssetIds.length > 0)) errors.push(`manufacturing portfolio ${areaKey}: not-covered area cannot claim current assets`);
@@ -139,7 +218,7 @@ async function validateFiles() {
     if (!oosReadme.includes(required)) errors.push(`oos-investigation-template README: missing ${required}`);
   }
   const reviewPacket = await readFile(path.join(root, "docs", "content-reviews", "OOS_WORKFLOW_2_1_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "FDA-OOS-2022", "EU-GMP-CH6-2014", "ICH-Q9-R1", "ICH-Q10", "Critical review checklist", "Review record"]) {
+for (const required of ["editorial-reviewed", "FDA-OOS-2022", "EU-GMP-CH6-2014", "ICH-Q9-R1", "ICH-Q10", "Critical review checklist", "Review record"]) {
     if (!reviewPacket.includes(required)) errors.push(`OOS review packet: missing ${required}`);
   }
 
@@ -210,7 +289,7 @@ async function validateFiles() {
     }
   }
   const downstreamReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_DOWNSTREAM_CLEARANCE_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q5A-R2", "ICH-Q11", "ICH-Q6B", "FDA-PROCESS-VALIDATION-2011", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+for (const required of ["editorial-reviewed", "ICH-Q5A-R2", "ICH-Q11", "ICH-Q6B", "FDA-PROCESS-VALIDATION-2011", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!downstreamReviewPacket.includes(required)) errors.push(`Biopharma downstream review packet: missing ${required}`);
   }
 
@@ -266,7 +345,7 @@ async function validateFiles() {
     }
   }
   const analyticalReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_ANALYTICAL_CONTROL_STRATEGY_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q6B", "ICH-Q6-R1-CONCEPT-2024", "ICH-Q2-R2", "ICH-Q14", "WHO-IBRS-2026", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+for (const required of ["editorial-reviewed", "ICH-Q6B", "ICH-Q6-R1-CONCEPT-2024", "ICH-Q2-R2", "ICH-Q14", "WHO-IBRS-2026", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!analyticalReviewPacket.includes(required)) errors.push(`Biopharma analytical control-strategy review packet: missing ${required}`);
   }
 
@@ -294,7 +373,7 @@ async function validateFiles() {
     }
   }
   const technologyTransferReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_TECHNOLOGY_TRANSFER_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "WHO-TRS-1044-ANNEX4", "ICH-Q10", "ICH-Q5E", "ICH-Q2-R2", "ICH-Q14", "FDA-PROCESS-VALIDATION-2011", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+for (const required of ["editorial-reviewed", "WHO-TRS-1044-ANNEX4", "ICH-Q10", "ICH-Q5E", "ICH-Q2-R2", "ICH-Q14", "FDA-PROCESS-VALIDATION-2011", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!technologyTransferReviewPacket.includes(required)) errors.push(`Biopharma technology-transfer review packet: missing ${required}`);
   }
 
@@ -350,7 +429,7 @@ async function validateFiles() {
     }
   }
   const cellSubstrateReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_CELL_SUBSTRATE_CONTROL_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q5D", "ICH-Q5B", "ICH-Q5A-R2", "WHO-TRS-978-ANNEX3", "ICH-Q5E", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+for (const required of ["editorial-reviewed", "ICH-Q5D", "ICH-Q5B", "ICH-Q5A-R2", "WHO-TRS-978-ANNEX3", "ICH-Q5E", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!cellSubstrateReviewPacket.includes(required)) errors.push(`Biopharma cell-substrate review packet: missing ${required}`);
   }
 
@@ -378,7 +457,7 @@ async function validateFiles() {
     }
   }
   const processValidationReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_PROCESS_VALIDATION_CPV_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "FDA-PROCESS-VALIDATION-2011", "EMA-BIOLOGICS-PROCESS-VALIDATION-2016", "EU-GMP-ANNEX15-2015", "ICH-Q8-R2", "ICH-Q11", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+for (const required of ["editorial-reviewed", "FDA-PROCESS-VALIDATION-2011", "EMA-BIOLOGICS-PROCESS-VALIDATION-2016", "EU-GMP-ANNEX15-2015", "ICH-Q8-R2", "ICH-Q11", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!processValidationReviewPacket.includes(required)) errors.push(`Biopharma process-validation/CPV review packet: missing ${required}`);
   }
 
@@ -405,7 +484,7 @@ async function validateFiles() {
     }
   }
   const apiReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "PHARMA_API_IMPURITY_CONTROL_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q11", "ICH-Q11-QA", "ICH-Q3A-R2", "ICH-Q3C-R9", "ICH-Q3D-R2", "ICH-M7-R2", "ICH-Q6A", "ICH-Q7", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+for (const required of ["editorial-reviewed", "ICH-Q11", "ICH-Q11-QA", "ICH-Q3A-R2", "ICH-Q3C-R9", "ICH-Q3D-R2", "ICH-M7-R2", "ICH-Q6A", "ICH-Q7", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!apiReviewPacket.includes(required)) errors.push(`Pharma API review packet: missing ${required}`);
   }
 
@@ -425,7 +504,7 @@ async function validateFiles() {
     try { await access(path.join(apiInputDir, filename)); } catch { errors.push(`pharma-api-starting-material-input-control: missing ${filename}`); }
   }
   const apiInputReview = await readFile(path.join(root, "docs", "content-reviews", "PHARMA_API_STARTING_MATERIAL_INPUT_CONTROL_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "Critical fail conditions", "Required reviewers", "permissioned real case"]) {
+for (const required of ["editorial-reviewed", "Critical fail conditions", "Required reviewers", "permissioned real case"]) {
     if (!apiInputReview.toLowerCase().includes(required.toLowerCase())) errors.push(`Pharma API starting-material review packet: missing ${required}`);
   }
   const apiLifecycleLesson = await readFile(path.join(academyDir, "pharma-api-analytical-specification-lifecycle.en.mdx"), "utf8");
@@ -444,7 +523,7 @@ async function validateFiles() {
     try { await access(path.join(apiLifecycleDir, filename)); } catch { errors.push(`pharma-api-analytical-lifecycle: missing ${filename}`); }
   }
   const apiLifecycleReview = await readFile(path.join(root, "docs", "content-reviews", "PHARMA_API_ANALYTICAL_LIFECYCLE_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "Critical fail conditions", "Required reviewers", "permissioned real method lifecycle case"]) {
+for (const required of ["editorial-reviewed", "Critical fail conditions", "Required reviewers", "permissioned real method lifecycle case"]) {
     if (!apiLifecycleReview.toLowerCase().includes(required.toLowerCase())) errors.push(`Pharma API analytical lifecycle review packet: missing ${required}`);
   }
   const portfolioReport = await readFile(path.join(root, "docs", "MANUFACTURING_QUALITY_PORTFOLIO.md"), "utf8");
@@ -504,4 +583,4 @@ if (errors.length) {
   errors.forEach((error) => console.error(`error: ${error}`));
   process.exit(1);
 }
-console.log("Content quality contract valid. Under-review inventory remains visible but unpromoted.");
+console.log("Content quality contract valid. Editorial review is recorded where declared; SME and release gates remain enforced.");

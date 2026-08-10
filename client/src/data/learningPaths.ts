@@ -141,6 +141,17 @@ export const learningPaths: LearningPath[] = [
     ],
   },
   {
+    slug: "pharma-drug-product-quality",
+    title: "Pharma Drug Product Quality Lifecycle",
+    description: "Connect formulation, material attributes, unit operations, analytical performance, release, stability, transfer and continued lifecycle evidence with OSD as a bounded example.",
+    lessonSlugs: [
+      "drug-product-formulation-material-attributes",
+      "drug-product-unit-operations-scale-up",
+      "drug-product-analytical-release-stability",
+      "drug-product-validation-transfer-lifecycle",
+    ],
+  },
+  {
     slug: "biologics-biopharmaceutical-qc",
     title: "Biopharma Product & Process Quality",
     description: "Connect cell substrate, manufacturing process, characterization, potency, impurities, viral safety, stability, and lifecycle change — not final-product QC alone.",

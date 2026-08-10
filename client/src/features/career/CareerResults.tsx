@@ -41,6 +41,7 @@ import {
   formatCareerProofExperiment,
   type CareerProfile,
 } from "@shared/career-blueprint";
+import { getCareerDomainTrack } from "@shared/career-domain-tracks";
 
 interface Props {
   profile: CareerProfile;
@@ -72,6 +73,7 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
   const [proofExperimentCopied, setProofExperimentCopied] = useState(false);
   const analysis = useMemo(() => buildCareerAnalysis(profile, selectedRouteId), [profile, selectedRouteId]);
   const proofExperiment = useMemo(() => buildCareerProofExperiment(profile, selectedRouteId), [profile, selectedRouteId]);
+  const domainTrack = getCareerDomainTrack(profile.domainTrackId);
   const firstName = profile.fullName.trim().split(/\s+/)[0] || "Your";
   const radarData = analysis.competencies.map((item) => ({
     subject: item.label === "Investigation ownership" ? "Investigation" : item.label,
@@ -221,6 +223,7 @@ export function CareerResults({ profile, entitled, checkingAccess, checkoutLoadi
             <h2 id="career-proof-experiment-title" className="mt-2 text-xl font-bold">Test the route through one bounded piece of evidence.</h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">{proofExperiment.objective}</p>
           </div>
+          {domainTrack && <Link href="/career/domains" className="mt-4 inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/[0.05] px-3 py-1.5 text-xs font-semibold text-teal-100" onClick={() => analytics.careerDomainTrackSelected(domainTrack.id, "career-results")}>Domain evidence track: {domainTrack.title}<ArrowRight className="h-3.5 w-3.5" /></Link>}
           <button type="button" onClick={copyProofExperiment} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-amber-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200">
             {proofExperimentCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{proofExperimentCopied ? "Copied proof experiment" : "Copy 30-day proof experiment"}
           </button>

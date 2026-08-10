@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0-review
 
-**Status:** Under review
+**Status:** Editorial reviewed
 
 **Document purpose:** Educational decision and evidence-mapping support
 
@@ -92,4 +92,3 @@ This package structures evidence. It does not establish a purification train,
 product-specific clearance, viral safety, causality, robustness, operating
 range, resin or membrane lifetime, validation status, comparability, regulatory
 acceptability, or batch disposition.
-

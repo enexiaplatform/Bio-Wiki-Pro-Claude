@@ -33,7 +33,7 @@ export default function Career() {
     description: "Build a free evidence-based Career Snapshot and unlock a detailed, personalized Career Operating Blueprint.",
   });
   const { user, isAuthenticated } = useUser();
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const [phase, setPhase] = useState<Phase>("intro");
   const [profile, setProfile] = useState<CareerProfile | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -113,10 +113,12 @@ export default function Career() {
   }, [isAuthenticated, phase]);
 
   const assessmentInitial = useMemo(() => {
-    if (profile) return profile;
+    const domain = new URLSearchParams(location.split("?")[1] ?? "").get("domain");
+    if (profile) return domain && ["biopharma", "pharma-api", "drug-product"].includes(domain) ? { ...profile, domainTrackId: domain as CareerProfile["domainTrackId"] } : profile;
     const accountName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
-    return accountName ? { ...defaultCareerProfile, fullName: accountName } : defaultCareerProfile;
-  }, [profile, user?.firstName, user?.lastName]);
+    const nextProfile = accountName ? { ...defaultCareerProfile, fullName: accountName } : defaultCareerProfile;
+    return domain && ["biopharma", "pharma-api", "drug-product"].includes(domain) ? { ...nextProfile, domainTrackId: domain as CareerProfile["domainTrackId"] } : nextProfile;
+  }, [location, profile, user?.firstName, user?.lastName]);
 
   function startAssessment() {
     analytics.careerAssessmentStarted();
@@ -242,6 +244,7 @@ function CareerIntro({ hasSavedProfile, onStart, onResume }: { hasSavedProfile: 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <button type="button" onClick={onStart} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-400 px-6 py-3.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300">Build my free Career Snapshot <ArrowRight className="h-4 w-4" /></button>
               {hasSavedProfile && <button type="button" onClick={onResume} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-6 py-3.5 text-sm font-semibold transition hover:border-white/30">Resume my snapshot</button>}
+              <Link href="/career/domains" className="inline-flex items-center justify-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/[0.06] px-6 py-3.5 text-sm font-semibold text-teal-100 transition hover:border-teal-300/45">Explore domain evidence tracks <ArrowRight className="h-4 w-4" /></Link>
             </div>
             <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-400">
               <span className="flex items-center gap-2"><LockKeyhole className="h-3.5 w-3.5" /> No card required</span>

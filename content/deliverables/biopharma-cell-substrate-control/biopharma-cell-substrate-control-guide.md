@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0-review
 
-**Status:** Under review
+**Status:** Editorial reviewed
 
 **Document purpose:** Educational decision and evidence-mapping support
 
@@ -97,7 +97,7 @@ not a benchmark or recommended protocol.
 ## Document control and sign-off
 
 - Content version: 1.0.0-review
-- Review status: under-review
+- Review status: editorial-reviewed
 - Reviewed by role: not yet recorded
 - Last reviewed: not yet recorded
 - Review due: after source/cell-substrate/process change or before controlled use

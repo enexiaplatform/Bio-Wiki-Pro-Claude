@@ -41,6 +41,38 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Life Science Atlas/i }).first()).toBeVisible();
   });
 
+  test("decision package guides connect public evidence to Blueprint, Pro and Career", async ({ page }) => {
+    await page.goto("/evidence");
+    await expect(page.getByRole("heading", { name: /A connected evidence path/i })).toBeVisible();
+    await page.goto("/evidence/biopharma");
+    await expect(page.getByRole("heading", { name: /Biopharma evidence for the decision/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Cell substrate, materials.*upstream control/i })).toBeVisible();
+    await page.goto("/evidence");
+    await page.getByRole("link", { name: /Cell substrate, materials.*upstream control/i }).click();
+    await expect(page.getByText(/This package is editorial-reviewed but not SME-approved/i)).toBeVisible();
+
+    await page.getByRole("link", { name: "Use in Blueprint context" }).click();
+    await expect(page).toHaveURL(/\/quality-lab\/planner\?package=biopharma-cell-materials-upstream/);
+
+    await page.goto("/evidence/packages/biopharma-cell-materials-upstream");
+    await page.getByRole("link", { name: "Continue in Atlas Pro" }).click();
+    await expect(page).toHaveURL(/\/pro\?package=biopharma-cell-materials-upstream/);
+
+    await page.goto("/evidence/packages/biopharma-cell-materials-upstream");
+    await page.getByRole("link", { name: /Build Biopharma product & process quality evidence/i }).click();
+    await expect(page).toHaveURL(/\/career\?domain=biopharma/);
+
+    await page.goto("/evidence/packages/biopharma-cell-materials-upstream");
+    await page.getByRole("link", { name: "Run monthly review" }).click();
+    await expect(page).toHaveURL(/\/pro\/monthly-review\?package=biopharma-cell-materials-upstream/);
+    await expect(page.getByText(/Decision package monthly review/i)).toBeVisible();
+    await expect(page.getByText(/Which cell substrate, bank/i)).toBeVisible();
+
+    await page.goto("/career/domains");
+    await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();
+    await expect(page.getByText(/13-week evidence actions/i).first()).toBeVisible();
+  });
+
   test("account entry keeps the Blueprint workspace primary", async ({ page }) => {
     await page.goto("/login?returnTo=/my-downloads");
     await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
@@ -616,6 +648,10 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Initial model compiled")).toBeVisible();
     await expect(page.getByText("66.7% of starts")).toBeVisible();
     await expect(page.getByText(/No project inputs, contact details or evidence content are stored/i)).toBeVisible();
+    await page.getByRole("tab", { name: "Decision intelligence" }).click();
+    await expect(page.getByRole("heading", { name: "Decision intelligence registry" })).toBeVisible();
+    await expect(page.getByText("12/12")).toBeVisible();
+    await expect(page.getByText("decision_package_product_handoff")).toBeVisible();
   });
 
   test("quality lab funnel reaches planner and expert review intake", async ({ page }) => {

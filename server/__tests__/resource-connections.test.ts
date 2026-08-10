@@ -101,7 +101,7 @@ describe("resource connection registry", () => {
     const expectedAreas = ["workflows", "academy", "tools", "toolkits", "methods", "compliance", "monitor"];
     const coverage = workflowSystems.flatMap((system) => system.stages.map((stage) => getStageResourceCoverage({ systemId: system.id, stageId: stage.id })));
 
-    expect(coverage).toHaveLength(35);
+    expect(coverage).toHaveLength(workflowSystems.flatMap((system) => system.stages).length);
     expect(coverage.every(Boolean)).toBe(true);
     expect(coverage.every((entry) => entry?.contractVersion === RESOURCE_COVERAGE_CONTRACT_VERSION)).toBe(true);
     expect(coverage.flatMap((entry) => expectedAreas.filter((area) => !entry?.areas[area as keyof typeof entry.areas]?.connections.length))).toEqual([]);
@@ -111,11 +111,12 @@ describe("resource connection registry", () => {
     const stageKeys = workflowSystems.flatMap((system) => system.stages.map((stage) => `${system.id}:${stage.id}`));
     const ruleKeys = STAGE_COVERAGE_RULES.map((entry) => `${entry.systemId}:${entry.stageId}`);
     const sourceIds = new Set(EVIDENCE_SOURCE_CATALOG.sources.map((source) => source.id));
+    const expectedAreas = ["workflows", "academy", "tools", "toolkits", "methods", "compliance", "monitor"];
 
-    expect(ruleKeys).toHaveLength(35);
-    expect(new Set(ruleKeys).size).toBe(35);
+    expect(ruleKeys).toHaveLength(workflowSystems.flatMap((system) => system.stages).length);
+    expect(new Set(ruleKeys).size).toBe(workflowSystems.flatMap((system) => system.stages).length);
     expect(new Set(ruleKeys)).toEqual(new Set(stageKeys));
-    expect(stageCoverageProfiles).toHaveLength(105);
+    expect(stageCoverageProfiles).toHaveLength(workflowSystems.flatMap((system) => system.stages).length * 3);
     expect(stageCoverageProfiles.every((profile) => profile.reviewRequired && profile.applicability && profile.limitations && profile.reviewerRole)).toBe(true);
     expect(stageCoverageProfiles.flatMap((profile) => profile.sourceIds.filter((sourceId) => !sourceIds.has(sourceId)))).toEqual([]);
   });
@@ -126,5 +127,11 @@ describe("resource connection registry", () => {
 
     expect(connections.length).toBeGreaterThan(0);
     expect(connections.every((connection) => connection.coverageStatus === "evidence-required")).toBe(true);
+  });
+
+  it("surfaces package coverage as evidence-required when editorial review is complete", () => {
+    const coverage = getStageResourceCoverage({ systemId: "pharma-drug-product", stageId: "formulation-material-attributes" });
+    expect(coverage?.areas.methods.status).toBe("evidence-required");
+    expect(coverage?.areas.methods.connections.flatMap((connection) => connection.decisionPackageIds)).toContain("drug-product-formulation-material-attributes");
   });
 });

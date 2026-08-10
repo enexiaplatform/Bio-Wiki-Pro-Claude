@@ -70,6 +70,7 @@ const productLinks = [
 ];
 
 const resourceLinks = [
+  { name: "Decision packages", description: "Lifecycle evidence for three Atlas products", icon: FileCheck2, path: "/evidence" },
   { name: "Methods & standards", description: "Coverage-aware evidence navigation", icon: Search, path: "/methods" },
   { name: "Change monitor", description: "Official-source impact watch", icon: TrendingUp, path: "/monitor" },
   { name: "Workflows", description: "Step-by-step quality processes", icon: Workflow, path: "/workflows" },
@@ -82,6 +83,7 @@ const resourceLinks = [
 // Secondary destinations for the mobile "More" drawer — everything not on the
 // 4-slot bottom bar, so mobile users (no desktop footer) can reach the full IA.
 const moreLinks = [
+  { name: "Decision packages", icon: FileCheck2, path: "/evidence" },
   { name: "All products", icon: Package, path: "/products" },
   { name: "Request Blueprint Review", icon: ClipboardCheck, path: "/quality-lab/review" },
   { name: "How Atlas works", icon: Workflow, path: "/how-it-works" },

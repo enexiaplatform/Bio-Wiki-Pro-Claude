@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/command";
 import { listContent } from "@/lib/content";
 import { TOOL_CATALOG } from "@/data/tools/catalog";
+import { DECISION_PACKAGES } from "@shared/decision-packages";
 
 const PAGES: { label: string; path: string }[] = [
   { label: "Workflows", path: "/workflows" },
@@ -28,6 +29,8 @@ const PAGES: { label: string; path: string }[] = [
   { label: "Pro Lab Workbench", path: "/pro/lab-workbench" },
   { label: "Methods & Standards Navigator", path: "/methods" },
   { label: "Regulatory Change Monitor", path: "/monitor" },
+  { label: "Atlas Evidence decision packages", path: "/evidence" },
+  { label: "Career domain tracks", path: "/career/domains" },
   { label: "My Learning", path: "/my-learning" },
   { label: "My Downloads", path: "/my-downloads" },
   { label: "Vault", path: "/vault" },
@@ -80,6 +83,15 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
             ))}
           </CommandGroup>
         )}
+
+        <CommandGroup heading="Decision packages">
+          {DECISION_PACKAGES.map((item) => (
+            <CommandItem key={item.id} value={`decision package ${item.title} ${item.lane} ${item.decisionQuestion} ${item.discoveryQuestions.join(" ")}`} onSelect={() => go(`/evidence/packages/${item.id}`)}>
+              <Compass className="mr-2 h-4 w-4 text-violet-300" />
+              <span>{item.title}</span>
+            </CommandItem>
+          ))}
+        </CommandGroup>
 
         <CommandGroup heading="Tools">
           {TOOL_CATALOG.map((tool) => (

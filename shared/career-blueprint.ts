@@ -4,6 +4,10 @@ export const careerTracks = ["qc-microbiology", "quality-assurance", "regulatory
 export const careerTrackSchema = z.enum(careerTracks);
 export type CareerTrack = z.infer<typeof careerTrackSchema>;
 
+export const careerDomainTrackIds = ["biopharma", "pharma-api", "drug-product"] as const;
+export const careerDomainTrackSchema = z.enum(careerDomainTrackIds);
+export type CareerDomainTrackId = z.infer<typeof careerDomainTrackSchema>;
+
 export const competencyKeys = [
   "technicalExecution",
   "gmpEvidence",
@@ -19,6 +23,7 @@ export const careerProfileSchema = z.object({
   fullName: z.string().trim().min(2).max(80),
   currentRole: z.string().trim().min(2).max(100),
   careerTrack: careerTrackSchema,
+  domainTrackId: careerDomainTrackSchema.default("biopharma"),
   yearsExperience: z.number().min(0).max(45),
   sector: z.string().trim().min(2).max(100),
   location: z.string().trim().min(2).max(100),
@@ -143,6 +148,7 @@ export const defaultCareerProfile: CareerProfile = {
   fullName: "",
   currentRole: "QC Microbiology Analyst",
   careerTrack: "qc-microbiology",
+  domainTrackId: "biopharma",
   yearsExperience: 3,
   sector: "Pharmaceutical manufacturing",
   location: "",

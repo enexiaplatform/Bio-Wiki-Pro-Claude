@@ -50,7 +50,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -103,7 +109,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -156,7 +168,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -209,7 +227,26 @@
         "answer": 1
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "drug-product-validation-transfer-lifecycle",
+    "decisionPackageIds": [
+      "drug-product-validation-transfer-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "validation-transfer-lifecycle"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:validation-transfer-lifecycle"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -262,7 +299,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -315,7 +358,32 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "pharma-api-analytical-lifecycle",
+    "decisionPackageIds": [
+      "pharma-api-analytical-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-analytical",
+      "api-validation",
+      "api-stability-investigation",
+      "api-release-change"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-analytical",
+      "pharma-api:api-validation",
+      "pharma-api:api-stability-investigation",
+      "pharma-api:api-release-change"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -368,7 +436,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 15
+    "readMinutes": 15,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -421,7 +495,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -474,7 +554,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -517,7 +603,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -570,7 +662,13 @@
         "answer": 3
       }
     ],
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -623,7 +721,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -666,7 +770,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -719,7 +829,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -772,7 +888,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": "biopharma-cell-materials-upstream",
+    "decisionPackageIds": [
+      "biopharma-cell-materials-upstream"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "cell-source-materials",
+      "upstream"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:cell-source-materials",
+      "biopharma:upstream"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -825,7 +962,30 @@
         "answer": 3
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "biopharma-downstream-analytics-formulation",
+    "decisionPackageIds": [
+      "biopharma-downstream-analytics-formulation"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "downstream",
+      "formulation-fill",
+      "analytical-control"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:downstream",
+      "biopharma:formulation-fill",
+      "biopharma:analytical-control"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -878,7 +1038,30 @@
         "answer": 3
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "biopharma-downstream-analytics-formulation",
+    "decisionPackageIds": [
+      "biopharma-downstream-analytics-formulation"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "downstream",
+      "formulation-fill",
+      "analytical-control"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:downstream",
+      "biopharma:formulation-fill",
+      "biopharma:analytical-control"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -931,7 +1114,13 @@
         "answer": 3
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -984,7 +1173,30 @@
         "answer": 3
       }
     ],
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": "biopharma-downstream-analytics-formulation",
+    "decisionPackageIds": [
+      "biopharma-downstream-analytics-formulation"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "downstream",
+      "formulation-fill",
+      "analytical-control"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:downstream",
+      "biopharma:formulation-fill",
+      "biopharma:analytical-control"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1037,7 +1249,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "biopharma-validation-comparability-transfer",
+    "decisionPackageIds": [
+      "biopharma-validation-comparability-transfer"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "validation-cpv",
+      "release-transfer"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:validation-cpv",
+      "biopharma:release-transfer"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1090,7 +1323,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": "biopharma-validation-comparability-transfer",
+    "decisionPackageIds": [
+      "biopharma-validation-comparability-transfer"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "validation-cpv",
+      "release-transfer"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:validation-cpv",
+      "biopharma:release-transfer"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1143,7 +1397,30 @@
         "answer": 3
       }
     ],
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": "biopharma-downstream-analytics-formulation",
+    "decisionPackageIds": [
+      "biopharma-downstream-analytics-formulation"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "downstream",
+      "formulation-fill",
+      "analytical-control"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:downstream",
+      "biopharma:formulation-fill",
+      "biopharma:analytical-control"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1196,7 +1473,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "biopharma-validation-comparability-transfer",
+    "decisionPackageIds": [
+      "biopharma-validation-comparability-transfer"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "validation-cpv",
+      "release-transfer"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:validation-cpv",
+      "biopharma:release-transfer"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1249,7 +1547,13 @@
         "answer": 3
       }
     ],
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1302,7 +1606,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "biopharma-cell-materials-upstream",
+    "decisionPackageIds": [
+      "biopharma-cell-materials-upstream"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "cell-source-materials",
+      "upstream"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:cell-source-materials",
+      "biopharma:upstream"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1355,7 +1680,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "biopharma-cell-materials-upstream",
+    "decisionPackageIds": [
+      "biopharma-cell-materials-upstream"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "cell-source-materials",
+      "upstream"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:cell-source-materials",
+      "biopharma:upstream"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1408,7 +1754,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1461,7 +1813,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1514,7 +1872,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1567,7 +1931,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1620,7 +1990,26 @@
         "answer": 0
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "drug-product-validation-transfer-lifecycle",
+    "decisionPackageIds": [
+      "drug-product-validation-transfer-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "validation-transfer-lifecycle"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:validation-transfer-lifecycle"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1673,7 +2062,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1726,7 +2121,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1779,7 +2180,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1832,7 +2239,26 @@
         "answer": 1
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "drug-product-analytical-release-stability-packaging",
+    "decisionPackageIds": [
+      "drug-product-analytical-release-stability-packaging"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "analytical-release-stability-packaging"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:analytical-release-stability-packaging"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1885,7 +2311,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -1938,7 +2370,33 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "cross-cutting-evidence-governance",
+    "decisionPackageIds": [
+      "cross-cutting-evidence-governance"
+    ],
+    "systemIds": [
+      "quality-lifecycle",
+      "qc-laboratory"
+    ],
+    "stageIds": [
+      "quality-signals",
+      "capa-change",
+      "quality-review-release",
+      "lab-investigations"
+    ],
+    "lifecycleStageIds": [
+      "quality-lifecycle:quality-signals",
+      "quality-lifecycle:capa-change",
+      "quality-lifecycle:quality-review-release",
+      "qc-laboratory:lab-investigations"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -1991,7 +2449,33 @@
         "answer": 3
       }
     ],
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": "cross-cutting-evidence-governance",
+    "decisionPackageIds": [
+      "cross-cutting-evidence-governance"
+    ],
+    "systemIds": [
+      "quality-lifecycle",
+      "qc-laboratory"
+    ],
+    "stageIds": [
+      "quality-signals",
+      "capa-change",
+      "quality-review-release",
+      "lab-investigations"
+    ],
+    "lifecycleStageIds": [
+      "quality-lifecycle:quality-signals",
+      "quality-lifecycle:capa-change",
+      "quality-lifecycle:quality-review-release",
+      "qc-laboratory:lab-investigations"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -2044,7 +2528,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2097,7 +2587,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2150,7 +2646,274 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": "drug-product-analytical-release-stability-packaging",
+    "decisionPackageIds": [
+      "drug-product-analytical-release-stability-packaging"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "analytical-release-stability-packaging"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:analytical-release-stability-packaging"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
+  },
+  {
+    "collection": "academy",
+    "slug": "drug-product-analytical-release-stability",
+    "lang": "en",
+    "title": "Drug product analytical, release and stability lifecycle",
+    "tier": "pro",
+    "category": "Pharma Drug Product",
+    "seoDescription": "Build a traceable drug-product analytical, release, stability and packaging evidence chain with a bounded OSD example, controlled sources and clear limits on methods, specifications and shelf-life claims.",
+    "updatedAt": "2026-08-10",
+    "quiz": [
+      {
+        "q": "What connects an analytical result to a release decision?",
+        "options": [
+          "Purpose, capability, sample/material context, source, limitation and qualified review",
+          "A passing result alone",
+          "A copied specification",
+          "A vendor certificate"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What is the OSD case allowed to show?",
+        "options": [
+          "Evidence structure and open decisions",
+          "A shelf-life assignment",
+          "A dissolution acceptance limit",
+          "A regulatory precedent"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "How should a stability signal be handled?",
+        "options": [
+          "Preserve the observation, competing hypotheses, method capability and next review",
+          "Replace it with an average",
+          "Declare failure immediately",
+          "Ignore packaging context"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 2,
+    "decisionPackageId": "drug-product-analytical-release-stability-packaging",
+    "decisionPackageIds": [
+      "drug-product-analytical-release-stability-packaging"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "analytical-release-stability-packaging"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:analytical-release-stability-packaging"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
+  },
+  {
+    "collection": "academy",
+    "slug": "drug-product-formulation-material-attributes",
+    "lang": "en",
+    "title": "Drug product formulation and material attributes",
+    "tier": "pro",
+    "category": "Pharma Drug Product",
+    "seoDescription": "Frame drug-product formulation and material-attribute decisions with a bounded OSD example, controlled sources, evidence questions, and explicit limits on what the framework can support.",
+    "updatedAt": "2026-08-10",
+    "quiz": [
+      {
+        "q": "What is the first decision baseline for a formulation evidence map?",
+        "options": [
+          "Dosage form, product intent, material versions and decision owner",
+          "A copied excipient ratio",
+          "A universal design space",
+          "A final shelf-life claim"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What is the OSD worked example?",
+        "options": [
+          "A synthetic planning example",
+          "A validated formulation",
+          "A bioequivalence precedent",
+          "A regulatory filing conclusion"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What should an attribute-to-risk link preserve?",
+        "options": [
+          "Hypothesis, evidence source, uncertainty and accountable review",
+          "Only the final test result",
+          "A generic acceptance limit",
+          "A supplier brochure"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 2,
+    "decisionPackageId": "drug-product-formulation-material-attributes",
+    "decisionPackageIds": [
+      "drug-product-formulation-material-attributes"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "formulation-material-attributes"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:formulation-material-attributes"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
+  },
+  {
+    "collection": "academy",
+    "slug": "drug-product-unit-operations-scale-up",
+    "lang": "en",
+    "title": "Drug product unit operations and scale-up control",
+    "tier": "pro",
+    "category": "Pharma Drug Product",
+    "seoDescription": "Connect drug-product unit operations, equipment, hold, sampling, scale and process-control evidence for review while keeping OSD examples synthetic and avoiding unsupported parameters or acceptance criteria.",
+    "updatedAt": "2026-08-10",
+    "quiz": [
+      {
+        "q": "What should be frozen before comparing two scales?",
+        "options": [
+          "Process version, equipment context, intended decision and evidence basis",
+          "The largest vessel",
+          "A universal batch count",
+          "The final specification only"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What does a similar endpoint at two scales prove?",
+        "options": [
+          "It is one observation requiring broader evidence",
+          "Automatic equivalence",
+          "A validated design space",
+          "A transfer authorization"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Why preserve hold and sampling evidence?",
+        "options": [
+          "Because they can change representativeness and material performance",
+          "To make the workbook longer",
+          "To replace process understanding",
+          "To infer a universal hold time"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 2,
+    "decisionPackageId": "drug-product-unit-operations-scale-up",
+    "decisionPackageIds": [
+      "drug-product-unit-operations-scale-up"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "unit-operations-scale-up"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:unit-operations-scale-up"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
+  },
+  {
+    "collection": "academy",
+    "slug": "drug-product-validation-transfer-lifecycle",
+    "lang": "en",
+    "title": "Drug product validation, transfer and continued lifecycle",
+    "tier": "pro",
+    "category": "Pharma Drug Product",
+    "seoDescription": "Connect drug-product technology transfer, validation, change and continued lifecycle evidence using a bounded OSD example without implying site readiness, validation conclusions or execution authorization.",
+    "updatedAt": "2026-08-10",
+    "quiz": [
+      {
+        "q": "What should a transfer baseline include?",
+        "options": [
+          "Scope, process/version, receiving-site capability, evidence gaps and accountable owner",
+          "Only a copied batch record",
+          "Only the final test method",
+          "A vendor capacity statement"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What does a fictional transfer case demonstrate?",
+        "options": [
+          "Decision lineage and open evidence questions",
+          "Site approval",
+          "A validated process",
+          "A filing conclusion"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "Why link change control to transfer evidence?",
+        "options": [
+          "Differences can alter process, analytical, equipment and lifecycle risk",
+          "To avoid documenting deviations",
+          "To set a universal change threshold",
+          "To replace receiving-site review"
+        ],
+        "answer": 0
+      }
+    ],
+    "readMinutes": 2,
+    "decisionPackageId": "drug-product-validation-transfer-lifecycle",
+    "decisionPackageIds": [
+      "drug-product-validation-transfer-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "validation-transfer-lifecycle"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:validation-transfer-lifecycle"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -2203,7 +2966,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2256,7 +3025,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2309,7 +3084,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2362,7 +3143,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2415,7 +3202,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2468,7 +3261,26 @@
         "answer": 1
       }
     ],
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": "drug-product-unit-operations-scale-up",
+    "decisionPackageIds": [
+      "drug-product-unit-operations-scale-up"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "unit-operations-scale-up"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:unit-operations-scale-up"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -2521,7 +3333,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2574,7 +3392,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2627,7 +3451,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2680,7 +3510,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2733,7 +3569,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2786,7 +3628,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2829,7 +3677,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 3
+    "readMinutes": 3,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2882,7 +3736,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2935,7 +3795,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -2988,7 +3854,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3041,7 +3913,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3094,7 +3972,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3147,7 +4031,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3200,7 +4090,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3253,7 +4149,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3296,7 +4198,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3349,7 +4257,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3402,7 +4316,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3455,7 +4375,28 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "pharma-api-isolation-solid-state-impurity",
+    "decisionPackageIds": [
+      "pharma-api-isolation-solid-state-impurity"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-stability-investigation"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-stability-investigation"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -3508,7 +4449,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3561,7 +4508,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3614,7 +4567,33 @@
         "answer": 1
       }
     ],
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": "cross-cutting-evidence-governance",
+    "decisionPackageIds": [
+      "cross-cutting-evidence-governance"
+    ],
+    "systemIds": [
+      "quality-lifecycle",
+      "qc-laboratory"
+    ],
+    "stageIds": [
+      "quality-signals",
+      "capa-change",
+      "quality-review-release",
+      "lab-investigations"
+    ],
+    "lifecycleStageIds": [
+      "quality-lifecycle:quality-signals",
+      "quality-lifecycle:capa-change",
+      "quality-lifecycle:quality-review-release",
+      "qc-laboratory:lab-investigations"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -3667,7 +4646,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3720,7 +4705,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -3773,7 +4764,32 @@
         "answer": 3
       }
     ],
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": "pharma-api-analytical-lifecycle",
+    "decisionPackageIds": [
+      "pharma-api-analytical-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-analytical",
+      "api-validation",
+      "api-stability-investigation",
+      "api-release-change"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-analytical",
+      "pharma-api:api-validation",
+      "pharma-api:api-stability-investigation",
+      "pharma-api:api-release-change"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -3826,7 +4842,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": "pharma-api-reaction-workup-scale-up",
+    "decisionPackageIds": [
+      "pharma-api-reaction-workup-scale-up"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-equipment-cleaning"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-equipment-cleaning"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -3879,7 +4916,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": "pharma-api-isolation-solid-state-impurity",
+    "decisionPackageIds": [
+      "pharma-api-isolation-solid-state-impurity"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-stability-investigation"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-stability-investigation"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -3932,7 +4990,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "pharma-api-isolation-solid-state-impurity",
+    "decisionPackageIds": [
+      "pharma-api-isolation-solid-state-impurity"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-stability-investigation"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-stability-investigation"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -3985,7 +5064,32 @@
         "answer": 3
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": "pharma-api-analytical-lifecycle",
+    "decisionPackageIds": [
+      "pharma-api-analytical-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-analytical",
+      "api-validation",
+      "api-stability-investigation",
+      "api-release-change"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-analytical",
+      "pharma-api:api-validation",
+      "pharma-api:api-stability-investigation",
+      "pharma-api:api-release-change"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -4038,7 +5142,28 @@
         "answer": 3
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": "pharma-api-reaction-workup-scale-up",
+    "decisionPackageIds": [
+      "pharma-api-reaction-workup-scale-up"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-equipment-cleaning"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-equipment-cleaning"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -4091,7 +5216,26 @@
         "answer": 3
       }
     ],
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": "pharma-api-route-inputs-suppliers",
+    "decisionPackageIds": [
+      "pharma-api-route-inputs-suppliers"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-inputs"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-inputs"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -4144,7 +5288,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4197,7 +5347,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4250,7 +5406,26 @@
         "answer": 0
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "drug-product-unit-operations-scale-up",
+    "decisionPackageIds": [
+      "drug-product-unit-operations-scale-up"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "unit-operations-scale-up"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:unit-operations-scale-up"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -4303,7 +5478,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4356,7 +5537,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4409,7 +5596,26 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": "drug-product-formulation-material-attributes",
+    "decisionPackageIds": [
+      "drug-product-formulation-material-attributes"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "formulation-material-attributes"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:formulation-material-attributes"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -4462,7 +5668,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4515,7 +5727,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4568,7 +5786,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4621,7 +5845,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4674,7 +5904,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4727,7 +5963,29 @@
         "answer": 0
       }
     ],
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [
+      "drug-product-formulation-material-attributes",
+      "drug-product-analytical-release-stability-packaging"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "formulation-material-attributes",
+      "analytical-release-stability-packaging"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:formulation-material-attributes",
+      "pharma-drug-product:analytical-release-stability-packaging"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -4780,7 +6038,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4833,7 +6097,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4886,7 +6156,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4939,7 +6215,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -4992,7 +6274,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -5045,7 +6333,26 @@
         "answer": 1
       }
     ],
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "pharma-api-route-inputs-suppliers",
+    "decisionPackageIds": [
+      "pharma-api-route-inputs-suppliers"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-inputs"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-inputs"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -5098,7 +6405,26 @@
         "answer": 1
       }
     ],
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "drug-product-validation-transfer-lifecycle",
+    "decisionPackageIds": [
+      "drug-product-validation-transfer-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "validation-transfer-lifecycle"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:validation-transfer-lifecycle"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "academy",
@@ -5151,7 +6477,13 @@
         "answer": 1
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -5204,7 +6536,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "academy",
@@ -5257,7 +6595,13 @@
         "answer": 0
       }
     ],
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5268,7 +6612,13 @@
     "category": "Regulatory Affairs",
     "seoDescription": "Promoting a medicine is regulated. Learn how on-label claims, fair balance, substantiation, MLR review, digital promotion, and regional oversight work.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5279,7 +6629,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A method-level framework for converting pharmaceutical analytical requirements into sample preparation, instrument sequences, standards, analyst workload, review capacity, resilience and lifecycle governance.",
     "updatedAt": "2026-07-11",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5290,7 +6646,32 @@
     "category": "Laboratory Controls",
     "seoDescription": "Method validation proves an analytical procedure is fit for its purpose. Learn how ICH Q2(R2) connects specificity, accuracy, precision, range, robustness, LOD/LOQ, reportable range, system suitability, and the Q14 lifecycle.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "pharma-api-analytical-lifecycle",
+    "decisionPackageIds": [
+      "pharma-api-analytical-lifecycle"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-analytical",
+      "api-validation",
+      "api-stability-investigation",
+      "api-release-change"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-analytical",
+      "pharma-api:api-validation",
+      "pharma-api:api-stability-investigation",
+      "pharma-api:api-release-change"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -5301,7 +6682,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "The practical changes in EU GMP Annex 1 2022: CCS, QRM, barrier technology, sterile filtration, environmental monitoring, media fills, and living evidence.",
     "updatedAt": "2026-07-02",
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5312,7 +6699,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Examine EU GMP Annex 1 (2022) cleanroom classification: Grade A-D airborne particle limits (at-rest & in-operation), microbial limits, and ISO 14644-1 sampling formulas.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5323,7 +6716,13 @@
     "category": "Quality Systems",
     "seoDescription": "The APR/PQR is not a box-ticking report. Learn how it verifies process consistency, specification fitness, recurring quality signals, and the actions a real review should trigger.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5334,7 +6733,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Aseptic technique protects the sterile path: first air, intervention control, slow movement, sterile tools, personnel monitoring, APS coverage, and what supervisors should observe.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5345,7 +6750,13 @@
     "category": "Data Integrity",
     "seoDescription": "A practical GMP guide to audit-trail review: what to review, when to review it, how to use risk-based exception review, and which red flags require QA escalation.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5356,7 +6767,13 @@
     "category": "Microbiology",
     "seoDescription": "Master the Bacterial Endotoxin Test (BET): LAL cascade biochemistry, K/M calculation formulas, Maximum Valid Dilution (MVD), rFC alternatives, and Low Endotoxin Recovery (LER) troubleshooting.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5367,7 +6784,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A specialist-gated BET application framework covering intended use, endotoxin limits, MVD, interference, gel-clot and photometric methods, controls, invalidity, lifecycle and capacity.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5378,7 +6801,13 @@
     "category": "Quality Systems",
     "seoDescription": "Batch release is where the quality system becomes one documented decision. Learn what QA/QP reviews, what blocks release, how review-by-exception works, and what auditors trace.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5389,7 +6818,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A method-application framework for bioburden enumeration covering sample purpose, preparation, membrane filtration, recovery suitability, calculations, decisions and capacity.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5400,7 +6835,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Biological indicators only mean something with valid controls. Why the positive control is non-negotiable, how to choose the right BI, and the false-negative traps to avoid.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 2
+    "readMinutes": 2,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5411,7 +6852,13 @@
     "category": "Validation",
     "seoDescription": "Every GMP measurement assumes the instrument is telling the truth. A practical guide to calibration, traceability, tolerance, as-found/as-left data, OOT impact assessment, intervals, and audit evidence.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5422,7 +6869,33 @@
     "category": "Quality Systems",
     "seoDescription": "A practical guide to CAPA effectiveness checks: how to define measurable criteria, choose a meaningful window, collect objective evidence, and avoid closing on activity alone.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": "cross-cutting-evidence-governance",
+    "decisionPackageIds": [
+      "cross-cutting-evidence-governance"
+    ],
+    "systemIds": [
+      "quality-lifecycle",
+      "qc-laboratory"
+    ],
+    "stageIds": [
+      "quality-signals",
+      "capa-change",
+      "quality-review-release",
+      "lab-investigations"
+    ],
+    "lifecycleStageIds": [
+      "quality-lifecycle:quality-signals",
+      "quality-lifecycle:capa-change",
+      "quality-lifecycle:quality-review-release",
+      "qc-laboratory:lab-investigations"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -5433,7 +6906,13 @@
     "category": "Career",
     "seoDescription": "A practical Career Blueprint guide for testing a life-science career route with requirement evidence, reviewer-confirmed proof, visible gaps and a 13-week continue-adjust-pivot decision.",
     "updatedAt": "2026-08-09",
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5444,7 +6923,28 @@
     "category": "Biologics QC",
     "seoDescription": "A biologic is only as consistent as the cell bank it comes from. How MCB/WCB systems, characterization, viral safety, genetic stability, storage, and change control protect biologics manufacturing.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": "biopharma-cell-materials-upstream",
+    "decisionPackageIds": [
+      "biopharma-cell-materials-upstream"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "cell-source-materials",
+      "upstream"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:cell-source-materials",
+      "biopharma:upstream"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -5455,7 +6955,13 @@
     "category": "Quality Systems",
     "seoDescription": "Change control protects the validated state by assessing product quality, validation, stability, regulatory, data-integrity, supplier, and batch-release impact before implementation.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5466,7 +6972,30 @@
     "category": "Biologics QC",
     "seoDescription": "Protein characterization needs orthogonal methods because a biologic is a heterogeneous molecule, not one simple structure. Learn how sequence, mass, charge, size, glycans, higher-order structure, purity, potency, and comparability fit together.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": "biopharma-downstream-analytics-formulation",
+    "decisionPackageIds": [
+      "biopharma-downstream-analytics-formulation"
+    ],
+    "systemIds": [
+      "biopharma"
+    ],
+    "stageIds": [
+      "downstream",
+      "formulation-fill",
+      "analytical-control"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:downstream",
+      "biopharma:formulation-fill",
+      "biopharma:analytical-control"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -5477,7 +7006,13 @@
     "category": "Validation",
     "seoDescription": "Examine the regulatory transition from legacy 10 ppm rules to Health-Based Exposure Limits (HBEL/PDE): toxicological derivation formulas (NOAEL & safety factors F1-F5) and MACO.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5488,7 +7023,13 @@
     "category": "Quality Systems",
     "seoDescription": "Product complaints are market intelligence for the pharmaceutical quality system. Learn intake, triage, adverse-event screening, investigation, trend review, CAPA, APR/PQR, and recall links.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5499,7 +7040,13 @@
     "category": "Data Integrity",
     "seoDescription": "Computer system validation and software assurance for GxP systems: intended use, risk-based testing, Part 11 and Annex 11 controls, supplier evidence, and lifecycle review.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5510,7 +7057,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "A sterile product is only sterile if the container keeps it that way. How CCI fits sterility assurance, Annex 1, MALL, deterministic methods, stability, shipping, and batch release.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5521,7 +7074,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "A practical guide to the Contamination Control Strategy in EU GMP Annex 1: how CCS connects facilities, people, utilities, cleaning, sterilization, EM, APS, deviations, QRM, CAPA, and lifecycle evidence into one sterile control story.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5532,7 +7091,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Turn a Quality Lab Blueprint into a controlled decision package with frozen scope, assumptions, evidence, limitations, acceptance criteria, actions, ownership, revisions and handover.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5543,7 +7108,13 @@
     "category": "Regulatory Affairs",
     "seoDescription": "The CTD organises a medicine dossier into five modules, while the eCTD manages electronic submission and lifecycle sequences. Learn Modules 1-5, CMC placement, regional differences, eCTD operations, publishing checks, and common RA mistakes.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5554,7 +7125,13 @@
     "category": "Data Integrity",
     "seoDescription": "A practical guide to recurring data-integrity observations in FDA 483s and warning letters: shared logins, unreviewed audit trails, testing into compliance, orphan data, backdating, access control gaps, and weak paper corrections.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5565,7 +7142,13 @@
     "category": "Data Integrity",
     "seoDescription": "A practical GMP guide to ALCOA+ data integrity: attributable, legible, contemporaneous, original, accurate, complete, consistent, enduring, and available records.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5576,7 +7159,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Sterilization kills microbes, but dead Gram-negatives can still leave endotoxin behind. How depyrogenation, dry heat, endotoxin indicators, 3-log reduction, and BET evidence fit sterile manufacturing.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5587,7 +7176,13 @@
     "category": "Microbiology",
     "seoDescription": "Master Disinfectant Efficacy Testing per USP <1072> and EU Annex 1: coupon studies, log-reduction criteria for bactericides, fungicides, and sporicides, and hold-times.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5598,7 +7193,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Disinfectant qualification proves cleanroom agents work against your facility isolates, surfaces, contact times, residues, and rotation strategy. Learn how Annex 1 expectations, sporicide use, EM trends, and operator technique fit together.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5609,7 +7210,26 @@
     "category": "Laboratory Controls",
     "seoDescription": "Most dissolution variability and false OOS results come from apparatus and medium, not the product. Learn the mechanical controls, USP 711 staged acceptance, and investigation checklist.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "drug-product-analytical-release-stability-packaging",
+    "decisionPackageIds": [
+      "drug-product-analytical-release-stability-packaging"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "analytical-release-stability-packaging"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:analytical-release-stability-packaging"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -5620,7 +7240,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "ICH Q3D(R2) replaced the old heavy-metals mindset with PDE-based, route-specific risk assessment. How classes, sources, concentration limits, ICP testing, and control strategy fit together.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5631,7 +7257,13 @@
     "category": "Microbiology",
     "seoDescription": "Examine the 5 environmental monitoring gaps that trigger FDA 483s and EU Annex 1 observations — convenience sampling, ignored trends, sampling contamination, lack of isolate ID, and slow excursion closure.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5642,7 +7274,13 @@
     "category": "Validation",
     "seoDescription": "DQ, IQ, OQ, and PQ explained as a lifecycle control system: URS, risk assessment, traceability, calibration, maintenance, change control, requalification, and audit evidence.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5653,7 +7291,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "The container and process equipment can leach chemicals into the product. Learn the difference between extractables and leachables, risk ranking, AET, supplier data, and practical control strategy.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5664,7 +7308,13 @@
     "category": "Quality Systems",
     "seoDescription": "A practical FDA inspection readiness checklist for QC and QA teams: daily readiness, front room/back room, document requests, SME preparation, and 483 response.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5675,7 +7325,13 @@
     "category": "Regulatory Affairs",
     "seoDescription": "Compare FDA and EMA regulatory pathways for medicines: IND vs CTA, NDA/BLA/ANDA/505(b)(2), EU centralised and national routes, accelerated tools, dossier strategy, lifecycle impact, and RA team decisions.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5686,7 +7342,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Convert QC capability, methods, workload and lifecycle needs into vendor-neutral user requirements, an auditable RFQ package and a traceable technical compliance matrix.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5697,7 +7359,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Turn early QC laboratory CAPEX and OPEX allowances into a structured, traceable and maturity-labeled cost basis covering installed cost, validation, lifecycle spend, uncertainty and change control.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5708,7 +7376,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate QC equipment and workflows into a traceable utility-demand basis covering operating states, diversity, quality attributes, resilience, monitoring and qualification boundaries.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5719,7 +7393,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A practical framework for converting QC method workload into analyst, reviewer and specialist staffing with productive hours, skill coverage, shifts, peaks and resilience.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5730,7 +7410,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Convert QC method demand into gross consumption, reorder points, safety stock, shelf-life controls, storage capacity and supplier-continuity decisions.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5741,7 +7427,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate QC workload into a calendar-aware turnaround model that separates touch, wait, incubation, queue, handoff and review time and defines when schedule simulation is required.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5752,7 +7444,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate QC capabilities into room functions, adjacencies, zoning, personnel and material flows, utility loads and an engineering-ready basis without pretending to produce a detailed design.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5763,7 +7461,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A cross-domain framework for converting QC workload into usable incubator, instrument, sterilizer and chamber capacity with peak demand, downtime and redundancy controls.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5774,7 +7478,13 @@
     "category": "Quality Systems",
     "seoDescription": "A practical 30-day GMP audit preparation plan for QC/QA teams: triage open risks, organize evidence, rehearse SMEs, run a mock audit, control document requests, and prepare for 483 response.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5785,7 +7495,13 @@
     "category": "Quality Systems",
     "seoDescription": "A plain-English guide to Good Manufacturing Practice: why GMP exists, what cGMP means, and the core principles behind pharma quality systems.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5796,7 +7512,13 @@
     "category": "Quality Systems",
     "seoDescription": "Reading an SOP is not the same as being qualified to do the task. Learn how GMP training proves competence, avoids weak CAPA retraining, and supports audit-ready qualification.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5807,7 +7529,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "In aseptic manufacturing, the gowned operator is often the largest contamination risk. Learn how gowning qualification, monitoring, requalification, APS coverage, and CAPA fit together.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5818,7 +7546,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A method-application framework for culture-media receipt, preparation, growth promotion, inhibitory and indicative properties, release decisions, failures and resource demand.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5829,7 +7563,13 @@
     "category": "Microbiology",
     "seoDescription": "Growth promotion testing qualifies microbiology media before use. Learn when to test each media lot, how low-inoculum recovery works, why selective media must prove recovery and inhibition, and how to investigate GPT failures.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5840,7 +7580,13 @@
     "category": "Biologics QC",
     "seoDescription": "Host-cell protein testing controls process-related protein impurities in biologics. Learn why HCP ELISA coverage, dilutional linearity, clearance trends, LC-MS support, specifications, and comparability matter.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5851,7 +7597,13 @@
     "category": "Quality Systems",
     "seoDescription": "A practical GMP deviation investigation guide: containment, impact assessment, risk classification, root cause, CAPA, effectiveness checks, closure evidence, and common audit traps.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5862,7 +7614,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A practical, evidence-aware framework for converting a non-sterile pharmaceutical portfolio into microbiology QC capabilities, workload, equipment, staffing, assumptions and review questions.",
     "updatedAt": "2026-07-11",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5873,7 +7631,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A controlled framework for converting Blueprint estimates, project actuals and expert corrections into validation cases, reviewed rule changes and defensible benchmark ranges.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5884,7 +7648,13 @@
     "category": "Validation",
     "seoDescription": "In a cleanroom the air is a process input. Why HVAC qualification covers airflow, HEPA integrity, pressure cascade, recovery, temperature, humidity, and cleanroom classification evidence.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5895,7 +7665,13 @@
     "category": "Quality Systems",
     "seoDescription": "A practical guide to GMP internal audits and self-inspection: risk-based scheduling, auditor independence, objective evidence, finding grading, CAPA follow-up, management review, and how to avoid a fake clean report.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5906,7 +7682,13 @@
     "category": "Regulatory Affairs",
     "seoDescription": "Labeling is regulated information, not marketing copy. Learn the difference between label, labeling, US Prescribing Information, EU SmPC/PIL, and how labeling changes are controlled.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5917,7 +7699,13 @@
     "category": "Investigations",
     "seoDescription": "Before you trend data, ask how much variation comes from the measurement system. A practical guide to MSA, Gage R&R, repeatability, reproducibility, %GRR, ndc, attribute studies, and when data are fit for decisions.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5928,7 +7716,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "A practical guide to aseptic process simulation: media-fill design, worst-case interventions, incubation, acceptance criteria, and failure investigation.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5939,7 +7733,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A product-specific microbial method suitability application pack connecting neutralization, recovery, bracketing and controlled evidence to method BOM, workload and laboratory capacity.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5950,7 +7750,13 @@
     "category": "Microbiology",
     "seoDescription": "Counting colonies tells you how many; microbial identification tells you what, where it may have come from, and whether it changes the investigation or batch decision.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5961,7 +7767,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate microbiology methods and shifts into a controlled qualification matrix covering observed competency, authorization, reviewers, expiry, cross-training, absence and surge coverage.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5972,7 +7784,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate microbiology media, reusable items and waste into qualified autoclave load families, cycle-hours, clean/dirty flow, release timing, resilience and expansion demand.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5983,7 +7801,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Convert microbiology methods into condition-specific incubator demand using plate-days, qualified rack geometry, arrival timing, reading windows, excursions and recovery scenarios.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -5994,7 +7818,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate microbiology excursions, invalid tests and contamination investigations into scenario-based analyst, media, incubation, identification, review and continuity capacity.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6005,7 +7835,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Convert microbiology schedules into lot-, status- and expiry-aware media and reagent readiness covering quarantine, preparation, QC, in-use dating, storage, allocation, stockout and continuity.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6016,7 +7852,13 @@
     "category": "Microbiology",
     "seoDescription": "Learn how to model microbiology QC laboratory capacity — converting sample testing demand into exact autoclave cycles, incubator shelf space, analyst hours, and consumable buffers.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6027,7 +7869,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate microbiology method requirements into a controlled reference-culture lifecycle covering source, identity, passage genealogy, working stocks, inoculum use, storage, inventory, workload and continuity.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6038,7 +7886,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate microbiology observations into a controlled review and decision flow covering raw data, calculations, controls, audit trails, exceptions, technical review, approval queues and release timing.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6049,7 +7903,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Convert microbiology sampling demand into a controlled receipt, accession, storage, hold-time, custody, rejection and test-start capability with traceable workload and exceptions.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6060,7 +7920,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Turn microbiology workflows into a controlled waste and decontamination capability covering segregation, containment, hold, treatment, clean/dirty flow, capacity, evidence and continuity.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6071,7 +7937,13 @@
     "category": "Biologics QC",
     "seoDescription": "Master Mycoplasma testing for biologics under USP 63 and Ph. Eur. 2.6.7: agar/broth culture, indicator cell line, NAT/qPCR validation, and contamination control.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6082,7 +7954,13 @@
     "category": "Biologics",
     "seoDescription": "Mycoplasma has no cell wall, slips through a 0.2-micron sterilizing filter, and won't cloud your media. Why it's the signature contaminant of cell culture, and how the compendial and rapid methods find it.",
     "updatedAt": "2026-06-24",
-    "readMinutes": 3
+    "readMinutes": 3,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6093,7 +7971,28 @@
     "category": "Laboratory Controls",
     "seoDescription": "A practical QC guide to nitrosamine impurity control: risk assessment, NDSRIs, acceptable intake limits, confirmatory testing, and method pitfalls.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": "pharma-api-isolation-solid-state-impurity",
+    "decisionPackageIds": [
+      "pharma-api-isolation-solid-state-impurity"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-stability-investigation"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-stability-investigation"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -6104,7 +8003,13 @@
     "category": "Microbiology",
     "seoDescription": "For non-sterile products, passing TAMC/TYMC limits is not enough. Learn how objectionable organisms are assessed by identity, route, product formulation, patient risk, BCC/Burkholderia concerns, SOP evidence, and batch impact.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6115,7 +8020,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "A practical walkthrough of FDA OOS investigation phases: Phase I laboratory assessment, Phase II full investigation, retesting, resampling, averaging, and final batch disposition.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6126,7 +8037,13 @@
     "category": "Investigations",
     "seoDescription": "Out-of-trend and out-of-specification results need different decisions. Learn OOS vs OOT vs OOE, investigation triggers, stability trend signals, CPV links, CAPA, APR/PQR, and batch impact.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6137,7 +8054,13 @@
     "category": "Data Integrity",
     "seoDescription": "21 CFR Part 11 and EU Annex 11 explain when electronic records and signatures can replace paper. Learn the practical controls: validation, audit trails, access control, copies, retention, e-signatures, review, and data integrity.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6148,7 +8071,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A method-application framework for viable environmental monitoring covering risk-based locations, activity states, air, surface and personnel methods, trending, excursions and capacity.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6159,7 +8088,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A decision framework for pharmaceutical microbial identification covering isolate source, required resolution, method selection, confidence, discordance, libraries, investigations and capacity.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6170,7 +8105,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A method-application framework for pharmaceutical water microbiology covering intended use, representative sampling, recovery method selection, incubation, controls, trending, investigations and resource demand.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6181,7 +8122,13 @@
     "category": "Microbiology",
     "seoDescription": "Pharmaceutical water is generated, stored, distributed, sanitized, sampled, and trended as a living utility. Learn why circulation, biofilm control, point-of-use sampling, and excursion response matter.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6192,7 +8139,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "A practical QC guide to USP, Ph. Eur., and JP: monographs, general chapters, harmonization, registered methods, reference standards, and lab pitfalls.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6203,7 +8156,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Translate a QC capability roadmap into phased procurement covering dependencies, long-lead items, utilities, qualification, cash flow, temporary capacity, expansion triggers and change control.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6214,7 +8173,13 @@
     "category": "Regulatory Affairs",
     "seoDescription": "An approved product still changes. Learn how post-approval variations are classified, how EU and US reporting categories differ, and how change control, evidence, and ICH Q12 fit together.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6225,7 +8190,26 @@
     "category": "Validation",
     "seoDescription": "A practical guide to FDA's three-stage process validation lifecycle: process design, PPQ, continued process verification, and common validation traps.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": "drug-product-unit-operations-scale-up",
+    "decisionPackageIds": [
+      "drug-product-unit-operations-scale-up"
+    ],
+    "systemIds": [
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "unit-operations-scale-up"
+    ],
+    "lifecycleStageIds": [
+      "pharma-drug-product:unit-operations-scale-up"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -6236,7 +8220,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A cross-domain framework for converting products, markets and testing demand into a traceable QC capability map across microbiology, analytical chemistry, utilities, stability and outsourced testing.",
     "updatedAt": "2026-07-11",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6247,7 +8237,13 @@
     "category": "Biologics QC",
     "seoDescription": "Protein aggregates are product-related impurities in biologics that can grow during processing, shipping, storage, and use. Learn why SEC helps, where it misses risk, and how orthogonal methods, stability, formulation, and handling controls fit together.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6258,7 +8254,13 @@
     "category": "Career",
     "seoDescription": "QC/QA interviews probe judgement, not just knowledge. The recurring tough questions on OOS, deviations, data integrity, and pressure — and the structure of a strong answer.",
     "updatedAt": "2026-06-20",
-    "readMinutes": 2
+    "readMinutes": 2,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6269,7 +8271,13 @@
     "category": "Career",
     "seoDescription": "How QC analysts actually move into QA: internal transfer vs external application, the deviation/CAPA/audit evidence reviewers look for, a realistic 6–18 month timeline, and the bench-only CV mistake to avoid.",
     "updatedAt": "2026-07-25",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6280,7 +8288,13 @@
     "category": "Validation",
     "seoDescription": "Qualification vs validation explained for GMP teams: what each term means, how DQ/IQ/OQ/PQ, PPQ and continued verification fit, and how to answer audit questions clearly.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6291,7 +8305,32 @@
     "category": "Validation",
     "seoDescription": "Quality by Design connects patient needs, CQAs, CPPs, material attributes, design space, control strategy, risk management, process validation, and lifecycle improvement.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [
+      "pharma-api-reaction-workup-scale-up",
+      "drug-product-formulation-material-attributes"
+    ],
+    "systemIds": [
+      "pharma-api",
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "api-process",
+      "api-equipment-cleaning",
+      "formulation-material-attributes"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-process",
+      "pharma-api:api-equipment-cleaning",
+      "pharma-drug-product:formulation-material-attributes"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -6302,7 +8341,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A practical Quality Lab decision guide for connecting product and process demand to methods, people, equipment, space, cost, resilience and reviewable capacity scenarios across Pharma API and Biopharma.",
     "updatedAt": "2026-08-09",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6313,7 +8358,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "Convert a completed laboratory project into controlled operating readiness across facilities, utilities, equipment, methods, people, materials, data, quality systems, continuity and go-live governance.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 6
+    "readMinutes": 6,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6324,7 +8375,13 @@
     "category": "Quality Systems",
     "seoDescription": "A practical guide to pharmaceutical quality metrics: leading vs lagging indicators, lot acceptance, RFT, invalidated OOS, CAPA effectiveness, complaints, backlog, APR/PQR, management review, and how to avoid KPI gaming.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6335,7 +8392,13 @@
     "category": "Microbiology",
     "seoDescription": "Master Rapid Microbial Methods (RMM) validation under USP 1223 and Ph. Eur. 5.1.6: equivalence testing, LOD/LOQ, accuracy, repeatability, and comparability to traditional growth assays.",
     "updatedAt": "2026-07-29",
-    "readMinutes": 4
+    "readMinutes": 4,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6346,7 +8409,13 @@
     "category": "Microbiology QC",
     "seoDescription": "How to make rapid microbial methods audit-ready: intended use, technology fit, USP 1223 validation, equivalence, method suitability, routine controls, and change impact.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6357,7 +8426,13 @@
     "category": "Quality Systems",
     "seoDescription": "A recall is where distribution records, batch traceability, complaint signals, health-hazard assessment, and decision-making are tested under pressure. Learn recall classes, strategy, communications, effectiveness checks, mock recalls, and CAPA.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 11
+    "readMinutes": 11,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6368,7 +8443,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "Reference standards anchor assay, impurity, dissolution, potency, and system-suitability results. Learn how qualification, traceability, bridging, storage, assigned value, expiry, and biologics reference materials protect QC data.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6379,7 +8460,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "Residual solvents are volatile process impurities controlled by ICH Q3C(R9). How Class 1/2/3, PDE, Option 1/2 limits, GC headspace, process control, and supplier evidence fit release.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6390,7 +8477,13 @@
     "category": "Career",
     "seoDescription": "A realistic 3-year roadmap from QC microbiology analyst to senior: the skill ladder from bench mastery to investigations, EM trending, method validation, and review duties — plus how to document each step as evidence.",
     "updatedAt": "2026-07-25",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6401,7 +8494,13 @@
     "category": "Investigations",
     "seoDescription": "Statistical process control separates common-cause noise from special-cause signals. A practical guide to control charts, limits, chart selection, CPV, capability, alert/action rules, and avoiding tampering.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6412,7 +8511,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A non-sterile microbiology application framework for specified-organism absence tests, method suitability, enrichment, confirmation, objectionability and laboratory capacity.",
     "updatedAt": "2026-07-12",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6423,7 +8528,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A framework for converting stability protocols, timepoints, sample inventory and analytical methods into chamber, storage, pull, testing, review, investigation and continuity capacity.",
     "updatedAt": "2026-07-11",
-    "readMinutes": 8
+    "readMinutes": 8,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6434,7 +8545,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "A stability program is only as useful as its stability-indicating methods, protocol, chambers, pulls, trend review, and shelf-life logic. A practical guide to ICH Q1A/Q1B/Q1D/Q1E.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6445,7 +8562,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Moist-heat sterilization is validated by heat, load, and biology together. Learn what F0 means, why the cold spot controls the cycle, how heat penetration and biological indicators prove lethality, and what to review before release.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6456,7 +8579,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A capability-planning framework for sterile products and biologics covering contamination control evidence, microbiology, potency, impurities, specialist methods, capacity, outsourcing and lifecycle risk.",
     "updatedAt": "2026-07-11",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6467,7 +8596,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "A 0.22 micron filter is a label; the real claim is bacterial retention under your conditions. Why product-specific validation and post-use integrity testing matter.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6478,7 +8613,26 @@
     "category": "Quality Systems",
     "seoDescription": "Supplier qualification is lifecycle risk management for materials and outsourced services. Learn risk tiers, quality agreements, change notification, CoA verification, ongoing monitoring, and when supplier issues trigger CAPA or requalification.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": "pharma-api-route-inputs-suppliers",
+    "decisionPackageIds": [
+      "pharma-api-route-inputs-suppliers"
+    ],
+    "systemIds": [
+      "pharma-api"
+    ],
+    "stageIds": [
+      "api-inputs"
+    ],
+    "lifecycleStageIds": [
+      "pharma-api:api-inputs"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -6489,7 +8643,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "System suitability is the routine gate for chromatographic data. Learn how SST links validation, USP 621, bracketing standards, %RSD, resolution, audit trails, OOS investigations, and data-integrity controls.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6500,7 +8660,32 @@
     "category": "Validation",
     "seoDescription": "Technology transfer is a controlled handoff of process knowledge, control strategy, methods, risks, and evidence. Learn gap assessment, transfer package, protocol, receiving-site readiness, comparability, and failure modes.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [
+      "biopharma-validation-comparability-transfer",
+      "drug-product-validation-transfer-lifecycle"
+    ],
+    "systemIds": [
+      "biopharma",
+      "pharma-drug-product"
+    ],
+    "stageIds": [
+      "validation-cpv",
+      "release-transfer",
+      "validation-transfer-lifecycle"
+    ],
+    "lifecycleStageIds": [
+      "biopharma:validation-cpv",
+      "biopharma:release-transfer",
+      "pharma-drug-product:validation-transfer-lifecycle"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
   },
   {
     "collection": "blog",
@@ -6511,7 +8696,13 @@
     "category": "Biologics QC",
     "seoDescription": "ICH Q5A(R2) builds viral safety on source control, stage-appropriate testing, and validated clearance because no single negative test can prove a virus is absent. Learn how the barrier argument works.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6522,7 +8713,13 @@
     "category": "Sterile Manufacturing",
     "seoDescription": "Every injectable is inspected for visible particles and defects, but 100% inspection is still probabilistic. How FDA, USP 790/1790, AQL, inspector qualification, AVI, investigations, and trend review fit together.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6533,7 +8730,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A practical framework for converting pharmaceutical water and environmental monitoring programs into sample demand, method workload, incubation capacity, trending, investigation and resilience requirements.",
     "updatedAt": "2026-07-11",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6544,7 +8747,13 @@
     "category": "Microbiology QC",
     "seoDescription": "Bioburden testing explained for QC teams: what it measures, USP 61/62 vs ISO 11737, sampling, recovery efficiency, method suitability, and trend review.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 5
+    "readMinutes": 5,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6555,7 +8764,13 @@
     "category": "Quality Systems",
     "seoDescription": "A practical GMP guide to CAPA: correction vs corrective vs preventive action, when a CAPA is needed, how root cause drives the action plan, and what makes effectiveness checks audit-ready.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6566,7 +8781,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "A practical QC guide to the Certificate of Analysis (CoA): what it contains, how it supports batch release and incoming-material control, and why supplier CoAs still need verification.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6577,7 +8798,13 @@
     "category": "Investigations",
     "seoDescription": "What an OOS result is, how it differs from OOT and OOE, how the two-phase investigation works, and how to avoid testing into compliance.",
     "updatedAt": "2026-07-03",
-    "readMinutes": 9
+    "readMinutes": 9,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6588,7 +8815,13 @@
     "category": "Microbiology",
     "seoDescription": "Sterility testing is a limited sample of a batch, not proof every unit is sterile. Learn what USP 71 and Ph. Eur. 2.6.1 can show, why sterility assurance is built into the process, and how positive results should be investigated.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 12
+    "readMinutes": 12,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6599,7 +8832,13 @@
     "category": "Quality Lab Planning",
     "seoDescription": "A controlled make-or-buy framework for QC testing that compares capability, turnaround, demand, evidence transfer, continuity, governance and lifecycle cost.",
     "updatedAt": "2026-07-14",
-    "readMinutes": 7
+    "readMinutes": 7,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6610,7 +8849,13 @@
     "category": "Laboratory Controls",
     "seoDescription": "WFI vs Purified Water vs reagent-grade water: how to choose and defend the right water grade for product contact, final rinse, QC testing, cleaning, endotoxin risk, and analytical use.",
     "updatedAt": "2026-07-04",
-    "readMinutes": 10
+    "readMinutes": 10,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6621,7 +8866,13 @@
     "category": "Biologics QC",
     "seoDescription": "Potency is the biologic QC test that links product quality to mechanism of action. Learn why cell-based assays are noisy, how relative potency, reference standards, 4PL curves, parallelism, system suitability, validation, stability, and investigations fit together.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 14
+    "readMinutes": 14,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   },
   {
     "collection": "blog",
@@ -6632,6 +8883,12 @@
     "category": "Quality Systems",
     "seoDescription": "Acceptance sampling and final QC testing cannot create quality after manufacturing. Learn AQL, producer and consumer risk, why accepted does not mean defect-free, how sampling fits batch release, process validation, QbD, CPV, and when zero-defect logic is required.",
     "updatedAt": "2026-07-05",
-    "readMinutes": 13
+    "readMinutes": 13,
+    "decisionPackageId": null,
+    "decisionPackageIds": [],
+    "systemIds": [],
+    "stageIds": [],
+    "lifecycleStageIds": [],
+    "productDestinations": []
   }
 ]

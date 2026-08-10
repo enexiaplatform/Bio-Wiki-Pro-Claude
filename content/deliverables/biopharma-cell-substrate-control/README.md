@@ -6,7 +6,7 @@ process/product evidence, lifecycle change and accountable review.
 
 **Package version:** 1.0.0-review
 
-**Review status:** under-review
+**Review status:** editorial-reviewed
 
 **Decision owner:** the authorized cell-substrate/bank/change owner and quality
 unit, supported by cell-line development, molecular characterization,

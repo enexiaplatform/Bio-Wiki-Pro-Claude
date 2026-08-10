@@ -72,6 +72,7 @@ function coreLesson(input: {
   workedExample: string;
   workingAsset: string;
   score: [number, number, number, number, number];
+  strategicCore?: boolean;
 }): ContentQuality {
   const [provenance, actionability, applicability, workedExample, usability] = input.score;
   return contentQualitySchema.parse({
@@ -90,7 +91,7 @@ function coreLesson(input: {
     workingAsset: input.workingAsset,
     supersedes: null,
     changeSummary: "Registered as a strategic core lesson for evidence, scenario and asset review.",
-    strategicCore: true,
+    strategicCore: input.strategicCore ?? true,
     promoted: false,
     score: { provenance, actionability, applicability, workedExample, usability, criticalFails: ["Editorial and risk-based reviewer sign-off are not recorded."] },
   });
@@ -133,7 +134,42 @@ export const CONTENT_QUALITY_REGISTRY: Record<string, ContentQuality> = {
   "academy/cell-bank-characterization": coreLesson({ slug: "cell-bank-characterization", version: "2.0.0-review", riskLevel: "high", objectives: ["Explain how cell-substrate and banking controls contribute to product quality and safety.", "Identify the product-specific evidence and reviewer roles needed before relying on a cell-bank conclusion."], decisionUse: "Prepare a cell-substrate evidence review for an approved product, process, or change-control workflow.", sourceIds: ["ICH-Q5D", "ICH-Q5A-R2", "ICH-Q9-R1"], workedExample: "Existing cell-bank content requires source-by-source claim review and a completed evidence map.", workingAsset: "Biopharma control-strategy workflow brief", score: [18, 18, 12, 9, 8] }),
   "academy/protein-characterization": coreLesson({ slug: "protein-characterization", version: "2.0.0-review", riskLevel: "high", objectives: ["Select complementary characterization questions across structure, heterogeneity, activity, and impurities.", "Separate development characterization from routine specification and release decisions."], decisionUse: "Frame an orthogonal characterization plan for qualified product and regulatory review.", sourceIds: ["ICH-Q6B", "ICH-Q5E", "ICH-Q9-R1"], workedExample: "Existing method examples require current scientific and product-scope review.", workingAsset: "Biopharma control-strategy workflow brief", score: [18, 19, 12, 10, 8] }),
   "academy/cell-based-potency-assays": coreLesson({ slug: "cell-based-potency-assays", version: "2.0.0-review", riskLevel: "high", objectives: ["Connect potency measurement to relevant biological activity and assay-system control.", "Identify evidence needed before accepting a relative-potency result or lifecycle change."], decisionUse: "Structure a potency-assay evidence and lifecycle review without supplying product-specific suitability or acceptance criteria.", sourceIds: ["ICH-Q6B", "ICH-Q5C", "ICH-Q2-R2", "ICH-Q14", "ICH-Q9-R1"], workedExample: "Existing potency examples require bioassay-statistics and product-specific review.", workingAsset: "Biopharma control-strategy workflow brief", score: [17, 20, 12, 10, 8] }),
+  "academy/drug-product-formulation-material-attributes": coreLesson({ slug: "drug-product-formulation-material-attributes", version: "1.0.0-review", riskLevel: "high", objectives: ["Connect drug-product quality decisions to formulation intent, material attributes, process knowledge, analytical evidence and lifecycle context.", "Keep OSD worked examples bounded: distinguish planning hypotheses and evidence requests from product-specific formulation, specification or approval conclusions."], decisionUse: "Frame a drug-product formulation and material-attribute evidence package for qualified review without supplying a formula, design space, universal material limits or regulatory conclusion.", sourceIds: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10"], workedExample: "A fictional OSD tablet planning case links excipient variability, blend behavior, compaction observations and dissolution questions while preserving missing evidence and accountable reviewers; it is not a formula, design space or validation case.", workingAsset: "Drug Product Formulation & Material Attributes Decision Brief", score: [22, 22, 14, 14, 13], strategicCore: false }),
+  "academy/drug-product-unit-operations-scale-up": coreLesson({ slug: "drug-product-unit-operations-scale-up", version: "1.0.0-review", riskLevel: "high", objectives: ["Trace unit-operation intent, scale effects, equipment context, material attributes, process controls, sampling and analytical evidence across a drug-product decision.", "Separate observed OSD example signals from product-specific scale-up, validation, acceptance and authorization decisions."], decisionUse: "Prepare a bounded drug-product unit-operations and scale-up evidence package for qualified review without supplying universal operating ranges, process capability conclusions or manufacturing authorization.", sourceIds: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"], workedExample: "A fictional OSD blend-to-compression scale-up case preserves equipment, hold-time, sampling, tablet-attribute and analytical questions without declaring equivalence, capability or validation success.", workingAsset: "Drug Product Unit Operations & Scale-up Decision Brief", score: [22, 22, 14, 14, 13], strategicCore: false }),
+  "academy/drug-product-analytical-release-stability": coreLesson({ slug: "drug-product-analytical-release-stability", version: "1.0.0-review", riskLevel: "high", objectives: ["Connect drug-product analytical intent to performance evidence, release and stability questions, packaging context and lifecycle change.", "Keep method capability, specification basis, trend signals and product conclusions separate in a bounded OSD example."], decisionUse: "Frame a drug-product analytical, release, stability or packaging evidence package for qualified review without supplying methods, specifications, acceptance criteria, shelf life or batch disposition.", sourceIds: ["ICH-Q1A-R2", "ICH-Q2-R2", "ICH-Q6A", "ICH-Q14", "FDA-CONTAINER-CLOSURE-1999"], workedExample: "A fictional OSD stability and container-closure change case preserves dissolution, assay, degradation, method, packaging and trend questions without reaching a specification, shelf-life or release conclusion.", workingAsset: "Drug Product Analytical, Release & Stability Decision Brief", score: [22, 22, 14, 14, 13], strategicCore: false }),
+  "academy/drug-product-validation-transfer-lifecycle": coreLesson({ slug: "drug-product-validation-transfer-lifecycle", version: "1.0.0-review", riskLevel: "high", objectives: ["Connect drug-product validation, transfer, change and continued-lifecycle questions to process, analytical, material, site and governance evidence.", "Preserve OSD example limitations and open actions without presenting a validation conclusion, transfer acceptance or regulatory precedent."], decisionUse: "Prepare a bounded drug-product validation, technology-transfer, change-control or continued-lifecycle evidence package for qualified review without supplying validation design, acceptance criteria, batch conclusions or authorization.", sourceIds: ["WHO-TRS-1044-ANNEX4", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"], workedExample: "A fictional OSD receiving-site transfer and coating-parameter change preserves process, analytical, material, comparability, validation and residual-action questions without reaching transfer acceptance or lifecycle approval.", workingAsset: "Drug Product Validation, Transfer & Lifecycle Decision Brief", score: [22, 22, 14, 14, 13], strategicCore: false }),
 };
+
+// The twelve roadmap packages have completed the founder/editorial pass. This
+// is intentionally distinct from SME review and controlled-release promotion.
+const EDITORIAL_REVIEWED_PACKAGE_LESSONS = [
+  "biopharma-upstream-process-control",
+  "biopharma-integrated-analytical-control-strategy",
+  "biopharma-integrated-technology-transfer",
+  "pharma-api-starting-materials-input-control",
+  "pharma-api-reaction-workup-scale-up",
+  "pharma-api-isolation-solid-state-control",
+  "pharma-api-analytical-specification-lifecycle",
+  "drug-product-formulation-material-attributes",
+  "drug-product-unit-operations-scale-up",
+  "drug-product-analytical-release-stability",
+  "drug-product-validation-transfer-lifecycle",
+  "data-integrity-deep-dive",
+] as const;
+
+for (const slug of EDITORIAL_REVIEWED_PACKAGE_LESSONS) {
+  const key = `academy/${slug}`;
+  const quality = CONTENT_QUALITY_REGISTRY[key];
+  if (quality) {
+    CONTENT_QUALITY_REGISTRY[key] = {
+      ...quality,
+      reviewStatus: "editorial-reviewed",
+      lastReviewedAt: "2026-08-10",
+      reviewDueAt: "2027-02-10",
+      reviewerRoles: ["editorial owner"],
+    };
+  }
+}
 
 export function getContentQuality(collection: string, slug: string, title: string, tier: string): ContentQuality {
   return CONTENT_QUALITY_REGISTRY[`${collection}/${slug}`] ?? legacyContentQuality(title, tier);

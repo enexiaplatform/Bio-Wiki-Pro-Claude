@@ -1,6 +1,6 @@
 # Pharma API Analytical & Lifecycle — 1.0 Review Packet
 
-Status: `under-review`  
+Status: `editorial-reviewed`
 Content version: `1.0.0-review`
 
 ## Review scope

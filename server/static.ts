@@ -2,6 +2,7 @@ import express, { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { DECISION_PACKAGES } from "../shared/decision-packages.js";
 
 const SLUG_RE = /^[a-z0-9-]+$/;
 const SITE_URL = (process.env.PUBLIC_APP_URL
@@ -288,6 +289,74 @@ export function serveStatic(app: Express) {
 
   contentMeta("blog", "/blog");
   contentMeta("academy", "/library");
+
+  app.get("/evidence/packages/:id", async (req, res, next) => {
+    const id = String(req.params.id ?? "");
+    if (!SLUG_RE.test(id)) return next();
+    const item = DECISION_PACKAGES.find((candidate) => candidate.id === id);
+    if (!item) return next();
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(injectMeta(html, {
+        title: item.title,
+        description: item.summary,
+        url: `${SITE_URL}/evidence/packages/${item.id}`,
+        type: "article",
+      }));
+    } catch {
+      return next();
+    }
+  });
+
+  const evidenceHubMeta: Record<string, { title: string; description: string }> = {
+    biopharma: { title: "Biopharma Evidence Hub | Atlas Evidence", description: "Follow biopharma evidence from substrate and materials through upstream, analytics, validation, comparability and transfer." },
+    "pharma-api": { title: "Pharma/API Evidence Hub | Atlas Evidence", description: "Connect Pharma/API route, starting materials, reaction, impurity, analytical and commercial lifecycle evidence." },
+    "drug-product": { title: "Drug Product Evidence Hub | Atlas Evidence", description: "Use a dosage-form-aware drug-product evidence framework with a bounded synthetic oral-solid-dose example." },
+  };
+
+  app.get("/evidence/:lane", async (req, res, next) => {
+    const lane = String(req.params.lane ?? "");
+    const meta = evidenceHubMeta[lane];
+    if (!meta) return next();
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(injectMeta(html, { ...meta, url: `${SITE_URL}/evidence/${lane}`, type: "website" }));
+    } catch {
+      return next();
+    }
+  });
+
+  app.get("/evidence", async (_req, res, next) => {
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(injectMeta(html, {
+        title: "Atlas Evidence Decision Packages",
+        description: "Explore evidence-linked decision guides connecting Biopharma, Pharma/API and drug-product quality work to Atlas Pro, Blueprint and Career.",
+        url: `${SITE_URL}/evidence`,
+        type: "website",
+      }));
+    } catch {
+      return next();
+    }
+  });
+
+  app.get("/career/domains", async (_req, res, next) => {
+    try {
+      const html = await fs.promises.readFile(indexPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.send(injectMeta(html, {
+        title: "Career Domain Tracks | Life Science Atlas",
+        description: "Choose a Biopharma, Pharma/API or Drug Product evidence track with competency mapping and 13-week proof activities.",
+        url: `${SITE_URL}/career/domains`,
+        type: "website",
+      }));
+    } catch {
+      return next();
+    }
+  });
 
   // Per-tool social/SEO meta for the standalone tool pages (from the in-memory
   // TOOL_META map, no file read). Any miss falls through to the default index.

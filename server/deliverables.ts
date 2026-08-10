@@ -255,6 +255,71 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "pharma-api-analytical-lifecycle-v1-fictional-example.xlsx", label: "Pharma API Analytical & Lifecycle Fictional Example v1 (XLSX)", description: "Fictional column and sample-preparation transfer case preserving method, stability, reference, data-integrity and filing questions.", contentType: XLSX },
     ],
   },
+  pharma_api_reaction_scale_up: {
+    id: "pharma_api_reaction_scale_up",
+    dir: "pharma-api-reaction-scale-up",
+    name: "Pharma API Reaction, Work-up & Scale-up Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "under-review", limitations: ["Qualified process chemistry, engineering, manufacturing science, validation, quality and regulatory CMC review is required before controlled use. No operating range, purge factor, acceptance criterion, process capability conclusion or authorization is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Package scope, source IDs, reviewer roles and the evidence-chain boundary.", contentType: MD },
+      { filename: "pharma-api-reaction-scale-up-guide.md", label: "Reaction, Work-up & Scale-up Guide", description: "Evidence-led workflow for reaction, work-up, equipment, scale and accountable review.", contentType: MD },
+      { filename: "pharma-api-reaction-scale-up-blank.csv", label: "Reaction & Scale-up Working File (CSV)", description: "Blank register for evidence, controls, actions, sources and review state.", contentType: CSV },
+      { filename: "pharma-api-reaction-scale-up-fictional-example.md", label: "Reaction & Scale-up Fictional Example", description: "Bounded synthetic example with observed evidence and open decisions.", contentType: MD },
+    ],
+  },
+  drug_product_formulation_material_attributes: {
+    id: "drug_product_formulation_material_attributes",
+    dir: "drug-product-formulation-material-attributes",
+    name: "Drug Product Formulation & Material Attributes Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "under-review", limitations: ["The OSD example is synthetic planning context only. Qualified formulation, material, biopharmaceutics, analytical, quality and regulatory review is required; no formula, design space, bioequivalence conclusion, release criterion or precedent is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Package scope, OSD boundary, source IDs and review roles.", contentType: MD },
+      { filename: "drug-product-formulation-material-attributes-guide.md", label: "Formulation & Material Attributes Guide", description: "Framework for linking formulation hypotheses, material attributes and evidence strength.", contentType: MD },
+      { filename: "drug-product-formulation-material-attributes-blank.csv", label: "Formulation Working File (CSV)", description: "Blank register for attributes, evidence, questions, sources and review state.", contentType: CSV },
+      { filename: "drug-product-formulation-material-attributes-fictional-example.md", label: "Synthetic OSD Fictional Example", description: "Illustrative planning case labelled as fictional and non-regulatory.", contentType: MD },
+    ],
+  },
+  drug_product_unit_operations_scale_up: {
+    id: "drug_product_unit_operations_scale_up",
+    dir: "drug-product-unit-operations-scale-up",
+    name: "Drug Product Unit Operations & Scale-up Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "under-review", limitations: ["Qualified process development, engineering, manufacturing, statistics, validation, quality and regulatory review is required. No process parameter, scale rule, hold limit, sampling plan or acceptance criterion is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Package scope, unit-operation boundary, source IDs and review roles.", contentType: MD },
+      { filename: "drug-product-unit-operations-scale-up-guide.md", label: "Unit Operations & Scale-up Guide", description: "Evidence-led workflow for equipment, hold, sampling, scale and control questions.", contentType: MD },
+      { filename: "drug-product-unit-operations-scale-up-blank.csv", label: "Unit Operations Working File (CSV)", description: "Blank register for unit operations, evidence, controls and open actions.", contentType: CSV },
+      { filename: "drug-product-unit-operations-scale-up-fictional-example.md", label: "Synthetic OSD Scale-up Fictional Example", description: "Illustrative scale-up evidence map with explicit unknowns.", contentType: MD },
+    ],
+  },
+  drug_product_analytical_release_stability: {
+    id: "drug_product_analytical_release_stability",
+    dir: "drug-product-analytical-release-stability",
+    name: "Drug Product Analytical, Release & Stability Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "under-review", limitations: ["Qualified analytical, QC, stability, packaging, quality and regulatory review is required. No product-specific method, specification, limit, shelf life, dissolution conclusion or release decision is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Package scope, evidence boundary, source IDs and review roles.", contentType: MD },
+      { filename: "drug-product-analytical-release-stability-guide.md", label: "Analytical, Release & Stability Guide", description: "Framework for linking analytical capability, release, stability and packaging evidence.", contentType: MD },
+      { filename: "drug-product-analytical-release-stability-blank.csv", label: "Analytical Lifecycle Working File (CSV)", description: "Blank register for methods, studies, evidence, actions and review state.", contentType: CSV },
+      { filename: "drug-product-analytical-release-stability-fictional-example.md", label: "Synthetic OSD Release & Stability Fictional Example", description: "Illustrative case preserving open technical and quality decisions.", contentType: MD },
+    ],
+  },
+  drug_product_validation_transfer_lifecycle: {
+    id: "drug_product_validation_transfer_lifecycle",
+    dir: "drug-product-validation-transfer-lifecycle",
+    name: "Drug Product Validation, Transfer & Lifecycle Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "under-review", limitations: ["Qualified transfer, manufacturing, engineering, analytical/QC, validation, quality and regulatory review is required. No execution authorization, validation conclusion, change approval, site readiness decision or disposition is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Package scope, transfer boundary, source IDs and review roles.", contentType: MD },
+      { filename: "drug-product-validation-transfer-lifecycle-guide.md", label: "Validation, Transfer & Lifecycle Guide", description: "Evidence-led workflow for receiving-site capability, validation, change and continued review.", contentType: MD },
+      { filename: "drug-product-validation-transfer-lifecycle-blank.csv", label: "Transfer & Lifecycle Working File (CSV)", description: "Blank register for scope, evidence, actions, sources and sign-off.", contentType: CSV },
+      { filename: "drug-product-validation-transfer-lifecycle-fictional-example.md", label: "Synthetic Receiving-site Transfer Fictional Example", description: "Illustrative case labelled fictional and not an authorization or validation conclusion.", contentType: MD },
+    ],
+  },
   environmental_monitoring_checklist: {
     id: "environmental_monitoring_checklist",
     dir: "environmental-monitoring-checklist",
@@ -328,6 +393,27 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
     ],
   },
 };
+
+const EDITORIAL_REVIEWED_PACKAGE_DELIVERABLES = new Set([
+  "biopharma_cell_substrate_control",
+  "biopharma_downstream_clearance",
+  "biopharma_process_validation_cpv",
+  "biopharma_technology_transfer",
+  "pharma_api_starting_material_input_control",
+  "pharma_api_reaction_scale_up",
+  "pharma_api_impurity_control",
+  "pharma_api_analytical_lifecycle",
+  "drug_product_formulation_material_attributes",
+  "drug_product_unit_operations_scale_up",
+  "drug_product_analytical_release_stability",
+  "drug_product_validation_transfer_lifecycle",
+  "oos_investigation_template",
+]);
+
+for (const productId of Array.from(EDITORIAL_REVIEWED_PACKAGE_DELIVERABLES)) {
+  const product = DELIVERABLES[productId];
+  if (product?.quality) product.quality = { ...product.quality, reviewStatus: "editorial-reviewed" };
+}
 
 /** All deliverable products a purchase of `productType` unlocks. */
 export function deliverablesForPurchase(productType: string): DeliverableProduct[] {

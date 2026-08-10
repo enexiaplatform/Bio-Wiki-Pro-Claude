@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import {
-  Activity, BadgeDollarSign, BarChart3, BookOpenCheck, Building2, CheckCircle2, Database,
+  Activity, BadgeDollarSign, BarChart3, BookOpenCheck, BriefcaseBusiness, Building2, CheckCircle2, Database,
   Download, FileArchive, FileCheck2, FolderKanban, LayoutDashboard, Loader2,
-  Mail, Search, ShieldCheck, ShoppingCart, Users, XCircle,
+  Mail, Network, Search, ShieldCheck, ShoppingCart, Users, XCircle,
 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -12,6 +12,9 @@ import { useSEO } from "@/hooks/use-seo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import type { QualityLabFunnelSnapshot, QualityLabFunnelStage } from "@shared/quality-lab-funnel";
+import { DECISION_PACKAGES } from "@shared/decision-packages";
+import { CAREER_DOMAIN_TRACKS } from "@shared/career-domain-tracks";
+import { MANUFACTURING_QUALITY_PORTFOLIO } from "@shared/manufacturing-quality-portfolio";
 
 type Overview = {
   users: { total: number; pro: number; verified: number };
@@ -67,6 +70,7 @@ const funnelLabels: Record<QualityLabFunnelStage, string> = {
   diagnostic_checkout_started: "Diagnostic checkout started",
   diagnostic_purchased: "Diagnostic purchased",
 };
+const decisionAnalyticsEvents = ["decision_package_viewed", "decision_package_asset_opened", "decision_package_completed", "decision_package_product_handoff", "career_domain_track_selected", "coverage_gap_opened"] as const;
 
 export default function AdminDashboardPage() {
   useSEO({ title: "Admin Control Center", description: "Operational control center for Life Science Atlas." });
@@ -121,6 +125,13 @@ export default function AdminDashboardPage() {
     const term = contentSearch.trim().toLowerCase();
     return (content.data?.content ?? []).filter((entry) => !term || entry.slug.toLowerCase().includes(term));
   }, [content.data, contentSearch]);
+  const decisionIntelligence = useMemo(() => ({
+    packages: DECISION_PACKAGES.length,
+    underReview: DECISION_PACKAGES.filter((item) => item.reviewStatus === "under-review").length,
+    tracks: CAREER_DOMAIN_TRACKS.length,
+    linkedAreas: MANUFACTURING_QUALITY_PORTFOLIO.flatMap((lane) => lane.areas).filter((area) => area.status !== "not-covered" && area.decisionPackageIds.length > 0).length,
+    totalAreas: MANUFACTURING_QUALITY_PORTFOLIO.flatMap((lane) => lane.areas).filter((area) => area.status !== "not-covered").length,
+  }), []);
 
   if (isLoading || !isAdmin) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-teal-300" /></div>;
 
@@ -153,6 +164,7 @@ export default function AdminDashboardPage() {
             <AdminTab value="documents" icon={FileArchive} label="Paid documents" />
             <AdminTab value="pipeline" icon={FolderKanban} label="Pipeline" />
             <AdminTab value="funnel" icon={BarChart3} label="Blueprint funnel" />
+            <AdminTab value="decision-intelligence" icon={Network} label="Decision intelligence" />
             <AdminTab value="content" icon={BookOpenCheck} label="Content" />
           </TabsList>
 
@@ -208,6 +220,26 @@ export default function AdminDashboardPage() {
                 </div>
               )}
             </Panel>
+          </TabsContent>
+
+          <TabsContent value="decision-intelligence" className="mt-5 space-y-5">
+            <Panel title="Decision intelligence registry" description="Registry-backed coverage and instrumentation status. Engagement counts remain in the configured analytics provider; this panel never fabricates user activity.">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <MetricCard icon={Network} label="Decision Packages" value={`${decisionIntelligence.packages}/12`} detail={`${decisionIntelligence.underReview} currently under review`} />
+                <MetricCard icon={BriefcaseBusiness} label="Career tracks" value={decisionIntelligence.tracks} detail="Biopharma · Pharma/API · Drug Product" />
+                <MetricCard icon={FileCheck2} label="Linked portfolio areas" value={`${decisionIntelligence.linkedAreas}/${decisionIntelligence.totalAreas}`} detail="Non-not-covered areas with package links" />
+                <MetricCard icon={Activity} label="Instrumented events" value={decisionAnalyticsEvents.length} detail="PostHog event contract" />
+              </div>
+            </Panel>
+            <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
+              <Panel title="Package review queue" description="Every package remains visible, source-bound and blocked from SME promotion until qualified review is recorded.">
+                <div className="space-y-2">{DECISION_PACKAGES.map((item) => <Link key={item.id} href={`/evidence/packages/${item.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-slate-950/35 p-3 transition hover:border-teal-300/25"><div><p className="text-sm font-semibold text-white">{item.title}</p><p className="mt-1 text-[10px] uppercase tracking-wider text-slate-600">Month {item.month} · {item.lane} · {item.stageRefs.length} stages</p></div><span className="rounded-full border border-amber-300/20 bg-amber-300/[0.06] px-2 py-1 text-[9px] font-bold uppercase text-amber-200">{item.reviewStatus}</span></Link>)}</div>
+              </Panel>
+              <Panel title="Analytics event contract" description="These event names are emitted by public, Blueprint, Pro and Career handoffs; no project inputs or regulated evidence are sent as event payloads.">
+                <div className="flex flex-wrap gap-2">{decisionAnalyticsEvents.map((event) => <span key={event} className="rounded-lg border border-sky-300/15 bg-sky-300/[0.05] px-2.5 py-2 font-mono text-[10px] text-sky-200">{event}</span>)}</div>
+                <div className="mt-5 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4 text-xs leading-6 text-slate-400">Review status is an editorial and SME control, not an engagement metric. Source, applicability, limitations and domain-pack boundaries remain visible in every package.</div>
+              </Panel>
+            </div>
           </TabsContent>
 
           <TabsContent value="content" className="mt-5">

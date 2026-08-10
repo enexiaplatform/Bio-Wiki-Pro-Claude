@@ -35,6 +35,7 @@ import { filterRegulatoryUpdates, regulatoryDigestPreferenceSchema } from "../sh
 import { fetchRegulatoryMonitor } from "./regulatory-monitor.js";
 import { qualityLabFunnelEventSchema } from "../shared/quality-lab-funnel.js";
 import { fulfillStripeEventOnce, type StripeFulfillment } from "./stripe-fulfillment.js";
+import { DECISION_PACKAGES } from "../shared/decision-packages.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -1654,9 +1655,9 @@ export async function registerRoutes(app: Express): Promise<void> {
 
     const corePaths = [
       "", "/workflows", "/toolkits", "/academy",
-      "/glossary", "/about", "/tools", "/compliance", "/career", "/products", "/pro", "/how-it-works", "/methods", "/monitor",
+      "/glossary", "/about", "/tools", "/compliance", "/career", "/career/domains", "/products", "/pro", "/how-it-works", "/methods", "/monitor",
       "/quality-lab", "/quality-lab/how-it-works", "/quality-lab/deliverables", "/quality-lab/sample",
-      "/pricing", "/toolkits/gmp-audit-kit",
+      "/pricing", "/toolkits/gmp-audit-kit", "/evidence", "/evidence/biopharma", "/evidence/pharma-api", "/evidence/drug-product",
       "/blog", "/upgrade", "/login", "/signup", "/faq", "/terms", "/privacy",
     ];
     // Learning-path tracks. Kept in sync with client/src/data/learningPaths.ts.
@@ -1665,6 +1666,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "validation-essentials", "quality-systems",
       "investigations-data-integrity", "laboratory-controls-stability",
       "pharma-api-development-quality",
+      "pharma-drug-product-quality",
       "biologics-biopharmaceutical-qc",
     ].map((s) => `/paths/${s}`);
     // Workflow detail pages. Kept in sync with client/src/data/workflows.ts.
@@ -1703,7 +1705,8 @@ export async function registerRoutes(app: Express): Promise<void> {
     ].map((s) => `/tools/${s}`);
     const blogPaths = (await slugsIn("blog")).map((s) => `/blog/${s}`);
     const libPaths = (await slugsIn("academy")).map((s) => `/library/${s}`);
-    const allPaths = [...corePaths, ...pathPaths, ...workflowPaths, ...toolPaths, ...blogPaths, ...libPaths];
+    const decisionPackagePaths = DECISION_PACKAGES.map((item) => `/evidence/packages/${item.id}`);
+    const allPaths = [...corePaths, ...decisionPackagePaths, ...pathPaths, ...workflowPaths, ...toolPaths, ...blogPaths, ...libPaths];
 
     // English-only: clean single URL per path.
     const urls = allPaths

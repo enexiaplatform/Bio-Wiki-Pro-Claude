@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0-review
 
-**Status:** Under review
+**Status:** Editorial reviewed
 
 **Document purpose:** Educational decision and evidence-mapping support
 
@@ -114,4 +114,3 @@ establish facility or equipment suitability, process robustness, material
 equivalence, analytical equivalence, product comparability, validation,
 stability, regulatory acceptability, execution readiness, routine readiness,
 site approval, or batch disposition.
-

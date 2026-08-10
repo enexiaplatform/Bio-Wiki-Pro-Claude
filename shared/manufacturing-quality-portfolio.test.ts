@@ -30,9 +30,17 @@ describe("manufacturing quality portfolio", () => {
     expect(impurity?.materialGaps.length).toBeGreaterThan(0);
   });
 
-  it("keeps unsupported areas explicitly not covered", () => {
-    expect(getPortfolioLane("pharma-drug-product")?.areas.find((area) => area.id === "formulation-and-material-attributes")?.status).toBe("not-covered");
+  it("keeps unsupported modalities explicitly not covered", () => {
+    expect(getPortfolioLane("pharma-drug-product")?.areas.find((area) => area.id === "formulation-and-material-attributes")?.status).toBe("covered-under-review");
     expect(getPortfolioLane("biopharma")?.areas.find((area) => area.id === "advanced-modalities")?.status).toBe("not-covered");
-    expect(summarizeManufacturingQualityPortfolio()).toEqual({ "covered-under-review": 6, partial: 7, "not-covered": 2 });
+    expect(summarizeManufacturingQualityPortfolio()).toEqual({ "covered-under-review": 11, partial: 3, "not-covered": 1 });
+  });
+
+  it("links every reviewable portfolio area to a decision package", () => {
+    for (const lane of MANUFACTURING_QUALITY_PORTFOLIO) {
+      for (const area of lane.areas) {
+        if (area.status !== "not-covered") expect(area.decisionPackageIds.length).toBeGreaterThan(0);
+      }
+    }
   });
 });

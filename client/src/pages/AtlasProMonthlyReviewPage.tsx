@@ -6,6 +6,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { useUser } from "@/context/UserContext";
 import { downloadAtlasProMonthlyReview, emptyAtlasProMonthlyStatuses, loadAtlasProMonthlyReviews, mergeAtlasProMonthlyReviews, saveAtlasProMonthlyReview, type StoredAtlasProMonthlyReview } from "@/lib/atlas-pro-monthly";
 import { ATLAS_PRO_MONTHLY_FOCUS, atlasProMonthlyFocusValues, atlasProMonthlyRoleValues, compileAtlasProMonthlyPortfolio, compileAtlasProMonthlyReview, defaultAtlasProMonthlyInput, exampleAtlasProMonthlyInput, formatAtlasProMonthlyReview, type AtlasProMonthlyActionStatus, type AtlasProMonthlyCycleStep, type AtlasProMonthlyInput } from "@shared/atlas-pro-monthly";
+import { getDecisionPackage } from "@shared/decision-packages";
 
 const fieldClass = "mt-2 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-300/50 focus:ring-2 focus:ring-sky-300/10";
 const roleLabels: Record<AtlasProMonthlyInput["role"], string> = { qc: "QC", qa: "QA", validation: "Validation", "quality-leadership": "Quality leadership", "cross-functional": "Cross-functional" };
@@ -27,6 +28,16 @@ function nextMonth(value: string) {
 function readableMonth(value: string) {
   const [year, month] = value.split("-").map(Number);
   return year && month ? new Intl.DateTimeFormat("en-US", { month: "long", year: "numeric" }).format(new Date(year, month - 1, 1)) : value;
+}
+
+function packageFromQuery() {
+  if (typeof window === "undefined") return undefined;
+  const packageId = new URLSearchParams(window.location.search).get("package");
+  return packageId ? getDecisionPackage(packageId) : undefined;
+}
+
+function DecisionPackageMonthlyContext({ packageItem }: { packageItem: NonNullable<ReturnType<typeof packageFromQuery>> }) {
+  return <section className="mb-6 rounded-2xl border border-violet-300/20 bg-violet-300/[0.045] p-5 md:p-6"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-200">Decision package monthly review</p><h2 className="mt-2 text-xl font-bold text-white">{packageItem.title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-300">{packageItem.decisionQuestion}</p></div><span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-amber-200">{packageItem.reviewStatus} · Domain Pack not verified</span></div><div className="mt-4 grid gap-2 md:grid-cols-2">{packageItem.discoveryQuestions.map((question) => <p key={question} className="rounded-lg border border-white/10 bg-slate-950/20 px-3 py-2 text-xs leading-5 text-slate-400">{question}</p>)}</div><p className="mt-4 text-[11px] leading-5 text-slate-500">Use this route to frame evidence, owners and next review actions. It does not create a new calculation, recommendation or approval.</p></section>;
 }
 
 function ReviewPreview({ input, statuses, interactive, onStatus }: { input: AtlasProMonthlyInput; statuses: Record<AtlasProMonthlyCycleStep["id"], AtlasProMonthlyActionStatus>; interactive: boolean; onStatus?: (id: AtlasProMonthlyCycleStep["id"], status: AtlasProMonthlyActionStatus) => void }) {
@@ -79,6 +90,7 @@ function ReviewPreview({ input, statuses, interactive, onStatus }: { input: Atla
 
 export default function AtlasProMonthlyReviewPage() {
   const { isPro, isLoading, isAuthenticated } = useUser();
+  const packageItem = packageFromQuery();
   const [input, setInput] = useState(() => defaultAtlasProMonthlyInput(localMonth()));
   const [statuses, setStatuses] = useState(emptyAtlasProMonthlyStatuses);
   const [records, setRecords] = useState<StoredAtlasProMonthlyReview[]>(loadAtlasProMonthlyReviews);
@@ -88,7 +100,7 @@ export default function AtlasProMonthlyReviewPage() {
   const review = useMemo(() => compileAtlasProMonthlyReview(input), [input]);
   const portfolio = useMemo(() => compileAtlasProMonthlyPortfolio(records), [records]);
 
-  useSEO({ title: "Atlas Pro Monthly Quality Review", description: "Build a reusable monthly quality operating brief with a decision mandate, evidence position, owned actions, review status and carryover." });
+  useSEO({ title: packageItem ? `${packageItem.title} · Monthly Review | Atlas Pro` : "Atlas Pro Monthly Quality Review", description: "Build a reusable monthly quality operating brief with a decision mandate, evidence position, owned actions, review status and carryover." });
 
   useEffect(() => {
     if (!isPro || !isAuthenticated) return;
@@ -150,11 +162,13 @@ export default function AtlasProMonthlyReviewPage() {
 
   if (!isPro) {
     return <div className="min-h-screen bg-[#07182d] px-4 pb-24 pt-10 text-slate-100"><div className="mx-auto max-w-6xl">
+      {packageItem && <DecisionPackageMonthlyContext packageItem={packageItem} />}
       <div className="grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-start"><div className="lg:sticky lg:top-24"><span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200"><Crown className="h-3.5 w-3.5" /> Atlas Pro monthly workspace</span><h1 className="mt-5 text-4xl font-bold leading-tight md:text-5xl">A quality review you can run again next month.</h1><p className="mt-4 text-sm leading-7 text-slate-400">Turn one recurring quality priority into a decision mandate, evidence position, four-step operating cycle, owned review and carryover record.</p><div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5"><p className="text-sm font-bold text-white">Included with Atlas Pro</p><ul className="mt-3 space-y-2 text-xs leading-5 text-slate-400">{["Five recurring quality-review focus areas", "Browser-local monthly history", "Status tracking and next-month carryover", "Downloadable Markdown decision brief", "Links into relevant evidence, tools and working files"].map((item) => <li key={item} className="flex gap-2"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-sky-300" />{item}</li>)}</ul><Link href="/pricing#evidence-plans" className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Start Pro <ArrowRight className="h-4 w-4" /></Link></div><p className="mt-4 flex gap-2 text-[11px] leading-5 text-slate-500"><LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" />The sample is illustrative. Editing, saving, history and export require an active Pro entitlement.</p></div><div><ReviewPreview input={exampleAtlasProMonthlyInput} statuses={{ frame: "closed", verify: "in-progress", decide: "waiting-review", close: "not-started" }} interactive={false} /></div></div>
     </div></div>;
   }
 
   return <div className="min-h-screen bg-[#07182d] px-4 pb-24 pt-8 text-slate-100"><div className="mx-auto max-w-7xl">
+    {packageItem && <DecisionPackageMonthlyContext packageItem={packageItem} />}
     <header className="rounded-3xl border border-sky-300/20 bg-gradient-to-br from-sky-300/10 via-slate-950 to-teal-300/5 p-6 md:p-8"><div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200"><Crown className="h-3.5 w-3.5" /> Active Pro workspace</span><h1 className="mt-5 text-3xl font-bold md:text-5xl">Monthly Quality Review</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">Run one bounded quality priority through a repeatable evidence-to-decision cycle, then carry the unresolved work into the next month.</p><p className="mt-2 text-[11px] text-slate-500">{syncState === "synced" ? "Account sync ready · browser copy retained" : syncState === "syncing" ? "Syncing account records…" : syncState === "unavailable" ? "Browser copy active · account sync unavailable" : "Browser-local working record"}</p></div><div className="flex flex-wrap gap-2"><button type="button" onClick={() => void save()} className="inline-flex items-center gap-2 rounded-xl bg-sky-300 px-4 py-3 text-sm font-bold text-slate-950"><Save className="h-4 w-4" /> Save month</button><button type="button" onClick={download} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><Download className="h-4 w-4" /> Export brief</button><button type="button" onClick={startNextMonth} className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-bold"><RefreshCw className="h-4 w-4" /> Start next month</button></div></div>{notice && <p role="status" className="mt-4 text-xs font-semibold text-sky-200">{notice}</p>}</header>
 
     <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-6" aria-label="Monthly portfolio pulse">

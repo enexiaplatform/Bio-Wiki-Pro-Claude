@@ -29,10 +29,12 @@ import { evidenceForRuleIds, ruleGuidanceForIds } from "@/data/atlasEvidenceGrap
 import { ProjectActionCenter } from "@/components/quality-lab/ProjectActionCenter";
 import { BlueprintVisualDecisionLayer } from "@/components/quality-lab/BlueprintVisualDecisionLayer";
 import { DecisionTraceLink } from "@/components/quality-lab/DecisionLineagePanel";
+import { DecisionPackageContextCard } from "@/components/DecisionPackageContextCard";
 
 interface Props {
   project: QualityLabProject;
   onEdit?: () => void;
+  decisionPackageId?: string;
 }
 
 type RoleLens = "qc" | "qa" | "engineering" | "procurement";
@@ -192,7 +194,7 @@ function printBlueprint(mode: "executive" | "full") {
   window.setTimeout(reset, 2_000);
 }
 
-export function BlueprintReport({ project, onEdit }: Props) {
+export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
   const { blueprint } = project;
   const { input, current, future } = blueprint;
   const readiness = getQualityLabReadiness(blueprint);
@@ -217,6 +219,7 @@ export function BlueprintReport({ project, onEdit }: Props) {
   return (
     <div className="quality-blueprint-report mx-auto max-w-7xl px-4 pb-24 pt-6 print:max-w-none print:px-0 print:pt-0">
       <ExecutiveBriefPrint project={project} />
+      <div data-print="hide" className="mb-5"><DecisionPackageContextCard packageId={decisionPackageId} /></div>
       <div data-print="hide" className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <button onClick={onEdit} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white">
           <ArrowLeft className="h-4 w-4" /> Edit inputs

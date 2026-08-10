@@ -2,7 +2,7 @@
 
 Document ID: `LSA-PRO-OOS-REVIEW-002`  
 Package version: `2.1.0-review`  
-Status: `under-review`  
+Status: `editorial-reviewed`
 Risk level: `high`  
 Prepared date: `2026-08-03`
 

@@ -51,4 +51,4 @@ Qualified API analytical development, QC, statistics, stability, validation, qua
 
 ## Review record
 
-Status: `under-review`. Version: `1.0.0-review`. No controlled-use approval has been granted.
+Status: `editorial-reviewed`. Version: `1.0.0-review`. No controlled-use approval has been granted.

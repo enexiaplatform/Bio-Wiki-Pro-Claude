@@ -6,7 +6,7 @@ accountable decisions for an explicitly defined biologics process.
 
 **Package version:** 1.0.0-review
 
-**Review status:** under-review
+**Review status:** editorial-reviewed
 
 **Decision owner:** the authorized process-validation owner and Quality Unit,
 supported by process development/MSAT, manufacturing, engineering/automation,

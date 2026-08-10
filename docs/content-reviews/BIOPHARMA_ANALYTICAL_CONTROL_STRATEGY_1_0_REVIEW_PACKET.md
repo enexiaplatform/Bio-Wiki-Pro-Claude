@@ -1,6 +1,6 @@
 # Biopharma Analytical Control Strategy 1.0 Review Packet
 
-> Asset status: `under-review`
+> Asset status: `editorial-reviewed`
 >
 > Package version: `1.0.0-review`
 >
@@ -101,6 +101,7 @@
 
 ## Review record
 
-No qualified review has been recorded. The package remains `under-review` and
+No qualified review has been recorded. The package remains editorial-reviewed
+and
 must not be represented as SME-reviewed, validated, inspection-ready, or an
 approved specification/control strategy.

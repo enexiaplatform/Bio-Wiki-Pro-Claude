@@ -2,12 +2,13 @@ import type { RegulatoryDomain } from "@shared/regulatory-monitor";
 
 import type { BlueprintDecisionId } from "./atlasEvidenceGraph";
 import { getWorkflowSystem, type WorkflowSystem, type WorkflowSystemStage } from "./workflowSystems";
+import { getDecisionPackagesForStage } from "../../../shared/decision-packages";
 
-export const RESOURCE_COVERAGE_CONTRACT_VERSION = "resource-coverage/v2" as const;
+export const RESOURCE_COVERAGE_CONTRACT_VERSION = "resource-coverage/v3" as const;
 
 export type ResourceArea = "methods" | "monitor" | "workflows" | "academy" | "tools" | "toolkits" | "compliance";
 export type ResourceKind = "workflow" | "lesson" | "tool" | "toolkit" | "method" | "monitor" | "compliance";
-export type ResourceCoverageStatus = "mapped" | "evidence-required" | "specialist-review-required" | "no-current-change";
+export type ResourceCoverageStatus = "mapped" | "under-review" | "evidence-required" | "specialist-review-required" | "not-covered" | "no-current-change";
 
 export interface StageCoverageRule {
   systemId: string;
@@ -33,6 +34,7 @@ export interface StageCoverageProfile {
   coverageStatus: ResourceCoverageStatus;
   sourceIds: string[];
   decisionIds: BlueprintDecisionId[];
+  decisionPackageIds: string[];
   reviewRequired: true;
   reviewerRole: string;
   purpose: string;
@@ -92,6 +94,11 @@ export const STAGE_COVERAGE_RULES: StageCoverageRule[] = [
   rule("pharma-api", "api-stability-investigation", "API stability and investigation method profile", "Stability and investigation governance profile", ["ICH-Q1A-R2", "FDA-OOS-2022", ...apiSources], ["analytical-chemistry", "quality-systems"], ["control-investigation", "lifecycle-governance"], "API stability, analytical and Quality reviewer"),
   rule("pharma-api", "api-release-change", "API release and change method profile", "Release, change and transfer governance profile", ["WHO-TRS-1044-ANNEX4", ...apiSources], ["quality-systems", "data-integrity"], ["control-investigation", "lifecycle-governance"], "Quality Unit, release and regulatory CMC reviewer"),
 
+  rule("pharma-drug-product", "formulation-material-attributes", "Drug-product formulation and material-attribute method profile", "Drug-product formulation and material governance profile", ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10"], ["analytical-chemistry", "quality-systems"], ["scope-applicability", "method-architecture", "lifecycle-governance"], "Formulation, material-science and regulatory CMC reviewer"),
+  rule("pharma-drug-product", "unit-operations-scale-up", "Drug-product unit-operation and scale-up method profile", "Drug-product process-control governance profile", ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"], ["quality-systems", "analytical-chemistry"], ["method-architecture", "workload-capacity", "equipment-utilities", "control-investigation"], "Drug-product process, engineering, statistics and validation reviewer"),
+  rule("pharma-drug-product", "analytical-release-stability-packaging", "Drug-product analytical and packaging method profile", "Drug-product release, stability and packaging governance profile", ["ICH-Q1A-R2", "ICH-Q2-R2", "ICH-Q6A", "ICH-Q14", "FDA-CONTAINER-CLOSURE-1999"], ["analytical-chemistry", "quality-systems"], ["method-architecture", "control-investigation", "lifecycle-governance"], "Drug-product analytical, stability, packaging and regulatory CMC reviewer"),
+  rule("pharma-drug-product", "validation-transfer-lifecycle", "Drug-product validation and transfer method profile", "Drug-product lifecycle and transfer governance profile", ["WHO-TRS-1044-ANNEX4", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"], ["quality-systems", "data-integrity"], ["scope-applicability", "control-investigation", "lifecycle-governance"], "Drug-product validation, transfer and Quality reviewer"),
+
   rule("quality-lifecycle", "supplier-governance", "Supplier evidence review method profile", "Supplier quality-system control profile", ["FDA-QUALITY-AGREEMENTS-2016", ...coreSources], ["quality-systems"], ["scope-applicability", "control-investigation", "lifecycle-governance"], "Supplier Quality and system owner"),
   rule("quality-lifecycle", "qualification", "Qualification evidence method profile", "Qualification governance profile", ["EU-GMP-ANNEX15-2015", ...coreSources], ["quality-systems", "data-integrity"], ["equipment-utilities", "control-investigation", "lifecycle-governance"], "Validation, engineering and Quality reviewer"),
   rule("quality-lifecycle", "validation", "Validation lifecycle method profile", "Validation governance profile", ["FDA-PROCESS-VALIDATION-2011", "EU-GMP-ANNEX15-2015", ...coreSources], ["quality-systems"], ["control-investigation", "lifecycle-governance"], "Validation and Quality reviewer"),
@@ -106,7 +113,12 @@ function profileFor(ruleEntry: StageCoverageRule, area: StageCoverageProfile["ar
   const stage = system.stages.find((candidate) => candidate.id === ruleEntry.stageId)!;
   const kind = area === "methods" ? "method" : area === "compliance" ? "compliance" : "monitor";
   const title = area === "methods" ? ruleEntry.methodTitle : area === "compliance" ? ruleEntry.complianceTitle : `${stage.title} regulatory watch context`;
-  const status: ResourceCoverageStatus = area === "methods" ? "evidence-required" : area === "compliance" ? "specialist-review-required" : "no-current-change";
+  const packages = getDecisionPackagesForStage(ruleEntry.systemId, ruleEntry.stageId);
+  const status: ResourceCoverageStatus = area === "compliance"
+    ? (packages.length ? "specialist-review-required" : "specialist-review-required")
+    : area === "methods"
+      ? (packages.some((item) => item.reviewStatus === "under-review") ? "under-review" : "evidence-required")
+      : (packages.some((item) => item.reviewStatus === "under-review") ? "under-review" : "no-current-change");
   return {
     key: `${ruleEntry.systemId}:${ruleEntry.stageId}:${kind}:stage-profile`,
     contractVersion: RESOURCE_COVERAGE_CONTRACT_VERSION,
@@ -120,6 +132,7 @@ function profileFor(ruleEntry: StageCoverageRule, area: StageCoverageProfile["ar
     coverageStatus: status,
     sourceIds: ruleEntry.sourceIds,
     decisionIds: ruleEntry.decisionIds,
+    decisionPackageIds: packages.map((item) => item.id),
     reviewRequired: true,
     reviewerRole: ruleEntry.reviewerRole,
     purpose: area === "methods" ? `Frame the method and evidence questions attached to ${stage.title}.` : area === "compliance" ? `Frame the control objective and review evidence attached to ${stage.title}.` : `Watch official-source signals that may affect ${stage.title}.`,

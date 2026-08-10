@@ -1,7 +1,7 @@
 # Pharma API Process & Impurity Control Evidence Map
 
 Version: `1.0.0-review`  
-Review status: `under-review`
+Review status: `editorial-reviewed`
 
 ## Start here
 

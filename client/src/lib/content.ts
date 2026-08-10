@@ -38,6 +38,12 @@ export interface ContentEntry extends ContentFrontmatter {
   Component?: ComponentType<Record<string, unknown>>;
   /** Estimated reading time in minutes, precomputed in the manifest. */
   readMinutes: number;
+  decisionPackageId: string | null;
+  decisionPackageIds: string[];
+  systemIds: string[];
+  stageIds: string[];
+  lifecycleStageIds: string[];
+  productDestinations: string[];
   quality: PublicContentQuality;
 }
 

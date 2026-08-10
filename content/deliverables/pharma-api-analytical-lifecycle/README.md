@@ -1,7 +1,7 @@
 # Pharma API Analytical & Lifecycle Control Evidence Map
 
 Version: `1.0.0-review`  
-Status: `Under review`  
+Status: `editorial-reviewed`
 Decision state: `Evidence required` or `Qualified review required` only
 
 This package structures the analytical decision chain for a defined small-molecule API: intended use, analytical target profile, procedure capability, specification linkage, stability evidence, transfer and lifecycle change. It does not validate a method, approve a specification, establish shelf life or release a batch.

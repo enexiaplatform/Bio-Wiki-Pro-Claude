@@ -201,6 +201,24 @@ export const analytics = {
   resourceCatalogOpened: (area: string, systemId?: string, stageId?: string) =>
     capture("resource_catalog_opened", { area, system_id: systemId, stage_id: stageId }),
 
+  decisionPackageViewed: (packageId: string, lane: string, reviewStatus: string) =>
+    capture("decision_package_viewed", { package_id: packageId, lane, review_status: reviewStatus }),
+
+  decisionPackageAssetOpened: (packageId: string, assetKind: string, assetId: string) =>
+    capture("decision_package_asset_opened", { package_id: packageId, asset_kind: assetKind, asset_id: assetId }),
+
+  decisionPackageCompleted: (packageId: string, completedArtifacts: number) =>
+    capture("decision_package_completed", { package_id: packageId, completed_artifacts: completedArtifacts }),
+
+  decisionPackageProductHandoff: (packageId: string, destination: string) =>
+    capture("decision_package_product_handoff", { package_id: packageId, destination }),
+
+  careerDomainTrackSelected: (trackId: string, source: string) =>
+    capture("career_domain_track_selected", { track_id: trackId, source }),
+
+  coverageGapOpened: (packageId: string, systemId: string, stageId: string) =>
+    capture("coverage_gap_opened", { package_id: packageId, system_id: systemId, stage_id: stageId }),
+
   blueprintCtaClicked: (placement: string, destination: string) => {
     capture("blueprint_cta_clicked", { placement, destination });
     recordQualityLabFunnelEvent({ stage: "cta_clicked", placement, destination });

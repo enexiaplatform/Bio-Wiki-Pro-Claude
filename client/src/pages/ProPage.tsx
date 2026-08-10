@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import {
   ArrowRight,
   BadgeCheck,
@@ -21,6 +21,7 @@ import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { copyText } from "@/lib/clipboard";
 import { ATLAS_PRO_WORKFLOWS, formatAtlasProWorkflowBrief, getAtlasProWorkflow, type AtlasProWorkflowId } from "@shared/atlas-pro-workflows";
+import { getDecisionPackage, getNextDecisionPackage } from "@shared/decision-packages";
 
 const proLibrary = [
   {
@@ -92,9 +93,13 @@ const qualityLabReasons = [
 ];
 
 export default function ProPage() {
+  const [location] = useLocation();
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<AtlasProWorkflowId>("audit-readiness");
   const [briefCopied, setBriefCopied] = useState(false);
   const selectedWorkflow = getAtlasProWorkflow(selectedWorkflowId);
+  const packageId = new URLSearchParams(location.split("?")[1] ?? "").get("package");
+  const packageContext = packageId ? getDecisionPackage(packageId) : undefined;
+  const nextPackage = packageContext ? getNextDecisionPackage(packageContext.id) : undefined;
 
   useSEO({
     title: "Life Science Atlas Pro",
@@ -166,6 +171,8 @@ export default function ProPage() {
           </aside>
         </div>
       </section>
+
+      {packageContext && <section className="border-b border-sky-200/70 bg-[#f4fbff] px-4 py-8"><div className="mx-auto max-w-7xl rounded-2xl border border-sky-200 bg-white p-5 shadow-sm md:p-6"><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-800">Decision package in focus · {packageContext.reviewStatus}</p><h2 className="mt-2 text-xl font-bold text-slate-950">{packageContext.title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{packageContext.decisionQuestion} Continue with the working asset and monthly review only as bounded evidence support; this package is not SME-approved.</p><div className="mt-3 flex flex-wrap gap-2">{packageContext.stageRefs.map((stage) => <span key={`${stage.systemId}:${stage.stageId}`} className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-semibold text-sky-800">{stage.stageId.replaceAll("-", " ")}</span>)}</div></div><div className="flex shrink-0 flex-col gap-2 sm:flex-row"><Link href={`/evidence/packages/${packageContext.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-sky-300 px-4 py-2 text-xs font-bold text-sky-900">Review package <ArrowRight className="h-4 w-4" /></Link>{nextPackage && <Link href={`/pro?package=${nextPackage.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-sky-900 px-4 py-2 text-xs font-bold text-white">Next stage <ArrowRight className="h-4 w-4" /></Link>}</div></div></div></section>}
 
       <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-14 md:py-20">
         <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[1.75rem] border border-sky-200 bg-white shadow-xl shadow-sky-950/5 lg:grid-cols-[0.82fr_1.18fr]">

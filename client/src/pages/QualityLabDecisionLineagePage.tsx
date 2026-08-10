@@ -7,6 +7,7 @@ import { analyzeQualityLabOperatingModel } from "@shared/quality-lab-operating-m
 import { DecisionLineagePanel } from "@/components/quality-lab/DecisionLineagePanel";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { DecisionPackageContextCard } from "@/components/DecisionPackageContextCard";
 
 function decoded(value?: string) {
   if (!value) return "";
@@ -40,6 +41,7 @@ export default function QualityLabDecisionLineagePage() {
           <Link href={lineage.decisionType === "operating-model" ? `/quality-lab/operating-model?project=${encodeURIComponent(project.id)}` : `/quality-lab/projects/${encodeURIComponent(project.id)}`} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {lineage.decisionType === "operating-model" ? "Back to operating-model analysis" : "Back to Blueprint"}</Link>
           <span className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200"><FlaskConical className="h-3.5 w-3.5" /> {project.name}</span>
         </div>
+        <div className="mb-6"><DecisionPackageContextCard packageId="cross-cutting-evidence-governance" compact /></div>
         <DecisionLineagePanel projectId={project.id} blueprint={project.blueprint} lineage={lineage} />
       </div>
     </div>

@@ -8,7 +8,7 @@ sources. It is not an inspection-readiness certificate or an approved OOS SOP.
 
 **Package version:** 2.1.0-review
 
-**Review status:** Under review
+**Review status:** Editorial reviewed
 
 **Decision owner:** The authorized site quality unit, not Atlas
 

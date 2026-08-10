@@ -34,6 +34,14 @@ const expectedVersions: Record<(typeof core)[number], string> = {
   biopharma_process_validation_cpv: "1.0.0-review",
   pharma_api_impurity_control: "1.0.0-review",
 };
+const editorialReviewed = new Set([
+  "oos_investigation_template",
+  "biopharma_downstream_clearance",
+  "biopharma_technology_transfer",
+  "biopharma_cell_substrate_control",
+  "biopharma_process_validation_cpv",
+  "pharma_api_impurity_control",
+]);
 
 const customWorkbookStructure: Partial<Record<(typeof core)[number], { sheets: string[]; workingSheet: string }>> = {
   biopharma_upstream_control: {
@@ -78,7 +86,7 @@ describe("core toolkit quality packages", () => {
   for (const productId of core) {
     it(`${productId} ships a guide, blank workbook, fictional example and control metadata`, () => {
       const product = DELIVERABLES[productId];
-      expect(product.quality).toMatchObject({ reviewStatus: "under-review", version: expectedVersions[productId] });
+      expect(product.quality).toMatchObject({ reviewStatus: editorialReviewed.has(productId) ? "editorial-reviewed" : "under-review", version: expectedVersions[productId] });
       expect(product.quality?.limitations.length).toBeGreaterThan(0);
       expect(product.files.some((file) => file.filename === "README.md")).toBe(true);
       expect(product.files.some((file) => file.filename.endsWith(".pdf"))).toBe(true);

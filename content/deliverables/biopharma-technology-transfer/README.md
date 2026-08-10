@@ -7,7 +7,7 @@ commitments, governance, and routine readiness.
 
 **Package version:** 1.0.0-review
 
-**Review status:** under-review
+**Review status:** editorial-reviewed
 
 **Decision owner:** the authorized transfer steering team and quality unit,
 supported by product/process development, MSAT, manufacturing, engineering,
@@ -80,4 +80,3 @@ connected but separate decisions.
 
 Every product-specific claim requires controlled provenance and qualified
 review.
-

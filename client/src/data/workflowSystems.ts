@@ -284,6 +284,40 @@ export const workflowSystems: WorkflowSystem[] = [
     ],
   },
   {
+    id: "pharma-drug-product",
+    shortTitle: "Drug product",
+    title: "Pharmaceutical drug-product lifecycle",
+    description: "Follow formulation, OSD unit operations, analytical performance, release, stability, packaging, transfer and lifecycle change.",
+    audience: "Formulation, process development, manufacturing science, QC, validation, packaging, QA and regulatory CMC",
+    boundary: "This is an Atlas navigation model with a synthetic OSD example; it is not a dosage-form-specific method set, validated process, specification or regulatory conclusion.",
+    stages: [
+      {
+        id: "formulation-material-attributes",
+        title: "Formulation & material attributes",
+        summary: "Connect formulation intent, API/excipient attributes, manufacturability and presentation evidence.",
+        applications: [app("workflow", "stability-program"), app("tool", "stability-trend-shelf-life-planner"), app("lesson", "quality-risk-management-q9"), app("lesson", "stability-studies"), app("toolkit", "quality-lifecycle-control-pack")],
+      },
+      {
+        id: "unit-operations-scale-up",
+        title: "Unit operations & scale-up",
+        summary: "Connect equipment, scale, hold, sampling and process-control evidence across the manufacturing sequence.",
+        applications: [app("workflow", "process-validation"), app("tool", "process-capability-calculator"), app("lesson", "process-validation-stages"), app("lesson", "equipment-qualification"), app("toolkit", "quality-lifecycle-control-pack")],
+      },
+      {
+        id: "analytical-release-stability-packaging",
+        title: "Analytical, release & stability",
+        summary: "Bring performance, release, stability, dissolution and packaging evidence into one product view.",
+        applications: [app("workflow", "dissolution-testing-workflow"), app("workflow", "stability-program"), app("lesson", "dissolution-testing-usp-711"), app("lesson", "container-closure-integrity"), app("tool", "stability-trend-shelf-life-planner"), app("toolkit", "quality-lifecycle-control-pack")],
+      },
+      {
+        id: "validation-transfer-lifecycle",
+        title: "Validation, transfer & lifecycle",
+        summary: "Connect receiving-site capability, validation, change impact and continued lifecycle governance.",
+        applications: [app("workflow", "change-control-workflow"), app("workflow", "process-validation"), app("lesson", "technology-transfer"), app("lesson", "change-control"), app("tool", "change-control-impact-triage"), app("toolkit", "quality-lifecycle-control-pack")],
+      },
+    ],
+  },
+  {
     id: "quality-lifecycle",
     shortTitle: "Quality lifecycle",
     title: "Pharmaceutical quality-system lifecycle",

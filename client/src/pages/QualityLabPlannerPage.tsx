@@ -54,6 +54,7 @@ import { BlueprintReport } from "@/components/quality-lab/BlueprintReport";
 import { getQualityLabProject, saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { DecisionPackageContextCard } from "@/components/DecisionPackageContextCard";
 
 const steps = [
   { title: "Project basis", subtitle: "Facility, market and portfolio", icon: Building2 },
@@ -174,7 +175,8 @@ export default function QualityLabPlannerPage() {
     description: "Model microbiology testing demand, staffing, equipment, space and costs for a regulated manufacturing QC laboratory.",
   });
   const [, params] = useRoute("/quality-lab/projects/:id");
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+  const decisionPackageId = useMemo(() => new URLSearchParams(location.split("?")[1] ?? "").get("package") ?? undefined, [location]);
   const [input, setInput] = useState<QualityLabInput>(defaultQualityLabInput);
   const [step, setStep] = useState(0);
   const [furthestStep, setFurthestStep] = useState(0);
@@ -393,7 +395,7 @@ export default function QualityLabPlannerPage() {
   }
 
   if (view === "report" && project) {
-    return <BlueprintReport project={project} onEdit={() => { setView("form"); setStep(0); setFurthestStep(steps.length - 1); window.scrollTo({ top: 0 }); }} />;
+    return <BlueprintReport project={project} decisionPackageId={decisionPackageId} onEdit={() => { setView("form"); setStep(0); setFurthestStep(steps.length - 1); window.scrollTo({ top: 0 }); }} />;
   }
 
   if (!params?.id && startMode === null) {
@@ -401,6 +403,7 @@ export default function QualityLabPlannerPage() {
       <div className="min-h-screen bg-[#08111f] px-4 py-10 text-slate-100 md:py-16">
         <div className="mx-auto max-w-5xl">
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>
+          <div className="mt-6"><DecisionPackageContextCard packageId={decisionPackageId} compact /></div>
           <section className="mt-8 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-sky-300/5 p-6 md:p-10">
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> Microbiology concept intake</span>
             <h1 className="mt-5 max-w-3xl text-3xl font-bold md:text-5xl">You do not need to know every lab number.</h1>
@@ -452,6 +455,7 @@ export default function QualityLabPlannerPage() {
             </details>
           </div>
         </header>
+        <div className="mb-5"><DecisionPackageContextCard packageId={decisionPackageId} compact /></div>
 
         <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
           <span>Planner progress</span><span>{step + 1} / {steps.length}</span>

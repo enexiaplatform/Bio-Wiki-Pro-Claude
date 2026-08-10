@@ -22,6 +22,7 @@ const LabTools = lazy(() => import("@/pages/LabTools"));
 const ToolDetailPage = lazy(() => import("@/pages/ToolDetailPage"));
 const Compliance = lazy(() => import("@/pages/Compliance"));
 const Career = lazy(() => import("@/pages/Career"));
+const CareerDomainTracksPage = lazy(() => import("@/pages/CareerDomainTracksPage"));
 const CareerBlueprintWorkspacePage = lazy(() => import("@/pages/CareerBlueprintWorkspacePage"));
 const Settings = lazy(() => import("@/pages/Settings"));
 const UpgradePage = lazy(() => import("@/pages/UpgradePage"));
@@ -44,6 +45,7 @@ const ProductsPage = lazy(() => import("@/pages/ProductsPage"));
 const ProPage = lazy(() => import("@/pages/ProPage"));
 const AtlasProMonthlyReviewPage = lazy(() => import("@/pages/AtlasProMonthlyReviewPage"));
 const ProLabWorkbenchPage = lazy(() => import("@/pages/ProLabWorkbenchPage"));
+const DecisionPackagesPage = lazy(() => import("@/pages/DecisionPackagesPage"));
 const MethodStandardsNavigatorPage = lazy(() => import("@/pages/MethodStandardsNavigatorPage"));
 const RegulatoryMonitorPage = lazy(() => import("@/pages/RegulatoryMonitorPage"));
 const Blog = lazy(() => import("@/pages/Blog"));
@@ -135,6 +137,11 @@ function Layout() {
           <Route path="/pro" component={ProPage} />
           <Route path="/pro/monthly-review" component={AtlasProMonthlyReviewPage} />
           <Route path="/pro/lab-workbench" component={ProLabWorkbenchPage} />
+          <Route path="/evidence" component={DecisionPackagesPage} />
+          <Route path="/evidence/biopharma" component={DecisionPackagesPage} />
+          <Route path="/evidence/pharma-api" component={DecisionPackagesPage} />
+          <Route path="/evidence/drug-product" component={DecisionPackagesPage} />
+          <Route path="/evidence/packages/:id" component={DecisionPackagesPage} />
           <Route path="/methods" component={MethodStandardsNavigatorPage} />
           <Route path="/monitor" component={RegulatoryMonitorPage} />
           <Route path="/how-it-works" component={PlatformHowItWorksPage} />
@@ -191,6 +198,7 @@ function Layout() {
           <Route path="/compliance" component={Compliance} />
           <Route path="/vault" component={Vault} />
           <Route path="/career/blueprint" component={CareerBlueprintWorkspacePage} />
+          <Route path="/career/domains" component={CareerDomainTracksPage} />
           <Route path="/career" component={Career} />
           <Route path="/settings" component={Settings} />
           <Route path="/admin" component={AdminDashboardPage} />

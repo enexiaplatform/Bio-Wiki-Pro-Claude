@@ -8,6 +8,7 @@
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import { decisionPackageForAsset } from "../shared/decision-packages.js";
 
 const ROOT = process.cwd();
 const CONTENT_DIR = path.join(ROOT, "content");
@@ -31,6 +32,12 @@ interface ManifestEntry {
   updatedAt?: string;
   quiz?: unknown[];
   readMinutes: number;
+  decisionPackageId: string | null;
+  decisionPackageIds: string[];
+  systemIds: string[];
+  stageIds: string[];
+  lifecycleStageIds: string[];
+  productDestinations: string[];
 }
 
 export async function generateManifestEntries(): Promise<ManifestEntry[]> {
@@ -49,6 +56,7 @@ export async function generateManifestEntries(): Promise<ManifestEntry[]> {
       const [, slug, lang] = m;
       const raw = await readFile(path.join(dir, file), "utf-8");
       const { data: fm, content } = matter(raw);
+      const packages = decisionPackageForAsset(collection, (fm.slug as string) ?? slug);
       entries.push({
         collection,
         slug: (fm.slug as string) ?? slug,
@@ -60,6 +68,12 @@ export async function generateManifestEntries(): Promise<ManifestEntry[]> {
         updatedAt: fm.updatedAt as string | undefined,
         quiz: Array.isArray(fm.quiz) ? fm.quiz : undefined,
         readMinutes: readingMinutes(content),
+        decisionPackageId: packages.length === 1 ? packages[0].id : null,
+        decisionPackageIds: packages.map((item) => item.id),
+        systemIds: Array.from(new Set(packages.flatMap((item) => item.stageRefs.map((stage) => stage.systemId)))),
+        stageIds: Array.from(new Set(packages.flatMap((item) => item.stageRefs.map((stage) => stage.stageId)))),
+        lifecycleStageIds: packages.flatMap((item) => item.stageRefs.map((stage) => `${stage.systemId}:${stage.stageId}`)),
+        productDestinations: Array.from(new Set(packages.flatMap((item) => item.productDestinations))),
       });
     }
   }

@@ -40,6 +40,7 @@ const SYSTEM_ICONS: Record<string, IconType> = {
   "sterile-product": PiShieldCheck,
   "qc-laboratory": PiMicroscope,
   "pharma-api": PiFlask,
+  "pharma-drug-product": PiFactory,
   "quality-lifecycle": PiStack,
 };
 
@@ -115,7 +116,7 @@ export function ResourceSystemNavigator({ area, showGuide = false }: { area: Res
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Full general workflow</p>
             <h2 className="mt-1 text-lg font-bold text-slate-100">Choose the system around the work—not a content category</h2>
-            <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">Five connected views organize the same Atlas resources. Select one to reveal its seven decision stages.</p>
+            <p className="mt-1 max-w-3xl text-xs leading-5 text-slate-500">{workflowSystems.length} connected views organize the same Atlas resources. Select one to reveal its decision stages.</p>
           </div>
           {showGuide && (
             <button
@@ -162,7 +163,7 @@ export function ResourceSystemNavigator({ area, showGuide = false }: { area: Res
                 <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-300/[0.06] text-teal-300"><Icon className="h-5 w-5" /></span>
                 <span className="mt-4 block text-sm font-bold text-slate-100 group-hover:text-teal-200">{item.shortTitle}</span>
                 <span className="mt-1 block text-[11px] leading-5 text-slate-500">{item.description}</span>
-                <span className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-teal-300">7 stages · {areaCount} {AREA_LABELS[area]} <PiArrowRight className="h-3.5 w-3.5" /></span>
+                <span className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-teal-300">{item.stages.length} stages · {areaCount} {AREA_LABELS[area]} <PiArrowRight className="h-3.5 w-3.5" /></span>
               </button>
             );
           })}

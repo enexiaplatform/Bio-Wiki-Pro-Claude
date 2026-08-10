@@ -4,6 +4,8 @@ import matter from "gray-matter";
 import { getContentQuality } from "../shared/content-quality-registry.js";
 import { PAID_ASSET_QUALITY } from "../shared/paid-asset-quality.js";
 import { totalQualityScore } from "../shared/content-quality.js";
+import { DECISION_PACKAGES } from "../shared/decision-packages.js";
+import { CAREER_DOMAIN_TRACKS } from "../shared/career-domain-tracks.js";
 
 const root = process.cwd();
 const academyDir = path.join(root, "content", "academy");
@@ -42,11 +44,12 @@ const counts = {
 const lines = [
   "# Content Quality Baseline",
   "",
-  "> Generated from repository evidence. This is a triage score, not an SME approval. Under-review assets remain accessible but are not eligible for featured or sales-evidence use.",
+  "> Generated from repository evidence. This is a triage score, not an SME approval. Editorial-reviewed assets remain bounded by their limitations and release gates; no asset is promoted as SME-approved without the required evidence.",
   "",
-  `Generated: 2026-08-03`,
+  `Generated: ${new Date().toISOString().slice(0, 10)}`,
   "",
   `Inventory: ${counts.proLessons} Pro lessons, ${counts.toolkits} Atlas Pro toolkits, ${counts.paidOutputs} paid-output packages.`,
+  `Decision intelligence inventory: ${DECISION_PACKAGES.length} Decision Packages, ${CAREER_DOMAIN_TRACKS.length} Career domain tracks; package quality and review records retain explicit editorial, SME and release boundaries.`,
   "",
   `Strategic core: ${counts.coreLessons} lessons; all other paid content is compatibility inventory until reviewed.`,
   "",
@@ -77,7 +80,7 @@ const lines = [
   "",
   "## Week 1 decision",
   "",
-    "No paid asset currently clears its release gate. The repository therefore presents reviewed status explicitly, keeps legacy access, and prevents any under-review asset from being promoted as evidence of paid-product quality. The next review queue is Quality Lab outputs, the twenty-five workflow core lessons (including Biopharma cell-substrate and bank lifecycle, raw/ancillary material and single-use control, product-process control, upstream and downstream evidence mapping, formulation and stability, integrated analytical control strategy, process validation and continued verification, manufacturing comparability, and technology transfer), and the twelve core toolkits.",
+    "No paid asset currently clears its release gate. The repository therefore records editorial review where declared, keeps access bounded by limitations, and prevents any asset from being promoted as SME-approved evidence of paid-product quality. The next release queue is Quality Lab outputs, legacy workflow lessons, and assets requiring qualified reviewers or permissioned real cases.",
   "",
 ];
 

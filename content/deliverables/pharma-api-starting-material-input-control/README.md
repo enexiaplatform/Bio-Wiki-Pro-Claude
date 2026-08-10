@@ -1,7 +1,7 @@
 # Pharma API Starting Material & Input Control Evidence Map
 
 Version: `1.0.0-review`  
-Status: `Under review`  
+Status: `editorial-reviewed`
 Decision state: `Evidence required` or `Qualified review required` only
 
 This package structures the route-to-input evidence chain for a chemically synthesized small-molecule API. It does not approve a starting material, supplier, specification, quality agreement, incoming-control program, filing or batch.

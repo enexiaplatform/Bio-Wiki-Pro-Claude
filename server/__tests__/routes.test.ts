@@ -1489,6 +1489,12 @@ describe("sitemap", () => {
     }
     // Core, workflow, and dynamic content slugs are listed too (host-agnostic).
     expect(res.text).toContain("/pricing</loc>");
+    expect(res.text).toContain("/evidence</loc>");
+    expect(res.text).toContain("/evidence/biopharma</loc>");
+    expect(res.text).toContain("/evidence/pharma-api</loc>");
+    expect(res.text).toContain("/evidence/drug-product</loc>");
+    expect(res.text).toContain("/evidence/packages/drug-product-formulation-material-attributes</loc>");
+    expect(res.text).toContain("/career/domains</loc>");
     expect(res.text).toContain("/workflows/oos-investigation</loc>");
     expect(res.text).toMatch(/\/library\/[a-z0-9-]+<\/loc>/);
     expect(res.text).toMatch(/\/blog\/[a-z0-9-]+<\/loc>/);

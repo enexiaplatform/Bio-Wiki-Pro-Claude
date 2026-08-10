@@ -7,7 +7,7 @@ triggers.
 
 **Package version:** 1.0.0-review
 
-**Review status:** Under review
+**Review status:** editorial-reviewed
 
 **Decision owner:** The authorized product, process, viral-safety, quality, and regulatory owners - not Atlas
 

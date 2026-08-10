@@ -37,7 +37,8 @@ describe("workflow systems", () => {
     expect(invalid).toEqual([]);
   });
 
-  it("keeps a seven-stage reading rhythm for every system", () => {
-    expect(workflowSystems.every((system) => system.stages.length === 7)).toBe(true);
+  it("keeps the canonical seven-stage rhythm and the four-stage drug-product framework", () => {
+    expect(workflowSystems.filter((system) => system.id !== "pharma-drug-product").every((system) => system.stages.length === 7)).toBe(true);
+    expect(workflowSystems.find((system) => system.id === "pharma-drug-product")?.stages).toHaveLength(4);
   });
 });

@@ -39,6 +39,7 @@ export interface ResourceConnection {
   stage: WorkflowSystemStage;
   evidenceDomainIds: EvidenceDomainId[];
   decisionIds: BlueprintDecisionId[];
+  decisionPackageIds: string[];
   coverageStatus: ResourceCoverageStatus;
   sourceIds: string[];
   reviewRequired: boolean;
@@ -143,6 +144,7 @@ const applicationConnections: ResourceConnection[] = workflowSystems.flatMap((sy
     system,
     stage,
     ...evidence,
+    decisionPackageIds: [],
     coverageStatus: reference.kind === "toolkit" && EVIDENCE_REQUIRED_TOOLKITS.has(reference.slug) ? "evidence-required" : "mapped",
     sourceIds: [],
     reviewRequired: true,
@@ -169,6 +171,7 @@ const profileConnections: ResourceConnection[] = stageCoverageProfiles.flatMap((
     stage,
     evidenceDomainIds: [],
     decisionIds: profile.decisionIds,
+    decisionPackageIds: profile.decisionPackageIds,
     coverageStatus: profile.coverageStatus,
     sourceIds: profile.sourceIds,
     reviewRequired: profile.reviewRequired,
@@ -217,10 +220,8 @@ export function getStageResourceCoverage(selection: ResourceSelection): StageRes
   if (!system || !stage) return undefined;
   const areas = Object.fromEntries(RESOURCE_AREAS.map((area) => {
     const connections = getConnectionsForSelection({ systemId: system.id, stageId: stage.id }, area);
-    const status = connections.some((connection) => connection.coverageStatus === "mapped") ? "mapped"
-      : connections.some((connection) => connection.coverageStatus === "specialist-review-required") ? "specialist-review-required"
-      : connections.some((connection) => connection.coverageStatus === "evidence-required") ? "evidence-required"
-      : "no-current-change";
+    const status = (["not-covered", "evidence-required", "specialist-review-required", "under-review", "mapped", "no-current-change"] as ResourceCoverageStatus[])
+      .find((candidate) => connections.some((connection) => connection.coverageStatus === candidate)) ?? "no-current-change";
     return [area, { area, status, connections } satisfies StageAreaCoverage];
   })) as Record<ResourceArea, StageAreaCoverage>;
   return { contractVersion: RESOURCE_COVERAGE_CONTRACT_VERSION, system, stage, areas };

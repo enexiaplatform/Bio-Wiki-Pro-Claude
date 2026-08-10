@@ -3,6 +3,7 @@ import { ArrowRight, Check, CheckCircle2, CircleDashed, ClipboardList, Copy, Dow
 import { Link } from "wouter";
 import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
+import { DecisionPackageContextCard } from "@/components/DecisionPackageContextCard";
 import { useSEO } from "@/hooks/use-seo";
 import { copyText } from "@/lib/clipboard";
 import { blueprintDiscoveryTemplates } from "@/data/qualityLabDiscoveryTemplates";
@@ -117,6 +118,7 @@ export default function QualityLabDiscoveryPackPage() {
           <Link href="/quality-lab/casebook" className="inline-flex items-center gap-1.5 hover:text-sky-200">Explore worked cases <ArrowRight className="h-3.5 w-3.5" /></Link>
           <Link href="/quality-lab/evidence" className="inline-flex items-center gap-1.5 hover:text-sky-200">Navigate the evidence graph <ArrowRight className="h-3.5 w-3.5" /></Link>
         </nav>
+        <div className="mt-6"><DecisionPackageContextCard packageId="cross-cutting-evidence-governance" compact /></div>
 
         <section className="py-12">
           <div className="max-w-3xl">
