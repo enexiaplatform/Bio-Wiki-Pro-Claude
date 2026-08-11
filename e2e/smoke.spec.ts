@@ -5,6 +5,7 @@ import { createQualityLabOperatingModelInput } from "../shared/quality-lab-opera
 import { createQualityLabOperatingModelReviewDraft } from "../shared/quality-lab-operating-model-review";
 import { CAREER_PROFILE_STORAGE_KEY, defaultCareerProfile } from "../shared/career-blueprint";
 import { createCareerExecutionRecord } from "../shared/career-execution";
+import { getDecisionPackageLearningFlow } from "../shared/decision-package-learning";
 
 async function mockAdmin(page: Page) {
   await page.route("**/api/auth/me", (route) => route.fulfill({
@@ -73,6 +74,26 @@ test.describe("public smoke", () => {
       await expect(page.getByText("Decision-led statistics and process evidence map", { exact: true })).toBeVisible();
       await expect(page.getByText("Investigation, CAPA and change evidence loop", { exact: true })).toBeVisible();
     await expect(page.getByText(/editorial-reviewed but not SME-approved/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Continue from orientation into the complete Pro workflow." })).toBeVisible();
+    await expect(page.getByText("Specialist review required", { exact: true })).toBeVisible();
+    await expect(page.getByText(/detailed body has not been sent to this guest session/i)).toBeVisible();
+    await expect(page.getByText("Signal-to-decision lineage reconstruction", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Mark full flow complete/i })).toHaveCount(0);
+
+    await page.route("**/api/decision-packages/*/learning-flow", async (route) => {
+      const parts = new URL(route.request().url()).pathname.split("/");
+      const packageId = parts[3] ?? "";
+      const flow = getDecisionPackageLearningFlow(packageId);
+      if (!flow) return route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ message: "Not found" }) });
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ locked: false, tier: "pro", flow }) });
+    });
+    await page.goto("/evidence/packages/cross-cutting-evidence-governance");
+    await expect(page.getByRole("heading", { name: "Learn the decision, run the workflow, challenge the evidence." })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Five gated phases from scope to decision" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What to examine, test or simulate" })).toBeVisible();
+    await expect(page.getByText("Signal-to-decision lineage reconstruction", { exact: true })).toBeVisible();
+    await expect(page.getByText("CAPA effectiveness study frame", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Mark full flow complete/i })).toBeVisible();
 
     await page.goto("/career/domains");
     await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();
@@ -104,12 +125,19 @@ test.describe("public smoke", () => {
     await page.goto("/pro?package=drug-product-formulation-material-attributes");
     await expect(page.getByText("Drug product formulation & material attributes", { exact: true }).first()).toBeVisible();
     await expect(page.getByText(/bounded evidence support; this package is not SME-approved/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open full learning flow/i })).toHaveAttribute("href", "/evidence/packages/drug-product-formulation-material-attributes#package-learning-flow");
 
     await page.goto("/pro");
     await expect(page.getByRole("heading", { name: "Choose the decision chain you are working through." })).toBeVisible();
     for (const lane of ["Biopharma decision chain", "Pharma/API decision chain", "Drug Product decision chain"]) {
       await expect(page.getByRole("heading", { name: lane, exact: true })).toBeVisible();
     }
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/evidence/packages/drug-product-formulation-material-attributes");
+    await expect(page.getByRole("heading", { name: "Five gated phases from scope to decision" })).toBeVisible();
+    await expect(page.getByText("Compatibility study architecture", { exact: true })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
   test("account entry keeps the Blueprint workspace primary", async ({ page }) => {

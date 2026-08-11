@@ -36,6 +36,7 @@ import { fetchRegulatoryMonitor } from "./regulatory-monitor.js";
 import { qualityLabFunnelEventSchema } from "../shared/quality-lab-funnel.js";
 import { fulfillStripeEventOnce, type StripeFulfillment } from "./stripe-fulfillment.js";
 import { DECISION_PACKAGES } from "../shared/decision-packages.js";
+import { getDecisionPackageLearningFlow } from "../shared/decision-package-learning.js";
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -1301,6 +1302,35 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.json({ locked: true, tier, title, teaser, quality });
     }
     return res.json({ locked: false, tier, title, body: content, quality });
+  });
+
+  // Full Decision Package learning flows are Pro bodies. The public package
+  // page receives counts and boundaries only; detailed knowledge, execution
+  // steps, study frames and reasoning checks never ship to an unentitled client.
+  app.get("/api/decision-packages/:packageId/learning-flow", async (req: any, res) => {
+    const packageId = String(req.params.packageId ?? "");
+    if (!SLUG_RE.test(packageId)) return res.status(400).json({ message: "Invalid decision package reference" });
+    const flow = getDecisionPackageLearningFlow(packageId);
+    if (!flow) return res.status(404).json({ message: "Decision package learning flow not found" });
+
+    const userId: string | undefined = req.session?.userId;
+    const user = userId ? await storage.getUser(userId).catch(() => undefined) : undefined;
+    const entitled = isProActive(user) || isAdminEmail(user?.email);
+    if (!entitled) {
+      return res.json({
+        locked: true,
+        tier: "pro",
+        reviewStatus: flow.reviewStatus,
+        preview: {
+          learningObjectives: flow.learningObjectives.length,
+          knowledgeUnits: flow.knowledgeUnits.length,
+          workflowPhases: flow.workflowPhases.length,
+          evidenceActivities: flow.evidenceActivities.length,
+          knowledgeChecks: flow.knowledgeChecks.length,
+        },
+      });
+    }
+    return res.json({ locked: false, tier: "pro", flow });
   });
 
   // Official-source metadata plus deterministic impact triage. No feed item is

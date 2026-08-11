@@ -459,6 +459,32 @@ describe("content API", () => {
     expect(res.body.message).toBe("Invalid content reference");
     expect(storageMock.getContentEntry).not.toHaveBeenCalled();
   });
+
+  it("keeps the full Decision Package learning flow out of guest responses", async () => {
+    const app = await buildApp();
+    const res = await request(app).get("/api/decision-packages/cross-cutting-evidence-governance/learning-flow");
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ locked: true, tier: "pro", reviewStatus: "specialist-review-required", preview: { knowledgeUnits: 3, workflowPhases: 5, evidenceActivities: 3, knowledgeChecks: 3 } });
+    expect(res.body).not.toHaveProperty("flow");
+    expect(JSON.stringify(res.body)).not.toContain("Signal-to-decision lineage reconstruction");
+  });
+
+  it("returns the complete learning flow only to an active Pro session", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    const user = { id: "u-learning-pro", email: "learning@example.com", isPro: true, subscriptionStatus: "active" };
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce(user);
+    await agent.post("/api/auth/register").send({ email: user.email, password: "pw123456" }).expect(201);
+    storageMock.getUser.mockResolvedValueOnce(user);
+
+    const res = await agent.get("/api/decision-packages/cross-cutting-evidence-governance/learning-flow");
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ locked: false, tier: "pro", flow: { packageId: "cross-cutting-evidence-governance", reviewStatus: "specialist-review-required" } });
+    expect(res.body.flow.workflowPhases).toHaveLength(5);
+    expect(res.body.flow.evidenceActivities[0].title).toBe("Signal-to-decision lineage reconstruction");
+  });
 });
 
 describe("stripe webhook", () => {

@@ -19,6 +19,11 @@ import {
 } from "../../shared/career-domain-tracks";
 import { CONTENT_QUALITY_REGISTRY } from "../../shared/content-quality-registry";
 import { PAID_ASSET_QUALITY } from "../../shared/paid-asset-quality";
+import {
+  DECISION_PACKAGE_LEARNING_CONTRACT_VERSION,
+  DECISION_PACKAGE_LEARNING_FLOWS,
+  validateDecisionPackageLearningFlows,
+} from "../../shared/decision-package-learning";
 
 describe("Atlas decision-package contracts", () => {
   it("registers twelve unique, product-bound packages with complete artifact plans", () => {
@@ -126,5 +131,30 @@ describe("Atlas decision-package contracts", () => {
       lifecycleStageIds: ["pharma-drug-product:formulation-material-attributes"],
       productDestinations: ["public", "pro", "quality-lab", "career"],
     });
+  });
+
+  it("provides a complete knowledge, workflow, evidence and reasoning flow for every package", () => {
+    expect(validateDecisionPackageLearningFlows()).toEqual([]);
+    expect(DECISION_PACKAGE_LEARNING_FLOWS).toHaveLength(DECISION_PACKAGES.length);
+    expect(new Set(DECISION_PACKAGE_LEARNING_FLOWS.map((flow) => flow.packageId))).toEqual(new Set(DECISION_PACKAGES.map((item) => item.id)));
+    for (const flow of DECISION_PACKAGE_LEARNING_FLOWS) {
+      expect(flow.contractVersion).toBe(DECISION_PACKAGE_LEARNING_CONTRACT_VERSION);
+      expect(flow.reviewStatus).toBe("specialist-review-required");
+      expect(flow.reviewPacketPath).toBe("docs/content-reviews/DECISION_PACKAGE_LEARNING_FLOWS_1_0_REVIEW_PACKET.md");
+      expect(flow.learningObjectives.length).toBeGreaterThanOrEqual(3);
+      expect(flow.knowledgeUnits.length).toBeGreaterThanOrEqual(3);
+      expect(flow.workflowPhases.length).toBeGreaterThanOrEqual(5);
+      expect(flow.evidenceActivities.length).toBeGreaterThanOrEqual(3);
+      expect(flow.knowledgeChecks.length).toBeGreaterThanOrEqual(3);
+      expect(flow.completionCriteria.length).toBeGreaterThanOrEqual(4);
+    }
+  });
+
+  it("rejects duplicate, missing and structurally incomplete learning flows", () => {
+    const first = DECISION_PACKAGE_LEARNING_FLOWS[0];
+    expect(validateDecisionPackageLearningFlows([...DECISION_PACKAGE_LEARNING_FLOWS, first])).toContain(`duplicate learning flow: ${first.packageId}`);
+    expect(validateDecisionPackageLearningFlows(DECISION_PACKAGE_LEARNING_FLOWS.slice(1))).toContain(`missing learning flow: ${first.packageId}`);
+    const incomplete = { ...first, workflowPhases: first.workflowPhases.slice(0, 4) };
+    expect(validateDecisionPackageLearningFlows([incomplete, ...DECISION_PACKAGE_LEARNING_FLOWS.slice(1)])).toContain(`${first.packageId}: at least five workflow phases are required`);
   });
 });

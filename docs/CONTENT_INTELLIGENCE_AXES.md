@@ -17,3 +17,9 @@ Last audited: 2026-08-11
 - Public guide handoffs preserve the `decisionPackageId` into Blueprint and Pro routes and select the matching Career domain.
 - Quality Lab does not compile Biopharma, API or Drug Product recommendations. The executable Domain Pack remains non-sterile pharmaceutical microbiology and is not verified.
 - Editorial review does not imply SME review, validated competence, product/site approval, Gate 1 completion or dosage-form applicability.
+
+## Full learning and execution flow
+
+Every package now has a `decision-package-learning/v1` structured draft covering learning objectives, knowledge foundations, five gated workflow phases, three evidence or study activities, reasoning checks and review-ready completion criteria. Detailed flow bodies are server-gated Pro content and are absent from the public client bundle; guest sessions receive counts, boundaries and handoff only. These flows are labelled `specialist-review-required`: they do not inherit SME approval from the package, do not provide laboratory execution parameters or universal acceptance criteria, and do not change the executable Quality Lab Compiler.
+
+Qualified review is controlled through `docs/content-reviews/DECISION_PACKAGE_LEARNING_FLOWS_1_0_REVIEW_PACKET.md`; all twelve dispositions remain open until reviewer evidence and corrections are recorded.
