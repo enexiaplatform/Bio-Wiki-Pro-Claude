@@ -6,7 +6,7 @@ performance indicators, evidence strength, controls, and lifecycle triggers.
 
 **Package version:** 1.0.0-review
 
-**Review status:** Under review
+**Review status:** Editorial-reviewed; not SME-approved
 
 **Decision owner:** The authorized product, process, quality, and regulatory owners — not Atlas
 
@@ -45,4 +45,3 @@ The workbook contains no generic numeric operating range, CPP designation,
 design space, process capability claim, PPQ criterion, specification, or batch
 disposition rule. Every product-specific value requires controlled provenance
 and qualified review.
-

@@ -9,16 +9,19 @@ Compiler mode: `evidence-context-only`
 
 - Reviewer roles: quality control, quality assurance, manufacturing science,
   data integrity, statistics and regulatory CMC.
-- Controlled sources: ICH Q2(R2), ICH Q9(R1), ICH Q10, FDA Data Integrity
-  guidance and FDA OOS guidance.
-- Required evidence: a permissioned investigation or change case linking data
-  integrity, hypotheses, CAPA, effectiveness, knowledge transfer and an
-  accountable conclusion.
+- Controlled sources: ICH Q2(R2), ICH Q8(R2), ICH Q9(R1), ICH Q10, FDA Data
+  Integrity guidance, FDA OOS guidance and FDA Process Validation guidance.
+- Working assets: `analytical-lifecycle-evidence-map`,
+  `decision-led-statistics-evidence-map` and `oos-investigation-template`.
+- Required evidence: permissioned analytical lifecycle, process-data and
+  investigation/change cases linking data integrity, hypotheses, uncertainty,
+  CAPA, effectiveness, knowledge transfer and accountable conclusions.
 
 ## Critical boundaries
 
-Do not promote this package as a statistical rule, OOS disposition, CAPA
-effectiveness conclusion, product release decision or change authorization.
+Do not promote this package as an analytical method, validation or transfer
+conclusion, statistical rule, CPP decision, OOS disposition, CAPA effectiveness
+conclusion, product release decision or change authorization.
 
 ## Decision
 

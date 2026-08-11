@@ -320,6 +320,32 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "drug-product-validation-transfer-lifecycle-fictional-example.md", label: "Synthetic Receiving-site Transfer Fictional Example", description: "Illustrative case labelled fictional and not an authorization or validation conclusion.", contentType: MD },
     ],
   },
+  analytical_lifecycle_evidence_map: {
+    id: "analytical_lifecycle_evidence_map",
+    dir: "analytical-lifecycle-evidence-map",
+    name: "Analytical Lifecycle Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "editorial-reviewed", limitations: ["Qualified product-specific analytical, statistics, QC, validation, quality and regulatory review is required. No method, performance criterion, validation conclusion, specification, transfer acceptance, filing position or batch decision is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Scope, source map, reviewer roles and analytical lifecycle boundary.", contentType: MD },
+      { filename: "analytical-lifecycle-evidence-map-guide.md", label: "Analytical Lifecycle Evidence Map Guide", description: "Evidence-led workflow from intended use through procedure performance, transfer and change.", contentType: MD },
+      { filename: "analytical-lifecycle-evidence-map-blank.csv", label: "Analytical Lifecycle Working File (CSV)", description: "Blank register for intended use, performance claims, evidence, limitations and actions.", contentType: CSV },
+      { filename: "analytical-lifecycle-evidence-map-fictional-example.md", label: "Analytical Lifecycle Fictional Example", description: "Bounded synthetic transfer example preserving unresolved evidence and reviewer ownership.", contentType: MD },
+    ],
+  },
+  decision_led_statistics_evidence_map: {
+    id: "decision_led_statistics_evidence_map",
+    dir: "decision-led-statistics-evidence-map",
+    name: "Decision-led Statistics & Process Evidence Map",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "editorial-reviewed", limitations: ["Qualified statistical, domain, measurement-system, data-integrity and quality review is required. No default sample size, threshold, control limit, CPP, capability, validation or authorization conclusion is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Scope, source map, reviewer roles and model-use boundary.", contentType: MD },
+      { filename: "decision-led-statistics-evidence-map-guide.md", label: "Decision-led Statistics & Process Evidence Guide", description: "Workflow linking a decision to data lineage, measurement evidence, analysis and uncertainty.", contentType: MD },
+      { filename: "decision-led-statistics-evidence-map-blank.csv", label: "Statistics & Process Evidence Working File (CSV)", description: "Blank register for datasets, assumptions, diagnostics, uncertainty and actions.", contentType: CSV },
+      { filename: "decision-led-statistics-evidence-map-fictional-example.md", label: "Decision-led Statistics Fictional Example", description: "Synthetic scale-up example that does not declare causality, criticality or process acceptance.", contentType: MD },
+    ],
+  },
   environmental_monitoring_checklist: {
     id: "environmental_monitoring_checklist",
     dir: "environmental-monitoring-checklist",
@@ -396,7 +422,11 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
 
 const EDITORIAL_REVIEWED_PACKAGE_DELIVERABLES = new Set([
   "biopharma_cell_substrate_control",
+  "biopharma_upstream_control",
+  "biopharma_materials_control",
   "biopharma_downstream_clearance",
+  "biopharma_formulation_stability",
+  "biopharma_analytical_control_strategy",
   "biopharma_process_validation_cpv",
   "biopharma_technology_transfer",
   "pharma_api_starting_material_input_control",

@@ -7,7 +7,7 @@ qualification, change control and accountable review.
 
 **Package version:** 1.0.0-review
 
-**Review status:** under-review
+**Review status:** editorial-reviewed; not SME-approved
 
 **Decision owner:** the authorized material/change owner and quality unit,
 supported by raw-material sciences, supplier quality, supply chain,

@@ -68,6 +68,11 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/Decision package monthly review/i)).toBeVisible();
     await expect(page.getByText(/Which cell substrate, bank/i)).toBeVisible();
 
+    await page.goto("/evidence/packages/cross-cutting-evidence-governance");
+    await expect(page.getByText("Analytical lifecycle evidence map", { exact: true })).toBeVisible();
+    await expect(page.getByText("Decision-led statistics and process evidence map", { exact: true })).toBeVisible();
+    await expect(page.getByText(/editorial-reviewed but not SME-approved/i)).toBeVisible();
+
     await page.goto("/career/domains");
     await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();
     await expect(page.getByText(/13-week evidence actions/i).first()).toBeVisible();

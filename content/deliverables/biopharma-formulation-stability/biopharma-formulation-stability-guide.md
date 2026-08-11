@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0-review
 
-**Status:** under review
+**Status:** editorial-reviewed; not SME-approved
 
 **Document purpose:** educational decision and evidence-mapping support
 
@@ -90,4 +90,3 @@ degradation mechanism, process, presentation, container suitability or integrity
 sterility assurance, stability protocol, shipping qualification, storage
 condition, shelf life, validation status, comparability, regulatory acceptability,
 or batch disposition.
-

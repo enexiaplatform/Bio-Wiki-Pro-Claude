@@ -7,7 +7,7 @@ specification basis, lifecycle changes, and accountable review.
 
 **Package version:** 1.0.0-review
 
-**Review status:** under-review
+**Review status:** editorial-reviewed; not SME-approved
 
 **Decision owner:** the authorized product-quality, analytical development,
 bioassay, reference-standard, QC, quality, statistics, and regulatory CMC

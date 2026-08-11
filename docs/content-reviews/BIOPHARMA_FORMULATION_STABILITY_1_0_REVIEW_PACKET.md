@@ -4,7 +4,7 @@
 
 **Content version:** 1.0.0-review
 
-**Review status:** under-review
+**Review status:** editorial-reviewed; not SME-approved
 
 **Risk level:** high
 
@@ -105,4 +105,3 @@ Any unchecked critical item blocks promotion regardless of numerical score.
 | Regulatory CMC/quality unit | Pending | Pending | Pending | Pending | Pending |
 
 This empty record is deliberate. It must not be interpreted as approval.
-

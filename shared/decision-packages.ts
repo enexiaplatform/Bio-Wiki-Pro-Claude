@@ -588,7 +588,7 @@ export const DECISION_PACKAGES: DecisionPackage[] = ([
     summary: "Move analytical signals and process changes through data quality, investigation, CAPA, effectiveness and knowledge transfer.",
     decisionQuestion: "What evidence chain makes a cross-product quality signal or change decision reviewable and reusable?",
     stageRefs: [{ systemId: "quality-lifecycle", stageId: "quality-signals" }, { systemId: "quality-lifecycle", stageId: "capa-change" }, { systemId: "quality-lifecycle", stageId: "quality-review-release" }, { systemId: "qc-laboratory", stageId: "lab-investigations" }],
-    sourceIds: ["ICH-Q2-R2", "ICH-Q9-R1", "FDA-DI-2018", "FDA-OOS-2022", "ICH-Q10"],
+    sourceIds: ["ICH-Q2-R2", "ICH-Q8-R2", "ICH-Q9-R1", "FDA-DI-2018", "FDA-OOS-2022", "FDA-PROCESS-VALIDATION-2011", "ICH-Q10"],
     applicability: "Cross-product analytical, statistical, investigation, CAPA, change-control and knowledge-transfer decisions.",
     limitations: sharedLimitations,
     reviewerRoles: ["quality control", "quality assurance", "manufacturing science", "data integrity", "regulatory CMC"],
@@ -603,6 +603,8 @@ export const DECISION_PACKAGES: DecisionPackage[] = ([
       asset("academy", "oos-investigation-deep-dive", "OOS investigation"),
       asset("academy", "decision-led-doe-and-multivariate-process-evidence", "Decision-led DoE and multivariate evidence"),
       asset("workflow", "oos-investigation", "OOS investigation workflow"),
+      asset("toolkit", "analytical-lifecycle-evidence-map", "Analytical lifecycle evidence map"),
+      asset("toolkit", "decision-led-statistics-evidence-map", "Decision-led statistics and process evidence map"),
       asset("toolkit", "oos-investigation-template", "OOS investigation template"),
     ],
     artifactPlan: [

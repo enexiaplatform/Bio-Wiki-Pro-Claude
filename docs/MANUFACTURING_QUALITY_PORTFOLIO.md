@@ -11,7 +11,7 @@ The portfolio now plans across four lanes and five operating functions:
 | Pharma API | Route and starting materials → reaction/work-up → isolation/solid state → impurity strategy → analytics/specifications → validation/stability/transfer/change | Controlled-under-review slices now cover starting-material/input, process/impurity control, and analytical/specification/lifecycle evidence; qualified review and real cases remain open |
 | Pharma Drug Product | Formulation/material attributes → unit operations/scale-up → performance/release → stability/container → validation/transfer/change | Four linked Decision Packages now exist under review; OSD is synthetic planning context only and no dosage-form applicability is verified |
 | Biopharma | Cell substrate/materials → upstream → downstream → formulation/fill-finish → analytical/product control → validation/comparability/transfer | Broad protein-biologics evidence chain under review; no advanced-modality generalization |
-| Cross-cutting Quality & R&D | Analytical lifecycle → statistics/data/process understanding → QRM/PQS → investigations/CAPA/change | Reusable foundations exist but real cases and qualified reviews remain gaps |
+| Cross-cutting Quality & R&D | Analytical lifecycle → statistics/data/process understanding → QRM/PQS → investigations/CAPA/change | Three asset-backed review slices now cover analytical lifecycle, decision-led statistics/process evidence and investigation/change; qualified review and real cases remain open |
 
 Functions are explicit in the code contract: R&D, process development, manufacturing science, QC, and quality/regulatory CMC. “QC content exists” is never treated as proof that the development or manufacturing lifecycle is covered.
 
@@ -31,7 +31,7 @@ Functions are explicit in the code contract: R&D, process development, manufactu
 3. Pharma API: analytical/specification/stability/lifecycle — controlled-under-review asset delivered; real method lifecycle cases remain next.
 4. Pharma Drug Product: maintain the four linked formulation–unit-operation–performance–lifecycle packages under review, then qualify any dosage-form wedge from validated demand before adding product-specific depth.
 5. Biopharma: close qualified review and real-case gaps before adding advanced modalities.
-6. Cross-cutting: analytical target profile/lifecycle and decision-led statistics/DoE.
+6. Cross-cutting: analytical lifecycle and decision-led statistics/process-evidence working packs delivered; close qualified review and permissioned-case gaps before promotion.
 
 Expansion is measured by a decision package that users can apply and review, not by lesson count.
 
@@ -58,3 +58,10 @@ drug-product lifecycle hub, four Pro lessons, four repository-backed working
 assets, fictional OSD examples, and review packets. The assets are linked from
 public decision guides, Blueprint context and Career evidence tracks; they do
 not create a Compiler recommendation or a verified Domain Pack.
+
+The cross-cutting lane now has dedicated repository-backed working packs for
+analytical lifecycle and decision-led statistics/process evidence, alongside
+the existing investigation workflow and OOS working asset. All fourteen
+non-advanced portfolio areas therefore have an integrated lesson/package and a
+working asset. This is asset coverage only: qualified reviewers, permissioned
+real cases, release gates and Domain Pack verification remain open.

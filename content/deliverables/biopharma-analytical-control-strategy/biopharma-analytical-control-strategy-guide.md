@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0-review
 
-**Status:** Under review
+**Status:** Editorial-reviewed; not SME-approved
 
 **Document purpose:** Educational decision and evidence-mapping support
 

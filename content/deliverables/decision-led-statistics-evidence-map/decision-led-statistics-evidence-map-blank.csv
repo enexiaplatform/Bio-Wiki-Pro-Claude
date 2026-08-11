@@ -1,0 +1,2 @@
+decision_id,product_or_process,dataset_version,decision_question,response_or_signal,factor_or_event,data_source,measurement_system_evidence,design_or_analysis,assumption,diagnostic_evidence,uncertainty,contradiction,model_use_boundary,lifecycle_trigger,owner,reviewer_role,next_action
+,,,,,,,,,,,,,evidence-required,,,,

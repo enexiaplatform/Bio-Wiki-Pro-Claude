@@ -36,8 +36,12 @@ const expectedVersions: Record<(typeof core)[number], string> = {
 };
 const editorialReviewed = new Set([
   "oos_investigation_template",
+  "biopharma_upstream_control",
   "biopharma_downstream_clearance",
+  "biopharma_formulation_stability",
+  "biopharma_analytical_control_strategy",
   "biopharma_technology_transfer",
+  "biopharma_materials_control",
   "biopharma_cell_substrate_control",
   "biopharma_process_validation_cpv",
   "pharma_api_impurity_control",

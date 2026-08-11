@@ -11,6 +11,8 @@ const expandedPackages = [
   ["drug-product-unit-operations-scale-up", "drug_product_unit_operations_scale_up"],
   ["drug-product-analytical-release-stability-packaging", "drug_product_analytical_release_stability"],
   ["drug-product-validation-transfer-lifecycle", "drug_product_validation_transfer_lifecycle"],
+  ["cross-cutting-evidence-governance", "analytical_lifecycle_evidence_map"],
+  ["cross-cutting-evidence-governance", "decision_led_statistics_evidence_map"],
 ] as const;
 
 describe("expanded decision-package assets", () => {

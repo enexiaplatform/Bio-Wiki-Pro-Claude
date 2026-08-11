@@ -2,7 +2,7 @@
 
 **Version:** 1.0.0-review
 
-**Status:** Under review
+**Status:** Editorial-reviewed; not SME-approved
 
 **Document purpose:** Educational decision and evidence-mapping support
 
@@ -100,7 +100,7 @@ benchmark or recommended study design.
 ## Document control and sign-off
 
 - Content version: 1.0.0-review
-- Review status: under-review
+- Review status: editorial-reviewed; not SME-approved
 - Reviewed by role: not yet recorded
 - Last reviewed: not yet recorded
 - Review due: after source change, qualified-review correction or before any

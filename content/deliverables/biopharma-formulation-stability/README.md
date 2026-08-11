@@ -7,7 +7,7 @@ changes, commitments, and accountable review.
 
 **Package version:** 1.0.0-review
 
-**Review status:** under review
+**Review status:** editorial-reviewed; not SME-approved
 
 **Decision owner:** the authorized product, formulation, fill-finish, stability,
 analytical, quality, validation, and regulatory owners - not Atlas

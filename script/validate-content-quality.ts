@@ -44,6 +44,7 @@ async function validateRegistry() {
   const toolkitSlugs = new Set(toolkits.map((item) => item.slug));
   const toolkitBySlug = new Map(toolkits.map((item) => [item.slug, item]));
   const deliverableDirs = new Set(Object.values(DELIVERABLES).map((item) => item.dir));
+  const paidAssetIds = new Set(PAID_ASSET_QUALITY.map((item) => item.id));
   const blogSlugs = new Set((await readdir(path.join(root, "content", "blog"))).filter((file) => file.endsWith(".en.mdx")).map((file) => file.replace(/\.en\.mdx$/, "")));
   const academySlugs = new Set((await readdir(path.join(root, "content", "academy"))).filter((file) => file.endsWith(".en.mdx")).map((file) => file.replace(/\.en\.mdx$/, "")));
   for (const item of DECISION_PACKAGES) {
@@ -173,6 +174,12 @@ async function validateRegistry() {
       if (area.materialGaps.length === 0) errors.push(`manufacturing portfolio ${areaKey}: material gaps must be explicit`);
       if (area.requiredReviewerRoles.length === 0) errors.push(`manufacturing portfolio ${areaKey}: reviewer roles must be explicit`);
       if (area.status === "not-covered" && (area.currentLessonSlugs.length > 0 || area.currentAssetIds.length > 0)) errors.push(`manufacturing portfolio ${areaKey}: not-covered area cannot claim current assets`);
+      if (area.status === "covered-under-review" && area.currentAssetIds.length === 0) errors.push(`manufacturing portfolio ${areaKey}: covered area requires a repository-backed working asset`);
+      for (const assetId of area.currentAssetIds) {
+        if (!paidAssetIds.has(assetId)) errors.push(`manufacturing portfolio ${areaKey}: asset ${assetId} has no paid-asset quality record`);
+        if (toolkitBySlug.get(assetId)?.status !== "available") errors.push(`manufacturing portfolio ${areaKey}: asset ${assetId} is not an available toolkit`);
+        if (!deliverableDirs.has(assetId)) errors.push(`manufacturing portfolio ${areaKey}: asset ${assetId} has no repository deliverable directory`);
+      }
       for (const slug of area.currentLessonSlugs) {
         try {
           await access(path.join(root, "content", "academy", `${slug}.en.mdx`));
@@ -261,7 +268,7 @@ for (const required of ["editorial-reviewed", "FDA-OOS-2022", "EU-GMP-CH6-2014",
     }
   }
   const upstreamReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_UPSTREAM_CONTROL_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q8-R2", "ICH-Q11", "FDA-PROCESS-VALIDATION-2011", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+  for (const required of ["editorial-reviewed", "ICH-Q8-R2", "ICH-Q11", "FDA-PROCESS-VALIDATION-2011", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!upstreamReviewPacket.includes(required)) errors.push(`Biopharma upstream review packet: missing ${required}`);
   }
 
@@ -317,7 +324,7 @@ for (const required of ["editorial-reviewed", "ICH-Q5A-R2", "ICH-Q11", "ICH-Q6B"
     }
   }
   const formulationReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_FORMULATION_STABILITY_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q5C", "ICH-Q1A-R2", "ICH-Q1B", "EU-GMP-ANNEX1-2022", "FDA-CONTAINER-CLOSURE-1999", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+  for (const required of ["editorial-reviewed", "ICH-Q5C", "ICH-Q1A-R2", "ICH-Q1B", "EU-GMP-ANNEX1-2022", "FDA-CONTAINER-CLOSURE-1999", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!formulationReviewPacket.includes(required)) errors.push(`Biopharma formulation/stability review packet: missing ${required}`);
   }
 
@@ -401,7 +408,7 @@ for (const required of ["editorial-reviewed", "WHO-TRS-1044-ANNEX4", "ICH-Q10", 
     }
   }
   const materialsReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_MATERIALS_CONTROL_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q11", "ICH-Q5A-R2", "ICH-Q5E", "EU-GMP-ANNEX1-2022", "WHO-TRS-996-ANNEX3", "FDA-QUALITY-AGREEMENTS-2016", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
+  for (const required of ["editorial-reviewed", "ICH-Q11", "ICH-Q5A-R2", "ICH-Q5E", "EU-GMP-ANNEX1-2022", "WHO-TRS-996-ANNEX3", "FDA-QUALITY-AGREEMENTS-2016", "Critical review checklist", "Workbook usability acceptance", "Open evidence and product backlog", "Review record"]) {
     if (!materialsReviewPacket.includes(required)) errors.push(`Biopharma materials-control review packet: missing ${required}`);
   }
 
@@ -565,7 +572,7 @@ for (const required of ["editorial-reviewed", "Critical fail conditions", "Requi
   }
 
   const biopharmaReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_CONTROL_STRATEGY_1_0_REVIEW_PACKET.md"), "utf8");
-  for (const required of ["under-review", "ICH-Q5A-R2", "ICH-Q5C", "ICH-Q5D", "ICH-Q5B", "ICH-Q5E", "ICH-Q6B", "WHO-TRS-978-ANNEX3", "WHO-TRS-1044-ANNEX4", "WHO-TRS-996-ANNEX3", "EMA-BIOLOGICS-PROCESS-VALIDATION-2016", "EU-GMP-ANNEX15-2015", "Critical review checklist", "Open content backlog", "Review record"]) {
+  for (const required of ["editorial-reviewed", "ICH-Q5A-R2", "ICH-Q5C", "ICH-Q5D", "ICH-Q5B", "ICH-Q5E", "ICH-Q6B", "WHO-TRS-978-ANNEX3", "WHO-TRS-1044-ANNEX4", "WHO-TRS-996-ANNEX3", "EMA-BIOLOGICS-PROCESS-VALIDATION-2016", "EU-GMP-ANNEX15-2015", "Critical review checklist", "Open content backlog", "Review record"]) {
     if (!biopharmaReviewPacket.includes(required)) errors.push(`Biopharma review packet: missing ${required}`);
   }
   const biopharmaCoverage = await readFile(path.join(root, "docs", "BIOPHARMA_CONTENT_COVERAGE.md"), "utf8");
