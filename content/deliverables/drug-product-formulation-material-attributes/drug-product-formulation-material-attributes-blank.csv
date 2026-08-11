@@ -1,2 +1,6 @@
-decision_id,dosage_form,product_intent,material_or_attribute,method_capability,manufacturing_consequence,source_locator,limitation,reviewer,next_action,decision_state
-DP-FMA-001,OSD,,,,,,,,,evidence-required
+record_type,decision_id,sequence,dosage_form_or_scope,object_or_question,version_or_locator,observation_or_hypothesis,evidence_for,evidence_against,method_or_data_limitation,affected_handoff,accountable_reviewer,next_action,due_or_trigger,decision_state
+baseline,DP-FMA-001,01,,,,,,,,,,,,evidence-required
+material-function,DP-FMA-001,02,,,,,,,,,,,,evidence-required
+formulation-hypothesis,DP-FMA-001,03,,,,,,,,,,,,evidence-required
+study-question,DP-FMA-001,04,,,,,,,,,,,,evidence-required
+decision-handoff,DP-FMA-001,05,,,,,,,,,,,,qualified-review-required

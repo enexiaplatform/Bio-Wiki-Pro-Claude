@@ -23,3 +23,5 @@ Last audited: 2026-08-11
 Every package now has a `decision-package-learning/v2` structured draft covering learning objectives, knowledge foundations, five gated workflow phases, three evidence or study activities, reasoning checks, review-ready completion criteria and a package-specific three-round fictional Decision Lab. Detailed flow and lab bodies are server-gated Pro content and are absent from the public client bundle; guest sessions receive counts, boundaries and handoff only. These flows are labelled `specialist-review-required`: they do not inherit SME approval from the package, do not provide laboratory execution parameters or universal acceptance criteria, and do not change the executable Quality Lab Compiler.
 
 Qualified review is controlled through `docs/content-reviews/DECISION_PACKAGE_LEARNING_FLOWS_1_0_REVIEW_PACKET.md`; all twelve dispositions remain open until reviewer evidence and corrections are recorded.
+
+The full-content definition, package-by-package depth counts, closed gaps and intentionally open external gates are recorded in `docs/DECISION_PACKAGE_FULL_CONTENT_AUDIT.md`.

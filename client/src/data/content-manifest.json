@@ -2321,6 +2321,85 @@
   },
   {
     "collection": "academy",
+    "slug": "cross-product-evidence-investigation-change-governance",
+    "lang": "en",
+    "title": "Cross-product evidence, investigation and change governance",
+    "tier": "pro",
+    "category": "Quality Systems",
+    "seoDescription": "Move analytical and process signals through data lineage, statistical review, investigation, CAPA, effectiveness, change control and knowledge transfer without collapsing distinct quality decisions.",
+    "updatedAt": "2026-08-11",
+    "quiz": [
+      {
+        "q": "What must happen before a trend becomes an investigation conclusion?",
+        "options": [
+          "Reproduce and attribute the signal, test competing explanations, and complete accountable review",
+          "Choose the most convenient root cause",
+          "Convert the trend into a specification",
+          "Retrain the analyst"
+        ],
+        "answer": 0
+      },
+      {
+        "q": "What is the difference between a correction and CAPA?",
+        "options": [
+          "There is no difference",
+          "A correction addresses the observed issue; CAPA addresses supported causes or systemic risk with planned effectiveness evidence",
+          "CAPA is any retraining",
+          "A correction always closes the investigation"
+        ],
+        "answer": 1
+      },
+      {
+        "q": "What does a statistical signal authorize?",
+        "options": [
+          "Automatic batch rejection",
+          "Automatic process adjustment",
+          "A proportionate evidence review; disposition and change remain separate controlled decisions",
+          "A new universal alert limit"
+        ],
+        "answer": 2
+      },
+      {
+        "q": "When is knowledge transfer complete?",
+        "options": [
+          "When documents are emailed",
+          "When the receiving role can locate, interpret and govern the evidence and unresolved boundaries for the intended use",
+          "When the training roster is signed",
+          "When a change request is opened"
+        ],
+        "answer": 1
+      }
+    ],
+    "readMinutes": 8,
+    "decisionPackageId": "cross-cutting-evidence-governance",
+    "decisionPackageIds": [
+      "cross-cutting-evidence-governance"
+    ],
+    "systemIds": [
+      "quality-lifecycle",
+      "qc-laboratory"
+    ],
+    "stageIds": [
+      "quality-signals",
+      "capa-change",
+      "quality-review-release",
+      "lab-investigations"
+    ],
+    "lifecycleStageIds": [
+      "quality-lifecycle:quality-signals",
+      "quality-lifecycle:capa-change",
+      "quality-lifecycle:quality-review-release",
+      "qc-laboratory:lab-investigations"
+    ],
+    "productDestinations": [
+      "public",
+      "pro",
+      "quality-lab",
+      "career"
+    ]
+  },
+  {
+    "collection": "academy",
     "slug": "data-integrity-deep-dive",
     "lang": "en",
     "title": "Data Integrity — Audit Trail Review (Deep Dive)",
@@ -2675,7 +2754,7 @@
     "tier": "pro",
     "category": "Pharma Drug Product",
     "seoDescription": "Build a traceable drug-product analytical, release, stability and packaging evidence chain with a bounded OSD example, controlled sources and clear limits on methods, specifications and shelf-life claims.",
-    "updatedAt": "2026-08-10",
+    "updatedAt": "2026-08-11",
     "quiz": [
       {
         "q": "What connects an analytical result to a release decision?",
@@ -2708,7 +2787,7 @@
         "answer": 0
       }
     ],
-    "readMinutes": 2,
+    "readMinutes": 6,
     "decisionPackageId": "drug-product-analytical-release-stability-packaging",
     "decisionPackageIds": [
       "drug-product-analytical-release-stability-packaging"
@@ -2737,7 +2816,7 @@
     "tier": "pro",
     "category": "Pharma Drug Product",
     "seoDescription": "Frame drug-product formulation and material-attribute decisions with a bounded OSD example, controlled sources, evidence questions, and explicit limits on what the framework can support.",
-    "updatedAt": "2026-08-10",
+    "updatedAt": "2026-08-11",
     "quiz": [
       {
         "q": "What is the first decision baseline for a formulation evidence map?",
@@ -2770,7 +2849,7 @@
         "answer": 0
       }
     ],
-    "readMinutes": 2,
+    "readMinutes": 6,
     "decisionPackageId": "drug-product-formulation-material-attributes",
     "decisionPackageIds": [
       "drug-product-formulation-material-attributes"
@@ -2799,7 +2878,7 @@
     "tier": "pro",
     "category": "Pharma Drug Product",
     "seoDescription": "Connect drug-product unit operations, equipment, hold, sampling, scale and process-control evidence for review while keeping OSD examples synthetic and avoiding unsupported parameters or acceptance criteria.",
-    "updatedAt": "2026-08-10",
+    "updatedAt": "2026-08-11",
     "quiz": [
       {
         "q": "What should be frozen before comparing two scales?",
@@ -2832,7 +2911,7 @@
         "answer": 0
       }
     ],
-    "readMinutes": 2,
+    "readMinutes": 6,
     "decisionPackageId": "drug-product-unit-operations-scale-up",
     "decisionPackageIds": [
       "drug-product-unit-operations-scale-up"
@@ -2861,7 +2940,7 @@
     "tier": "pro",
     "category": "Pharma Drug Product",
     "seoDescription": "Connect drug-product technology transfer, validation, change and continued lifecycle evidence using a bounded OSD example without implying site readiness, validation conclusions or execution authorization.",
-    "updatedAt": "2026-08-10",
+    "updatedAt": "2026-08-11",
     "quiz": [
       {
         "q": "What should a transfer baseline include?",
@@ -2894,7 +2973,7 @@
         "answer": 0
       }
     ],
-    "readMinutes": 2,
+    "readMinutes": 6,
     "decisionPackageId": "drug-product-validation-transfer-lifecycle",
     "decisionPackageIds": [
       "drug-product-validation-transfer-lifecycle"

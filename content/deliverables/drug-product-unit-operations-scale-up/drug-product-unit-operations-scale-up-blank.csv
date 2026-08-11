@@ -1,2 +1,6 @@
-decision_id,operation,equipment_and_scale,hold_or_sampling_basis,observation,hypothesis,analytical_link,source_locator,limitation,reviewer,next_action,decision_state
-DP-UO-001,,,,,,,,,,,evidence-required
+record_type,decision_id,sequence,unit_operation_or_scope,equipment_material_or_sample_version,intended_function,observation_or_difference,mechanism_hypothesis,evidence_for,evidence_against,measurement_or_sampling_limitation,affected_handoff,accountable_reviewer,next_action,due_or_trigger,decision_state
+baseline,DP-UO-001,01,,,,,,,,,,,,,evidence-required
+equipment-difference,DP-UO-001,02,,,,,,,,,,,,,evidence-required
+process-signal,DP-UO-001,03,,,,,,,,,,,,,evidence-required
+study-question,DP-UO-001,04,,,,,,,,,,,,,evidence-required
+lifecycle-handoff,DP-UO-001,05,,,,,,,,,,,,,qualified-review-required

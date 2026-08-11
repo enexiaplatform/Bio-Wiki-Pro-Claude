@@ -579,6 +579,40 @@ for (const required of ["editorial-reviewed", "Critical fail conditions", "Requi
     if (lesson.toLowerCase().includes(".xlsx")) errors.push(`academy/${slug}: new lifecycle content must not introduce workbook deliverables`);
   }
 
+  const fullDecisionPackageLessons = [
+    ["drug-product-formulation-material-attributes", "## Separate seven formulation evidence objects", "## Run the formulation evidence workflow"],
+    ["drug-product-unit-operations-scale-up", "## Separate eight process evidence objects", "## Run the unit-operation workflow"],
+    ["drug-product-analytical-release-stability", "## Separate nine analytical and product evidence objects", "## Run the analytical-to-lifecycle workflow"],
+    ["drug-product-validation-transfer-lifecycle", "## Separate ten lifecycle evidence objects", "## Run the transfer and lifecycle workflow"],
+    ["cross-product-evidence-investigation-change-governance", "## Separate eleven governance objects", "## Run the signal-to-decision workflow"],
+  ] as const;
+  for (const [slug, objectSection, workflowSection] of fullDecisionPackageLessons) {
+    const lesson = await readFile(path.join(academyDir, `${slug}.en.mdx`), "utf8");
+    const wordCount = lesson.replace(/^---[\s\S]*?---/m, "").trim().split(/\s+/).length;
+    for (const section of ["## Decision question", "## Applicability and do-not-use boundary", "## Controlled source map", objectSection, workflowSection, "## Evidence and study architecture", "## Decision table", "## Worked example", "## Working asset", "## Limitations"]) {
+      if (!lesson.includes(section)) errors.push(`academy/${slug}: missing full-package section ${section}`);
+    }
+    if (wordCount < 1_100) errors.push(`academy/${slug}: deep lesson requires at least 1100 words; found ${wordCount}`);
+    if (lesson.toLowerCase().includes(".xlsx")) errors.push(`academy/${slug}: full-package content must link through controlled asset routes, not introduce workbook filenames`);
+  }
+
+  for (const packageItem of DECISION_PACKAGES) {
+    const lessonSlug = packageItem.artifactPlan.find((artifact) => artifact.kind === "pro-lesson")?.assetRef;
+    if (!lessonSlug) {
+      errors.push(`${packageItem.id}: canonical Pro lesson is missing`);
+      continue;
+    }
+    const rawLesson = await readFile(path.join(academyDir, `${lessonSlug}.en.mdx`), "utf8");
+    const parsedLesson = matter(rawLesson);
+    const bodyWordCount = parsedLesson.content.trim().split(/\s+/).length;
+    if (parsedLesson.data.tier !== "pro") errors.push(`${packageItem.id}: canonical lesson ${lessonSlug} must be Pro`);
+    if (bodyWordCount < 1_000) errors.push(`${packageItem.id}: canonical lesson ${lessonSlug} requires at least 1000 body words; found ${bodyWordCount}`);
+    if (!Array.isArray(parsedLesson.data.quiz) || parsedLesson.data.quiz.length < 3) errors.push(`${packageItem.id}: canonical lesson ${lessonSlug} requires at least three assessment questions`);
+    for (const section of ["## Decision question", "## Applicability and do-not-use boundary", "## Controlled source map", "## Worked example", "## Working asset", "## Limitations"]) {
+      if (!rawLesson.includes(section)) errors.push(`${packageItem.id}: canonical lesson ${lessonSlug} missing ${section}`);
+    }
+  }
+
   const biopharmaReviewPacket = await readFile(path.join(root, "docs", "content-reviews", "BIOPHARMA_CONTROL_STRATEGY_1_0_REVIEW_PACKET.md"), "utf8");
   for (const required of ["editorial-reviewed", "ICH-Q5A-R2", "ICH-Q5C", "ICH-Q5D", "ICH-Q5B", "ICH-Q5E", "ICH-Q6B", "WHO-TRS-978-ANNEX3", "WHO-TRS-1044-ANNEX4", "WHO-TRS-996-ANNEX3", "EMA-BIOLOGICS-PROCESS-VALIDATION-2016", "EU-GMP-ANNEX15-2015", "Critical review checklist", "Open content backlog", "Review record"]) {
     if (!biopharmaReviewPacket.includes(required)) errors.push(`Biopharma review packet: missing ${required}`);

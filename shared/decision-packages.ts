@@ -600,6 +600,7 @@ export const DECISION_PACKAGES: DecisionPackage[] = ([
     careerCompetencyIds: ["gmpEvidence", "investigationOwnership", "documentation", "leadership"],
     assetRefs: [
       asset("guide", "capa-effectiveness-check", "CAPA effectiveness check"),
+      asset("academy", "cross-product-evidence-investigation-change-governance", "Cross-product evidence, investigation and change governance"),
       asset("academy", "data-integrity-deep-dive", "Data integrity deep dive"),
       asset("academy", "oos-investigation-deep-dive", "OOS investigation"),
       asset("academy", "decision-led-doe-and-multivariate-process-evidence", "Decision-led DoE and multivariate evidence"),
@@ -611,7 +612,7 @@ export const DECISION_PACKAGES: DecisionPackage[] = ([
     ],
     artifactPlan: [
       plan("public-guide", "Evidence-to-effectiveness decision guide", "existing", "capa-effectiveness-check"),
-      plan("pro-lesson", "Cross-product evidence governance lesson", "existing", "data-integrity-deep-dive"),
+      plan("pro-lesson", "Cross-product evidence governance lesson", "existing", "cross-product-evidence-investigation-change-governance"),
       plan("workflow-or-tool", "Signal-to-CAPA workflow", "existing", "oos-investigation"),
       plan("working-asset", "Investigation-to-effectiveness evidence map", "existing", "investigation-capa-change-evidence-loop"),
       plan("fictional-example", "Fictional investigation case", "existing", "investigation-capa-change-evidence-loop"),

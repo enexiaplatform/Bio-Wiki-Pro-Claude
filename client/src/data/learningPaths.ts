@@ -97,6 +97,7 @@ export const learningPaths: LearningPath[] = [
     description: "Investigate failures and defend your data — good documentation, ALCOA+, OOS/OOT, and SPC/MSA for trending.",
     lessonSlugs: [
       "good-documentation-practice",
+      "cross-product-evidence-investigation-change-governance",
       "data-integrity-deep-dive",
       "electronic-records-part-11",
       "oos-investigation-deep-dive",

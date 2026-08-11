@@ -5,7 +5,7 @@ lang: "en"
 tier: "pro"
 category: "Pharma Drug Product"
 seoDescription: "Frame drug-product formulation and material-attribute decisions with a bounded OSD example, controlled sources, evidence questions, and explicit limits on what the framework can support."
-updatedAt: "2026-08-10"
+updatedAt: "2026-08-11"
 quiz:
   - q: "What is the first decision baseline for a formulation evidence map?"
     options: ["Dosage form, product intent, material versions and decision owner", "A copied excipient ratio", "A universal design space", "A final shelf-life claim"]
@@ -42,6 +42,115 @@ quality and regulatory CMC reviewers.
 | ICH Q8(R2) | Connect material attributes, process understanding and product performance | It does not supply a product formula or design space |
 | ICH Q9(R1) | Structure risk questions and review priorities | Risk ranking does not replace experiments or approval |
 | ICH Q10 | Keep formulation knowledge and changes in the quality lifecycle | It does not authorize a change |
+
+## Separate seven formulation evidence objects
+
+Do not collapse a formulation decision into one risk score or one development
+table. Preserve seven linked objects:
+
+1. **Product intent** — dosage form, route, strength/presentation assumptions,
+   intended performance, patient-use context and the exact decision owner.
+2. **API state** — identity, form, particle and surface observations, water or
+   solvent history, stability knowledge, lot/version and analytical limits.
+3. **Excipient function** — intended role, grade/version, supplier/process
+   history, variability evidence and the mechanism by which it could affect the
+   product.
+4. **Formulation hypothesis** — a testable product-specific relationship, not a
+   copied formula or a declaration of criticality.
+5. **Process interaction** — how blending, granulation, drying, milling,
+   compression, coating, filling or another dosage-form operation could modify
+   the material relationship.
+6. **Performance evidence** — capable methods, representative samples,
+   dissolution or other dosage-form performance observations, stability and
+   uncertainty.
+7. **Lifecycle decision** — what the evidence supports now, what remains open,
+   who reviews it and which change reopens the question.
+
+This separation matters because the same material label can hide different
+physical histories, and the same analytical result can have different meaning
+for different dosage forms, processes or presentations.
+
+## Run the formulation evidence workflow
+
+### 1. Freeze the decision baseline
+
+Record the product/dosage-form concept, API and material versions, process
+state, market or development stage, question, accountable owner and due date.
+If the team is simultaneously changing API state, excipient source and process
+equipment, record each change rather than calling the comparison a simple
+formulation study.
+
+**Gate:** the baseline is usable only when every sample and observation can be
+linked to a defined material and process state.
+
+### 2. Build the material-function-mechanism map
+
+For every material, state its intended function and the plausible mechanism by
+which variability could influence manufacturability, dose delivery, stability
+or another product attribute. Mark whether the relationship is prior
+knowledge, product evidence, a hypothesis or currently unknown. Supplier
+documentation is an input; it is not product-specific functional evidence.
+
+**Gate:** no attribute is labelled critical solely because it appears on a
+certificate, risk template or another product's development report.
+
+### 3. Challenge measurement and confounding
+
+Check sampling, sample preparation, method purpose, method version, reference
+status, reportable result and missing data. Then list changes that moved
+together. A dissolution observation coincident with both an API particle shift
+and an excipient-source change cannot distinguish those mechanisms without
+additional evidence.
+
+**Gate:** an association remains unresolved when measurement capability or a
+material/process confounder could reasonably explain it.
+
+### 4. Frame bounded evidence generation
+
+Write the decision question before selecting factors or responses. Define the
+material contrasts, process context, representative samples, analytical
+responses, data lineage, handling of inconclusive results and accountable
+review. Qualified site teams own compositions, levels, feasible ranges,
+protocols, safety and acceptance logic.
+
+**Gate:** the study frame may organize evidence but cannot become a formula,
+design space or manufacturing instruction.
+
+### 5. Record the conclusion and next-stage handoff
+
+Separate observations, interpretations, proposed actions and formal
+authorization. Carry material risks into the relevant unit operation,
+analytical/stability program, packaging question, transfer activity or change
+control. Include triggers such as supplier/process changes, new API lots,
+method changes or contradictory stability evidence.
+
+**Gate:** completion means ready for accountable review, not formulation
+selection, bioequivalence, validation or regulatory acceptance.
+
+## Evidence and study architecture
+
+| Study question | Evidence that improves the decision | Evidence that remains insufficient |
+| --- | --- | --- |
+| Could a material-version difference alter product performance? | Attributable lots, mechanism-based contrasts, representative processing, capable methods and product-relevant responses | Grade name, certificate comparison or one unreplicated endpoint |
+| Is an observed response caused by formulation rather than process or measurement? | Deliberate contrasts or reconciled natural experiments with process, sampling and method versions preserved | A correlation in which several changes moved together |
+| Can prior knowledge be applied? | Similarity rationale covering material function, product, dosage form, process, response and uncertainty | “Platform” or literature evidence without applicability review |
+| Is the evidence ready for lifecycle use? | Versioned conclusion, limitations, reviewers, open actions and change triggers | A development slide without data lineage or authorization boundary |
+
+Do not force a conclusive result. “Evidence required,” “confounded,” “method
+capability unresolved” and “dosage-form applicability not established” are
+valid outputs.
+
+## Common failure modes
+
+- Treating material grade or supplier specification as proof of equivalent
+  product function.
+- Assigning criticality before distinguishing hypothesis from demonstrated
+  product impact.
+- Copying excipient levels, factor ranges or responses from another product.
+- Ignoring API state, process history, sampling or analytical capability.
+- Using a risk score as a substitute for experimental evidence.
+- Reporting a synthetic OSD example as a validated formulation or regulatory
+  precedent.
 
 ## Evidence chain
 

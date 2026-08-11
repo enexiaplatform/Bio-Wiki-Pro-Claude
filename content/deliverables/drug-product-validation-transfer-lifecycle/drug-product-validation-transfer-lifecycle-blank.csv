@@ -1,2 +1,6 @@
-decision_id,transfer_scope,receiving_unit,knowledge_or_equipment_gap,analytical_readiness,validation_or_change_evidence,observation,source_locator,limitation,reviewer,next_action,decision_state
-DP-VTL-001,,,,,,,,,,,evidence-required
+record_type,decision_id,sequence,sending_receiving_or_scope,product_process_method_version,difference_or_commitment,plausible_impact,evidence_for,evidence_against,deviation_or_limitation,validation_transfer_or_change_link,accountable_reviewer,next_action,monitoring_or_trigger,authorization_state,decision_state
+baseline,DP-VTL-001,01,,,,,,,,,,,,,authorization-open,evidence-required
+receiving-capability,DP-VTL-001,02,,,,,,,,,,,,,authorization-open,evidence-required
+difference-impact,DP-VTL-001,03,,,,,,,,,,,,,authorization-open,evidence-required
+exception-review,DP-VTL-001,04,,,,,,,,,,,,,authorization-open,evidence-required
+continued-lifecycle,DP-VTL-001,05,,,,,,,,,,,,,authorization-open,qualified-review-required

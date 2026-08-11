@@ -5,7 +5,7 @@ lang: "en"
 tier: "pro"
 category: "Pharma Drug Product"
 seoDescription: "Connect drug-product unit operations, equipment, hold, sampling, scale and process-control evidence for review while keeping OSD examples synthetic and avoiding unsupported parameters or acceptance criteria."
-updatedAt: "2026-08-10"
+updatedAt: "2026-08-11"
 quiz:
   - q: "What should be frozen before comparing two scales?"
     options: ["Process version, equipment context, intended decision and evidence basis", "The largest vessel", "A universal batch count", "The final specification only"]
@@ -42,6 +42,101 @@ statistics, validation and quality reviewers.
 | ICH Q9(R1) | Prioritize equipment, hold, sampling and failure-mode questions | Risk priority is not an acceptance limit |
 | ICH Q10 | Carry process knowledge into transfer and change governance | It does not authorize execution |
 | FDA Process Validation guidance | Organize lifecycle evidence | It does not prescribe a universal batch plan |
+
+## Separate eight process evidence objects
+
+1. **Product and process baseline** — dosage form, strength/presentation,
+   formulation/material versions, process version, site, scale and decision.
+2. **Unit-operation purpose** — the transformation or control contribution
+   expected from each operation and the attributes entering and leaving it.
+3. **Equipment context** — geometry, operating mode, control/measurement
+   architecture, material contact, capacity and known differences.
+4. **Material genealogy** — API/excipient lots, intermediates, rework or hold
+   states and the batches or samples they entered.
+5. **Process history** — additions, sequence, endpoint observations, holds,
+   interruptions, alarms, interventions and deviations.
+6. **Sampling and measurement** — location, timing, representativeness, sample
+   handling, method purpose, capability and version.
+7. **Scale and mechanism hypothesis** — how mixing, transfer, densification,
+   drying, mechanical energy or another relevant phenomenon could change.
+8. **Lifecycle disposition** — supported inference, limitation, open evidence,
+   reviewer, next action and trigger for renewed review.
+
+Similar endpoint results do not prove similar mechanisms, and similar nominal
+equipment settings do not prove similar product or process histories.
+
+## Run the unit-operation workflow
+
+### 1. Freeze process versions and handoffs
+
+Draw the process from material dispensing through the relevant finished-product
+state. For each handoff, record material state, hold condition, equipment,
+sample identity and version. Name the exact question: development scale choice,
+equipment change, site transfer, deviation assessment, validation evidence or
+continued-verification signal.
+
+**Gate:** do not pool or compare data from mixed process, material or method
+versions without an explicit comparability rationale.
+
+### 2. Map mechanisms to observable responses
+
+For each operation, state the intended function, plausible failure mechanisms
+and observations capable of distinguishing them. In an OSD example, blend,
+granulation, drying, milling, lubrication, compression and coating may transmit
+material history differently. Other dosage forms need their own mechanism and
+applicability review.
+
+**Gate:** an unmeasured mechanism remains a hypothesis and cannot be promoted
+to a process control.
+
+### 3. Compare equipment and scale by function
+
+Record geometry and mode differences, measurement locations, control response,
+load state, transfer paths and intervention opportunities. Identify which
+differences could affect the named mechanism. “Same model family,” “same
+setpoint” or “same endpoint” is not a complete scale rationale.
+
+**Gate:** every claimed similarity has a locator and scope; every material
+difference has an evidence question or justified exclusion.
+
+### 4. Challenge holds, sampling and data quality
+
+Map planned and unplanned holds, intermediate storage, resumption sequence,
+sampling locations, composites, sample preparation and method versions. Review
+whether the sampling scheme can see the heterogeneity or transient behavior
+being discussed. Preserve missing, censored and non-comparable results.
+
+**Gate:** a process conclusion is blocked when measurement or sampling could
+plausibly create the apparent signal.
+
+### 5. Frame studies and lifecycle review
+
+Define mechanism-based questions, representative material/process states,
+responses, data lineage, protocol ownership, safety review and escalation for
+discordant evidence. Then connect the result to qualification, validation,
+transfer, analytical/stability review and change control.
+
+**Gate:** Atlas supplies the evidence architecture, never site settings,
+process ranges, sampling instructions, adjustment rules or authorization.
+
+## Evidence and study architecture
+
+| Question | Review-ready evidence | Fail-closed outcome |
+| --- | --- | --- |
+| Can an equipment difference affect the operation's intended function? | Function/geometry comparison, mechanism, representative process evidence and qualified engineering/process review | `Evidence required` when only nominal settings or vendor descriptions are available |
+| Does a process signal represent material, process or measurement change? | Batch/material/sample genealogy, capable methods, chronology and competing hypotheses | `Measurement or attribution unresolved` when versions cannot be reconciled |
+| Is a hold or interruption understood? | Exact material state, duration/exposure record, resumption history, product/process observations and controlled study rationale | `Product-specific study required`; no universal hold time |
+| Is the scale decision ready for validation or transfer review? | Supported scope, limitations, residual risks, receiving-stage inputs and accountable reviewers | `Qualified review required`; no validation conclusion |
+
+## Common failure modes
+
+- Copying development or sending-site settings to different equipment.
+- Using one finished-product endpoint to claim every unit operation is
+  equivalent.
+- Losing material genealogy between intermediate containers and samples.
+- Treating an in-process method as capable without intended-use evidence.
+- Ignoring intervention, hold, sampling or software/control-system differences.
+- Turning a process-capability calculation into validation or batch disposition.
 
 ## Evidence chain
 

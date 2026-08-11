@@ -1,2 +1,6 @@
-decision_id,presentation,performance_or_release_question,method_capability,stability_or_packaging_basis,observation,hypothesis,source_locator,limitation,reviewer,next_action,decision_state
-DP-ARS-001,OSD,,,,,,,,,,evidence-required
+record_type,decision_id,sequence,product_sample_or_presentation,method_reference_or_package_version,intended_use_or_question,observation_or_signal,hypothesis,evidence_for,evidence_against,method_data_or_exposure_limitation,investigation_or_change_link,accountable_reviewer,next_action,due_or_trigger,decision_state
+baseline,DP-ARS-001,01,,,,,,,,,,,,,evidence-required
+method-attribute-map,DP-ARS-001,02,,,,,,,,,,,,,evidence-required
+stability-package-chronology,DP-ARS-001,03,,,,,,,,,,,,,evidence-required
+signal-investigation,DP-ARS-001,04,,,,,,,,,,,,,evidence-required
+lifecycle-decision,DP-ARS-001,05,,,,,,,,,,,,,qualified-review-required

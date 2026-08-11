@@ -35,7 +35,17 @@ describe("drug-product decision content quality", () => {
       expect(lesson).toContain("synthetic");
       expect(lesson.toLowerCase()).toContain("under review");
       expect(lesson).toMatch(/ICH Q|FDA|WHO/);
+      expect(lesson.trim().split(/\s+/).length).toBeGreaterThanOrEqual(1_100);
+      expect(lesson).toContain("## Evidence and study architecture");
+      expect(lesson).toContain("## Common failure modes");
     }
+  });
+
+  it("ships a dedicated cross-product signal-to-change deep lesson", () => {
+    const lesson = readFileSync(path.resolve(root, "content", "academy", "cross-product-evidence-investigation-change-governance.en.mdx"), "utf8");
+    for (const section of ["## Decision question", "## Controlled source map", "## Separate eleven governance objects", "## Run the signal-to-decision workflow", "## Evidence and study activities", "## Evidence and study architecture", "## Decision table", "## Worked example: fictional cross-product evidence loop", "## Working asset", "## Completion standard", "## Limitations"]) expect(lesson).toContain(section);
+    expect(lesson.trim().split(/\s+/).length).toBeGreaterThanOrEqual(1_400);
+    expect(lesson).toContain("specialist-review-required");
   });
 
   it("keeps every public guide connected to discovery, sources and the next lifecycle handoff", () => {
