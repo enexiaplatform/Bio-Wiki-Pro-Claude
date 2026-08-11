@@ -14,6 +14,11 @@ const assets = [
     sources: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "FDA-DI-2018", "FDA-PROCESS-VALIDATION-2011"],
     requiredHeaders: ["dataset_version", "measurement_system_evidence", "assumption", "uncertainty", "model_use_boundary"],
   },
+  {
+    slug: "investigation-capa-change-evidence-loop",
+    sources: ["FDA-OOS-2022", "FDA-DI-2018", "ICH-Q9-R1", "ICH-Q10"],
+    requiredHeaders: ["source_record_locator", "hypothesis", "corrective_action", "change_control_id", "effectiveness_question", "knowledge_transfer_target"],
+  },
 ] as const;
 
 describe("cross-cutting decision assets", () => {

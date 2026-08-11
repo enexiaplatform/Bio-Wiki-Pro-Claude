@@ -37,7 +37,7 @@ async function validateRegistry() {
   for (const error of validateDecisionPackages()) errors.push(error);
   for (const error of validateCareerDomainTracks()) errors.push(error);
   if (CAREER_DOMAIN_TRACKS.length !== 3) errors.push(`career domain tracks: expected three lifecycle tracks, found ${CAREER_DOMAIN_TRACKS.length}`);
-  const packageIds = new Set(DECISION_PACKAGES.map((item) => item.id));
+  const packageIds = new Set<string>(DECISION_PACKAGES.map((item) => item.id));
   const stageKeys = new Set(workflowSystems.flatMap((system) => system.stages.map((stage) => `${system.id}:${stage.id}`)));
   const workflowSlugs = new Set(workflows.map((item) => item.slug));
   const toolSlugs = new Set(TOOL_CATALOG.map((item) => item.slug));
@@ -149,8 +149,16 @@ async function validateRegistry() {
     validateSourceIds(`biopharma coverage ${area.id}`, area.sourceIds);
     if (area.materialGaps.length === 0) errors.push(`biopharma coverage ${area.id}: material gaps must be explicit`);
     if (area.requiredReviewerRoles.length === 0) errors.push(`biopharma coverage ${area.id}: reviewer roles must be explicit`);
-    if (area.status === "not-covered" && area.currentLessonSlugs.length > 0) errors.push(`biopharma coverage ${area.id}: not-covered area cannot claim current lessons`);
-    if (area.status === "covered-under-review" && !area.currentLessonSlugs.some((slug) => lessonKeys.has(slug))) errors.push(`biopharma coverage ${area.id}: at least one current lesson requires quality registration`);
+    if (area.status === "not-covered" && (area.currentLessonSlugs.length > 0 || area.currentAssetIds.length > 0 || area.decisionPackageIds.length > 0)) errors.push(`biopharma coverage ${area.id}: not-covered area cannot claim current content`);
+    if (area.status === "mapped" && !area.currentLessonSlugs.some((slug) => lessonKeys.has(slug))) errors.push(`biopharma coverage ${area.id}: at least one current lesson requires quality registration`);
+    if (area.status === "mapped" && area.currentAssetIds.length === 0) errors.push(`biopharma coverage ${area.id}: mapped area requires a repository-backed working asset`);
+    if (area.status === "mapped" && area.decisionPackageIds.length === 0) errors.push(`biopharma coverage ${area.id}: mapped area requires a Decision Package`);
+    for (const assetId of area.currentAssetIds) {
+      if (!paidAssetIds.has(assetId)) errors.push(`biopharma coverage ${area.id}: asset ${assetId} has no paid-asset quality record`);
+      if (toolkitBySlug.get(assetId)?.status !== "available") errors.push(`biopharma coverage ${area.id}: asset ${assetId} is not an available toolkit`);
+      if (!deliverableDirs.has(assetId)) errors.push(`biopharma coverage ${area.id}: asset ${assetId} has no repository deliverable directory`);
+    }
+    for (const packageId of area.decisionPackageIds) if (!packageIds.has(packageId)) errors.push(`biopharma coverage ${area.id}: unknown Decision Package ${packageId}`);
     for (const slug of area.currentLessonSlugs) {
       const academyFile = path.join(root, "content", "academy", `${slug}.en.mdx`);
       try {
@@ -174,7 +182,7 @@ async function validateRegistry() {
       if (area.materialGaps.length === 0) errors.push(`manufacturing portfolio ${areaKey}: material gaps must be explicit`);
       if (area.requiredReviewerRoles.length === 0) errors.push(`manufacturing portfolio ${areaKey}: reviewer roles must be explicit`);
       if (area.status === "not-covered" && (area.currentLessonSlugs.length > 0 || area.currentAssetIds.length > 0)) errors.push(`manufacturing portfolio ${areaKey}: not-covered area cannot claim current assets`);
-      if (area.status === "covered-under-review" && area.currentAssetIds.length === 0) errors.push(`manufacturing portfolio ${areaKey}: covered area requires a repository-backed working asset`);
+      if (area.status === "mapped" && area.currentAssetIds.length === 0) errors.push(`manufacturing portfolio ${areaKey}: mapped area requires a repository-backed working asset`);
       for (const assetId of area.currentAssetIds) {
         if (!paidAssetIds.has(assetId)) errors.push(`manufacturing portfolio ${areaKey}: asset ${assetId} has no paid-asset quality record`);
         if (toolkitBySlug.get(assetId)?.status !== "available") errors.push(`manufacturing portfolio ${areaKey}: asset ${assetId} is not an available toolkit`);

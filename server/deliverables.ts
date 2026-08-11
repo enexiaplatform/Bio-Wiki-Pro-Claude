@@ -346,6 +346,19 @@ export const DELIVERABLES: Record<string, DeliverableProduct> = {
       { filename: "decision-led-statistics-evidence-map-fictional-example.md", label: "Decision-led Statistics Fictional Example", description: "Synthetic scale-up example that does not declare causality, criticality or process acceptance.", contentType: MD },
     ],
   },
+  investigation_capa_change_evidence_loop: {
+    id: "investigation_capa_change_evidence_loop",
+    dir: "investigation-capa-change-evidence-loop",
+    name: "Investigation, CAPA & Change Evidence Loop",
+    entitledBy: [],
+    quality: { version: "1.0.0-review", reviewStatus: "editorial-reviewed", limitations: ["Qualified laboratory/process ownership, quality, data-integrity/system, manufacturing-science and regulatory review is required. No invalidation, root cause, CAPA, change, effectiveness, reporting, release or disposition decision is supplied."] },
+    files: [
+      { filename: "README.md", label: "Start Here (README)", description: "Scope, source map, reviewer roles and quality-decision boundary.", contentType: MD },
+      { filename: "investigation-capa-change-evidence-loop-guide.md", label: "Investigation, CAPA & Change Evidence Loop Guide", description: "Evidence-led workflow from signal through effectiveness and bounded knowledge transfer.", contentType: MD },
+      { filename: "investigation-capa-change-evidence-loop-blank.csv", label: "Investigation-to-Effectiveness Working File (CSV)", description: "Blank register for facts, hypotheses, actions, change, effectiveness and knowledge-transfer lineage.", contentType: CSV },
+      { filename: "investigation-capa-change-evidence-loop-fictional-example.md", label: "Investigation, CAPA & Change Fictional Example", description: "Synthetic cross-product data-processing signal that preserves unresolved evidence and accountable decisions.", contentType: MD },
+    ],
+  },
   environmental_monitoring_checklist: {
     id: "environmental_monitoring_checklist",
     dir: "environmental-monitoring-checklist",

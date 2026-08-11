@@ -4,7 +4,7 @@
 
 Generated: 2026-08-11
 
-Inventory: 58 Pro lessons, 26 Atlas Pro toolkits, 3 paid-output packages.
+Inventory: 58 Pro lessons, 27 Atlas Pro toolkits, 3 paid-output packages.
 Decision intelligence inventory: 12 Decision Packages, 3 Career domain tracks; package quality and review records retain explicit editorial, SME and release boundaries.
 
 Strategic core: 33 lessons; all other paid content is compatibility inventory until reviewed.
@@ -50,6 +50,7 @@ Strategic core: 33 lessons; all other paid content is compatibility inventory un
 | Biopharma Process Validation & CPV Evidence Map | core | 88 | editorial-reviewed | Qualified process-development/MSAT, manufacturing, validation, engineering/automation/data, analytical/QC, statistics, product-quality, quality, and regulatory CMC review is not recorded.; No real permissioned PPQ-to-CPV or revalidation case with corrections, decisions and actual process/product outcomes is available. |
 | Analytical Lifecycle Evidence Map | core | 87 | editorial-reviewed | Qualified analytical, measurement-science, QC, validation, quality and regulatory review is not recorded.; No permissioned real analytical lifecycle or transfer case with accountable outcomes is available. |
 | Decision-led Statistics & Process Evidence Map | core | 87 | editorial-reviewed | Qualified applied-statistics, domain, measurement-system, data-integrity and quality review is not recorded.; No permissioned real DoE or multivariate process case with accountable outcomes is available. |
+| Investigation, CAPA & Change Evidence Loop | core | 87 | editorial-reviewed | Qualified laboratory/process, quality, data-integrity/system, manufacturing-science and regulatory review is not recorded.; No permissioned real investigation-to-effectiveness case with accountable outcomes is available. |
 | BI Workflow Checklist | compatibility | 39 | under-review | Content Quality Contract v2 review is incomplete. |
 | Culture Media Selection Guide | compatibility | 39 | under-review | Content Quality Contract v2 review is incomplete. |
 | Data Integrity Self-Check | compatibility | 39 | under-review | Content Quality Contract v2 review is incomplete. |

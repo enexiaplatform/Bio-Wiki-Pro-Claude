@@ -1,0 +1,2 @@
+record_id,decision_id,signal_type,signal_date,product_process_scope,source_record_locator,data_integrity_status,immediate_control,triage_outcome,hypothesis,evidence_request,investigation_conclusion,root_cause_confidence,correction,corrective_action,preventive_action,change_control_id,effectiveness_question,effectiveness_measure,effectiveness_due_date,effectiveness_result,knowledge_transfer_target,applicability,limitation,decision_state,owner_role,reviewer_role,next_action
+,,,,,,,,,,,,,,,,,,,,,,,,Evidence required,,,

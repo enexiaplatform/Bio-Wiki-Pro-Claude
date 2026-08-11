@@ -243,6 +243,16 @@ export const toolkits: Toolkit[] = [
     href: "/my-downloads",
   },
   {
+    slug: "investigation-capa-change-evidence-loop",
+    title: "Investigation, CAPA & Change Evidence Loop",
+    audience: "QC, quality assurance, manufacturing science, data integrity, system ownership and regulatory CMC",
+    problemSolved: "Preserve decision lineage from a quality signal through investigation, CAPA, change, effectiveness and bounded knowledge transfer without implying closure or authorization.",
+    format: "Guide + working CSV + fictional example",
+    accessTier: "pro",
+    status: "available",
+    href: "/my-downloads",
+  },
+  {
     slug: "gmp-audit-kit",
     title: "GMP Audit Readiness Kit",
     audience: "Senior QC/QA preparing for a GMP or Annex 1 audit",

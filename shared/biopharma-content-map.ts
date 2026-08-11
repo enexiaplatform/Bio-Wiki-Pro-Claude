@@ -1,29 +1,34 @@
-export type BiopharmaCoverageStatus = "covered-under-review" | "partial" | "not-covered";
+export type BiopharmaCoverageStatus = "mapped" | "evidence-required" | "not-covered";
 
 export interface BiopharmaCoverageArea {
   id: string;
   decision: string;
   status: BiopharmaCoverageStatus;
   currentLessonSlugs: string[];
+  currentAssetIds: string[];
+  decisionPackageIds: string[];
   materialGaps: string[];
   requiredReviewerRoles: string[];
   sourceIds: string[];
   nextAsset: string;
 }
 
-export const BIOPHARMA_CONTENT_MAP_VERSION = "biopharma-content-map/v1" as const;
+export const BIOPHARMA_CONTENT_MAP_VERSION = "biopharma-content-map/v2" as const;
 
 /**
  * Product-quality coverage map, not a claim that Atlas can approve a biologics
- * control strategy. Areas remain partial until the listed gaps and review roles
- * are closed with product- and modality-appropriate evidence.
+ * control strategy. `mapped` records an Evidence -> Decision -> Working Asset
+ * chain; review status, real-case evidence and Domain Pack readiness remain
+ * separate gates.
  */
 export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "product-process-control-strategy",
     decision: "Connect intended product quality to cell substrate, process, analytical, stability, and lifecycle controls.",
-    status: "covered-under-review",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-product-process-control-strategy", "biologics-qc-overview"],
+    currentAssetIds: ["biopharma-cell-substrate-control", "biopharma-materials-control", "biopharma-upstream-control", "biopharma-downstream-clearance", "biopharma-formulation-stability", "biopharma-analytical-control-strategy", "biopharma-process-validation-cpv", "biopharma-technology-transfer"],
+    decisionPackageIds: ["biopharma-cell-materials-upstream", "biopharma-downstream-analytics-formulation", "biopharma-validation-comparability-transfer"],
     materialGaps: ["No qualified cross-functional review is recorded.", "No real product control-strategy case is available."],
     requiredReviewerRoles: ["biologics CMC", "process development or MSAT", "analytical development", "quality or regulatory CMC"],
     sourceIds: ["ICH-Q5D", "ICH-Q5A-R2", "ICH-Q5C", "ICH-Q5E", "ICH-Q6B", "ICH-Q9-R1", "ICH-Q10"],
@@ -32,8 +37,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "cell-substrate-and-raw-materials",
     decision: "Define cell-bank, substrate, adventitious-agent, and material controls appropriate to the product and process.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-cell-line-cell-bank-genetic-stability", "biopharma-raw-ancillary-materials-control", "cell-bank-characterization", "viral-safety-testing"],
+    currentAssetIds: ["biopharma-cell-substrate-control", "biopharma-materials-control"],
+    decisionPackageIds: ["biopharma-cell-materials-upstream"],
     materialGaps: ["Qualified cell-line/construct, cell-bank, raw-material, supplier-quality, SUS/E&L, process/MSAT, analytical/product-quality, viral-safety, validation, quality, and regulatory review is not recorded.", "No real permissioned cell-line/bank or material/SUS change case connects implementation to actual process/product outcomes."],
     requiredReviewerRoles: ["cell-line development and molecular characterization", "cell-bank manufacturing/custody", "virology or viral safety", "raw-material sciences", "supplier quality and supply chain", "single-use systems and E&L/toxicology", "process/MSAT", "analytical/product quality and statistics", "quality or regulatory CMC"],
     sourceIds: ["ICH-Q5D", "ICH-Q5B", "ICH-Q5A-R2", "WHO-TRS-978-ANNEX3", "ICH-Q5E", "ICH-Q6B", "ICH-Q11", "ICH-Q9-R1", "ICH-Q10", "EU-GMP-ANNEX1-2022", "WHO-TRS-996-ANNEX3", "FDA-QUALITY-AGREEMENTS-2016"],
@@ -42,8 +49,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "upstream-process-control",
     decision: "Relate material attributes and upstream parameters to cell performance and product-quality attributes.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-upstream-process-control"],
+    currentAssetIds: ["biopharma-upstream-control"],
+    decisionPackageIds: ["biopharma-cell-materials-upstream"],
     materialGaps: ["Qualified upstream/MSAT and analytical review is not recorded.", "No real scale-up, process-characterization, or continued-verification case is available."],
     requiredReviewerRoles: ["upstream process development", "MSAT", "biostatistics or process data science", "quality"],
     sourceIds: ["ICH-Q8-R2", "ICH-Q11", "ICH-Q5D", "ICH-Q6B", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"],
@@ -52,8 +61,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "downstream-purification-and-clearance",
     decision: "Balance impurity clearance, recovery, product variants, viral safety, and process robustness across purification.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-downstream-purification-clearance", "host-cell-protein-testing", "viral-safety-testing", "aggregation-and-sec"],
+    currentAssetIds: ["biopharma-downstream-clearance"],
+    decisionPackageIds: ["biopharma-downstream-analytics-formulation"],
     materialGaps: ["Qualified downstream, analytical, viral-safety, quality, and regulatory review is not recorded.", "No real permissioned downstream change, scale-down, resin/membrane lifecycle, or clearance case is available."],
     requiredReviewerRoles: ["downstream process development", "viral safety", "analytical development", "quality"],
     sourceIds: ["ICH-Q8-R2", "ICH-Q11", "ICH-Q5A-R2", "ICH-Q5E", "ICH-Q6B", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"],
@@ -62,8 +73,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "process-validation-and-continued-verification",
     decision: "Establish and maintain a validated process state through process knowledge, enabling qualification, PPQ, continued verification, signal assessment and controlled lifecycle learning.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-process-validation-continued-verification", "statistical-process-control", "process-validation-stages"],
+    currentAssetIds: ["biopharma-process-validation-cpv"],
+    decisionPackageIds: ["biopharma-validation-comparability-transfer"],
     materialGaps: ["Qualified process-development/MSAT, manufacturing, validation, engineering/automation/data, analytical/QC, statistics, product-quality, quality and regulatory CMC review is not recorded.", "No real permissioned PPQ-to-CPV, process-drift, monitoring-change or revalidation case connects execution, signals, decisions and actual process/product outcomes."],
     requiredReviewerRoles: ["process development or MSAT", "manufacturing operations", "process validation", "engineering, automation and data integrity", "analytical development or QC", "statistics or process data science", "product quality", "quality or regulatory CMC"],
     sourceIds: ["FDA-PROCESS-VALIDATION-2011", "EMA-BIOLOGICS-PROCESS-VALIDATION-2016", "EU-GMP-ANNEX15-2015", "ICH-Q8-R2", "ICH-Q11", "ICH-Q9-R1", "ICH-Q10", "ICH-Q5E", "ICH-Q6B"],
@@ -72,8 +85,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "characterization-potency-and-specifications",
     decision: "Choose an orthogonal analytical strategy and justify which attributes belong in characterization, release, stability, or process control.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-integrated-analytical-control-strategy", "biopharma-potency-reference-and-orthogonal-characterization", "protein-characterization", "cell-based-potency-assays", "analytical-procedure-lifecycle-q14", "reference-standards-management", "glycosylation-analysis", "aggregation-and-sec", "host-cell-protein-testing"],
+    currentAssetIds: ["biopharma-analytical-control-strategy"],
+    decisionPackageIds: ["biopharma-downstream-analytics-formulation"],
     materialGaps: ["Qualified product-quality, analytical, bioassay/statistics, reference-standard, QC, quality, validation, and regulatory review is not recorded.", "No real permissioned analytical-strategy, specification, reference-transition, method-transfer, or comparability case is available.", "Dedicated charge-variant and residual-DNA depth and real reference-transition evidence still require review."],
     requiredReviewerRoles: ["analytical development", "bioassay", "product quality", "regulatory CMC"],
     sourceIds: ["ICH-Q6B", "ICH-Q6-R1-CONCEPT-2024", "ICH-Q2-R2", "ICH-Q14", "ICH-Q5E", "ICH-Q5C", "ICH-Q9-R1", "ICH-Q10", "WHO-IBRS-2026"],
@@ -82,8 +97,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "formulation-fill-finish-and-stability",
     decision: "Protect product quality through formulation, concentration, filtration, filling, container, shipping, and storage.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-formulation-fill-finish-stability", "aggregation-and-sec"],
+    currentAssetIds: ["biopharma-formulation-stability"],
+    decisionPackageIds: ["biopharma-downstream-analytics-formulation"],
     materialGaps: ["Qualified formulation, fill-finish, analytical, stability, container, quality, validation, and regulatory review is not recorded.", "No real permissioned formulation, fill-finish, container, shipping, storage, or stability change case is available."],
     requiredReviewerRoles: ["formulation development", "fill-finish or process engineering", "stability", "analytical development", "container-closure engineering", "quality or regulatory CMC"],
     sourceIds: ["ICH-Q5C", "ICH-Q1A-R2", "ICH-Q1B", "ICH-Q6B", "ICH-Q5E", "ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "EU-GMP-ANNEX1-2022", "FDA-CONTAINER-CLOSURE-1999", "FDA-CCS-VIAL-STOPPER-2024"],
@@ -92,8 +109,10 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
   {
     id: "comparability-tech-transfer-and-lifecycle",
     decision: "Determine the evidence required after process, site, scale, formulation, method, or container change.",
-    status: "partial",
+    status: "mapped",
     currentLessonSlugs: ["biopharma-integrated-technology-transfer", "biopharma-manufacturing-comparability", "analytical-method-transfer", "biopharma-product-process-control-strategy"],
+    currentAssetIds: ["biopharma-technology-transfer"],
+    decisionPackageIds: ["biopharma-validation-comparability-transfer"],
     materialGaps: ["The integrated technology-transfer and ICH Q5E content has no qualified cross-functional review.", "No real permissioned biologics transfer case connects execution, corrections, acceptance, continued verification, and actual outcomes.", "The comparability workflow still lacks a dedicated completed working package."],
     requiredReviewerRoles: ["biologics CMC or product quality", "MSAT or technology transfer", "manufacturing operations", "engineering or automation", "analytical development and QC", "validation", "supply chain or materials", "regulatory CMC", "quality"],
     sourceIds: ["WHO-TRS-1044-ANNEX4", "ICH-Q5E", "ICH-Q8-R2", "ICH-Q11", "ICH-Q6B", "ICH-Q5C", "ICH-Q2-R2", "ICH-Q14", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"],
@@ -104,6 +123,8 @@ export const BIOPHARMA_CONTENT_MAP: BiopharmaCoverageArea[] = [
     decision: "Identify when protein-biologics reasoning is insufficient for a different modality.",
     status: "not-covered",
     currentLessonSlugs: [],
+    currentAssetIds: [],
+    decisionPackageIds: [],
     materialGaps: ["Cell and gene therapy, viral vectors, mRNA, vaccines, plasma-derived products, ADCs, and oligonucleotides do not have modality-specific coverage."],
     requiredReviewerRoles: ["modality-specific CMC", "manufacturing sciences", "analytical development", "regulatory CMC", "quality"],
     sourceIds: [],
@@ -121,6 +142,6 @@ export function summarizeBiopharmaCoverage() {
       summary[area.status] += 1;
       return summary;
     },
-    { "covered-under-review": 0, partial: 0, "not-covered": 0 },
+    { mapped: 0, "evidence-required": 0, "not-covered": 0 },
   );
 }

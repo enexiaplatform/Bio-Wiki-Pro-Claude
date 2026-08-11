@@ -8,16 +8,16 @@ The portfolio now plans across four lanes and five operating functions:
 
 | Lane | End-to-end boundary | Current position |
 | --- | --- | --- |
-| Pharma API | Route and starting materials → reaction/work-up → isolation/solid state → impurity strategy → analytics/specifications → validation/stability/transfer/change | Controlled-under-review slices now cover starting-material/input, process/impurity control, and analytical/specification/lifecycle evidence; qualified review and real cases remain open |
-| Pharma Drug Product | Formulation/material attributes → unit operations/scale-up → performance/release → stability/container → validation/transfer/change | Four linked Decision Packages now exist under review; OSD is synthetic planning context only and no dosage-form applicability is verified |
-| Biopharma | Cell substrate/materials → upstream → downstream → formulation/fill-finish → analytical/product control → validation/comparability/transfer | Broad protein-biologics evidence chain under review; no advanced-modality generalization |
+| Pharma API | Route and starting materials → reaction/work-up → isolation/solid state → impurity strategy → analytics/specifications → validation/stability/transfer/change | Mapped editorial-reviewed slices cover starting-material/input, process/impurity control, and analytical/specification/lifecycle evidence; qualified review and real cases remain open |
+| Pharma Drug Product | Formulation/material attributes → unit operations/scale-up → performance/release → stability/container → validation/transfer/change | Four linked Decision Packages and assets are mapped and editorial-reviewed; OSD is synthetic planning context only and no dosage-form applicability is verified |
+| Biopharma | Cell substrate/materials → upstream → downstream → formulation/fill-finish → analytical/product control → validation/comparability/transfer | Broad protein-biologics evidence chain is mapped and editorial-reviewed; no advanced-modality generalization |
 | Cross-cutting Quality & R&D | Analytical lifecycle → statistics/data/process understanding → QRM/PQS → investigations/CAPA/change | Three asset-backed review slices now cover analytical lifecycle, decision-led statistics/process evidence and investigation/change; qualified review and real cases remain open |
 
 Functions are explicit in the code contract: R&D, process development, manufacturing science, QC, and quality/regulatory CMC. “QC content exists” is never treated as proof that the development or manufacturing lifecycle is covered.
 
 ## Release rules
 
-- `covered-under-review` means an integrated lesson and working asset exist, not that the content is approved or proven in a real engagement.
+- `mapped` means an integrated lesson, Decision Package and repository-backed working asset exist. Review status is tracked separately and mapping is not approval or proof from a real engagement.
 - `partial` means relevant material exists but does not yet create a complete decision package.
 - `not-covered` means the product must not imply coverage.
 - Every area keeps material gaps, reviewer roles, source IDs, and the next defensible asset visible.
@@ -26,10 +26,10 @@ Functions are explicit in the code contract: R&D, process development, manufactu
 
 ## Expansion sequence
 
-1. Pharma API: process development, impurity fate/purge and control strategy — controlled-under-review asset delivered.
-2. Pharma API: starting-material/input control — controlled-under-review asset delivered.
-3. Pharma API: analytical/specification/stability/lifecycle — controlled-under-review asset delivered; real method lifecycle cases remain next.
-4. Pharma Drug Product: maintain the four linked formulation–unit-operation–performance–lifecycle packages under review, then qualify any dosage-form wedge from validated demand before adding product-specific depth.
+1. Pharma API: process development, impurity fate/purge and control strategy — mapped editorial-reviewed asset delivered.
+2. Pharma API: starting-material/input control — mapped editorial-reviewed asset delivered.
+3. Pharma API: analytical/specification/stability/lifecycle — mapped editorial-reviewed asset delivered; real method lifecycle cases remain next.
+4. Pharma Drug Product: maintain the four linked formulation–unit-operation–performance–lifecycle packages as mapped editorial-reviewed evidence, then qualify any dosage-form wedge from validated demand before adding product-specific depth.
 5. Biopharma: close qualified review and real-case gaps before adding advanced modalities.
 6. Cross-cutting: analytical lifecycle and decision-led statistics/process-evidence working packs delivered; close qualified review and permissioned-case gaps before promotion.
 
@@ -50,8 +50,9 @@ to advanced modalities.
 
 The next depth layer adds an API full-lifecycle drug-substance control capstone,
 Biopharma potency/reference and orthogonal-characterization evidence, and a
-decision-led DoE/multivariate process-evidence workflow. These remain under review
-until qualified reviewers and permissioned real cases close the evidence gaps.
+decision-led DoE/multivariate process-evidence workflow. These are
+editorial-reviewed but cannot pass specialist or real-case release gates until
+qualified reviewers and permissioned cases close the evidence gaps.
 
 The six-month Atlas End-to-End Content Intelligence slice now also carries a
 drug-product lifecycle hub, four Pro lessons, four repository-backed working
@@ -60,8 +61,9 @@ public decision guides, Blueprint context and Career evidence tracks; they do
 not create a Compiler recommendation or a verified Domain Pack.
 
 The cross-cutting lane now has dedicated repository-backed working packs for
-analytical lifecycle and decision-led statistics/process evidence, alongside
-the existing investigation workflow and OOS working asset. All fourteen
+analytical lifecycle, decision-led statistics/process evidence, and the full
+investigation–CAPA–change–effectiveness–knowledge-transfer loop, alongside the
+existing investigation workflow and OOS working asset. All fourteen
 non-advanced portfolio areas therefore have an integrated lesson/package and a
 working asset. This is asset coverage only: qualified reviewers, permissioned
 real cases, release gates and Domain Pack verification remain open.

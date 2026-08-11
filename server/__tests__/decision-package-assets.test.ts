@@ -13,6 +13,7 @@ const expandedPackages = [
   ["drug-product-validation-transfer-lifecycle", "drug_product_validation_transfer_lifecycle"],
   ["cross-cutting-evidence-governance", "analytical_lifecycle_evidence_map"],
   ["cross-cutting-evidence-governance", "decision_led_statistics_evidence_map"],
+  ["cross-cutting-evidence-governance", "investigation_capa_change_evidence_loop"],
 ] as const;
 
 describe("expanded decision-package assets", () => {

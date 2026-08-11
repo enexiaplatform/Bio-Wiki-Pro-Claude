@@ -1,7 +1,7 @@
 export const MANUFACTURING_QUALITY_PORTFOLIO_VERSION = "manufacturing-quality-portfolio/v2" as const;
 
 export type PortfolioLaneId = "pharma-api" | "pharma-drug-product" | "biopharma" | "cross-cutting-quality-rd";
-export type PortfolioCoverageStatus = "covered-under-review" | "partial" | "not-covered";
+export type PortfolioCoverageStatus = "mapped" | "partial" | "not-covered";
 export type PortfolioFunction = "research-and-development" | "process-development" | "manufacturing-science" | "quality-control" | "quality-and-regulatory";
 
 export interface PortfolioCoverageArea {
@@ -39,7 +39,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Route, starting materials and input controls",
         decision: "Define the process and input evidence needed to justify the proposed commercial drug-substance boundary and starting-material controls.",
         functions: ["research-and-development", "process-development", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["pharma-api-starting-materials-input-control", "pharma-api-process-development-impurity-control", "supplier-qualification"],
         currentAssetIds: ["pharma-api-starting-material-input-control", "pharma-api-impurity-control"],
         sourceIds: ["ICH-Q11", "ICH-Q11-QA", "ICH-Q7", "ICH-Q7-QA", "ICH-Q9-R1", "ICH-Q10", "FDA-QUALITY-AGREEMENTS-2016"], decisionPackageIds: ["pharma-api-route-inputs-suppliers"],
@@ -52,7 +52,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Reaction, work-up, isolation and solid-state process",
         decision: "Connect transformations, work-up, crystallization, isolation, drying, milling and hold steps to material attributes, process performance and drug-substance quality.",
         functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["pharma-api-full-lifecycle-drug-substance-control", "pharma-api-reaction-workup-scale-up", "pharma-api-process-development-impurity-control", "pharma-api-isolation-solid-state-control", "process-validation-stages"],
         currentAssetIds: ["pharma-api-reaction-scale-up", "pharma-api-impurity-control"],
         sourceIds: ["ICH-Q8-R2", "ICH-Q11", "ICH-Q9-R1", "FDA-PROCESS-VALIDATION-2011"], decisionPackageIds: ["pharma-api-reaction-workup-scale-up"],
@@ -65,7 +65,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Impurity fate, purge and control strategy",
         decision: "Trace actual and potential impurities from origin through observed fate, analytical capability and justified control placement without treating a calculated ratio as a transferable purge claim.",
         functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["pharma-api-process-development-impurity-control", "nitrosamine-impurity-control", "residual-solvents-q3c", "elemental-impurities-q3d"],
         currentAssetIds: ["pharma-api-impurity-control"],
         sourceIds: ["ICH-Q3A-R2", "ICH-Q3C-R9", "ICH-Q3D-R2", "ICH-M7-R2", "ICH-Q6A", "ICH-Q11", "ICH-Q2-R2", "ICH-Q14", "ICH-Q9-R1"], decisionPackageIds: ["pharma-api-isolation-solid-state-impurity"],
@@ -78,11 +78,11 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Analytical, specifications, stability, validation and lifecycle",
         decision: "Maintain a justified analytical and specification strategy through validation, stability, transfer, process verification and post-approval change.",
         functions: ["process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["pharma-api-full-lifecycle-drug-substance-control", "pharma-api-analytical-specification-lifecycle", "pharma-api-process-validation-commercial-lifecycle", "analytical-procedure-lifecycle-q14", "analytical-method-validation", "analytical-method-transfer", "stability-studies", "retest-period-shelf-life", "process-validation-stages", "technology-transfer"],
         currentAssetIds: ["pharma-api-analytical-lifecycle"],
         sourceIds: ["ICH-Q1A-R2", "ICH-Q2-R2", "ICH-Q6A", "ICH-Q7", "ICH-Q10", "ICH-Q14", "FDA-ANALYTICAL-PROCEDURES-2015", "FDA-PROCESS-VALIDATION-2011", "WHO-TRS-1044-ANNEX4"], decisionPackageIds: ["pharma-api-analytical-lifecycle"],
-        materialGaps: ["The API-specific lifecycle package remains under review and requires qualified analytical, stability, validation and regulatory review.", "No real API method, specification, stability, validation or site-transfer case is available."],
+        materialGaps: ["The API-specific lifecycle package is editorial-reviewed but still requires qualified analytical, stability, validation and regulatory review.", "No real API method, specification, stability, validation or site-transfer case is available."],
         requiredReviewerRoles: ["API analytical development", "quality control", "stability", "process validation", "technology transfer", "quality", "regulatory CMC"],
         nextAsset: "Qualified review and a real API method lifecycle or transfer case connected to a defined drug substance, process version and filing basis.",
       },
@@ -99,7 +99,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Formulation and material attributes",
         decision: "Connect product performance and manufacturability to the formulation, API/excipient attributes and container presentation.",
         functions: ["research-and-development", "process-development", "quality-control", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["drug-product-formulation-material-attributes"], currentAssetIds: ["drug-product-formulation-material-attributes"], sourceIds: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10"], decisionPackageIds: ["drug-product-formulation-material-attributes"],
         materialGaps: ["The OSD example is synthetic and no qualified dosage-form or product-specific formulation review is recorded."],
         requiredReviewerRoles: ["formulation development", "material science", "biopharmaceutics", "analytical development", "regulatory CMC"],
@@ -110,7 +110,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Unit operations, scale-up and process control",
         decision: "Translate development understanding into a controllable commercial process across equipment, scale, hold, sampling and process-monitoring boundaries.",
         functions: ["process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["drug-product-unit-operations-scale-up", "process-validation-stages", "statistical-process-control", "equipment-qualification"], currentAssetIds: ["drug-product-unit-operations-scale-up"],
         sourceIds: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"], decisionPackageIds: ["drug-product-unit-operations-scale-up"],
         materialGaps: ["The OSD example remains synthetic and qualified process, engineering, statistics and validation review is not recorded."],
@@ -122,7 +122,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Analytical, release, stability and packaging",
         decision: "Justify the release, performance, stability and container controls for the complete drug product presentation.",
         functions: ["research-and-development", "quality-control", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["drug-product-analytical-release-stability", "dissolution-testing-usp-711", "stability-studies", "ongoing-stability-program", "container-closure-integrity", "extractables-and-leachables"], currentAssetIds: ["drug-product-analytical-release-stability"],
         sourceIds: ["ICH-Q1A-R2", "ICH-Q2-R2", "ICH-Q6A", "ICH-Q14", "FDA-CONTAINER-CLOSURE-1999"], decisionPackageIds: ["drug-product-analytical-release-stability-packaging"],
         materialGaps: ["The OSD example remains synthetic and qualified analytical, stability, packaging and regulatory review is not recorded."],
@@ -134,7 +134,7 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
         title: "Validation, transfer and lifecycle change",
         decision: "Demonstrate receiving-unit capability and maintain the validated process and product control strategy through change.",
         functions: ["process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"],
-        status: "covered-under-review",
+        status: "mapped",
         currentLessonSlugs: ["drug-product-validation-transfer-lifecycle", "technology-transfer", "analytical-method-transfer", "process-validation-stages", "change-control"], currentAssetIds: ["drug-product-validation-transfer-lifecycle"],
         sourceIds: ["WHO-TRS-1044-ANNEX4", "ICH-Q9-R1", "ICH-Q10", "FDA-PROCESS-VALIDATION-2011"], decisionPackageIds: ["drug-product-validation-transfer-lifecycle"],
         materialGaps: ["The OSD example remains synthetic and qualified transfer, validation, quality and regulatory review is not recorded."],
@@ -151,19 +151,19 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
     areas: [
       {
         id: "cell-substrate-materials-and-upstream", title: "Cell substrate, materials and upstream", decision: "Connect the production substrate, material chain and upstream process to product-quality evidence.",
-        functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"], status: "covered-under-review",
+        functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"], status: "mapped",
         currentLessonSlugs: ["biopharma-full-lifecycle-product-process-orchestration", "biopharma-cell-line-cell-bank-genetic-stability", "biopharma-raw-ancillary-materials-control", "biopharma-upstream-process-control"], currentAssetIds: ["biopharma-cell-substrate-control", "biopharma-materials-control", "biopharma-upstream-control"],
         sourceIds: ["ICH-Q5B", "ICH-Q5D", "ICH-Q8-R2", "ICH-Q11", "ICH-Q9-R1"], decisionPackageIds: ["biopharma-cell-materials-upstream"], materialGaps: ["Qualified review and real permissioned cases are absent."], requiredReviewerRoles: ["cell-line development", "upstream process development", "materials science", "analytical development", "quality", "regulatory CMC"], nextAsset: "Qualified review and actual cell-bank/material/upstream change evidence.",
       },
       {
         id: "downstream-product-analytics-and-formulation", title: "Downstream, product analytics and formulation", decision: "Connect purification, clearance, product variants, potency, formulation and stability to the total control strategy.",
-        functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"], status: "covered-under-review",
+        functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"], status: "mapped",
         currentLessonSlugs: ["biopharma-full-lifecycle-product-process-orchestration", "biopharma-downstream-purification-clearance", "biopharma-integrated-analytical-control-strategy", "biopharma-potency-reference-and-orthogonal-characterization", "biopharma-formulation-fill-finish-stability"], currentAssetIds: ["biopharma-downstream-clearance", "biopharma-analytical-control-strategy", "biopharma-formulation-stability"],
         sourceIds: ["ICH-Q5A-R2", "ICH-Q5C", "ICH-Q5E", "ICH-Q6B", "ICH-Q9-R1"], decisionPackageIds: ["biopharma-downstream-analytics-formulation"], materialGaps: ["Qualified review and real permissioned downstream, analytical and formulation cases are absent."], requiredReviewerRoles: ["downstream process development", "product quality", "analytical development", "formulation development", "quality", "regulatory CMC"], nextAsset: "Qualified reviews and actual product/process outcome evidence.",
       },
       {
         id: "validation-comparability-transfer-and-lifecycle", title: "Validation, comparability, transfer and lifecycle", decision: "Maintain product/process knowledge and validated control through execution, monitoring, transfer and change.",
-        functions: ["process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"], status: "covered-under-review",
+        functions: ["process-development", "manufacturing-science", "quality-control", "quality-and-regulatory"], status: "mapped",
         currentLessonSlugs: ["biopharma-process-validation-continued-verification", "biopharma-manufacturing-comparability", "biopharma-integrated-technology-transfer"], currentAssetIds: ["biopharma-process-validation-cpv", "biopharma-technology-transfer"],
         sourceIds: ["ICH-Q5E", "ICH-Q10", "ICH-Q11", "FDA-PROCESS-VALIDATION-2011", "WHO-TRS-1044-ANNEX4"], decisionPackageIds: ["biopharma-validation-comparability-transfer"], materialGaps: ["No qualified review or real permissioned validation/comparability/transfer case closes the lifecycle loop."], requiredReviewerRoles: ["MSAT", "validation", "technology transfer", "manufacturing", "quality", "regulatory CMC"], nextAsset: "Real engagements with corrections, acceptance and actual outcomes.",
       },
@@ -180,13 +180,13 @@ export const MANUFACTURING_QUALITY_PORTFOLIO: ManufacturingQualityPortfolioLane[
     compilerDomainPackReady: false,
     areas: [
       {
-        id: "analytical-development-and-lifecycle", title: "Analytical development and lifecycle", decision: "Define the analytical question, performance evidence, transfer and lifecycle controls before results support a decision.", functions: ["research-and-development", "process-development", "quality-control", "quality-and-regulatory"], status: "covered-under-review", currentLessonSlugs: ["analytical-procedure-lifecycle-q14", "analytical-method-validation", "analytical-method-transfer", "measurement-systems-analysis"], currentAssetIds: ["analytical-lifecycle-evidence-map"], sourceIds: ["ICH-Q2-R2", "ICH-Q14", "ICH-Q9-R1", "ICH-Q10"], decisionPackageIds: ["pharma-api-analytical-lifecycle", "drug-product-analytical-release-stability-packaging", "cross-cutting-evidence-governance"], materialGaps: ["Qualified cross-modality analytical, measurement-science, QC, validation and regulatory review is not recorded.", "No permissioned real analytical lifecycle or transfer case is available."], requiredReviewerRoles: ["analytical development", "statistics", "quality control", "validation", "regulatory CMC"], nextAsset: "Qualified review and a permissioned analytical lifecycle case; no universal ATP, method, criterion or transfer conclusion.",
+        id: "analytical-development-and-lifecycle", title: "Analytical development and lifecycle", decision: "Define the analytical question, performance evidence, transfer and lifecycle controls before results support a decision.", functions: ["research-and-development", "process-development", "quality-control", "quality-and-regulatory"], status: "mapped", currentLessonSlugs: ["analytical-procedure-lifecycle-q14", "analytical-method-validation", "analytical-method-transfer", "measurement-systems-analysis"], currentAssetIds: ["analytical-lifecycle-evidence-map"], sourceIds: ["ICH-Q2-R2", "ICH-Q14", "ICH-Q9-R1", "ICH-Q10"], decisionPackageIds: ["pharma-api-analytical-lifecycle", "drug-product-analytical-release-stability-packaging", "cross-cutting-evidence-governance"], materialGaps: ["Qualified cross-modality analytical, measurement-science, QC, validation and regulatory review is not recorded.", "No permissioned real analytical lifecycle or transfer case is available."], requiredReviewerRoles: ["analytical development", "statistics", "quality control", "validation", "regulatory CMC"], nextAsset: "Qualified review and a permissioned analytical lifecycle case; no universal ATP, method, criterion or transfer conclusion.",
       },
       {
-        id: "statistics-data-and-process-understanding", title: "Statistics, data and process understanding", decision: "Choose analysis that matches the decision, measurement system, data structure and uncertainty.", functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control"], status: "covered-under-review", currentLessonSlugs: ["statistical-process-control", "measurement-systems-analysis", "data-integrity-deep-dive", "decision-led-doe-and-multivariate-process-evidence"], currentAssetIds: ["decision-led-statistics-evidence-map"], sourceIds: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "FDA-DI-2018", "FDA-PROCESS-VALIDATION-2011"], decisionPackageIds: ["cross-cutting-evidence-governance"], materialGaps: ["Qualified applied-statistics, domain, measurement-system, data-integrity and quality review is not recorded.", "No permissioned real DoE or multivariate case with accountable outcomes is available."], requiredReviewerRoles: ["applied statistics", "process data science", "data integrity", "domain scientist"], nextAsset: "Qualified review and a real decision-led DoE or process-data case without generic model acceptance rules.",
+        id: "statistics-data-and-process-understanding", title: "Statistics, data and process understanding", decision: "Choose analysis that matches the decision, measurement system, data structure and uncertainty.", functions: ["research-and-development", "process-development", "manufacturing-science", "quality-control"], status: "mapped", currentLessonSlugs: ["statistical-process-control", "measurement-systems-analysis", "data-integrity-deep-dive", "decision-led-doe-and-multivariate-process-evidence"], currentAssetIds: ["decision-led-statistics-evidence-map"], sourceIds: ["ICH-Q8-R2", "ICH-Q9-R1", "ICH-Q10", "FDA-DI-2018", "FDA-PROCESS-VALIDATION-2011"], decisionPackageIds: ["cross-cutting-evidence-governance"], materialGaps: ["Qualified applied-statistics, domain, measurement-system, data-integrity and quality review is not recorded.", "No permissioned real DoE or multivariate case with accountable outcomes is available."], requiredReviewerRoles: ["applied statistics", "process data science", "data integrity", "domain scientist"], nextAsset: "Qualified review and a real decision-led DoE or process-data case without generic model acceptance rules.",
       },
       {
-        id: "quality-systems-investigations-and-change", title: "Quality systems, investigations and change", decision: "Move signals and changes through evidence, investigation, action, effectiveness and accountable decision pathways.", functions: ["manufacturing-science", "quality-control", "quality-and-regulatory"], status: "covered-under-review", currentLessonSlugs: ["oos-investigation-deep-dive", "deviation-management", "capa-fundamentals", "change-control", "pharmaceutical-quality-system-q10"], currentAssetIds: ["oos-investigation-template", "gmp-audit-kit"], sourceIds: ["FDA-OOS-2022", "ICH-Q9-R1", "ICH-Q10"], decisionPackageIds: ["cross-cutting-evidence-governance"], materialGaps: ["No permissioned end-to-end investigation-to-effectiveness case is available across API, drug product and Biopharma.", "Qualified cross-product quality, data-integrity and regulatory review remains open."], requiredReviewerRoles: ["quality control", "quality assurance", "manufacturing science", "data integrity", "regulatory CMC"], nextAsset: "Real cases that preserve corrections, disposition, change and effectiveness evidence.",
+        id: "quality-systems-investigations-and-change", title: "Quality systems, investigations and change", decision: "Move signals and changes through evidence, investigation, action, effectiveness and accountable decision pathways.", functions: ["manufacturing-science", "quality-control", "quality-and-regulatory"], status: "mapped", currentLessonSlugs: ["oos-investigation-deep-dive", "deviation-management", "capa-fundamentals", "change-control", "pharmaceutical-quality-system-q10"], currentAssetIds: ["investigation-capa-change-evidence-loop", "oos-investigation-template", "gmp-audit-kit"], sourceIds: ["FDA-OOS-2022", "FDA-DI-2018", "ICH-Q9-R1", "ICH-Q10"], decisionPackageIds: ["cross-cutting-evidence-governance"], materialGaps: ["No permissioned end-to-end investigation-to-effectiveness case is available across API, drug product and Biopharma.", "Qualified cross-product quality, data-integrity and regulatory review remains open."], requiredReviewerRoles: ["quality control", "quality assurance", "manufacturing science", "data integrity or system ownership", "regulatory CMC"], nextAsset: "Qualified review and real cases that preserve corrections, disposition, change, effectiveness and bounded knowledge-transfer evidence.",
       },
     ],
   },
@@ -200,5 +200,5 @@ export function summarizeManufacturingQualityPortfolio() {
   return MANUFACTURING_QUALITY_PORTFOLIO.flatMap((lane) => lane.areas).reduce<Record<PortfolioCoverageStatus, number>>((summary, area) => {
     summary[area.status] += 1;
     return summary;
-  }, { "covered-under-review": 0, partial: 0, "not-covered": 0 });
+  }, { mapped: 0, partial: 0, "not-covered": 0 });
 }

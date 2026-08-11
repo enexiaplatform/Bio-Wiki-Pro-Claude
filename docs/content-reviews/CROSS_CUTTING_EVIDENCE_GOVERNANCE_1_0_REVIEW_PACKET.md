@@ -8,11 +8,13 @@ Compiler mode: `evidence-context-only`
 ## Review record
 
 - Reviewer roles: quality control, quality assurance, manufacturing science,
-  data integrity, statistics and regulatory CMC.
+  data integrity or system ownership, statistics and regulatory CMC.
 - Controlled sources: ICH Q2(R2), ICH Q8(R2), ICH Q9(R1), ICH Q10, FDA Data
   Integrity guidance, FDA OOS guidance and FDA Process Validation guidance.
 - Working assets: `analytical-lifecycle-evidence-map`,
-  `decision-led-statistics-evidence-map` and `oos-investigation-template`.
+  `decision-led-statistics-evidence-map`,
+  `investigation-capa-change-evidence-loop` and
+  `oos-investigation-template`.
 - Required evidence: permissioned analytical lifecycle, process-data and
   investigation/change cases linking data integrity, hypotheses, uncertainty,
   CAPA, effectiveness, knowledge transfer and accountable conclusions.

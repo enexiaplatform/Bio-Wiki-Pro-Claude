@@ -70,7 +70,8 @@ test.describe("public smoke", () => {
 
     await page.goto("/evidence/packages/cross-cutting-evidence-governance");
     await expect(page.getByText("Analytical lifecycle evidence map", { exact: true })).toBeVisible();
-    await expect(page.getByText("Decision-led statistics and process evidence map", { exact: true })).toBeVisible();
+      await expect(page.getByText("Decision-led statistics and process evidence map", { exact: true })).toBeVisible();
+      await expect(page.getByText("Investigation, CAPA and change evidence loop", { exact: true })).toBeVisible();
     await expect(page.getByText(/editorial-reviewed but not SME-approved/i)).toBeVisible();
 
     await page.goto("/career/domains");

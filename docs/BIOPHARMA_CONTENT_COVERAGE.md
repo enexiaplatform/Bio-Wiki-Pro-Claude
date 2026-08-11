@@ -2,9 +2,9 @@
 
 > Status: working coverage map, not a claim of SME approval or Domain Pack readiness
 >
-> Contract: `biopharma-content-map/v1`
+> Contract: `biopharma-content-map/v2`
 >
-> Updated: 2026-08-04
+> Updated: 2026-08-11
 
 ## Direction correction
 
@@ -21,20 +21,20 @@ Intended product quality
 -> comparability, transfer, and lifecycle control
 ```
 
-The current repository now has dedicated cell-substrate/bank-lifecycle, raw/ancillary-material and single-use control, upstream, downstream, formulation/stability, integrated analytical control-strategy, process-validation/continued-verification, and integrated technology-transfer evidence workflows. All eight remain under review and lack real permissioned cases. A dedicated completed comparability working package and modality-specific depth remain weaker.
+The current repository now has dedicated cell-substrate/bank-lifecycle, raw/ancillary-material and single-use control, upstream, downstream, formulation/stability, integrated analytical control-strategy, process-validation/continued-verification, and integrated technology-transfer Evidence -> Decision -> Working Asset chains. All eight are mapped and editorial-reviewed, while qualified review and real permissioned cases remain open. Mapping does not imply SME approval, Domain Pack readiness or product/site applicability.
 
 ## Repository baseline
 
 | Decision area | Current status | Useful content already present | Material gap |
 | --- | --- | --- | --- |
-| Product-process control strategy | Covered, under review | New cross-lifecycle control-strategy lesson and biologics overview | No qualified cross-functional review or real case |
-| Cell substrate and raw materials | Partial | Dedicated cell-line/bank/genetic-stability and raw/ancillary-material/SUS lessons; two blank and fictional workbook packages; cell-bank and viral-safety orientation | Qualified cross-functional review and real permissioned bank plus material/SUS changes with actual process/product outcomes |
-| Upstream process control | Partial | Dedicated lesson plus blank and fictional CQA-parameter evidence workbook | Qualified review and real scale-up, process-characterization, or continued-verification case |
-| Downstream purification and clearance | Partial | Dedicated lesson plus blank and fictional downstream evidence workbook; HCP, viral safety, aggregation | Qualified review and real downstream change, scale-down, resin/membrane lifecycle, and clearance evidence |
-| Process validation and continued verification | Partial | Dedicated lifecycle lesson plus blank and fictional twelve-sheet workbook connecting process knowledge, qualification, PPQ, CPV plan/data, statistical versus specification signals, evidence and actions | Qualified cross-functional review and a real permissioned PPQ-to-CPV or revalidation case with actual process/product outcomes |
-| Characterization, potency, and specifications | Partial | Dedicated analytical control-strategy lesson plus blank and fictional workbook connecting attributes, methods, specification basis, reference systems, lifecycle changes, evidence, and review; protein characterization, potency, glycans, aggregates, HCP | Qualified review, a real analytical/reference/specification change case, and deeper charge-variant and residual-DNA coverage |
-| Formulation, fill-finish, and stability | Partial | Dedicated lesson plus blank and fictional formulation/stability evidence workbook; aggregation and general sterile orientation | Qualified review and real formulation, fill-finish, container, shipping, storage, or stability change evidence |
-| Comparability, transfer, and lifecycle | Partial | Dedicated Q5E comparability lesson plus an integrated technology-transfer lesson and blank/fictional twelve-sheet working package connecting scope, knowledge, receiving-unit capability, process/material, analytical, validation, comparability, commitments, and staged acceptance | Qualified cross-functional review, a real permissioned site-transfer case with actual outcomes, and a dedicated completed comparability working package |
+| Product-process control strategy | Mapped | Cross-lifecycle lesson, three linked Decision Packages and the stage working assets | No qualified cross-functional review or real case |
+| Cell substrate and raw materials | Mapped | Dedicated lessons plus cell-substrate and materials blank/fictional working packages | Qualified cross-functional review and real permissioned bank plus material/SUS changes with actual process/product outcomes |
+| Upstream process control | Mapped | Dedicated lesson plus blank and fictional CQA-parameter evidence workbook | Qualified review and real scale-up, process-characterization, or continued-verification case |
+| Downstream purification and clearance | Mapped | Dedicated lesson plus blank and fictional downstream evidence workbook; HCP, viral safety, aggregation | Qualified review and real downstream change, scale-down, resin/membrane lifecycle, and clearance evidence |
+| Process validation and continued verification | Mapped | Dedicated lifecycle lesson plus blank and fictional twelve-sheet workbook connecting process knowledge, qualification, PPQ, CPV plan/data, statistical versus specification signals, evidence and actions | Qualified cross-functional review and a real permissioned PPQ-to-CPV or revalidation case with actual process/product outcomes |
+| Characterization, potency, and specifications | Mapped | Dedicated analytical control-strategy lesson plus blank and fictional workbook connecting attributes, methods, specification basis, reference systems, lifecycle changes, evidence, and review; protein characterization, potency, glycans, aggregates, HCP | Qualified review, a real analytical/reference/specification change case, and deeper charge-variant and residual-DNA evidence |
+| Formulation, fill-finish, and stability | Mapped | Dedicated lesson plus blank and fictional formulation/stability evidence workbook; aggregation and general sterile orientation | Qualified review and real formulation, fill-finish, container, shipping, storage, or stability change evidence |
+| Comparability, transfer, and lifecycle | Mapped | Dedicated Q5E comparability lesson plus integrated technology-transfer lesson and blank/fictional twelve-sheet working package | Qualified cross-functional review and a real permissioned site-transfer/comparability case with actual outcomes |
 | Advanced modalities | Not covered | Incidental references only | Modality-specific coverage and reviewer paths for CGT, vectors, mRNA, vaccines, plasma products, ADCs, and oligonucleotides |
 
 ## Build sequence
@@ -68,7 +68,7 @@ The product-process coverage now includes a full-lifecycle orchestration lesson 
 addition to the stage-specific lessons. It deliberately keeps the relationships
 between cell substrate, materials, upstream, downstream, formulation/fill-finish,
 analytics, validation, comparability, transfer and lifecycle change visible in one
-decision chain. It remains under review and does not close the qualified-review or
+decision chain. It is editorial-reviewed and does not close the qualified-review or
 permissioned-real-case gaps.
 
 The analytical depth layer now also includes potency, reference-system and
