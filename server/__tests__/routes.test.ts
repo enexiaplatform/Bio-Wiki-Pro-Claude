@@ -465,7 +465,7 @@ describe("content API", () => {
     const res = await request(app).get("/api/decision-packages/cross-cutting-evidence-governance/learning-flow");
 
     expect(res.status).toBe(200);
-    expect(res.body).toMatchObject({ locked: true, tier: "pro", reviewStatus: "specialist-review-required", preview: { knowledgeUnits: 3, workflowPhases: 5, evidenceActivities: 3, knowledgeChecks: 3 } });
+    expect(res.body).toMatchObject({ locked: true, tier: "pro", reviewStatus: "specialist-review-required", preview: { knowledgeUnits: 3, workflowPhases: 5, evidenceActivities: 3, knowledgeChecks: 3, practiceLabs: 1 } });
     expect(res.body).not.toHaveProperty("flow");
     expect(JSON.stringify(res.body)).not.toContain("Signal-to-decision lineage reconstruction");
   });
@@ -484,6 +484,8 @@ describe("content API", () => {
     expect(res.body).toMatchObject({ locked: false, tier: "pro", flow: { packageId: "cross-cutting-evidence-governance", reviewStatus: "specialist-review-required" } });
     expect(res.body.flow.workflowPhases).toHaveLength(5);
     expect(res.body.flow.evidenceActivities[0].title).toBe("Signal-to-decision lineage reconstruction");
+    expect(res.body.flow.practiceLab.title).toBe("Fictional signal-to-investigation-to-change evidence loop");
+    expect(res.body.flow.practiceLab.rounds).toHaveLength(3);
   });
 });
 

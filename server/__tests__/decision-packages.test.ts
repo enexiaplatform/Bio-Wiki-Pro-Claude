@@ -139,6 +139,7 @@ describe("Atlas decision-package contracts", () => {
     expect(new Set(DECISION_PACKAGE_LEARNING_FLOWS.map((flow) => flow.packageId))).toEqual(new Set(DECISION_PACKAGES.map((item) => item.id)));
     for (const flow of DECISION_PACKAGE_LEARNING_FLOWS) {
       expect(flow.contractVersion).toBe(DECISION_PACKAGE_LEARNING_CONTRACT_VERSION);
+      expect(flow.contractVersion).toBe("decision-package-learning/v2");
       expect(flow.reviewStatus).toBe("specialist-review-required");
       expect(flow.reviewPacketPath).toBe("docs/content-reviews/DECISION_PACKAGE_LEARNING_FLOWS_1_0_REVIEW_PACKET.md");
       expect(flow.learningObjectives.length).toBeGreaterThanOrEqual(3);
@@ -147,6 +148,8 @@ describe("Atlas decision-package contracts", () => {
       expect(flow.evidenceActivities.length).toBeGreaterThanOrEqual(3);
       expect(flow.knowledgeChecks.length).toBeGreaterThanOrEqual(3);
       expect(flow.completionCriteria.length).toBeGreaterThanOrEqual(4);
+      expect(flow.practiceLab.rounds).toHaveLength(3);
+      expect(flow.practiceLab.boundary.toLowerCase()).toMatch(/synthetic|fictional/);
     }
   });
 
@@ -156,5 +159,7 @@ describe("Atlas decision-package contracts", () => {
     expect(validateDecisionPackageLearningFlows(DECISION_PACKAGE_LEARNING_FLOWS.slice(1))).toContain(`missing learning flow: ${first.packageId}`);
     const incomplete = { ...first, workflowPhases: first.workflowPhases.slice(0, 4) };
     expect(validateDecisionPackageLearningFlows([incomplete, ...DECISION_PACKAGE_LEARNING_FLOWS.slice(1)])).toContain(`${first.packageId}: at least five workflow phases are required`);
+    const missingLab = { ...first, practiceLab: undefined } as unknown as typeof first;
+    expect(validateDecisionPackageLearningFlows([missingLab, ...DECISION_PACKAGE_LEARNING_FLOWS.slice(1)])).toContain(`${first.packageId}: fictional decision lab is required`);
   });
 });

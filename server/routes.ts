@@ -1327,6 +1327,7 @@ export async function registerRoutes(app: Express): Promise<void> {
           workflowPhases: flow.workflowPhases.length,
           evidenceActivities: flow.evidenceActivities.length,
           knowledgeChecks: flow.knowledgeChecks.length,
+          practiceLabs: 1,
         },
       });
     }

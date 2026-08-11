@@ -4,21 +4,27 @@ import { CROSS_CUTTING_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-packag
 import { DRUG_PRODUCT_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/drug-product";
 import { PHARMA_API_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/pharma-api";
 import type { DecisionPackageLearningFlow } from "./decision-package-learning-types";
+import { DECISION_PACKAGE_PRACTICE_LABS } from "./decision-package-practice-labs";
 
 export * from "./decision-package-learning-types";
 
-export const DECISION_PACKAGE_LEARNING_FLOWS: DecisionPackageLearningFlow[] = [
+const BASE_DECISION_PACKAGE_LEARNING_FLOWS = [
   ...BIOPHARMA_DECISION_PACKAGE_LEARNING_FLOWS,
   ...PHARMA_API_DECISION_PACKAGE_LEARNING_FLOWS,
   ...DRUG_PRODUCT_DECISION_PACKAGE_LEARNING_FLOWS,
   ...CROSS_CUTTING_DECISION_PACKAGE_LEARNING_FLOWS,
 ];
 
+export const DECISION_PACKAGE_LEARNING_FLOWS: DecisionPackageLearningFlow[] = BASE_DECISION_PACKAGE_LEARNING_FLOWS.map((flow) => ({
+  ...flow,
+  practiceLab: DECISION_PACKAGE_PRACTICE_LABS[flow.packageId],
+}));
+
 export function getDecisionPackageLearningFlow(packageId: string) {
   return DECISION_PACKAGE_LEARNING_FLOWS.find((flow) => flow.packageId === packageId);
 }
 
-export function validateDecisionPackageLearningFlows(flows = DECISION_PACKAGE_LEARNING_FLOWS): string[] {
+export function validateDecisionPackageLearningFlows(flows: DecisionPackageLearningFlow[] = DECISION_PACKAGE_LEARNING_FLOWS): string[] {
   const errors: string[] = [];
   const packageIds = new Set<DecisionPackageId>(DECISION_PACKAGES.map((item) => item.id));
   const seen = new Set<string>();
@@ -39,6 +45,17 @@ export function validateDecisionPackageLearningFlows(flows = DECISION_PACKAGE_LE
     if (flow.evidenceActivities.some((activity) => activity.approach.length < 3 || activity.expectedOutputs.length < 3 || !activity.boundary.trim())) errors.push(`${flow.packageId}: every evidence activity requires approach, outputs and boundary`);
     if (flow.knowledgeChecks.length < 3 || flow.knowledgeChecks.some((check) => !check.question.trim() || !check.expectedReasoning.trim())) errors.push(`${flow.packageId}: at least three complete knowledge checks are required`);
     if (flow.completionCriteria.length < 4) errors.push(`${flow.packageId}: at least four completion criteria are required`);
+    const lab = flow.practiceLab;
+    if (!lab) {
+      errors.push(`${flow.packageId}: fictional decision lab is required`);
+    } else {
+      if (!lab.title.trim() || !lab.scenario.trim() || !lab.learnerRole.trim()) errors.push(`${flow.packageId}: decision lab identity must be complete`);
+      if (lab.startingEvidence.length < 4) errors.push(`${flow.packageId}: decision lab requires at least four starting evidence items`);
+      if (lab.rounds.length < 3) errors.push(`${flow.packageId}: decision lab requires at least three rounds`);
+      if (lab.rounds.some((round) => !round.title.trim() || !round.event.trim() || round.tasks.length < 3 || round.evidenceToRecord.length < 3 || !round.reviewGate.trim())) errors.push(`${flow.packageId}: every decision-lab round must be complete`);
+      if (lab.expectedArtifacts.length < 4) errors.push(`${flow.packageId}: decision lab requires at least four expected artifacts`);
+      if (lab.debriefQuestions.length < 3 || !lab.boundary.trim()) errors.push(`${flow.packageId}: decision lab debrief and boundary must be complete`);
+    }
   }
   packageIds.forEach((packageId) => {
     if (!seen.has(packageId)) errors.push(`missing learning flow: ${packageId}`);

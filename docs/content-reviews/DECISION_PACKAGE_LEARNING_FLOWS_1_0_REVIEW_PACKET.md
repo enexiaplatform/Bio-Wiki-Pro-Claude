@@ -1,6 +1,6 @@
 # Decision Package Learning Flows — Specialist Review Packet
 
-Contract: `decision-package-learning/v1`
+Contract: `decision-package-learning/v2`
 
 Version: `1.0.0-draft`
 
@@ -14,8 +14,9 @@ Review the twelve server-gated learning flows in:
 - `shared/decision-package-learning/pharma-api.ts`
 - `shared/decision-package-learning/drug-product.ts`
 - `shared/decision-package-learning/cross-cutting.ts`
+- `shared/decision-package-practice-labs.ts`
 
-The review covers learning objectives, knowledge explanations, five-phase execution workflows, evidence/study activities, reasoning checks and completion criteria. Existing package review packets, controlled source maps and limitations remain part of the evidence context.
+The review covers learning objectives, knowledge explanations, five-phase execution workflows, evidence/study activities, reasoning checks, completion criteria and a package-specific three-round fictional Decision Lab. Each lab includes starting evidence, event injects, learner tasks, evidence records, review gates, expected artifacts and debrief questions. Existing package review packets, controlled source maps and limitations remain part of the evidence context.
 
 ## Required specialist roles
 
@@ -31,6 +32,8 @@ The review covers learning objectives, knowledge explanations, five-phase execut
 - [ ] Is every scientific statement accurate within the package's product, process, dosage-form and lifecycle scope?
 - [ ] Does each workflow preserve observation, hypothesis, evidence, interpretation, decision and authorization as distinct objects?
 - [ ] Are study activities framed as decision-support designs without operational recipes, unsafe instructions, universal ranges or acceptance criteria?
+- [ ] Does each Decision Lab contain enough conflicting or incomplete evidence to exercise judgment without embedding disguised real data, process settings, criteria or client facts?
+- [ ] Does every lab round preserve a fail-closed review gate and prevent the learner from treating exercise completion as authorization?
 - [ ] Are analytical capability, sampling, data lineage, applicability and contradictory evidence treated explicitly?
 - [ ] Do validation, comparability, transfer, specification, stability, release and change statements avoid implied approval or regulatory precedent?
 - [ ] Does the synthetic OSD example remain bounded and non-transferable as a formula, design space, validation case or dosage-form rule?

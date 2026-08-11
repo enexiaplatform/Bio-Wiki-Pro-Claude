@@ -93,6 +93,9 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: "What to examine, test or simulate" })).toBeVisible();
     await expect(page.getByText("Signal-to-decision lineage reconstruction", { exact: true })).toBeVisible();
     await expect(page.getByText("CAPA effectiveness study frame", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Fictional signal-to-investigation-to-change evidence loop" })).toBeVisible();
+    await expect(page.getByText("Round 2 — challenge cause and CAPA logic", { exact: true })).toBeVisible();
+    await expect(page.getByText(/Synthetic governance exercise/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Mark full flow complete/i })).toBeVisible();
 
     await page.goto("/career/domains");
@@ -137,6 +140,7 @@ test.describe("public smoke", () => {
     await page.goto("/evidence/packages/drug-product-formulation-material-attributes");
     await expect(page.getByRole("heading", { name: "Five gated phases from scope to decision" })).toBeVisible();
     await expect(page.getByText("Compatibility study architecture", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Fictional OSD formulation and material-variability challenge" })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
