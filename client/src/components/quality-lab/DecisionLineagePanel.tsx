@@ -5,10 +5,12 @@ import { analytics } from "@/hooks/use-analytics";
 
 export function DecisionTraceLink({ projectId, lineage, label = "Trace this decision" }: { projectId: string; lineage?: DecisionLineage; label?: string }) {
   if (!lineage) return null;
+  const packageId = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("package");
+  const packageQuery = packageId ? `?package=${encodeURIComponent(packageId)}` : "";
   return (
     <Link
       data-print="hide"
-      href={`/quality-lab/projects/${encodeURIComponent(projectId)}/lineage/${encodeURIComponent(lineage.id)}`}
+      href={`/quality-lab/projects/${encodeURIComponent(projectId)}/lineage/${encodeURIComponent(lineage.id)}${packageQuery}`}
       className="inline-flex items-center gap-1.5 text-[11px] font-bold text-sky-300 transition hover:text-sky-200"
     >
       <GitBranch className="h-3.5 w-3.5" /> {label} <ArrowRight className="h-3.5 w-3.5" />

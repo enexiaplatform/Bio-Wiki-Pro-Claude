@@ -13,6 +13,8 @@ import { SITE_URL as BASE_URL } from "@/lib/site";
 import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintContext";
 import { ContentArticleHero } from "@/components/ContentArticleHero";
 import { ReadingProgress } from "@/components/ReadingProgress";
+import { DecisionPackagePublicHandoff } from "@/components/DecisionPackagePublicHandoff";
+import { decisionPackageForAsset } from "@shared/decision-packages";
 
 export default function BlogPost() {
   const { slug = "" } = useParams();
@@ -61,6 +63,7 @@ export default function BlogPost() {
   const related = listContent({ collection: "blog", lang: language })
     .filter((p) => p.slug !== slug && p.category === entry.category)
     .slice(0, 3);
+  const decisionPackages = decisionPackageForAsset("blog", slug);
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
@@ -119,6 +122,8 @@ export default function BlogPost() {
       <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary [&>h1:first-child]:hidden">
         {Body ? <Body /> : <p className="text-muted-foreground">Loading article...</p>}
       </article>
+
+      {decisionPackages.map((item) => <DecisionPackagePublicHandoff key={item.id} packageId={item.id} />)}
 
       <AtlasBlueprintContext href={`/blog/${slug}`} />
 

@@ -77,6 +77,39 @@ test.describe("public smoke", () => {
     await page.goto("/career/domains");
     await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();
     await expect(page.getByText(/13-week evidence actions/i).first()).toBeVisible();
+
+    const guideJourneys = [
+      { slug: "cell-banks-the-foundation-of-a-biologic", packageId: "biopharma-cell-materials-upstream", title: /Cell substrate, materials.*upstream control/i },
+      { slug: "supplier-qualification-quality-agreement", packageId: "pharma-api-route-inputs-suppliers", title: /API route, starting materials.*supplier inputs/i },
+      { slug: "process-validation-three-stages", packageId: "drug-product-unit-operations-scale-up", title: /Drug product unit operations.*scale-up/i },
+    ];
+    for (const journey of guideJourneys) {
+      await page.goto(`/blog/${journey.slug}`);
+      const handoff = page.getByRole("region", { name: "Continue this decision across Atlas products" }).filter({ has: page.getByRole("heading", { name: journey.title }) });
+      await expect(handoff.getByText("Not SME-approved", { exact: true })).toBeVisible();
+      await expect(handoff.getByRole("link", { name: /Blueprint discovery/i })).toHaveAttribute("href", `/quality-lab/discovery-pack?package=${journey.packageId}`);
+      await expect(handoff.getByRole("link", { name: /Atlas Pro depth/i })).toHaveAttribute("href", `/pro?package=${journey.packageId}`);
+      await expect(handoff.getByRole("link", { name: /Career evidence track/i })).toHaveAttribute("href", /\/career\?domain=/);
+    }
+
+    await page.goto("/quality-lab/discovery-pack?package=drug-product-formulation-material-attributes");
+    await expect(page.getByText("Drug product formulation & material attributes", { exact: true })).toBeVisible();
+    await expect(page.getByText("Domain Pack not verified", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Start a Blueprint/i })).toHaveAttribute("href", "/quality-lab/planner?package=drug-product-formulation-material-attributes");
+
+    await page.goto("/quality-lab/planner?package=drug-product-formulation-material-attributes");
+    await expect(page.getByText("Drug product formulation & material attributes", { exact: true })).toBeVisible();
+    await expect(page.getByText("Domain Pack not verified", { exact: true })).toBeVisible();
+
+    await page.goto("/pro?package=drug-product-formulation-material-attributes");
+    await expect(page.getByText("Drug product formulation & material attributes", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/bounded evidence support; this package is not SME-approved/i)).toBeVisible();
+
+    await page.goto("/pro");
+    await expect(page.getByRole("heading", { name: "Choose the decision chain you are working through." })).toBeVisible();
+    for (const lane of ["Biopharma decision chain", "Pharma/API decision chain", "Drug Product decision chain"]) {
+      await expect(page.getByRole("heading", { name: lane, exact: true })).toBeVisible();
+    }
   });
 
   test("account entry keeps the Blueprint workspace primary", async ({ page }) => {

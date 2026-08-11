@@ -1,6 +1,9 @@
 # Drug Product Formulation & Material Attributes — Review Packet
 
 Package: `drug-product-formulation-material-attributes`
+
+Bounded workflow: `drug-product-formulation-attribute-assessment`
+
 Version: `1.0.0-review`
 Status: `editorial-reviewed`
 Worked example: synthetic OSD only

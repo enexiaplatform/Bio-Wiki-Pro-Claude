@@ -295,7 +295,7 @@ export const workflowSystems: WorkflowSystem[] = [
         id: "formulation-material-attributes",
         title: "Formulation & material attributes",
         summary: "Connect formulation intent, API/excipient attributes, manufacturability and presentation evidence.",
-        applications: [app("workflow", "stability-program"), app("tool", "stability-trend-shelf-life-planner"), app("lesson", "quality-risk-management-q9"), app("lesson", "stability-studies"), app("toolkit", "quality-lifecycle-control-pack")],
+        applications: [app("workflow", "drug-product-formulation-attribute-assessment"), app("workflow", "stability-program"), app("tool", "stability-trend-shelf-life-planner"), app("lesson", "quality-risk-management-q9"), app("lesson", "stability-studies"), app("toolkit", "drug-product-formulation-material-attributes"), app("toolkit", "quality-lifecycle-control-pack")],
       },
       {
         id: "unit-operations-scale-up",

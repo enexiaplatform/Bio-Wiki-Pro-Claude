@@ -1679,7 +1679,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       "cleaning-validation-program", "change-control-workflow",
       "supplier-qualification-workflow", "batch-record-review-release",
       "hplc-system-suitability-workflow", "dissolution-testing-workflow",
-      "stability-program", "pharma-api-impurity-control", "biopharma-control-strategy", "cell-based-potency-assay",
+      "stability-program", "drug-product-formulation-attribute-assessment", "pharma-api-impurity-control", "biopharma-control-strategy", "cell-based-potency-assay",
       "host-cell-protein-testing-workflow", "viral-safety-testing-workflow",
     ].map((s) => `/workflows/${s}`);
     // Standalone tool pages. Kept in sync with client/src/features/tools/registry.tsx.

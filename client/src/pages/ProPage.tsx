@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import {
   ArrowRight,
   BadgeCheck,
@@ -21,7 +21,13 @@ import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { copyText } from "@/lib/clipboard";
 import { ATLAS_PRO_WORKFLOWS, formatAtlasProWorkflowBrief, getAtlasProWorkflow, type AtlasProWorkflowId } from "@shared/atlas-pro-workflows";
-import { getDecisionPackage, getNextDecisionPackage } from "@shared/decision-packages";
+import { getDecisionPackage, getDecisionPackagesForLane, getNextDecisionPackage, type DecisionPackageLane } from "@shared/decision-packages";
+
+const proLifecycleLanes: Array<{ id: DecisionPackageLane; label: string; description: string }> = [
+  { id: "biopharma", label: "Biopharma", description: "Cell substrate and materials through process, analytics, validation, comparability and transfer." },
+  { id: "pharma-api", label: "Pharma/API", description: "Route and inputs through reaction, isolation, impurity, analytical and commercial lifecycle." },
+  { id: "pharma-drug-product", label: "Drug Product", description: "Formulation through unit operations, release, stability, packaging, validation and change, with bounded OSD examples." },
+];
 
 const proLibrary = [
   {
@@ -46,8 +52,8 @@ const proLibrary = [
     icon: FileSpreadsheet,
     number: "03",
     title: "Reusable working files",
-      body: "Use thirteen upgraded working packs with a guide, blank validated workbook, fictional completed example, source boundary, and sign-off fields. Other legacy packs remain accessible under review.",
-      example: "13 upgraded packs · legacy packs under review",
+    body: "Use twenty editorial-reviewed working packs with a guide, blank working file, fictional completed example, source boundary, and accountable review fields. Other legacy packs remain accessible under review.",
+    example: "20 editorial-reviewed packs · legacy packs under review",
     href: "/toolkits",
     linkLabel: "Preview the toolkit library",
   },
@@ -74,7 +80,7 @@ const comparisonRows = [
     ["Evidence", "Public orientation and selected guides", "36 core lessons in five workflows spanning the full Pharma API route, reaction/work-up, isolation/solid-state, impurity, analytical, validation and lifecycle chain plus the full Biopharma product-process lifecycle, potency/reference depth and decision-led DoE, with a Monthly Quality Review and visible review status, sources, limitations, scenario, and rationale-based quiz"],
   ["Tools", "30 focused public calculators", "Blueprint-connected Lab Workbench with saved assumptions, revisions, and export"],
   ["Regulatory updates", "Public official-source monitor", "Opt-in weekly impact digest or narrow daily watchlist"],
-    ["Working files", "Limited public samples", "Thirteen upgraded working packs with validated XLSX and fictional examples; legacy packs stay accessible under review"],
+  ["Working files", "Limited public samples", "Twenty editorial-reviewed working packs with blank files and fictional examples; legacy packs stay accessible under review"],
   ["Audit readiness", "Public orientation resources", "GMP Audit Readiness Kit included"],
   ["Expert project review", "Not included", "Not included — use Quality Lab for scoped review"],
 ];
@@ -93,11 +99,10 @@ const qualityLabReasons = [
 ];
 
 export default function ProPage() {
-  const [location] = useLocation();
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<AtlasProWorkflowId>("audit-readiness");
   const [briefCopied, setBriefCopied] = useState(false);
   const selectedWorkflow = getAtlasProWorkflow(selectedWorkflowId);
-  const packageId = new URLSearchParams(location.split("?")[1] ?? "").get("package");
+  const packageId = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("package");
   const packageContext = packageId ? getDecisionPackage(packageId) : undefined;
   const nextPackage = packageContext ? getNextDecisionPackage(packageContext.id) : undefined;
 
@@ -173,6 +178,8 @@ export default function ProPage() {
       </section>
 
       {packageContext && <section className="border-b border-sky-200/70 bg-[#f4fbff] px-4 py-8"><div className="mx-auto max-w-7xl rounded-2xl border border-sky-200 bg-white p-5 shadow-sm md:p-6"><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-800">Decision package in focus · {packageContext.reviewStatus}</p><h2 className="mt-2 text-xl font-bold text-slate-950">{packageContext.title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{packageContext.decisionQuestion} Continue with the working asset and monthly review only as bounded evidence support; this package is not SME-approved.</p><div className="mt-3 flex flex-wrap gap-2">{packageContext.stageRefs.map((stage) => <span key={`${stage.systemId}:${stage.stageId}`} className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-semibold text-sky-800">{stage.stageId.replaceAll("-", " ")}</span>)}</div></div><div className="flex shrink-0 flex-col gap-2 sm:flex-row"><Link href={`/evidence/packages/${packageContext.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-sky-300 px-4 py-2 text-xs font-bold text-sky-900">Review package <ArrowRight className="h-4 w-4" /></Link>{nextPackage && <Link href={`/pro?package=${nextPackage.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-sky-900 px-4 py-2 text-xs font-bold text-white">Next stage <ArrowRight className="h-4 w-4" /></Link>}</div></div></div></section>}
+
+      <ProLifecycleNavigator />
 
       <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-14 md:py-20">
         <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[1.75rem] border border-sky-200 bg-white shadow-xl shadow-sky-950/5 lg:grid-cols-[0.82fr_1.18fr]">
@@ -362,5 +369,36 @@ export default function ProPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function ProLifecycleNavigator() {
+  const sharedPackage = getDecisionPackage("cross-cutting-evidence-governance");
+  return (
+    <section className="border-b border-slate-200 bg-[#f8fbfc] px-4 py-14 md:py-20" aria-labelledby="pro-lifecycle-heading">
+      <div className="mx-auto max-w-7xl">
+        <div className="max-w-3xl">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Domain → lifecycle stage → decision package</p>
+          <h2 id="pro-lifecycle-heading" className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Choose the decision chain you are working through.</h2>
+          <p className="mt-4 text-sm leading-7 text-slate-600">Each stage opens the matching Pro depth, working asset and next-stage path. Package maturity and review boundaries remain visible.</p>
+        </div>
+        <div className="mt-8 grid gap-5 lg:grid-cols-3">
+          {proLifecycleLanes.map((lane) => (
+            <article key={lane.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-800">{lane.label}</p>
+              <h3 className="mt-2 text-xl font-bold text-slate-950">{lane.label} decision chain</h3>
+              <p className="mt-2 min-h-12 text-xs leading-5 text-slate-600">{lane.description}</p>
+              <div className="mt-5 space-y-3">
+                {getDecisionPackagesForLane(lane.id).map((item, index) => {
+                  const workingAsset = item.assetRefs.find((asset) => asset.kind === "toolkit" || asset.kind === "deliverable");
+                  return <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="flex items-start gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-[10px] font-bold text-sky-900">{String(index + 1).padStart(2, "0")}</span><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{item.stageRefs.map((stage) => stage.stageId.replaceAll("-", " ")).join(" · ")}</p><p className="mt-1 text-sm font-bold leading-5 text-slate-900">{item.title}</p></div></div><div className="mt-3 flex flex-wrap gap-2"><Link href={`/pro?package=${item.id}`} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-sky-900 px-3 py-2 text-[11px] font-bold text-white">Open Pro stage <ArrowRight className="h-3.5 w-3.5" /></Link>{workingAsset && <Link href={workingAsset.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-[11px] font-bold text-slate-700">Working asset <FileSpreadsheet className="h-3.5 w-3.5" /></Link>}</div></div>;
+                })}
+              </div>
+            </article>
+          ))}
+        </div>
+        {sharedPackage && <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-violet-200 bg-violet-50 p-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-800">Shared evidence loop</p><p className="mt-1 text-sm font-bold text-slate-950">{sharedPackage.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">Analytical lifecycle, statistics, investigation, CAPA, change, effectiveness and knowledge transfer across all three domains.</p></div><Link href={`/pro?package=${sharedPackage.id}`} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-violet-900 px-4 py-2 text-xs font-bold text-white">Open shared package <ArrowRight className="h-4 w-4" /></Link></div>}
+      </div>
+    </section>
   );
 }

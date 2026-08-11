@@ -459,12 +459,13 @@ export const DECISION_PACKAGES: DecisionPackage[] = ([
       asset("academy", "quality-risk-management-q9", "Quality risk management"),
       asset("academy", "stability-studies", "Stability studies"),
       asset("academy", "drug-product-formulation-material-attributes", "Drug-product formulation and material attributes"),
+      asset("workflow", "drug-product-formulation-attribute-assessment", "Formulation and material-attribute assessment"),
       asset("toolkit", "drug-product-formulation-material-attributes", "Formulation and material-attributes evidence map"),
     ],
     artifactPlan: [
       plan("public-guide", "Formulation and material-attributes decision guide", "existing", "quality-by-design-building-quality-in"),
       plan("pro-lesson", "Drug-product formulation and OSD lesson", "existing", "drug-product-formulation-material-attributes"),
-      plan("workflow-or-tool", "Formulation-to-attribute workflow", "existing", "drug-product-formulation-material-attributes"),
+      plan("workflow-or-tool", "Formulation-to-attribute workflow", "existing", "drug-product-formulation-attribute-assessment"),
       plan("working-asset", "OSD formulation evidence map", "existing", "drug-product-formulation-material-attributes"),
       plan("fictional-example", "Synthetic OSD worked example", "existing", "drug-product-formulation-material-attributes"),
       plan("review-packet", "Founder review packet", "existing"),
@@ -674,6 +675,11 @@ export function validateDecisionPackages(packages = DECISION_PACKAGES): string[]
       if (!knownStageKeys.has(`${stage.systemId}:${stage.stageId}`)) errors.push(`${item.id}: invalid stage mapping ${stage.systemId}:${stage.stageId}`);
     }
     if (item.assetRefs.length === 0) errors.push(`${item.id}: assetRefs must not be empty`);
+    const assetSlugs = new Set(item.assetRefs.map((assetRef) => assetRef.slug));
+    if (!item.assetRefs.some((assetRef) => assetRef.kind === "guide")) errors.push(`${item.id}: public guide asset is required`);
+    if (!item.assetRefs.some((assetRef) => assetRef.kind === "academy")) errors.push(`${item.id}: Pro lesson asset is required`);
+    if (!item.assetRefs.some((assetRef) => assetRef.kind === "workflow" || assetRef.kind === "tool")) errors.push(`${item.id}: bounded workflow or tool asset is required`);
+    if (!item.assetRefs.some((assetRef) => assetRef.kind === "toolkit" || assetRef.kind === "deliverable")) errors.push(`${item.id}: working asset is required`);
     if (!item.reviewPacketPath?.startsWith("docs/content-reviews/")) errors.push(`${item.id}: reviewPacketPath must point to a repository review packet`);
     if (item.productDestinations.length === 0 || requiredDestinations.some((destination) => !item.productDestinations.includes(destination))) errors.push(`${item.id}: productDestinations must bind public, pro, quality-lab and career`);
     if (item.artifactPlan.length !== 6) errors.push(`${item.id}: artifactPlan must contain six required artifacts`);
@@ -681,6 +687,7 @@ export function validateDecisionPackages(packages = DECISION_PACKAGES): string[]
     if (new Set(item.artifactPlan.map((artifact) => artifact.kind)).size !== item.artifactPlan.length) errors.push(`${item.id}: artifactPlan contains duplicate kinds`);
     for (const artifact of item.artifactPlan) {
       if (artifact.status === "existing" && artifact.kind !== "review-packet" && !artifact.assetRef) errors.push(`${item.id}: existing ${artifact.kind} artifact requires an assetRef`);
+      if (artifact.assetRef && !assetSlugs.has(artifact.assetRef)) errors.push(`${item.id}: ${artifact.kind} references unregistered asset ${artifact.assetRef}`);
     }
     if (item.reviewStatus === "sme-reviewed" && item.reviewerRoles.length === 0) errors.push(`${item.id}: SME-reviewed package requires reviewer roles`);
     for (const assetRef of item.assetRefs) {

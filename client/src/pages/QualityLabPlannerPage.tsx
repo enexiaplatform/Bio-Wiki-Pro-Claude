@@ -176,7 +176,7 @@ export default function QualityLabPlannerPage() {
   });
   const [, params] = useRoute("/quality-lab/projects/:id");
   const [location, setLocation] = useLocation();
-  const decisionPackageId = useMemo(() => new URLSearchParams(location.split("?")[1] ?? "").get("package") ?? undefined, [location]);
+  const decisionPackageId = useMemo(() => typeof window === "undefined" ? undefined : new URLSearchParams(window.location.search).get("package") ?? undefined, [location]);
   const [input, setInput] = useState<QualityLabInput>(defaultQualityLabInput);
   const [step, setStep] = useState(0);
   const [furthestStep, setFurthestStep] = useState(0);

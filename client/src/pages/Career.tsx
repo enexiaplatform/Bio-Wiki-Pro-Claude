@@ -113,7 +113,7 @@ export default function Career() {
   }, [isAuthenticated, phase]);
 
   const assessmentInitial = useMemo(() => {
-    const domain = new URLSearchParams(location.split("?")[1] ?? "").get("domain");
+    const domain = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("domain");
     if (profile) return domain && ["biopharma", "pharma-api", "drug-product"].includes(domain) ? { ...profile, domainTrackId: domain as CareerProfile["domainTrackId"] } : profile;
     const accountName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
     const nextProfile = accountName ? { ...defaultCareerProfile, fullName: accountName } : defaultCareerProfile;

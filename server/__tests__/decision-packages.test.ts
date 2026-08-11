@@ -42,6 +42,7 @@ describe("Atlas decision-package contracts", () => {
       expect(item.reviewerRoles.length).toBeGreaterThan(0);
       expect(item.discoveryQuestions.length).toBeGreaterThanOrEqual(3);
       expect(item.discoveryQuestions.every((question) => question.trim().length > 0)).toBe(true);
+      expect(item.assetRefs.some((asset) => asset.kind === "workflow" || asset.kind === "tool"), `${item.id} requires a bounded workflow or tool`).toBe(true);
       const proLessonRef = item.artifactPlan.find((artifact) => artifact.kind === "pro-lesson")?.assetRef;
       expect(proLessonRef).toBeTruthy();
       expect(CONTENT_QUALITY_REGISTRY[`academy/${proLessonRef}`]?.reviewStatus).toBe(item.reviewStatus);
@@ -86,6 +87,10 @@ describe("Atlas decision-package contracts", () => {
     expect(validateDecisionPackages([missingProducts])).toContain("biopharma-cell-materials-upstream: productDestinations must bind public, pro, quality-lab and career");
     const invalidStage = { ...DECISION_PACKAGES[0], stageRefs: [{ systemId: "biopharma", stageId: "does-not-exist" }] };
     expect(validateDecisionPackages([invalidStage])).toContain("biopharma-cell-materials-upstream: invalid stage mapping biopharma:does-not-exist");
+    const missingWorkflow = { ...DECISION_PACKAGES[0], assetRefs: DECISION_PACKAGES[0].assetRefs.filter((asset) => asset.kind !== "workflow" && asset.kind !== "tool") };
+    expect(validateDecisionPackages([missingWorkflow])).toContain("biopharma-cell-materials-upstream: bounded workflow or tool asset is required");
+    const orphanArtifact = { ...DECISION_PACKAGES[0], artifactPlan: DECISION_PACKAGES[0].artifactPlan.map((artifact) => artifact.kind === "working-asset" ? { ...artifact, assetRef: "unregistered-working-asset" } : artifact) };
+    expect(validateDecisionPackages([orphanArtifact])).toContain("biopharma-cell-materials-upstream: working-asset references unregistered asset unregistered-working-asset");
 
     const manifest = contentManifest as Array<{ collection: string; slug: string }>;
     const known = {

@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
 import { DecisionPackageContextCard } from "@/components/DecisionPackageContextCard";
+import { getDecisionPackage } from "@shared/decision-packages";
 import { useSEO } from "@/hooks/use-seo";
 import { copyText } from "@/lib/clipboard";
 import { blueprintDiscoveryTemplates } from "@/data/qualityLabDiscoveryTemplates";
@@ -67,6 +68,9 @@ function downloadTemplate(template: (typeof blueprintDiscoveryTemplates)[number]
 }
 
 export default function QualityLabDiscoveryPackPage() {
+  const requestedPackageId = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("package") ?? "";
+  const decisionPackageId = getDecisionPackage(requestedPackageId)?.id ?? "cross-cutting-evidence-governance";
+  const plannerHref = `/quality-lab/planner?package=${encodeURIComponent(decisionPackageId)}`;
   const [decisionFrame, setDecisionFrame] = useState<QualityLabDecisionFrameInput>(loadStoredDecisionFrame);
   const [decisionFrameCopied, setDecisionFrameCopied] = useState(false);
   const decisionFrameReadiness = useMemo(() => assessQualityLabDecisionFrame(decisionFrame), [decisionFrame]);
@@ -111,14 +115,14 @@ export default function QualityLabDiscoveryPackPage() {
           title="Collect the facts a defensible Blueprint needs."
           description="Use one structured pack to frame the decision, capture the product portfolio and testing demand, and make missing evidence visible before detailed modelling begins."
           image={{ src: "/images/editorial/laboratory-glassware-planning.jpg", alt: "Laboratory glassware arranged for structured planning and evidence collection", creditName: "Hans Reniers", creditUrl: "https://unsplash.com/photos/lQGJCMY5qcM", className: "object-[center_54%]" }}
-          actions={<><Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">Start a Blueprint <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/review" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "expert_review")} className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">Discuss a real project</Link></>}
+          actions={<><Link href={plannerHref} onClick={() => analytics.blueprintCtaClicked("discovery_pack", "planner")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">Start a Blueprint <ArrowRight className="h-4 w-4" /></Link><Link href="/quality-lab/review" onClick={() => analytics.blueprintCtaClicked("discovery_pack", "expert_review")} className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">Discuss a real project</Link></>}
         />
 
         <nav aria-label="Related Blueprint resources" className="mt-4 flex flex-wrap gap-x-5 gap-y-2 px-2 text-xs font-bold text-sky-300">
           <Link href="/quality-lab/casebook" className="inline-flex items-center gap-1.5 hover:text-sky-200">Explore worked cases <ArrowRight className="h-3.5 w-3.5" /></Link>
           <Link href="/quality-lab/evidence" className="inline-flex items-center gap-1.5 hover:text-sky-200">Navigate the evidence graph <ArrowRight className="h-3.5 w-3.5" /></Link>
         </nav>
-        <div className="mt-6"><DecisionPackageContextCard packageId="cross-cutting-evidence-governance" compact /></div>
+        <div className="mt-6"><DecisionPackageContextCard packageId={decisionPackageId} compact /></div>
 
         <section className="py-12">
           <div className="max-w-3xl">
