@@ -6,6 +6,7 @@ import { createQualityLabOperatingModelReviewDraft } from "../shared/quality-lab
 import { CAREER_PROFILE_STORAGE_KEY, defaultCareerProfile } from "../shared/career-blueprint";
 import { createCareerExecutionRecord } from "../shared/career-execution";
 import { getDecisionPackageLearningFlow } from "../shared/decision-package-learning";
+import { DECISION_PACKAGE_PROGRESS_STORAGE_KEY } from "../shared/decision-package-progress";
 
 async function mockAdmin(page: Page) {
   await page.route("**/api/auth/me", (route) => route.fulfill({
@@ -78,7 +79,7 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Specialist review required", { exact: true })).toBeVisible();
     await expect(page.getByText(/detailed body has not been sent to this guest session/i)).toBeVisible();
     await expect(page.getByText("Signal-to-decision lineage reconstruction", { exact: true })).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /Mark full flow complete/i })).toHaveCount(0);
+    await expect(page.getByRole("checkbox")).toHaveCount(0);
 
     await page.route("**/api/decision-packages/*/learning-flow", async (route) => {
       const parts = new URL(route.request().url()).pathname.split("/");
@@ -96,7 +97,25 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: "Fictional signal-to-investigation-to-change evidence loop" })).toBeVisible();
     await expect(page.getByText("Round 2 — challenge cause and CAPA logic", { exact: true })).toBeVisible();
     await expect(page.getByText(/Synthetic governance exercise/i)).toBeVisible();
-    await expect(page.getByRole("button", { name: /Mark full flow complete/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Build the review handoff" })).toBeVisible();
+    const criteria = page.getByRole("checkbox");
+    await expect(criteria).toHaveCount(4);
+    await criteria.nth(0).check();
+    await criteria.nth(1).check();
+    await expect(page.getByRole("progressbar", { name: "Decision package completion criteria" })).toHaveAttribute("aria-valuenow", "2");
+    await page.reload();
+    await expect(page.getByRole("checkbox").nth(0)).toBeChecked();
+    await expect(page.getByRole("checkbox").nth(1)).toBeChecked();
+    await page.getByRole("checkbox").nth(2).check();
+    await page.getByRole("checkbox").nth(3).check();
+    await expect(page.getByRole("heading", { name: "Ready for accountable review" })).toBeVisible();
+    const storedProgress = await page.evaluate((key) => localStorage.getItem(key), DECISION_PACKAGE_PROGRESS_STORAGE_KEY);
+    expect(storedProgress).toContain("decision-package-progress/v1");
+
+    await page.goto("/evidence");
+    await expect(page.getByText("Ready for review", { exact: true })).toBeVisible();
+    await page.goto("/pro");
+    await expect(page.getByText(/1\/12 packages ready for accountable review/i)).toBeVisible();
 
     await page.goto("/career/domains");
     await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();

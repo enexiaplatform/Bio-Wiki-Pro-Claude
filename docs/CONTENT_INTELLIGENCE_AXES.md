@@ -1,6 +1,6 @@
 # Atlas End-to-End Content Intelligence Axes
 
-Last audited: 2026-08-11
+Last audited: 2026-08-12
 
 `PRODUCT_SOURCE_OF_TRUTH.md` remains canonical. This matrix describes four content and product-facing axes across three priority lifecycle domains. Public/SEO is a distribution axis, not a fourth paid product; the commercial architecture remains Quality Lab Blueprint, Atlas Pro and Career Blueprint.
 
@@ -23,5 +23,7 @@ Last audited: 2026-08-11
 Every package now has a `decision-package-learning/v2` structured draft covering learning objectives, knowledge foundations, five gated workflow phases, three evidence or study activities, reasoning checks, review-ready completion criteria and a package-specific three-round fictional Decision Lab. Detailed flow and lab bodies are server-gated Pro content and are absent from the public client bundle; guest sessions receive counts, boundaries and handoff only. These flows are labelled `specialist-review-required`: they do not inherit SME approval from the package, do not provide laboratory execution parameters or universal acceptance criteria, and do not change the executable Quality Lab Compiler.
 
 Qualified review is controlled through `docs/content-reviews/DECISION_PACKAGE_LEARNING_FLOWS_1_0_REVIEW_PACKET.md`; all twelve dispositions remain open until reviewer evidence and corrections are recorded.
+
+Learner continuity uses `decision-package-progress/v1`. An entitled learner records each package-specific completion criterion separately; the status is derived as `not-started`, `in-progress` or `ready-for-review` and is shown on the Evidence and Pro lifecycle maps after reload. The record is browser-local, version-bound and contains criterion state only. “Ready for review” is not competence verification, evidence acceptance, SME approval, a controlled training record or a Compiler rule change.
 
 The full-content definition, package-by-package depth counts, closed gaps and intentionally open external gates are recorded in `docs/DECISION_PACKAGE_FULL_CONTENT_AUDIT.md`.

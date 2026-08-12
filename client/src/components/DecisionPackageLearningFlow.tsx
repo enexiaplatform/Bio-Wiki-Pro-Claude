@@ -3,7 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 
 import type { DecisionPackageLearningFlow as LearningFlow } from "@shared/decision-package-learning-types";
+import type { DecisionPackageId } from "@shared/decision-packages";
 import { useUser } from "@/context/UserContext";
+import { analytics } from "@/hooks/use-analytics";
+import { useDecisionPackageProgress } from "@/hooks/use-decision-package-progress";
 
 type LearningFlowResponse =
   | { locked: true; tier: "pro"; reviewStatus: LearningFlow["reviewStatus"]; preview: { learningObjectives: number; knowledgeUnits: number; workflowPhases: number; evidenceActivities: number; knowledgeChecks: number; practiceLabs: number } }
@@ -17,7 +20,9 @@ const activityKindLabels: Record<LearningFlow["evidenceActivities"][number]["kin
   "transfer-simulation": "Transfer simulation",
 };
 
-export function DecisionPackageLearningFlow({ flow }: { flow: LearningFlow }) {
+export function DecisionPackageLearningFlow({ flow, completedCriteria, onCriterionChange }: { flow: LearningFlow; completedCriteria: Set<string>; onCriterionChange: (criterion: string, complete: boolean) => void }) {
+  const completedCount = flow.completionCriteria.filter((criterion) => completedCriteria.has(criterion)).length;
+  const progress = Math.round((completedCount / flow.completionCriteria.length) * 100);
   return (
     <section id="package-learning-flow" className="mt-8 scroll-mt-24 space-y-6" aria-labelledby="package-learning-flow-heading">
       <header className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.045] p-5 md:p-7">
@@ -55,13 +60,13 @@ export function DecisionPackageLearningFlow({ flow }: { flow: LearningFlow }) {
 
       <section className="grid gap-6 lg:grid-cols-[1.15fr_.85fr]">
         <div id="reasoning-checks" className="scroll-mt-24 rounded-2xl border border-white/10 bg-white/[0.03] p-5 md:p-7"><div className="flex items-center gap-3"><Target className="h-5 w-5 text-teal-300" /><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Reasoning checks</p><h3 className="mt-1 text-xl font-bold text-slate-100">Test the decision logic</h3></div></div><div className="mt-5 space-y-3">{flow.knowledgeChecks.map((check, index) => <details key={check.question} className="group rounded-xl border border-white/10 bg-slate-950/20"><summary className="flex cursor-pointer list-none items-start justify-between gap-4 p-4 text-sm font-semibold leading-6 text-slate-200"><span>{index + 1}. {check.question}</span><ChevronDown className="mt-1 h-4 w-4 shrink-0 text-slate-500 transition group-open:rotate-180" /></summary><div className="border-t border-white/10 px-4 py-4"><p className="text-[9px] font-bold uppercase tracking-[0.14em] text-teal-300">Expected reasoning</p><p className="mt-2 text-xs leading-6 text-slate-400">{check.expectedReasoning}</p></div></details>)}</div></div>
-        <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.04] p-5 md:p-7"><div className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-teal-300" /><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Definition of done</p><h3 className="mt-1 text-xl font-bold text-slate-100">Ready for accountable review</h3></div></div><ul className="mt-5 space-y-3">{flow.completionCriteria.map((criterion) => <li key={criterion} className="flex gap-3 text-sm leading-6 text-slate-300"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-teal-300" /><span>{criterion}</span></li>)}</ul><p className="mt-5 border-t border-teal-300/15 pt-4 text-xs leading-6 text-slate-500">Meeting these criteria means the evidence package is structured for qualified review. It does not verify competence, approve a product/site decision or change the executable Atlas Compiler.</p></div>
+        <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.04] p-5 md:p-7"><div className="flex items-center gap-3"><CheckCircle2 className="h-5 w-5 text-teal-300" /><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-300">Definition of done</p><h3 className="mt-1 text-xl font-bold text-slate-100">{completedCount === flow.completionCriteria.length ? "Ready for accountable review" : "Build the review handoff"}</h3></div></div><div className="mt-5 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-500"><span>{completedCount}/{flow.completionCriteria.length} criteria recorded</span><span>{progress}%</span></div><div role="progressbar" aria-label="Decision package completion criteria" aria-valuemin={0} aria-valuemax={flow.completionCriteria.length} aria-valuenow={completedCount} className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-teal-300 transition-all" style={{ width: `${progress}%` }} /></div><div className="mt-5 space-y-3">{flow.completionCriteria.map((criterion) => { const checked = completedCriteria.has(criterion); return <label key={criterion} className={`flex cursor-pointer gap-3 rounded-xl border p-3 text-sm leading-6 transition ${checked ? "border-teal-300/25 bg-teal-300/[0.06] text-slate-200" : "border-white/10 bg-slate-950/20 text-slate-400"}`}><input type="checkbox" checked={checked} onChange={(event) => onCriterionChange(criterion, event.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-teal-300" /><span>{criterion}</span></label>; })}</div><p className="mt-5 border-t border-teal-300/15 pt-4 text-xs leading-6 text-slate-500">This browser-local record means only that the learner has assembled the stated handoff elements. It does not verify competence, confirm evidence quality, approve a product/site decision or change the executable Atlas Compiler.</p></div>
       </section>
     </section>
   );
 }
 
-export function DecisionPackageLearningFlowGate({ packageId, completed, onComplete }: { packageId: string; completed: boolean; onComplete: () => void }) {
+export function DecisionPackageLearningFlowGate({ packageId }: { packageId: DecisionPackageId }) {
   const { isPro, isAdmin } = useUser();
   const query = useQuery<LearningFlowResponse>({
     queryKey: ["decision-package-learning-flow", packageId, isPro || isAdmin ? "entitled" : "guest"],
@@ -74,7 +79,7 @@ export function DecisionPackageLearningFlowGate({ packageId, completed, onComple
 
   if (query.isLoading) return <section className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6" aria-label="Loading learning flow"><div className="h-4 w-40 animate-pulse rounded bg-white/10" /><div className="mt-4 h-16 animate-pulse rounded-xl bg-white/[0.05]" /></section>;
   if (query.isError || !query.data) return <section className="mt-8 rounded-2xl border border-amber-300/20 bg-amber-300/[0.04] p-5 text-sm text-amber-100/80">The full learning flow is temporarily unavailable. Package sources, limitations and product handoffs remain available below.</section>;
-  if (!query.data.locked) return <><DecisionPackageLearningFlow flow={query.data.flow} /><button type="button" onClick={onComplete} className={`mt-6 inline-flex min-h-10 items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold ${completed ? "bg-teal-300 text-slate-950" : "border border-teal-300/30 bg-teal-300/10 text-teal-200"}`}>{completed ? "Full flow completion noted" : "Mark full flow complete"}<CheckCircle2 className="h-4 w-4" /></button></>;
+  if (!query.data.locked) return <EntitledLearningFlow flow={query.data.flow} />;
 
   const preview = query.data.preview;
   return (
@@ -86,6 +91,17 @@ export function DecisionPackageLearningFlowGate({ packageId, completed, onComple
       <p className="mt-4 text-xs leading-5 text-slate-500">Pro access does not make the flow SME-approved and does not authorize laboratory execution, product/site decisions or Compiler expansion.</p>
     </section>
   );
+}
+
+function EntitledLearningFlow({ flow }: { flow: LearningFlow }) {
+  const progress = useDecisionPackageProgress(flow.packageId, flow.completionCriteria);
+  const completedCriteria = new Set(progress.record.criteria.filter((item) => item.complete).map((item) => item.criterion));
+  const onCriterionChange = (criterion: string, complete: boolean) => {
+    const wasReady = progress.assessment.status === "ready-for-review";
+    const next = progress.setCriterion(criterion, complete);
+    if (!wasReady && next.status === "ready-for-review") analytics.decisionPackageCompleted(flow.packageId, next.completedCount);
+  };
+  return <DecisionPackageLearningFlow flow={flow} completedCriteria={completedCriteria} onCriterionChange={onCriterionChange} />;
 }
 
 function PracticeLab({ practiceLab }: { practiceLab: LearningFlow["practiceLab"] }) {

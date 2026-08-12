@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ArrowLeft, ArrowRight, BookOpenCheck, BriefcaseBusiness, Building2, CalendarClock, CheckCircle2, FileCheck2, ShieldAlert, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
@@ -7,7 +7,9 @@ import { EVIDENCE_SOURCE_CATALOG } from "@shared/content-quality-registry";
 import { getDecisionPackage, getDecisionPackagesForLane, getNextDecisionPackage, type DecisionPackage, type DecisionPackageLane } from "@shared/decision-packages";
 import { DecisionPackageLearningFlowGate } from "@/components/DecisionPackageLearningFlow";
 import { analytics } from "@/hooks/use-analytics";
+import { useDecisionPackageProgressPortfolio } from "@/hooks/use-decision-package-progress";
 import { useSEO } from "@/hooks/use-seo";
+import { assessDecisionPackageProgress, type DecisionPackageProgressRecord } from "@shared/decision-package-progress";
 
 const laneLabels: Record<DecisionPackageLane, string> = {
   biopharma: "Biopharma",
@@ -49,6 +51,7 @@ export default function DecisionPackagesPage() {
 }
 
 function DecisionPackageIndex({ lane }: { lane?: DecisionPackageLane }) {
+  const progress = useDecisionPackageProgressPortfolio();
   const visibleLanes = lane ? [lane] : laneOrder;
   return (
     <main className="min-h-screen bg-[#061426] text-slate-100">
@@ -73,7 +76,7 @@ function DecisionPackageIndex({ lane }: { lane?: DecisionPackageLane }) {
             const items = getDecisionPackagesForLane(lane);
             return <section key={lane} aria-labelledby={`${lane}-packages`}>
               <div className="flex flex-col gap-2 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">{laneLabels[lane]}</p><h2 id={`${lane}-packages`} className="mt-2 text-2xl font-bold">{laneLabels[lane]} decision chain</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{laneDescriptions[lane]}</p></div><span className="text-xs font-semibold text-slate-500">{items.length} package{items.length === 1 ? "" : "s"}</span></div>
-              <div className="mt-5 grid gap-4 lg:grid-cols-2">{items.map((item) => <PackageCard key={item.id} item={item} />)}</div>
+              <div className="mt-5 grid gap-4 lg:grid-cols-2">{items.map((item) => <PackageCard key={item.id} item={item} progressRecord={progress.getRecord(item.id)} />)}</div>
             </section>;
           })}
         </div>
@@ -82,16 +85,15 @@ function DecisionPackageIndex({ lane }: { lane?: DecisionPackageLane }) {
   );
 }
 
-function PackageCard({ item }: { item: DecisionPackage }) {
-  return <Link href={`/evidence/packages/${item.id}`} className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/35 hover:bg-teal-300/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/50"><div className="flex items-start justify-between gap-4"><div><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Month {item.month} · {item.reviewStatus}</span><h3 className="mt-2 text-lg font-bold text-slate-100 group-hover:text-teal-200">{item.title}</h3></div><ArrowRight className="mt-1 h-5 w-5 shrink-0 text-slate-600 transition group-hover:translate-x-1 group-hover:text-teal-300" /></div><p className="mt-3 text-sm leading-6 text-slate-400">{item.summary}</p><div className="mt-auto flex flex-wrap gap-2 pt-5">{item.stageRefs.map((stage) => <span key={`${stage.systemId}:${stage.stageId}`} className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-slate-500">{stage.stageId.replaceAll("-", " ")}</span>)}</div></Link>;
+function PackageCard({ item, progressRecord }: { item: DecisionPackage; progressRecord?: DecisionPackageProgressRecord }) {
+  const progress = assessDecisionPackageProgress(progressRecord);
+  return <Link href={`/evidence/packages/${item.id}`} className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/35 hover:bg-teal-300/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/50"><div className="flex items-start justify-between gap-4"><div><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Month {item.month} · {item.reviewStatus}</span><h3 className="mt-2 text-lg font-bold text-slate-100 group-hover:text-teal-200">{item.title}</h3></div><ArrowRight className="mt-1 h-5 w-5 shrink-0 text-slate-600 transition group-hover:translate-x-1 group-hover:text-teal-300" /></div><p className="mt-3 text-sm leading-6 text-slate-400">{item.summary}</p>{progress.totalCount > 0 && <div className="mt-4"><div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider"><span className={progress.status === "ready-for-review" ? "text-teal-300" : "text-sky-300"}>{progress.status === "ready-for-review" ? "Ready for review" : "Resume package"}</span><span className="text-slate-600">{progress.completedCount}/{progress.totalCount}</span></div><div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10"><div className="h-full bg-teal-300" style={{ width: `${progress.percent}%` }} /></div></div>}<div className="mt-auto flex flex-wrap gap-2 pt-5">{item.stageRefs.map((stage) => <span key={`${stage.systemId}:${stage.stageId}`} className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-slate-500">{stage.stageId.replaceAll("-", " ")}</span>)}</div></Link>;
 }
 
 function DecisionPackageDetail({ item }: { item: DecisionPackage }) {
   const careerTracks = getCareerTracksForPackage(item.id);
   const careerTrack = careerTracks[0];
   const nextPackage = getNextDecisionPackage(item.id);
-  const [completed, setCompleted] = useState(false);
-  const existingArtifacts = item.artifactPlan.filter((artifact) => artifact.status === "existing").length;
   return (
     <main className="min-h-screen bg-[#061426] px-4 pb-24 pt-20 text-slate-100 md:pt-28">
       <div className="mx-auto max-w-6xl">
@@ -105,7 +107,7 @@ function DecisionPackageDetail({ item }: { item: DecisionPackage }) {
 
         <section className="mt-6 rounded-2xl border border-violet-300/20 bg-violet-300/[0.04] p-5 md:p-7"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-200">Discovery questions</p><p className="mt-2 text-sm leading-6 text-slate-500">Use these prompts to identify evidence, owners and next decisions; they do not supply a recommendation or acceptance criterion.</p><div className="mt-4 grid gap-3 md:grid-cols-2">{item.discoveryQuestions.map((question, index) => <div key={question} className="flex gap-3 rounded-xl border border-white/10 bg-slate-950/20 p-4"><span className="text-xs font-bold text-violet-300">0{index + 1}</span><p className="text-sm leading-6 text-slate-300">{question}</p></div>)}</div></section>
 
-        <DecisionPackageLearningFlowGate packageId={item.id} completed={completed} onComplete={() => { setCompleted(true); analytics.decisionPackageCompleted(item.id, existingArtifacts); }} />
+        <DecisionPackageLearningFlowGate packageId={item.id} />
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-7"><h2 className="text-xl font-bold">Connected resources</h2><p className="mt-2 text-sm leading-6 text-slate-500">Existing evidence is reused where available; planned artifacts stay visibly open.</p><div className="mt-5 space-y-2">{item.assetRefs.map((asset) => <a key={`${asset.kind}:${asset.slug}`} href={asset.href} onClick={() => analytics.decisionPackageAssetOpened(item.id, asset.kind, asset.slug)} className="flex items-center justify-between gap-4 rounded-xl border border-white/10 bg-slate-950/20 px-4 py-3 text-sm transition hover:border-teal-300/35"><span><span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-600">{asset.kind}</span><span className="mt-1 block font-semibold text-slate-200">{asset.title}</span></span><ArrowRight className="h-4 w-4 shrink-0 text-teal-300" /></a>)}</div></section>
           <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-7"><h2 className="text-xl font-bold">Package completeness</h2><div className="mt-5 space-y-2">{item.artifactPlan.map((artifact) => <div key={artifact.kind} className="flex items-start gap-3 rounded-xl border border-white/10 bg-slate-950/20 px-4 py-3"><CheckCircle2 className={`mt-0.5 h-4 w-4 shrink-0 ${artifact.status === "existing" ? "text-teal-300" : "text-amber-300"}`} /><div><p className="text-sm font-semibold text-slate-200">{artifact.title}</p><p className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-600">{artifact.status === "existing" ? "Available" : "Planned · evidence required"}</p></div></div>)}</div></section>

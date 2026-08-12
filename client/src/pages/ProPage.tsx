@@ -18,10 +18,12 @@ import {
 } from "lucide-react";
 import { EditorialImage } from "@/components/EditorialImage";
 import { analytics } from "@/hooks/use-analytics";
+import { useDecisionPackageProgressPortfolio } from "@/hooks/use-decision-package-progress";
 import { useSEO } from "@/hooks/use-seo";
 import { copyText } from "@/lib/clipboard";
 import { ATLAS_PRO_WORKFLOWS, formatAtlasProWorkflowBrief, getAtlasProWorkflow, type AtlasProWorkflowId } from "@shared/atlas-pro-workflows";
 import { getDecisionPackage, getDecisionPackagesForLane, getNextDecisionPackage, type DecisionPackageLane } from "@shared/decision-packages";
+import { assessDecisionPackageProgress } from "@shared/decision-package-progress";
 
 const proLifecycleLanes: Array<{ id: DecisionPackageLane; label: string; description: string }> = [
   { id: "biopharma", label: "Biopharma", description: "Cell substrate and materials through process, analytics, validation, comparability and transfer." },
@@ -374,6 +376,7 @@ export default function ProPage() {
 
 function ProLifecycleNavigator() {
   const sharedPackage = getDecisionPackage("cross-cutting-evidence-governance");
+  const packageProgress = useDecisionPackageProgressPortfolio();
   return (
     <section className="border-b border-slate-200 bg-[#f8fbfc] px-4 py-14 md:py-20" aria-labelledby="pro-lifecycle-heading">
       <div className="mx-auto max-w-7xl">
@@ -381,6 +384,7 @@ function ProLifecycleNavigator() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Domain → lifecycle stage → decision package</p>
           <h2 id="pro-lifecycle-heading" className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Choose the decision chain you are working through.</h2>
           <p className="mt-4 text-sm leading-7 text-slate-600">Each stage opens the matching Pro depth, working asset and next-stage path. Package maturity and review boundaries remain visible.</p>
+          {packageProgress.records.length > 0 && <p className="mt-3 text-xs font-semibold text-teal-800">{packageProgress.completedCount}/12 packages ready for accountable review · browser-local learning record</p>}
         </div>
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           {proLifecycleLanes.map((lane) => (
@@ -391,7 +395,8 @@ function ProLifecycleNavigator() {
               <div className="mt-5 space-y-3">
                 {getDecisionPackagesForLane(lane.id).map((item, index) => {
                   const workingAsset = item.assetRefs.find((asset) => asset.kind === "toolkit" || asset.kind === "deliverable");
-                  return <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="flex items-start gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-[10px] font-bold text-sky-900">{String(index + 1).padStart(2, "0")}</span><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{item.stageRefs.map((stage) => stage.stageId.replaceAll("-", " ")).join(" · ")}</p><p className="mt-1 text-sm font-bold leading-5 text-slate-900">{item.title}</p></div></div><div className="mt-3 flex flex-wrap gap-2"><Link href={`/pro?package=${item.id}`} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-sky-900 px-3 py-2 text-[11px] font-bold text-white">Open Pro stage <ArrowRight className="h-3.5 w-3.5" /></Link>{workingAsset && <Link href={workingAsset.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-[11px] font-bold text-slate-700">Working asset <FileSpreadsheet className="h-3.5 w-3.5" /></Link>}</div></div>;
+                  const progress = assessDecisionPackageProgress(packageProgress.getRecord(item.id));
+                  return <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="flex items-start gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-[10px] font-bold text-sky-900">{String(index + 1).padStart(2, "0")}</span><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{item.stageRefs.map((stage) => stage.stageId.replaceAll("-", " ")).join(" · ")}</p><p className="mt-1 text-sm font-bold leading-5 text-slate-900">{item.title}</p>{progress.totalCount > 0 && <p className={`mt-1 text-[10px] font-bold uppercase tracking-wider ${progress.status === "ready-for-review" ? "text-teal-700" : "text-sky-700"}`}>{progress.status === "ready-for-review" ? "Ready for review" : `Resume · ${progress.completedCount}/${progress.totalCount}`}</p>}</div></div><div className="mt-3 flex flex-wrap gap-2"><Link href={`/pro?package=${item.id}`} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-sky-900 px-3 py-2 text-[11px] font-bold text-white">{progress.totalCount > 0 && progress.status !== "ready-for-review" ? "Resume Pro stage" : "Open Pro stage"} <ArrowRight className="h-3.5 w-3.5" /></Link>{workingAsset && <Link href={workingAsset.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-[11px] font-bold text-slate-700">Working asset <FileSpreadsheet className="h-3.5 w-3.5" /></Link>}</div></div>;
                 })}
               </div>
             </article>
