@@ -1,4 +1,4 @@
-import { defineLearningFlow } from "../decision-package-learning-types";
+import { defineLearningFlow } from "../decision-package-learning-types.js";
 
 export const PHARMA_API_DECISION_PACKAGE_LEARNING_FLOWS = [
   defineLearningFlow({

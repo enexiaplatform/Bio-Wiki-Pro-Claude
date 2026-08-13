@@ -1,12 +1,12 @@
-import { DECISION_PACKAGES, type DecisionPackageId } from "./decision-packages";
-import { BIOPHARMA_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/biopharma";
-import { CROSS_CUTTING_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/cross-cutting";
-import { DRUG_PRODUCT_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/drug-product";
-import { PHARMA_API_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/pharma-api";
+import { DECISION_PACKAGES, type DecisionPackageId } from "./decision-packages.js";
+import { BIOPHARMA_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/biopharma.js";
+import { CROSS_CUTTING_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/cross-cutting.js";
+import { DRUG_PRODUCT_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/drug-product.js";
+import { PHARMA_API_DECISION_PACKAGE_LEARNING_FLOWS } from "./decision-package-learning/pharma-api.js";
 import type { DecisionPackageLearningFlow } from "./decision-package-learning-types";
-import { DECISION_PACKAGE_PRACTICE_LABS } from "./decision-package-practice-labs";
+import { DECISION_PACKAGE_PRACTICE_LABS } from "./decision-package-practice-labs.js";
 
-export * from "./decision-package-learning-types";
+export * from "./decision-package-learning-types.js";
 
 const BASE_DECISION_PACKAGE_LEARNING_FLOWS = [
   ...BIOPHARMA_DECISION_PACKAGE_LEARNING_FLOWS,
