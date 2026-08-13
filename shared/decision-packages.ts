@@ -1,7 +1,9 @@
 import type { BlueprintDecisionId } from "../client/src/data/atlasEvidenceGraph";
-import { workflowSystems } from "../client/src/data/workflowSystems";
+// This registry is loaded by the Vercel Node ESM entry as well as by Vite.
+// Keep runtime imports extension-explicit so the traced serverless files resolve.
+import { workflowSystems } from "../client/src/data/workflowSystems.js";
 import type { CompetencyKey } from "./career-blueprint";
-import { EVIDENCE_SOURCE_CATALOG } from "./content-quality-registry";
+import { EVIDENCE_SOURCE_CATALOG } from "./content-quality-registry.js";
 
 export const DECISION_PACKAGE_CONTRACT_VERSION = "decision-package/v1" as const;
 
