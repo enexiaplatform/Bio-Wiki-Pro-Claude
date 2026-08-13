@@ -14,6 +14,7 @@ import { AtlasBlueprintContext } from "@/components/quality-lab/AtlasBlueprintCo
 import { ContentArticleHero } from "@/components/ContentArticleHero";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { DecisionPackagePublicHandoff } from "@/components/DecisionPackagePublicHandoff";
+import { ContentQualityNotice } from "@/components/ContentQualityNotice";
 import { decisionPackageForAsset } from "@shared/decision-packages";
 
 export default function BlogPost() {
@@ -118,6 +119,8 @@ export default function BlogPost() {
       <FreeReadBanner count={count} />
 
       <ContentArticleHero title={entry.title} description={entry.seoDescription} category={entry.category} readMinutes={entry.readMinutes} label="Evidence guide" />
+
+      <ContentQualityNotice contentId={`blog/${entry.slug}`} quality={entry.quality} />
 
       <article className="prose prose-invert max-w-none prose-headings:font-display prose-a:text-primary [&>h1:first-child]:hidden">
         {Body ? <Body /> : <p className="text-muted-foreground">Loading article...</p>}

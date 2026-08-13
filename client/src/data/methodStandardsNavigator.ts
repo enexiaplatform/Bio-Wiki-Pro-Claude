@@ -5,6 +5,7 @@ export type StandardAccess = "public-source" | "licensed-source-required";
 
 export interface NavigatorStandard {
   id: string;
+  canonicalSourceId: string;
   title: string;
   publisher: string;
   market: string;
@@ -32,10 +33,11 @@ export interface MethodNavigatorRecord {
 export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   {
     id: "usp-61",
+    canonicalSourceId: "USP-61-CURRENT",
     title: "USP <61> Microbial Enumeration Tests",
     publisher: "United States Pharmacopeia",
     market: "United States / harmonized context",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://www.usp.org/harmonization-standards/pdg/general-methods/microbial-examination",
     access: "licensed-source-required",
     scope: "Non-sterile product enumeration and product-specific method suitability context.",
@@ -43,10 +45,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "usp-62",
+    canonicalSourceId: "USP-62-CURRENT",
     title: "USP <62> Tests for Specified Microorganisms",
     publisher: "United States Pharmacopeia",
     market: "United States / harmonized context",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://www.usp.org/harmonization-standards/pdg/general-methods/microbial-examination",
     access: "licensed-source-required",
     scope: "Specified-organism recovery, enrichment, selection and confirmation context.",
@@ -54,10 +57,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "usp-85",
+    canonicalSourceId: "USP-85-CURRENT",
     title: "USP <85> Bacterial Endotoxins Test",
     publisher: "United States Pharmacopeia",
     market: "United States / harmonized context",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://www.usp.org/harmonization-standards/pdg/general-methods/bacterial-endotoxins",
     access: "licensed-source-required",
     scope: "Bacterial endotoxins method, controls and product-specific suitability context.",
@@ -65,10 +69,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "usp-1111",
+    canonicalSourceId: "USP-1111-CURRENT",
     title: "USP <1111> Acceptance Criteria for Nonsterile Products",
     publisher: "United States Pharmacopeia",
     market: "United States",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://online.uspnf.com/",
     access: "licensed-source-required",
     scope: "Microbiological quality and specified-organism context for non-sterile products.",
@@ -76,10 +81,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "usp-1113",
+    canonicalSourceId: "USP-1113-CURRENT",
     title: "USP <1113> Microbial Characterization, Identification, and Strain Typing",
     publisher: "United States Pharmacopeia",
     market: "United States",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://online.uspnf.com/",
     access: "licensed-source-required",
     scope: "Risk-based microbial identification and characterization context.",
@@ -87,10 +93,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "usp-1116",
+    canonicalSourceId: "USP-1116-CURRENT",
     title: "USP <1116> Microbiological Control and Monitoring of Aseptic Processing Environments",
     publisher: "United States Pharmacopeia",
     market: "United States",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://online.uspnf.com/",
     access: "licensed-source-required",
     scope: "Environmental-monitoring program and interpretation context for aseptic processing.",
@@ -98,10 +105,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "usp-1231",
+    canonicalSourceId: "USP-1231-CURRENT",
     title: "USP <1231> Water for Pharmaceutical Purposes",
     publisher: "United States Pharmacopeia",
     market: "United States",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable subscription edition must be confirmed",
     locator: "https://online.uspnf.com/",
     access: "licensed-source-required",
     scope: "Pharmaceutical-water system, sampling, monitoring and microbial-control context.",
@@ -109,10 +117,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "ph-eur-microbiology",
+    canonicalSourceId: "PH-EUR-CURRENT",
     title: "European Pharmacopoeia microbiological methods",
-    publisher: "EDQM",
+    publisher: "European Directorate for the Quality of Medicines & HealthCare",
     market: "European Pharmacopoeia member states",
-    version: "Current applicable edition must be confirmed",
+    version: "Current applicable licensed edition must be confirmed",
     locator: "https://pheur.edqm.eu/",
     access: "licensed-source-required",
     scope: "Applicable microbiological examination, endotoxins and water monograph context.",
@@ -120,10 +129,11 @@ export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
   },
   {
     id: "eu-gmp-annex-1",
+    canonicalSourceId: "EU-GMP-ANNEX1-2022",
     title: "EU GMP Annex 1 — Manufacture of Sterile Medicinal Products",
     publisher: "European Commission",
     market: "European Union / PIC/S-aligned context",
-    version: "2022",
+    version: "2022 revision",
     locator: "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
     access: "public-source",
     scope: "Sterile operations, contamination control and environmental-monitoring context.",

@@ -16,7 +16,7 @@ describe("Test Method Application Packs", () => {
   it("opens water microbiology as application development without overstating Method Graph maturity", () => {
     const water = testMethodApplicationPacks[0];
     expect(water.stage).toBe("application-development");
-    expect(water.methodGraphStatus).toBe("workflow-only");
+    expect(water.methodGraphStatus).toBe("executable-concept");
     expect(water.guideHref).toBe("/blog/pharmaceutical-water-microbiology-application-pack");
     expect(assessApplicationPack(water).blockers.map((item) => item.id)).toContain("lifecycle");
   });
@@ -25,7 +25,7 @@ describe("Test Method Application Packs", () => {
     const growthPromotion = testMethodApplicationPacks.find((pack) => pack.id === "growth-promotion-media-qc");
     const bioburden = testMethodApplicationPacks.find((pack) => pack.id === "bioburden-filtration");
 
-    expect(growthPromotion).toMatchObject({ stage: "application-development", methodGraphStatus: "workflow-only", guideHref: "/blog/growth-promotion-media-qc-application-pack" });
+    expect(growthPromotion).toMatchObject({ stage: "application-development", methodGraphStatus: "executable-concept", guideHref: "/blog/growth-promotion-media-qc-application-pack" });
     expect(bioburden).toMatchObject({ stage: "application-development", methodGraphStatus: "workflow-only", guideHref: "/blog/bioburden-membrane-filtration-application-pack" });
     expect(growthPromotion?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
     expect(bioburden?.dimensions.find((dimension) => dimension.id === "intended-use")?.status).toBe("structured");
@@ -37,7 +37,7 @@ describe("Test Method Application Packs", () => {
     const environmentalMonitoring = testMethodApplicationPacks.find((pack) => pack.id === "environmental-monitoring");
     expect(environmentalMonitoring).toMatchObject({
       stage: "application-development",
-      methodGraphStatus: "workflow-only",
+      methodGraphStatus: "executable-concept",
       guideHref: "/blog/pharmaceutical-environmental-monitoring-application-pack",
     });
     expect(environmentalMonitoring?.dimensions.find((dimension) => dimension.id === "matrix")?.status).toBe("partial");

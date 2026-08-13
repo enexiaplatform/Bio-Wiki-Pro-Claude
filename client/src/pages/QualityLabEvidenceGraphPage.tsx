@@ -1,9 +1,12 @@
 import { useMemo, useState } from "react";
-import { ArrowRight, BookOpen, Boxes, FlaskConical, Network, ShieldCheck, Wrench } from "lucide-react";
+import { ArrowRight, BookOpen, Boxes, CircleAlert, FlaskConical, Network, ShieldCheck, Wrench } from "lucide-react";
 import { Link } from "wouter";
 import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { atlasEvidenceDomains, blueprintDecisions, type BlueprintDecisionId, type EvidenceResourceKind } from "@/data/atlasEvidenceGraph";
 import { useSEO } from "@/hooks/use-seo";
+import { useLanguage } from "@/hooks/use-language";
+import { getContentBySlug, type ContentCollection } from "@/lib/content";
+import { QUALITY_LAB_TRUST_CORRIDOR, QUALITY_LAB_TRUST_CORRIDOR_VERSION } from "@shared/quality-lab-trust-corridor";
 
 const kindIcon: Record<EvidenceResourceKind, typeof BookOpen> = {
   guide: BookOpen,
@@ -18,8 +21,18 @@ const maturityLabel = {
   "specialist-gated": "Specialist gated",
 };
 
+const corridorRoleLabel = {
+  scope: "Scope",
+  method: "Method",
+  workload: "Workload",
+  capacity: "Capacity",
+  evidence: "Evidence",
+  governance: "Governance",
+};
+
 export default function QualityLabEvidenceGraphPage() {
   const [decision, setDecision] = useState<BlueprintDecisionId | "all">("all");
+  const { language } = useLanguage();
   useSEO({
     title: "Atlas Evidence Graph | Quality Lab Blueprint",
     description: "Explore how Atlas connects QC planning decisions to domain guides, lessons, operational workflows and decision-support tools.",
@@ -29,6 +42,12 @@ export default function QualityLabEvidenceGraphPage() {
     ...domain,
     resources: decision === "all" ? domain.resources : domain.resources.filter((item) => item.decisions.includes(decision)),
   })).filter((domain) => domain.resources.length > 0), [decision]);
+  const corridorItems = useMemo(() => QUALITY_LAB_TRUST_CORRIDOR.map((item) => {
+    const [collection, slug] = item.id.split("/") as [ContentCollection, string];
+    return { ...item, collection, slug, entry: getContentBySlug(collection, slug, language) };
+  }), [language]);
+  const corridorSourceCount = corridorItems.reduce((total, item) => total + (item.entry?.quality.sourceCount ?? 0), 0);
+  const corridorPromotedCount = corridorItems.filter((item) => item.entry?.quality.promoted).length;
 
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
@@ -45,6 +64,32 @@ export default function QualityLabEvidenceGraphPage() {
             <Link href="/quality-lab/discovery-pack" className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:border-white/30">Collect project evidence</Link>
           </>}
         />
+
+        <section className="mt-8 rounded-3xl border border-teal-300/20 bg-teal-300/[0.035] p-5 md:p-7" aria-labelledby="trust-corridor-title">
+          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">{QUALITY_LAB_TRUST_CORRIDOR_VERSION}</p>
+              <h2 id="trust-corridor-title" className="mt-2 text-2xl font-bold">First-wedge trust corridor</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-400">These 20 resources are the bounded evidence path for the non-sterile microbiology Blueprint. They are registered and sourced, but remain unpromoted until their applicable editorial and specialist gates close.</p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-3"><strong className="block text-lg text-teal-200">{corridorItems.length}</strong><span className="text-[9px] uppercase tracking-wider text-slate-500">resources</span></div>
+              <div className="rounded-xl border border-white/10 bg-slate-950/40 px-3 py-3"><strong className="block text-lg text-sky-200">{corridorSourceCount}</strong><span className="text-[9px] uppercase tracking-wider text-slate-500">source links</span></div>
+              <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.04] px-3 py-3"><strong className="block text-lg text-amber-200">{corridorPromotedCount}</strong><span className="text-[9px] uppercase tracking-wider text-slate-500">promoted</span></div>
+            </div>
+          </div>
+          <div className="mt-5 flex items-start gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-4 text-xs leading-5 text-slate-400"><CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /><p><strong className="text-slate-200">Release boundary:</strong> Registration and source linkage are not SME review, site applicability or controlled release. Each item exposes its current quality state on the destination page.</p></div>
+          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {corridorItems.map((item) => {
+              const href = item.collection === "academy" ? `/library/${item.slug}` : `/blog/${item.slug}`;
+              return <Link key={item.id} href={href} className="group rounded-xl border border-white/10 bg-slate-950/30 p-4 transition hover:border-teal-300/30 hover:bg-white/[0.05]">
+                <div className="flex items-center justify-between gap-2"><span className="text-[9px] font-bold uppercase tracking-wider text-teal-300">{corridorRoleLabel[item.role]}</span><span className="text-[9px] text-slate-500">{item.entry?.quality.sourceCount ?? 0} sources</span></div>
+                <h3 className="mt-2 text-sm font-bold leading-5 text-slate-200 group-hover:text-teal-200">{item.entry?.title ?? item.slug}</h3>
+                <p className="mt-2 line-clamp-2 text-[11px] leading-5 text-slate-500">{item.decisionUse}</p>
+              </Link>;
+            })}
+          </div>
+        </section>
 
         <section className="py-10">
           <div className="flex items-center gap-3"><Boxes className="h-5 w-5 text-teal-300" /><h2 className="text-xl font-bold">Choose the decision you need to defend</h2></div>

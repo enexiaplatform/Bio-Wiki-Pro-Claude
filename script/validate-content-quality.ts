@@ -17,6 +17,7 @@ import { workflows } from "../client/src/data/workflows.js";
 import { TOOL_CATALOG } from "../client/src/data/tools/catalog.js";
 import { toolkits } from "../client/src/data/toolkits.js";
 import { DELIVERABLES } from "../server/deliverables.js";
+import { QUALITY_LAB_TRUST_CORRIDOR, QUALITY_LAB_TRUST_CORRIDOR_VERSION } from "../shared/quality-lab-trust-corridor.js";
 
 const root = process.cwd();
 const errors: string[] = [];
@@ -47,6 +48,23 @@ async function validateRegistry() {
   const paidAssetIds = new Set(PAID_ASSET_QUALITY.map((item) => item.id));
   const blogSlugs = new Set((await readdir(path.join(root, "content", "blog"))).filter((file) => file.endsWith(".en.mdx")).map((file) => file.replace(/\.en\.mdx$/, "")));
   const academySlugs = new Set((await readdir(path.join(root, "content", "academy"))).filter((file) => file.endsWith(".en.mdx")).map((file) => file.replace(/\.en\.mdx$/, "")));
+  if (QUALITY_LAB_TRUST_CORRIDOR_VERSION !== "quality-lab-trust-corridor/v1") errors.push("Quality Lab trust corridor has an unexpected contract version");
+  if (QUALITY_LAB_TRUST_CORRIDOR.length !== 20) errors.push(`Quality Lab trust corridor: expected 20 bounded items, found ${QUALITY_LAB_TRUST_CORRIDOR.length}`);
+  const corridorIds = new Set<string>();
+  for (const item of QUALITY_LAB_TRUST_CORRIDOR) {
+    if (corridorIds.has(item.id)) errors.push(`Quality Lab trust corridor: duplicate ${item.id}`);
+    corridorIds.add(item.id);
+    const [collection, slug] = item.id.split("/");
+    const exists = collection === "academy" ? academySlugs.has(slug) : collection === "blog" ? blogSlugs.has(slug) : false;
+    if (!exists) errors.push(`Quality Lab trust corridor: missing ${item.id}`);
+    const quality = CONTENT_QUALITY_REGISTRY[item.id];
+    if (!quality) errors.push(`Quality Lab trust corridor: ${item.id} has no Content Quality v2 record`);
+    else {
+      if (quality.contentVersion === "legacy/v1") errors.push(`Quality Lab trust corridor: ${item.id} cannot be legacy`);
+      if (quality.sourceIds.length === 0) errors.push(`Quality Lab trust corridor: ${item.id} requires named sources`);
+      if (quality.promoted && (!passesQualityGate(quality.score, collection === "blog" ? "public-evidence" : "pro") || quality.reviewStatus === "under-review")) errors.push(`Quality Lab trust corridor: ${item.id} is promoted before its release gate`);
+    }
+  }
   for (const item of DECISION_PACKAGES) {
     validateSourceIds(`decision package ${item.id}`, item.sourceIds);
     for (const stage of item.stageRefs) if (!stageKeys.has(`${stage.systemId}:${stage.stageId}`)) errors.push(`decision package ${item.id}: unknown stage ${stage.systemId}:${stage.stageId}`);
@@ -626,7 +644,7 @@ for (const required of ["editorial-reviewed", "Critical fail conditions", "Requi
 await validateRegistry();
 await validateFiles();
 
-console.log(`Content quality v2: ${Object.keys(CONTENT_QUALITY_REGISTRY).length} core lessons, ${EVIDENCE_SOURCE_CATALOG.sources.length} sources, ${PAID_ASSET_QUALITY.length} paid assets.`);
+console.log(`Content quality v2: ${Object.keys(CONTENT_QUALITY_REGISTRY).length} registered content items, ${EVIDENCE_SOURCE_CATALOG.sources.length} sources, ${PAID_ASSET_QUALITY.length} paid assets.`);
 warnings.forEach((warning) => console.warn(`warning: ${warning}`));
 if (errors.length) {
   errors.forEach((error) => console.error(`error: ${error}`));

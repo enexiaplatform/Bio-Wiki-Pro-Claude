@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   compileNonSterileMethodGraph,
+  compileNonSterileSupportMethodGraph,
   productProfileSchema,
   type ProductProfile,
 } from "./quality-lab-method-graph";
@@ -31,7 +32,7 @@ describe("quality lab method graph", () => {
     const suitability = graph.requirements.find((item) => item.requirementType === "method-suitability");
     expect(enumeration?.methodId).toBe("usp-61-concept");
     expect(specified?.methodId).toBe("usp-62-concept");
-    expect(suitability?.methodId).toBe("method-suitability");
+    expect(suitability?.methodId).toBe("method-suitability-recovery-concept");
     expect(graph.requirements).toHaveLength(3);
 
     // 10 batches × 3 samples per batch = 30 monthly executions, fully allocated for a single market.
@@ -53,6 +54,7 @@ describe("quality lab method graph", () => {
     expect(neutralizer?.item).toBe("Polysorbate 80 neutralizer to confirm");
     expect(neutralizer?.quantityPerMonth).toBe(30);
     expect(graph.bom.every((item) => item.status === "site-confirmation-required")).toBe(true);
+    expect(graph.bom.filter((item) => item.methodRequirementId === suitability?.id).map((item) => item.category)).toEqual(expect.arrayContaining(["neutralizer", "reference-strain", "control"]));
 
     // In-house execution creates capacity demand on the expected resources.
     expect(graph.capacity.map((item) => item.resourceId)).toEqual(expect.arrayContaining(["incubator-20-25", "incubator-30-35", "bsc", "autoclave"]));
@@ -84,7 +86,7 @@ describe("quality lab method graph", () => {
     expect(testRequirements.every((item) => item.operationalDemandStatus === "unresolved")).toBe(true);
     expect(testRequirements.every((item) => item.allocatedMonthlyExecutions === 0)).toBe(true);
     // No physical load is fabricated while the allocation is unknown.
-    expect(unresolved.capacity).toEqual([]);
+    expect(unresolved.capacity.every((item) => item.monthlyDemand === 0)).toBe(true);
     expect(unresolved.bom.every((item) => item.quantityPerMonth === 0)).toBe(true);
     expect(testRequirements.reduce((total, item) => total + item.allocatedMonthlyExecutions, 0)).toBe(0);
 
@@ -140,5 +142,35 @@ describe("quality lab method graph", () => {
     // Compendial context travels with the generated nodes, never alone.
     const enumerated = graph.requirements.find((item) => item.requirementType === "microbial-enumeration");
     expect(enumerated?.evidenceIds).toEqual(expect.arrayContaining(["usp-61-context", "site-approved-methods", "atlas-microbiology-benchmarks-v1"]));
+  });
+
+  it("compiles application-level nodes for raw materials, water, EM and media QC", () => {
+    const graph = compileNonSterileSupportMethodGraph({
+      rawMaterialLotsPerMonth: 20,
+      waterPoints: 10,
+      waterRoundsPerWeek: 2,
+      emLocations: 15,
+      emRoundsPerWeek: 1,
+      mediaLotsPerMonth: 6,
+      outsourcePercent: 10,
+      scope: { rawMaterials: true, water: true, environmentalMonitoring: true, growthPromotion: true },
+    });
+
+    expect(graph.requirements.map((item) => item.requirementType)).toEqual([
+      "raw-material-microbiology",
+      "water-microbiology",
+      "environmental-monitoring",
+      "growth-promotion-media-qc",
+    ]);
+    const water = graph.requirements.find((item) => item.requirementType === "water-microbiology")!;
+    expect(water.monthlyExecutions).toBe(86.6);
+    expect(water.allocatedMonthlyExecutions).toBe(77.9);
+    expect(water.evidenceIds).toContain("usp-1231-context");
+    expect(graph.bom.some((item) => item.methodRequirementId === water.id && item.category === "membrane")).toBe(true);
+    expect(graph.capacity.some((item) => item.methodRequirementId === water.id && item.resourceId === "incubator-20-25" && item.monthlyDemand > 0)).toBe(true);
+
+    const gpt = graph.requirements.find((item) => item.requirementType === "growth-promotion-media-qc")!;
+    expect(graph.bom.some((item) => item.methodRequirementId === gpt.id && item.category === "reference-strain")).toBe(true);
+    expect(graph.capacity.some((item) => item.methodRequirementId === gpt.id && item.resourceId === "autoclave")).toBe(true);
   });
 });

@@ -7,8 +7,21 @@ import {
   workflowRuleTrace,
   type MicrobiologyWorkflowKey,
 } from "./quality-lab-microbiology-pack";
+import { EVIDENCE_SOURCE_CATALOG } from "./content-quality-registry";
 
 describe("microbiology domain pack", () => {
+  it("binds regulatory context records to canonical source identities", () => {
+    const canonical = new Map(EVIDENCE_SOURCE_CATALOG.sources.map((source) => [source.id, source]));
+    for (const record of MICROBIOLOGY_EVIDENCE_CATALOG.filter((item) => item.kind === "regulatory-context")) {
+      expect(record.canonicalSourceId, record.id).toBeDefined();
+      const source = canonical.get(record.canonicalSourceId!);
+      expect(source, record.id).toBeDefined();
+      expect(record.publisher, record.id).toBe(source?.publisher);
+      expect(record.version, record.id).toBe(source?.edition);
+      expect(record.locator, record.id).toBe(source?.locator);
+    }
+  });
+
   it("publishes an honest concept-status identity for the non-sterile wedge", () => {
     expect(MICROBIOLOGY_DOMAIN_PACK.id).toBe("nonsterile-pharma-microbiology");
     expect(MICROBIOLOGY_DOMAIN_PACK.status).toBe("concept");
@@ -45,6 +58,8 @@ describe("microbiology domain pack", () => {
       for (const evidenceId of rule.evidenceIds) expect(catalogIds.has(evidenceId)).toBe(true);
       expect(rule.applicability.length).toBeGreaterThan(0);
       expect(rule.limitations.length).toBeGreaterThan(0);
+      expect(rule.uncertaintyPercent).toBeGreaterThan(0);
+      expect(rule.rangeBasis).toMatch(/uncalibrated/i);
       // Site-approved methods gate every workflow before controlled use.
       expect(rule.evidenceIds).toContain("site-approved-methods");
     }

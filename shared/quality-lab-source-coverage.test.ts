@@ -34,7 +34,7 @@ const assessment = assessSourceCoverage({
 describe("Quality Lab source coverage", () => {
   it("resolves every current microbiology rule to the evidence catalog", () => {
     expect(assessment.metrics).toMatchObject({
-      evidenceRecordCount: 7,
+      evidenceRecordCount: 11,
       ruleCount: 14,
       catalogTraceableRuleCount: 14,
       missingEvidenceLinkCount: 0,
@@ -46,8 +46,8 @@ describe("Quality Lab source coverage", () => {
 
   it("does not mistake catalog traceability for controlled evidence closure", () => {
     expect(assessment.metrics.controlledReviewReadyRuleCount).toBe(0);
-    expect(assessment.metrics.openEvidenceCount).toBe(6);
-    expect(assessment.metrics.controlledEvidenceCount).toBe(1);
+    expect(assessment.metrics.openEvidenceCount).toBe(9);
+    expect(assessment.metrics.controlledEvidenceCount).toBe(2);
     expect(assessment.blockers).toEqual(expect.arrayContaining([
       expect.stringMatching(/applicable edition/i),
       expect.stringMatching(/site-approved methods/i),

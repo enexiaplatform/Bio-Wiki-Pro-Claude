@@ -12,6 +12,7 @@ export const reviewStatusValues = ["concept-only", "review-requested", "expert-r
 
 export const evidenceRecordSchema = z.object({
   id: z.string().min(1),
+  canonicalSourceId: z.string().min(1).optional(),
   title: z.string().min(1),
   kind: z.enum(["regulatory-context", "project-input", "benchmark", "site-document"]),
   publisher: z.string().min(1),

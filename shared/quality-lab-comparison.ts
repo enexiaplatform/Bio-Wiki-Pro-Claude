@@ -81,7 +81,7 @@ const trackedInputs: Array<{ id: keyof QualityLabInput; label: string; unit: str
   { id: "emRoundsPerWeek", label: "EM rounds / week", unit: "rounds" },
   { id: "mediaLotsPerMonth", label: "Media lots / month", unit: "lots" },
   { id: "targetTurnaroundDays", label: "Target turnaround", unit: "days" },
-  { id: "growthRatePercent", label: "Growth assumption", unit: "%" },
+  { id: "growthRatePercent", label: "Growth over planning horizon", unit: "% over horizon" },
   { id: "horizonYears", label: "Planning horizon", unit: "years" },
   { id: "workingDaysPerMonth", label: "Working days / month", unit: "days" },
   { id: "shifts", label: "Operating shifts", unit: "shifts" },

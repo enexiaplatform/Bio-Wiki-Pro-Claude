@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowRight, Box, Building2, CircleGauge, GitBranch, Layers3 } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowRight, Box, Building2, CircleGauge, Clock3, Database, GitBranch, Layers3, PackageCheck, PieChart, SlidersHorizontal, WalletCards } from "lucide-react";
 import type { QualityLabBlueprint } from "@shared/quality-lab";
 import { buildCapacityVisual, buildScenarioComparison, buildZoneLayout } from "@shared/quality-lab-visuals";
 
@@ -38,7 +38,7 @@ function CompilerChain({ blueprint }: { blueprint: QualityLabBlueprint }) {
   ];
 
   return (
-    <div>
+    <div data-testid="blueprint-compiler-chain-visual">
       <div className="mb-3 flex items-center gap-2">
         <GitBranch className="h-4 w-4 text-sky-300 print:text-slate-700" />
         <h3 className="text-sm font-bold print:text-slate-950">Compiler chain</h3>
@@ -142,6 +142,102 @@ function ZoningSchematic({ blueprint }: { blueprint: QualityLabBlueprint }) {
   );
 }
 
+function MethodResourceLineage({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const rows = blueprint.methodRequirements.slice(0, 6).map((requirement) => ({
+    requirement,
+    resources: Array.from(new Set(blueprint.methodCapacity.filter((item) => item.methodRequirementId === requirement.id).map((item) => item.resourceName))),
+  }));
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-method-lineage-visual">
+    <div className="mb-1 flex items-center gap-2"><GitBranch className="h-4 w-4 text-sky-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Requirement → method → resource lineage</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">The first six graph nodes show where a decision has an application structure and where site evidence is still required.</p>
+    <div className="space-y-2">{rows.map(({ requirement, resources }) => <div key={requirement.id} className="grid gap-2 rounded-lg border border-white/8 p-3 text-[10px] md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-center print:border-slate-300">
+      <div><span className="font-bold uppercase tracking-wider text-slate-500">Requirement</span><p className="mt-1 font-semibold text-slate-200 print:text-slate-950">{requirement.productName}</p></div><ArrowDown className="mx-auto h-3.5 w-3.5 text-slate-600 md:rotate-[-90deg]" />
+      <div><span className="font-bold uppercase tracking-wider text-slate-500">Method node</span><p className="mt-1 font-semibold text-sky-200 print:text-slate-950">{requirement.methodName}</p></div><ArrowDown className="mx-auto h-3.5 w-3.5 text-slate-600 md:rotate-[-90deg]" />
+      <div><span className="font-bold uppercase tracking-wider text-slate-500">Resources</span><p className="mt-1 text-slate-300 print:text-slate-800">{resources.length ? resources.join(" · ") : "Qualification/site evidence only"}</p></div>
+    </div>)}</div>
+  </div>;
+}
+
+function WorkflowUncertainty({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const max = Math.max(1, ...blueprint.workflows.map((item) => item.monthlyHandsOnHoursRange.high));
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-workflow-uncertainty-visual">
+    <div className="mb-1 flex items-center gap-2"><SlidersHorizontal className="h-4 w-4 text-violet-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Workflow uncertainty range</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Low/base/high hands-on hours use each rule's explicit uncalibrated planning spread; this is not a probability interval.</p>
+    <div className="space-y-3">{blueprint.workflows.map((row) => <div key={row.id}>
+      <div className="mb-1 flex items-start justify-between gap-3 text-[10px]"><span className="font-semibold text-slate-300 print:text-slate-900">{row.label}</span><span className="shrink-0 text-slate-500">{number.format(row.monthlyHandsOnHoursRange.low)} / <strong className="text-violet-200 print:text-slate-950">{number.format(row.monthlyHandsOnHours)}</strong> / {number.format(row.monthlyHandsOnHoursRange.high)} h</span></div>
+      <div className="relative h-2 rounded-full bg-white/8 print:bg-slate-200" role="img" aria-label={`${row.label}: ${number.format(row.monthlyHandsOnHoursRange.low)} to ${number.format(row.monthlyHandsOnHoursRange.high)} hands-on hours, base ${number.format(row.monthlyHandsOnHours)}`}><div className="absolute h-full rounded-full bg-violet-300/45 print:bg-slate-400" style={{ left: `${row.monthlyHandsOnHoursRange.low / max * 100}%`, width: `${(row.monthlyHandsOnHoursRange.high - row.monthlyHandsOnHoursRange.low) / max * 100}%` }} /><span className="absolute top-[-2px] h-3 w-0.5 bg-violet-100 print:bg-slate-950" style={{ left: `${row.monthlyHandsOnHours / max * 100}%` }} /></div>
+    </div>)}</div>
+  </div>;
+}
+
+function EvidenceStatusMatrix({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const labels: Record<QualityLabBlueprint["evidence"][number]["status"], string> = { "public-reference": "Public context", "user-supplied": "Project input", "internal-concept": "Atlas concept", "site-evidence-required": "Site evidence open" };
+  const statuses = Object.keys(labels) as Array<keyof typeof labels>;
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-evidence-matrix-visual">
+    <div className="mb-1 flex items-center gap-2"><Database className="h-4 w-4 text-teal-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Evidence status matrix</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Counts describe the current record types. Public context and catalog linkage do not equal controlled applicability.</p>
+    <div className="grid grid-cols-2 gap-2">{statuses.map((status) => {
+      const count = blueprint.evidence.filter((item) => item.status === status).length;
+      return <div key={status} className={`rounded-lg border p-3 ${status === "site-evidence-required" ? "border-amber-300/20 bg-amber-300/[0.04]" : "border-white/8 bg-white/[0.025]"} print:border-slate-300 print:bg-white`}><p className="text-xl font-bold text-slate-100 print:text-slate-950">{count}</p><p className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-500">{labels[status]}</p></div>;
+    })}</div>
+  </div>;
+}
+
+function OpenInputMatrix({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const categories = Array.from(new Set(blueprint.unresolvedInputs.map((item) => item.category)));
+  const severityTone = { blocking: "text-red-200", important: "text-amber-200", advisory: "text-sky-200" };
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-open-input-matrix-visual">
+    <div className="mb-1 flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-amber-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Open-input priority matrix</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Open questions are grouped by decision domain and severity so operational risk counts cannot hide evidence blockers.</p>
+    <div className="space-y-2">{categories.map((category) => <div key={category} className="grid grid-cols-[1fr_repeat(3,48px)] items-center gap-2 rounded-lg border border-white/8 px-3 py-2 print:border-slate-300"><span className="text-[10px] font-semibold capitalize text-slate-300 print:text-slate-900">{category}</span>{(["blocking", "important", "advisory"] as const).map((severity) => <div key={severity} className="text-center"><strong className={`block text-sm ${severityTone[severity]} print:text-slate-950`}>{blueprint.unresolvedInputs.filter((item) => item.category === category && item.severity === severity).length}</strong><span className="text-[7px] uppercase text-slate-600">{severity.slice(0, 3)}</span></div>)}</div>)}</div>
+  </div>;
+}
+
+function WorkloadComposition({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const total = Math.max(1, blueprint.workflows.reduce((sum, row) => sum + row.monthlyHandsOnHours, 0));
+  const rows = [...blueprint.workflows].sort((a, b) => b.monthlyHandsOnHours - a.monthlyHandsOnHours);
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-workload-composition-visual">
+    <div className="mb-1 flex items-center gap-2"><PieChart className="h-4 w-4 text-sky-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Hands-on workload composition</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Share of modeled routine hands-on hours by workflow. Excluded non-routine work remains outside this composition.</p>
+    <div className="space-y-3">{rows.map((row) => { const share = row.monthlyHandsOnHours / total * 100; return <div key={row.id}><div className="mb-1 flex items-center justify-between gap-3 text-[10px]"><span className="font-semibold text-slate-300 print:text-slate-900">{row.label}</span><span className="text-slate-500">{number.format(row.monthlyHandsOnHours)} h · {number.format(share)}%</span></div><div className="h-2 rounded-full bg-white/8 print:bg-slate-200" role="img" aria-label={`${row.label}: ${number.format(share)} percent of modeled routine hands-on hours`}><div className="h-full rounded-full bg-sky-300 print:bg-slate-700" style={{ width: `${share}%` }} /></div></div>; })}</div>
+  </div>;
+}
+
+function TurnaroundTimeline({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const maxDays = Math.max(1, ...blueprint.workflows.map((row) => row.turnaroundDays));
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-turnaround-timeline-visual">
+    <div className="mb-1 flex items-center gap-2"><Clock3 className="h-4 w-4 text-amber-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Nominal workflow turnaround timeline</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Nominal rule duration beside touch time. This does not simulate arrivals, queues, weekends, review or release deadlines.</p>
+    <div className="space-y-3">{blueprint.workflows.map((row) => <div key={row.id}><div className="mb-1 flex items-start justify-between gap-3 text-[10px]"><span className="font-semibold text-slate-300 print:text-slate-900">{row.label}</span><span className="shrink-0 text-slate-500">{number.format(row.monthlyHandsOnHours)} touch h/mo · {row.turnaroundDays} nominal d</span></div><div className="relative h-2 rounded-full bg-white/8 print:bg-slate-200" role="img" aria-label={`${row.label}: ${row.turnaroundDays} nominal turnaround days and ${number.format(row.monthlyHandsOnHours)} modeled monthly hands-on hours`}><div className="h-full rounded-full bg-amber-300/70 print:bg-slate-600" style={{ width: `${row.turnaroundDays / maxDays * 100}%` }} /></div></div>)}</div>
+  </div>;
+}
+
+function MethodBomComposition({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const categories = Array.from(new Set(blueprint.methodBom.map((row) => row.category))).map((category) => ({ category, count: blueprint.methodBom.filter((row) => row.category === category).length, open: blueprint.methodBom.filter((row) => row.category === category && row.status === "site-confirmation-required").length }));
+  const max = Math.max(1, ...categories.map((row) => row.count));
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-method-bom-composition-visual">
+    <div className="mb-1 flex items-center gap-2"><PackageCheck className="h-4 w-4 text-teal-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Method BOM coverage</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">BOM line coverage by category. Counts are not summed across incompatible physical units.</p>
+    {categories.length ? <div className="space-y-3">{categories.map((row) => <div key={row.category}><div className="mb-1 flex items-center justify-between gap-3 text-[10px]"><span className="font-semibold capitalize text-slate-300 print:text-slate-900">{row.category.replaceAll("-", " ")}</span><span className="text-slate-500">{row.count} lines · {row.open} site-confirmation</span></div><div className="h-2 rounded-full bg-white/8 print:bg-slate-200"><div className="h-full rounded-full bg-teal-300 print:bg-slate-700" style={{ width: `${row.count / max * 100}%` }} /></div></div>)}</div> : <p className="rounded-lg border border-dashed border-white/10 p-4 text-xs text-slate-500 print:border-slate-300">Method BOM remains empty for this scope.</p>}
+  </div>;
+}
+
+function CapexRangeBridge({ blueprint }: { blueprint: QualityLabBlueprint }) {
+  const current = blueprint.current;
+  const future = blueprint.future;
+  const max = Math.max(1, future.capexHighUsd, current.capexHighUsd);
+  const bars = [
+    { label: "Current concept range", low: current.capexLowUsd, high: current.capexHighUsd, tone: "bg-slate-400" },
+    { label: "Future concept range", low: future.capexLowUsd, high: future.capexHighUsd, tone: "bg-violet-300" },
+    { label: "Incremental range", low: Math.max(0, future.capexLowUsd - current.capexLowUsd), high: Math.max(0, future.capexHighUsd - current.capexHighUsd), tone: "bg-amber-300" },
+  ];
+  return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-capex-range-bridge-visual">
+    <div className="mb-1 flex items-center gap-2"><WalletCards className="h-4 w-4 text-violet-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">CAPEX range bridge</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Current, future and incremental concept ranges on one USD scale. These are vendor-neutral allowances, not quotations.</p>
+    <div className="space-y-4">{bars.map((bar) => <div key={bar.label}><div className="mb-1 flex items-center justify-between gap-3 text-[10px]"><span className="font-semibold text-slate-300 print:text-slate-900">{bar.label}</span><span className="text-slate-500">${number.format(bar.low)}–${number.format(bar.high)}</span></div><div className="relative h-3 rounded-full bg-white/8 print:bg-slate-200" role="img" aria-label={`${bar.label}: ${number.format(bar.low)} to ${number.format(bar.high)} US dollars`}><div className={`absolute h-full rounded-full ${bar.tone} print:bg-slate-700`} style={{ left: `${bar.low / max * 100}%`, width: `${Math.max(1, (bar.high - bar.low) / max * 100)}%` }} /></div></div>)}</div>
+  </div>;
+}
+
 export function BlueprintVisualDecisionLayer({ blueprint }: { blueprint: QualityLabBlueprint }) {
   return (
     <section id="visual-decision-layer" className="mb-5 scroll-mt-32 break-inside-avoid rounded-2xl border border-sky-300/15 bg-gradient-to-br from-sky-300/[0.055] via-white/[0.025] to-violet-300/[0.035] p-5 shadow-lg shadow-black/10 md:p-6 print:border-slate-300 print:bg-white print:shadow-none">
@@ -151,6 +247,11 @@ export function BlueprintVisualDecisionLayer({ blueprint }: { blueprint: Quality
       </div>
       <CompilerChain blueprint={blueprint} />
       <div className="mt-5 grid gap-4 lg:grid-cols-2"><ScenarioComparison blueprint={blueprint} /><CapacityChart blueprint={blueprint} /></div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2"><WorkflowUncertainty blueprint={blueprint} /><EvidenceStatusMatrix blueprint={blueprint} /></div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2"><WorkloadComposition blueprint={blueprint} /><TurnaroundTimeline blueprint={blueprint} /></div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2"><MethodBomComposition blueprint={blueprint} /><CapexRangeBridge blueprint={blueprint} /></div>
+      <div className="mt-4"><MethodResourceLineage blueprint={blueprint} /></div>
+      <div className="mt-4"><OpenInputMatrix blueprint={blueprint} /></div>
       <div className="mt-4"><ZoningSchematic blueprint={blueprint} /></div>
     </section>
   );

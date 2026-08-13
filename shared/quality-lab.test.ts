@@ -18,6 +18,9 @@ describe("quality lab compiler", () => {
   it("compiles the default non-sterile scenario", () => {
     const result = compileQualityLabBlueprint(defaultQualityLabInput);
     expect(result.workflows.length).toBeGreaterThanOrEqual(4);
+    expect(result.workflows.every((workflow) => workflow.modelBasis === "point-estimate-with-range" && workflow.calibrationStatus === "uncalibrated-concept")).toBe(true);
+    expect(result.workflows.every((workflow) => workflow.monthlyHandsOnHoursRange.low <= workflow.monthlyHandsOnHours && workflow.monthlyHandsOnHoursRange.high >= workflow.monthlyHandsOnHours)).toBe(true);
+    expect(result.workflows.find((workflow) => workflow.id === "water-microbiology")?.methodGraphCoverage).toBe("application-node");
     expect(result.current.monthlyTests).toBeGreaterThan(0);
     expect(result.current.analystFte).toBeGreaterThanOrEqual(2);
     expect(result.workforceCapacity?.current.totalTeamFte).toBe(result.current.totalTeamFte);
@@ -53,6 +56,24 @@ describe("quality lab compiler", () => {
     });
     expect(withoutSterility.equipment.some((item) => item.id === "sterility-isolator")).toBe(false);
     expect(withSterility.equipment.some((item) => item.id === "sterility-isolator")).toBe(true);
+  });
+
+  it("uses the declared productive hours when sizing biological safety cabinets", () => {
+    const constrained = compileQualityLabBlueprint({
+      ...defaultQualityLabInput,
+      rawMaterialLotsPerMonth: 1_000,
+      productiveHoursPerShift: 2,
+    });
+    const extended = compileQualityLabBlueprint({
+      ...defaultQualityLabInput,
+      rawMaterialLotsPerMonth: 1_000,
+      productiveHoursPerShift: 12,
+    });
+
+    const constrainedBsc = constrained.equipment.find((item) => item.id === "bsc")!;
+    const extendedBsc = extended.equipment.find((item) => item.id === "bsc")!;
+    expect(constrainedBsc.quantityFuture).toBeGreaterThan(extendedBsc.quantityFuture);
+    expect(extendedBsc.rationale).toContain("user-supplied productive hours");
   });
 
   it("rejects projects with no target market", () => {
@@ -156,6 +177,7 @@ describe("quality lab compiler", () => {
     expect(result.methodRequirements.some((item) => item.requirementType === "microbial-enumeration")).toBe(true);
     expect(result.methodRequirements.some((item) => item.requirementType === "specified-microorganisms")).toBe(true);
     expect(result.methodRequirements.some((item) => item.requirementType === "method-suitability")).toBe(true);
+    expect(result.methodRequirements.map((item) => item.requirementType)).toEqual(expect.arrayContaining(["raw-material-microbiology", "water-microbiology", "environmental-monitoring", "growth-promotion-media-qc"]));
     expect(result.methodBom.some((item) => item.category === "media" && item.quantityPerMonth > 0)).toBe(true);
     expect(result.methodBom.every((item) => item.status === "site-confirmation-required")).toBe(true);
     expect(result.methodCapacitySummary.some((item) => item.resourceId === "incubator-20-25" && item.monthlyDemand > 0)).toBe(true);
@@ -175,8 +197,8 @@ describe("quality lab compiler", () => {
       productProfiles: defaultQualityLabInput.productProfiles.map((product) => ({ ...product, execution: "outsource" as const })),
     });
     expect(result.methodRequirements.length).toBeGreaterThan(0);
-    expect(result.methodCapacity).toEqual([]);
-    expect(result.methodCapacitySummary).toEqual([]);
+    expect(result.methodCapacity.filter((item) => item.productName === defaultQualityLabInput.productProfiles[0].name)).toEqual([]);
+    expect(result.methodCapacity.some((item) => item.productName === "Pharmaceutical-water monitoring program")).toBe(true);
   });
 
   it("keeps product, market and execution trace distinct across a portfolio", () => {
@@ -190,14 +212,15 @@ describe("quality lab compiler", () => {
     });
     expect(result.methodRequirements.some((item) => item.productName === "Solid oral family" && item.market === "vietnam" && item.execution === "in-house")).toBe(true);
     expect(result.methodRequirements.some((item) => item.productName === "Oral liquid family" && item.market === "asean" && item.execution === "outsource")).toBe(true);
-    expect(result.methodCapacity.every((item) => item.productName === "Solid oral family")).toBe(true);
+    expect(result.methodCapacity.some((item) => item.productName === "Solid oral family" && item.monthlyDemand > 0)).toBe(true);
+    expect(result.methodCapacity.some((item) => item.productName === "Oral liquid family")).toBe(false);
   });
 
   it("does not multiply physical load across markets until allocation is declared", () => {
     const base = { ...defaultQualityLabInput.productProfiles[0], markets: ["vietnam", "asean"] as const, preservativeOrNeutralizerNote: "Neutralizer to be confirmed" };
     const unresolved = compileQualityLabBlueprint({ ...defaultQualityLabInput, markets: ["vietnam", "asean"], productProfiles: [{ ...base, marketExecutionStrategy: "unknown" }] });
     expect(unresolved.methodRequirements.filter((item) => item.requirementType === "microbial-enumeration")).toHaveLength(2);
-    expect(unresolved.methodCapacity).toEqual([]);
+    expect(unresolved.methodCapacity.filter((item) => item.productName === base.name).every((item) => item.monthlyDemand === 0)).toBe(true);
     expect(unresolved.methodBom.filter((item) => item.category === "neutralizer").every((item) => item.quantityPerMonth === 0)).toBe(true);
     expect(unresolved.unresolvedInputs.some((item) => item.id === "market-execution-allocation")).toBe(true);
 

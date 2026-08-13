@@ -1,7 +1,25 @@
 import type { ExpertOwnershipAssessment } from "./quality-lab-expert-ownership";
 import type { SourceCoverageAssessment } from "./quality-lab-source-coverage";
+import { z } from "zod";
 
 export const QUALITY_LAB_GATE_2_RELEASE_VERSION = "quality-lab-gate-2-release/v1" as const;
+export const QUALITY_LAB_GATE_2_DECISION_VERSION = "quality-lab-gate-2-decision/v1" as const;
+
+export const gate2ReleaseDecisionSchema = z.object({
+  decisionVersion: z.literal(QUALITY_LAB_GATE_2_DECISION_VERSION),
+  domainPackId: z.string().trim().min(1),
+  domainPackVersion: z.string().trim().min(1),
+  reviewedValidationCaseIds: z.array(z.string().trim().min(1)).min(3),
+  crossCaseReviewEvidenceRef: z.string().trim().min(1),
+  ruleDisposition: z.enum(["retain-current-rules", "approved-rule-changes", "reject-release"]),
+  ruleDispositionSummary: z.string().trim().min(20),
+  ruleChangeApprovalEvidenceRefs: z.array(z.string().trim().min(1)),
+  decision: z.enum(["approved-outside-atlas", "rejected"]),
+  approvedByRoles: z.array(z.string().trim().min(1)).min(2),
+  approvalEvidenceRef: z.string().trim().min(1),
+  decidedAt: z.string().datetime(),
+});
+export type Gate2ReleaseDecision = z.infer<typeof gate2ReleaseDecisionSchema>;
 
 export type Gate2ControlStatus = "open" | "evidence-complete";
 
@@ -19,12 +37,17 @@ export interface Gate2ReleaseAssessment {
   generatedAt: string;
   domainPackId: string;
   domainPackVersion: string;
-  status: "blocked" | "eligible-for-qualified-release-review";
+  status: "blocked" | "eligible-for-qualified-release-review" | "approved-outside-atlas" | "rejected-outside-atlas";
   evidenceCompleteCount: number;
   totalControlCount: number;
   controls: Gate2ControlAssessment[];
   blockers: string[];
   versionMismatches: string[];
+  authorization: {
+    status: "not-recorded" | "evidence-incomplete" | "approved-outside-atlas" | "rejected-outside-atlas";
+    blockers: string[];
+    decision: Gate2ReleaseDecision | null;
+  };
   notice: string;
 }
 
@@ -51,6 +74,7 @@ export function assessGate2Release(args: {
   expertOwnership: ExpertOwnershipAssessment;
   validationRegistry: ValidationRegistryBasis;
   paidPilotPortfolio: PaidPilotPortfolioBasis;
+  releaseDecision?: Gate2ReleaseDecision | null;
   generatedAt?: string;
 }): Gate2ReleaseAssessment {
   const generatedAt = args.generatedAt ?? new Date().toISOString();
@@ -126,18 +150,45 @@ export function assessGate2Release(args: {
   ];
   const blockers = controls.flatMap((control) => control.blockers.map((blocker) => `${control.label}: ${blocker}`));
   const evidenceCompleteCount = controls.filter((control) => control.status === "evidence-complete").length;
+  const prerequisitesComplete = evidenceCompleteCount === controls.length && blockers.length === 0;
+  const decisionParse = args.releaseDecision ? gate2ReleaseDecisionSchema.safeParse(args.releaseDecision) : null;
+  const authorizationBlockers: string[] = [];
+  const releaseDecision = decisionParse?.success ? decisionParse.data : null;
+  if (args.releaseDecision && !decisionParse?.success) authorizationBlockers.push("The release decision record is structurally invalid.");
+  if (releaseDecision) {
+    if (!prerequisitesComplete) authorizationBlockers.push("All four Gate 2 evidence prerequisites must be complete before release authorization.");
+    if (`${releaseDecision.domainPackId}@${releaseDecision.domainPackVersion}` !== expectedDomainPack) authorizationBlockers.push("The release decision does not match the active Domain Pack version.");
+    const acceptedCaseIds = new Set(args.validationRegistry.records
+      .filter((record) => record.assessment.eligibility === "eligible-validation-case")
+      .map((record) => (record.packet as { validationControl?: { caseId?: string } }).validationControl?.caseId)
+      .filter((value): value is string => Boolean(value)));
+    if (acceptedCaseIds.size > 0 && releaseDecision.reviewedValidationCaseIds.some((caseId) => !acceptedCaseIds.has(caseId))) authorizationBlockers.push("Every reviewed case ID must exist in the accepted current-version validation registry.");
+    if (new Set(releaseDecision.reviewedValidationCaseIds).size < args.validationRegistry.targetCount) authorizationBlockers.push(`Cross-case review must include at least ${args.validationRegistry.targetCount} distinct validation cases.`);
+    if (releaseDecision.ruleDisposition === "approved-rule-changes" && releaseDecision.ruleChangeApprovalEvidenceRefs.length === 0) authorizationBlockers.push("Approved rule changes require at least one controlled external approval reference.");
+    if (releaseDecision.decision === "approved-outside-atlas" && releaseDecision.ruleDisposition === "reject-release") authorizationBlockers.push("A rejected rule disposition cannot authorize release.");
+    if (releaseDecision.decision === "rejected" && releaseDecision.ruleDisposition !== "reject-release") authorizationBlockers.push("A rejected release decision must carry a reject-release rule disposition.");
+  }
+  const authorizationStatus = !args.releaseDecision ? "not-recorded" as const
+    : authorizationBlockers.length ? "evidence-incomplete" as const
+    : releaseDecision?.decision === "approved-outside-atlas" ? "approved-outside-atlas" as const
+    : "rejected-outside-atlas" as const;
+  const status = authorizationStatus === "approved-outside-atlas" ? "approved-outside-atlas" as const
+    : authorizationStatus === "rejected-outside-atlas" ? "rejected-outside-atlas" as const
+    : prerequisitesComplete ? "eligible-for-qualified-release-review" as const
+    : "blocked" as const;
   return {
     assessmentVersion: QUALITY_LAB_GATE_2_RELEASE_VERSION,
     generatedAt,
     domainPackId: args.sourceCoverage.domainPackId,
     domainPackVersion: args.sourceCoverage.domainPackVersion,
-    status: evidenceCompleteCount === controls.length && blockers.length === 0 ? "eligible-for-qualified-release-review" : "blocked",
+    status,
     evidenceCompleteCount,
     totalControlCount: controls.length,
     controls,
     blockers,
     versionMismatches,
-    notice: "Eligibility starts a qualified release review only. It does not verify the Domain Pack, approve a rule change, authorize client use, or replace documented approval outside Atlas.",
+    authorization: { status: authorizationStatus, blockers: authorizationBlockers, decision: releaseDecision },
+    notice: "Evidence eligibility starts a qualified release review only and does not verify the Domain Pack. A separate version-matched cross-case decision with documented rule disposition and approval outside Atlas is required before the Pack can be recorded as released.",
   };
 }
 
@@ -153,6 +204,7 @@ export function createGate2ReleaseDossier(assessment: Gate2ReleaseAssessment, ev
     controls: assessment.controls,
     blockers: assessment.blockers,
     versionMismatches: assessment.versionMismatches,
+    authorization: assessment.authorization,
     evidenceBasis: evidenceBasis ? {
       sourceClosure: {
         domainPack: { id: evidenceBasis.sourceCoverage.domainPackId, version: evidenceBasis.sourceCoverage.domainPackVersion },

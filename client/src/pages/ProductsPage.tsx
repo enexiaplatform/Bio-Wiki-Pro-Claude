@@ -172,7 +172,7 @@ export default function ProductsPage() {
 
             <div className="rounded-[1.75rem] border border-teal-100 bg-[#e7f7f3] p-4 sm:p-7">
               <div className="overflow-hidden rounded-2xl border border-slate-900/10 bg-[#07182d] shadow-2xl shadow-slate-900/15">
-                <img src="/images/blueprint/quality-lab-blueprint-deliverables.webp" alt="Illustrative Quality Lab Blueprint package showing an executive brief, capacity model, cost scenario, and evidence register" width="900" height="720" fetchPriority="high" className="aspect-[5/4] w-full object-contain" />
+                <img src="/images/blueprint/quality-lab-blueprint-deliverables.webp" alt="Illustrative Quality Lab Blueprint package showing an executive brief, capacity model, cost scenario, and evidence register" width="900" height="720" className="aspect-[5/4] w-full object-contain" />
               </div>
               <div className="mt-4 grid gap-2 sm:grid-cols-3">
                 {[

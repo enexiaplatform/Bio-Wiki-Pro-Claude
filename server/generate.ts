@@ -136,6 +136,7 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
     ["Package version", delivery.packageVersion], ["Project", snapshot.projectName], ["Project ID", snapshot.localProjectId],
     [], ["DECISION MANDATE", ""], ["Primary decision", snapshot.input.primaryDecision], ["Project intent", snapshot.input.projectIntent],
     ["Decision owner", snapshot.input.decisionOwnerRole], ["Decision window", snapshot.input.decisionWindow], ["Scenario label", snapshot.input.scenarioLabel],
+    ["Project owner role", snapshot.input.projectOwnerRole], ["Input-source owner role", snapshot.input.sourceOwnerRole], ["Controlled input revision", snapshot.input.inputRevision],
     [], ["DOCUMENT CONTROL", ""],
     ["Document ID", delivery.control.documentId], ["Revision", delivery.control.revision], ["Recorded status", delivery.control.recordedStatus],
     ["Computed readiness", delivery.readiness.status], ["Intended use", delivery.control.intendedUse], ["Prepared by role", delivery.control.preparedByRole],
@@ -147,7 +148,9 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
     ["Commercial status", packet.pilotControl.commercialStatus], ["Commercial evidence reference", packet.pilotControl.commercialEvidenceReference],
     ["Service started", packet.pilotControl.serviceStartedAt], ["Scope confirmed", packet.pilotControl.scopeConfirmedAt],
     ["First controlled delivery", packet.pilotControl.firstControlledDeliveryAt], ["Delivery calendar days", pilot.deliveryCalendarDays],
-    ["Delivery effort hours", pilot.deliveryEffortHours], ["Acceptance status", packet.pilotControl.acceptanceStatus],
+    ["Delivery effort hours", pilot.deliveryEffortHours], ["Contract value USD", packet.pilotControl.contractValueUsd],
+    ["Direct delivery cost USD", packet.pilotControl.directDeliveryCostUsd], ["Gross margin percent", pilot.grossMarginPercent],
+    ["Delivery economics evidence", packet.pilotControl.economicsEvidenceReference], ["Acceptance status", packet.pilotControl.acceptanceStatus],
     ["Client acceptance time", packet.pilotControl.clientAcceptanceAt], ["Acceptance reference", packet.pilotControl.acceptanceReference],
     ["Outcome note", packet.pilotControl.outcomeNote], [], ["PILOT EVIDENCE BLOCKERS", ""],
     ...pilot.blockers.map((item) => ["", item]), [], ["RELEASE BLOCKERS", ""],
@@ -209,6 +212,10 @@ export function qualityLabDeliveryWorkbook(snapshot: QualityLabReviewedProjectSn
   addDeliverySheet(wb, "Evidence Register", [["Evidence ID", "Title", "Kind", "Status", "Publisher", "Version", "Locator", "Scope", "Limitations"], ...blueprint.evidence.map((item) => [item.id, item.title, item.kind, item.status, item.publisher, item.version, item.locator, item.scope, item.limitations])], [28, 42, 24, 24, 28, 18, 52, 65, 65]);
 
   addDeliverySheet(wb, "Rule Trace", [["Rule ID", "Rule version", "Domain Pack", "Output types", "Applicability", "Confidence", "Review required", "Evidence IDs", "Limitations"], ...blueprint.ruleTrace.map((item) => [item.ruleId, item.ruleVersion, item.domainPackId, item.outputTypes.join(" | "), item.applicability, item.confidence, item.reviewRequired ? "Yes" : "No", item.evidenceIds.join(" | "), item.limitations])], [30, 18, 28, 28, 65, 16, 18, 38, 65]);
+
+  addDeliverySheet(wb, "Model Controls", [["Control ID", "Parameter", "Owner role", "Rule IDs", "Base value", "Unit", "Stress low", "Stress high", "Range interpretation", "Maturity", "Applicability", "Rationale", "Evidence IDs", "Calibration plan"], ...blueprint.modelControls.map((item) => [item.id, item.label, item.ownerRole, item.ruleIds.join(" | "), item.baseValue, item.unit, item.stressRange.low, item.stressRange.high, item.stressRange.interpretation, item.maturity, item.applicability, item.rationale, item.evidenceIds.join(" | "), item.calibrationPlan])], [38, 42, 30, 36, 14, 30, 14, 14, 24, 24, 65, 65, 42, 70]);
+
+  addDeliverySheet(wb, "Model Glossary", [["Term ID", "Term", "Definition", "Decision boundary", "Glossary version", "Control version"], ...blueprint.modelGlossary.map((item) => [item.id, item.term, item.definition, item.decisionBoundary, blueprint.modelGlossaryVersion, blueprint.modelControlVersion])], [30, 32, 75, 75, 32, 32]);
 
   addDeliverySheet(wb, "Decision Lineage", [["Lineage ID", "Decision type", "Output key", "Conclusion", "Current output", "Calculation", "Input paths", "Rule versions", "Evidence versions", "Assumptions", "Limitations", "Open inputs", "Material change factors"], ...blueprint.decisionLineage.map((item) => [item.id, item.decisionType, item.outputKey, item.summary, item.currentOutput, item.calculation, item.contributingInputPaths.join(" | "), item.ruleRefs.map((ref) => `${ref.id}@${ref.version}`).join(" | "), item.evidenceRefs.map((ref) => `${ref.id}@${ref.version}`).join(" | "), item.assumptionIds.join(" | "), item.limitations.join(" | "), item.unresolvedInputIds.join(" | "), item.materialChangeFactors.join(" | ")])], [36, 18, 32, 55, 22, 70, 55, 55, 55, 40, 70, 45, 55]);
 

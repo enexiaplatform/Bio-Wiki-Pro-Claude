@@ -5,6 +5,7 @@ import { qualityLabActionPlanSchema, reconcileQualityLabActionPlan } from "./qua
 import { qualityLabDecisionRegisterSchema, reconcileQualityLabDecisionRegister } from "./quality-lab-decisions.js";
 import { createEmptyQualityLabEvidenceRegister, qualityLabEvidenceRegisterSchema } from "./quality-lab-evidence.js";
 import { ensureQualityLabProjectHistory, qualityLabFrozenRevisionSchema } from "./quality-lab-revisions.js";
+import { QUALITY_LAB_MODEL_CONTROL_VERSION, QUALITY_LAB_MODEL_GLOSSARY, QUALITY_LAB_MODEL_GLOSSARY_VERSION, createQualityLabModelControls } from "./quality-lab-model-glossary.js";
 
 export const QUALITY_LAB_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v3" as const;
 export const QUALITY_LAB_V2_ACCOUNT_SNAPSHOT_VERSION = "quality-lab-account-project/v2" as const;
@@ -79,6 +80,18 @@ export const qualityLabLocalStoreSchema = z.object({
 
 export type QualityLabLocalStore = z.infer<typeof qualityLabLocalStoreSchema>;
 
+function compactModelRegistry(blueprint: QualityLabProject["blueprint"]): QualityLabProject["blueprint"] {
+  return { ...blueprint, modelGlossary: [], modelControls: [] };
+}
+
+function rehydrateModelRegistry(blueprint: QualityLabProject["blueprint"]): QualityLabProject["blueprint"] {
+  return {
+    ...blueprint,
+    modelGlossary: blueprint.modelGlossary.length > 0 || blueprint.modelGlossaryVersion !== QUALITY_LAB_MODEL_GLOSSARY_VERSION ? blueprint.modelGlossary : QUALITY_LAB_MODEL_GLOSSARY,
+    modelControls: blueprint.modelControls.length > 0 || blueprint.modelControlVersion !== QUALITY_LAB_MODEL_CONTROL_VERSION ? blueprint.modelControls : createQualityLabModelControls(blueprint.input),
+  };
+}
+
 export function createQualityLabAccountSnapshot(project: QualityLabProject, engagement: QualityLabReviewedProjectSnapshot["engagement"] = null): QualityLabReviewedProjectSnapshot {
   const historical = ensureQualityLabProjectHistory(project);
   const activeRevision = historical.revisions?.find((revision) => revision.revisionId === historical.activeRevisionId)
@@ -91,11 +104,11 @@ export function createQualityLabAccountSnapshot(project: QualityLabProject, enga
     projectCreatedAt: historical.createdAt,
     projectUpdatedAt: historical.updatedAt,
     input: historical.input,
-    blueprint: historical.blueprint,
+    blueprint: compactModelRegistry(historical.blueprint),
     actionPlan: historical.actionPlan,
     decisionRegister: historical.decisionRegister,
     evidenceRegister: historical.evidenceRegister,
-    frozenRevisions: [activeRevision],
+    frozenRevisions: [{ ...activeRevision, blueprintSnapshot: compactModelRegistry(activeRevision.blueprintSnapshot) }],
     activeRevisionId: activeRevision.revisionId,
     engagement,
     reviewRequestedAt: project.reviewRequestedAt ?? null,
@@ -149,21 +162,23 @@ export function migrateQualityLabLocalStore(rawV2: string | null, rawV1: string 
 }
 
 export function qualityLabProjectFromReviewedSnapshot(snapshot: QualityLabReviewedProjectSnapshot): QualityLabProject {
+  const blueprint = rehydrateModelRegistry(snapshot.blueprint);
+  const frozenRevisions = snapshot.frozenRevisions?.map((revision) => ({ ...revision, blueprintSnapshot: rehydrateModelRegistry(revision.blueprintSnapshot) }));
   const storedActionPlan = qualityLabActionPlanSchema.safeParse(snapshot.actionPlan);
-  const actionPlan = storedActionPlan.success ? storedActionPlan.data : reconcileQualityLabActionPlan(snapshot.blueprint, undefined, snapshot.blueprint.generatedAt);
+  const actionPlan = storedActionPlan.success ? storedActionPlan.data : reconcileQualityLabActionPlan(blueprint, undefined, blueprint.generatedAt);
   const storedDecisionRegister = qualityLabDecisionRegisterSchema.safeParse(snapshot.decisionRegister ?? snapshot.workspace?.decisionRegister);
   return ensureQualityLabProjectHistory({
     id: snapshot.localProjectId,
     name: snapshot.projectName,
     input: snapshot.input,
-    blueprint: snapshot.blueprint,
+    blueprint,
     actionPlan,
-    decisionRegister: storedDecisionRegister.success ? storedDecisionRegister.data : reconcileQualityLabDecisionRegister(snapshot.blueprint, actionPlan, undefined, snapshot.blueprint.generatedAt),
-    evidenceRegister: snapshot.evidenceRegister ?? createEmptyQualityLabEvidenceRegister(snapshot.projectUpdatedAt ?? snapshot.blueprint.generatedAt),
-    revisions: snapshot.frozenRevisions,
+    decisionRegister: storedDecisionRegister.success ? storedDecisionRegister.data : reconcileQualityLabDecisionRegister(blueprint, actionPlan, undefined, blueprint.generatedAt),
+    evidenceRegister: snapshot.evidenceRegister ?? createEmptyQualityLabEvidenceRegister(snapshot.projectUpdatedAt ?? blueprint.generatedAt),
+    revisions: frozenRevisions,
     activeRevisionId: snapshot.activeRevisionId,
-    createdAt: snapshot.projectCreatedAt ?? snapshot.blueprint.generatedAt,
-    updatedAt: snapshot.projectUpdatedAt ?? snapshot.blueprint.generatedAt,
+    createdAt: snapshot.projectCreatedAt ?? blueprint.generatedAt,
+    updatedAt: snapshot.projectUpdatedAt ?? blueprint.generatedAt,
     reviewRequestedAt: snapshot.reviewRequestedAt ?? undefined,
   });
 }

@@ -24,7 +24,7 @@ export function ContentQualityNotice({ contentId, quality }: { contentId: string
         </span>
         <span className="text-xs text-muted-foreground">v{quality.contentVersion} · {quality.sourceCount} sources · quality score {quality.score}/100</span>
       </div>
-      {!reviewed && <p className="mt-2 text-sm text-muted-foreground">This lesson remains accessible, but it is not currently used as evidence for a promoted product claim.</p>}
+      {!reviewed && <p className="mt-2 text-sm text-muted-foreground">This content remains accessible for orientation, but it is not currently used as evidence for a promoted product claim.</p>}
       {quality.limitations.length > 0 && <p className="mt-2 text-xs text-muted-foreground"><span className="font-semibold text-foreground">Limit:</span> {quality.limitations[0]}</p>}
     </section>
   );

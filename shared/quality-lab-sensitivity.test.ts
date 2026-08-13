@@ -26,6 +26,17 @@ describe("Quality Lab sensitivity and evidence confidence", () => {
     expect(hours.swingPercent).toBeGreaterThan(0);
   });
 
+  it("describes growth as a total change over the selected horizon", () => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Horizon semantics" });
+    const result = analyzeQualityLabSensitivity(project);
+    const growth = result.drivers.find((item) => item.id === "growthRatePercent")!;
+
+    expect(growth.label).toBe("Growth over planning horizon");
+    expect(growth.unit).toBe("% over horizon");
+    expect(growth.evidenceNeeded).toContain("not an annual CAGR");
+    expect(growth.decisionUse).toContain("applied once");
+  });
+
   it("elevates influential unresolved assumptions into the verification queue", () => {
     const project = createQualityLabProject({
       ...defaultQualityLabInput,

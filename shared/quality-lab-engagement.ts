@@ -45,6 +45,9 @@ const emptyPilotControl = () => ({
   scopeConfirmedAt: "",
   firstControlledDeliveryAt: "",
   deliveryEffortHours: null as number | null,
+  contractValueUsd: null as number | null,
+  directDeliveryCostUsd: null as number | null,
+  economicsEvidenceReference: "",
   acceptanceStatus: "not-requested" as const,
   clientAcceptanceAt: "",
   acceptanceReference: "",
@@ -63,6 +66,10 @@ const emptyValidationControl = () => ({
   acceptanceRationale: "",
   acceptedByRole: "",
   acceptedAt: null as string | null,
+  publicationPermission: "not-assessed" as const,
+  publicationEvidenceReference: "",
+  publicationApprovedByRole: "",
+  publicationApprovedAt: null as string | null,
 });
 
 export const qualityLabEngagementPacketSchema = z.object({
@@ -108,6 +115,9 @@ export const qualityLabEngagementPacketSchema = z.object({
     scopeConfirmedAt: z.string(),
     firstControlledDeliveryAt: z.string(),
     deliveryEffortHours: z.number().nonnegative().max(10000).nullable(),
+    contractValueUsd: z.number().nonnegative().max(100_000_000).nullable().default(null),
+    directDeliveryCostUsd: z.number().nonnegative().max(100_000_000).nullable().default(null),
+    economicsEvidenceReference: z.string().max(240).default(""),
     acceptanceStatus: z.enum(["not-requested", "pending", "accepted", "accepted-with-actions", "not-accepted"]),
     clientAcceptanceAt: z.string(),
     acceptanceReference: z.string().max(240),
@@ -125,6 +135,10 @@ export const qualityLabEngagementPacketSchema = z.object({
     acceptanceRationale: z.string().max(2000),
     acceptedByRole: z.string().max(160),
     acceptedAt: z.string().datetime().nullable(),
+    publicationPermission: z.enum(["not-assessed", "not-permitted", "anonymized-public", "attributed-public"]).default("not-assessed"),
+    publicationEvidenceReference: z.string().max(240).default(""),
+    publicationApprovedByRole: z.string().max(160).default(""),
+    publicationApprovedAt: z.string().datetime().nullable().default(null),
   }).default(emptyValidationControl),
   checklist: z.array(z.object({ id: z.string().min(1), ownerRole: z.string().min(1), status: checklistStatusSchema, question: z.string().min(1), requiredEvidence: z.string().min(1), relatedRuleIds: z.array(z.string()), reviewerNote: z.string() })),
   methodEvidenceMatrix: z.array(z.object({ id: z.string(), productName: z.string(), market: z.string(), requirementType: z.string(), methodName: z.string(), evidenceIds: z.array(z.string()).min(1), verificationRequirement: z.string(), status: commercialReviewStatusSchema, reviewerNote: z.string() })).default([]),
@@ -224,6 +238,31 @@ export function calculateVariancePercent(estimate: number, actual: number): numb
   return Math.round(((actual - estimate) / estimate) * 1000) / 10;
 }
 
+export function calculateGrossMarginPercent(contractValueUsd: number | null, directDeliveryCostUsd: number | null): number | null {
+  if (contractValueUsd === null || directDeliveryCostUsd === null || contractValueUsd <= 0) return null;
+  return Math.round(((contractValueUsd - directDeliveryCostUsd) / contractValueUsd) * 1000) / 10;
+}
+
+export type CasePublicationEligibility = "not-authorized" | "evidence-incomplete" | "eligible-for-publication-review";
+
+export function assessCasePublicationPermission(packet: QualityLabEngagementPacket): {
+  eligibility: CasePublicationEligibility;
+  blockers: string[];
+} {
+  const control = packet.validationControl;
+  if (["not-assessed", "not-permitted"].includes(control.publicationPermission)) {
+    return { eligibility: "not-authorized", blockers: ["Explicit external-publication permission has not been granted."] };
+  }
+  const blockers: string[] = [];
+  if (control.status !== "accepted") blockers.push("The underlying validation case must be accepted before publication review.");
+  if (control.publicationPermission === "anonymized-public" && !["internal-anonymized", "shareable"].includes(control.confidentialityClass)) blockers.push("An anonymized-public case requires an internal-anonymized or shareable confidentiality classification.");
+  if (control.publicationPermission === "attributed-public" && control.confidentialityClass !== "shareable") blockers.push("An attributed public case requires a shareable confidentiality classification.");
+  if (!control.publicationEvidenceReference.trim()) blockers.push("A controlled publication-permission reference is required.");
+  if (!control.publicationApprovedByRole.trim()) blockers.push("Record the role that approved publication permission.");
+  if (parseRecordedTime(control.publicationApprovedAt ?? "") === null) blockers.push("Record a valid publication-permission approval timestamp.");
+  return { eligibility: blockers.length ? "evidence-incomplete" : "eligible-for-publication-review", blockers };
+}
+
 export type PaidPilotEligibility = "not-a-gate-1-record" | "evidence-incomplete" | "eligible-gate-1-pilot-record";
 
 function parseRecordedTime(value: string): number | null {
@@ -240,6 +279,7 @@ export function assessPaidPilotEvidence(
   blockers: string[];
   deliveryCalendarDays: number | null;
   deliveryEffortHours: number | null;
+  grossMarginPercent: number | null;
 } {
   const pilot = packet.pilotControl;
   const startedAt = parseRecordedTime(pilot.serviceStartedAt);
@@ -251,7 +291,7 @@ export function assessPaidPilotEvidence(
     : null;
 
   if (pilot.engagementClass === "unclassified" && pilot.commercialStatus === "not-recorded") {
-    return { eligibility: "not-a-gate-1-record", blockers: ["Classify the engagement and record its commercial status."], deliveryCalendarDays, deliveryEffortHours: pilot.deliveryEffortHours };
+    return { eligibility: "not-a-gate-1-record", blockers: ["Classify the engagement and record its commercial status."], deliveryCalendarDays, deliveryEffortHours: pilot.deliveryEffortHours, grossMarginPercent: calculateGrossMarginPercent(pilot.contractValueUsd, pilot.directDeliveryCostUsd) };
   }
 
   const blockers: string[] = [];
@@ -262,6 +302,9 @@ export function assessPaidPilotEvidence(
   if (scopeAt === null) blockers.push("Record a valid scope-confirmation timestamp.");
   if (deliveredAt === null) blockers.push("Record the first controlled-delivery timestamp.");
   if (pilot.deliveryEffortHours === null || pilot.deliveryEffortHours <= 0) blockers.push("Record positive delivery effort hours.");
+  if (pilot.contractValueUsd === null || pilot.contractValueUsd <= 0) blockers.push("Record the paid contract value used for delivery economics.");
+  if (pilot.directDeliveryCostUsd === null) blockers.push("Record direct delivery cost, including zero only when supported by evidence.");
+  if (!pilot.economicsEvidenceReference.trim()) blockers.push("A controlled delivery-economics evidence reference is required.");
   if (!(["accepted", "accepted-with-actions"] as const).includes(pilot.acceptanceStatus as "accepted" | "accepted-with-actions")) blockers.push("Record client acceptance or acceptance with actions.");
   if (acceptedAt === null) blockers.push("Record a valid client-acceptance timestamp.");
   if (!pilot.acceptanceReference.trim()) blockers.push("A controlled client-acceptance reference is required.");
@@ -276,6 +319,7 @@ export function assessPaidPilotEvidence(
     blockers,
     deliveryCalendarDays,
     deliveryEffortHours: pilot.deliveryEffortHours,
+    grossMarginPercent: calculateGrossMarginPercent(pilot.contractValueUsd, pilot.directDeliveryCostUsd),
   };
 }
 

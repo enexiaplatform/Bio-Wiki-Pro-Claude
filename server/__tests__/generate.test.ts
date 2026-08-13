@@ -27,7 +27,7 @@ describe("Quality Lab controlled delivery files", () => {
     const workbook = XLSX.read(qualityLabDeliveryWorkbook(reviewedSnapshot()), { type: "buffer", cellFormula: true });
     expect(workbook.SheetNames).toEqual([
       "Control Summary", "Demand Capacity", "Method Portfolio", "Equipment URS", "Consumables", "Open Inputs", "Action Register",
-      "Evidence Register", "Rule Trace", "Decision Lineage", "Readiness", "Review Checklist", "Decisions Corrections", "Calibration",
+      "Evidence Register", "Rule Trace", "Model Controls", "Model Glossary", "Decision Lineage", "Readiness", "Review Checklist", "Decisions Corrections", "Calibration",
     ]);
     const summaryRows = XLSX.utils.sheet_to_json<unknown[]>(workbook.Sheets["Control Summary"], { header: 1 });
     const summaryValue = (label: string) => summaryRows.find((row) => row[0] === label)?.[1];
@@ -37,9 +37,13 @@ describe("Quality Lab controlled delivery files", () => {
     expect(summaryRows.flat()).toContain("PAID PILOT EVIDENCE");
     expect(summaryValue("Primary decision")).toBe(defaultQualityLabInput.primaryDecision);
     expect(summaryValue("Decision owner")).toBe(defaultQualityLabInput.decisionOwnerRole);
+    expect(summaryValue("Contract value USD")).toBe("");
+    expect(summaryValue("Gross margin percent")).toBe("");
     expect(XLSX.utils.sheet_to_json(workbook.Sheets["Equipment URS"], { header: 1 })).toHaveLength(reviewedSnapshot().blueprint.equipment.length + 1);
     expect(XLSX.utils.sheet_to_json(workbook.Sheets["Action Register"], { header: 1 })).toHaveLength(reviewedSnapshot().blueprint.unresolvedInputs.length + 1);
     expect(XLSX.utils.sheet_to_json(workbook.Sheets["Decision Lineage"], { header: 1 })).toHaveLength(reviewedSnapshot().blueprint.decisionLineage.length + 1);
+    expect(XLSX.utils.sheet_to_json(workbook.Sheets["Model Controls"], { header: 1 })).toHaveLength(reviewedSnapshot().blueprint.modelControls.length + 1);
+    expect(XLSX.utils.sheet_to_json(workbook.Sheets["Model Glossary"], { header: 1 }).flat()).toContain("quality-lab-model-controls/v1");
     expect(XLSX.utils.sheet_to_json(workbook.Sheets["Readiness"], { header: 1 }).flat()).toContain("Decision readiness");
   });
 

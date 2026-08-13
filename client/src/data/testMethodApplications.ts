@@ -26,7 +26,7 @@ const commonExit = {
 
 export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
   {
-    id: "water-microbiology", sequence: 1, title: "Pharmaceutical water microbiology", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "workflow-only",
+    id: "water-microbiology", sequence: 1, title: "Pharmaceutical water microbiology", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "executable-concept",
     decision: "Determine whether a water system remains in microbial control and whether sampled water is fit for its intended use under the site's approved program.",
     boundary: "Atlas structures monitoring and laboratory capability. It does not set universal microbial specifications, approve sampling representativeness or replace the site water-system control strategy.",
     guideHref: "/blog/pharmaceutical-water-microbiology-application-pack",
@@ -34,21 +34,21 @@ export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
     dimensions: [
       { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Process-control versus QC/fitness-for-use purpose is explicitly separated.", exitEvidence: commonExit.intendedUse },
       { id: "matrix", label: "Sampling & matrix", status: "partial", currentBasis: "Point/frequency demand exists; true point-of-use representativeness, flush, container and hold time remain site evidence.", exitEvidence: commonExit.matrix },
-      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Filtration/plating capability is modeled broadly; sample volume, medium, temperature and incubation are not frozen.", exitEvidence: commonExit.method },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "An application-level filtration/plating concept node now exposes sample, container, membrane, medium, control and resource dependencies; site parameters are not frozen.", exitEvidence: commonExit.method },
       { id: "decision", label: "Result decision", status: "partial", currentBasis: "Trending and excursion logic exists; no universal limit is inferred.", exitEvidence: commonExit.decision },
-      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Workflow hours, plate-days, media and filtration demand are class-level allowances.", exitEvidence: commonExit.resources },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Application-level BOM and incubator/BSC/autoclave demand are compiled from point-round demand; observed route, filtration and exception data remain required.", exitEvidence: commonExit.resources },
       { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "No paid/site-calibrated application case has been approved as an Atlas benchmark.", exitEvidence: commonExit.lifecycle },
     ],
   },
   {
-    id: "growth-promotion-media-qc", sequence: 2, title: "Growth promotion and media QC", domain: "Non-sterile microbiology", stage: "application-development", methodGraphStatus: "workflow-only",
+    id: "growth-promotion-media-qc", sequence: 2, title: "Growth promotion and media QC", domain: "Non-sterile microbiology", stage: "application-development", methodGraphStatus: "executable-concept",
     decision: "Establish whether each prepared or purchased media lot is suitable for its intended recovery/selectivity role before use.", boundary: "Organism panels, inoculum targets, acceptance rules and reduced-testing strategies remain method- and site-controlled.", guideHref: "/blog/growth-promotion-media-qc-application-pack", evidenceHrefs: ["/blog/growth-promotion-testing-what-good-looks-like", "/library/growth-promotion-testing", "/workflows/culture-media-selection"],
     dimensions: [
       { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Prepared, purchased, method-specific, in-use hold, comparability and failure decisions are separated.", exitEvidence: commonExit.intendedUse },
       { id: "matrix", label: "Media/organism matrix", status: "partial", currentBasis: "The media × method × property × organism contract is defined; controlled site records remain required.", exitEvidence: commonExit.matrix },
-      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Receipt/preparation, challenge culture, growth, inhibition, indication and negative-control branches are structured but not executable nodes.", exitEvidence: commonExit.method },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "A media-lot application node now exposes media, challenge panel, inoculum, controls and resource dependencies; organism-property branches remain site-controlled.", exitEvidence: commonExit.method },
       { id: "decision", label: "Result decision", status: "partial", currentBasis: "Release, restriction, failure and affected-use logic is explicit without inventing site acceptance criteria.", exitEvidence: commonExit.decision },
-      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Lot/preparation cadence, organism-property units, incubation, release and failure demand are defined for case capture.", exitEvidence: commonExit.resources },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Application-level BOM and incubator/BSC/autoclave demand are compiled per media lot; container, organism-property and failure demand require controlled cases.", exitEvidence: commonExit.resources },
       { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "Supplier qualification, skip/reduced testing and failure history are not calibrated.", exitEvidence: commonExit.lifecycle },
     ],
   },
@@ -101,14 +101,14 @@ export const testMethodApplicationPacks: TestMethodApplicationPack[] = [
     ],
   },
   {
-    id: "environmental-monitoring", sequence: 7, title: "Environmental monitoring methods", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "workflow-only",
+    id: "environmental-monitoring", sequence: 7, title: "Environmental monitoring methods", domain: "Water & environmental microbiology", stage: "application-development", methodGraphStatus: "executable-concept",
     decision: "Detect and trend viable contamination signals across defined locations, activities and personnel to support contamination-control decisions.", boundary: "Grades, locations, methods, volumes, frequencies, limits, incubation and excursion actions require the approved site program.", guideHref: "/blog/pharmaceutical-environmental-monitoring-application-pack", evidenceHrefs: ["/blog/water-environmental-monitoring-capability-planning", "/library/environmental-monitoring-basics", "/workflows/environmental-monitoring"],
     dimensions: [
       { id: "intended-use", label: "Intended use & decision", status: "structured", currentBasis: "Program decisions and excursion burden are described.", exitEvidence: commonExit.intendedUse },
       { id: "matrix", label: "Location/activity matrix", status: "partial", currentBasis: "The location × activity × method × decision contract is defined; approved site points and risk rationales remain required.", exitEvidence: commonExit.matrix },
-      { id: "method", label: "Method architecture", status: "partial", currentBasis: "Active air, passive air, contact plate, swab and personnel branches are structured but not executable nodes.", exitEvidence: commonExit.method },
+      { id: "method", label: "Method architecture", status: "partial", currentBasis: "A location-round application node now exposes collection, media, control and dual-condition resource dependencies; the approved method mix remains open.", exitEvidence: commonExit.method },
       { id: "decision", label: "Result decision", status: "partial", currentBasis: "Alert, action, trend, identification and excursion pathways are separated without inferring site limits.", exitEvidence: commonExit.decision },
-      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Route, sampler, media, plate-day, reading, identification and excursion demand are defined for controlled case capture.", exitEvidence: commonExit.resources },
+      { id: "resources", label: "BOM & capacity", status: "partial", currentBasis: "Application-level BOM and incubator/BSC/autoclave demand are compiled from location-round demand; route, sampler, reading, ID and excursion loads remain open.", exitEvidence: commonExit.resources },
       { id: "lifecycle", label: "Lifecycle evidence", status: "evidence-required", currentBasis: "Recovery, incubation and trend performance are not calibrated.", exitEvidence: commonExit.lifecycle },
     ],
   },

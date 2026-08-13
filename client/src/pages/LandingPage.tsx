@@ -252,7 +252,6 @@ export default function LandingPage() {
               alt="Illustrative Atlas Quality Lab Blueprint delivery package with an executive brief, capability and capacity model, cost scenario, and evidence register"
               width="900"
               height="720"
-              fetchPriority="high"
               decoding="async"
               className="mx-auto w-full max-w-[760px] object-contain mix-blend-lighten drop-shadow-[0_28px_50px_rgba(0,0,0,0.34)]"
             />

@@ -142,7 +142,8 @@ function ExecutiveBriefPrint({ project }: { project: QualityLabProject }) {
       <div className="border-b-4 border-teal-600 pb-5">
         <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-700">Atlas Quality Lab Blueprint</p>
         <h1 className="mt-2 text-3xl font-bold">Working Executive Decision Brief</h1>
-        <p className="mt-2 text-sm text-slate-600">{project.name} · {input.companyName || "Site not specified"} · {input.country}</p>
+        <p className="mt-2 text-sm text-slate-600">{project.name} · {input.companyName || "Site not specified"} · {input.country} · input {input.inputRevision}</p>
+        <p className="mt-1 text-xs text-slate-500">Project owner: {input.projectOwnerRole || "open"} · Source owner: {input.sourceOwnerRole || "open"}</p>
         <div className="mt-4 border border-amber-400 bg-amber-50 p-3 text-xs leading-5 text-slate-700"><strong>Working draft · not controlled.</strong> This brief supports discovery and scenario discussion. It is not a validated design, approved specification, regulatory opinion, supplier recommendation or investment approval.</div>
       </div>
 
@@ -279,22 +280,25 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
               <p className="text-xl font-bold text-teal-200 print:text-slate-950">{current.totalTeamFte}</p><p className="text-[11px] text-slate-400 print:text-slate-600">modeled team FTE</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
-              <p className="text-xl font-bold text-teal-200 print:text-slate-950">{current.estimatedAreaSqm} m²</p><p className="text-[11px] text-slate-400 print:text-slate-600">concept allowance</p>
+            <div className="rounded-xl border border-red-300/15 bg-red-300/[0.04] p-3 print:border-slate-300 print:bg-white">
+              <p className="text-xl font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[11px] text-slate-400 print:text-slate-600">controlled-use blockers</p>
             </div>
             <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3 print:border-slate-300 print:bg-white">
-              <p className="text-xl font-bold text-slate-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high operational risks detected from current inputs</p>
+              <p className="text-xl font-bold text-slate-200 print:text-slate-950">{highRisks}</p><p className="text-[11px] text-slate-400 print:text-slate-600">high operational flags from current inputs</p>
             </div>
           </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5 sm:grid-cols-4 print:border-slate-300">
+          <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5 sm:grid-cols-5 print:border-slate-300">
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-teal-200 print:text-slate-950">{current.estimatedAreaSqm} m²</p><p className="text-[10px] text-slate-500">concept area allowance</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-sky-200 print:text-slate-950">{readiness.modelCompleteness.score}%</p><p className="text-[10px] text-slate-500">model completeness</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-amber-200 print:text-slate-950">{readiness.evidenceReadiness.score}%</p><p className="text-[10px] text-slate-500">evidence readiness</p></div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blueprint.dataQuality.blockingOpenCount}</p><p className="text-[10px] text-slate-500">controlled-use blockers</p></div>
+            <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-lg font-bold text-red-200 print:text-slate-950">{blockingActions.length}</p><p className="text-[10px] text-slate-500">blocking next actions</p></div>
             <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3 print:border-slate-300 print:bg-white"><p className="text-xs font-bold text-teal-200 print:text-slate-950">{readiness.decisionReadiness.label}</p><p className="mt-1 text-[10px] text-slate-500">decision readiness</p></div>
           </div>
         </div>
       </header>
+
+      <button data-print="hide" type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report_mobile_inline", "working_brief_print"); printBlueprint("executive"); }} className="mb-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-xs font-bold text-slate-950 shadow-lg shadow-black/20 md:hidden"><FileText className="h-4 w-4" /> Download decision brief</button>
 
       {input.facilityType !== "nonsterile-pharma" && (
         <section aria-label="Domain Pack availability" className="mb-5 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-5 text-xs leading-6 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700">
@@ -463,14 +467,14 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
             </div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
               {[
-                [number.format(scenario.monthlyTests), "Tests / month"],
-                [number.format(scenario.monthlyHandsOnHours), "Hands-on h / month"],
-                [`${scenario.analystFte} + ${scenario.totalTeamFte - scenario.analystFte}`, "Analysts + review"],
-                [money.format(scenario.capexLowUsd), "CAPEX low"],
-                [money.format(scenario.capexHighUsd), "CAPEX high"],
-                [`${money.format(scenario.annualOpexLowUsd)}–${money.format(scenario.annualOpexHighUsd)}`, "Annual OPEX"],
-              ].map(([value, label]) => (
-                <div key={label}><p className="font-bold text-slate-100 print:text-slate-950">{value}</p><p className="mt-1 text-xs text-slate-500">{label}</p></div>
+                [number.format(scenario.monthlyTests), "Tests / month", blueprint.methodRequirements.length > 0 ? "mixed method + application concept" : "aggregate concept"],
+                [number.format(scenario.monthlyHandsOnHours), "Hands-on h / month", "uncalibrated range model"],
+                [`${scenario.analystFte} + ${scenario.totalTeamFte - scenario.analystFte}`, "Analysts + review", "aggregate concept"],
+                [money.format(scenario.capexLowUsd), "CAPEX low", "concept cost range"],
+                [money.format(scenario.capexHighUsd), "CAPEX high", "concept cost range"],
+                [`${money.format(scenario.annualOpexLowUsd)}–${money.format(scenario.annualOpexHighUsd)}`, "Annual OPEX", "concept cost range"],
+              ].map(([value, label, maturity]) => (
+                <div key={label}><p className="font-bold text-slate-100 print:text-slate-950">{value}</p><p className="mt-1 text-xs text-slate-500">{label}</p><p className="mt-1 text-[9px] font-semibold uppercase tracking-wide text-amber-200/70 print:text-slate-500">{maturity}</p></div>
               ))}
             </div>
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/8 pt-3 print:hidden">
@@ -491,11 +495,11 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
               <tbody>
                 {blueprint.workflows.map((row) => (
                   <tr key={row.id} className="border-b border-white/5 print:border-slate-200">
-                    <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{row.label}</p><p className="mt-1 max-w-xl text-[11px] leading-5 text-slate-500">{row.basis}</p></td>
+                    <td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{row.label}</p><div className="mt-1 flex flex-wrap gap-1"><span className="rounded-full border border-sky-300/15 bg-sky-300/[0.04] px-2 py-0.5 text-[9px] font-bold uppercase text-sky-200/80 print:border-slate-300 print:text-slate-700">{row.methodGraphCoverage === "product-node" ? "Product Method Graph linked" : row.methodGraphCoverage === "application-node" ? "Application node linked" : "Aggregate concept only"}</span><span className="rounded-full border border-amber-300/15 bg-amber-300/[0.04] px-2 py-0.5 text-[9px] font-bold uppercase text-amber-200/80 print:border-slate-300 print:text-slate-700">uncalibrated</span></div><p className="mt-1 max-w-xl text-[11px] leading-5 text-slate-500">{row.basis}</p></td>
                     <td className="py-3 pr-4 font-semibold print:text-slate-950">{number.format(row.monthlyUnits)}</td>
-                    <td className="py-3 pr-4 print:text-slate-800">{number.format(row.monthlyHandsOnHours)}</td>
-                    <td className="py-3 pr-4 print:text-slate-800">{number.format(row.monthlyPlateDays)}</td>
-                    <td className="py-3 pr-4 print:text-slate-800">{number.format(row.monthlyMediaLiters)}</td>
+                    <td className="py-3 pr-4 print:text-slate-800"><span className="font-semibold">{number.format(row.monthlyHandsOnHours)}</span><span className="mt-1 block text-[10px] text-slate-500">{number.format(row.monthlyHandsOnHoursRange.low)}–{number.format(row.monthlyHandsOnHoursRange.high)}</span></td>
+                    <td className="py-3 pr-4 print:text-slate-800"><span className="font-semibold">{number.format(row.monthlyPlateDays)}</span><span className="mt-1 block text-[10px] text-slate-500">{number.format(row.monthlyPlateDaysRange.low)}–{number.format(row.monthlyPlateDaysRange.high)}</span></td>
+                    <td className="py-3 pr-4 print:text-slate-800"><span className="font-semibold">{number.format(row.monthlyMediaLiters)}</span><span className="mt-1 block text-[10px] text-slate-500">{number.format(row.monthlyMediaLitersRange.low)}–{number.format(row.monthlyMediaLitersRange.high)}</span></td>
                     <td className="py-3"><span className="rounded-full border border-white/10 px-2 py-1 text-[10px] font-bold uppercase text-slate-300 print:border-slate-300 print:text-slate-700">{row.criticality}</span></td>
                   </tr>
                 ))}
@@ -703,6 +707,20 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
           </Section>
         </div>
 
+        <Section icon={Info} eyebrow="Model control ledger" title="Glossary, coefficient ownership and calibration plan" collapsible defaultOpen={false} collapsedSummary={`${blueprint.modelGlossary.length} defined terms · ${blueprint.modelControls.length} controlled model parameters · no concept range is a confidence interval.`}>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {blueprint.modelGlossary.map((item) => <article key={item.id} className="rounded-xl border border-white/8 bg-slate-950/30 p-4 print:border-slate-300 print:bg-white"><h3 className="text-sm font-bold print:text-slate-950">{item.term}</h3><p className="mt-2 text-xs leading-5 text-slate-400 print:text-slate-700">{item.definition}</p><p className="mt-2 text-[10px] leading-5 text-amber-200/75 print:text-slate-600"><strong>Boundary:</strong> {item.decisionBoundary}</p></article>)}
+          </div>
+          <div className="mt-5 overflow-x-auto rounded-xl border border-white/8 print:border-slate-300">
+            <table className="w-full min-w-[980px] text-left text-xs">
+              <caption className="sr-only">Versioned model coefficient controls with owners, units, stress ranges and calibration plans</caption>
+              <thead className="bg-slate-950/60 text-slate-300 print:bg-slate-100 print:text-slate-800"><tr><th scope="col" className="px-3 py-3">Parameter</th><th scope="col" className="px-3 py-3">Owner</th><th scope="col" className="px-3 py-3">Base and unit</th><th scope="col" className="px-3 py-3">Stress range</th><th scope="col" className="px-3 py-3">Maturity</th><th scope="col" className="px-3 py-3">Calibration plan</th></tr></thead>
+              <tbody className="divide-y divide-white/8 print:divide-slate-200">{blueprint.modelControls.map((control) => <tr key={control.id} className="align-top"><th scope="row" className="px-3 py-3 font-semibold text-slate-200 print:text-slate-950">{control.label}<span className="mt-1 block font-mono text-[9px] font-normal text-slate-600">{control.id}</span></th><td className="px-3 py-3 text-slate-400 print:text-slate-700">{control.ownerRole}</td><td className="px-3 py-3 text-slate-300 print:text-slate-800">{number.format(control.baseValue)}<span className="mt-1 block text-[10px] text-slate-500">{control.unit}</span></td><td className="px-3 py-3 text-violet-200 print:text-slate-800">{number.format(control.stressRange.low)}–{number.format(control.stressRange.high)}<span className="mt-1 block text-[9px] uppercase text-slate-600">not probabilistic</span></td><td className="px-3 py-3"><span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2 py-1 text-[9px] font-bold uppercase text-amber-200 print:border-slate-300 print:bg-white print:text-slate-700">{control.maturity.replaceAll("-", " ")}</span></td><td className="px-3 py-3 leading-5 text-slate-400 print:text-slate-700">{control.calibrationPlan}</td></tr>)}</tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-[10px] leading-5 text-slate-500">Versions: {blueprint.modelGlossaryVersion} · {blueprint.modelControlVersion}. Stress ranges expose sensitivity only; they are not validated operating ranges or statistical confidence intervals.</p>
+        </Section>
+
         <Section icon={Info} eyebrow="Assumption ledger" title="What this model believes" collapsible defaultOpen={false}>
           <div className="grid gap-3 md:grid-cols-2">
             {blueprint.assumptions.map((assumption) => (
@@ -785,7 +803,6 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
       <footer className="mt-5 rounded-2xl border border-amber-300/20 bg-amber-300/5 p-5 text-xs leading-6 text-slate-400 print:border-slate-300 print:bg-white print:text-slate-700">
         <div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-300 print:text-slate-700" /><p><strong className="text-slate-200 print:text-slate-950">Concept-use notice.</strong> This blueprint is a planning aid, not a validated design, regulatory opinion, supplier quote, approved specification or substitute for qualified QC, QA and engineering review. Reconcile all outputs against current registered specifications, pharmacopeial requirements, site procedures, methods, utilities, local regulations and vendor data before use.</p></div>
       </footer>
-      <button data-print="hide" type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report_mobile_sticky", "working_brief_print"); printBlueprint("executive"); }} className="fixed bottom-20 right-4 z-40 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-xs font-bold text-slate-950 shadow-2xl shadow-black/40 md:hidden"><FileText className="h-4 w-4" /> Download decision brief</button>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import {
   getContentQuality,
 } from "./content-quality-registry.js";
 import { legacyContentQuality, passesQualityGate, totalQualityScore } from "./content-quality.js";
+import { QUALITY_LAB_TRUST_CORRIDOR } from "./quality-lab-trust-corridor.js";
 import { ATLAS_PRO_WORKFLOWS } from "./atlas-pro-workflows.js";
 
 describe("Content Quality Contract v2", () => {
@@ -14,6 +15,17 @@ describe("Content Quality Contract v2", () => {
     expect(quality.reviewStatus).toBe("under-review");
     expect(quality.promoted).toBe(false);
     expect(quality.score.criticalFails.length).toBeGreaterThan(0);
+  });
+
+  it("keeps the bounded Quality Lab trust corridor registered, sourced and unpromoted until review", () => {
+    expect(QUALITY_LAB_TRUST_CORRIDOR).toHaveLength(20);
+    for (const item of QUALITY_LAB_TRUST_CORRIDOR) {
+      const quality = CONTENT_QUALITY_REGISTRY[item.id];
+      expect(quality, item.id).toBeDefined();
+      expect(quality.contentVersion, item.id).not.toBe("legacy/v1");
+      expect(quality.sourceIds.length, item.id).toBeGreaterThan(0);
+      if (quality.reviewStatus === "under-review") expect(quality.promoted, item.id).toBe(false);
+    }
   });
 
   it("resolves all registered source IDs", () => {

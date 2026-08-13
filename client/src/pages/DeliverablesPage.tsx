@@ -89,7 +89,7 @@ export default function DeliverablesPage() {
             </div>
           </div>
           <div className="rounded-[1.75rem] border border-white/10 bg-[#0a1d32] p-4 shadow-2xl shadow-black/20 sm:p-6">
-            <img src="/images/blueprint/quality-lab-blueprint-deliverables.webp" alt="Illustrative Quality Lab Blueprint package showing an executive brief, capability model, cost scenario, and evidence register" width="900" height="720" fetchPriority="high" className="mx-auto w-full object-contain" />
+            <img src="/images/blueprint/quality-lab-blueprint-deliverables.webp" alt="Illustrative Quality Lab Blueprint package showing an executive brief, capability model, cost scenario, and evidence register" width="900" height="720" className="mx-auto w-full object-contain" />
             <p className="mt-3 text-center text-[10px] italic tracking-wide text-slate-500">Illustrative concept output · final scope and deliverables are agreed before kickoff</p>
           </div>
         </div>

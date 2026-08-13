@@ -192,7 +192,7 @@ export default function QualityLabLandingPage() {
               </Link>
             </motion.div>
             <motion.div variants={fade} initial="hidden" animate="show" custom={4} className="mt-8 grid max-w-2xl gap-3 text-sm text-slate-300 sm:grid-cols-3">
-              {["Vendor-neutral", "Scenario-based", "SME review-ready"].map((item) => (
+              {["Vendor-neutral", "Scenario-based", "Structured for SME review"].map((item) => (
                 <div key={item} className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-teal-300" /> {item}
                 </div>

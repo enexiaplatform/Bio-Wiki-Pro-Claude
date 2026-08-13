@@ -781,8 +781,30 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /See the model before reading the detail/i })).toBeVisible();
     await expect(page.getByTestId("blueprint-scenario-chart")).toBeVisible();
     await expect(page.getByTestId("blueprint-capacity-chart")).toBeVisible();
+    await expect(page.getByTestId("blueprint-compiler-chain-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-method-lineage-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-workflow-uncertainty-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-evidence-matrix-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-open-input-matrix-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-workload-composition-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-turnaround-timeline-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-method-bom-composition-visual")).toBeVisible();
+    await expect(page.getByTestId("blueprint-capex-range-bridge-visual")).toBeVisible();
     await expect(page.getByTestId("blueprint-zoning-schematic")).toBeVisible();
     await expect(page.getByText(/before a decision-grade 3D model can be generated/i)).toBeVisible();
+    await expect(page.getByRole("img", { name: /percent of modeled routine hands-on hours/i }).first()).toBeVisible();
+    await page.getByRole("button", { name: /Show Glossary, coefficient ownership and calibration plan detail/i }).click();
+    await expect(page.getByRole("table", { name: /Versioned model coefficient controls/i })).toBeVisible();
+    await expect(page.getByText(/quality-lab-model-controls\/v1/i)).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
+    const mobileDecisionBrief = page.getByRole("button", { name: /Download decision brief/i });
+    await mobileDecisionBrief.scrollIntoViewIfNeeded();
+    await expect(mobileDecisionBrief).toBeVisible();
+    expect(await mobileDecisionBrief.evaluate((element) => getComputedStyle(element).position)).not.toBe("fixed");
+    await mobileDecisionBrief.focus();
+    await expect(mobileDecisionBrief).toBeFocused();
+    await page.setViewportSize({ width: 1280, height: 900 });
     await expect(page.getByRole("heading", { name: /Workforce capacity and skill coverage/i })).toBeVisible();
     await page.getByRole("button", { name: /Show Workforce capacity and skill coverage detail/i }).click();
     await expect(page.getByText(/base execution/i).first()).toBeVisible();
@@ -1005,7 +1027,7 @@ test.describe("public smoke", () => {
   test("Atlas Evidence Graph connects domains to Blueprint decisions", async ({ page }) => {
     await page.goto("/quality-lab/evidence");
     await expect(page.getByRole("heading", { name: /Trace the evidence behind the decision/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Non-sterile pharmaceutical microbiology/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Non-sterile pharmaceutical microbiology", exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: /Scope a non-sterile microbiology QC lab/i })).toHaveAttribute("href", "/blog/how-to-scope-nonsterile-microbiology-qc-lab");
     await page.getByRole("button", { name: /Equipment & utilities/i }).click();
     await expect(page.getByText(/What vendor-neutral resources, resilience and qualification basis must exist/i)).toBeVisible();
@@ -1066,6 +1088,9 @@ test.describe("public smoke", () => {
       "atlas-microbiology-benchmarks-v1": "calibrated-benchmark-replacement",
       "usp-61-context": "confirmed-public-edition",
       "usp-62-context": "confirmed-public-edition",
+      "usp-1231-context": "confirmed-public-edition",
+      "usp-1116-context": "confirmed-public-edition",
+      "ph-eur-microbiology-context": "confirmed-public-edition",
       "site-approved-methods": "controlled-site-record",
       "vendor-budget-evidence": "controlled-site-record",
     };
@@ -1218,7 +1243,7 @@ test.describe("public smoke", () => {
     await page.route("**/api/quality-lab/projects", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
     await page.route("**/api/quality-lab/governance/expert-ownership", (route) => route.fulfill({ status: 404, contentType: "application/json", body: JSON.stringify({ message: "not found" }) }));
     await page.route("**/api/quality-lab/governance/source-closures", (route) => {
-      const types: Record<string, string> = { "project-inputs": "controlled-project-revision", "atlas-microbiology-benchmarks-v1": "calibrated-benchmark-replacement", "usp-61-context": "confirmed-public-edition", "usp-62-context": "confirmed-public-edition", "site-approved-methods": "controlled-site-record", "vendor-budget-evidence": "controlled-site-record" };
+      const types: Record<string, string> = { "project-inputs": "controlled-project-revision", "atlas-microbiology-benchmarks-v1": "calibrated-benchmark-replacement", "usp-61-context": "confirmed-public-edition", "usp-62-context": "confirmed-public-edition", "usp-1231-context": "confirmed-public-edition", "usp-1116-context": "confirmed-public-edition", "ph-eur-microbiology-context": "confirmed-public-edition", "site-approved-methods": "controlled-site-record", "vendor-budget-evidence": "controlled-site-record" };
       const closures = Object.entries(types).map(([evidenceId, resolutionType]) => ({ evidenceId, domainPackId: "nonsterile-pharma-microbiology", domainPackVersion: "microbiology-pack/v1.1", resolutionType, sourceVersion: "Controlled source revision 2026-07", sourceLocator: `controlled-reference-${evidenceId}`, scopeSummary: "Controlled scope reviewed for the non-sterile microbiology Domain Pack boundary.", reviewStatus: "accepted-outside-atlas", reviewedByRole: "Microbiology Domain Pack owner", reviewedAt: "2026-07-01T00:00:00.000Z", reviewEvidenceRef: `external-review-${evidenceId}`, limitations: "This working record does not authorize site implementation or external release decisions." }));
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ registerVersion: "source-closure-register/v1", domainPackId: "nonsterile-pharma-microbiology", domainPackVersion: "microbiology-pack/v1.1", updatedAt: "2026-07-14T12:00:00.000Z", closures }) });
     });

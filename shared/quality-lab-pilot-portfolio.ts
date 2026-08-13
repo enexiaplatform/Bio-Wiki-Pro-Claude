@@ -1,5 +1,6 @@
 import {
   assessPaidPilotEvidence,
+  calculateGrossMarginPercent,
   summarizeCalibration,
   type QualityLabEngagementPacket,
 } from "./quality-lab-engagement.js";
@@ -26,12 +27,14 @@ export function assessPaidPilotPortfolio(inputs: PilotPortfolioInput[]) {
       blockers.push("Capture at least one observed estimate-to-actual metric with complete provenance and variance classification.");
     }
     const gate1EvidenceComplete = pilot.eligibility === "eligible-gate-1-pilot-record" && calibration.reviewReady;
-    return { packet, pilot, calibration, gate1EvidenceComplete, blockers };
+    const grossMarginPercent = pilot.grossMarginPercent ?? calculateGrossMarginPercent(packet.pilotControl.contractValueUsd, packet.pilotControl.directDeliveryCostUsd);
+    return { packet, pilot, calibration, grossMarginPercent, gate1EvidenceComplete, blockers };
   });
 
   const complete = records.filter((record) => record.gate1EvidenceComplete);
   const measuredDays = records.flatMap((record) => record.pilot.deliveryCalendarDays === null ? [] : [record.pilot.deliveryCalendarDays]);
   const measuredHours = records.flatMap((record) => record.pilot.deliveryEffortHours === null ? [] : [record.pilot.deliveryEffortHours]);
+  const measuredMargins = records.flatMap((record) => record.grossMarginPercent === null ? [] : [record.grossMarginPercent]);
   const average = (values: number[]) => values.length ? Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10 : null;
   const eligibleCount = complete.length;
   const startedCount = records.filter((record) => record.packet.pilotControl.engagementClass !== "unclassified" || record.packet.pilotControl.commercialStatus !== "not-recorded").length;
@@ -46,6 +49,8 @@ export function assessPaidPilotPortfolio(inputs: PilotPortfolioInput[]) {
     deliveryMeasuredCount: measuredDays.length,
     averageDeliveryCalendarDays: average(measuredDays),
     averageDeliveryEffortHours: average(measuredHours),
+    averageGrossMarginPercent: average(measuredMargins),
+    economicsMeasuredCount: measuredMargins.length,
     totalCorrections: records.reduce((sum, record) => sum + record.packet.corrections.length, 0),
     totalDecisions: records.reduce((sum, record) => sum + record.packet.decisions.length, 0),
     observedCalibrationMetrics: records.reduce((sum, record) => sum + record.calibration.observedCount, 0),
@@ -68,6 +73,8 @@ export function createPaidPilotRegistry(inputs: PilotPortfolioInput[], generated
       deliveryMeasuredCount: portfolio.deliveryMeasuredCount,
       averageDeliveryCalendarDays: portfolio.averageDeliveryCalendarDays,
       averageDeliveryEffortHours: portfolio.averageDeliveryEffortHours,
+      averageGrossMarginPercent: portfolio.averageGrossMarginPercent,
+      economicsMeasuredCount: portfolio.economicsMeasuredCount,
       totalCorrections: portfolio.totalCorrections,
       totalDecisions: portfolio.totalDecisions,
       observedCalibrationMetrics: portfolio.observedCalibrationMetrics,
@@ -82,6 +89,10 @@ export function createPaidPilotRegistry(inputs: PilotPortfolioInput[], generated
       commercialEvidenceReference: record.packet.pilotControl.commercialEvidenceReference,
       deliveryCalendarDays: record.pilot.deliveryCalendarDays,
       deliveryEffortHours: record.pilot.deliveryEffortHours,
+      contractValueUsd: record.packet.pilotControl.contractValueUsd,
+      directDeliveryCostUsd: record.packet.pilotControl.directDeliveryCostUsd,
+      grossMarginPercent: record.grossMarginPercent,
+      economicsEvidenceReference: record.packet.pilotControl.economicsEvidenceReference,
       acceptanceStatus: record.packet.pilotControl.acceptanceStatus,
       acceptanceReference: record.packet.pilotControl.acceptanceReference,
       corrections: record.packet.corrections.length,

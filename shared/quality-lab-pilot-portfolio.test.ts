@@ -9,6 +9,7 @@ function completeRecord(id: string) {
     engagementClass: "blueprint", commercialStatus: "paid", commercialEvidenceReference: `INV-${id}`,
     serviceStartedAt: "2026-07-01T09:00:00.000Z", scopeConfirmedAt: "2026-07-02T09:00:00.000Z",
     firstControlledDeliveryAt: "2026-07-08T09:00:00.000Z", deliveryEffortHours: 24,
+    contractValueUsd: 4000, directDeliveryCostUsd: 2400, economicsEvidenceReference: `FIN-${id}`,
     acceptanceStatus: "accepted", clientAcceptanceAt: "2026-07-10T09:00:00.000Z", acceptanceReference: `MOM-${id}`,
   });
   packet.decisions.push({ id: `dec-${id}`, recordedAt: "2026-07-10T09:00:00.000Z", decision: "Proceed", optionsConsidered: ["Proceed", "Hold"], rationale: "Reviewed basis", owner: "Sponsor", downstreamImpact: "Project plan" });
@@ -28,7 +29,7 @@ describe("Quality Lab paid-pilot portfolio", () => {
 
   it("requires three paid, accepted, calibrated engagement records", () => {
     const portfolio = assessPaidPilotPortfolio([completeRecord("pilot_1"), completeRecord("pilot_2"), completeRecord("pilot_3")]);
-    expect(portfolio).toMatchObject({ status: "evidence-complete", eligibleCount: 3, remainingCount: 0, averageDeliveryCalendarDays: 7, averageDeliveryEffortHours: 24, totalDecisions: 3, observedCalibrationMetrics: 3 });
+    expect(portfolio).toMatchObject({ status: "evidence-complete", eligibleCount: 3, remainingCount: 0, averageDeliveryCalendarDays: 7, averageDeliveryEffortHours: 24, averageGrossMarginPercent: 40, economicsMeasuredCount: 3, totalDecisions: 3, observedCalibrationMetrics: 3 });
     expect(createPaidPilotRegistry([completeRecord("pilot_1")], "2026-07-14T00:00:00.000Z")).toMatchObject({ registryVersion: "quality-lab-paid-pilot-registry/v1", eligibleCount: 1 });
   });
 

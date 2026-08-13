@@ -507,6 +507,9 @@ export default function QualityLabPlannerPage() {
                   <TextField label="Scenario label" value={input.scenarioLabel} onChange={(value) => update("scenarioLabel", value)} placeholder="e.g. Baseline - 1 shift" />
                   <TextField label="Company / site" value={input.companyName} onChange={(value) => update("companyName", value)} placeholder="Optional" />
                   <TextField id="country" label="Facility country" value={input.country} onChange={(value) => update("country", value)} error={fieldErrors.country} />
+                  <TextField label="Project owner role" value={input.projectOwnerRole} onChange={(value) => update("projectOwnerRole", value)} placeholder="e.g. QC Director" />
+                  <TextField label="Input-source owner role" value={input.sourceOwnerRole} onChange={(value) => update("sourceOwnerRole", value)} placeholder="e.g. QC Planning Lead" />
+                  <TextField label="Controlled input revision" value={input.inputRevision} onChange={(value) => update("inputRevision", value)} placeholder="e.g. D0 or FCST-2026-Q3" />
                 </div>
                 <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.045] p-4 md:p-5">
                   <div className="mb-4"><p className="text-sm font-bold text-sky-100">Decision mandate</p><p className="mt-1 text-xs leading-5 text-slate-400">Define the decision the Blueprint must support. This context carries into the executive brief and expert-review handoff.</p></div>
@@ -621,7 +624,7 @@ export default function QualityLabPlannerPage() {
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <NumberField label="Release target" value={input.targetTurnaroundDays} onChange={(value) => update("targetTurnaroundDays", value)} suffix="days" min={1} max={60} hint="Atlas will flag conflicts with conventional incubation." />
-                  <NumberField id="growthRatePercent" label="Growth over horizon" value={input.growthRatePercent} onChange={(value) => update("growthRatePercent", value)} suffix="%" min={-50} max={500} />
+                  <NumberField id="growthRatePercent" label="Growth over planning horizon" value={input.growthRatePercent} onChange={(value) => update("growthRatePercent", value)} suffix="%" min={-50} max={500} hint={`Applied once from current demand to Year ${input.horizonYears}; this is not annual CAGR.`} />
                   <NumberField label="Planning horizon" value={input.horizonYears} onChange={(value) => update("horizonYears", value)} suffix="years" min={1} max={10} />
                   <NumberField label="Working days" value={input.workingDaysPerMonth} onChange={(value) => update("workingDaysPerMonth", value)} suffix="/ month" min={10} max={31} />
                   <NumberField label="Operating shifts" value={input.shifts} onChange={(value) => update("shifts", value)} suffix="shifts" min={1} max={3} />

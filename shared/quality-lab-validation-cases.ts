@@ -1,4 +1,4 @@
-import { summarizeCalibration, type QualityLabEngagementPacket } from "./quality-lab-engagement";
+import { assessCasePublicationPermission, summarizeCalibration, type QualityLabEngagementPacket } from "./quality-lab-engagement";
 import { acceptedCalibrationEvidenceForProject, type QualityLabCalibrationReviewCase } from "./quality-lab-calibration-observation";
 
 export const QUALITY_LAB_VALIDATION_CASE_REGISTRY_VERSION = "quality-lab-validation-case-registry/v2" as const;
@@ -67,7 +67,7 @@ export function assessValidationCase(packet: QualityLabEngagementPacket, accepte
 }
 
 export function assessValidationCaseRegistry(packets: QualityLabEngagementPacket[], calibrationCases: QualityLabCalibrationReviewCase[] = []) {
-  const records = packets.map((packet) => ({ packet, assessment: assessValidationCase(packet, acceptedCalibrationEvidenceForProject(calibrationCases, packet.project.id)) }));
+  const records = packets.map((packet) => ({ packet, assessment: assessValidationCase(packet, acceptedCalibrationEvidenceForProject(calibrationCases, packet.project.id)), publication: assessCasePublicationPermission(packet) }));
   const eligibleRecords = records.filter((record) => record.assessment.eligibility === "eligible-validation-case");
   const caseIds = eligibleRecords.map((record) => record.packet.validationControl.caseId);
   const projectIds = eligibleRecords.map((record) => record.packet.project.id);
@@ -110,7 +110,7 @@ export function createValidationCaseRegistry(packets: QualityLabEngagementPacket
     remainingCount: registry.remainingCount,
     metrics: { observedMetricCount: registry.observedMetricCount, coveredRuleCount: registry.coveredRuleCount },
     portfolioBlockers: registry.portfolioBlockers,
-    cases: registry.records.map(({ packet, assessment }) => ({
+    cases: registry.records.map(({ packet, assessment, publication }) => ({
       caseId: packet.validationControl.caseId,
       project: packet.project,
       sourceVersions: packet.sourceVersions,
@@ -129,6 +129,12 @@ export function createValidationCaseRegistry(packets: QualityLabEngagementPacket
       acceptedByRole: packet.validationControl.acceptedByRole,
       acceptedAt: packet.validationControl.acceptedAt,
       acceptanceRationale: packet.validationControl.acceptanceRationale,
+      publicationPermission: packet.validationControl.publicationPermission,
+      publicationEligibility: publication.eligibility,
+      publicationBlockers: publication.blockers,
+      publicationEvidenceReference: packet.validationControl.publicationEvidenceReference,
+      publicationApprovedByRole: packet.validationControl.publicationApprovedByRole,
+      publicationApprovedAt: packet.validationControl.publicationApprovedAt,
     })),
     controlNotice: registry.controlNotice,
   };

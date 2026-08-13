@@ -232,9 +232,10 @@ function drawCover(doc: Doc, project: QualityLabProject, snapshot: QualityLabRev
     ["Issue date", issueDate],
     ["Compiler", blueprint.engineVersion],
     ["Domain Pack", `${blueprint.domainPack.id}@${blueprint.domainPack.version}`],
+    ["Input revision", `${project.input.inputRevision} · ${project.input.sourceOwnerRole || "source owner open"}`],
   ];
   controlRows.forEach(([left, right], index) => {
-    const y = 432 + index * 20;
+    const y = 432 + index * 17;
     doc.font("Helvetica").fontSize(8).fillColor("#8FA5BA").text(left, 223, y, { width: 86 });
     doc.font("Helvetica-Bold").fillColor("#E8F0F6").text(short(right, 45), 314, y, { width: 203 });
   });

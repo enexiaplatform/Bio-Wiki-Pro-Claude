@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createQualityLabProject, defaultQualityLabInput } from "./quality-lab";
-import { assessCalibrationCandidate, assessPaidPilotEvidence, calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, summarizeCalibration, varianceMagnitude } from "./quality-lab-engagement";
+import { assessCalibrationCandidate, assessCasePublicationPermission, assessPaidPilotEvidence, calculateGrossMarginPercent, calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, summarizeCalibration, varianceMagnitude } from "./quality-lab-engagement";
 
 describe("Quality Lab engagement packet", () => {
   it("creates a validated review checklist and empty learning logs", () => {
@@ -18,6 +18,8 @@ describe("Quality Lab engagement packet", () => {
     expect(packet.decisions).toEqual([]);
     expect(packet.calibration).toMatchObject({ status: "draft", learningDisposition: "hold" });
     expect(packet.pilotControl).toMatchObject({ engagementClass: "unclassified", commercialStatus: "not-recorded", acceptanceStatus: "not-requested" });
+    expect(packet.pilotControl).toMatchObject({ contractValueUsd: null, directDeliveryCostUsd: null, economicsEvidenceReference: "" });
+    expect(packet.validationControl).toMatchObject({ publicationPermission: "not-assessed", publicationEvidenceReference: "" });
     expect(packet.calibration.metricNotes).toHaveLength(5);
     expect(packet.controls).toMatchObject({ expertApprovalInsideAtlas: false, containsContactData: false });
   });
@@ -27,6 +29,13 @@ describe("Quality Lab engagement packet", () => {
     expect(calculateVariancePercent(100, 85)).toBe(-15);
     expect(calculateVariancePercent(0, 0)).toBe(0);
     expect(calculateVariancePercent(0, 5)).toBeNull();
+  });
+
+  it("calculates delivery gross margin only from recorded economics", () => {
+    expect(calculateGrossMarginPercent(10_000, 6_500)).toBe(35);
+    expect(calculateGrossMarginPercent(10_000, 12_000)).toBe(-20);
+    expect(calculateGrossMarginPercent(null, 100)).toBeNull();
+    expect(calculateGrossMarginPercent(0, 0)).toBeNull();
   });
 
   it("keeps legacy packets readable by adding empty paid-pilot controls", () => {
@@ -48,6 +57,9 @@ describe("Quality Lab engagement packet", () => {
       scopeConfirmedAt: "2026-07-02T09:00:00.000Z",
       firstControlledDeliveryAt: "2026-07-08T09:00:00.000Z",
       deliveryEffortHours: 26,
+      contractValueUsd: 5000,
+      directDeliveryCostUsd: 3000,
+      economicsEvidenceReference: "FIN-PROJECT-104",
       acceptanceStatus: "accepted-with-actions",
       clientAcceptanceAt: "2026-07-10T09:00:00.000Z",
       acceptanceReference: "CLIENT-MOM-2026-07-10",
@@ -56,7 +68,25 @@ describe("Quality Lab engagement packet", () => {
 
     packet.deliveryControl.recordedStatus = "recorded-external-release";
     packet.decisions.push({ id: "dec_1", recordedAt: "2026-07-10T09:00:00.000Z", decision: "Use phased incubator procurement", optionsConsidered: ["Buy all now", "Phase procurement"], rationale: "Demand ramp", owner: "Project sponsor", downstreamImpact: "Procurement plan" });
-    expect(assessPaidPilotEvidence(packet, { status: "recorded-external-release", blockers: [] })).toMatchObject({ eligibility: "eligible-gate-1-pilot-record", blockers: [], deliveryCalendarDays: 7, deliveryEffortHours: 26 });
+    expect(assessPaidPilotEvidence(packet, { status: "recorded-external-release", blockers: [] })).toMatchObject({ eligibility: "eligible-gate-1-pilot-record", blockers: [], deliveryCalendarDays: 7, deliveryEffortHours: 26, grossMarginPercent: 40 });
+  });
+
+  it("keeps internal learning permission separate from explicit case publication permission", () => {
+    const packet = createQualityLabEngagementPacket(createQualityLabProject(defaultQualityLabInput, "qlp_publication"));
+    packet.validationControl.learningUsePermission = "internal-anonymized-learning";
+    expect(assessCasePublicationPermission(packet).eligibility).toBe("not-authorized");
+
+    Object.assign(packet.validationControl, {
+      status: "accepted",
+      confidentialityClass: "internal-anonymized",
+      publicationPermission: "anonymized-public",
+      publicationEvidenceReference: "CLIENT-PERMISSION-017",
+      publicationApprovedByRole: "Client sponsor",
+      publicationApprovedAt: "2026-07-15T00:00:00.000Z",
+    });
+    expect(assessCasePublicationPermission(packet)).toMatchObject({ eligibility: "eligible-for-publication-review", blockers: [] });
+    packet.validationControl.publicationPermission = "attributed-public";
+    expect(assessCasePublicationPermission(packet).blockers).toContain("An attributed public case requires a shareable confidentiality classification.");
   });
 
   it("keeps legacy v1 packets readable by adding an empty calibration record", () => {

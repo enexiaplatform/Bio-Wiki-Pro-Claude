@@ -29,6 +29,7 @@ import {
 } from "./quality-lab-microbiology-pack.js";
 import {
   compileNonSterileMethodGraph,
+  compileNonSterileSupportMethodGraph,
   productProfileSchema,
   methodRequirementSchema,
   methodBomItemSchema,
@@ -39,6 +40,14 @@ import { reconcileQualityLabActionPlan, type QualityLabActionPlan } from "./qual
 import { reconcileQualityLabDecisionRegister, type QualityLabDecisionRegister } from "./quality-lab-decisions.js";
 import type { QualityLabEvidenceRegister } from "./quality-lab-evidence.js";
 import type { QualityLabFrozenRevision } from "./quality-lab-revisions.js";
+import {
+  QUALITY_LAB_MODEL_CONTROL_VERSION,
+  QUALITY_LAB_MODEL_GLOSSARY,
+  QUALITY_LAB_MODEL_GLOSSARY_VERSION,
+  createQualityLabModelControls,
+  qualityLabModelControlSchema,
+  qualityLabModelGlossaryTermSchema,
+} from "./quality-lab-model-glossary.js";
 
 export * from "./quality-lab-contract.js";
 export * from "./quality-lab-microbiology-pack.js";
@@ -46,6 +55,7 @@ export * from "./quality-lab-method-graph.js";
 export * from "./quality-lab-actions.js";
 export * from "./quality-lab-decisions.js";
 export * from "./quality-lab-evidence.js";
+export * from "./quality-lab-model-glossary.js";
 
 export const QUALITY_LAB_ENGINE_VERSION = `${QUALITY_LAB_COMPILER_CORE_VERSION}+${MICROBIOLOGY_DOMAIN_PACK.version}`;
 
@@ -80,6 +90,9 @@ export const qualityLabInputSchema = z.object({
   decisionOwnerRole: z.enum(decisionOwnerRoleValues).default("cross-functional"),
   decisionWindow: z.enum(decisionWindowValues).default("not-set"),
   companyName: z.string().trim().max(120).default(""),
+  projectOwnerRole: z.string().trim().max(160).default(""),
+  sourceOwnerRole: z.string().trim().max(160).default(""),
+  inputRevision: z.string().trim().min(1).max(40).default("D0"),
   country: z.string().trim().min(2).max(80),
   facilityType: z.enum(facilityTypeValues),
   markets: z.array(z.enum(marketValues)).min(1),
@@ -142,6 +155,14 @@ export interface WorkflowDemand {
   confidence: "high" | "medium" | "indicative";
   evidenceIds: string[];
   basis: string;
+  modelBasis: "point-estimate-with-range";
+  methodGraphCoverage: "product-node" | "application-node" | "none";
+  calibrationStatus: "uncalibrated-concept";
+  uncertaintyPercent: number;
+  monthlyHandsOnHoursRange: { low: number; high: number };
+  monthlyPlateDaysRange: { low: number; high: number };
+  monthlyMediaLitersRange: { low: number; high: number };
+  rangeBasis: string;
 }
 
 export interface EquipmentRecommendation {
@@ -293,6 +314,14 @@ export interface MethodCapacitySummary {
 
 const workflowDemandSchema = z.object({
   id: z.string(), ruleId: z.string(), label: z.string(), monthlyUnits: z.number(), monthlyHandsOnHours: z.number(), monthlyPlateDays: z.number(), monthlyMediaLiters: z.number(), turnaroundDays: z.number(), criticality: z.enum(["routine", "important", "critical"]), confidence: z.enum(["high", "medium", "indicative"]), evidenceIds: z.array(z.string()), basis: z.string(),
+  modelBasis: z.literal("point-estimate-with-range").default("point-estimate-with-range"),
+  methodGraphCoverage: z.enum(["product-node", "application-node", "none"]).default("none"),
+  calibrationStatus: z.literal("uncalibrated-concept").default("uncalibrated-concept"),
+  uncertaintyPercent: z.number().min(0).max(100).default(0),
+  monthlyHandsOnHoursRange: z.object({ low: z.number(), high: z.number() }).default({ low: 0, high: 0 }),
+  monthlyPlateDaysRange: z.object({ low: z.number(), high: z.number() }).default({ low: 0, high: 0 }),
+  monthlyMediaLitersRange: z.object({ low: z.number(), high: z.number() }).default({ low: 0, high: 0 }),
+  rangeBasis: z.string().default("Legacy workflow record without an explicit uncertainty range."),
 });
 const equipmentRecommendationSchema = z.object({
   id: z.string(), name: z.string(), category: z.string(), quantityNow: z.number(), quantityFuture: z.number(), unitCapexLowUsd: z.number(), unitCapexHighUsd: z.number(), confidence: z.enum(["high", "medium", "indicative"]), rationale: z.string(), specification: z.string(), methodRequirementIds: z.array(z.string()).default([]), methodLoadBasis: z.array(z.string()).default([]), evidenceIds: z.array(z.string()).default([]),
@@ -337,6 +366,10 @@ export const qualityLabBlueprintSchema = z.object({
   spaces: z.array(spaceRecommendationSchema),
   risks: z.array(blueprintRiskSchema),
   assumptions: z.array(blueprintAssumptionSchema),
+  modelGlossaryVersion: z.literal(QUALITY_LAB_MODEL_GLOSSARY_VERSION).default(QUALITY_LAB_MODEL_GLOSSARY_VERSION),
+  modelControlVersion: z.literal(QUALITY_LAB_MODEL_CONTROL_VERSION).default(QUALITY_LAB_MODEL_CONTROL_VERSION),
+  modelGlossary: z.array(qualityLabModelGlossaryTermSchema).default([]),
+  modelControls: z.array(qualityLabModelControlSchema).default([]),
   recommendations: z.array(blueprintRecommendationSchema),
   procurementSequence: z.array(z.object({ phase: z.string(), timing: z.string(), items: z.array(z.string()) })),
   current: blueprintScenarioSchema,
@@ -379,6 +412,9 @@ export const defaultQualityLabInput: QualityLabInput = {
   decisionOwnerRole: "cross-functional",
   decisionWindow: "3-6-months",
   companyName: "",
+  projectOwnerRole: "",
+  sourceOwnerRole: "",
+  inputRevision: "D0",
   country: "Vietnam",
   facilityType: "nonsterile-pharma",
   markets: ["vietnam"],
@@ -436,6 +472,9 @@ export function createBlankQualityLabInput(): QualityLabInput {
     decisionOwnerRole: "cross-functional",
     decisionWindow: "not-set",
     companyName: "",
+    projectOwnerRole: "",
+    sourceOwnerRole: "",
+    inputRevision: "D0",
     country: "",
     markets: [],
     finishedProducts: 0,
@@ -476,22 +515,35 @@ function workflow(
   units: number,
   insourceFactor: number,
   growthMultiplier = 1,
+  methodGraphCoverage: WorkflowDemand["methodGraphCoverage"] = "none",
 ): WorkflowDemand {
   const rule = MICROBIOLOGY_WORKFLOW_RULES[key];
   const monthlyUnits = Math.max(0, units * insourceFactor * growthMultiplier);
+  const range = (value: number) => ({ low: round(Math.max(0, value * (1 - rule.uncertaintyPercent / 100))), high: round(value * (1 + rule.uncertaintyPercent / 100)) });
+  const monthlyHandsOnHours = round(monthlyUnits * rule.hours);
+  const monthlyPlateDays = round(monthlyUnits * rule.plateDays);
+  const monthlyMediaLiters = round(monthlyUnits * rule.media);
   return {
     id: rule.id,
     ruleId: rule.ruleId,
     label: rule.label,
     monthlyUnits: round(monthlyUnits),
-    monthlyHandsOnHours: round(monthlyUnits * rule.hours),
-    monthlyPlateDays: round(monthlyUnits * rule.plateDays),
-    monthlyMediaLiters: round(monthlyUnits * rule.media),
+    monthlyHandsOnHours,
+    monthlyPlateDays,
+    monthlyMediaLiters,
     turnaroundDays: rule.tat,
     criticality: rule.criticality,
     confidence: rule.confidence,
     evidenceIds: rule.evidenceIds,
-    basis: `${rule.hours} hands-on h/unit; ${rule.plateDays} plate-days/unit; ${rule.media} L media/unit. Validate against site methods.`,
+    basis: `${rule.hours} hands-on h/unit; ${rule.plateDays} plate-days/unit; ${rule.media} L media/unit. Point estimate with ±${rule.uncertaintyPercent}% uncalibrated planning spread.`,
+    modelBasis: "point-estimate-with-range",
+    methodGraphCoverage,
+    calibrationStatus: "uncalibrated-concept",
+    uncertaintyPercent: rule.uncertaintyPercent,
+    monthlyHandsOnHoursRange: range(monthlyHandsOnHours),
+    monthlyPlateDaysRange: range(monthlyPlateDays),
+    monthlyMediaLitersRange: range(monthlyMediaLiters),
+    rangeBasis: rule.rangeBasis,
   };
 }
 
@@ -532,7 +584,14 @@ function buildWorkflowDemand(input: QualityLabInput, multiplier = 1, finishedPro
   ];
   return values
     .filter(([, enabled, units]) => enabled && units > 0)
-    .map(([key, , units, workflowInsourceFactor]) => workflow(key, units, workflowInsourceFactor ?? insourceFactor, multiplier));
+    .map(([key, , units, workflowInsourceFactor]) => {
+      const methodGraphCoverage: WorkflowDemand["methodGraphCoverage"] = key === "finishedProducts"
+        ? input.productProfiles.length > 0 ? "product-node" : "none"
+        : key === "rawMaterials" || key === "water" || key === "environmentalMonitoring" || key === "growthPromotion"
+          ? "application-node"
+          : "none";
+      return workflow(key, units, workflowInsourceFactor ?? insourceFactor, multiplier, methodGraphCoverage);
+    });
 }
 
 function sum<T>(items: T[], get: (item: T) => number): number {
@@ -547,7 +606,7 @@ function buildEquipment(
   finishedProductDemand?: FinishedProductDemandReconciliation,
 ): EquipmentRecommendation[] {
   const uptime = Math.max(0.5, 1 - input.equipmentDowntimePercent / 100);
-  const workingHoursPerMonth = input.workingDaysPerMonth * input.shifts * 6 * 0.75 * uptime;
+  const workingHoursPerMonth = input.workingDaysPerMonth * input.shifts * input.productiveHoursPerShift * 0.75 * uptime;
   const units = (id: string, rows = now) => rows.find((row) => row.id === id)?.monthlyUnits ?? 0;
   const futureUnits = (id: string) => units(id, future);
   const plateDaysNow = sum(now, (row) => row.monthlyPlateDays);
@@ -592,7 +651,7 @@ function buildEquipment(
     id: "bsc", name: "Class II biological safety cabinet", category: "Aseptic handling",
     quantityNow: bscQty(manipHoursNow), quantityFuture: bscQty(manipHoursFuture),
     unitCapexLowUsd: 9_000, unitCapexHighUsd: 22_000, confidence: "medium",
-    rationale: "Sized from estimated manipulation hours and shift coverage; dedicated sterility/organism work can change segregation needs.",
+    rationale: "Sized from estimated manipulation hours, user-supplied productive hours, 75% planned cabinet utilization, shift coverage and downtime; dedicated sterility/organism work can change segregation needs.",
     specification: "EN 12469/NSF-style performance, HEPA integrity access, ergonomic working width, qualification support.",
   });
   const manifoldQty = (rows: WorkflowDemand[]) => {
@@ -965,6 +1024,7 @@ function buildUnresolvedInputs(input: QualityLabInput, workflows: WorkflowDemand
     { id: "quality-governance", category: "governance", severity: "blocking", question: "Who owns QC, QA, engineering, EHS and procurement review, and what constitutes approval outside Atlas?", impact: "No Blueprint output can move from concept to controlled use without accountable reviewers and site governance.", resolution: "Name required reviewers, decision rights, document controls and approval records.", relatedRuleIds: ["core.capacity.people", "core.capacity.equipment", "core.space.concept", "core.cost.concept"] },
   ];
   if (!input.companyName.trim()) unresolved.push({ id: "site-identity", category: "governance", severity: "advisory", question: "Which legal entity and site owns this project?", impact: "The model cannot yet be tied to a controlled project record.", resolution: "Add the company and site identifier before expert review.", relatedRuleIds: [] });
+  if (!input.projectOwnerRole.trim() || !input.sourceOwnerRole.trim()) unresolved.push({ id: "project-source-ownership", category: "governance", severity: "important", question: "Who owns the project decision and the controlled input-source revision?", impact: "Inputs can be recalculated without a named accountability path for confirming their source basis.", resolution: "Name the project owner role, source owner role and controlled input revision before qualified review.", relatedRuleIds: [] });
   if (input.finishedProducts > 0 && input.finishedBatchesPerMonth === 0) unresolved.push({ id: "finished-batch-demand", category: "workload", severity: "blocking", question: "What is the monthly finished-product batch and sample demand?", impact: "Finished-product capability is present but no release workload is modeled.", resolution: "Provide current and future monthly batch/sample forecasts by product family.", relatedRuleIds: ["micro.workflow.finished-products"] });
   if (input.rawMaterials > 0 && input.rawMaterialLotsPerMonth === 0) unresolved.push({ id: "raw-material-demand", category: "workload", severity: "blocking", question: "What is the monthly incoming-lot and sample demand?", impact: "Raw-material capability is present but no incoming workload is modeled.", resolution: "Provide current and future incoming-lot/sample forecasts by material family.", relatedRuleIds: ["micro.workflow.raw-materials"] });
   return unresolved;
@@ -1360,7 +1420,29 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
   const finishedProductDemand = buildFinishedProductDemand(input);
   const currentWorkflows = buildWorkflowDemand(input, 1, finishedProductDemand);
   const methodGraph = input.facilityType === "nonsterile-pharma"
-    ? compileNonSterileMethodGraph(input.productProfiles)
+    ? (() => {
+      const productGraph = compileNonSterileMethodGraph(input.productProfiles);
+      const supportGraph = compileNonSterileSupportMethodGraph({
+        rawMaterialLotsPerMonth: input.rawMaterialLotsPerMonth,
+        waterPoints: input.waterPoints,
+        waterRoundsPerWeek: input.waterRoundsPerWeek,
+        emLocations: input.emLocations,
+        emRoundsPerWeek: input.emRoundsPerWeek,
+        mediaLotsPerMonth: input.mediaLotsPerMonth,
+        outsourcePercent: input.outsourcePercent,
+        scope: {
+          rawMaterials: input.scope.rawMaterials,
+          water: input.scope.water,
+          environmentalMonitoring: input.scope.environmentalMonitoring,
+          growthPromotion: input.scope.growthPromotion,
+        },
+      });
+      return {
+        requirements: [...productGraph.requirements, ...supportGraph.requirements],
+        bom: [...productGraph.bom, ...supportGraph.bom],
+        capacity: [...productGraph.capacity, ...supportGraph.capacity],
+      };
+    })()
     : { requirements: [], bom: [], capacity: [] };
   const futureWorkflows = buildWorkflowDemand(input, growthMultiplier, finishedProductDemand);
   const equipment = buildEquipment(input, currentWorkflows, futureWorkflows, methodGraph.capacity, finishedProductDemand);
@@ -1412,6 +1494,10 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
     spaces: futureSpaces,
     risks: buildRisks(input, current, future),
     assumptions,
+    modelGlossaryVersion: QUALITY_LAB_MODEL_GLOSSARY_VERSION,
+    modelControlVersion: QUALITY_LAB_MODEL_CONTROL_VERSION,
+    modelGlossary: QUALITY_LAB_MODEL_GLOSSARY,
+    modelControls: createQualityLabModelControls(input),
     recommendations,
     procurementSequence: [
       { phase: "1 — Basis of design", timing: "0–4 weeks", items: ["Product/test matrix", "Approved demand forecast", "Insourcing strategy", "Site workflow time study"] },
