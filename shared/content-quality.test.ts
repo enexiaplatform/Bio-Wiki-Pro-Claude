@@ -24,6 +24,11 @@ describe("Content Quality Contract v2", () => {
       expect(quality, item.id).toBeDefined();
       expect(quality.contentVersion, item.id).not.toBe("legacy/v1");
       expect(quality.sourceIds.length, item.id).toBeGreaterThan(0);
+      expect(quality.claimSourceBindings.length, item.id).toBeGreaterThan(0);
+      for (const binding of quality.claimSourceBindings) {
+        expect(binding.status, `${item.id}/${binding.claimId}`).toBe("review-required");
+        expect(binding.sourceIds.every((sourceId) => quality.sourceIds.includes(sourceId)), `${item.id}/${binding.claimId}`).toBe(true);
+      }
       if (quality.reviewStatus === "under-review") expect(quality.promoted, item.id).toBe(false);
     }
   });

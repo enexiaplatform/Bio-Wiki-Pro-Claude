@@ -160,7 +160,8 @@ function ExecutiveBriefPrint({ project }: { project: QualityLabProject }) {
       <section className="mt-6 break-inside-avoid">
         <div className="flex items-end justify-between border-b border-slate-300 pb-2"><h2 className="text-lg font-bold">Scenario basis</h2><p className="text-[10px] text-slate-500">Concept allowances · verification required</p></div>
         <table className="mt-3 w-full border-collapse text-left text-xs">
-          <thead><tr className="bg-slate-100"><th className="border border-slate-300 p-2">Scenario</th><th className="border border-slate-300 p-2">Tests / month</th><th className="border border-slate-300 p-2">Team FTE</th><th className="border border-slate-300 p-2">Area</th><th className="border border-slate-300 p-2">CAPEX allowance</th><th className="border border-slate-300 p-2">Annual OPEX</th></tr></thead>
+          <caption className="sr-only">Current and future Quality Lab scenario basis</caption>
+          <thead><tr className="bg-slate-100"><th scope="col" className="border border-slate-300 p-2">Scenario</th><th scope="col" className="border border-slate-300 p-2">Tests / month</th><th scope="col" className="border border-slate-300 p-2">Team FTE</th><th scope="col" className="border border-slate-300 p-2">Area</th><th scope="col" className="border border-slate-300 p-2">CAPEX allowance</th><th scope="col" className="border border-slate-300 p-2">Annual OPEX</th></tr></thead>
           <tbody>{[blueprint.current, blueprint.future].map((scenario) => <tr key={scenario.label}><td className="border border-slate-300 p-2 font-bold">{scenario.label}<br /><span className="font-normal text-slate-500">{scenario.multiplier}× demand</span></td><td className="border border-slate-300 p-2">{number.format(scenario.monthlyTests)}</td><td className="border border-slate-300 p-2">{scenario.totalTeamFte}</td><td className="border border-slate-300 p-2">{number.format(scenario.estimatedAreaSqm)} m²</td><td className="border border-slate-300 p-2">{money.format(scenario.capexLowUsd)}–{money.format(scenario.capexHighUsd)}</td><td className="border border-slate-300 p-2">{money.format(scenario.annualOpexLowUsd)}–{money.format(scenario.annualOpexHighUsd)}</td></tr>)}</tbody>
         </table>
       </section>
@@ -489,8 +490,9 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
         <Section id="demand-model" icon={FlaskConical} eyebrow="Demand model" title="Testing workload">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-left text-sm">
+              <caption className="sr-only">Testing workload by workflow, demand unit, resource load and criticality</caption>
               <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
-                <tr><th className="pb-3 pr-4">Workflow</th><th className="pb-3 pr-4">Units / month</th><th className="pb-3 pr-4">Hands-on h</th><th className="pb-3 pr-4">Plate-days</th><th className="pb-3 pr-4">Media L</th><th className="pb-3">Criticality</th></tr>
+                <tr><th scope="col" className="pb-3 pr-4">Workflow</th><th scope="col" className="pb-3 pr-4">Units / month</th><th scope="col" className="pb-3 pr-4">Hands-on h</th><th scope="col" className="pb-3 pr-4">Plate-days</th><th scope="col" className="pb-3 pr-4">Media L</th><th scope="col" className="pb-3">Criticality</th></tr>
               </thead>
               <tbody>
                 {blueprint.workflows.map((row) => (
@@ -543,8 +545,9 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
           {blueprint.methodRequirements.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[980px] text-left text-sm">
+                <caption className="sr-only">Product and site-program requirements linked to method architecture and verification boundaries</caption>
                 <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
-                  <tr><th className="pb-3 pr-4">Product / market</th><th className="pb-3 pr-4">Requirement</th><th className="pb-3 pr-4">Method architecture</th><th className="pb-3 pr-4">Requirement / allocated executions</th><th className="pb-3">Verification boundary</th></tr>
+                  <tr><th scope="col" className="pb-3 pr-4">Product / market</th><th scope="col" className="pb-3 pr-4">Requirement</th><th scope="col" className="pb-3 pr-4">Method architecture</th><th scope="col" className="pb-3 pr-4">Requirement / allocated executions</th><th scope="col" className="pb-3">Verification boundary</th></tr>
                 </thead>
                 <tbody>
                   {blueprint.methodRequirements.map((item) => (
@@ -566,8 +569,9 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
           <Section icon={Boxes} eyebrow="Method bill of materials" title="Method-level consumables and controls" collapsible defaultOpen={false}>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[880px] text-left text-sm">
+                <caption className="sr-only">Method bill of materials by application, execution quantity and control condition</caption>
                 <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
-                  <tr><th className="pb-3 pr-4">Product / method</th><th className="pb-3 pr-4">Item</th><th className="pb-3 pr-4">Per execution</th><th className="pb-3 pr-4">Monthly</th><th className="pb-3">Control / condition</th></tr>
+                  <tr><th scope="col" className="pb-3 pr-4">Product / method</th><th scope="col" className="pb-3 pr-4">Item</th><th scope="col" className="pb-3 pr-4">Per execution</th><th scope="col" className="pb-3 pr-4">Monthly</th><th scope="col" className="pb-3">Control / condition</th></tr>
                 </thead>
                 <tbody>
                   {blueprint.methodBom.map((item) => (
@@ -590,8 +594,9 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
             <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400">This checks the in-house product-method slice against the current equipment concept. It deliberately does not present itself as a complete operational simulation.</p>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[880px] text-left text-sm">
+                <caption className="sr-only">Method-derived resource demand, available capacity and planning utilization</caption>
                 <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
-                  <tr><th className="pb-3 pr-4">Resource</th><th className="pb-3 pr-4">Method load / month</th><th className="pb-3 pr-4">Peak-week equivalent</th><th className="pb-3 pr-4">Available capacity</th><th className="pb-3">Planning utilization</th></tr>
+                  <tr><th scope="col" className="pb-3 pr-4">Resource</th><th scope="col" className="pb-3 pr-4">Method load / month</th><th scope="col" className="pb-3 pr-4">Peak-week equivalent</th><th scope="col" className="pb-3 pr-4">Available capacity</th><th scope="col" className="pb-3">Planning utilization</th></tr>
                 </thead>
                 <tbody>
                   {blueprint.methodCapacitySummary.map((item) => (
@@ -612,8 +617,9 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
         <Section id="capability-plan" icon={Boxes} eyebrow="Capability architecture" title="Vendor-neutral equipment plan" collapsible defaultOpen={false} collapsedSummary={`${blueprint.equipment.length} equipment classes · ${money.format(current.capexLowUsd)}–${money.format(current.capexHighUsd)} current CAPEX allowance.`}>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[940px] text-left text-sm">
+              <caption className="sr-only">Vendor-neutral equipment quantities, budget range, maturity and sizing basis</caption>
               <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300">
-                <tr><th className="pb-3 pr-4">Equipment</th><th className="pb-3 pr-4">Now</th><th className="pb-3 pr-4">Future</th><th className="pb-3 pr-4">Unit budget</th><th className="pb-3 pr-4">Confidence</th><th className="pb-3">Basis / specification</th></tr>
+                <tr><th scope="col" className="pb-3 pr-4">Equipment</th><th scope="col" className="pb-3 pr-4">Now</th><th scope="col" className="pb-3 pr-4">Future</th><th scope="col" className="pb-3 pr-4">Unit budget</th><th scope="col" className="pb-3 pr-4">Confidence</th><th scope="col" className="pb-3">Basis / specification</th></tr>
               </thead>
               <tbody>
                 {blueprint.equipment.map((item) => (
@@ -666,7 +672,8 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
             <p className="mb-4 max-w-4xl text-xs leading-5 text-slate-400 print:text-slate-700">Reorder and target-stock values are concept planning quantities—not purchase instructions. Pack size, MOQ, shelf life, qualified storage, receipt release and supplier status remain unresolved.</p>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[900px] text-left text-sm">
-                <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300"><tr><th className="pb-3 pr-4">Item</th><th className="pb-3 pr-4">Net / gross month</th><th className="pb-3 pr-4">Reorder point</th><th className="pb-3 pr-4">Safety stock</th><th className="pb-3 pr-4">Target stock</th><th className="pb-3">Annual spend range</th></tr></thead>
+                <caption className="sr-only">Consumable demand, reorder, safety-stock and annual-spend planning basis</caption>
+                <thead className="border-b border-white/10 text-[10px] uppercase tracking-wider text-slate-500 print:border-slate-300"><tr><th scope="col" className="pb-3 pr-4">Item</th><th scope="col" className="pb-3 pr-4">Net / gross month</th><th scope="col" className="pb-3 pr-4">Reorder point</th><th scope="col" className="pb-3 pr-4">Safety stock</th><th scope="col" className="pb-3 pr-4">Target stock</th><th scope="col" className="pb-3">Annual spend range</th></tr></thead>
                 <tbody>{blueprint.consumableSupply.current.map((item) => <tr key={item.id} className="border-b border-white/5 print:border-slate-200"><td className="py-3 pr-4"><p className="font-semibold print:text-slate-950">{item.name}</p><p className="text-[10px] text-slate-500">{item.unit}</p></td><td className="py-3 pr-4 print:text-slate-800">{number.format(item.netMonthlyDemand)} / <strong>{number.format(item.grossMonthlyDemand)}</strong></td><td className="py-3 pr-4 print:text-slate-800">{number.format(item.reorderPoint)}</td><td className="py-3 pr-4 print:text-slate-800">{number.format(item.safetyStock)}</td><td className="py-3 pr-4 font-bold text-teal-200 print:text-slate-950">{number.format(item.targetStock)}</td><td className="py-3 print:text-slate-800">{money.format(item.annualSpendLowUsd)}–{money.format(item.annualSpendHighUsd)}</td></tr>)}</tbody>
               </table>
             </div>

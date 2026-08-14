@@ -1,33 +1,33 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import type { IconType } from "react-icons";
 import {
-  PiArrowDown,
-  PiArrowLeft,
-  PiArrowRight,
-  PiBookOpenText,
-  PiBooks,
-  PiChartLine,
-  PiCheckCircle,
-  PiCirclesThreePlus,
-  PiClipboardText,
-  PiCube,
-  PiDatabase,
-  PiFactory,
-  PiFlowArrow,
-  PiInfo,
-  PiJar,
-  PiMicroscope,
-  PiPackage,
-  PiSealCheck,
-  PiShieldCheck,
-  PiStack,
-  PiTestTube,
-  PiToolbox,
-  PiWarningCircle,
-  PiWrench,
-} from "react-icons/pi";
+  ArrowDown as PiArrowDown,
+  ArrowLeft as PiArrowLeft,
+  ArrowRight as PiArrowRight,
+  BadgeCheck as PiSealCheck,
+  BookOpen as PiBooks,
+  BookOpenText as PiBookOpenText,
+  Box as PiCube,
+  ChartLine as PiChartLine,
+  CircleAlert as PiWarningCircle,
+  CircleCheck as PiCheckCircle,
+  CircleDotDashed as PiCirclesThreePlus,
+  ClipboardList as PiClipboardText,
+  Cylinder as PiJar,
+  Database as PiDatabase,
+  Factory as PiFactory,
+  Info as PiInfo,
+  Layers3 as PiStack,
+  Microscope as PiMicroscope,
+  Package as PiPackage,
+  PackageOpen as PiToolbox,
+  ShieldCheck as PiShieldCheck,
+  TestTube as PiTestTube,
+  Workflow as PiFlowArrow,
+  Wrench as PiWrench,
+  type LucideIcon,
+} from "lucide-react";
 
 import { EditorialImage } from "@/components/EditorialImage";
 import { JsonLd } from "@/components/JsonLd";
@@ -48,7 +48,7 @@ import { capture } from "@/hooks/use-analytics";
 import { useResourceSelection } from "@/hooks/use-resource-selection";
 import { listContent } from "@/lib/content";
 
-const STAGE_ICONS: IconType[] = [
+const STAGE_ICONS: LucideIcon[] = [
   PiDatabase,
   PiFactory,
   PiStack,
@@ -68,7 +68,7 @@ const BIOPHARMA_STAGE_SUMMARIES = [
   "Batch release, lot tracking, transfer",
 ];
 
-const KIND_META: Record<ConnectedApplicationKind, { label: string; icon: IconType }> = {
+const KIND_META: Record<ConnectedApplicationKind, { label: string; icon: LucideIcon }> = {
   workflow: { label: "Workflow", icon: PiFlowArrow },
   tool: { label: "Interactive tool", icon: PiWrench },
   lesson: { label: "Lesson", icon: PiBookOpenText },

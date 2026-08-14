@@ -1,23 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
-import type { IconType } from "react-icons";
 import {
-  PiArrowRight,
-  PiBooks,
-  PiCheckCircle,
-  PiClipboardText,
-  PiDna,
-  PiFactory,
-  PiFlask,
-  PiFlowArrow,
-  PiMagnifyingGlass,
-  PiMicroscope,
-  PiQuestion,
-  PiShieldCheck,
-  PiStack,
-  PiToolbox,
-  PiWrench,
-} from "react-icons/pi";
+  ArrowRight as PiArrowRight,
+  BookOpen as PiBooks,
+  CircleCheck as PiCheckCircle,
+  CircleHelp as PiQuestion,
+  ClipboardList as PiClipboardText,
+  Dna as PiDna,
+  Factory as PiFactory,
+  FlaskConical as PiFlask,
+  Layers3 as PiStack,
+  Microscope as PiMicroscope,
+  PackageOpen as PiToolbox,
+  Search as PiMagnifyingGlass,
+  ShieldCheck as PiShieldCheck,
+  Workflow as PiFlowArrow,
+  Wrench as PiWrench,
+  type LucideIcon,
+} from "lucide-react";
 
 import {
   getConnectionsForSelection,
@@ -35,7 +35,7 @@ import { capture } from "@/hooks/use-analytics";
 import { useResourceSelection } from "@/hooks/use-resource-selection";
 import { StageCoverageDashboard } from "@/components/StageCoverageDashboard";
 
-const SYSTEM_ICONS: Record<string, IconType> = {
+const SYSTEM_ICONS: Record<string, LucideIcon> = {
   biopharma: PiDna,
   "sterile-product": PiShieldCheck,
   "qc-laboratory": PiMicroscope,
@@ -61,7 +61,7 @@ const PHASE_OPTIONS: Array<{ value: GuidedWorkPhase; label: string; detail: stri
   { value: "release", label: "Release", detail: "Review, disposition, transfer" },
 ];
 
-const OUTCOME_OPTIONS: Array<{ value: GuidedOutcome; label: string; icon: IconType }> = [
+const OUTCOME_OPTIONS: Array<{ value: GuidedOutcome; label: string; icon: LucideIcon }> = [
   { value: "learn", label: "Learn", icon: PiBooks },
   { value: "calculate", label: "Calculate", icon: PiWrench },
   { value: "workflow", label: "Run a workflow", icon: PiFlowArrow },

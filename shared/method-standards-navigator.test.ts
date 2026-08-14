@@ -6,6 +6,8 @@ describe("method and standards navigator", () => {
   it("keeps the public catalog bounded to defined application packs", () => {
     expect(METHOD_NAVIGATOR_RECORDS).toHaveLength(8);
     expect(METHOD_NAVIGATOR_RECORDS.every((record) => record.coverage !== undefined)).toBe(true);
+    expect(METHOD_NAVIGATOR_RECORDS.every((record) => record.controlledRevisionStatus === "not-recorded")).toBe(true);
+    expect(METHOD_NAVIGATOR_RECORDS.every((record) => record.dimensionStatus.structured + record.dimensionStatus.partial + record.dimensionStatus.evidenceRequired === 6)).toBe(true);
   });
 
   it("finds methods through mapped standard identifiers", () => {
@@ -19,6 +21,8 @@ describe("method and standards navigator", () => {
     expect(water.coverage).toBe("structured-concept");
     expect(standardsForMethod(water).map((standard) => standard.id)).toContain("usp-1231");
     expect(water.unresolvedCount).toBeGreaterThan(0);
+    expect(water.methodGraphStatus).toBe("executable-concept");
+    expect(water.dimensionStatus.evidenceRequired).toBeGreaterThan(0);
   });
 
   it("binds every Navigator standard to the canonical evidence catalog", () => {

@@ -449,6 +449,11 @@ describe("content API", () => {
       promoted: false,
     });
     expect(res.body.quality.limitations.length).toBeGreaterThan(0);
+    expect(res.body.quality.claimSourceBindings).toMatchObject([{
+      claimId: "decision-use",
+      status: "review-required",
+      sourceIds: ["EU-GMP-V4", "ICH-Q10", "FDA-DI-2018"],
+    }]);
   });
 
   it("rejects legacy non-English content language requests", async () => {

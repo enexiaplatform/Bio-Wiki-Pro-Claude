@@ -17,15 +17,15 @@ import {
   type WorkflowSystem,
   type WorkflowSystemStage,
 } from "./workflowSystems";
+import {
+  buildResourceContextHref,
+  type ResourceSelection,
+} from "./resourceSelection";
 
 export type { ResourceArea, ResourceCoverageStatus, ResourceKind } from "./resourceCoverage";
+export { buildResourceContextHref, parseResourceSelection, type ResourceSelection } from "./resourceSelection";
 export type GuidedWorkPhase = "prepare" | "execute" | "investigate" | "release";
 export type GuidedOutcome = "learn" | "calculate" | "workflow" | "toolkit" | "verify";
-
-export interface ResourceSelection {
-  systemId?: string;
-  stageId?: string;
-}
 
 export interface ResourceConnection {
   key: string;
@@ -183,27 +183,6 @@ const profileConnections: ResourceConnection[] = stageCoverageProfiles.flatMap((
 });
 
 export const resourceConnections: ResourceConnection[] = [...applicationConnections, ...profileConnections];
-
-export function parseResourceSelection(search: string): ResourceSelection {
-  const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
-  const system = getWorkflowSystem(params.get("system") ?? "");
-  if (!system) return {};
-  const stageId = params.get("stage") ?? undefined;
-  return {
-    systemId: system.id,
-    stageId: stageId && system.stages.some((stage) => stage.id === stageId) ? stageId : undefined,
-  };
-}
-
-export function buildResourceContextHref(path: string, selection: ResourceSelection, source?: string) {
-  const [pathname, existingSearch = ""] = path.split("?");
-  const params = new URLSearchParams(existingSearch);
-  if (selection.systemId) params.set("system", selection.systemId); else params.delete("system");
-  if (selection.systemId && selection.stageId) params.set("stage", selection.stageId); else params.delete("stage");
-  if (source) params.set("source", source);
-  const query = params.toString();
-  return query ? `${pathname}?${query}` : pathname;
-}
 
 export function getConnectionsForSelection(selection: ResourceSelection, area?: ResourceArea) {
   if (!selection.systemId) return [];

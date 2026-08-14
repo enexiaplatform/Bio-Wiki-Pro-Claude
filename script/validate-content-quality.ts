@@ -62,6 +62,11 @@ async function validateRegistry() {
     else {
       if (quality.contentVersion === "legacy/v1") errors.push(`Quality Lab trust corridor: ${item.id} cannot be legacy`);
       if (quality.sourceIds.length === 0) errors.push(`Quality Lab trust corridor: ${item.id} requires named sources`);
+      if (quality.claimSourceBindings.length === 0) errors.push(`Quality Lab trust corridor: ${item.id} requires a bounded claim-to-source binding`);
+      for (const binding of quality.claimSourceBindings) {
+        if (binding.status === "controlled" && quality.reviewStatus !== "sme-reviewed") errors.push(`Quality Lab trust corridor: ${item.id} cannot claim a controlled binding before SME review`);
+        for (const sourceId of binding.sourceIds) if (!quality.sourceIds.includes(sourceId)) errors.push(`Quality Lab trust corridor: ${item.id} binding ${binding.claimId} references undeclared source ${sourceId}`);
+      }
       if (quality.promoted && (!passesQualityGate(quality.score, collection === "blog" ? "public-evidence" : "pro") || quality.reviewStatus === "under-review")) errors.push(`Quality Lab trust corridor: ${item.id} is promoted before its release gate`);
     }
   }
@@ -129,6 +134,7 @@ async function validateRegistry() {
 
   for (const [key, quality] of Object.entries(CONTENT_QUALITY_REGISTRY)) {
     validateSourceIds(key, quality.sourceIds);
+    for (const binding of quality.claimSourceBindings) validateSourceIds(`${key} claim ${binding.claimId}`, binding.sourceIds);
     if (quality.reviewStatus !== "under-review" && (!quality.lastReviewedAt || !quality.reviewDueAt || quality.reviewerRoles.length === 0)) {
       errors.push(`${key}: reviewed content requires review dates and reviewer roles`);
     }

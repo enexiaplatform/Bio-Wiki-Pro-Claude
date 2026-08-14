@@ -28,6 +28,9 @@ export interface MethodNavigatorRecord {
   standardIds: string[];
   keywords: string[];
   unresolvedCount: number;
+  methodGraphStatus: TestMethodApplicationPack["methodGraphStatus"];
+  dimensionStatus: { structured: number; partial: number; evidenceRequired: number };
+  controlledRevisionStatus: "not-recorded";
 }
 
 export const NAVIGATOR_STANDARDS: NavigatorStandard[] = [
@@ -170,6 +173,13 @@ export const METHOD_NAVIGATOR_RECORDS: MethodNavigatorRecord[] = testMethodAppli
   standardIds: STANDARD_LINKS[pack.id] ?? [],
   keywords: [pack.title, pack.domain, pack.decision, pack.boundary, ...(STANDARD_LINKS[pack.id] ?? [])].map((value) => value.toLowerCase()),
   unresolvedCount: pack.dimensions.filter((dimension) => dimension.status !== "structured").length,
+  methodGraphStatus: pack.methodGraphStatus,
+  dimensionStatus: {
+    structured: pack.dimensions.filter((dimension) => dimension.status === "structured").length,
+    partial: pack.dimensions.filter((dimension) => dimension.status === "partial").length,
+    evidenceRequired: pack.dimensions.filter((dimension) => dimension.status === "evidence-required").length,
+  },
+  controlledRevisionStatus: "not-recorded",
 }));
 
 export function searchMethodNavigator(query: string, coverage: NavigatorCoverage | "all" = "all") {

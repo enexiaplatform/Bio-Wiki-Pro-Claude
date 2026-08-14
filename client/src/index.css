@@ -89,6 +89,15 @@
   display: none;
 }
 
+/* Audit-critical technical surfaces use slate-400 as the lowest muted-text
+   contrast on the dark product canvas. Slate-500/600 are retained elsewhere
+   where type is larger or decorative. */
+.quality-blueprint-report .text-slate-500,
+.method-navigator-page .text-slate-500,
+.method-navigator-page .text-slate-600 {
+  color: rgb(148 163 184);
+}
+
 /* ── Print: clean, readable lesson/article output ── */
 @media print {
   header,

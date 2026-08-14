@@ -3,6 +3,7 @@ import type { QualityLabBlueprint } from "@shared/quality-lab";
 import { buildCapacityVisual, buildScenarioComparison, buildZoneLayout } from "@shared/quality-lab-visuals";
 
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+const signedNumber = (value: number) => `${value > 0 ? "+" : ""}${number.format(value)}`;
 const ZONE_WIDTH = 720;
 const ZONE_HEIGHT = 320;
 const zoneColors = ["#99f6e4", "#bae6fd", "#c4b5fd", "#fde68a", "#a7f3d0", "#fecdd3", "#bfdbfe", "#ddd6fe", "#d1d5db"];
@@ -64,14 +65,14 @@ function ScenarioComparison({ blueprint }: { blueprint: QualityLabBlueprint }) {
   const metrics = buildScenarioComparison(blueprint.current, blueprint.future);
   return (
     <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-scenario-chart">
-      <div className="mb-1 flex items-center gap-2"><Layers3 className="h-4 w-4 text-teal-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Scenario movement</h3></div>
-      <p className="mb-5 text-xs leading-5 text-slate-500 print:text-slate-700">Current and future are compared within each metric—never across unlike units.</p>
+      <div className="mb-1 flex items-center gap-2"><Layers3 className="h-4 w-4 text-teal-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Scenario delta bridge</h3></div>
+      <p className="mb-5 text-xs leading-5 text-slate-500 print:text-slate-700">Current → absolute delta → future is shown within each metric. Unlike units are never added into one waterfall.</p>
       <div className="space-y-5">
         {metrics.map((metric) => (
           <div key={metric.key}>
             <div className="mb-2 flex items-end justify-between gap-3">
               <div><p className="text-xs font-bold print:text-slate-950">{metric.label}</p><p className="text-[9px] text-slate-500">{metric.unit}</p></div>
-              <span className="rounded-full border border-teal-300/15 bg-teal-300/[0.06] px-2 py-1 text-[9px] font-bold text-teal-200 print:border-slate-300 print:bg-white print:text-slate-700">+{number.format(metric.changePercent)}%</span>
+              <span className="rounded-full border border-teal-300/15 bg-teal-300/[0.06] px-2 py-1 text-[9px] font-bold text-teal-200 print:border-slate-300 print:bg-white print:text-slate-700">Δ {signedNumber(metric.future - metric.current)} {metric.unit} · {signedNumber(metric.changePercent)}%</span>
             </div>
             <div className="space-y-1.5" role="img" aria-label={`${metric.label}: current ${number.format(metric.current)} ${metric.unit}; future ${number.format(metric.future)} ${metric.unit}`}>
               <div className="grid grid-cols-[52px_1fr_auto] items-center gap-2 text-[10px]"><span className="text-slate-500">Current</span><div className="h-2 rounded-full bg-white/8 print:bg-slate-200"><div className="h-full rounded-full bg-slate-400 print:bg-slate-500" style={{ width: `${metric.currentPlotPercent}%` }} /></div><strong className="min-w-12 text-right text-slate-300 print:text-slate-800">{number.format(metric.current)}</strong></div>
@@ -206,9 +207,9 @@ function WorkloadComposition({ blueprint }: { blueprint: QualityLabBlueprint }) 
 function TurnaroundTimeline({ blueprint }: { blueprint: QualityLabBlueprint }) {
   const maxDays = Math.max(1, ...blueprint.workflows.map((row) => row.turnaroundDays));
   return <div className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white" data-testid="blueprint-turnaround-timeline-visual">
-    <div className="mb-1 flex items-center gap-2"><Clock3 className="h-4 w-4 text-amber-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Nominal workflow turnaround timeline</h3></div>
-    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">Nominal rule duration beside touch time. This does not simulate arrivals, queues, weekends, review or release deadlines.</p>
-    <div className="space-y-3">{blueprint.workflows.map((row) => <div key={row.id}><div className="mb-1 flex items-start justify-between gap-3 text-[10px]"><span className="font-semibold text-slate-300 print:text-slate-900">{row.label}</span><span className="shrink-0 text-slate-500">{number.format(row.monthlyHandsOnHours)} touch h/mo · {row.turnaroundDays} nominal d</span></div><div className="relative h-2 rounded-full bg-white/8 print:bg-slate-200" role="img" aria-label={`${row.label}: ${row.turnaroundDays} nominal turnaround days and ${number.format(row.monthlyHandsOnHours)} modeled monthly hands-on hours`}><div className="h-full rounded-full bg-amber-300/70 print:bg-slate-600" style={{ width: `${row.turnaroundDays / maxDays * 100}%` }} /></div></div>)}</div>
+    <div className="mb-1 flex items-center gap-2"><Clock3 className="h-4 w-4 text-amber-300 print:text-slate-700" /><h3 className="text-sm font-bold print:text-slate-950">Laboratory workflow swimlane and nominal turnaround</h3></div>
+    <p className="mb-4 text-xs leading-5 text-slate-500 print:text-slate-700">The shared stage skeleton preserves physical workflow order while the bar shows only nominal total rule duration. Stage durations, arrivals, queues, weekends, review and release deadlines are not simulated.</p>
+    <div className="space-y-4">{blueprint.workflows.map((row) => <div key={row.id}><div className="mb-1 flex items-start justify-between gap-3 text-[10px]"><span className="font-semibold text-slate-300 print:text-slate-900">{row.label}</span><span className="shrink-0 text-slate-500">{number.format(row.monthlyHandsOnHours)} touch h/mo · {row.turnaroundDays} nominal d</span></div><div className="mb-1 grid grid-cols-4 gap-1 text-center text-[8px] uppercase tracking-wide text-slate-600" aria-hidden="true"><span>Receive</span><span>Prepare / execute</span><span>Run / incubate</span><span>Read / review</span></div><div className="relative h-2 rounded-full bg-white/8 print:bg-slate-200" role="img" aria-label={`${row.label}: receive, prepare or execute, run or incubate, then read or review; ${row.turnaroundDays} nominal turnaround days and ${number.format(row.monthlyHandsOnHours)} modeled monthly hands-on hours`}><div className="h-full rounded-full bg-amber-300/70 print:bg-slate-600" style={{ width: `${row.turnaroundDays / maxDays * 100}%` }} /></div></div>)}</div>
   </div>;
 }
 

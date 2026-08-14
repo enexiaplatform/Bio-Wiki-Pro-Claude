@@ -1,14 +1,14 @@
 import { Link, useLocation } from "wouter";
-import type { IconType } from "react-icons";
 import {
-  PiBookOpenText,
-  PiFlowArrow,
-  PiGraduationCap,
-  PiPulse,
-  PiShieldCheck,
-  PiToolbox,
-  PiWrench,
-} from "react-icons/pi";
+  Activity as PiPulse,
+  BookOpenText as PiBookOpenText,
+  BriefcaseBusiness as PiToolbox,
+  GraduationCap as PiGraduationCap,
+  ShieldCheck as PiShieldCheck,
+  Workflow as PiFlowArrow,
+  Wrench as PiWrench,
+  type LucideIcon,
+} from "lucide-react";
 import { useResourceSelection } from "@/hooks/use-resource-selection";
 
 interface ResourceDestination {
@@ -16,7 +16,7 @@ interface ResourceDestination {
   label: string;
   shortLabel: string;
   description: string;
-  icon: IconType;
+  icon: LucideIcon;
 }
 
 export const RESOURCE_DESTINATIONS: ResourceDestination[] = [

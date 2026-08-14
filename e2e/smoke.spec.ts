@@ -788,6 +788,17 @@ test.describe("public smoke", () => {
     await expect(page.getByTestId("blueprint-open-input-matrix-visual")).toBeVisible();
     await expect(page.getByTestId("blueprint-workload-composition-visual")).toBeVisible();
     await expect(page.getByTestId("blueprint-turnaround-timeline-visual")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Laboratory workflow swimlane and nominal turnaround/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Scenario delta bridge/i })).toBeVisible();
+    const mutedBlueprintText = page.getByText(/Current and future are compared within each metric|Current → absolute delta → future/i).first();
+    const blueprintContrast = await mutedBlueprintText.evaluate((element) => {
+      const channels = getComputedStyle(element).color.match(/\d+(?:\.\d+)?/g)!.slice(0, 3).map(Number);
+      const luminance = (values: number[]) => values.map((value) => value / 255).map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+      const foreground = luminance(channels);
+      const background = luminance([7, 24, 45]);
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+    });
+    expect(blueprintContrast).toBeGreaterThanOrEqual(4.5);
     await expect(page.getByTestId("blueprint-method-bom-composition-visual")).toBeVisible();
     await expect(page.getByTestId("blueprint-capex-range-bridge-visual")).toBeVisible();
     await expect(page.getByTestId("blueprint-zoning-schematic")).toBeVisible();
@@ -796,6 +807,14 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Show Glossary, coefficient ownership and calibration plan detail/i }).click();
     await expect(page.getByRole("table", { name: /Versioned model coefficient controls/i })).toBeVisible();
     await expect(page.getByText(/quality-lab-model-controls\/v1/i)).toBeVisible();
+    const blueprintTables = page.locator("table");
+    expect(await blueprintTables.count()).toBeGreaterThanOrEqual(8);
+    for (let index = 0; index < await blueprintTables.count(); index++) {
+      const table = blueprintTables.nth(index);
+      expect(await table.locator("caption").count(), `Blueprint table ${index + 1} requires an accessible caption`).toBe(1);
+      const columnHeaders = table.locator("thead th");
+      for (let headerIndex = 0; headerIndex < await columnHeaders.count(); headerIndex++) await expect(columnHeaders.nth(headerIndex)).toHaveAttribute("scope", "col");
+    }
     await page.setViewportSize({ width: 390, height: 844 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1)).toBe(false);
     const mobileDecisionBrief = page.getByRole("button", { name: /Download decision brief/i });
@@ -1425,6 +1444,16 @@ test.describe("public smoke", () => {
     }
   });
 
+  test("Quality Lab trust-corridor content exposes a bounded claim-to-source relationship", async ({ page }) => {
+    await page.goto("/blog/how-to-scope-nonsterile-microbiology-qc-lab");
+    const quality = page.getByRole("region", { name: "Content quality status" });
+    await expect(quality).toContainText(/Under review/i);
+    await quality.getByText(/Inspect 1 bounded claim-to-source binding/i).click();
+    await expect(quality).toContainText(/Applies only to the bounded decision use/i);
+    await expect(quality.getByRole("link").first()).toHaveAttribute("href", /^https:\/\//);
+    await expect(quality).toContainText(/review required/i);
+  });
+
   test("workflow atlas lists workflows", async ({ page }) => {
     await page.goto("/workflows");
     await expect(page.getByRole("heading", { name: /Start from the full quality system/i })).toBeVisible();
@@ -1886,8 +1915,25 @@ test.describe("public smoke", () => {
     await page.goto("/methods");
     await expect(page.getByRole("heading", { name: /Find what Atlas covers/i })).toBeVisible();
     await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
+    const coverageMatrix = page.getByRole("table", { name: /Method application coverage matrix/i });
+    await expect(coverageMatrix).toBeVisible();
+    await expect(page.getByText(/0 controlled revisions/i)).toBeVisible();
+    await expect(coverageMatrix).toContainText(/Same application record reused/i);
+    const mutedMatrixText = coverageMatrix.getByText(/Same application record reused/i).first();
+    const matrixContrast = await mutedMatrixText.evaluate((element) => {
+      const channels = getComputedStyle(element).color.match(/\d+(?:\.\d+)?/g)!.slice(0, 3).map(Number);
+      const luminance = (values: number[]) => values.map((value) => value / 255).map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
+      const foreground = luminance(channels);
+      const background = luminance([7, 24, 45]);
+      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+    });
+    expect(matrixContrast).toBeGreaterThanOrEqual(4.5);
+    await expect(page.getByRole("button", { name: "All coverage" })).toHaveAttribute("aria-pressed", "true");
     await page.getByLabel("Search methods and standards").fill("USP-85");
     await expect(page.getByRole("heading", { name: /Bacterial endotoxins/i }).first()).toBeVisible();
+    await expect(coverageMatrix.getByRole("row")).toHaveCount(2);
+    await expect(coverageMatrix).toContainText(/workflow only/i);
+    await expect(coverageMatrix).toContainText(/Not recorded/i);
     await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
     await expect(page.getByRole("heading", { name: "Not yet covered" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Request scoped review/i })).toHaveAttribute("href", /method=impossible-unmapped-method-xyz/);

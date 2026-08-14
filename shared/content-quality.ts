@@ -42,6 +42,16 @@ export const qualityScoreSchema = z.object({
 });
 export type QualityScore = z.infer<typeof qualityScoreSchema>;
 
+export const claimSourceBindingSchema = z.object({
+  claimId: z.string().trim().regex(/^[a-z0-9][a-z0-9-]*$/),
+  claim: z.string().trim().min(12),
+  sourceIds: z.array(z.string().trim().min(1)).min(1),
+  applicability: z.string().trim().min(12),
+  limitation: z.string().trim().min(12),
+  status: z.enum(["orientation-only", "review-required", "controlled"]),
+});
+export type ClaimSourceBinding = z.infer<typeof claimSourceBindingSchema>;
+
 export const contentQualitySchema = z.object({
   contractVersion: z.literal(CONTENT_QUALITY_CONTRACT_VERSION),
   contentVersion: z.string().trim().min(1),
@@ -53,6 +63,7 @@ export const contentQualitySchema = z.object({
   learningObjectives: z.array(z.string().trim().min(8)).min(1),
   decisionUse: z.string().trim().min(12),
   sourceIds: z.array(z.string().trim().min(1)),
+  claimSourceBindings: z.array(claimSourceBindingSchema).default([]),
   limitations: z.array(z.string().trim().min(8)).min(1),
   workedExample: z.string().trim().min(1).nullable(),
   workingAsset: z.string().trim().min(1).nullable(),
@@ -111,6 +122,7 @@ export interface PublicContentQuality {
   reviewDueAt: string | null;
   reviewerRoles: string[];
   sourceCount: number;
+  claimSourceBindings: ClaimSourceBinding[];
   limitations: string[];
   score: number;
   promoted: boolean;
@@ -125,6 +137,7 @@ export function toPublicContentQuality(quality: ContentQuality): PublicContentQu
     reviewDueAt: quality.reviewDueAt,
     reviewerRoles: quality.reviewerRoles,
     sourceCount: quality.sourceIds.length,
+    claimSourceBindings: quality.claimSourceBindings,
     limitations: quality.limitations,
     score: totalQualityScore(quality.score),
     promoted: quality.promoted,
@@ -143,6 +156,7 @@ export function legacyContentQuality(title: string, tier: string): ContentQualit
     learningObjectives: [`Understand the current educational scope of ${title}.`],
     decisionUse: "Orientation only until the content completes the v2 review workflow.",
     sourceIds: [],
+    claimSourceBindings: [],
     limitations: ["Legacy content has not yet completed Content Quality Contract v2 review."],
     workedExample: null,
     workingAsset: null,

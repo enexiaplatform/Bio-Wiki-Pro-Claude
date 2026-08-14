@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { buildResourceContextHref, parseResourceSelection, type ResourceSelection } from "@/data/resourceConnections";
+import { buildResourceContextHref, parseResourceSelection, type ResourceSelection } from "@/data/resourceSelection";
 
 function currentSelection() {
   return typeof window === "undefined" ? {} : parseResourceSelection(window.location.search);

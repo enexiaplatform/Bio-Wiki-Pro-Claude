@@ -15,7 +15,11 @@ The repository implementation following this audit now includes:
 - a canonical source-identity layer shared by content, the Compiler pack and Method Navigator;
 - application-level Method Graph nodes for method suitability, raw materials, water, environmental monitoring and growth-promotion/media QC;
 - explicit uncalibrated uncertainty ranges, derivation labels and output-maturity labels;
-- eight reusable, model-generated technical visual archetypes in the Blueprint decision layer;
+- twelve reusable, model-generated technical decision panels spanning eight visual archetypes in the Blueprint decision layer;
+- an application-level Method Navigator coverage matrix that separates method depth, evidence state, controlled revision and reuse of the same record across views;
+- bounded principal-decision claim-to-source bindings for every trust-corridor item, exposed with exact canonical source editions and release limitations;
+- accessible captions and explicit column-header scope on every Blueprint technical table, enforced in the browser smoke suite;
+- a lightweight resource-selection boundary that keeps the source registry and connected-resource graph out of the initial application bundle; the largest entry chunk fell from approximately 614 KB to 354 KB and no longer triggers Vite's 500 KB warning;
 - controlled reviewer ownership, paid-pilot economics, estimate-to-actual calibration, buyer decisions, corrections, acceptance, immutable review evidence and separate external-publication permission;
 - a two-stage Gate 2 control: four version-matched evidence prerequisites open qualified release review, while actual release requires a separate cross-case decision, rule disposition and documented approval outside Atlas;
 - project owner, input-source owner and controlled input revision captured at intake and carried into report/export surfaces.
@@ -30,11 +34,15 @@ No real-world proof was fabricated. The current records remain open wherever evi
 | BSC productive-time consistency | `shared/quality-lab.ts`, `shared/quality-lab.test.ts` | Bound to the project productive-hours input |
 | Mobile action safety and blocker-first hierarchy | `client/src/components/quality-lab/BlueprintReport.tsx`, `e2e/smoke.spec.ts` | Implemented; mobile overflow, focus and non-fixed action asserted |
 | Blog evidence transparency and 15–20 page trust corridor | `client/src/pages/BlogPost.tsx`, `shared/quality-lab-trust-corridor.ts`, `script/validate-content-quality.ts` | Twenty-item corridor enforced; release promotion remains blocked until review evidence exists |
+| Principal decision claim-to-source relationships | `shared/content-quality.ts`, `shared/content-quality-registry.ts`, `client/src/components/ContentQualityNotice.tsx` | Every corridor record exposes a bounded binding to canonical source editions; all remain `review-required`, not controlled |
 | Canonical evidence identity | `shared/content-quality-registry.ts`, `shared/quality-lab-microbiology-pack.ts`, `client/src/data/methodStandardsNavigator.ts` | Shared IDs and version assertions implemented |
 | Application-level Method Graph | `shared/quality-lab-method-graph.ts` | Suitability, raw materials, water, EM and GPT/media nodes implemented; unsupported scopes remain explicit |
+| Method Navigator coverage matrix | `client/src/data/methodStandardsNavigator.ts`, `client/src/pages/MethodStandardsNavigatorPage.tsx` | One row per application separates architecture, six-dimension depth, source state, missing controlled revision and connected-view reuse |
 | Derivation, uncertainty and maturity per output | `shared/quality-lab.ts`, `client/src/components/quality-lab/BlueprintReport.tsx` | Ranges and maturity labels implemented; still uncalibrated where real actuals are absent |
 | Coefficient owner, unit, rationale, range, applicability and calibration plan | `shared/quality-lab-model-glossary.ts` | Versioned registry carried into Blueprint and delivery workbook |
 | Twelve decision-support visuals | `client/src/components/quality-lab/BlueprintVisualDecisionLayer.tsx` | Twelve model-derived panels; no decorative proof imagery |
+| Technical table accessibility | `client/src/components/quality-lab/BlueprintReport.tsx`, `e2e/smoke.spec.ts` | All Blueprint tables have accessible captions and scoped column headers; mobile focus/overflow remain asserted |
+| Initial bundle hygiene | `client/src/data/resourceSelection.ts`, `client/src/hooks/use-resource-selection.ts`, `vite.config.ts` | Heavy evidence/resource registries load with their lazy routes; production entry chunk reduced from ~614 KB to 354 KB with no chunk-size warning |
 | Reviewer appointment control | `shared/quality-lab-expert-ownership.ts` | Workflow implemented; no real appointment recorded in source control |
 | Three paid engagements with actuals, decisions, corrections, hours and margin | `shared/quality-lab-engagement.ts`, `shared/quality-lab-pilot-portfolio.ts` | Capture and Gate 1 logic implemented; real portfolio remains externally dependent |
 | Controlled validation and publication permission | `shared/quality-lab-validation-cases.ts`, `shared/quality-lab-engagement.ts` | Internal learning and external publication permissions are separate; no permission is implied |
@@ -50,6 +58,13 @@ The repository cannot truthfully manufacture the following completion evidence. 
 4. three accepted immutable validation cases for the released Domain Pack version;
 5. explicit client permission before any real case is published;
 6. cross-case rule disposition and documented release approval outside Atlas.
+
+### Current repository verification — 2026-08-14
+
+- `npm run validate` passed: 230 MDX files, 55 Quality v2 records, 49 canonical sources, 105/105 learning-path coverage and 305 internal targets.
+- `npm test` passed: 80 files and 492 tests.
+- Production build passed; the largest entry chunk is 354.10 KB (103.33 KB gzip) and the prior 500 KB warning is cleared.
+- The full browser suite passed cleanly against a managed local server: 102 public tests passed and two Stripe test-mode cases were intentionally skipped. A prior invocation had completed the same cases but hung during Windows runner teardown; the clean rerun confirms that was test-harness lifecycle behavior rather than a product failure.
 
 ## 1. Executive conclusion
 
