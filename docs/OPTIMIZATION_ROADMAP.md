@@ -180,8 +180,12 @@ landmark; LessonQuiz radiogroup/radio + aria-checked; aria-expanded on
 GMP-kit/glossary accordions (FAQ already had); aria-pressed on glossary filters;
 search aria-label. Dialog/Drawer/Command palette get focus-trap + ARIA from
 Radix/vaul/cmdk (verified earlier sessions). Icon-only buttons labelled in WP-B
-a11y pass. **Deferred:** an actual axe-core run + a formal color-contrast audit
-of the dark palette (owner/tooling — couldn't run axe headless here).
+a11y pass. **Closure update 2026-08-14:** `e2e/accessibility.spec.ts` adds an
+axe-core WCAG 2.1 A/AA gate across ten strategic desktop/mobile routes plus
+planner keyboard-state and 320 CSS-pixel reflow checks. Thirteen checks pass;
+contrast, focus, hidden-input label and scrollable-region defects found by the
+gate were corrected. A human assistive-technology review remains required for
+any formal conformance claim.
 
 ### WP-E3 — Security & observability ✅ deps: A
 Security headers/CSP, review rate-limits + input validation, dependency audit

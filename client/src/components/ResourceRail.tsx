@@ -45,7 +45,7 @@ export function ResourceRail() {
   return (
     <>
       <aside className={`sticky top-16 hidden h-[calc(100vh-4rem)] shrink-0 border-r border-white/[0.08] bg-[#071426]/95 px-2 py-5 transition-[width] md:flex md:w-[7.25rem] md:flex-col ${compact ? "" : "xl:w-[17rem] xl:px-3"}`} aria-label="Resource areas">
-        <p className="px-2 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-600">
+        <p className="px-2 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
           <span className={compact ? "" : "xl:hidden"}>Resources</span>
           {!compact && <span className="hidden xl:inline">Learn, calculate, and verify</span>}
         </p>
@@ -66,7 +66,7 @@ export function ResourceRail() {
                 <Icon className={`h-6 w-6 shrink-0 ${active ? "text-teal-300" : "text-slate-400 group-hover:text-teal-300"}`} aria-hidden="true" />
                 <span className="min-w-0">
                   <span className="block font-semibold text-slate-100">{label}</span>
-                  {!compact && <span className="mt-0.5 hidden text-[11px] font-normal leading-4 text-slate-500 xl:block">{description}</span>}
+                  {!compact && <span className="mt-0.5 hidden text-[11px] font-normal leading-4 text-slate-400 xl:block">{description}</span>}
                 </span>
               </Link>
             );

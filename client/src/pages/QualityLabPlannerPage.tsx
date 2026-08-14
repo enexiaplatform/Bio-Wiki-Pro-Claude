@@ -400,7 +400,7 @@ export default function QualityLabPlannerPage() {
 
   if (!params?.id && startMode === null) {
     return (
-      <div className="min-h-screen bg-[#08111f] px-4 py-10 text-slate-100 md:py-16">
+      <div className="quality-lab-planner-page min-h-screen bg-[#08111f] px-4 py-10 text-slate-100 md:py-16">
         <div className="mx-auto max-w-5xl">
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>
           <div className="mt-6"><DecisionPackageContextCard packageId={decisionPackageId} compact /></div>
@@ -416,7 +416,7 @@ export default function QualityLabPlannerPage() {
               <button type="button" onClick={() => fileInputRef.current?.click()} className="rounded-2xl border border-sky-300/25 bg-sky-300/[0.07] p-5 text-left transition hover:-translate-y-0.5 hover:border-sky-300/45"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Portable JSON</p><h2 className="mt-2 text-lg font-bold">Import inputs</h2><p className="mt-2 text-xs leading-5 text-slate-400">Load a compatible input or exported model. It cannot overwrite a saved project.</p></button>
             </div>
             <p className="mt-5 text-xs leading-5 text-slate-500">Atlas suggestions are labeled planning assumptions. They never become site facts, approved methods or qualified evidence unless your team confirms them.</p>
-            <input ref={fileInputRef} type="file" accept="application/json,.json" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; event.currentTarget.value = ""; if (file) void importInputs(file); }} />
+            <input ref={fileInputRef} type="file" accept="application/json,.json" aria-label="Import Quality Lab input JSON" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; event.currentTarget.value = ""; if (file) void importInputs(file); }} />
           </section>
         </div>
       </div>
@@ -424,7 +424,7 @@ export default function QualityLabPlannerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#08111f] px-4 pb-40 pt-5 text-slate-100 md:pb-24 md:pt-10">
+    <div className="quality-lab-planner-page min-h-screen bg-[#08111f] px-4 pb-40 pt-5 text-slate-100 md:pb-24 md:pt-10">
       <div className="mx-auto max-w-7xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link href="/quality-lab" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> Quality Lab Blueprint</Link>

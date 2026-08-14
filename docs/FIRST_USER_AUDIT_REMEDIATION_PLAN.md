@@ -279,6 +279,8 @@ Acceptance criteria:
 - Locked steps have an accessible reason.
 - Changed surfaces pass automated accessibility checks plus a documented keyboard/zoom smoke test.
 
+**Completed 2026-08-14:** `e2e/accessibility.spec.ts` now runs thirteen checks across ten strategic desktop/mobile routes. It covers automated WCAG 2.1 A/AA rules, visible focus and keyboard order, planner selected/locked-step semantics, keyboard activation and 320 CSS-pixel reflow. The implementation also corrected the contrast, focus, hidden-input label and scrollable-region defects found by that gate. Automated results do not constitute full WCAG conformance.
+
 ## Phase 2 — complete the pilot workspace using existing infrastructure
 
 **Target:** 1–2 weeks, driven by the workflow of the first paid pilot  

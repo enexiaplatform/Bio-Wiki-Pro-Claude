@@ -165,7 +165,7 @@ export default function QualityLabLandingPage() {
   });
 
   return (
-    <div className="min-h-screen overflow-hidden bg-[#08111f] text-slate-100">
+    <div className="quality-lab-landing-page min-h-screen overflow-hidden bg-[#08111f] text-slate-100">
       <section className="relative isolate border-b border-white/10 px-4 py-14 md:py-24">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_8%,rgba(45,212,191,0.18),transparent_28%),radial-gradient(circle_at_80%_18%,rgba(56,189,248,0.12),transparent_28%)]" />
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(148,163,184,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.05)_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:linear-gradient(to_bottom,black,transparent_82%)]" />
@@ -259,7 +259,7 @@ export default function QualityLabLandingPage() {
             { label: "Deliverables", detail: "Brief, model, workbook, register", href: "/quality-lab/deliverables" },
             { label: "Illustrative sample", detail: "Inspect the concept package", href: "/quality-lab/sample" },
             { label: "Commercial scope", detail: "$149 diagnostic · Blueprint from $990", href: "/pricing" },
-          ].map((item) => <Link key={item.label} href={item.href} className="group rounded-xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-teal-300/30 hover:bg-teal-300/[0.06]"><span className="flex items-center justify-between text-sm font-bold text-slate-100">{item.label}<ArrowRight className="h-4 w-4 text-teal-300 transition group-hover:translate-x-0.5" /></span><span className="mt-1 block text-xs leading-5 text-slate-500">{item.detail}</span></Link>)}
+          ].map((item) => <Link key={item.label} href={item.href} className="group rounded-xl border border-white/10 bg-white/[0.035] p-4 transition hover:border-teal-300/30 hover:bg-teal-300/[0.06]"><span className="flex items-center justify-between text-sm font-bold text-slate-100">{item.label}<ArrowRight className="h-4 w-4 text-teal-300 transition group-hover:translate-x-0.5" /></span><span className="mt-1 block text-xs leading-5 text-slate-400">{item.detail}</span></Link>)}
         </div>
       </nav>
 
@@ -275,7 +275,7 @@ export default function QualityLabLandingPage() {
               <div key={step.label} className="relative rounded-2xl border border-white/10 bg-white/[0.035] p-5">
                 <div className="mb-8 flex items-center justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-300/20 bg-teal-300/10 text-teal-200"><step.icon className="h-5 w-5" /></div>
-                  <span className="text-xs font-bold text-slate-600">0{index + 1}</span>
+                  <span className="text-xs font-bold text-slate-400">0{index + 1}</span>
                 </div>
                 <h3 className="text-base font-bold">{step.label}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-400">{step.detail}</p>

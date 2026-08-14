@@ -84,7 +84,7 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-4 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 pt-6 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} Life Science Atlas. Planning support, not regulatory approval.</p>
           <div className="flex items-center gap-5">
             <Link href="/terms" className="transition hover:text-slate-300">Terms</Link>

@@ -56,6 +56,11 @@
     font-family: var(--font-display);
     @apply tracking-tight font-bold text-white;
   }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid rgb(94 234 212);
+    outline-offset: 3px;
+  }
 }
 
 /* Custom Scrollbar */
@@ -93,6 +98,12 @@
    contrast on the dark product canvas. Slate-500/600 are retained elsewhere
    where type is larger or decorative. */
 .quality-blueprint-report .text-slate-500,
+.quality-lab-landing-page .text-slate-500,
+.quality-lab-landing-page .text-slate-600,
+.quality-lab-planner-page .text-slate-500,
+.quality-lab-planner-page .text-slate-600,
+.quality-lab-sample-page .text-slate-500,
+.quality-lab-sample-page .text-slate-600,
 .method-navigator-page .text-slate-500,
 .method-navigator-page .text-slate-600 {
   color: rgb(148 163 184);

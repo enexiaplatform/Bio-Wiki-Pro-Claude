@@ -19,6 +19,7 @@ The repository implementation following this audit now includes:
 - an application-level Method Navigator coverage matrix that separates method depth, evidence state, controlled revision and reuse of the same record across views;
 - bounded principal-decision claim-to-source bindings for every trust-corridor item, exposed with exact canonical source editions and release limitations;
 - accessible captions and explicit column-header scope on every Blueprint technical table, enforced in the browser smoke suite;
+- an automated WCAG 2.1 A/AA accessibility gate across ten strategic desktop/mobile routes, plus planner keyboard-state and 320 CSS-pixel reflow checks;
 - a lightweight resource-selection boundary that keeps the source registry and connected-resource graph out of the initial application bundle; the largest entry chunk fell from approximately 614 KB to 354 KB and no longer triggers Vite's 500 KB warning;
 - controlled reviewer ownership, paid-pilot economics, estimate-to-actual calibration, buyer decisions, corrections, acceptance, immutable review evidence and separate external-publication permission;
 - a two-stage Gate 2 control: four version-matched evidence prerequisites open qualified release review, while actual release requires a separate cross-case decision, rule disposition and documented approval outside Atlas;
@@ -42,6 +43,7 @@ No real-world proof was fabricated. The current records remain open wherever evi
 | Coefficient owner, unit, rationale, range, applicability and calibration plan | `shared/quality-lab-model-glossary.ts` | Versioned registry carried into Blueprint and delivery workbook |
 | Twelve decision-support visuals | `client/src/components/quality-lab/BlueprintVisualDecisionLayer.tsx` | Twelve model-derived panels; no decorative proof imagery |
 | Technical table accessibility | `client/src/components/quality-lab/BlueprintReport.tsx`, `e2e/smoke.spec.ts` | All Blueprint tables have accessible captions and scoped column headers; mobile focus/overflow remain asserted |
+| Automated accessibility gate | `e2e/accessibility.spec.ts`, `package.json` | Thirteen checks cover automated WCAG 2.1 A/AA rules on ten strategic desktop/mobile routes, planner keyboard semantics and 320 CSS-pixel reflow; this is not a full conformance claim |
 | Initial bundle hygiene | `client/src/data/resourceSelection.ts`, `client/src/hooks/use-resource-selection.ts`, `vite.config.ts` | Heavy evidence/resource registries load with their lazy routes; production entry chunk reduced from ~614 KB to 354 KB with no chunk-size warning |
 | Reviewer appointment control | `shared/quality-lab-expert-ownership.ts` | Workflow implemented; no real appointment recorded in source control |
 | Three paid engagements with actuals, decisions, corrections, hours and margin | `shared/quality-lab-engagement.ts`, `shared/quality-lab-pilot-portfolio.ts` | Capture and Gate 1 logic implemented; real portfolio remains externally dependent |
@@ -64,7 +66,7 @@ The repository cannot truthfully manufacture the following completion evidence. 
 - `npm run validate` passed: 230 MDX files, 55 Quality v2 records, 49 canonical sources, 105/105 learning-path coverage and 305 internal targets.
 - `npm test` passed: 80 files and 492 tests.
 - Production build passed; the largest entry chunk is 354.10 KB (103.33 KB gzip) and the prior 500 KB warning is cleared.
-- The full browser suite passed cleanly against a managed local server: 102 public tests passed and two Stripe test-mode cases were intentionally skipped. A prior invocation had completed the same cases but hung during Windows runner teardown; the clean rerun confirms that was test-harness lifecycle behavior rather than a product failure.
+- The full browser suite passed cleanly against a managed local server: 115 tests passed, including thirteen accessibility/keyboard/reflow checks, and two Stripe test-mode cases were intentionally skipped. Reduced-motion mode and a settled route-entry state keep contrast measurement out of transient fade animations.
 
 ## 1. Executive conclusion
 
@@ -344,12 +346,11 @@ Every quantitative visual should be generated from the actual model state. Hero 
 
 Observed strengths include a skip link, semantic landmarks, accessible control labels, pressed states, locked-step reasons and a dedicated mobile navigation pattern.
 
-Items requiring a formal accessibility pass:
+The repository now enforces an automated accessibility regression gate over ten strategic desktop/mobile routes. The same suite verifies visible keyboard focus, planner selection/locked-step semantics, keyboard activation and 320 CSS-pixel reflow. During implementation it identified and closed muted-text contrast, focus visibility, unlabeled file-input and scrollable-region focus defects.
 
-- contrast and readability of small muted text on dark cards;
-- keyboard/focus order through the dense planner and report;
+Items that still require human or assistive-technology review before any conformance claim:
+
 - status communication that does not rely on color alone;
-- table semantics and mobile horizontal overflow in long technical articles;
 - safe areas for fixed mobile actions;
 - meaningful alt text for editorial and future explanatory images.
 
@@ -369,9 +370,9 @@ Run on 2026-08-13:
 - `npm test -- --run` — 79 files passed, 480 tests passed.
 - `npm run test:e2e` — 101 tests passed, 2 tests skipped, 0 failed.
 
-Validation correctly reports release warnings rather than treating under-review assets as complete. This is a strength. Additional browser warnings found during the walkthrough:
+Validation correctly reports release warnings rather than treating under-review assets as complete. This is a strength. One additional browser warning was found during the original walkthrough:
 
-- React reports that `fetchPriority` is not recognized on a DOM `img` element in the current runtime. This is not a product-blocking defect, but should be cleaned up or verified against the supported React version.
+- React reported that `fetchPriority` was not recognized on a DOM `img` element in the runtime used for the audit. This has been resolved; the attribute no longer occurs in application source.
 
 ## 9. Prioritized development roadmap
 

@@ -265,7 +265,7 @@ export default function LandingPage() {
                 <span><strong className="text-teal-200">Expert-reviewed Blueprint from $990</strong> for the founding pilot scope.</span>
               </div>
             </div>
-            <p className="mt-3 text-center text-[10px] italic tracking-wide text-slate-500 sm:text-left">Illustrative concept output · final scope and deliverables are agreed before kickoff</p>
+            <p className="mt-3 text-center text-[10px] italic tracking-wide text-slate-400 sm:text-left">Illustrative concept output · final scope and deliverables are agreed before kickoff</p>
           </div>
         </div>
       </section>
@@ -326,12 +326,12 @@ export default function LandingPage() {
           <div className="mt-10 grid gap-5 lg:grid-cols-[1.45fr_.55fr] lg:items-start">
             <CommercialPathCard offer={commercialPaths[0]} />
             <aside className="space-y-4" aria-label="Also from Life Science Atlas">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Also from Atlas</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Also from Atlas</p>
               {commercialPaths.slice(1).map((offer) => <CommercialPathCard key={offer.title} offer={offer} compact />)}
             </aside>
           </div>
 
-          <p className="mt-6 text-xs leading-5 text-slate-500">Partner-led laboratory projects are scoped through the Quality Lab review path. Larger portfolios, specialist coverage, and additional scenarios are quoted separately.</p>
+          <p className="mt-6 text-xs leading-5 text-slate-400">Partner-led laboratory projects are scoped through the Quality Lab review path. Larger portfolios, specialist coverage, and additional scenarios are quoted separately.</p>
         </div>
       </section>
 

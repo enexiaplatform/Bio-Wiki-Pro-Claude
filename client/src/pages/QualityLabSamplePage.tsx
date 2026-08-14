@@ -31,7 +31,7 @@ export default function QualityLabSamplePage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#07111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
+    <div className="quality-lab-sample-page min-h-screen bg-[#07111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-6xl">
         <header className="rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-6 md:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
@@ -61,7 +61,7 @@ export default function QualityLabSamplePage() {
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-300">Readiness and decision controls</p>
           <h2 className="mt-2 text-2xl font-bold">A completed planner can still be unready for controlled use.</h2>
           <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {[["4/4", "Planner steps", "Concept intake complete"], ["10%", "Evidence readiness", "Weighted evidence-gap score"], ["5", "Controlled-use blockers", "Reliance remains prohibited"], ["12", "Active actions", "Work to resolve open evidence"]].map(([value, label, detail]) => <div key={label} className="rounded-xl border border-white/10 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-slate-100">{value}</p><p className="mt-1 text-xs font-bold text-slate-300">{label}</p><p className="mt-2 text-[11px] leading-5 text-slate-500">{detail}</p></div>)}
+            {[["4/4", "Planner steps", "Concept intake complete"], ["10%", "Evidence readiness", "Weighted evidence-gap score"], ["5", "Controlled-use blockers", "Reliance remains prohibited"], ["12", "Active actions", "Work to resolve open evidence"]].map(([value, label, detail]) => <div key={label} className="rounded-xl border border-white/10 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-slate-100">{value}</p><p className="mt-1 text-xs font-bold text-slate-300">{label}</p><p className="mt-2 text-[11px] leading-5 text-slate-400">{detail}</p></div>)}
           </div>
           <div className="mt-4 grid gap-3 lg:grid-cols-3"><ControlCard icon={AlertTriangle} title="Modeled operational risk" body="A signal produced by the currently modeled scenario. Zero detected risks does not cancel evidence blockers." /><ControlCard icon={ShieldCheck} title="Controlled-use blocker" body="Missing evidence or review that prevents reliance for investment, URS or procurement." /><ControlCard icon={CheckCircle2} title="Action" body="Owned work with evidence, due date and review status that resolves a blocker or important input." /></div>
         </section>
@@ -70,7 +70,7 @@ export default function QualityLabSamplePage() {
           <div className="flex items-start gap-3"><BarChart3 className="mt-1 h-5 w-5 text-sky-300" /><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-300">Demand and capacity</p><h2 className="mt-2 text-2xl font-bold">The sample exposes the calculation at the point of use.</h2></div></div>
           <div className="mt-6 grid gap-5 lg:grid-cols-[.8fr_1.2fr]">
             <div className="rounded-xl border border-white/10 bg-slate-950/30 p-4"><p className="text-sm font-bold">Scenario movement</p><div className="mt-5 space-y-5">{[["Test units / month", 309, 525], ["Team FTE", 6, 8], ["Concept area (m²)", 185, 216]].map(([label, current, future]) => <div key={label}><div className="flex justify-between text-xs"><span className="text-slate-400">{label}</span><strong>{current} → {future}</strong></div><div className="mt-2 h-2 rounded-full bg-white/10"><div className="h-full rounded-full bg-teal-300" style={{ width: `${Math.min(100, Number(future) / Math.max(Number(current), Number(future)) * 100)}%` }} /></div></div>)}</div></div>
-            <div className="overflow-x-auto rounded-xl border border-white/10"><table className="w-full min-w-[680px] text-left text-sm"><thead className="text-[10px] uppercase tracking-wider text-slate-500"><tr><th className="p-3">Resource</th><th className="p-3">Monthly load</th><th className="p-3">Available</th><th className="p-3">Planning utilization</th></tr></thead><tbody className="divide-y divide-white/8"><tr><td className="p-3 font-semibold">Incubator 20–25 °C</td><td className="p-3">450 plate-days</td><td className="p-3">5,355</td><td className="p-3"><strong className="text-teal-200">10.9%</strong><p className="mt-1 text-[10px] text-slate-500">(450 × 1.3 peak factor) ÷ 5,355 × 100</p></td></tr><tr><td className="p-3 font-semibold">Class II BSC</td><td className="p-3">45 hours</td><td className="p-3">252.5 hours</td><td className="p-3"><strong className="text-teal-200">23.2%</strong><p className="mt-1 text-[10px] text-slate-500">Highest modeled pressure · site verification required</p></td></tr></tbody></table></div>
+            <div className="overflow-x-auto rounded-xl border border-white/10" tabIndex={0} role="region" aria-label="Sample resource capacity table"><table className="w-full min-w-[680px] text-left text-sm"><thead className="text-[10px] uppercase tracking-wider text-slate-400"><tr><th className="p-3">Resource</th><th className="p-3">Monthly load</th><th className="p-3">Available</th><th className="p-3">Planning utilization</th></tr></thead><tbody className="divide-y divide-white/8"><tr><td className="p-3 font-semibold">Incubator 20–25 °C</td><td className="p-3">450 plate-days</td><td className="p-3">5,355</td><td className="p-3"><strong className="text-teal-200">10.9%</strong><p className="mt-1 text-[10px] text-slate-400">(450 × 1.3 peak factor) ÷ 5,355 × 100</p></td></tr><tr><td className="p-3 font-semibold">Class II BSC</td><td className="p-3">45 hours</td><td className="p-3">252.5 hours</td><td className="p-3"><strong className="text-teal-200">23.2%</strong><p className="mt-1 text-[10px] text-slate-400">Highest modeled pressure · site verification required</p></td></tr></tbody></table></div>
           </div>
         </section>
 
@@ -83,8 +83,8 @@ export default function QualityLabSamplePage() {
         <section id="sample-trace" className="mt-6 scroll-mt-32 rounded-2xl border border-white/10 bg-white/[0.035] p-5 md:p-7">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-300">Evidence and assumption register</p>
           <h2 className="mt-2 text-2xl font-bold">Every important number carries a basis and a next action.</h2>
-          <p className="mt-3 text-xs text-slate-500 md:hidden">Swipe horizontally to inspect the complete register →</p>
-          <div className="mt-3 overflow-x-auto rounded-xl border border-white/5"><table className="w-full min-w-[700px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-400"><tr><th className="p-3">Item</th><th className="p-3">Current basis</th><th className="p-3">Confidence</th><th className="p-3">Required action</th></tr></thead><tbody className="divide-y divide-white/8">{evidenceRows.map((row) => <tr key={row[0]}>{row.map((cell) => <td key={cell} className="p-3 text-slate-300">{cell}</td>)}</tr>)}</tbody></table></div>
+          <p className="mt-3 text-xs text-slate-400 md:hidden">Swipe horizontally to inspect the complete register →</p>
+          <div className="mt-3 overflow-x-auto rounded-xl border border-white/5" tabIndex={0} role="region" aria-label="Sample evidence and assumption register"><table className="w-full min-w-[700px] text-left text-sm"><thead className="text-xs uppercase tracking-wider text-slate-400"><tr><th className="p-3">Item</th><th className="p-3">Current basis</th><th className="p-3">Confidence</th><th className="p-3">Required action</th></tr></thead><tbody className="divide-y divide-white/8">{evidenceRows.map((row) => <tr key={row[0]}>{row.map((cell) => <td key={cell} className="p-3 text-slate-300">{cell}</td>)}</tr>)}</tbody></table></div>
         </section>
 
         <section className="mt-6 rounded-2xl border border-violet-300/15 bg-violet-300/[0.035] p-5 md:p-7">
@@ -106,5 +106,5 @@ function SampleCard({ title, icon: Icon, children }: { title: string; icon: type
 }
 
 function ControlCard({ title, icon: Icon, body }: { title: string; icon: typeof AlertTriangle; body: string }) {
-  return <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4"><Icon className="h-4 w-4 text-amber-300" /><p className="mt-3 text-sm font-bold">{title}</p><p className="mt-2 text-xs leading-5 text-slate-500">{body}</p></div>;
+  return <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4"><Icon className="h-4 w-4 text-amber-300" /><p className="mt-3 text-sm font-bold">{title}</p><p className="mt-2 text-xs leading-5 text-slate-400">{body}</p></div>;
 }
