@@ -44,7 +44,10 @@ starts. Direct route entry is allowed, so later-stage reach can exceed CTA reach
 The purchase receipt remains a client-side funnel proxy. Stripe webhook and
 purchase records remain authoritative for payment and revenue.
 
-Run `npm run db:push` in the target environment before relying on the report.
+Run `npm run audit:schema` in the protected target environment before relying
+on the report. If storage is absent, reconcile and rehearse a versioned additive
+migration, obtain production-change approval, then apply it with
+`npm run db:migrate`; never use a direct schema push against production data.
 If the receipt table is temporarily absent, the API deliberately returns an
 accepted/no-record response so analytics cannot break the customer journey.
 

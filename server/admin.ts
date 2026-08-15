@@ -6,6 +6,7 @@ import { z } from "zod";
 import { users, purchases } from "../shared/models/auth.js";
 import { contentEntries, leads, qualityLabFunnelEvents, qualityLabReviewedProjects, quoteRequests } from "../shared/schema.js";
 import { buildQualityLabFunnelSnapshot } from "../shared/quality-lab-funnel.js";
+import { RUNTIME_SCHEMA_REMEDIATION } from "../shared/operational-readiness.js";
 import { db } from "./db.js";
 import { DELIVERABLES } from "./deliverables.js";
 import { storage } from "./storage.js";
@@ -197,7 +198,7 @@ export function registerAdminRoutes(app: Express, isAuthenticated: RequestHandle
       res.json(buildQualityLabFunnelSnapshot(events, days));
     } catch (error) {
       console.error("[Admin] Quality Lab funnel error:", error);
-      res.status(503).json({ message: "Funnel receipts unavailable; run db:push for this environment" });
+      res.status(503).json({ message: `Funnel receipts unavailable. ${RUNTIME_SCHEMA_REMEDIATION}` });
     }
   });
 

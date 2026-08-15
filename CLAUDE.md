@@ -4,6 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **Current product direction:** Read `docs/PRODUCT_SOURCE_OF_TRUTH.md` before product, roadmap, positioning, commercialization, or major UX work. It supersedes older toolkit-first, content-subscription-first, microbiology-only, and generic SaaS positioning. Use `LIFE_SCIENCE_ATLAS_MASTER_GOAL_PROMPT.md` for persistent goal execution.
 
+> **Repository authority (2026-08-15):** `AGENTS.md` is the current operational
+> guide. Preserve useful implementation history below, but when a route count,
+> product description, command or launch instruction differs, follow
+> `AGENTS.md`, `PRODUCT_SOURCE_OF_TRUTH.md`, `COMMERCIAL_LAUNCH_RUNBOOK.md` and
+> `DB_MIGRATIONS.md`.
+
 ## Commands
 
 ```bash
@@ -19,7 +25,14 @@ npm run build
 # Run the production build
 npm start
 
-# Push Drizzle schema to the DB (drizzle-kit push — NO migration files)
+# Read-only target schema audit (names/counts only)
+npm run audit:schema
+
+# Generate/apply reviewed versioned migrations (staging/production)
+npm run db:generate
+npm run db:migrate
+
+# Direct schema push (local/throwaway databases only; never production data)
 npm run db:push
 
 # Validate content + learning-path coverage (CI guards)
@@ -119,7 +132,7 @@ When asked to "wire up real data", the work is: move a `use-data.ts` hook from r
 
 `isAuthenticated` checks `req.session.userId`. Session middleware (`setupSession`) uses `connect-pg-simple` backed by the resolved `connectionString` (`db.ts`); without it, sessions fall back to memory. The Stripe webhook is registered before session middleware and uses `req.rawBody` for signature verification.
 
-> ⚠️ **Migration-first rule (learned from an outage):** Drizzle `db.select().from(users)` selects *all* schema columns, so adding a column to the `users` schema and deploying **before** `db:push` runs breaks every user query (register/login/me 500). Never ship a `users` schema change ahead of its migration — stage it on a branch, run `db:push`, then merge. Always re-probe prod auth (`/api/auth/register`) after any DB-touching deploy.
+> ⚠️ **Migration-first rule (learned from an outage):** Drizzle `db.select().from(users)` selects *all* schema columns, so adding a column to the `users` schema and deploying before its migration breaks every user query (register/login/me 500). Never ship a schema-dependent code change ahead of a reviewed versioned migration. Audit the target, reconcile the migration journal, rehearse backup/restore in staging, obtain approval, apply with `npm run db:migrate`, then deploy and re-probe prod auth (`/api/auth/register`).
 
 ### Auth & Pro Gating
 
@@ -129,11 +142,17 @@ When asked to "wire up real data", the work is: move a `use-data.ts` hook from r
 
 ### Database (Drizzle + PostgreSQL)
 
-PostgreSQL via `DATABASE_URL`. Drizzle ORM with **schema-push** (`drizzle-kit push`) — there are **no migration files**, so schema changes apply directly.
+PostgreSQL via `DATABASE_URL`. Drizzle schemas live in `shared/schema.ts` and
+`shared/models/auth.ts`; versioned SQL migrations live in `migrations/`. Use
+`npm run audit:schema` for the protected read-only target check and
+`npm run db:migrate` only after review, staging rehearsal, backup and explicit
+production-change approval. Direct schema push is limited to local/throwaway DBs.
 
-> **Schema import split (don't undo):** `shared/schema.ts` does **not** re-export `./models/auth.js` — that `.js` extension is required for Vercel native ESM but drizzle-kit's loader can't resolve `.js`→`.ts`, which broke `db:push`. So `drizzle.config.ts` lists **both** files (`schema.ts` + `models/auth.ts`), and app code imports auth tables/types from `@shared/models/auth`. Keep them separate.
+> **Schema import split (don't undo):** `shared/schema.ts` does **not** re-export `./models/auth.js` — that `.js` extension is required for Vercel native ESM but Drizzle Kit's loader cannot resolve `.js`→`.ts`. Therefore `drizzle.config.ts` lists **both** files (`schema.ts` + `models/auth.ts`), and app code imports auth tables/types from `@shared/models/auth`. Keep them separate.
 >
-> **Running `db:push` against Supabase locally:** use the **Session pooler** URL (port 5432) and, because the local Node may not trust Supabase's cert, set `NODE_TLS_REJECT_UNAUTHORIZED=0` + `?sslmode=no-verify` for that one-off command.
+> **TLS safety:** never disable certificate verification for a production schema
+> operation. Use the provider's supported pooler/direct connection and trusted
+> CA configuration. A connectivity problem is not authorization to weaken TLS.
 
 Tables:
 - `shared/models/auth.ts`: **users** (id, email, names, isPro, passwordHash, reset-token + verification-token fields, Stripe fields, timestamps), **sessions** (connect-pg-simple store), **purchases** (userId, productType, Stripe IDs, amount in cents, status)

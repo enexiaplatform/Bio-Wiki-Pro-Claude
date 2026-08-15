@@ -1,5 +1,10 @@
 # Life Science Atlas — Optimization Roadmap (to commercial)
 
+> **Superseded strategy notice (2026-08-15):** this is a historical record of
+> the former subscription-first roadmap. Current product, launch and database
+> authority is `PRODUCT_SOURCE_OF_TRUTH.md`, `COMMERCIAL_LAUNCH_RUNBOOK.md` and
+> `DB_MIGRATIONS.md`. Do not execute this document's legacy launch protocol.
+
 The single source of truth for taking Life Science Atlas from "launch-ready code" to a
 **self-sustaining commercial product**, then optimizing it for real.
 
@@ -31,7 +36,8 @@ at the end of each session.
 6. If you discover the WP is bigger than one session, split it (add `WP-Xa/Xb`)
    rather than rushing.
 
-Owner-only operational steps (Stripe live keys, `db:push`, DNS, secrets) are
+Owner-only operational steps (Stripe live keys, protected schema audit and
+approved migration, DNS, secrets) are
 flagged 🔑 — a session can prepare/verify around them but cannot complete them.
 
 ---
@@ -54,7 +60,7 @@ Only the owner-only 🔑 LAUNCH (go-live ops) remains.
 | E2 | Hardening | Accessibility full pass (keyboard/focus/contrast, axe audit, complex widgets) | 4% | ✅ DONE (5d0885e) |
 | E3 | Hardening | Security & observability (headers/CSP, rate-limit review, error monitoring, webhook alerts, dep audit) | 5% | ✅ DONE (e520669) |
 | E4 | Hardening | Testing depth (e2e purchase via E2E_RUN, route coverage, smoke for new flows) | 4% | ✅ DONE |
-| LAUNCH | Ops 🔑 | Go-live dry run: env audit, Stripe live, `db:push`, PostHog key, one real purchase, prod smoke | 5% | ⛔ TODO (owner) |
+| LAUNCH | Ops 🔑 | Historical go-live dry run; use the current commercial launch runbook | 5% | ⛔ SUPERSEDED |
 
 > % sums to 100. Adjust weights if scope shifts. "DONE" rows are recorded in the
 > `commercialization-gaps` memory with commit hashes.
@@ -100,8 +106,9 @@ DB; tsc+build green.
 **✅ DONE 2026-06-13 (e014c73):** folded into the single daily `/api/cron/nurture`
 (3 isolated jobs). New `lifecycle_sends` + `checkout_attempts` tables (graceful if
 absent). `recordCheckoutAttempt` best-effort in create-checkout-session. +5 tests
-(60 total). **Owner: run `db:push`** to create the two tables (works without it —
-per-job error reported, checkout unaffected).
+(60 total). **Historical owner action:** reconcile the two tables through the
+current protected schema-audit and approved versioned-migration workflow
+(per-job error reported, checkout unaffected while absent).
 
 ### WP-C2 — Onboarding & activation ⛔ deps: A, B
 **Goal:** get a new free user to first value fast.
@@ -225,7 +232,8 @@ keys + a seeded user — can't run locally (no `DATABASE_URL`/Stripe CLI here).
 
 Not code — but a session can verify around it. Set Stripe **live** keys + price
 IDs + webhook (6 events), `DATABASE_URL`, `SESSION_SECRET`, `BASE_URL`,
-`RESEND_API_KEY`, `EMAIL_FROM`, `VITE_POSTHOG_KEY`; run `db:push`; do one real
+`RESEND_API_KEY`, `EMAIL_FROM`, `VITE_POSTHOG_KEY`; complete the protected
+schema audit and approved migration; do one real
 purchase; run the prod smoke in `docs/GO_LIVE.md`. Then execute the current
 Founding Blueprint acquisition sequence in `docs/SOFT_LAUNCH.md`.
 

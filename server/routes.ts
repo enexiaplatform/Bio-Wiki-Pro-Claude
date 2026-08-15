@@ -27,6 +27,7 @@ import { qualityLabPortfolioQueueMetrics, qualityLabPortfolioWorkQueue, qualityL
 import { qualityLabGovernanceKeySchema, qualityLabGovernanceSnapshotSchema } from "../shared/quality-lab-governance.js";
 import { isAdminEmail, registerAdminRoutes } from "./admin.js";
 import { getPublicOrigin, runtimeReadiness } from "./runtime-config.js";
+import { RUNTIME_SCHEMA_REMEDIATION } from "../shared/operational-readiness.js";
 import { careerProfileSchema } from "../shared/career-blueprint.js";
 import { careerExecutionRecordSchema, createCareerExecutionRecord } from "../shared/career-execution.js";
 import { careerBlueprintPdf, careerBlueprintSamplePdf, careerProfileFilename } from "./career-blueprint.js";
@@ -909,8 +910,8 @@ export async function registerRoutes(app: Express): Promise<void> {
       });
       return res.status(202).json({ accepted: true, recorded: Boolean(row) });
     } catch (error) {
-      // Analytics must never interrupt the user journey. The admin endpoint will
-      // expose a missing table clearly until db:push is run.
+      // Analytics must never interrupt the user journey. Protected operator
+      // diagnostics identify incomplete schema until an approved migration runs.
       console.error("[Quality Lab funnel] receipt error:", error);
       return res.status(202).json({ accepted: true, recorded: false });
     }
@@ -1368,7 +1369,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       return res.json({ cadence: row.cadence, domains: row.domains, sources: row.sources, updatedAt: row.updatedAt, syncAvailable: true });
     } catch (err) {
       console.error("[Regulatory monitor] preference save failed:", err);
-      return res.status(503).json({ message: "Regulatory watchlist storage is unavailable; run db:push" });
+      return res.status(503).json({ message: `Regulatory watchlist storage is unavailable. ${RUNTIME_SCHEMA_REMEDIATION}` });
     }
   });
 
@@ -1409,7 +1410,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       result.nurture = { scanned, sent };
     } catch (err) {
       console.error("[Cron] nurture error:", err);
-      result.nurture = { error: "nurture_sends table may be absent — run db:push" };
+      result.nurture = { error: `nurture_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
     // 2. Trial-ending (3-day then 1-day, most urgent unsent reminder per user)
@@ -1427,7 +1428,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       result.trialEnding = { sent };
     } catch (err) {
       console.error("[Cron] trial-ending error:", err);
-      result.trialEnding = { error: "lifecycle_sends table may be absent — run db:push" };
+      result.trialEnding = { error: `lifecycle_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
     // 3. Abandoned checkout (started 1–72h ago, not converted, once per user)
@@ -1451,7 +1452,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       result.abandonedCheckout = { sent };
     } catch (err) {
       console.error("[Cron] abandoned-checkout error:", err);
-      result.abandonedCheckout = { error: "checkout_attempts/lifecycle_sends table may be absent — run db:push" };
+      result.abandonedCheckout = { error: `checkout_attempts/lifecycle_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
     // 4. Re-engagement (last lesson read 7–14 days ago, not Pro, once per user)
@@ -1468,7 +1469,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       result.reEngagement = { sent };
     } catch (err) {
       console.error("[Cron] re-engagement error:", err);
-      result.reEngagement = { error: "lesson_reads/lifecycle_sends table may be absent — run db:push" };
+      result.reEngagement = { error: `lesson_reads/lifecycle_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
     // 5. Opt-in Blueprint work queue and weekly review. Only explicitly saved
@@ -1528,7 +1529,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       result.qualityLabWeeklyReview = { scanned: weeklyScanned, sent: weeklySent, skippedNoChange: weeklySkippedNoChange };
     } catch (err) {
       console.error("[Cron] Blueprint reminder error:", err);
-      const error = "reminder preferences or reviewed-project tables may be absent — run db:push";
+      const error = `Reminder preferences or reviewed-project storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}`;
       result.qualityLabWorkQueue = { error };
       result.qualityLabWeeklyReview = { error };
     }

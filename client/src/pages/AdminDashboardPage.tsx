@@ -15,6 +15,7 @@ import type { QualityLabFunnelSnapshot, QualityLabFunnelStage } from "@shared/qu
 import { DECISION_PACKAGES } from "@shared/decision-packages";
 import { CAREER_DOMAIN_TRACKS } from "@shared/career-domain-tracks";
 import { MANUFACTURING_QUALITY_PORTFOLIO } from "@shared/manufacturing-quality-portfolio";
+import { RUNTIME_SCHEMA_REMEDIATION } from "@shared/operational-readiness";
 
 type Overview = {
   users: { total: number; pro: number; verified: number };
@@ -24,6 +25,29 @@ type Overview = {
   reviewedProjects: number;
   content: { total: number; published: number; paid: number };
   documents: { products: number; files: number };
+};
+
+type RuntimeHealth = {
+  httpStatus: number;
+  status: "ok" | "degraded";
+  commerceMode: "disabled" | "test" | "live";
+  commerceReady: boolean;
+  diagnosticTestReady: boolean;
+  timestamp: string;
+  readiness: {
+    database: boolean;
+    sessions: boolean;
+    stripe: boolean;
+    stripeMode: "unconfigured" | "test" | "live";
+    scopeDiagnostic: boolean;
+    email: boolean;
+    commercialNotifications: boolean;
+    analytics: boolean;
+    cron: boolean;
+    publicOriginConfigured: boolean;
+    publicOrigin: string;
+    schema: boolean;
+  };
 };
 
 type AdminUser = {
@@ -91,6 +115,16 @@ export default function AdminDashboardPage() {
   const content = useQuery<{ content: ContentControl[] }>({ queryKey: ["/api/admin/content"], enabled: isAdmin, staleTime: 30_000 });
   const pipeline = useQuery<Pipeline>({ queryKey: ["/api/admin/pipeline"], enabled: isAdmin, staleTime: 30_000 });
   const funnel = useQuery<QualityLabFunnelSnapshot>({ queryKey: ["/api/admin/quality-lab-funnel?days=30"], enabled: isAdmin, staleTime: 30_000 });
+  const readiness = useQuery<RuntimeHealth>({
+    queryKey: ["/api/health", "admin-readiness"],
+    enabled: isAdmin,
+    staleTime: 30_000,
+    queryFn: async () => {
+      const response = await fetch("/api/health", { credentials: "include" });
+      const body = await response.json() as Omit<RuntimeHealth, "httpStatus">;
+      return { ...body, httpStatus: response.status };
+    },
+  });
 
   const accessMutation = useMutation({
     mutationFn: async ({ userId, isPro }: { userId: string; isPro: boolean }) => (await apiRequest("PATCH", `/api/admin/users/${userId}/access`, { isPro })).json(),
@@ -135,7 +169,7 @@ export default function AdminDashboardPage() {
 
   if (isLoading || !isAdmin) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-teal-300" /></div>;
 
-  const loading = overview.isLoading || users.isLoading || documents.isLoading || content.isLoading || pipeline.isLoading || funnel.isLoading;
+  const loading = overview.isLoading || users.isLoading || documents.isLoading || content.isLoading || pipeline.isLoading || funnel.isLoading || readiness.isLoading;
 
   return (
     <div className="min-h-screen bg-[#07111f] px-4 pb-24 pt-6 text-slate-100 md:pt-10">
@@ -150,7 +184,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="flex flex-wrap gap-2">
               <Link href="/quality-lab/projects" className="rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-teal-300/30">Open Blueprint workspace</Link>
-              <button onClick={() => { void Promise.all([overview.refetch(), users.refetch(), documents.refetch(), content.refetch(), pipeline.refetch(), funnel.refetch()]); }} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200"><Activity className="h-4 w-4" /> Refresh data</button>
+              <button onClick={() => { void Promise.all([overview.refetch(), users.refetch(), documents.refetch(), content.refetch(), pipeline.refetch(), funnel.refetch(), readiness.refetch()]); }} className="inline-flex items-center gap-2 rounded-xl bg-teal-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-teal-200"><Activity className="h-4 w-4" /> Refresh data</button>
             </div>
           </div>
         </header>
@@ -169,6 +203,7 @@ export default function AdminDashboardPage() {
           </TabsList>
 
           <TabsContent value="overview" className="mt-5 space-y-5">
+            <RuntimeReadinessPanel health={readiness.data} failed={readiness.isError} />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <MetricCard icon={Users} label="Registered users" value={overview.data?.users.total ?? 0} detail={`${overview.data?.users.pro ?? 0} Pro · ${overview.data?.users.verified ?? 0} verified`} />
               <MetricCard icon={BadgeDollarSign} label="Completed revenue" value={money.format((overview.data?.purchases.revenueCents ?? 0) / 100)} detail={`${overview.data?.purchases.completed ?? 0} completed purchases`} />
@@ -202,7 +237,7 @@ export default function AdminDashboardPage() {
           <TabsContent value="funnel" className="mt-5">
             <Panel title="Blueprint funnel · last 30 days" description="First-party stage receipts remain available when PostHog is absent. Counts are unique browser journeys; direct entry can make later-stage reach exceed earlier CTA reach.">
               {funnel.isError ? (
-                <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-100">Funnel receipts are unavailable in this environment. Run the current database schema push before launch.</div>
+                <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-100">Funnel receipts are unavailable in this environment. {RUNTIME_SCHEMA_REMEDIATION}</div>
               ) : (
                 <div className="space-y-3">
                   <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
@@ -255,6 +290,35 @@ export default function AdminDashboardPage() {
 }
 
 function AdminTab({ value, icon: Icon, label }: { value: string; icon: typeof LayoutDashboard; label: string }) { return <TabsTrigger value={value} className="gap-2 px-4 py-2.5 data-[state=active]:bg-teal-300 data-[state=active]:text-slate-950"><Icon className="h-4 w-4" />{label}</TabsTrigger>; }
+function RuntimeReadinessPanel({ health, failed }: { health?: RuntimeHealth; failed: boolean }) {
+  if (failed) return <section className="rounded-2xl border border-red-300/20 bg-red-300/[0.05] p-5"><p className="text-sm font-bold text-red-200">Runtime readiness could not be loaded.</p><p className="mt-2 text-xs leading-6 text-slate-400">Treat commercial operations as HOLD until the health endpoint is reachable and reviewed.</p></section>;
+  if (!health) return <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5 text-sm text-slate-500">Loading runtime readiness…</section>;
+
+  const controls = [
+    ["Persistent database", health.readiness.database, "Required"],
+    ["Session security", health.readiness.sessions, "Required"],
+    ["Gate 1 runtime schema", health.readiness.schema, "Required"],
+    [`Stripe core · ${health.readiness.stripeMode}`, health.readiness.stripe, "Required"],
+    ["USD 149 Scope Diagnostic", health.readiness.scopeDiagnostic, "Required"],
+    ["Transactional email", health.readiness.email, "Required"],
+    ["Monitored owner inbox", health.readiness.commercialNotifications, "Required"],
+    ["Custom public origin", health.readiness.publicOriginConfigured, "Live only"],
+    ["Lifecycle cron", health.readiness.cron, "Operational"],
+    ["PostHog analytics", health.readiness.analytics, "Optional"],
+  ] as const;
+  const pilotReady = health.diagnosticTestReady;
+
+  return <section className={`rounded-2xl border p-5 ${pilotReady ? "border-teal-300/25 bg-teal-300/[0.05]" : "border-amber-300/25 bg-amber-300/[0.05]"}`}>
+    <div className="flex flex-wrap items-start justify-between gap-4">
+      <div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">Commercial runtime</p><h2 className="mt-2 text-xl font-bold text-white">{pilotReady ? "Controlled test checkout is ready" : "HOLD — prerequisites remain"}</h2><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-400">Mode: <span className="font-mono text-slate-300">{health.commerceMode}</span> · HTTP {health.httpStatus}. This panel proves configuration and minimum schema compatibility only; it does not prove webhook delivery, inbox receipt, payment acceptance or reviewer appointment.</p></div>
+      <div className="flex gap-2"><ReadinessBadge ready={health.diagnosticTestReady} label="Test pilot" /><ReadinessBadge ready={health.commerceReady} label="Live commerce" /></div>
+    </div>
+    <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">{controls.map(([label, ready, scope]) => <div key={label} className="rounded-xl border border-white/8 bg-slate-950/35 p-3"><div className="flex items-start justify-between gap-2">{ready ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-300" /> : <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />}<span className="text-[9px] font-bold uppercase tracking-wider text-slate-600">{scope}</span></div><p className="mt-3 text-xs font-semibold text-slate-200">{label}</p><p className={`mt-1 text-[10px] font-bold uppercase ${ready ? "text-teal-300" : "text-amber-300"}`}>{ready ? "Ready" : "Open"}</p></div>)}</div>
+    {!health.readiness.schema && <p className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-xs leading-6 text-amber-100">{RUNTIME_SCHEMA_REMEDIATION} Never infer the required database change from this public boolean alone.</p>}
+    <p className="mt-3 break-all font-mono text-[10px] text-slate-600">Origin: {health.readiness.publicOrigin} · observed {new Date(health.timestamp).toLocaleString("en-GB")}</p>
+  </section>;
+}
+function ReadinessBadge({ ready, label }: { ready: boolean; label: string }) { return <span className={`rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${ready ? "border-teal-300/25 bg-teal-300/10 text-teal-200" : "border-amber-300/25 bg-amber-300/[0.06] text-amber-200"}`}>{label}: {ready ? "Ready" : "Hold"}</span>; }
 function MetricCard({ icon: Icon, label, value, detail }: { icon: typeof Users; label: string; value: string | number; detail: string }) { return <article className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><Icon className="h-5 w-5 text-teal-300" /><p className="mt-4 text-3xl font-bold text-white">{value}</p><p className="mt-1 text-sm font-semibold text-slate-300">{label}</p><p className="mt-2 text-xs text-slate-500">{detail}</p></article>; }
 function StatusPanel({ title, icon: Icon, items }: { title: string; icon: typeof Users; items: string[] }) { return <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><div className="flex items-center gap-2"><Icon className="h-4 w-4 text-sky-300" /><h2 className="font-bold text-white">{title}</h2></div><ul className="mt-4 space-y-2">{items.map((item) => <li key={item} className="flex items-center gap-2 text-sm text-slate-400"><CheckCircle2 className="h-3.5 w-3.5 text-teal-300" />{item}</li>)}</ul></section>; }
 function Panel({ title, description, children }: { title: string; description: string; children: ReactNode }) { return <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"><h2 className="text-lg font-bold text-white">{title}</h2><p className="mt-1 text-xs leading-5 text-slate-500">{description}</p><div className="mt-4">{children}</div></section>; }

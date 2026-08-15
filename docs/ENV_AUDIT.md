@@ -18,7 +18,7 @@
 
 | Biến | Dùng ở đâu | Bắt buộc cho | Build/Runtime | Ghi chú |
 |---|---|---|---|---|
-| `DATABASE_URL` | `server/db.ts:6`, `server/routes.ts:30,32` (session store) | Auth, leads, purchases, session persistence | Runtime | Postgres. Thiếu → session fallback về memory (mất session khi function cold-start). Drizzle dùng `db:push` (không migration). |
+| `DATABASE_URL` | `server/db.ts`, `server/routes.ts` (session store) | Auth, leads, purchases, session persistence | Runtime | Postgres. Production/preview fail closed when persistent storage is absent. Run the protected `audit:schema`; reconcile production only through reviewed versioned migrations. Direct schema push is local/throwaway only. |
 
 ---
 
@@ -26,7 +26,7 @@
 
 | Biến | Dùng ở đâu | Bắt buộc cho | Build/Runtime | Ghi chú |
 |---|---|---|---|---|
-| `SESSION_SECRET` | `server/routes.ts:41` | Ký session cookie (login) | Runtime | Có fallback `"default_secret"` — **production phải set giá trị mạnh, ngẫu nhiên**. |
+| `SESSION_SECRET` | `server/routes.ts`, `server/runtime-config.ts` | Ký session cookie (login) | Runtime | Production/preview yêu cầu giá trị không-placeholder dài ít nhất 32 ký tự và fail closed nếu thiếu; fallback chỉ dành cho local development. |
 | `BASE_URL` | `server/routes.ts:236,266`, `server/email.ts:8` | Stripe success/cancel/return URL, link trong email | Runtime | Fallback: `http://localhost:5000` (routes) / `https://lifescienceatlas.com` (email). **Phải set = domain production thật** nếu không Stripe redirect/email link sẽ trỏ về localhost. |
 | `NODE_ENV` | `server/routes.ts:47` (cookie secure), `server/index.ts:82` | Cookie `secure`, chế độ chạy | Runtime | Thường do platform set (`production` trên Vercel). Không cần khai báo thủ công. |
 | `PORT` | `server/index.ts:93` | Cổng server (chỉ local/self-host) | Runtime | Vercel serverless tự quản; chỉ liên quan local. |

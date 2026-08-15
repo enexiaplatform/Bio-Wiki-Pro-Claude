@@ -13,7 +13,7 @@ const allowTestStripe = process.argv.includes("--allow-test-stripe");
 const previewOriginReady = readiness.publicOrigin.startsWith("https://") && !readiness.publicOrigin.includes("localhost");
 
 record(readiness.database ? "ok" : "fail", "Database connection", readiness.database
-  ? "persistent storage is configured; confirm the read-only schema boolean through /api/health"
+  ? "persistent storage is configured; run npm run audit:schema in the protected target environment"
   : "set DATABASE_URL (or a supported Postgres integration variable)");
 record(readiness.sessions ? "ok" : "fail", "Session security", readiness.sessions
   ? "strong SESSION_SECRET detected"

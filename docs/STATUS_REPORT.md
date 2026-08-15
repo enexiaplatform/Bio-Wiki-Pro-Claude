@@ -64,7 +64,7 @@ The code is ready; these are the **operational switches** to go live. None requi
 - [ ] **End-to-end test purchase** (Stripe test mode): buy GMP kit → success page → webhook fires → purchase recorded → `/my-downloads` serves the real PDF/Excel; buy Pro → 7-day trial starts → entitlement active.
 
 ### Activate nurture drip (optional but recommended)
-- [ ] `npm run db:push` to create the `nurture_sends` table, set `CRON_SECRET` in Vercel env, redeploy. (Trial works *without* this; only the drip needs it.)
+- [ ] Run `npm run audit:schema` in the protected target environment. If `nurture_sends` is absent, add it through a reviewed, rehearsed versioned migration and apply with `npm run db:migrate` under explicit production-change approval. Set `CRON_SECRET` and redeploy. (Trial works without the drip.)
 
 ### Pre-launch polish
 - [ ] **Custom domain** instead of `*.vercel.app` (SEO + email deliverability) — update canonical/sitemap base if it changes.
@@ -92,7 +92,10 @@ npm run dev              # Express + Vite HMR (port 5000)
 npm run check            # type-check (tsc) — currently clean
 npm run build            # vite client + esbuild server → dist/
 npm start                # run production build
-npm run db:push          # push Drizzle schema (no migration files)
+npm run audit:schema     # read-only runtime schema audit
+npm run db:generate      # generate a versioned migration for review
+npm run db:migrate       # apply an approved migration
+npm run db:push          # local/throwaway databases only; never production data
 npm test                 # vitest server/unit coverage
 npm run test:e2e         # playwright public smoke
 npm run validate:content # MDX frontmatter / escaping guard

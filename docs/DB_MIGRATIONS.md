@@ -22,12 +22,26 @@ npm run db:generate            # writes migrations/NNNN_<name>.sql + meta/
 # 2. Apply pending migrations to the DB in DATABASE_URL:
 npm run db:migrate
 
+# Read-only names/counts audit against the loaded target environment:
+npm run audit:schema
+
+# Same audit as JSON for a protected release record:
+npm run audit:schema -- --json
+
 # (dev only) push schema directly without a migration file:
 npm run db:push
 ```
 
 `DATABASE_URL` must be set (generate reads the config but does not connect;
 migrate connects and applies).
+
+`audit:schema` reads only `information_schema.columns` and names-only
+`pg_catalog` index metadata. It does not inspect application rows, emit
+connection values or modify the database. The command fails closed when any
+Gate 1 runtime table, required column, column type/nullability/default contract,
+primary key or unique key is absent or incompatible. The
+public `/api/health` route exposes only the resulting boolean; missing object
+names belong in the protected operator output, not the public response.
 
 ## Baseline status
 
@@ -68,10 +82,18 @@ is not a server audit log or client approval record.
 
 ## Workflow
 
-1. Edit `shared/schema.ts`.
-2. `npm run db:generate` (review the generated SQL — commit it).
-3. Commit the migration file with the code change.
-4. Deploy → run `npm run db:migrate` against the target DB (CI step or release task).
+1. Run `npm run audit:schema` against the target and reconcile the result with
+   the deployed migration journal. A public `schema:false` result is not enough
+   information to design a migration.
+2. Edit `shared/schema.ts` only when the desired contract itself changes.
+3. `npm run db:generate` (review the generated SQL — commit it).
+4. Rehearse the migration and rollback/restore procedure against a
+   production-like staging copy; reject destructive or ambiguous statements.
+5. Take a verified production backup and obtain an explicit change approval.
+6. Commit the migration file with the code change.
+7. Deploy → run `npm run db:migrate` against the approved target.
+8. Rerun `npm run audit:schema` and `/api/health`, then perform the separate
+   Stripe/email acceptance journey.
 
 ## Notes
 

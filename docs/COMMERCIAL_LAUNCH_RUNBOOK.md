@@ -29,7 +29,7 @@ For target-account preparation, qualification and copy-ready founding-pilot outr
 
 The commercial journey now has a strict, privacy-minimal first-party funnel receipt and an Admin 30-day report. It stores stage and limited operational attribution only; it rejects project identifiers, project inputs, contact details and evidence content. The Stripe webhook carries the anonymous journey identifier so a successful Scope Diagnostic purchase remains attributable even when the buyer does not return to the success page.
 
-During P0, do not run `db:push` or alter the production schema. `GET /api/health` performs a cached, read-only check for the existing account, revision, funnel, session, purchase and Stripe-event tables and publishes only `readiness.schema: boolean`. If it is false, account sync and checkout stay fail-closed until a separately approved schema operation is completed. PostHog is an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
+During P0, do not run `db:push` or alter the production schema. `GET /api/health` performs a cached, read-only check of Gate 1 tables, column type/nullability/default compatibility and required primary/unique keys for the account, intake, payment, project revision, governance and funnel contract, then publishes only `readiness.schema: boolean`. If it is false, account sync and checkout stay fail-closed until a separately approved schema operation is completed. PostHog is an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
 
 ## Required production configuration
 
@@ -46,6 +46,8 @@ During P0, do not run `db:push` or alter the production schema. `GET /api/health
 
 `GET /api/health` reports `commerceMode`, `diagnosticTestReady`, `commerceReady`, and boolean schema/origin readiness without returning connection details or secrets. `diagnosticTestReady` means a preview can complete a Stripe test-mode acceptance journey. `commerceReady` remains false unless `COMMERCE_MODE=live`, the Stripe key is live, all email/inbox/database/session requirements are ready, the schema check passes, and the origin is a custom domain. Production stays `COMMERCE_MODE=disabled` for this pilot cycle.
 
+`npm run audit:schema` is the protected operator companion to that public boolean. It queries `information_schema.columns` plus names-only `pg_catalog` index metadata, reads no application rows and prints only required object names, structural issues and counts. Use `npm run audit:schema -- --json` for a machine-readable handoff. Its contract is derived from the current Drizzle definitions and covers ten Gate 1 tables, 82 column contracts and the primary/unique keys required for identity, idempotency and conflict-safe persistence: users, sessions, purchases, Stripe-event idempotency, Scope Diagnostic intake, reviewed projects/revisions, governance records/revisions and the privacy-minimal funnel.
+
 The interim public/canonical origin is `https://life-science-atlas-enexiaplatforms-projects.vercel.app`. Preview deployments in `COMMERCE_MODE=test` derive Stripe redirect URLs from their own `VERCEL_URL` so they cannot redirect a test buyer to production.
 
 ### Production name-only audit — 18 July 2026
@@ -53,6 +55,20 @@ The interim public/canonical origin is `https://life-science-atlas-enexiaplatfor
 The linked Vercel Production project currently lists database integration variables, `SESSION_SECRET`, `BASE_URL`, `VITE_SITE_URL`, `CRON_SECRET`, `ADMIN_EMAILS`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` and the legacy Pro price. The listing does not expose or validate their values.
 
 The Production listing does not yet contain `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, `RESEND_API_KEY`, `EMAIL_FROM` or `VITE_POSTHOG_KEY`. `COMMERCIAL_NOTIFICATION_EMAILS` is also absent, but the existing `ADMIN_EMAILS` is an allowed fallback when it points to a monitored operational inbox. Re-run `npm run preflight` inside a protected Production environment after configuration; do not copy secrets into source-controlled files or chat.
+
+### Public readiness probe — 15 August 2026
+
+The public pricing, Diagnostic review and illustrative sample routes returned HTTP 200. The production health endpoint returned HTTP 503 with `status: degraded`, `commerceMode: disabled`, `schema: false`, `diagnosticTestReady: false` and `commerceReady: false`. It reported database, session, Stripe test-mode, commercial-notification and cron configuration as present, while the Scope Diagnostic price, email, analytics and explicit public-origin readiness remained false. This is a dated names/booleans-only observation, not proof that any credential value, inbox delivery, webhook or payment journey works.
+
+### Schema remediation procedure — approval required
+
+1. Load the protected target environment without copying connection values into source control, screenshots or chat.
+2. Run `npm run audit:schema` and retain only its names/counts output in the private release record.
+3. Compare missing objects with `shared/schema.ts`, `shared/models/auth.ts` and the migration journal. Do not infer that all absent objects are safe to create from the public health boolean alone.
+4. Take and verify a restorable database backup, then reconcile an additive migration and rehearse it against a production-like staging copy. Review for drops, truncation, type narrowing, constraint conflicts and long locks.
+5. Obtain explicit production-change approval naming the migration, target, backup reference, operator, window and rollback owner.
+6. Apply the reviewed migration with `npm run db:migrate`. Never use `npm run db:push` against production data.
+7. Rerun `npm run audit:schema`, then `/api/health`. A green schema result proves structural compatibility only; complete the Stripe and email acceptance tests separately.
 
 ## Stripe acceptance test
 

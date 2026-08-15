@@ -21,7 +21,14 @@ npm run build
 # Run production build
 npm start
 
-# Push DB schema changes (no migration files - direct push)
+# Read-only target schema audit (names/counts only)
+npm run audit:schema
+
+# Generate/apply reviewed versioned migrations (staging/production)
+npm run db:generate
+npm run db:migrate
+
+# Direct schema push (local/throwaway databases only; never production data)
 npm run db:push
 
 # Content/path/link/tool metadata validation + type-check

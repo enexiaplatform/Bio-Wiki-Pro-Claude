@@ -24,6 +24,9 @@ The repository implementation following this audit now includes:
 - controlled reviewer ownership, paid-pilot economics, estimate-to-actual calibration, buyer decisions, corrections, acceptance, immutable review evidence and separate external-publication permission;
 - a two-stage Gate 2 control: four version-matched evidence prerequisites open qualified release review, while actual release requires a separate cross-case decision, rule disposition and documented approval outside Atlas;
 - project owner, input-source owner and controlled input revision captured at intake and carried into report/export surfaces.
+- a protected, read-only runtime schema auditor derived from the Drizzle contract, with exact missing table/column diagnostics kept out of the public health response;
+- production-facing schema guidance consolidated around audit, staging rehearsal, backup, explicit approval and versioned migration, with an automated guard preventing unsafe direct-push instructions from returning to application copy.
+- a private Admin Overview readiness panel that makes each commercial configuration/schema control, test/live HOLD state and acceptance-test limitation visible without exposing credentials or database object names.
 
 No real-world proof was fabricated. The current records remain open wherever evidence must come from licensed compendial access, named qualified reviewers, client-controlled documents, paid delivery, observed actuals, written publication permission or external release approval. Those are execution dependencies, not code-completeness defects.
 
@@ -49,6 +52,7 @@ No real-world proof was fabricated. The current records remain open wherever evi
 | Three paid engagements with actuals, decisions, corrections, hours and margin | `shared/quality-lab-engagement.ts`, `shared/quality-lab-pilot-portfolio.ts` | Capture and Gate 1 logic implemented; real portfolio remains externally dependent |
 | Controlled validation and publication permission | `shared/quality-lab-validation-cases.ts`, `shared/quality-lab-engagement.ts` | Internal learning and external publication permissions are separate; no permission is implied |
 | Gate 2 release and change boundary | `shared/quality-lab-gate-2-release.ts` | Evidence eligibility and external release authorization are separate version-matched decisions |
+| Commercial runtime schema safety | `server/runtime-schema.ts`, `script/audit-runtime-schema.ts`, `script/validate-operational-safety.ts`, `client/src/pages/AdminDashboardPage.tsx` | Ten Gate 1 tables, 82 type/nullability/default column contracts and required primary/unique keys are checked read-only; public health exposes booleans only, Admin renders an explicit HOLD/READY control view, and unsafe direct-push guidance is rejected by validation |
 
 ### Remaining evidence dependencies
 
@@ -61,10 +65,10 @@ The repository cannot truthfully manufacture the following completion evidence. 
 5. explicit client permission before any real case is published;
 6. cross-case rule disposition and documented release approval outside Atlas.
 
-### Current repository verification — 2026-08-14
+### Current repository verification — 2026-08-15
 
 - `npm run validate` passed: 230 MDX files, 55 Quality v2 records, 49 canonical sources, 105/105 learning-path coverage and 305 internal targets.
-- `npm test` passed: 80 files and 492 tests.
+- `npm test` passed: 81 files and 500 tests.
 - Production build passed; the largest entry chunk is 354.10 KB (103.33 KB gzip) and the prior 500 KB warning is cleared.
 - The full browser suite passed cleanly against a managed local server: 115 tests passed, including thirteen accessibility/keyboard/reflow checks, and two Stripe test-mode cases were intentionally skipped. Reduced-motion mode and a settled route-entry state keep contrast measurement out of transient fade animations.
 

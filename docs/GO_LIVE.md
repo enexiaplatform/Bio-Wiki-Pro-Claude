@@ -13,7 +13,7 @@ production deployment on Vercel. Sibling docs cover slices in depth:
 > trialDays:7}`, so a `STRIPE_SECRET_KEY` + `STRIPE_PRO_PRICE_ID` are already set —
 > **verify they are LIVE keys, not test**. Remaining owner-only steps to actually take
 > money: confirm live Stripe keys, add the **live webhook secret** (Step 2b), set a prod
-> `DATABASE_URL` + run `npm run db:push` (Step 1), set `EMAIL_FROM` + `RESEND_API_KEY`,
+> `DATABASE_URL` + complete the protected schema audit and approved migration workflow (Step 1), set `EMAIL_FROM` + `RESEND_API_KEY`,
 > and (optional) `VITE_POSTHOG_KEY` + a custom domain. Everything else — 8 gated toolkit
 > downloads, 21 workflows, 5 tools, content — is already live in code.
 
@@ -41,19 +41,22 @@ production deployment on Vercel. Sibling docs cover slices in depth:
 
 ## Step 1 — Database
 
-Drizzle uses **schema-push** (no migration files).
+Drizzle schemas are reconciled through reviewed **versioned migrations** for
+every persistent environment. Direct schema push is limited to local or
+throwaway databases and must never be used against production data.
 
 ```bash
-# With the production DATABASE_URL in your environment:
-npm run db:push        # creates/updates: users, sessions, purchases, leads,
-                       # quote_requests, content_entries, processed_stripe_events,
-                       # lesson_reads (cross-device progress) + the lifecycle-email
-                       # tables (lifecycle_sends, checkout_attempts, nurture_sends).
-                       # All degrade gracefully if absent, but push them for
-                       # cross-device progress + trial/dunning/re-engagement emails.
+# With the protected production environment loaded:
+npm run audit:schema   # read-only names/counts check; no application rows
+
+# After backup, staging rehearsal and explicit production-change approval:
+npm run db:migrate     # apply only the reviewed versioned migration
 ```
 
-- [ ] `db:push` completes without error against the prod DB.
+- [ ] `audit:schema` identifies the exact structural gap without exposing data.
+- [ ] The reviewed migration and restore procedure pass on a production-like staging copy.
+- [ ] `db:migrate` completes against production under explicit change approval.
+- [ ] `audit:schema` and `/api/health` pass after the migration.
 - [ ] (Optional) `npm run seed:content` — syncs MDX frontmatter → `content_entries`
       for operational state (publish flags, view counts). **Not required**: the
       content endpoint defaults to *published* when a row is missing, so all
@@ -127,20 +130,20 @@ Set all of these for **Production**. Full annotations in `docs/ENV_AUDIT.md`.
 
 > **Quick check:** run **`npm run preflight`** with the target env loaded (it reads
 > `.env` via dotenv, or the ambient environment). It reports every required var as
-> `✗ blocking` / `! warning` / `✓ ok` for the subscription-first launch — catches the
-> commonly-forgotten `STRIPE_WEBHOOK_SECRET`, a `sk_test_` key left in prod, a
-> `localhost` `BASE_URL`, or a career-kit price with no download URL. Exit code is
-> non-zero while any blocking var is unset. It's a config linter only — still do the
-> live test purchase in Step 6 to confirm the webhook + DB end to end.
+> blocking/warning/ready for the current Paid Scope Diagnostic path. It catches
+> a missing webhook secret, checkout-mode/key mismatch, an unsafe public origin,
+> missing owner inbox, email sender or Diagnostic price. Exit code is non-zero
+> while any blocking requirement is unset. It is a config linter only; complete
+> the separate schema, webhook, email and payment acceptance checks.
 
 **Revenue-blocking (must be real, not placeholder):**
-- [ ] `DATABASE_URL` — prod Postgres. (Without it, sessions fall back to memory → users get logged out on cold start.)
-- [ ] `SESSION_SECRET` — strong random string (fallback is the weak `"default_secret"`).
-- [ ] `BASE_URL` — `https://<your-domain>` (drives Stripe success/cancel + email links; fallback is `localhost`).
-- [ ] `STRIPE_SECRET_KEY` — live `sk_live_...`.
-- [ ] `STRIPE_WEBHOOK_SECRET` — live `whsec_...` from Step 2b.
-- [ ] `STRIPE_PRO_PRICE_ID` — live recurring price.
-- [ ] `RESEND_API_KEY` — `re_...` (without it, emails are silently skipped).
+- [ ] `DATABASE_URL` or supported provider variable — persistent production Postgres; `/api/health` stays degraded without it.
+- [ ] `SESSION_SECRET` — non-placeholder random value of at least 32 characters; production startup fails closed without it.
+- [ ] `PUBLIC_APP_URL` — intended HTTPS origin. `BASE_URL` is temporary compatibility fallback only.
+- [ ] `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` — matching environment and `COMMERCE_MODE`.
+- [ ] `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID` — USD 149 one-time Diagnostic price.
+- [ ] `RESEND_API_KEY` and verified `EMAIL_FROM` sender.
+- [ ] `COMMERCIAL_NOTIFICATION_EMAILS` or monitored `ADMIN_EMAILS` fallback.
 
 **For one-time career kits (only if selling them — GMP kit is now Pro-only):**
 - [ ] `STRIPE_*_PRICE_ID` (starter_kit, interview_prep, bundle) + `DOWNLOAD_*` URLs (real file links — placeholder = broken delivery email).

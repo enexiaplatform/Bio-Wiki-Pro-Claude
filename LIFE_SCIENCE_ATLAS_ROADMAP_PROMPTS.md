@@ -292,7 +292,8 @@ LÀM:
    - Trả về { success: true }
 
 3. Trong shared/schema.ts: thêm Drizzle table định nghĩa cho leads
-4. Chạy npm run db:push để tạo bảng
+4. Historical step only: use the current protected schema-audit and approved
+   versioned-migration workflow; do not run a direct production schema push.
 
 5. Tạo nội dung file GMP Audit Quick Checklist (text để điền vào Google Doc/PDF):
    - 25 checklist items chia làm 5 nhóm: Documentation, Personnel, Equipment, Environment, Records
@@ -449,7 +450,8 @@ MỤC TIÊU: Sau khi khách mua GMP Audit Kit $59, họ phải nhận được f
 LÀM:
 1. Tạo bảng purchases trong shared/schema.ts:
    { id, email, productId, stripeSessionId, deliveredAt, created_at }
-   Chạy npm run db:push
+   Historical step only: use the current protected schema-audit and approved
+   versioned-migration workflow; do not run a direct production schema push.
 
 2. Trong server/routes.ts, endpoint POST /api/webhooks/stripe:
    - Khi checkout.session.completed: insert vào bảng purchases

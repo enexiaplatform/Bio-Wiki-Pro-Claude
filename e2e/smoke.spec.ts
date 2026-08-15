@@ -730,8 +730,29 @@ test.describe("public smoke", () => {
       const key = `${url.pathname}${url.search}`;
       return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(responses[key] ?? {}) });
     });
+    await page.route("**/api/health", (route) => route.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({
+        status: "degraded",
+        commerceMode: "disabled",
+        commerceReady: false,
+        diagnosticTestReady: false,
+        timestamp: "2026-08-15T07:33:45.227Z",
+        readiness: {
+          database: true, sessions: true, schema: false, stripe: true, stripeMode: "test",
+          scopeDiagnostic: false, email: false, commercialNotifications: true,
+          analytics: false, cron: true, publicOriginConfigured: false,
+          publicOrigin: "https://life-science-atlas.example.vercel.app",
+        },
+      }),
+    }));
 
     await page.goto("/admin");
+    await expect(page.getByRole("heading", { name: "HOLD — prerequisites remain" })).toBeVisible();
+    await expect(page.getByText("Gate 1 runtime schema")).toBeVisible();
+    await expect(page.getByText(/Run the protected schema audit, then apply an approved versioned migration/i)).toBeVisible();
+    await expect(page.getByText(/does not prove webhook delivery, inbox receipt, payment acceptance or reviewer appointment/i)).toBeVisible();
     await page.getByRole("tab", { name: "Blueprint funnel" }).click();
     await expect(page.getByRole("heading", { name: /Blueprint funnel · last 30 days/i })).toBeVisible();
     await expect(page.getByText("Unique Blueprint journeys observed")).toBeVisible();
@@ -742,6 +763,10 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: "Decision intelligence registry" })).toBeVisible();
     await expect(page.getByText("12/12")).toBeVisible();
     await expect(page.getByText("decision_package_product_handoff")).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.getByRole("tab", { name: "Overview" }).click();
+    await expect(page.getByRole("heading", { name: "HOLD — prerequisites remain" })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 
   test("quality lab funnel reaches planner and expert review intake", async ({ page }) => {

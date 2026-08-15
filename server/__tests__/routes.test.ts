@@ -126,6 +126,25 @@ beforeEach(() => {
   checkRuntimeSchema.mockResolvedValue(true);
 });
 
+describe("runtime readiness", () => {
+  it("fails closed without exposing protected schema object names", async () => {
+    checkRuntimeSchema.mockResolvedValueOnce(false);
+    const app = await buildApp();
+    const response = await request(app).get("/api/health");
+
+    expect(response.status).toBe(503);
+    expect(response.body).toMatchObject({
+      status: "degraded",
+      commerceReady: false,
+      diagnosticTestReady: false,
+      readiness: { schema: false },
+    });
+    expect(response.body.readiness).not.toHaveProperty("missingTables");
+    expect(response.body.readiness).not.toHaveProperty("missingColumns");
+    expect(JSON.stringify(response.body)).not.toContain("quote_requests");
+  });
+});
+
 describe("auth", () => {
   it("register → me round-trip (session persisted)", async () => {
     const app = await buildApp();
