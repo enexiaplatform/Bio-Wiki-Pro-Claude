@@ -406,6 +406,8 @@ Validation correctly reports release warnings rather than treating under-review 
 
 **Goal:** prove that buyers pay, use the output and correct the model.
 
+**Field execution:** follow `docs/QUALITY_LAB_GATE_1_GATE_2_FIELD_RUNBOOK.md` to create, reference and reconcile the required external records without placing confidential or licensed evidence in source control.
+
 1. Appoint and document qualified reviewer role(s), qualifications, scope and escalation boundaries.
 2. Sell and deliver three paid diagnostics/Blueprint engagements.
 3. Record estimate vs actual, buyer decision, corrections, delivery hours, margin and evidence closures.
@@ -417,6 +419,8 @@ Validation correctly reports release warnings rather than treating under-review 
 ### P3 — Gate 2 verified micro pack (after P2)
 
 **Goal:** release a calibrated, versioned first-wedge pack.
+
+**Field execution:** continue with the validation-case and Gate 2 release sections of `docs/QUALITY_LAB_GATE_1_GATE_2_FIELD_RUNBOOK.md`; the Atlas assessment is a working control, while appointment, case acceptance and release authorization remain external decisions.
 
 1. Calibrate all high-impact coefficients and confidence ranges against the three cases.
 2. Close all 14 rule evidence records to controlled-review-ready or explicitly remove/defer unsupported rules.
