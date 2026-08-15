@@ -406,6 +406,8 @@ Validation correctly reports release warnings rather than treating under-review 
 
 **Goal:** prove that buyers pay, use the output and correct the model.
 
+**Acquisition execution:** use the current `docs/SOFT_LAUNCH.md` for target-account preparation, qualification, bounded outreach copy and the existing commercial-status evidence discipline. It supersedes the former Academy/Pro launch campaign.
+
 **Field execution:** follow `docs/QUALITY_LAB_GATE_1_GATE_2_FIELD_RUNBOOK.md` to create, reference and reconcile the required external records without placing confidential or licensed evidence in source control.
 
 1. Appoint and document qualified reviewer role(s), qualifications, scope and escalation boundaries.

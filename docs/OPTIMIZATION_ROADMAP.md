@@ -77,8 +77,10 @@ download events); IA (Solutions surfaced, mobile "More" drawer, ⌘K complete);
 trust/legal (educational-use disclaimer on readers, trust badges, Terms §6);
 brand favicon; performance (index chunk 904→362KB, **Pro-content leak closed**,
 react-markdown off the landing path, dead recharts removed); content accuracy
-sweep (citations/formulas verified); a11y pass 1 (icon-button labels); soft-launch
-kit (`docs/SOFT_LAUNCH.md`).
+sweep (citations/formulas verified); a11y pass 1 (icon-button labels). The legacy
+soft-launch asset at `docs/SOFT_LAUNCH.md` was replaced in August 2026 by the
+current Founding Blueprint pilot acquisition kit so launch execution follows
+the Product Source of Truth rather than the former Academy/Pro campaign.
 
 ---
 
@@ -224,7 +226,8 @@ keys + a seeded user — can't run locally (no `DATABASE_URL`/Stripe CLI here).
 Not code — but a session can verify around it. Set Stripe **live** keys + price
 IDs + webhook (6 events), `DATABASE_URL`, `SESSION_SECRET`, `BASE_URL`,
 `RESEND_API_KEY`, `EMAIL_FROM`, `VITE_POSTHOG_KEY`; run `db:push`; do one real
-purchase; run the prod smoke in `docs/GO_LIVE.md`. Then execute `docs/SOFT_LAUNCH.md`.
+purchase; run the prod smoke in `docs/GO_LIVE.md`. Then execute the current
+Founding Blueprint acquisition sequence in `docs/SOFT_LAUNCH.md`.
 
 ---
 

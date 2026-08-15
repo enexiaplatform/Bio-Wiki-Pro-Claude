@@ -4,6 +4,8 @@ This checklist is the operational gate for accepting unattended public payment. 
 
 For execution after a qualified request becomes a real engagement, use `QUALITY_LAB_GATE_1_GATE_2_FIELD_RUNBOOK.md`. It maps reviewer appointment, paid-pilot delivery, calibration, client acceptance, validation cases, publication permission and external Domain Pack release to the existing Atlas control surfaces.
 
+For target-account preparation, qualification and copy-ready founding-pilot outreach, use the current `SOFT_LAUNCH.md`. It supersedes the former Academy/Pro launch campaign and does not authorize external sending by itself.
+
 ## Gate 1 change decision record
 
 1. **Current-state audit:** Atlas already has commercial intake, diagnostic checkout, reviewed-project persistence, controlled exports, action tracking, calibration records and a paid-pilot portfolio. The repository still contains no accepted real validation case.
