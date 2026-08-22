@@ -28,7 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { analytics } from "@/hooks/use-analytics";
 
 // Life Science Atlas "Knowledge Lattice" mark (molecule + knowledge graph).
-function AtlasMark({ className }: { className?: string }) {
+export function AtlasMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
       <g fill="none" stroke="#14B8A6" strokeOpacity="0.5" strokeWidth="3.4" strokeLinecap="round">

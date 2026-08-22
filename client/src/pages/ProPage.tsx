@@ -1,409 +1,450 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowRight,
-  BadgeCheck,
   BookOpenCheck,
-  Calculator,
   CalendarDays,
-  Check,
   CheckCircle2,
-  Copy,
-  Crown,
+  ChevronRight,
+  ClipboardCheck,
   FileSpreadsheet,
+  FlaskConical,
   LockKeyhole,
-  PackageCheck,
+  Network,
+  Scale,
+  Search,
   ShieldCheck,
-  Sparkles,
+  Target,
+  type LucideIcon,
 } from "lucide-react";
-import { EditorialImage } from "@/components/EditorialImage";
+import {
+  Handle,
+  Position,
+  ReactFlow,
+  type Edge,
+  type Node,
+  type NodeProps,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { AtlasMark } from "@/components/Navigation";
 import { analytics } from "@/hooks/use-analytics";
-import { useDecisionPackageProgressPortfolio } from "@/hooks/use-decision-package-progress";
 import { useSEO } from "@/hooks/use-seo";
-import { copyText } from "@/lib/clipboard";
-import { ATLAS_PRO_WORKFLOWS, formatAtlasProWorkflowBrief, getAtlasProWorkflow, type AtlasProWorkflowId } from "@shared/atlas-pro-workflows";
-import { getDecisionPackage, getDecisionPackagesForLane, getNextDecisionPackage, type DecisionPackageLane } from "@shared/decision-packages";
-import { assessDecisionPackageProgress } from "@shared/decision-package-progress";
+import {
+  getAtlasProWorkflow,
+  type AtlasProWorkflowId,
+} from "@shared/atlas-pro-workflows";
+import { getDecisionPackage } from "@shared/decision-packages";
 
-const proLifecycleLanes: Array<{ id: DecisionPackageLane; label: string; description: string }> = [
-  { id: "biopharma", label: "Biopharma", description: "Cell substrate and materials through process, analytics, validation, comparability and transfer." },
-  { id: "pharma-api", label: "Pharma/API", description: "Route and inputs through reaction, isolation, impurity, analytical and commercial lifecycle." },
-  { id: "pharma-drug-product", label: "Drug Product", description: "Formulation through unit operations, release, stability, packaging, validation and change, with bounded OSD examples." },
-];
+type SourceId = "evidence" | "workbench" | "file" | "audit";
+type ReviewStepId = "frame" | "verify" | "decide" | "close";
 
-const proLibrary = [
+const sourceShelf: Array<{
+  id: SourceId;
+  label: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  tone: string;
+}> = [
   {
+    id: "evidence",
+    label: "Evidence",
+    description: "Named sources and context",
+    href: "/evidence",
     icon: BookOpenCheck,
-    number: "01",
-    title: "Evidence with more context",
-      body: "Follow 36 strategic core lessons across five decision workflows, including the full Pharma API route-to-routine chain, Biopharma potency/reference depth, and decision-led DoE. The Monthly Quality Review turns one recurring signal into an evidence note, applied workflow, reviewer challenge, and owned carryover.",
-      example: "36 core lessons · five decision workflows",
-    href: "/academy",
-    linkLabel: "Browse public evidence",
+    tone: "text-teal-300",
   },
   {
-    icon: Calculator,
-    number: "02",
-    title: "Blueprint-connected Lab Workbench",
-    body: "Review recurring test demand, method resource load, and consumable replenishment assumptions from the same Blueprint basis on desktop or mobile.",
-    example: "Demand, capacity, and supply views",
+    id: "workbench",
+    label: "Lab Workbench",
+    description: "Demand, capacity, supply",
     href: "/pro/lab-workbench",
-    linkLabel: "Open the Lab Workbench",
+    icon: FlaskConical,
+    tone: "text-violet-300",
   },
   {
-    icon: FileSpreadsheet,
-    number: "03",
-    title: "Reusable working files",
-    body: "Use twenty editorial-reviewed working packs with a guide, blank working file, fictional completed example, source boundary, and accountable review fields. Other legacy packs remain accessible under review.",
-    example: "20 editorial-reviewed packs · legacy packs under review",
+    id: "file",
+    label: "Working File",
+    description: "Analysis and assumptions",
     href: "/toolkits",
-    linkLabel: "Preview the toolkit library",
+    icon: FileSpreadsheet,
+    tone: "text-sky-300",
   },
   {
-    icon: PackageCheck,
-    number: "04",
-    title: "GMP Audit Readiness Kit",
-    body: "Organize gap review, evidence requests, CAPA planning, interview preparation, and follow-up work.",
-    example: "Guide, gap analysis, CAPA, and Q&A",
+    id: "audit",
+    label: "Audit Readiness",
+    description: "Gaps and preparedness",
     href: "/toolkits/gmp-audit-kit",
-    linkLabel: "See what the kit contains",
+    icon: ShieldCheck,
+    tone: "text-teal-300",
   },
 ];
 
-const workflow = [
-  ["01", "Ask", "Start from a method, compliance, calculation, or audit question."],
-  ["02", "Understand", "Inspect the evidence basis, assumptions, and boundaries."],
-  ["03", "Apply", "Use the relevant tool, checklist, template, or working file."],
-  ["04", "Reuse", "Return to the same reference layer as the work evolves."],
+const reviewSteps: Array<{
+  id: ReviewStepId;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}> = [
+  { id: "frame", label: "Frame", description: "Define the decision and boundaries", icon: Target },
+  { id: "verify", label: "Verify", description: "Check evidence and assumptions", icon: Search },
+  { id: "decide", label: "Decide", description: "Compare options and choose a path", icon: Scale },
+  { id: "close", label: "Close", description: "Document decision and next actions", icon: CheckCircle2 },
 ];
 
-const comparisonRows = [
-  ["Monthly operating review", "Illustrative preview only", "Editable workspace, account sync, portfolio pulse, carryover, and export"],
-    ["Evidence", "Public orientation and selected guides", "36 core lessons in five workflows spanning the full Pharma API route, reaction/work-up, isolation/solid-state, impurity, analytical, validation and lifecycle chain plus the full Biopharma product-process lifecycle, potency/reference depth and decision-led DoE, with a Monthly Quality Review and visible review status, sources, limitations, scenario, and rationale-based quiz"],
-  ["Tools", "30 focused public calculators", "Blueprint-connected Lab Workbench with saved assumptions, revisions, and export"],
-  ["Regulatory updates", "Public official-source monitor", "Opt-in weekly impact digest or narrow daily watchlist"],
-  ["Working files", "Limited public samples", "Twenty editorial-reviewed working packs with blank files and fictional examples; legacy packs stay accessible under review"],
-  ["Audit readiness", "Public orientation resources", "GMP Audit Readiness Kit included"],
-  ["Expert project review", "Not included", "Not included — use Quality Lab for scoped review"],
-];
+function openSearch() {
+  window.dispatchEvent(new Event("lsa:open-search"));
+}
 
-const proReasons = [
-  "You need to keep one quality priority moving from evidence gap to owned carryover each month",
-  "You repeatedly use evidence, calculators, templates, or audit resources",
-  "You need more context than the public orientation layer",
-  "The output supports your own recurring professional workflow",
-];
-
-const qualityLabReasons = [
-  "The decision concerns a site, portfolio, capacity, equipment, cost, or risk",
-  "Multiple functions need one controlled decision basis",
-  "The scope requires project-specific expert challenge and delivery",
-];
-
-export default function ProPage() {
-  const [selectedWorkflowId, setSelectedWorkflowId] = useState<AtlasProWorkflowId>("audit-readiness");
-  const [briefCopied, setBriefCopied] = useState(false);
-  const selectedWorkflow = getAtlasProWorkflow(selectedWorkflowId);
-  const packageId = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("package");
-  const packageContext = packageId ? getDecisionPackage(packageId) : undefined;
-  const nextPackage = packageContext ? getNextDecisionPackage(packageContext.id) : undefined;
-
-  useSEO({
-    title: "Life Science Atlas Pro",
-    description: "Run a recurring Monthly Quality Review with connected Pro evidence, tools, reusable working files, account history, carryover, and export.",
-  });
-
-  function selectWorkflow(id: AtlasProWorkflowId) {
-    setSelectedWorkflowId(id);
-    setBriefCopied(false);
-    analytics.proWorkflowSelected(id);
-  }
-
-  async function copyWorkflowBrief() {
-    await copyText(formatAtlasProWorkflowBrief(selectedWorkflowId));
-    setBriefCopied(true);
-    analytics.proWorkflowBriefCopied(selectedWorkflowId);
-    window.setTimeout(() => setBriefCopied(false), 1800);
-  }
-
+function ProNav() {
   return (
-    <div className="min-h-screen bg-[#f4f7f5] text-[#0b1b2c]">
-      <section className="relative overflow-hidden border-b border-white/10 bg-[#061426] px-4 py-12 text-slate-100 md:py-16 lg:py-20">
-        <div className="pointer-events-none absolute -right-28 top-8 h-80 w-80 rounded-full bg-sky-300/[0.07] blur-3xl" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.94fr_1.06fr] lg:items-center">
-          <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-sky-300/30 bg-sky-300/[0.07] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-sky-200">
-              <Crown className="h-3.5 w-3.5" /> Atlas Pro
-            </span>
-            <h1 className="mt-6 font-display text-4xl font-bold leading-[1.04] tracking-[-0.035em] sm:text-5xl lg:text-[3.7rem]">
-              Evidence, tools, and working files for quality work <span className="text-sky-300">you repeat.</span>
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
-              Pro turns deeper evidence, practical tools, and reusable outputs into a monthly working cycle you can continue instead of rebuilding.
-            </p>
+    <header className="relative z-50 flex h-[4.75rem] items-center border-b border-slate-700/60 bg-[#031426]/95 px-4 backdrop-blur-md sm:px-6 lg:px-7">
+      <Link href="/" aria-label="Life Science Atlas home" className="flex shrink-0 items-center gap-2.5 transition hover:opacity-85">
+        <span className="grid h-10 w-10 place-items-center rounded-lg border border-teal-300/20 bg-[#071b2f] p-1.5">
+          <AtlasMark className="h-full w-full" />
+        </span>
+        <span className="hidden font-display text-xl font-bold text-slate-50 sm:inline">
+          Life Science <span className="text-teal-300">Atlas</span>
+        </span>
+      </Link>
 
-            <div className="mt-7 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <strong className="text-3xl tracking-tight text-white">$8/month</strong>
-              <span className="text-sm text-slate-400">or $80/year when annual access is available</span>
-            </div>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <a href="#what-pro-unlocks" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-                See what Pro unlocks <ArrowRight className="h-4 w-4" />
-              </a>
-              <Link href="/academy" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300">
-                Explore the public layer
-              </Link>
-            </div>
-            <p className="mt-4 flex items-start gap-2 text-xs leading-5 text-slate-500">
-              <LockKeyhole className="mt-0.5 h-3.5 w-3.5 shrink-0" /> Membership access for individual professional use · not project-specific expert review
-            </p>
-          </div>
+      <span className="ml-3 inline-flex min-h-9 items-center rounded-lg border border-teal-300/40 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200 sm:text-xs">
+        Atlas Pro
+      </span>
 
-          <aside className="overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#0b1d33] p-3 shadow-2xl shadow-black/25 sm:p-4" aria-label="Inside Atlas Pro">
-            <div className="relative overflow-hidden rounded-2xl">
-              <EditorialImage src="/images/editorial/evidence-data-review.jpg" alt="Life science professionals reviewing quality evidence and data" creditName="Faustina Okeke" creditUrl="https://unsplash.com/photos/XLQuTdktpa8" eager className="aspect-[16/7] w-full" imageClassName="object-center" />
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent px-5 pb-4 pt-12">
-                <div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-200">Inside your membership</p><p className="mt-1 text-lg font-bold text-white">One connected operating layer</p></div>
-                <BadgeCheck className="h-6 w-6 shrink-0 text-sky-300" />
-              </div>
-            </div>
-            <div className="mt-3 grid gap-2 sm:grid-cols-2">
-              {proLibrary.map((item) => (
-                <div key={item.title} className="flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.045] p-3.5">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-300/10 text-sky-200"><item.icon className="h-4 w-4" /></span>
-                  <div><p className="text-sm font-bold text-white">{item.title}</p><p className="mt-1 text-xs leading-5 text-slate-400">{item.example}</p></div>
-                </div>
-              ))}
-            </div>
-          </aside>
-        </div>
-      </section>
+      <nav aria-label="Atlas Pro navigation" className="ml-10 hidden items-center gap-8 text-sm font-medium text-slate-300 lg:flex">
+        <Link href="/products" className="transition hover:text-teal-200">Products</Link>
+        <Link href="/how-it-works" className="transition hover:text-teal-200">How Atlas works</Link>
+        <Link href="/evidence" className="transition hover:text-teal-200">Resources</Link>
+        <Link href="/pricing" className="transition hover:text-teal-200">Pricing</Link>
+      </nav>
 
-      {packageContext && <section className="border-b border-sky-200/70 bg-[#f4fbff] px-4 py-8"><div className="mx-auto max-w-7xl rounded-2xl border border-sky-200 bg-white p-5 shadow-sm md:p-6"><div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-800">Decision package in focus · {packageContext.reviewStatus}</p><h2 className="mt-2 text-xl font-bold text-slate-950">{packageContext.title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">{packageContext.decisionQuestion} Continue with the full learning flow, working asset and monthly review only as bounded evidence support; this package is not SME-approved.</p><div className="mt-3 flex flex-wrap gap-2">{packageContext.stageRefs.map((stage) => <span key={`${stage.systemId}:${stage.stageId}`} className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-1 text-[10px] font-semibold text-sky-800">{stage.stageId.replaceAll("-", " ")}</span>)}</div></div><div className="flex shrink-0 flex-col gap-2 sm:flex-row"><Link href={`/evidence/packages/${packageContext.id}#package-learning-flow`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-sky-300 px-4 py-2 text-xs font-bold text-sky-900">Open full learning flow <ArrowRight className="h-4 w-4" /></Link>{nextPackage && <Link href={`/pro?package=${nextPackage.id}`} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-sky-900 px-4 py-2 text-xs font-bold text-white">Next stage <ArrowRight className="h-4 w-4" /></Link>}</div></div></div></section>}
+      <div className="ml-auto flex items-center gap-2 sm:gap-4">
+        <button
+          type="button"
+          onClick={openSearch}
+          aria-label="Search Atlas"
+          className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-700/80 bg-[#07192c] px-3 text-xs text-slate-400 transition hover:border-teal-300/30 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70"
+        >
+          <Search className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden md:inline">Search</span>
+          <span className="hidden rounded bg-slate-700/60 px-1.5 py-0.5 text-[9px] xl:inline">Ctrl K</span>
+        </button>
+        <Link href="/login" className="hidden text-sm font-semibold text-slate-200 transition hover:text-teal-200 sm:inline">Sign in</Link>
+        <Link href="/register" className="inline-flex min-h-10 items-center rounded-lg bg-teal-300 px-4 text-xs font-bold text-slate-950 transition hover:bg-teal-200 sm:px-5 sm:text-sm">Start free</Link>
+      </div>
+    </header>
+  );
+}
 
-      <ProLifecycleNavigator />
+type SourceNodeData = Record<string, unknown> & {
+  item: (typeof sourceShelf)[number];
+  active: boolean;
+  onSelect: () => void;
+};
 
-      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-14 md:py-20">
-        <div className="mx-auto grid max-w-7xl gap-8 overflow-hidden rounded-[1.75rem] border border-sky-200 bg-white shadow-xl shadow-sky-950/5 lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="bg-[#07182d] p-6 text-slate-100 sm:p-9">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-300/10 text-sky-200"><CalendarDays className="h-5 w-5" /></span>
-            <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Monthly Quality Review</p>
-            <h2 className="mt-3 text-3xl font-bold leading-tight">A reason to return every month.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-400">Run one recurring quality priority through a visible Frame → Verify → Decide → Close cycle, then carry unresolved work into the next month.</p>
-            <div className="mt-6 flex flex-wrap gap-3"><Link href="/pro/monthly-review" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Open the monthly workspace <ArrowRight className="h-4 w-4" /></Link><Link href="/library/atlas-pro-monthly-quality-review" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 px-4 py-3 text-sm font-semibold text-white">Read the operating lesson</Link></div>
-          </div>
-          <div className="grid gap-px bg-sky-100 sm:grid-cols-2">
-            {[
-              ["01", "Choose the monthly decision", "Focus audit readiness, quality signals, method capacity, data integrity, or supplier control."],
-              ["02", "Make evidence gaps visible", "Separate controlled evidence already held from records, confirmation, or qualified review still needed."],
-              ["03", "Track an owned operating cycle", "Move the work through four statuses without confusing working completeness with approval."],
-              ["04", "See continuity and roll forward", "Use account-backed history, a six-month portfolio pulse, export, and carryover to start the next review."],
-            ].map(([number, title, body]) => <div key={number} className="bg-white p-6"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">{number}</span><h3 className="mt-4 text-lg font-bold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{body}</p></div>)}
-          </div>
-        </div>
-      </section>
+type CenterNodeData = Record<string, unknown> & {
+  question: string;
+  evidenceStatus: string;
+  assumptionStatus: string;
+  owner: string;
+  nextReview: string;
+  activeSource: string;
+};
 
-      <section className="border-b border-slate-200 bg-white px-4 py-14 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">First 7 days</p><h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Prove the workflow before you keep the membership.</h2><p className="mt-4 text-sm leading-7 text-slate-600">A practical trial should end with a useful working brief—not a tour of the catalog. Use this activation path on one real but appropriately bounded priority.</p></div>
-          <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 md:grid-cols-4">
-            {[
-              ["Day 1", "Frame", "Choose one of five focus areas and write the decision, signal, owner, and review date."],
-              ["Day 2", "Verify", "Use the paired Pro lesson or working file to separate evidence held from evidence still needed."],
-              ["Day 4", "Decide", "Apply the connected workflow or tool and assign the qualified decision or escalation owner."],
-              ["Day 7", "Close or carry", "Export the working brief, record the boundary, and roll unresolved work into the next month."],
-            ].map(([day, title, body]) => <article key={day} className="bg-[#f8fafb] p-6"><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-700">{day}</span><h3 className="mt-3 text-lg font-bold text-slate-950">{title}</h3><p className="mt-2 text-sm leading-6 text-slate-600">{body}</p></article>)}
-          </div>
-          <div className="mt-6 flex flex-wrap items-center gap-4"><Link href="/pro/monthly-review" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-800">Start the first review <ArrowRight className="h-4 w-4" /></Link><p className="text-xs leading-5 text-slate-500">Professional working support only · no site approval, compliance determination, or project-specific expert review.</p></div>
-        </div>
-      </section>
+type CanvasSourceNode = Node<SourceNodeData, "source-node">;
+type CanvasCenterNode = Node<CenterNodeData, "center-node">;
 
-      <section id="what-pro-unlocks" className="scroll-mt-20 border-b border-slate-200 bg-white px-4 py-16 md:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-7 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">What Pro unlocks</p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-5xl">Not more content. A more useful work layer.</h2>
-            </div>
-            <p className="max-w-2xl text-base leading-8 text-slate-600 lg:justify-self-end">Each part has a different role: evidence helps you understand, tools help you decide, and working files help you execute without rebuilding the same artifact from scratch.</p>
-          </div>
-
-          <div className="mt-10 grid gap-px overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-200 lg:grid-cols-2">
-            {proLibrary.map((item) => (
-              <article key={item.title} className="bg-[#f8fafb] p-6 sm:p-8">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-100 text-sky-800"><item.icon className="h-5 w-5" /></span>
-                  <span className="text-xs font-bold tracking-[0.16em] text-sky-800">{item.number}</span>
-                </div>
-                <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{item.example}</p>
-                <h3 className="mt-2 text-xl font-bold text-slate-950">{item.title}</h3>
-                <p className="mt-3 max-w-xl text-sm leading-7 text-slate-600">{item.body}</p>
-                <Link href={item.href} className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{item.linkLabel} <ArrowRight className="h-4 w-4" /></Link>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-16 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.74fr_1.26fr] lg:items-start">
-            <div className="max-w-xl">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Free versus Pro</p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Know exactly what changes when you upgrade.</h2>
-              <p className="mt-4 text-sm leading-7 text-slate-600">Start free. Upgrade only when deeper evidence and reusable files match work you genuinely need to do.</p>
-              <Link href="/pricing#evidence-plans" className="mt-6 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-800">See plans and availability <ArrowRight className="h-4 w-4" /></Link>
-            </div>
-
-            <div className="overflow-x-auto rounded-2xl border border-sky-200 bg-white shadow-xl shadow-sky-950/5">
-              <table className="w-full min-w-[650px] border-collapse text-left text-sm">
-                <thead className="bg-[#07182d] text-white"><tr><th className="p-4 font-semibold">Access</th><th className="p-4 font-semibold">Free</th><th className="p-4 font-semibold text-sky-200">Atlas Pro</th></tr></thead>
-                <tbody>{comparisonRows.map(([label, free, pro]) => <tr key={label} className="border-t border-slate-200"><th className="bg-slate-50 p-4 font-semibold text-slate-950">{label}</th><td className="p-4 leading-6 text-slate-600">{free}</td><td className="p-4 leading-6 text-slate-700"><span className="flex items-start gap-2"><Check className="mt-1 h-3.5 w-3.5 shrink-0 text-sky-700" />{pro}</span></td></tr>)}</tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-white/10 bg-[#081a2d] px-4 py-16 text-slate-100 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-300">How Pro fits the work</p>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] md:text-4xl">One question becomes a reusable professional workflow.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-400">Pro is most useful when understanding and execution happen together.</p>
-          </div>
-          <div className="mt-9 grid gap-3 md:grid-cols-4">
-            {workflow.map(([number, title, body]) => (
-              <article key={number} className="relative rounded-2xl border border-white/10 bg-white/[0.04] p-5">
-                <span className="text-xs font-bold tracking-[0.16em] text-sky-300">{number}</span>
-                <h3 className="mt-5 text-xl font-bold text-white">{title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-400">{body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-16 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Four repeatable playbooks</p>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Start with work to be done, then pull the right depth.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-600">These examples show how the Pro layers connect. Availability still depends on the published lesson, tool and file catalog at the time you use it.</p>
-          </div>
-          <div className="mt-9 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {ATLAS_PRO_WORKFLOWS.map((playbook, index) => {
-              const selected = playbook.id === selectedWorkflowId;
-              return (
-                <article key={playbook.question} className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm shadow-sky-950/5 transition ${selected ? "border-sky-500 ring-2 ring-sky-200" : "border-sky-200"}`}>
-                <div className="flex items-center justify-between gap-4"><span className="text-xs font-bold tracking-[0.16em] text-sky-700">0{index + 1}</span><span className="rounded-full border border-amber-300/40 bg-amber-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-amber-800">Under review</span></div>
-                <h3 className="mt-5 text-xl font-bold text-slate-950">{playbook.question}</h3>
-                <div className="mt-5 flex-1 space-y-4 border-t border-slate-200 pt-5">
-                  {[["Evidence", playbook.evidence], ["Tool", playbook.tool], ["Working file", playbook.workingFile]].map(([label, body]) => (
-                    <div key={label} className="grid grid-cols-[5.5rem_1fr] gap-3 text-sm leading-6"><strong className="text-sky-900">{label}</strong><span className="text-slate-600">{body}</span></div>
-                  ))}
-                </div>
-                <div className="mt-5 border-t border-slate-200 pt-4">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{playbook.lessonSlugs.length} core lessons</p>
-                  <ul className="mt-2 space-y-1.5">
-                    {playbook.lessonSlugs.map((slug) => (
-                      <li key={slug}><Link href={`/academy/${slug}`} className="text-xs font-semibold text-sky-800 hover:text-sky-950">{slug.replaceAll("-", " ")}</Link></li>
-                    ))}
-                  </ul>
-                </div>
-                <button type="button" aria-pressed={selected} onClick={() => selectWorkflow(playbook.id)} className={`mt-6 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition ${selected ? "bg-sky-900 text-white" : "border border-sky-200 text-sky-900 hover:bg-sky-50"}`}>{selected ? <CheckCircle2 className="h-4 w-4" /> : null}{selected ? "Selected for my brief" : `Build ${playbook.question} brief`}</button>
-                <Link href={playbook.href} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-sky-800 hover:text-sky-950">{playbook.cta} <ArrowRight className="h-4 w-4" /></Link>
-                </article>
-              );
-            })}
-          </div>
-          <div className="mt-8 overflow-hidden rounded-2xl border border-sky-200 bg-[#07182d] text-slate-100 shadow-xl shadow-sky-950/10">
-            <div className="grid lg:grid-cols-[0.72fr_1.28fr]">
-              <div className="border-b border-white/10 p-6 lg:border-b-0 lg:border-r lg:p-7">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-300">Your reusable work brief</p>
-                <h3 className="mt-3 text-2xl font-bold">{selectedWorkflow.question}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-400">Use this as a starting structure for your own work. Confirm claims, evidence, ownership, and site requirements before relying on the result.</p>
-                <button type="button" onClick={copyWorkflowBrief} className="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200">{briefCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{briefCopied ? "Copied workflow brief" : "Copy selected workflow brief"}</button>
-              </div>
-              <div className="grid gap-px bg-white/10 sm:grid-cols-2">
-                {[["First step", selectedWorkflow.firstStep], ["Review question", selectedWorkflow.reviewPrompt], ["Evidence", selectedWorkflow.evidence], ["Working file", selectedWorkflow.workingFile]].map(([label, body]) => (
-                  <div key={label} className="bg-[#0b1d33] p-5"><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-sky-300">{label}</p><p className="mt-2 text-sm leading-6 text-slate-300">{body}</p></div>
-                ))}
-              </div>
-            </div>
-            <p className="border-t border-white/10 px-6 py-3 text-[10px] leading-5 text-slate-500">Professional planning support only · not project-specific expert review, QA approval, regulatory advice, or a controlled site record.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-slate-200 bg-white px-4 py-16 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-px overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-200 lg:grid-cols-2">
-            <article className="bg-sky-50 p-6 sm:p-8">
-              <Sparkles className="h-6 w-6 text-sky-800" />
-              <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-sky-800">Choose Pro when</p>
-              <h2 className="mt-2 text-2xl font-bold text-slate-950">You want ongoing professional depth.</h2>
-              <ul className="mt-5 space-y-3">{proReasons.map((item) => <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-slate-700"><Check className="mt-1 h-4 w-4 shrink-0 text-sky-700" />{item}</li>)}</ul>
-            </article>
-            <article className="bg-teal-50 p-6 sm:p-8">
-              <ShieldCheck className="h-6 w-6 text-teal-800" />
-              <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-teal-800">Choose Quality Lab when</p>
-              <h2 className="mt-2 text-2xl font-bold text-slate-950">A real site decision needs scoped work.</h2>
-              <ul className="mt-5 space-y-3">{qualityLabReasons.map((item) => <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-slate-700"><Check className="mt-1 h-4 w-4 shrink-0 text-teal-700" />{item}</li>)}</ul>
-              <Link href="/quality-lab" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-teal-800">Explore Quality Lab <ArrowRight className="h-4 w-4" /></Link>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#07182d] px-4 py-14 text-slate-100 md:py-16">
-        <div className="mx-auto max-w-6xl rounded-[1.75rem] border border-sky-300/20 bg-sky-300/[0.055] p-6 sm:p-9 lg:flex lg:items-center lg:justify-between lg:gap-12">
-          <div className="max-w-2xl">
-            <div className="flex items-center gap-2 text-sky-200"><Crown className="h-5 w-5" /><span className="text-xs font-bold uppercase tracking-[0.17em]">Atlas Pro</span></div>
-            <h2 className="mt-4 font-display text-3xl font-bold tracking-[-0.025em] md:text-4xl">Start with the public layer. Upgrade when repeat work begins.</h2>
-            <p className="mt-4 text-sm leading-7 text-slate-400">No project engagement is bundled into Pro. You are paying for deeper access and reusable professional resources.</p>
-          </div>
-          <div className="mt-7 min-w-[17rem] rounded-2xl border border-white/10 bg-[#0b1d33] p-5 lg:mt-0">
-            <p className="text-sm text-slate-400">Membership from</p>
-            <p className="mt-1 text-3xl font-bold text-white">$8/month</p>
-            <Link href="/pricing#evidence-plans" className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-sky-200">See plans <ArrowRight className="h-4 w-4" /></Link>
-          </div>
-        </div>
-      </section>
+function SourceNodeView({ data }: NodeProps<CanvasSourceNode>) {
+  const Icon = data.item.icon;
+  return (
+    <div className="relative w-[290px]">
+      <button
+        type="button"
+        aria-label={`${data.item.label}: ${data.item.description}`}
+        aria-pressed={data.active}
+        onClick={data.onSelect}
+        className={`nodrag nopan group flex min-h-[74px] w-full items-center gap-3 rounded-xl border py-2.5 pl-3 pr-14 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${data.active ? "border-teal-300/60 bg-teal-300/[0.075] shadow-[0_0_28px_rgba(45,212,191,.1)]" : "border-slate-700/80 bg-[#07192b]/95 hover:border-sky-300/35"}`}
+      >
+        <span className={`grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-slate-600/70 bg-[#0a2138] ${data.item.tone}`}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-bold text-slate-100">{data.item.label}</span>
+          <span className="mt-1 block text-xs leading-5 text-slate-400">{data.item.description}</span>
+        </span>
+      </button>
+      <Link
+        href={data.item.href}
+        aria-label={`Open ${data.item.label}`}
+        className="nodrag nopan absolute right-2.5 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-slate-500 transition hover:bg-white/5 hover:text-teal-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70"
+      >
+        <ChevronRight className="h-4 w-4" aria-hidden="true" />
+      </Link>
+      <Handle type="source" position={Position.Right} isConnectable={false} className="!h-2.5 !w-2.5 !border-2 !border-[#041426] !bg-sky-300" />
     </div>
   );
 }
 
-function ProLifecycleNavigator() {
-  const sharedPackage = getDecisionPackage("cross-cutting-evidence-governance");
-  const packageProgress = useDecisionPackageProgressPortfolio();
+function CenterNodeView({ data }: NodeProps<CanvasCenterNode>) {
+  const rows = [
+    [BookOpenCheck, "Evidence status", data.evidenceStatus, "text-teal-300"],
+    [ClipboardCheck, "Assumptions", data.assumptionStatus, "text-violet-300"],
+    [Target, "Owner", data.owner, "text-sky-300"],
+    [CalendarDays, "Next review", data.nextReview, "text-teal-300"],
+  ] as const;
+
   return (
-    <section className="border-b border-slate-200 bg-[#f8fbfc] px-4 py-14 md:py-20" aria-labelledby="pro-lifecycle-heading">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-800">Domain → lifecycle stage → decision package</p>
-          <h2 id="pro-lifecycle-heading" className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">Choose the decision chain you are working through.</h2>
-          <p className="mt-4 text-sm leading-7 text-slate-600">Each stage opens the matching Pro depth, working asset and next-stage path. Package maturity and review boundaries remain visible.</p>
-          {packageProgress.records.length > 0 && <p className="mt-3 text-xs font-semibold text-teal-800">{packageProgress.completedCount}/12 packages ready for accountable review · browser-local learning record</p>}
-        </div>
-        <div className="mt-8 grid gap-5 lg:grid-cols-3">
-          {proLifecycleLanes.map((lane) => (
-            <article key={lane.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-950/5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-sky-800">{lane.label}</p>
-              <h3 className="mt-2 text-xl font-bold text-slate-950">{lane.label} decision chain</h3>
-              <p className="mt-2 min-h-12 text-xs leading-5 text-slate-600">{lane.description}</p>
-              <div className="mt-5 space-y-3">
-                {getDecisionPackagesForLane(lane.id).map((item, index) => {
-                  const workingAsset = item.assetRefs.find((asset) => asset.kind === "toolkit" || asset.kind === "deliverable");
-                  const progress = assessDecisionPackageProgress(packageProgress.getRecord(item.id));
-                  return <div key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3"><div className="flex items-start gap-3"><span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-[10px] font-bold text-sky-900">{String(index + 1).padStart(2, "0")}</span><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{item.stageRefs.map((stage) => stage.stageId.replaceAll("-", " ")).join(" · ")}</p><p className="mt-1 text-sm font-bold leading-5 text-slate-900">{item.title}</p>{progress.totalCount > 0 && <p className={`mt-1 text-[10px] font-bold uppercase tracking-wider ${progress.status === "ready-for-review" ? "text-teal-700" : "text-sky-700"}`}>{progress.status === "ready-for-review" ? "Ready for review" : `Resume · ${progress.completedCount}/${progress.totalCount}`}</p>}</div></div><div className="mt-3 flex flex-wrap gap-2"><Link href={`/pro?package=${item.id}`} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-sky-900 px-3 py-2 text-[11px] font-bold text-white">{progress.totalCount > 0 && progress.status !== "ready-for-review" ? "Resume Pro stage" : "Open Pro stage"} <ArrowRight className="h-3.5 w-3.5" /></Link>{workingAsset && <Link href={workingAsset.href} className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-2 text-[11px] font-bold text-slate-700">Working asset <FileSpreadsheet className="h-3.5 w-3.5" /></Link>}</div></div>;
-                })}
-              </div>
-            </article>
+    <div className="relative grid h-[500px] w-[500px] place-items-center rounded-full border-2 border-sky-300/80 bg-[#031426]/95 p-14 text-center shadow-[0_0_48px_rgba(56,189,248,.12),inset_0_0_45px_rgba(14,165,233,.045)]">
+      <Handle type="target" position={Position.Left} isConnectable={false} className="!h-3 !w-3 !border-2 !border-[#041426] !bg-sky-300" />
+      <div className="w-full">
+        <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-teal-300/60 bg-teal-300/[0.05] text-teal-200">
+          <Network className="h-7 w-7" aria-hidden="true" />
+        </span>
+        <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">This month&apos;s decision</p>
+        <h2 className="mx-auto mt-3 max-w-[360px] font-display text-[1.35rem] font-semibold leading-8 text-slate-100">{data.question}</h2>
+        <div className="mt-5 border-t border-slate-700/70 text-left">
+          {rows.map(([Icon, label, value, tone]) => (
+            <div key={label} className="flex min-h-11 items-center gap-3 border-b border-slate-700/55 px-1 py-2 text-xs">
+              <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/[0.04] ${tone}`}><Icon className="h-4 w-4" aria-hidden="true" /></span>
+              <span className="text-slate-400">{label}</span>
+              <span className={`ml-auto max-w-[190px] text-right font-semibold ${tone}`}>{value}</span>
+            </div>
           ))}
         </div>
-        {sharedPackage && <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-violet-200 bg-violet-50 p-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-800">Shared evidence loop</p><p className="mt-1 text-sm font-bold text-slate-950">{sharedPackage.title}</p><p className="mt-1 text-xs leading-5 text-slate-600">Analytical lifecycle, statistics, investigation, CAPA, change, effectiveness and knowledge transfer across all three domains.</p></div><Link href={`/pro?package=${sharedPackage.id}`} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-violet-900 px-4 py-2 text-xs font-bold text-white">Open shared package <ArrowRight className="h-4 w-4" /></Link></div>}
+        <p className="mt-4 text-[10px] leading-5 text-slate-500">Selected source · {data.activeSource}</p>
       </div>
-    </section>
+    </div>
+  );
+}
+
+const canvasNodeTypes = {
+  "source-node": SourceNodeView,
+  "center-node": CenterNodeView,
+};
+
+function CanvasGraph({
+  activeSource,
+  onSource,
+  centerData,
+}: {
+  activeSource: SourceId;
+  onSource: (id: SourceId) => void;
+  centerData: CenterNodeData;
+}) {
+  const nodes = useMemo<Array<CanvasSourceNode | CanvasCenterNode>>(() => [
+    ...sourceShelf.map((item, index): CanvasSourceNode => ({
+      id: item.id,
+      type: "source-node",
+      position: { x: 40, y: 195 + index * 88 },
+      draggable: false,
+      selectable: false,
+      data: { item, active: activeSource === item.id, onSelect: () => onSource(item.id) },
+    })),
+    {
+      id: "decision",
+      type: "center-node",
+      position: { x: 480, y: 85 },
+      draggable: false,
+      selectable: false,
+      data: centerData,
+    },
+  ], [activeSource, centerData, onSource]);
+
+  const edges = useMemo<Edge[]>(() => sourceShelf.map((item) => ({
+    id: `${item.id}-decision`,
+    source: item.id,
+    target: "decision",
+    type: "smoothstep",
+    animated: item.id === activeSource,
+    style: {
+      stroke: item.id === activeSource ? "#67e8f9" : "#35546d",
+      strokeWidth: item.id === activeSource ? 2 : 1.2,
+    },
+  })), [activeSource]);
+
+  return (
+    <div className="relative h-[660px] min-w-0">
+      <div className="pointer-events-none absolute left-10 top-[168px] z-20 text-[10px] font-bold uppercase tracking-[0.2em] text-teal-300">Source shelf</div>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={canvasNodeTypes}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        minZoom={1}
+        maxZoom={1}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        elementsSelectable={false}
+        panOnDrag={false}
+        zoomOnScroll={false}
+        zoomOnPinch={false}
+        zoomOnDoubleClick={false}
+        preventScrolling={false}
+        proOptions={{ hideAttribution: true }}
+        aria-label="Atlas Pro sources connected to this month's quality decision"
+        onNodeClick={(_, selectedNode) => {
+          if ("onSelect" in selectedNode.data && typeof selectedNode.data.onSelect === "function") selectedNode.data.onSelect();
+        }}
+      />
+    </div>
+  );
+}
+
+function monthLabel(offset: number) {
+  const value = new Date();
+  value.setDate(1);
+  value.setMonth(value.getMonth() + offset);
+  return new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" }).format(value).toUpperCase();
+}
+
+function reviewDateLabel() {
+  const value = new Date();
+  value.setMonth(value.getMonth() + 1, 0);
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(value);
+}
+
+export default function ProPage() {
+  const packageId = typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("package");
+  const packageContext = packageId ? getDecisionPackage(packageId) : undefined;
+  const [activeSource, setActiveSource] = useState<SourceId>("evidence");
+  const [activeStep, setActiveStep] = useState<ReviewStepId>("frame");
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState<AtlasProWorkflowId>("audit-readiness");
+  const selectedWorkflow = getAtlasProWorkflow(selectedWorkflowId);
+  const activeSourceItem = sourceShelf.find((item) => item.id === activeSource) ?? sourceShelf[0];
+
+  const history = useMemo(() => [
+    { month: monthLabel(-3), workflowId: "quality-signal" as const, status: "Example closed", tone: "text-teal-300" },
+    { month: monthLabel(-2), workflowId: "method-capacity" as const, status: "Example closed", tone: "text-teal-300" },
+    { month: monthLabel(-1), workflowId: "pharma-api-impurity-control" as const, status: "Example closed", tone: "text-teal-300" },
+    { month: monthLabel(0), workflowId: selectedWorkflowId, status: "In progress", tone: "text-sky-300", current: true },
+    { month: "CARRYOVER", workflowId: "biopharma-control-strategy" as const, status: "Deferred example", tone: "text-violet-300" },
+  ], [selectedWorkflowId]);
+
+  const centerData = useMemo<CenterNodeData>(() => ({
+    question: packageContext?.decisionQuestion ?? selectedWorkflow.question,
+    evidenceStatus: packageContext ? `${packageContext.sourceIds.length} named sources` : `${selectedWorkflow.lessonSlugs.length} linked lessons`,
+    assumptionStatus: packageContext ? packageContext.reviewStatus.replaceAll("-", " ") : "Reviewer check open",
+    owner: packageContext?.reviewerRoles[0] ?? "Unassigned",
+    nextReview: reviewDateLabel(),
+    activeSource: activeSourceItem.label,
+  }), [activeSourceItem.label, packageContext, selectedWorkflow]);
+
+  const monthlyReviewHref = packageContext ? `/pro/monthly-review?package=${packageContext.id}` : "/pro/monthly-review";
+
+  useSEO({
+    title: "Atlas Pro Quality Review Canvas",
+    description: "Build one bounded monthly quality decision from evidence, practical tools, working files, review steps and accountable carryover.",
+  });
+
+  function selectWorkflow(id: AtlasProWorkflowId) {
+    setSelectedWorkflowId(id);
+    setActiveStep("frame");
+    analytics.proWorkflowSelected(id);
+  }
+
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-[#041426] text-slate-100" style={{ backgroundImage: "url('/images/blueprint/decision-observatory-grid.jpg')", backgroundPosition: "top center", backgroundSize: "1600px auto", backgroundBlendMode: "soft-light" }}>
+      <ProNav />
+
+      <section className="mx-auto max-w-[1440px] px-4 pb-5 pt-8 sm:px-6 lg:px-8 lg:pt-10">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_275px] lg:items-start">
+          <div className="relative min-w-0">
+            <header className="relative z-20 lg:absolute lg:left-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">Quality review canvas</p>
+              <h1 className="mt-3 max-w-[390px] font-display text-4xl font-bold leading-[1.03] tracking-[-0.035em] text-slate-50 sm:text-5xl">
+                Build this month&apos;s quality <span className="text-sky-300">decision.</span>
+              </h1>
+            </header>
+
+            <div className="hidden lg:block">
+              <CanvasGraph activeSource={activeSource} onSource={setActiveSource} centerData={centerData} />
+            </div>
+
+            <div className="mt-7 lg:hidden">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-teal-300">Source shelf</p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {sourceShelf.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button key={item.id} type="button" aria-label={`${item.label}: ${item.description}`} aria-pressed={activeSource === item.id} onClick={() => setActiveSource(item.id)} className={`min-h-24 rounded-xl border p-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${activeSource === item.id ? "border-teal-300/60 bg-teal-300/[0.07]" : "border-slate-700 bg-[#07192b]/90"}`}>
+                      <Icon className={`h-5 w-5 ${item.tone}`} aria-hidden="true" />
+                      <span className="mt-3 block text-xs font-bold text-slate-100">{item.label}</span>
+                      <span className="mt-1 block text-[10px] leading-4 text-slate-500">{item.description}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <section className="mx-auto mt-7 grid aspect-square max-w-[390px] place-items-center rounded-full border-2 border-sky-300/75 bg-[#031426]/95 p-8 text-center shadow-[0_0_42px_rgba(56,189,248,.12)]">
+                <div>
+                  <Network className="mx-auto h-8 w-8 text-teal-300" aria-hidden="true" />
+                  <p className="mt-4 text-[9px] font-bold uppercase tracking-[0.18em] text-teal-300">This month&apos;s decision</p>
+                  <h2 className="mt-3 text-lg font-semibold leading-7 text-white">{centerData.question}</h2>
+                  <div className="mt-5 space-y-2 border-t border-slate-700/70 pt-4 text-left text-[11px]">
+                    <p className="flex justify-between gap-3"><span className="text-slate-500">Evidence</span><strong className="text-teal-300">{centerData.evidenceStatus}</strong></p>
+                    <p className="flex justify-between gap-3"><span className="text-slate-500">Assumptions</span><strong className="text-violet-300">{centerData.assumptionStatus}</strong></p>
+                    <p className="flex justify-between gap-3"><span className="text-slate-500">Owner</span><strong className="text-sky-300">{centerData.owner}</strong></p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <aside className="pt-2 lg:pl-8 lg:pt-11" aria-label="Review path">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">Review path</p>
+            <div className="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-1 lg:gap-3">
+              {reviewSteps.map((step, index) => {
+                const Icon = step.icon;
+                const active = activeStep === step.id;
+                return (
+                  <button key={step.id} type="button" aria-label={`${step.label}: ${step.description}`} aria-pressed={active} onClick={() => setActiveStep(step.id)} className={`group flex min-h-[84px] items-center gap-3 rounded-xl border p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${active ? "border-teal-300/55 bg-teal-300/[0.065] shadow-[0_0_26px_rgba(45,212,191,.08)]" : "border-slate-700/80 bg-[#07192b]/90 hover:border-sky-300/35"}`}>
+                    <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border text-sm font-bold ${active ? "border-sky-300 text-sky-300" : "border-slate-600 text-slate-500"}`}>{index + 1}</span>
+                    <span className="min-w-0">
+                      <span className={`flex items-center gap-2 text-sm font-bold ${active ? "text-teal-200" : "text-slate-300"}`}><Icon className="h-4 w-4" aria-hidden="true" />{step.label}</span>
+                      <span className="mt-1 block text-[11px] leading-4 text-slate-500">{step.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <Link href={monthlyReviewHref} className="mt-5 inline-flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-sky-300 px-5 text-sm font-bold text-slate-950 transition hover:bg-sky-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+              Open review canvas <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link href={activeSourceItem.href} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-white/[0.025] px-4 text-xs font-semibold text-slate-300 transition hover:border-teal-300/40 hover:text-teal-200">
+              Open selected source <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </aside>
+        </div>
+
+        <section className="mt-3 lg:-mt-6 lg:ml-10" aria-labelledby="monthly-history-heading">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p id="monthly-history-heading" className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">Illustrative monthly history</p>
+              <p className="mt-1 text-[10px] leading-5 text-slate-600">Examples show the operating pattern only; they are not client records or approved decisions.</p>
+            </div>
+            <Link href="/pro/monthly-review" className="hidden text-xs font-bold text-sky-300 hover:text-sky-200 sm:inline">View monthly workspace</Link>
+          </div>
+          <div className="mt-3 flex gap-3 overflow-x-auto pb-2">
+            {history.map((item, index) => {
+              const workflow = getAtlasProWorkflow(item.workflowId);
+              const selected = Boolean(item.current);
+              return (
+                <button key={`${item.month}-${index}`} type="button" onClick={() => selectWorkflow(item.workflowId)} className={`min-h-[102px] min-w-[220px] flex-1 rounded-xl border p-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${selected ? "border-sky-300/80 bg-sky-300/[0.065]" : "border-slate-700/80 bg-[#07192b]/85 hover:border-sky-300/35"}`}>
+                  <span className="flex items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-500"><span>{item.month}</span>{item.current && <span className="rounded-full bg-sky-300 px-2 py-0.5 text-[8px] text-slate-950">Current</span>}</span>
+                  <span className="mt-3 block text-xs font-semibold leading-5 text-slate-200">{workflow.question}</span>
+                  <span className={`mt-2 block text-[10px] font-semibold ${item.tone}`}>{item.status}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <footer className="mt-4 flex items-start gap-3 rounded-xl border border-slate-700/75 bg-[#07192b]/80 px-4 py-3 text-[10px] leading-5 text-slate-500 lg:ml-10">
+          <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />
+          <p>Atlas Pro provides professional working support to structure and document decisions. It is not project-specific expert review, QA approval, regulatory advice, or a controlled site record.</p>
+        </footer>
+      </section>
+    </div>
   );
 }

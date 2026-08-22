@@ -10,15 +10,23 @@ type AuditTarget = {
 
 const strategicTargets: AuditTarget[] = [
   { name: "homepage", path: "/", readyHeading: /A quality lab plan your whole project team can challenge/i },
-  { name: "Quality Lab landing", path: "/quality-lab", readyHeading: /From product portfolio to a defensible QC lab blueprint/i },
+  { name: "Quality Lab landing", path: "/quality-lab", readyHeading: /See the blueprint take shape/i },
+  { name: "Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i },
   { name: "Quality Lab planner intake", path: "/quality-lab/planner", readyHeading: /You do not need to know every lab number/i },
   { name: "public Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i },
-  { name: "Method Navigator", path: "/methods", readyHeading: /Find what Atlas covers—and what it does not/i },
+  { name: "Method Navigator", path: "/methods", readyHeading: /Ask the method question/i },
   { name: "Academy trust-corridor lesson", path: "/library/method-suitability-nonsterile-products", readyHeading: /Method suitability for non-sterile products/i },
   { name: "Blog trust-corridor guide", path: "/blog/how-to-validate-a-quality-lab-domain-pack", readyHeading: /How to validate a Quality Lab Domain Pack/i },
   { name: "pricing", path: "/pricing", readyHeading: /Start with the decision you need to make/i },
+  { name: "All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i },
+  { name: "Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i },
+  { name: "Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i },
   { name: "mobile Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i, viewport: { width: 390, height: 844 } },
-  { name: "mobile Method Navigator", path: "/methods", readyHeading: /Find what Atlas covers—and what it does not/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Method Navigator", path: "/methods", readyHeading: /Ask the method question/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i, viewport: { width: 390, height: 844 } },
 ];
 
 async function preparePage(page: Page, target: AuditTarget) {
@@ -82,6 +90,9 @@ test.describe("automated accessibility", () => {
   for (const target of [
     { name: "homepage", path: "/" },
     { name: "planner intake", path: "/quality-lab/planner" },
+    { name: "All Products Decision Router", path: "/products" },
+    { name: "Atlas Pro review canvas", path: "/pro" },
+    { name: "Career Proof Studio", path: "/career" },
   ]) {
     test(`${target.name} reflows without document-level horizontal scrolling at 320 CSS pixels`, async ({ page }) => {
       await page.setViewportSize({ width: 320, height: 640 });

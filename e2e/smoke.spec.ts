@@ -45,12 +45,12 @@ test.describe("public smoke", () => {
 
   test("decision package guides connect public evidence to Blueprint, Pro and Career", async ({ page }) => {
     await page.goto("/evidence");
-    await expect(page.getByRole("heading", { name: /A connected evidence path/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Trace evidence to the decision/i })).toBeVisible();
     await page.goto("/evidence/biopharma");
-    await expect(page.getByRole("heading", { name: /Biopharma evidence for the decision/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Cell substrate, materials.*upstream control/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Trace evidence to the decision/i })).toBeVisible();
+    await expect(page.getByText(/Cell substrate, materials.*upstream control/i)).toBeVisible();
     await page.goto("/evidence");
-    await page.getByRole("link", { name: /Cell substrate, materials.*upstream control/i }).click();
+    await page.getByRole("link", { name: /Open package/i }).click();
     await expect(page.getByText(/This package is editorial-reviewed but not SME-approved/i)).toBeVisible();
 
     await page.getByRole("link", { name: "Use in Blueprint context" }).click();
@@ -115,7 +115,8 @@ test.describe("public smoke", () => {
     await page.goto("/evidence");
     await expect(page.getByText("Ready for review", { exact: true })).toBeVisible();
     await page.goto("/pro");
-    await expect(page.getByText(/1\/12 packages ready for accountable review/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build this month's quality decision/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Prepare for a GMP audit/i })).toBeVisible();
 
     await page.goto("/career/domains");
     await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();
@@ -145,14 +146,14 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Domain Pack not verified", { exact: true })).toBeVisible();
 
     await page.goto("/pro?package=drug-product-formulation-material-attributes");
-    await expect(page.getByText("Drug product formulation & material attributes", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText(/bounded evidence support; this package is not SME-approved/i)).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open full learning flow/i })).toHaveAttribute("href", "/evidence/packages/drug-product-formulation-material-attributes#package-learning-flow");
+    await expect(page.getByRole("heading", { name: /How do formulation, API\/excipient attributes/i })).toBeVisible();
+    await expect(page.getByText("3 named sources", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("formulation development", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review?package=drug-product-formulation-material-attributes");
 
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: "Choose the decision chain you are working through." })).toBeVisible();
-    for (const lane of ["Biopharma decision chain", "Pharma/API decision chain", "Drug Product decision chain"]) {
-      await expect(page.getByRole("heading", { name: lane, exact: true })).toBeVisible();
+    for (const source of ["Evidence", "Lab Workbench", "Working File", "Audit Readiness"]) {
+      await expect(page.getByRole("button", { name: new RegExp(`^${source}:`, "i") })).toBeVisible();
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -440,30 +441,42 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /One evidence system/i })).toBeVisible();
 
     await page.goto("/products");
-    await expect(page.getByRole("heading", { name: /One Atlas\. Three ways to make a better decision/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "See Free vs Pro", exact: true })).toHaveAttribute("href", "/pro");
+    await expect(page.getByRole("heading", { name: /Choose the decision\. Atlas routes the work/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Select Quality Lab Blueprint", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("link", { name: "Open Quality Lab Blueprint", exact: true })).toHaveAttribute("href", "/quality-lab");
+    await page.getByRole("button", { name: "Select Atlas Pro", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Select Atlas Pro", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("link", { name: "Open Atlas Pro", exact: true })).toHaveAttribute("href", "/pro");
+    await page.getByRole("button", { name: "Select Personal Career Blueprint", exact: true }).click();
+    await expect(page.getByRole("link", { name: "Open Personal Career Blueprint", exact: true })).toHaveAttribute("href", "/career");
 
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /Evidence, tools, and working files/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Start with work to be done, then pull the right depth/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open the monthly workspace/i })).toHaveAttribute("href", "/pro/monthly-review");
-    await expect(page.getByRole("link", { name: "Inspect the audit kit", exact: true })).toHaveAttribute("href", "/toolkits/gmp-audit-kit");
-    await page.getByRole("button", { name: "Build Investigate a quality signal brief", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Investigate a quality signal", exact: true }).last()).toBeVisible();
-    await page.getByRole("button", { name: "Copy selected workflow brief", exact: true }).click();
-    await expect(page.getByRole("button", { name: "Copied workflow brief", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build this month's quality decision/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review");
+    await page.getByRole("button", { name: /Lab Workbench/i }).click();
+    await expect(page.getByText("Selected source · Lab Workbench", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open selected source/i })).toHaveAttribute("href", "/pro/lab-workbench");
+    await page.getByRole("button", { name: /Make a method or capacity decision/i }).click();
+    await expect(page.getByRole("heading", { name: "Make a method or capacity decision", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: /Verify: Check evidence and assumptions/i }).click();
+    await expect(page.getByRole("button", { name: /Verify: Check evidence and assumptions/i })).toHaveAttribute("aria-pressed", "true");
 
     await page.goto("/pro/monthly-review");
     await expect(page.getByRole("heading", { name: /A quality review you can run again next month/i })).toBeVisible();
     await expect(page.getByText(/editing, saving, history and export require an active Pro entitlement/i)).toBeVisible();
 
     await page.goto("/quality-lab");
-    await expect(page.getByRole("heading", { name: /See how a real planning question changes shape/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Inspect calculated cases", exact: true })).toHaveAttribute("href", "/quality-lab/casebook");
+    await expect(page.getByRole("heading", { name: /See the blueprint take shape/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Inspect a sample", exact: true })).toHaveAttribute("href", "/quality-lab/sample");
 
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /Turn a responsibility into a claim a reviewer can test/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Map my current evidence", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Turn your next role into a proof plan/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Build my free Career Snapshot", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Frame: Scope the proof", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Review: Evaluate the proof", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Review: Evaluate the proof", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Adjust", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Adjust", exact: true })).toHaveAttribute("aria-pressed", "true");
 
     await page.goto("/career/blueprint");
     await expect(page.getByRole("heading", { name: /Turn your Blueprint into 13 weeks of evidence/i })).toBeVisible();
@@ -662,13 +675,12 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("status")).toContainText("Started a new month");
   });
 
-  test("Atlas Pro explains a concrete seven-day activation path before checkout", async ({ page }) => {
+  test("Atlas Pro exposes the complete monthly review path before opening the workspace", async ({ page }) => {
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /Prove the workflow before you keep the membership/i })).toBeVisible();
-    for (const step of ["Frame", "Verify", "Decide", "Close or carry"]) {
-      await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
+    for (const step of ["Frame", "Verify", "Decide", "Close"]) {
+      await expect(page.getByRole("button", { name: new RegExp(`^${step}:`, "i") })).toBeVisible();
     }
-    await expect(page.getByRole("link", { name: /Start the first review/i })).toHaveAttribute("href", "/pro/monthly-review");
+    await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review");
   });
 
   test("Career Blueprint purchaser can create, track and export the 13-week workspace", async ({ page }) => {
@@ -776,8 +788,8 @@ test.describe("public smoke", () => {
       await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
     });
     await page.goto("/quality-lab");
-    await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
-    await page.getByRole("link", { name: /Build a blueprint/i }).click();
+    await expect(page.getByRole("heading", { name: /See the blueprint take shape/i })).toBeVisible();
+    await page.getByRole("link", { name: "Build a blueprint", exact: true }).last().click();
     await page.waitForURL(/\/quality-lab\/planner$/);
     await page.getByRole("button", { name: /Explore a worked example/i }).click();
     await expect(page.getByText(/microbiology-pack\/v1\.1/i)).toBeVisible();
@@ -1914,7 +1926,7 @@ test.describe("public smoke", () => {
 
   test("career assessment builds a personalised route comparison", async ({ page }) => {
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /A career plan built around what you can prove/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Turn your next role into a proof plan/i })).toBeVisible();
     await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
     await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
     await page.getByRole("textbox", { name: /^Location$/i }).fill("Singapore");
@@ -1938,27 +1950,20 @@ test.describe("public smoke", () => {
 
   test("method navigator exposes bounded coverage and explicit no-result state", async ({ page }) => {
     await page.goto("/methods");
-    await expect(page.getByRole("heading", { name: /Find what Atlas covers/i })).toBeVisible();
-    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
-    const coverageMatrix = page.getByRole("table", { name: /Method application coverage matrix/i });
-    await expect(coverageMatrix).toBeVisible();
-    await expect(page.getByText(/0 controlled revisions/i)).toBeVisible();
-    await expect(coverageMatrix).toContainText(/Same application record reused/i);
-    const mutedMatrixText = coverageMatrix.getByText(/Same application record reused/i).first();
-    const matrixContrast = await mutedMatrixText.evaluate((element) => {
-      const channels = getComputedStyle(element).color.match(/\d+(?:\.\d+)?/g)!.slice(0, 3).map(Number);
-      const luminance = (values: number[]) => values.map((value) => value / 255).map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
-      const foreground = luminance(channels);
-      const background = luminance([7, 24, 45]);
-      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
-    });
-    expect(matrixContrast).toBeGreaterThanOrEqual(4.5);
-    await expect(page.getByRole("button", { name: "All coverage" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("heading", { name: /Ask the method question/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Method evidence route" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Applications in scope" })).toBeVisible();
+    const applicationList = page.getByRole("list", { name: "Method applications" });
+    await expect(applicationList.getByRole("button")).toHaveCount(8);
+    await expect(page.getByLabel("8 methods")).toBeVisible();
+    await expect(page.getByLabel("9 sources")).toBeVisible();
+    await expect(page.getByLabel("0 approved")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Microbial method suitability and recovery/i })).toHaveAttribute("aria-pressed", "true");
     await page.getByLabel("Search methods and standards").fill("USP-85");
     await expect(page.getByRole("heading", { name: /Bacterial endotoxins/i }).first()).toBeVisible();
-    await expect(coverageMatrix.getByRole("row")).toHaveCount(2);
-    await expect(coverageMatrix).toContainText(/workflow only/i);
-    await expect(coverageMatrix).toContainText(/Not recorded/i);
+    await expect(page.getByText("Open in 2 named sources", { exact: true })).toBeVisible();
+    await expect(page.getByText("Source mapped", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Qualified review", { exact: true })).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
     await expect(page.getByRole("heading", { name: "Not yet covered" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Request scoped review/i })).toHaveAttribute("href", /method=impossible-unmapped-method-xyz/);

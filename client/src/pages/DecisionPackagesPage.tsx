@@ -1,6 +1,37 @@
-import { useEffect } from "react";
-import { ArrowLeft, ArrowRight, BookOpenCheck, BriefcaseBusiness, Building2, CalendarClock, CheckCircle2, FileCheck2, ShieldAlert, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Activity,
+  ArrowLeft,
+  ArrowRight,
+  BadgeCheck,
+  BookOpenCheck,
+  BriefcaseBusiness,
+  Building2,
+  CalendarClock,
+  CheckCircle2,
+  FileText,
+  FlaskConical,
+  Network,
+  PackageCheck,
+  Pill,
+  Search,
+  Settings2,
+  ShieldAlert,
+  ShieldCheck,
+  TestTube2,
+  type LucideIcon,
+} from "lucide-react";
 import { Link, useLocation } from "wouter";
+import {
+  Handle,
+  MarkerType,
+  Position,
+  ReactFlow,
+  type Edge,
+  type Node,
+  type NodeProps,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
 import { getCareerTracksForPackage } from "@shared/career-domain-tracks";
 import { EVIDENCE_SOURCE_CATALOG } from "@shared/content-quality-registry";
@@ -9,7 +40,7 @@ import { DecisionPackageLearningFlowGate } from "@/components/DecisionPackageLea
 import { analytics } from "@/hooks/use-analytics";
 import { useDecisionPackageProgressPortfolio } from "@/hooks/use-decision-package-progress";
 import { useSEO } from "@/hooks/use-seo";
-import { assessDecisionPackageProgress, type DecisionPackageProgressRecord } from "@shared/decision-package-progress";
+import { AtlasMark } from "@/components/Navigation";
 
 const laneLabels: Record<DecisionPackageLane, string> = {
   biopharma: "Biopharma",
@@ -26,7 +57,132 @@ const laneDescriptions: Record<DecisionPackageLane, string> = {
 };
 
 const laneOrder: DecisionPackageLane[] = ["biopharma", "pharma-api", "pharma-drug-product", "cross-cutting-quality-rd"];
-const laneSlugs: Partial<Record<DecisionPackageLane, string>> = { biopharma: "biopharma", "pharma-api": "pharma-api", "pharma-drug-product": "drug-product" };
+
+type EvidenceStageKey = "inputs" | "process" | "analytics" | "validation" | "transfer";
+
+type EvidenceStage = {
+  key: EvidenceStageKey;
+  label: string;
+  caption: string;
+  icon: LucideIcon;
+};
+
+const evidenceStages: EvidenceStage[] = [
+  { key: "inputs", label: "Inputs", caption: "Materials & starting context", icon: Network },
+  { key: "process", label: "Process", caption: "Process design & controls", icon: Settings2 },
+  { key: "analytics", label: "Analytics", caption: "Methods, results & signals", icon: Activity },
+  { key: "validation", label: "Validation", caption: "Validation & lifecycle evidence", icon: ShieldCheck },
+  { key: "transfer", label: "Transfer", caption: "Transfer & change control", icon: PackageCheck },
+];
+
+const laneVisuals: Record<DecisionPackageLane, { icon: LucideIcon; shortLabel: string }> = {
+  biopharma: { icon: FlaskConical, shortLabel: "Biopharma" },
+  "pharma-api": { icon: TestTube2, shortLabel: "Pharma / API" },
+  "pharma-drug-product": { icon: Pill, shortLabel: "Drug Product" },
+  "cross-cutting-quality-rd": { icon: ShieldCheck, shortLabel: "Cross-product governance" },
+};
+
+const stagePackageSlots: Record<DecisionPackageLane, [number, number, number, number, number]> = {
+  biopharma: [0, 0, 1, 2, 2],
+  "pharma-api": [0, 1, 2, 3, 3],
+  "pharma-drug-product": [0, 1, 2, 3, 3],
+  "cross-cutting-quality-rd": [0, 0, 0, 0, 0],
+};
+
+type EvidenceFlowNodeData = Record<string, unknown> & {
+  kind: "domain" | "stage";
+  title: string;
+  caption?: string;
+  icon: LucideIcon;
+  active: boolean;
+  hasTarget?: boolean;
+  hasSource?: boolean;
+  onSelect: () => void;
+};
+
+type EvidenceFlowNode = Node<EvidenceFlowNodeData, "evidence-flow">;
+
+function EvidenceFlowNodeView({ data }: NodeProps<EvidenceFlowNode>) {
+  const Icon = data.icon;
+  if (data.kind === "domain") {
+    return (
+      <div className="w-[220px]">
+        <button
+          type="button"
+          aria-pressed={data.active}
+          onClick={data.onSelect}
+          className={`nodrag nopan group flex w-full items-center gap-3 rounded-xl border px-3 py-2 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${data.active ? "border-teal-300/60 bg-teal-300/[0.08] text-teal-200 shadow-[0_0_28px_rgba(45,212,191,.12)]" : "border-slate-700/80 bg-[#07172a] text-slate-400 hover:border-sky-300/35 hover:text-slate-200"}`}
+        >
+          <span className={`grid h-11 w-11 shrink-0 place-items-center rounded-full border ${data.active ? "border-teal-300/70 bg-teal-300/[0.07] text-teal-300" : "border-slate-600 text-slate-400"}`}>
+            <Icon className="h-5 w-5" aria-hidden="true" />
+          </span>
+          <span className="text-sm font-semibold leading-5">{data.title}</span>
+        </button>
+        {data.hasSource && <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-0 !bg-sky-300" />}
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-[150px] text-center">
+      {data.hasTarget && <Handle type="target" position={Position.Left} className="!h-2 !w-2 !border-0 !bg-sky-300" />}
+      <p className={`text-sm font-semibold ${data.active ? "text-sky-300" : "text-slate-300"}`}>{data.title}</p>
+      <button
+        type="button"
+        aria-pressed={data.active}
+        aria-label={`Inspect ${data.title} evidence`}
+        onClick={data.onSelect}
+        className={`nodrag nopan relative mx-auto mt-3 grid h-[126px] w-[116px] place-items-center rounded-2xl border bg-[#081a30] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/70 ${data.active ? "border-sky-300/70 text-sky-400 shadow-[0_0_34px_rgba(56,189,248,.16)]" : "border-slate-600/80 text-sky-400 hover:border-sky-300/50"}`}
+      >
+        <span className="absolute left-3 top-3 grid h-5 w-5 place-items-center rounded-full border border-teal-300 text-teal-300">
+          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+        </span>
+        <Icon className="h-12 w-12 stroke-[1.45]" aria-hidden="true" />
+      </button>
+      <p className="mx-auto mt-3 max-w-[148px] text-xs leading-5 text-slate-400">{data.caption}</p>
+      {data.hasSource && <Handle type="source" position={Position.Right} className="!h-2 !w-2 !border-0 !bg-sky-300" />}
+    </div>
+  );
+}
+
+const evidenceNodeTypes = { "evidence-flow": EvidenceFlowNodeView };
+
+const openEvidenceSearch = () => window.dispatchEvent(new Event("lsa:open-search"));
+
+function EvidenceNav() {
+  return (
+    <header className="relative z-50 flex h-[4.5rem] items-center border-b border-slate-700/60 bg-[#041426]/95 px-4 backdrop-blur-md sm:px-6 lg:px-8">
+      <Link href="/evidence" className="flex shrink-0 items-center gap-2.5 transition hover:opacity-85">
+        <span className="grid h-9 w-9 place-items-center rounded-lg border border-teal-300/25 bg-[#081b2f] p-1">
+          <AtlasMark className="h-full w-full" />
+        </span>
+        <span className="font-display text-lg font-bold text-slate-50 sm:text-xl"><span className="text-teal-300">Atlas</span> Evidence</span>
+      </Link>
+
+      <nav aria-label="Evidence navigation" className="ml-10 hidden items-center gap-8 text-sm font-medium text-slate-300 lg:flex">
+        <Link href="/products" className="transition hover:text-teal-200">Products</Link>
+        <Link href="/how-it-works" className="transition hover:text-teal-200">How Atlas works</Link>
+        <Link href="/evidence" aria-current="page" className="rounded-lg bg-teal-300/[0.08] px-4 py-2 text-teal-300">Resources</Link>
+        <Link href="/pricing" className="transition hover:text-teal-200">Pricing</Link>
+      </nav>
+
+      <div className="ml-auto flex items-center gap-2 sm:gap-4">
+        <button
+          type="button"
+          onClick={openEvidenceSearch}
+          aria-label="Search"
+          className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-700/80 bg-[#08192c] px-3 text-xs text-slate-400 transition hover:border-teal-300/30 hover:text-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70"
+        >
+          <Search className="h-4 w-4" aria-hidden="true" />
+          <span className="hidden md:inline">Search</span>
+          <span className="hidden rounded bg-slate-700/60 px-1.5 py-0.5 text-[9px] text-slate-400 xl:inline">Ctrl K</span>
+        </button>
+        <Link href="/login" className="hidden text-sm font-semibold text-slate-200 transition hover:text-teal-200 sm:inline">Sign in</Link>
+        <Link href="/quality-lab/planner" className="inline-flex min-h-10 items-center rounded-lg bg-teal-300 px-4 text-xs font-bold text-slate-950 transition hover:bg-teal-200 sm:px-5 sm:text-sm">Start free</Link>
+      </div>
+    </header>
+  );
+}
 
 export default function DecisionPackagesPage() {
   const [location] = useLocation();
@@ -52,42 +208,226 @@ export default function DecisionPackagesPage() {
 
 function DecisionPackageIndex({ lane }: { lane?: DecisionPackageLane }) {
   const progress = useDecisionPackageProgressPortfolio();
-  const visibleLanes = lane ? [lane] : laneOrder;
+  const [activeLane, setActiveLane] = useState<DecisionPackageLane>(lane ?? "biopharma");
+  const [activeStageIndex, setActiveStageIndex] = useState(0);
+
+  useEffect(() => {
+    if (!lane) return;
+    setActiveLane(lane);
+    setActiveStageIndex(0);
+  }, [lane]);
+
+  const lanePackages = getDecisionPackagesForLane(activeLane);
+  const selectedPackage = lanePackages[stagePackageSlots[activeLane][activeStageIndex]] ?? lanePackages[0]!;
+  const SelectedLaneIcon = laneVisuals[activeLane].icon;
+
+  const selectLane = (nextLane: DecisionPackageLane) => {
+    setActiveLane(nextLane);
+    setActiveStageIndex(0);
+  };
+
+  const flowNodes = useMemo<EvidenceFlowNode[]>(() => {
+    const domainNodes: EvidenceFlowNode[] = laneOrder.map((laneItem, index) => ({
+      id: `domain-${laneItem}`,
+      type: "evidence-flow",
+      position: { x: 0, y: index * 76 },
+      draggable: false,
+      selectable: false,
+      data: {
+        kind: "domain",
+        title: laneVisuals[laneItem].shortLabel,
+        icon: laneVisuals[laneItem].icon,
+        active: activeLane === laneItem,
+        hasSource: true,
+        onSelect: () => selectLane(laneItem),
+      },
+    }));
+
+    const stageNodes: EvidenceFlowNode[] = evidenceStages.map((stage, index) => ({
+      id: `stage-${stage.key}`,
+      type: "evidence-flow",
+      position: { x: 300 + index * 205, y: 76 },
+      draggable: false,
+      selectable: false,
+      data: {
+        kind: "stage",
+        title: stage.label,
+        caption: stage.caption,
+        icon: stage.icon,
+        active: activeStageIndex === index,
+        hasTarget: true,
+        hasSource: index < evidenceStages.length - 1,
+        onSelect: () => setActiveStageIndex(index),
+      },
+    }));
+
+    return [...domainNodes, ...stageNodes];
+  }, [activeLane, activeStageIndex]);
+
+  const flowEdges = useMemo<Edge[]>(() => {
+    const domainEdges: Edge[] = laneOrder.map((laneItem) => ({
+      id: `domain-edge-${laneItem}`,
+      source: `domain-${laneItem}`,
+      target: "stage-inputs",
+      type: "smoothstep",
+      animated: laneItem === activeLane,
+      style: {
+        stroke: laneItem === activeLane ? "#2dd4bf" : "#27445f",
+        strokeWidth: laneItem === activeLane ? 2.2 : 1.1,
+      },
+    }));
+
+    const stageEdges: Edge[] = evidenceStages.slice(0, -1).map((stage, index) => ({
+      id: `stage-edge-${stage.key}`,
+      source: `stage-${stage.key}`,
+      target: `stage-${evidenceStages[index + 1].key}`,
+      type: "smoothstep",
+      animated: true,
+      markerEnd: { type: MarkerType.ArrowClosed, color: "#38bdf8", width: 16, height: 16 },
+      style: { stroke: "#38bdf8", strokeWidth: 2 },
+    }));
+
+    return [...domainEdges, ...stageEdges];
+  }, [activeLane]);
+
   return (
-    <main className="min-h-screen bg-[#061426] text-slate-100">
-      <section className="border-b border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(20,184,166,.16),transparent_42%),#07182d] px-4 pb-14 pt-16 md:pb-20 md:pt-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-teal-300"><Sparkles className="h-4 w-4" /> Atlas Evidence · decision packages</p>
-            <h1 className="mt-5 font-display text-4xl font-bold leading-tight tracking-[-0.03em] md:text-6xl">{lane ? `${laneLabels[lane]} evidence for the decision in front of you.` : "A connected evidence path for the decision in front of you."}</h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-slate-300 md:text-lg">{lane ? laneDescriptions[lane] : "Each package connects public orientation, deeper professional resources, a Blueprint context and a Career evidence route. Review maturity stays visible at every step."}</p>
+    <main className="min-h-screen overflow-hidden bg-[#041426] text-slate-100">
+      <EvidenceNav />
+      <section className="mx-auto max-w-[1440px] px-4 pb-10 pt-10 sm:px-6 md:px-10 md:pt-14 lg:px-12">
+        <header>
+          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">Atlas Evidence · decision packages</p>
+          <h1 className="mt-3 font-display text-4xl font-bold leading-[1.05] tracking-[-0.04em] text-slate-50 sm:text-5xl lg:text-[3.5rem]">Trace evidence to the decision.</h1>
+          <p className="mt-3 text-sm text-slate-400 sm:text-base">Follow the evidence path across the product lifecycle.</p>
+        </header>
+
+        <section aria-label="Interactive evidence decision path" className="relative mt-9 hidden h-[390px] lg:block">
+          <img
+            src="/images/evidence/evidence-flow-stream.png"
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute left-[20%] top-32 z-0 h-28 w-[78%] object-fill opacity-[0.48]"
+          />
+          <div className="relative z-10 h-full">
+            <ReactFlow
+              nodes={flowNodes}
+              edges={flowEdges}
+              nodeTypes={evidenceNodeTypes}
+              fitView
+              fitViewOptions={{ padding: 0.015, minZoom: 0.8, maxZoom: 1 }}
+              minZoom={0.8}
+              maxZoom={1}
+              nodesDraggable={false}
+              nodesConnectable={false}
+              elementsSelectable={false}
+              panOnDrag={false}
+              zoomOnScroll={false}
+              zoomOnPinch={false}
+              zoomOnDoubleClick={false}
+              preventScrolling={false}
+              proOptions={{ hideAttribution: true }}
+              aria-label="Evidence domains connected across five lifecycle stages"
+              onNodeClick={(_, selectedNode) => selectedNode.data.onSelect()}
+            />
           </div>
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            <TrustCard icon={BookOpenCheck} label="Evidence" body="Named sources, applicability and limitations." />
-            <TrustCard icon={Building2} label="Blueprint context" body="Discovery support, not a new verified Domain Pack." />
-            <TrustCard icon={BriefcaseBusiness} label="Career evidence" body="Competency activities, not competence certification." />
+        </section>
+
+        <section className="mt-8 lg:hidden" aria-label="Evidence domain and lifecycle explorer">
+          <div className="grid grid-cols-2 gap-2" role="group" aria-label="Evidence domains">
+            {laneOrder.map((laneItem) => {
+              const Icon = laneVisuals[laneItem].icon;
+              return (
+                <button
+                  key={laneItem}
+                  type="button"
+                  aria-pressed={activeLane === laneItem}
+                  onClick={() => selectLane(laneItem)}
+                  className={`flex min-h-14 items-center gap-2 rounded-xl border px-3 py-2 text-left text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/70 ${activeLane === laneItem ? "border-teal-300/60 bg-teal-300/[0.08] text-teal-200" : "border-slate-700 bg-[#07172a] text-slate-400"}`}
+                >
+                  <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  {laneVisuals[laneItem].shortLabel}
+                </button>
+              );
+            })}
           </div>
-          <div className="mt-6 flex flex-wrap gap-2" aria-label="Evidence domain hubs"><Link href="/evidence" className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${!lane ? "border-teal-300/35 bg-teal-300/10 text-teal-200" : "border-white/10 text-slate-400"}`}>All packages</Link>{(["biopharma", "pharma-api", "pharma-drug-product"] as DecisionPackageLane[]).map((hub) => <Link key={hub} href={`/evidence/${laneSlugs[hub]}`} className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${lane === hub ? "border-teal-300/35 bg-teal-300/10 text-teal-200" : "border-white/10 text-slate-400"}`}>{laneLabels[hub]}</Link>)}</div>
-        </div>
-      </section>
-      <section className="mx-auto max-w-7xl px-4 py-10 md:py-14">
-        <div className="space-y-12">
-          {visibleLanes.map((lane) => {
-            const items = getDecisionPackagesForLane(lane);
-            return <section key={lane} aria-labelledby={`${lane}-packages`}>
-              <div className="flex flex-col gap-2 border-b border-white/10 pb-4 md:flex-row md:items-end md:justify-between"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">{laneLabels[lane]}</p><h2 id={`${lane}-packages`} className="mt-2 text-2xl font-bold">{laneLabels[lane]} decision chain</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{laneDescriptions[lane]}</p></div><span className="text-xs font-semibold text-slate-500">{items.length} package{items.length === 1 ? "" : "s"}</span></div>
-              <div className="mt-5 grid gap-4 lg:grid-cols-2">{items.map((item) => <PackageCard key={item.id} item={item} progressRecord={progress.getRecord(item.id)} />)}</div>
-            </section>;
-          })}
+          <div className="mt-5 overflow-x-auto pb-2" aria-label="Lifecycle stages">
+            <div className="flex w-max items-center gap-2">
+              {evidenceStages.map((stage, index) => {
+                const Icon = stage.icon;
+                return (
+                  <div key={stage.key} className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      aria-pressed={activeStageIndex === index}
+                      onClick={() => setActiveStageIndex(index)}
+                      className={`w-32 rounded-xl border px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/70 ${activeStageIndex === index ? "border-sky-300/70 bg-sky-300/[0.08]" : "border-slate-700 bg-[#081a30]"}`}
+                    >
+                      <span className="flex items-center justify-between">
+                        <Icon className="h-5 w-5 text-sky-400" aria-hidden="true" />
+                        <CheckCircle2 className="h-4 w-4 text-teal-300" aria-hidden="true" />
+                      </span>
+                      <span className="mt-3 block text-sm font-semibold text-slate-100">{stage.label}</span>
+                      <span className="mt-1 block text-[10px] leading-4 text-slate-400">{stage.caption}</span>
+                    </button>
+                    {index < evidenceStages.length - 1 && <ArrowRight className="h-4 w-4 shrink-0 text-sky-400" aria-hidden="true" />}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section
+          aria-labelledby="selected-evidence-question"
+          className="mt-7 rounded-2xl border border-slate-700/80 bg-[#07182c] px-5 py-4 md:px-7 lg:mt-20 lg:grid lg:grid-cols-[1.9fr_.95fr_.95fr_.95fr_auto] lg:items-center lg:gap-0"
+        >
+          <div className="flex items-start gap-4 pr-5">
+            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full border border-teal-300/70 text-teal-300">
+              <SelectedLaneIcon className="h-7 w-7" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Selected question · {evidenceStages[activeStageIndex].label}</p>
+              <h2 id="selected-evidence-question" className="mt-2 text-base font-semibold leading-6 text-slate-100">{selectedPackage.decisionQuestion}</h2>
+              <p className="mt-1 text-xs text-slate-400">{selectedPackage.title}</p>
+            </div>
+          </div>
+
+          <EvidenceSignal icon={FileText} tone="amber" label="Named sources" body="Bounded to named, versioned records." />
+          <EvidenceSignal icon={Building2} tone="teal" label="Blueprint context" body="Discovery support within the stated scope." />
+          <EvidenceSignal icon={BadgeCheck} tone="teal" label={selectedPackage.reviewStatus.replaceAll("-", " ")} body="Editorial review; SME approval is not implied." />
+
+          <Link
+            href={`/evidence/packages/${selectedPackage.id}`}
+            className="mt-5 inline-flex min-h-11 items-center justify-center gap-4 rounded-lg bg-teal-300 px-5 text-sm font-bold text-slate-950 transition hover:bg-teal-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-200 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07182c] lg:mt-0"
+          >
+            Open package <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </section>
+
+        <div className="mt-3 flex flex-col gap-3 rounded-xl border border-slate-700/70 bg-[#07172a] px-5 py-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="h-5 w-5 text-teal-300" aria-hidden="true" />
+            <span className="font-semibold text-teal-300">Provenance</span>
+            <span>Evidence lineage stays visible from source boundary to decision handoff.</span>
+          </div>
+          {progress.completedCount > 0 && <span className="shrink-0 font-semibold text-teal-200">Ready for review</span>}
         </div>
       </section>
     </main>
   );
 }
 
-function PackageCard({ item, progressRecord }: { item: DecisionPackage; progressRecord?: DecisionPackageProgressRecord }) {
-  const progress = assessDecisionPackageProgress(progressRecord);
-  return <Link href={`/evidence/packages/${item.id}`} className="group flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.035] p-5 transition hover:-translate-y-0.5 hover:border-teal-300/35 hover:bg-teal-300/[0.045] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/50"><div className="flex items-start justify-between gap-4"><div><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Month {item.month} · {item.reviewStatus}</span><h3 className="mt-2 text-lg font-bold text-slate-100 group-hover:text-teal-200">{item.title}</h3></div><ArrowRight className="mt-1 h-5 w-5 shrink-0 text-slate-600 transition group-hover:translate-x-1 group-hover:text-teal-300" /></div><p className="mt-3 text-sm leading-6 text-slate-400">{item.summary}</p>{progress.totalCount > 0 && <div className="mt-4"><div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider"><span className={progress.status === "ready-for-review" ? "text-teal-300" : "text-sky-300"}>{progress.status === "ready-for-review" ? "Ready for review" : "Resume package"}</span><span className="text-slate-600">{progress.completedCount}/{progress.totalCount}</span></div><div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10"><div className="h-full bg-teal-300" style={{ width: `${progress.percent}%` }} /></div></div>}<div className="mt-auto flex flex-wrap gap-2 pt-5">{item.stageRefs.map((stage) => <span key={`${stage.systemId}:${stage.stageId}`} className="rounded-full border border-white/10 px-2.5 py-1 text-[10px] font-semibold text-slate-500">{stage.stageId.replaceAll("-", " ")}</span>)}</div></Link>;
+function EvidenceSignal({ icon: Icon, tone, label, body }: { icon: LucideIcon; tone: "teal" | "amber"; label: string; body: string }) {
+  return (
+    <div className="mt-5 flex items-start gap-3 border-t border-slate-700/70 pt-5 lg:mt-0 lg:border-l lg:border-t-0 lg:px-5 lg:pt-0">
+      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border ${tone === "amber" ? "border-amber-300/70 text-amber-300" : "border-teal-300/60 text-teal-300"}`}>
+        <Icon className="h-5 w-5" aria-hidden="true" />
+      </span>
+      <span>
+        <span className="block text-sm font-semibold capitalize text-slate-100">{label}</span>
+        <span className="mt-1 block text-xs leading-5 text-slate-400">{body}</span>
+      </span>
+    </div>
+  );
 }
 
 function DecisionPackageDetail({ item }: { item: DecisionPackage }) {
@@ -125,8 +465,4 @@ function DecisionPackageDetail({ item }: { item: DecisionPackage }) {
 
 function Handoff({ href, label, icon: Icon, destination, packageId }: { href: string; label: string; icon: typeof Building2; destination: string; packageId: string }) {
   return <Link href={href} onClick={() => analytics.decisionPackageProductHandoff(packageId, destination)} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-sm font-bold text-slate-200 transition hover:border-teal-300/35 hover:bg-teal-300/[0.08] hover:text-teal-100"><Icon className="h-4 w-4 text-teal-300" />{label}</Link>;
-}
-
-function TrustCard({ icon: Icon, label, body }: { icon: typeof Building2; label: string; body: string }) {
-  return <div className="rounded-xl border border-white/10 bg-white/[0.035] p-4"><Icon className="h-4 w-4 text-teal-300" /><p className="mt-3 text-sm font-bold text-slate-200">{label}</p><p className="mt-1 text-xs leading-5 text-slate-500">{body}</p></div>;
 }

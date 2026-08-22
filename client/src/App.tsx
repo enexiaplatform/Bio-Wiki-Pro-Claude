@@ -111,17 +111,22 @@ function AdminOnlyRoute({ component: Component }: { component: ComponentType }) 
 function Layout() {
   usePageTracking();
   const [location] = useLocation();
-  const resourceLocation = isResourceLocation(location);
+  const resourceLocation = isResourceLocation(location) && location !== "/methods";
+  const immersiveQualityLab = location === "/quality-lab";
+  const immersiveEvidence = ["/evidence", "/evidence/biopharma", "/evidence/pharma-api", "/evidence/drug-product"].includes(location);
+  const immersivePro = location === "/pro";
+  const immersiveCareer = location === "/career";
+  const immersiveSurface = immersiveQualityLab || immersiveEvidence || immersivePro || immersiveCareer;
   return (
-    <div className="min-h-screen bg-background text-foreground pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16">
+    <div className={`min-h-screen bg-background text-foreground ${immersiveSurface ? "" : "pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16"}`}>
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"
       >
         Skip to content
       </a>
-      <DesktopNav />
-      <MobileHeader />
+      {!immersiveSurface && <DesktopNav />}
+      {!immersiveSurface && <MobileHeader />}
 
       <main id="main" className={resourceLocation ? "md:flex md:items-start" : undefined}>
         {resourceLocation && <ResourceRail />}
@@ -228,8 +233,8 @@ function Layout() {
         </div>
       </main>
 
-      <BottomNav />
-      <Footer />
+      {!immersiveSurface && <BottomNav />}
+      {!immersiveSurface && <Footer />}
       <LazyCommandPalette />
     </div>
   );

@@ -1,209 +1,79 @@
-# Resource Process Blueprint — Design QA
+# Design QA — Method & Standards Navigator
 
 ## Comparison target
 
-- Source visual truth: `C:\Users\PC\.codex\generated_images\019fe571-034f-77e3-a631-6b236321a7c3\exec-402f5bad-7478-4df5-926e-4f9654feae77.png`
-- Browser-rendered implementation: `artifacts/resource-process-blueprint-desktop-v2.png`
-- Full-view comparison: `artifacts/resource-process-blueprint-comparison-v2.png`
-- Process-map focus comparison: `artifacts/resource-process-blueprint-map-focus.png`
-- Detail-drawer focus comparison: `artifacts/resource-process-blueprint-drawer-focus.png`
-- Responsive evidence: `artifacts/resource-process-blueprint-mobile.png`
-- Route/state: `/workflows`, dark theme, Biopharma system, stage 4 Formulation & fill-finish selected, guest state.
-- Viewport: desktop CSS viewport 1488 × 1056; mobile CSS viewport 390 × 844.
-- Pixel dimensions and density: source 1488 × 1056; desktop implementation 1488 × 1056; mobile implementation 390 × 844. Full-view comparison used equal pixel dimensions with no density resampling. Focus comparisons crop and resize only the corresponding process-map and detail-drawer regions for readable inspection.
+- Source visual truth: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-coverage-route.png`
+- Rendered implementation: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-implementation-final.png`
+- Route: `http://localhost:5000/methods`
+- State: desktop, dark theme, guest, query `microbial method suitability`, selected application `Microbial method suitability and recovery`
+- CSS viewport: `1440 × 1024`
+- Source pixels: `1440 × 1024`
+- Implementation pixels: `1432 × 1018`
+- Density normalization: device scale factor 1; implementation capture resized to `1440 × 1024` with bicubic interpolation only for the comparison composites. The original implementation evidence is preserved unchanged.
 
-## Findings
+## Visual evidence
 
-No actionable P0, P1, or P2 findings remain.
+- Full-view comparison: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-comparison-full.png`
+- Focused route comparison: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-comparison-route.png`
+- Focused radar comparison: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-comparison-radar.png`
 
-- [P3] Stage symbols are library-native rather than bespoke equipment drawings.
-  - Location: seven stage nodes.
-  - Evidence: the source uses custom bioreactor, chromatography, vial-line, and analytical-equipment illustrations; the implementation uses the closest Phosphor line symbols.
-  - Impact: the implementation is slightly less illustrative but remains clear, consistent, accessible, and faithful to the selected technical-blueprint language.
-  - Follow-up: commission a matched seven-symbol production icon set only if brand differentiation warrants the extra asset work.
-
-- [P3] Live product copy and counts differ from the illustrative mock.
-  - Location: linked-resource rail and bottom evidence drawer.
-  - Evidence: the mock uses illustrative labels/counts, while the implementation resolves the repository's real workflow, tool, lesson, and toolkit records for the selected stage.
-  - Impact: visual density remains equivalent and the implementation is more truthful to the product data.
-  - Follow-up: none required.
+The focused route crop was required to evaluate heading scale, search geometry, node alignment, connector rhythm, card proportions, status color, source rows, and CTA hierarchy. The focused radar crop was required to evaluate the lower application selector, curvature, metric group, legend, and trust strip.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: existing Inter body and Space Grotesk display fonts are preserved. Heading hierarchy, small uppercase labels, 14–16px reading text, truncation, and optical weight match the target closely.
-- Spacing and layout rhythm: the final canvas is edge-to-edge below the primary navigation, with the 7.25rem resource rail, compact header, two-row process map, right application rail, and bottom detail drawer aligned to the source proportions. Desktop and mobile show no document-level horizontal overflow.
-- Colors and visual tokens: deep navy surfaces, teal active paths, muted steel-blue inactive controls, and coral critical-control accents match the target palette and retain sufficient contrast.
-- Image quality and asset fidelity: the bottom drawer uses an existing high-resolution editorial laboratory image with a deliberate crop and credit metadata. Visible UI symbols use the Phosphor icon library; no handcrafted SVG, CSS illustration, emoji, or placeholder asset is used.
-- Copy and content: interface copy is English-only, concise, and uses real stage-linked product records. The evidence boundary remains visible and does not overstate applicability.
+- Fonts and typography: passed. The implementation uses the product's Space Grotesk display face and Inter body face, with matching display weight, uppercase micro-label treatment, compact UI scale, and single-line desktop headline.
+- Spacing and layout rhythm: passed. The top navigation, centered headline/search, five-stage route, five aligned detail columns, boundary block, lower radar, metric group, and trust strip match the selected composition. All persistent content is visible at the target viewport.
+- Colors and visual tokens: passed. Deep navy, teal/cyan mapped states, slate support text, and restrained amber evidence boundaries follow both the mock and current Atlas tokens. Status color is semantic and consistent.
+- Image quality and asset fidelity: passed. The selected target contains no photographic or illustrated content. The implementation uses the existing high-resolution Atlas decision-grid asset as a restrained background and the product's established professional icon library; no placeholder images, emoji, handcrafted SVGs, or rasterized UI were introduced.
+- Copy and content: passed. The selected query, application, exact three named sources, five unresolved dimensions, evidence boundary, decision-use labels, and 8/9/0 counters are sourced from the current repository. The eight radar labels deliberately use the real Atlas application records rather than the inaccurate ImageGen labels.
+- Icons: passed. Icons use one consistent library already present across approved Atlas screens, with matched stroke weight, size, color, and alignment.
+- States and interactions: passed. Search, matched result, explicit not-covered state, application selection, source links, application-guide CTA, and Blueprint CTA were exercised in the in-app browser.
+- Accessibility: passed for the target state. The search has a programmatic label, route and radar regions are named, application controls are buttons with pressed state, links retain visible focus styling, and state is not communicated by color alone.
 
 ## Comparison history
 
-### Pass 1 — blocked
+### Iteration 1
 
-- [P2] The implementation used an inset rounded container while the source used an edge-to-edge technical canvas.
-- [P2] The system selector created an over-tall header that compressed the process map.
-- [P2] Six linked applications were visible at once, making the right rail denser than the four-link source state.
-- [P2] The drawer used a background image behind the primary action instead of a separate photo cell.
-- Evidence: `artifacts/resource-process-blueprint-desktop.png` and `artifacts/resource-process-blueprint-comparison.png`.
+- Earlier finding [P1]: the headline wrapped to two lines and materially changed the hierarchy.
+- Earlier finding [P2]: the lower radar and trust strip were clipped below the target viewport.
+- Fixes: widened the headline measure, reduced unnecessary helper copy, rebalanced route and lower-panel vertical rhythm, and preserved the single-screen composition.
+- Post-fix evidence: `methods-implementation-v2.png`.
 
-### Fixes applied
+### Iteration 2
 
-- Opened the blueprint to the full resource content width and removed the outer card framing.
-- Moved the system selector into the eyebrow row and shortened the displayed Biopharma title.
-- Limited the default right rail to four key links with a functional control for the remaining stage resources.
-- Split the bottom image into its own cell and restored the target drawer proportions.
-- Added the shared symbol-led Resource rail to Methods, Monitor, Workflows, Academy, Tools, Toolkits, and Compliance.
-- Fixed Academy filter grid min-width behavior that caused mobile document overflow.
+- Earlier finding [P2]: connector arrows were missing and the evidence boundary appeared as a full-width strip rather than under the coverage state.
+- Fixes: added library-based arrow nodes between all five stages and moved the boundary into the coverage column.
+- Post-fix evidence: `methods-implementation-final.png` and `methods-comparison-route.png`.
 
-### Pass 2 — passed
+### Iteration 3
 
-- Post-fix evidence: `artifacts/resource-process-blueprint-desktop-v2.png`, `artifacts/resource-process-blueprint-comparison-v2.png`, `artifacts/resource-process-blueprint-map-focus.png`, and `artifacts/resource-process-blueprint-drawer-focus.png`.
-- The revised composition, hierarchy, palette, stage selection, application rail, and detail drawer match the selected direction without actionable P0/P1/P2 drift.
+- Earlier finding [P2]: the radar/metric group remained too tall, clipping the trust strip by approximately 16 pixels.
+- Fixes: reduced radar segment and metric padding while keeping the arc, legend, accurate application names, and 8/9/0 counters readable.
+- Post-fix evidence: `methods-implementation-final.png`, `methods-comparison-full.png`, and `methods-comparison-radar.png`.
 
-## Interaction and responsive checks
+## Findings
 
-- Selected Downstream clearance on mobile; the detail state changed to stage 3.
-- Switched from Biopharma to QC laboratory; the title, seven stages, and linked applications changed to the selected system.
-- Opened Tools from the shared Resource rail; navigation reached `/tools` and rendered the expected heading.
-- Verified all seven Resource index routes render with the shared rail: `/methods`, `/monitor`, `/workflows`, `/academy`, `/tools`, `/toolkits`, and `/compliance`.
-- Verified 390px mobile document width on all seven routes after the Academy min-width fix; no page-level horizontal overflow remains.
-- Checked the in-app browser console after the final route and interaction pass; no error-level messages were present.
-
-## Validation
-
-- `npm run validate`: passed.
-- `npm test`: 73 files and 452 tests passed.
-- `npm run build`: passed.
-
-## Remaining Resource organization QA
-
-- Source visual truth: `C:\Users\PC\AppData\Local\Temp\codex-clipboard-400792b0-7355-4fdd-bf49-cd6629fc7e3f.png` (278 × 454).
-- Browser-rendered implementation: `artifacts/resource-tools-organized-final.png` (1432 × 994 browser capture at a 1440 × 1000 CSS viewport).
-- Navigation focus comparison: `artifacts/resource-navigation-comparison.png`.
-- State: `/tools`, expanded descriptive Resource rail, guest state.
-
-### Result
-
-No actionable P0, P1, or P2 findings remain.
-
-- The expanded rail matches the reference hierarchy: one all-caps orientation label followed by seven symbol-led destinations, each with a strong title and muted purpose line.
-- The implementation uses the existing dark navy and teal product tokens and adds a clear active-route state. This is an intentional product affordance absent from the static reference.
-- Methods, Monitor, Academy, Tools, Toolkits, and Compliance each now place a three-step orientation flow directly after the hero. The strips use one consistent visual grammar: context label, three numbered actions, directional connectors, and a link to connected systems.
-- The Workflows route intentionally keeps the compact rail so the selected Process Blueprint retains enough horizontal space.
-- Desktop checks confirmed the expanded rail and correct flow copy on all six remaining Resource indexes.
-- Mobile checks confirmed the compact horizontal Resource navigator on all seven indexes, with no document-level horizontal overflow.
-- Focused comparison was necessary for the navigation because the full-page capture made 11–12px labels too small to judge; the combined focus image confirms readable hierarchy, spacing, symbol alignment, and purpose copy.
-
-### Residual P3 differences
-
-- The implementation uses Phosphor line icons instead of the reference's exact symbol set. Stroke weight and semantic clarity are close, and all icons come from one production library.
-- The active route has a subtle teal background to improve orientation; the reference shows no explicit selected state.
+No actionable P0, P1, or P2 differences remain at the target viewport and state.
 
 ## Follow-up polish
 
-- A bespoke seven-symbol bioprocess icon family could move the final P3 asset difference closer to the generated mock.
+- [P3] The raster mock uses a more pronounced semicircular arc and faint decorative sweep lines. The implementation keeps a flatter, more readable radar because the real application names are longer than the inaccurate labels generated in the mock.
+- [P3] The implementation uses the current Atlas global navigation exactly, so a few icon and spacing details differ slightly from the ImageGen approximation.
 
-## Blueprint Connected System extension
+## Verification
 
-### Comparison target
-
-- Source process reference: `C:\Users\PC\AppData\Local\Temp\codex-clipboard-7df46ac7-5c19-4d47-9008-738956ded3fc.png`.
-- Overview implementation: `artifacts/resource-connected-overview-desktop-viewport.png`.
-- Guided selector state: `artifacts/resource-connected-guide-desktop.png`.
-- Selected seven-stage system: `artifacts/resource-connected-system-desktop.png`.
-- System-first Tools surface: `artifacts/resource-connected-tools-desktop.png`.
-- Responsive evidence: `artifacts/resource-connected-overview-mobile.png`.
-- Combined comparison input: `artifacts/resource-connected-system-comparison.png`.
-- Viewports: desktop 1440 Ã— 1000 CSS px; mobile 390 Ã— 844 CSS px.
-
-### Result
-
-No actionable P0, P1, or P2 findings remain.
-
-- The default `/workflows` state now presents five peer systems instead of implying one default process. Each card uses a consistent scientific symbol, system description, seven-stage count, and truthful Resource coverage count.
-- The optional three-question selector is compact, keyboard reachable, and keeps the full-system path available through “Skip â€” view all systems”.
-- Selecting a system reveals the existing seven-stage Process Blueprint. The combined comparison confirms the implementation retains the source reference's directional process rhythm, connected-node model, scientific symbol language, and upstream/downstream reading logic while using the product's dark technical palette.
-- System and stage context remains visible when moving from Workflows to Tools and Academy. Browser Back restores the prior selected Resource state.
-- A connected Tool detail displays system position, previous/current/next stages, sibling resources, Blueprint relevance, and an “Apply this reasoning in a Blueprint” action.
-- Unmapped stage coverage is stated explicitly, while “Browse full catalog” remains accessible and marks unrelated items as “General reference”.
-
-### Interaction, accessibility, and responsive checks
-
-- Completed the guided route `QC laboratory â†’ Investigate â†’ Calculate`; the browser reached `/tools?system=qc-laboratory&stage=lab-investigations` and showed two explicitly connected tools.
-- Moved through the Resource rail to Academy and back to Tools; `system` and `stage` persisted in both directions.
-- Opened the OOS Investigation Decision Tree and confirmed multi-system context plus adjacent-stage navigation.
-- Verified the zero-tool state for Biopharma / Cell source & materials and the continued availability of the full catalog.
-- Desktop and mobile document widths match their viewports with no page-level horizontal overflow. The selected seven-stage row intentionally scrolls within its own container on smaller screens.
-- Keyboard focus is visible on the guided selector and stage controls. Headings, regions, labels, pressed states, and navigation landmarks are exposed semantically.
-- The in-app browser console reported no warnings or errors after the overview, selector, cross-Resource navigation, detail, coverage-gap, desktop, and mobile passes.
-
-### Residual P3 differences
-
-- The source reference is a single Biopharma manufacturing sequence, while the product entry state must compare five systems. The implementation preserves the linear sequence only after system selection so the information architecture stays truthful.
-- The implementation uses production Phosphor symbols rather than custom equipment illustrations. This keeps icon weight consistent across all five systems and seven Resource areas.
-
-final result: passed
-
-## Source-faithful Process Blueprint recreation
-
-### Comparison target
-
-- Source visual truth: `C:\Users\PC\AppData\Local\Temp\codex-clipboard-cb602a34-9f3b-4321-936c-a86880fd66f1.png`.
-- Final implementation: `artifacts/18-blueprint-source-faithful-final.png`.
-- Full-view comparison: `artifacts/19-blueprint-final-full-comparison.png`.
-- Process-map focus comparison: `artifacts/20-blueprint-final-map-comparison.png`.
-- Detail-panel focus comparison: `artifacts/21-blueprint-final-detail-comparison.png`.
-- Mobile evidence: `artifacts/11-blueprint-faithful-mobile.png`.
-- Source pixels: 1488 x 1059. Implementation pixels: 1488 x 1059. CSS viewport: 1488 x 1059 at device scale 1.
-- State: Biopharma system, stage 4 `formulation-fill` selected, guest navigation.
-
-### Findings
-
-No actionable P0, P1, or P2 differences remain.
-
-- Fonts and typography use the product's existing Inter and Space Grotesk families with matching hierarchy, compact labels, two-line process summaries, and selected-stage emphasis.
-- Spacing and layout rhythm now follow the source composition: four upper stages, three lower stages in reverse visual order, a right-side application branch, and a full-width stage detail panel beginning at the same vertical position.
-- Colors retain the source navy technical canvas, teal process flow, slate information links, coral critical controls, and teal selected-state treatment.
-- The fill-finish image is a dedicated, high-resolution sterile-vial production asset generated for the exact card slot and cool-blue art direction.
-- Copy matches the source where it describes the process. Application names and counts intentionally come from the explicit Resource registry rather than the mock's illustrative values.
-- Desktop interactions update the selected stage, linked applications, counts, CTA, URL parameters, and detail image state. Mobile keeps the active stage visible inside the horizontal stage strip with no document overflow.
-
-### Comparison history
-
-- Pass 1 (`artifacts/07-blueprint-source-faithful-pass1.png`) identified P2 spacing drift, a solid selected-stage badge, and doubled critical-control symbols.
-- Pass 2 (`artifacts/08-blueprint-source-faithful-pass2.png`) corrected node spacing and critical symbols, then identified a P2 missing lower process line and a weak stage-4 equipment symbol.
-- Final passes added the continuous 5-to-6-to-7 line, moved critical controls off stage labels, replaced the stage-4 glyph with a three-vial Phosphor composition, aligned the detail panel to the source, and verified the final result in the full and focused comparisons.
-
-### Residual P3 differences
-
-- Bespoke equipment illustrations from the mock are represented with the closest production Phosphor icons so the app retains one accessible icon system.
-- The source contains illustrative application titles and counts; the implementation preserves truthful registry content and exposes additional mapped resources through the existing expansion control.
-- The source's decorative return routing is simplified to a clearer continuous stage-4-to-stage-5 curve while preserving the same two-row visual rhythm.
-
-### Validation
-
+- Primary interactions tested: search match, explicit no-result/not-covered state, selecting `Pharmaceutical water microbiology`, source and CTA href resolution, and restoring the selected reference state.
+- Browser console: 0 warnings or errors in the final state.
 - `npm run validate`: passed.
-- `npm test`: 73 files and 452 tests passed.
+- `npm test`: 81 files and 500 tests passed.
 - `npm run build`: passed.
 
-final result: passed
+## Implementation checklist
 
-## Workflow sequence correction
-
-### Evidence
-
-- Reported zig-zag state: `artifacts/01-workflow-flow-before.png`.
-- Stage-selection inspection: `artifacts/02-workflow-stage-five-before-fix.png`.
-- First linear pass: `artifacts/03-workflow-linear-flow-after.png`.
-- Final wide layout: `artifacts/04-workflow-linear-final-wide.png`.
-- Final selected-stage mobile layout: `artifacts/05-workflow-linear-final-mobile.png`.
-
-### Result
-
-- Replaced the split 1-4 / 7-5 snake with one unambiguous left-to-right sequence from stage 1 through stage 7.
-- On narrower desktop and mobile viewports, only the stage strip scrolls horizontally; the document itself does not overflow.
-- Direct links and stage changes keep the active stage inside the visible strip without moving the page vertically.
-- Desktop at 1900 x 900 shows all seven stages simultaneously. Mobile at 390 x 844 centers the selected stage and retains the adjacent-process cue.
-- Type checking passed after the interaction change.
+- [x] Match the selected option 3 composition at `1440 × 1024`.
+- [x] Preserve the real eight-application evidence scope and named-source boundaries.
+- [x] Make search, selection, no-result, source, and CTA states functional.
+- [x] Keep all persistent controls visible in the target frame.
+- [x] Pass repository validation, unit tests, production build, browser interaction checks, and visual comparison.
 
 final result: passed

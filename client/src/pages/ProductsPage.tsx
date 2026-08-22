@@ -1,305 +1,384 @@
+import { useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowRight,
-  BadgeCheck,
-  BookOpenCheck,
+  Box,
   BriefcaseBusiness,
-  Building2,
   Check,
+  CircleHelp,
   Crown,
-  FileText,
-  Gauge,
-  Route,
+  FlaskConical,
+  LockKeyhole,
+  Network,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
+import {
+  ReactFlow,
+  type Edge,
+  type Node,
+  Position,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import { useSEO } from "@/hooks/use-seo";
 
-const productPaths = [
+type ProductKey = "quality-lab" | "pro" | "career";
+
+type Product = {
+  id: ProductKey;
+  intent: string;
+  title: string;
+  summary: string;
+  href: string;
+  image: string;
+  imageAlt: string;
+  icon: typeof FlaskConical;
+  accent: string;
+  defaultBorder: string;
+  selectedBorder: string;
+  selectedShadow: string;
+  iconSurface: string;
+  ctaClass: string;
+  boundary: string;
+};
+
+const products: Product[] = [
   {
-    eyebrow: "Plan a quality laboratory",
+    id: "quality-lab",
+    intent: "Plan a quality laboratory",
     title: "Quality Lab Blueprint",
-    price: "Free start · $149 diagnostic · from $990",
+    summary: "Translate products, markets, and testing demand into one controlled basis for capability, capacity, cost, and risk.",
     href: "/quality-lab",
     image: "/images/blueprint/quality-lab-blueprint-deliverables.webp",
-    alt: "Illustrative Quality Lab Blueprint decision package",
-    imageClassName: "object-contain bg-[#07182d]",
+    imageAlt: "Quality Lab Blueprint executive brief, capacity model, cost scenario, and evidence register",
+    icon: FlaskConical,
+    accent: "text-teal-300",
+    defaultBorder: "border-teal-300/35",
+    selectedBorder: "border-teal-300/80",
+    selectedShadow: "shadow-[0_0_34px_rgba(45,212,191,0.16)]",
+    iconSurface: "border-teal-300/50 bg-teal-300/[0.08] text-teal-300",
+    ctaClass: "bg-teal-300 text-slate-950 hover:bg-teal-200 focus-visible:ring-teal-100",
+    boundary: "Human review only in paid Blueprint scope.",
   },
   {
-    eyebrow: "Work with deeper resources",
+    id: "pro",
+    intent: "Strengthen my professional quality work",
     title: "Atlas Pro",
-    price: "$8/month · $80/year when available",
+    summary: "Deeper reusable evidence, tools, and working files for recurring quality work across the organization.",
     href: "/pro",
-    image: "/images/editorial/evidence-data-review.jpg",
-    alt: "Life science professionals reviewing quality evidence",
-    imageClassName: "object-cover object-center",
+    image: "/images/products/atlas-pro-review-canvas.png",
+    imageAlt: "Atlas Pro monthly quality review canvas",
+    icon: Crown,
+    accent: "text-sky-400",
+    defaultBorder: "border-sky-400/35",
+    selectedBorder: "border-sky-400/80",
+    selectedShadow: "shadow-[0_0_34px_rgba(56,189,248,0.15)]",
+    iconSurface: "border-sky-400/50 bg-sky-400/[0.08] text-sky-400",
+    ctaClass: "bg-sky-400 text-slate-950 hover:bg-sky-300 focus-visible:ring-sky-100",
+    boundary: "No project-specific expert review.",
   },
   {
-    eyebrow: "Make a career move",
+    id: "career",
+    intent: "Plan my next career move",
     title: "Personal Career Blueprint",
-    price: "$20 one time",
+    summary: "A personalized 13-week proof plan built from your evidence, constraints, timeline, and target route.",
     href: "/career",
     image: "/images/career/personal-career-blueprint-preview.webp",
-    alt: "Personal Career Blueprint report preview",
-    imageClassName: "object-cover",
+    imageAlt: "Personal Career Blueprint cover and evidence comparison page",
+    icon: BriefcaseBusiness,
+    accent: "text-amber-400",
+    defaultBorder: "border-amber-400/35",
+    selectedBorder: "border-amber-400/80",
+    selectedShadow: "shadow-[0_0_34px_rgba(251,191,36,0.13)]",
+    iconSurface: "border-amber-400/50 bg-amber-400/[0.07] text-amber-400",
+    ctaClass: "bg-amber-400 text-slate-950 hover:bg-amber-300 focus-visible:ring-amber-100",
+    boundary: "No hiring or credential guarantee.",
   },
 ];
 
-const comparisonRows = [
-  {
-    label: "Made for",
-    values: ["Quality, engineering, and project teams", "Life science quality professionals", "An individual career decision"],
-  },
-  {
-    label: "You receive",
-    values: ["Controlled project decision package", "Ongoing premium access", "Named PDF + 13-week workspace"],
-  },
-  {
-    label: "How you buy",
-    values: ["Free model → diagnostic → scoped project", "Monthly or annual membership", "One-time purchase"],
-  },
-  {
-    label: "Review boundary",
-    values: ["Human review in paid Blueprint scope", "Not project-specific review", "Planning aid; mentor review encouraged"],
-  },
+const qualityOffers = [
+  ["01", "Free model", "See the initial capability picture"],
+  ["02", "$149 diagnostic", "Clarify scope and decision gaps"],
+  ["03", "Blueprint from $990", "Receive the reviewed package"],
 ];
 
-function ProductPathCard({ product }: { product: (typeof productPaths)[number] }) {
+const proFeatures = [
+  "Reusable evidence",
+  "Professional tools",
+  "Working files",
+  "Current standards",
+];
+
+const careerFeatures = [
+  "Named for you",
+  "Role-specific",
+  "Evidence-led",
+  "Lifetime workspace",
+];
+
+function DecisionBranches() {
+  const nodes = useMemo<Node[]>(() => [
+    {
+      id: "question",
+      position: { x: 639, y: 2 },
+      sourcePosition: Position.Bottom,
+      style: { width: 2, height: 2, opacity: 0, padding: 0, border: 0 },
+      data: { label: "" },
+    },
+    ...[
+      ["quality", 203],
+      ["pro", 639],
+      ["career", 1076],
+    ].map(([id, x]) => ({
+      id: String(id),
+      position: { x: Number(x), y: 70 },
+      targetPosition: Position.Top,
+      style: { width: 2, height: 2, opacity: 0, padding: 0, border: 0 },
+      data: { label: "" },
+    })),
+  ], []);
+
+  const edges = useMemo<Edge[]>(() => [
+    {
+      id: "question-quality",
+      source: "question",
+      target: "quality",
+      type: "bezier",
+      style: { stroke: "#2dd4bf", strokeWidth: 2 },
+    },
+    {
+      id: "question-pro",
+      source: "question",
+      target: "pro",
+      type: "bezier",
+      style: { stroke: "#38bdf8", strokeWidth: 2 },
+    },
+    {
+      id: "question-career",
+      source: "question",
+      target: "career",
+      type: "bezier",
+      style: { stroke: "#fbbf24", strokeWidth: 2 },
+    },
+  ], []);
+
   return (
-    <Link
-      href={product.href}
-      className="group grid grid-cols-[72px_1fr_auto] items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.055] p-2.5 transition hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300"
-    >
-      <img
-        src={product.image}
-        alt=""
-        width="144"
-        height="104"
-        decoding="async"
-        className={`h-[52px] w-[72px] rounded-xl border border-white/10 ${product.imageClassName}`}
+    <div className="pointer-events-none hidden h-20 w-full xl:block" aria-hidden="true">
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+        nodesDraggable={false}
+        nodesConnectable={false}
+        nodesFocusable={false}
+        edgesFocusable={false}
+        elementsSelectable={false}
+        panOnDrag={false}
+        zoomOnDoubleClick={false}
+        zoomOnPinch={false}
+        zoomOnScroll={false}
+        preventScrolling={false}
+        tabIndex={-1}
+        proOptions={{ hideAttribution: true }}
       />
-      <span className="min-w-0">
-        <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{product.eyebrow}</span>
-        <span className="mt-1 block truncate text-sm font-bold text-white">{product.title}</span>
-        <span className="mt-0.5 block text-xs text-slate-400">{product.price}</span>
+    </div>
+  );
+}
+
+function ProductCard({
+  product,
+  selected,
+  onSelect,
+}: {
+  product: Product;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const Icon = product.icon;
+
+  return (
+    <button
+      type="button"
+      aria-label={`Select ${product.title}`}
+      aria-pressed={selected}
+      onClick={onSelect}
+      className={`group relative flex h-full w-full flex-col overflow-hidden rounded-[1.15rem] border bg-[#071a2d] p-3.5 text-left transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:p-4 ${
+        selected
+          ? `${product.selectedBorder} ${product.selectedShadow}`
+          : `${product.defaultBorder} hover:-translate-y-1 hover:brightness-110`
+      }`}
+    >
+      <span
+        className={`absolute left-1/2 top-0 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border bg-[#061426] transition ${
+          selected ? product.selectedBorder : "border-white/20"
+        }`}
+        aria-hidden="true"
+      >
+        <Check className={`h-4 w-4 ${selected ? product.accent : "text-slate-500"}`} />
       </span>
-      <ArrowRight className="h-4 w-4 text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-teal-200" />
-    </Link>
+
+      <span className="flex items-start gap-3">
+        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${product.iconSurface}`}>
+          <Icon className="h-5 w-5" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-medium leading-5 text-slate-200">{product.intent}</span>
+          <span className={`mt-1 block font-display text-[1.45rem] font-semibold leading-tight tracking-[-0.025em] ${product.accent}`}>
+            {product.title}
+          </span>
+        </span>
+      </span>
+
+      <span className="mt-3 block text-[13px] leading-[1.55] text-slate-300">{product.summary}</span>
+
+      <span className="mt-3 flex h-52 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/[0.08] bg-[#051222]/70">
+        <img
+          src={product.image}
+          alt={product.imageAlt}
+          width="900"
+          height="720"
+          decoding="async"
+          className={`max-h-full w-full object-contain transition duration-300 group-hover:scale-[1.015] ${
+            product.id === "pro" ? "p-2" : ""
+          }`}
+        />
+      </span>
+
+      {product.id === "quality-lab" ? (
+        <span className="mt-3 grid grid-cols-3 divide-x divide-teal-300/15 border-y border-teal-300/15 py-2.5">
+          {qualityOffers.map(([number, title, body]) => (
+            <span key={number} className="px-2 first:pl-0 last:pr-0">
+              <span className="block text-[9px] font-bold tracking-[0.15em] text-teal-300">{number}</span>
+              <span className="mt-1 block text-[11px] font-bold leading-4 text-white">{title}</span>
+              <span className="mt-1 hidden text-[9px] leading-4 text-slate-400 sm:block">{body}</span>
+            </span>
+          ))}
+        </span>
+      ) : null}
+
+      {product.id === "pro" ? (
+        <>
+          <span className="mt-3 grid grid-cols-2 gap-1.5">
+            {proFeatures.map((feature) => (
+              <span key={feature} className="flex min-h-9 items-center gap-2 rounded-lg border border-sky-400/12 bg-sky-400/[0.04] px-2.5 text-[10px] font-semibold leading-4 text-slate-300">
+                <Box className="h-3.5 w-3.5 shrink-0 text-sky-400" /> {feature}
+              </span>
+            ))}
+          </span>
+          <span className="mt-3 border-t border-sky-400/15 pt-3 text-center">
+            <span className="block text-base font-bold text-sky-400">$8/month or $80/year when available</span>
+            <span className="mt-1 block text-[11px] text-slate-400">Not project-specific review</span>
+          </span>
+        </>
+      ) : null}
+
+      {product.id === "career" ? (
+        <>
+          <span className="mt-3 flex flex-wrap justify-center gap-1.5">
+            {careerFeatures.map((feature) => (
+              <span key={feature} className="rounded-full border border-amber-400/20 bg-amber-400/[0.07] px-2.5 py-1 text-[9px] font-bold text-amber-300">
+                {feature}
+              </span>
+            ))}
+          </span>
+          <span className="mt-3 border-t border-amber-400/15 pt-3 text-center">
+            <span className="block text-base font-bold text-amber-400">Free snapshot</span>
+            <span className="mt-0.5 block text-xs text-amber-200">$20 full Blueprint · one-time</span>
+          </span>
+        </>
+      ) : null}
+    </button>
   );
 }
 
 export default function ProductsPage() {
+  const [selectedProduct, setSelectedProduct] = useState<ProductKey>("quality-lab");
+  const selected = products.find((product) => product.id === selectedProduct) ?? products[0];
+
   useSEO({
     title: "Life Science Atlas Products",
-    description: "Compare the Atlas Quality Lab Blueprint, Atlas Pro, and the Personal Career Blueprint by buyer, outcome, output, and price.",
+    description: "Choose the Atlas product that matches the quality laboratory, professional, or career decision in front of you.",
   });
 
   return (
-    <div className="min-h-screen bg-[#f4f7f5] text-[#0b1b2c]">
-      <section className="relative overflow-hidden border-b border-white/10 bg-[#061426] px-4 py-12 text-slate-100 md:py-16 lg:py-20">
-        <div className="pointer-events-none absolute -left-32 top-16 h-80 w-80 rounded-full bg-teal-300/[0.07] blur-3xl" />
-        <div className="relative mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.02fr_0.98fr] lg:items-center">
-          <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/30 bg-teal-300/[0.07] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-teal-200">
-              <Sparkles className="h-3.5 w-3.5" /> Three products, three jobs
-            </span>
-            <h1 className="mt-6 font-display text-4xl font-bold leading-[1.04] tracking-[-0.035em] sm:text-5xl lg:text-[3.75rem]">
-              One Atlas. Three ways to make a <span className="text-teal-300">better decision.</span>
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
-              Choose by the decision in front of you—not by a bundle. Each product has a different buyer, outcome, and payment model.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/quality-lab/planner" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-                Build the free lab model <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link href="/pricing" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-300">
-                Compare all pricing
-              </Link>
-            </div>
-            <div className="mt-8 hidden max-w-xl gap-3 border-t border-white/10 pt-5 text-xs text-slate-400 sm:grid sm:grid-cols-3">
-              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-teal-300" /> Clear free starting point</span>
-              <span className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-teal-300" /> Evidence-led boundaries</span>
-              <span className="flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-teal-300" /> No forced bundle</span>
-            </div>
-          </div>
+    <div
+      className="min-h-[calc(100vh-4rem)] overflow-hidden bg-[#061426] text-slate-100"
+      style={{
+        backgroundImage: "url('/images/blueprint/decision-observatory-grid.jpg')",
+        backgroundPosition: "center top",
+        backgroundSize: "cover",
+      }}
+    >
+      <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-screen-2xl flex-col px-4 pb-4 pt-7 sm:px-6 lg:px-8">
+        <header className="mx-auto max-w-5xl text-center">
+          <h1 className="font-display text-[2.15rem] font-semibold leading-[1.08] tracking-[-0.04em] text-white sm:text-5xl lg:text-[3.25rem]">
+            Choose the decision. <span className="text-teal-300">Atlas routes the work.</span>
+          </h1>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+            Answer one question and we’ll guide you to the right product and next step.
+          </p>
+        </header>
 
-          <aside className="rounded-[1.75rem] border border-white/12 bg-[#0b1d33]/90 p-4 shadow-2xl shadow-black/20 sm:p-5" aria-label="Choose a Life Science Atlas product">
-            <div className="mb-4 flex items-end justify-between gap-4 px-1">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200">Start with the job</p>
-                <h2 className="mt-1.5 text-xl font-bold text-white">What are you trying to do?</h2>
-              </div>
-              <Route className="hidden h-6 w-6 text-teal-300 sm:block" />
-            </div>
-            <div className="space-y-2.5">
-              {productPaths.map((product) => <ProductPathCard key={product.title} product={product} />)}
-            </div>
-          </aside>
+        <div className="mx-auto mt-5 w-full max-w-md rounded-xl border border-cyan-300/55 bg-[#071a2d] px-5 py-4 text-center shadow-[0_0_24px_rgba(34,211,238,0.09)] sm:py-6">
+          <span className="mx-auto -mt-10 mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-teal-300 bg-[#061426] text-teal-300" aria-hidden="true">
+            <CircleHelp className="h-6 w-6" />
+          </span>
+          <h2 className="text-base font-semibold text-white sm:text-lg">What are you trying to move forward?</h2>
         </div>
-      </section>
 
-      <section className="border-b border-slate-200/80 bg-white px-4 py-16 md:py-24">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div className="max-w-xl">
-              <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-100 text-teal-800"><Building2 className="h-5 w-5" /></span>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-800">Flagship · project-based</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-500">For a real laboratory planning decision</p>
+        <div className="mx-auto w-full max-w-7xl">
+          <DecisionBranches />
+          <div className="mt-6 grid gap-5 lg:grid-cols-3 xl:mt-2 xl:gap-8">
+            {products.map((product) => {
+              const isSelected = product.id === selectedProduct;
+              return (
+                <div key={product.id} className="flex flex-col">
+                  <ProductCard
+                    product={product}
+                    selected={isSelected}
+                    onSelect={() => setSelectedProduct(product.id)}
+                  />
+                  {isSelected ? (
+                    <Link
+                      href={product.href}
+                      className={`mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 lg:hidden ${product.ctaClass}`}
+                    >
+                      Open {product.title} <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  ) : null}
                 </div>
-              </div>
-              <h2 className="mt-7 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl lg:text-5xl">Atlas Quality Lab Blueprint</h2>
-              <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">Translate products, markets, and testing demand into one controlled basis for capability, capacity, cost, and risk.</p>
-              <div className="mt-6 border-y border-slate-200 py-5">
-                <div className="grid gap-4 text-sm sm:grid-cols-2">
-                  <div>
-                    <p className="font-bold text-slate-950">Bring</p>
-                    <p className="mt-1.5 leading-6 text-slate-600">Portfolio, markets, volumes, site facts, constraints, and decision horizon.</p>
-                  </div>
-                  <div>
-                    <p className="font-bold text-slate-950">Leave with</p>
-                    <p className="mt-1.5 leading-6 text-slate-600">A controlled decision package for one agreed site and scope.</p>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link href="/quality-lab" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-800">Explore Quality Lab <ArrowRight className="h-4 w-4" /></Link>
-                <Link href="/quality-lab/sample" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 transition hover:border-slate-400">See sample Blueprint</Link>
-              </div>
-            </div>
-
-            <div className="rounded-[1.75rem] border border-teal-100 bg-[#e7f7f3] p-4 sm:p-7">
-              <div className="overflow-hidden rounded-2xl border border-slate-900/10 bg-[#07182d] shadow-2xl shadow-slate-900/15">
-                <img src="/images/blueprint/quality-lab-blueprint-deliverables.webp" alt="Illustrative Quality Lab Blueprint package showing an executive brief, capacity model, cost scenario, and evidence register" width="900" height="720" className="aspect-[5/4] w-full object-contain" />
-              </div>
-              <div className="mt-4 grid gap-2 sm:grid-cols-3">
-                {[
-                  ["01", "Free model", "See the initial capability picture"],
-                  ["02", "$149 diagnostic", "Clarify scope and decision gaps"],
-                  ["03", "Blueprint from $990", "Receive the reviewed package"],
-                ].map(([number, title, body]) => (
-                  <div key={number} className="rounded-xl border border-teal-900/10 bg-white/75 p-3.5">
-                    <p className="text-[10px] font-bold tracking-[0.16em] text-teal-700">{number}</p>
-                    <p className="mt-2 text-sm font-bold text-slate-950">{title}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-600">{body}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-sky-200/70 bg-[#edf7ff] px-4 py-16 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.06fr_0.94fr] lg:items-center">
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-sky-200 bg-slate-950 p-3 shadow-xl shadow-sky-950/10 sm:p-5">
-            <img src="/images/editorial/evidence-data-review.jpg" alt="Life science professionals reviewing quality evidence and data" width="1600" height="1067" loading="lazy" decoding="async" className="aspect-[4/3] w-full rounded-2xl object-cover object-center opacity-90" />
-            <div className="absolute inset-x-5 bottom-5 rounded-2xl border border-white/15 bg-slate-950/85 p-4 text-white backdrop-blur sm:inset-x-8 sm:bottom-8">
-              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-200">Your professional execution layer</p>
-              <div className="mt-3 grid grid-cols-3 gap-2 text-xs text-slate-300">
-                <span>Evidence</span><span>Tools</span><span>Working files</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="max-w-xl lg:pl-6">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-100 text-sky-800"><Crown className="h-5 w-5" /></span>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-800">Membership · when available</p>
-                <p className="mt-1 text-sm font-semibold text-slate-600">$8/month · $80/year</p>
-              </div>
-            </div>
-            <h2 className="mt-7 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl lg:text-5xl">Life Science Atlas Pro</h2>
-            <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">For professionals who need reusable depth—not a project-specific consulting engagement.</p>
-            <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-              {["Monthly Quality Review workspace", "Deeper evidence-backed lessons", "Premium calculators", "Reusable working files", "GMP Audit Readiness Kit"].map((item) => (
-                <li key={item} className="flex items-center gap-2.5 rounded-xl border border-sky-200 bg-white/70 px-3.5 py-3 text-sm font-semibold text-slate-700"><Check className="h-4 w-4 shrink-0 text-sky-700" />{item}</li>
-              ))}
-            </ul>
-            <Link href="/pro" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-sky-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-sky-800">See Free vs Pro <ArrowRight className="h-4 w-4" /></Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-b border-amber-200/70 bg-[#fffaf0] px-4 py-16 md:py-24">
-        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.84fr_1.16fr] lg:items-center">
-          <div className="max-w-xl">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-amber-800"><BriefcaseBusiness className="h-5 w-5" /></span>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-amber-800">Personalized system · one-time</p>
-                <p className="mt-1 text-sm font-semibold text-slate-600">Free snapshot · $20 full Blueprint</p>
-              </div>
-            </div>
-            <h2 className="mt-7 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 sm:text-4xl lg:text-5xl">Personal Career Blueprint</h2>
-            <p className="mt-4 text-lg font-semibold leading-8 text-slate-800">A personalized Career Operating Blueprint plus a lifetime 13-week workspace built from your evidence, constraints, timeline, and target route.</p>
-            <div className="mt-6 space-y-3">
-              {[
-                [Gauge, "See your current position", "A free snapshot makes the first diagnosis visible before purchase."],
-                [Route, "Choose a realistic route", "Target-role evidence, gap priorities, and decision constraints stay connected."],
-                [FileText, "Execute the next 13 weeks", "The paid workspace tracks weekly actions, proof, reviewer feedback, and your next route decision."],
-              ].map(([Icon, title, body]) => {
-                const ItemIcon = Icon as typeof Gauge;
-                return (
-                  <div key={String(title)} className="flex gap-3 border-t border-amber-900/10 pt-3 first:border-0 first:pt-0">
-                    <ItemIcon className="mt-0.5 h-5 w-5 shrink-0 text-amber-700" />
-                    <div><p className="text-sm font-bold text-slate-950">{String(title)}</p><p className="mt-1 text-sm leading-6 text-slate-600">{String(body)}</p></div>
-                  </div>
-                );
-              })}
-            </div>
-            <Link href="/career" className="mt-7 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-amber-400 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-300">Build the free snapshot <ArrowRight className="h-4 w-4" /></Link>
-          </div>
-
-          <div className="rounded-[1.75rem] border border-amber-200 bg-[#fff3cf] p-4 sm:p-7">
-            <img src="/images/career/personal-career-blueprint-preview.webp" alt="Personal Career Blueprint cover and evidence comparison page" width="1421" height="1107" loading="lazy" decoding="async" className="aspect-[9/7] w-full rounded-2xl border border-amber-900/10 object-cover shadow-2xl shadow-amber-950/10" />
-            <div className="mt-4 flex flex-wrap gap-2">
-              {["Named for you", "Role-specific", "Evidence-led", "Lifetime workspace"].map((item) => <span key={item} className="rounded-full border border-amber-900/10 bg-white/75 px-3 py-1.5 text-xs font-bold text-amber-900">{item}</span>)}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white px-4 py-16 md:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-6 lg:grid-cols-[0.72fr_1.28fr] lg:items-end">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-800">Compare without the overlap</p>
-              <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em] text-slate-950 md:text-4xl">The shared foundation stops before the product begins.</h2>
-              <p className="mt-4 text-sm leading-7 text-slate-600">Atlas Evidence supports all three. The buyer, output, payment model, and review boundary remain deliberately separate.</p>
-            </div>
-            <div className="hidden grid-cols-3 gap-3 text-center text-xs font-bold text-slate-700 md:grid"><span>Quality Lab</span><span>Atlas Pro</span><span>Career</span></div>
-          </div>
-          <div className="mt-8 overflow-x-auto rounded-2xl border border-slate-200">
-            <table className="w-full min-w-[760px] border-collapse text-left text-sm">
-              <thead className="bg-[#07182d] text-white"><tr><th className="p-4 font-semibold">Compare</th><th className="p-4 font-semibold">Quality Lab Blueprint</th><th className="p-4 font-semibold">Atlas Pro</th><th className="p-4 font-semibold">Career Blueprint</th></tr></thead>
-              <tbody>{comparisonRows.map((row) => <tr key={row.label} className="border-t border-slate-200"><th className="bg-slate-50 p-4 font-semibold text-slate-900">{row.label}</th>{row.values.map((value, index) => <td key={`${row.label}-${index}`} className="p-4 leading-6 text-slate-600">{value}</td>)}</tr>)}</tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#07182d] px-4 py-14 text-slate-100 md:py-16">
-        <div className="mx-auto max-w-7xl rounded-[1.75rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8 lg:flex lg:items-center lg:justify-between lg:gap-10">
-          <div className="max-w-xl">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-200">Choose from the decision</p>
-            <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.025em]">Still not sure where to begin?</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-400">Use the job in front of you: plan a lab, deepen your professional toolkit, or execute a career move.</p>
-          </div>
-          <div className="mt-6 grid gap-2 sm:grid-cols-3 lg:mt-0 lg:min-w-[34rem]">
-            {[
-              [Building2, "Plan a lab", "/quality-lab/planner"],
-              [BookOpenCheck, "Go deeper", "/pro"],
-              [BriefcaseBusiness, "Plan my career", "/career"],
-            ].map(([Icon, label, href]) => {
-              const ItemIcon = Icon as typeof Building2;
-              return <Link key={String(label)} href={String(href)} className="group flex min-h-12 items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-bold text-white transition hover:border-teal-300/40 hover:bg-teal-300/10"><span className="flex items-center gap-2"><ItemIcon className="h-4 w-4 text-teal-300" />{String(label)}</span><ArrowRight className="h-4 w-4 text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-teal-200" /></Link>;
+              );
             })}
           </div>
         </div>
+
+        <div className="mx-auto mt-2 hidden w-full max-w-md text-center lg:block">
+          <Link
+            href={selected.href}
+            className={`inline-flex min-h-11 w-full items-center justify-center gap-3 rounded-lg px-5 py-3 text-sm font-bold transition focus-visible:outline-none focus-visible:ring-2 ${selected.ctaClass}`}
+          >
+            Open {selected.title} <ArrowRight className="h-4 w-4" />
+          </Link>
+          <p className="mt-1.5 text-[11px] text-slate-500">You can change your decision at any time.</p>
+        </div>
+
+        <aside className="mt-2 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 text-[11px] text-slate-400 sm:grid-cols-2 lg:grid-cols-4" aria-label="Atlas product boundaries">
+          <span className="flex min-h-11 items-center gap-2.5 bg-[#07182b]/95 px-4">
+            <ShieldCheck className="h-4 w-4 shrink-0 text-teal-300" />
+            Evidence-led; qualified review where scoped.
+          </span>
+          <span className="flex min-h-11 items-center gap-2.5 bg-[#07182b]/95 px-4">
+            <Box className="h-4 w-4 shrink-0 text-teal-300" />
+            Product and payment models stay separate.
+          </span>
+          <span className="flex min-h-11 items-center gap-2.5 bg-[#07182b]/95 px-4">
+            <LockKeyhole className="h-4 w-4 shrink-0 text-teal-300" />
+            Browser-local by default until you choose to save.
+          </span>
+          <span className="flex min-h-11 items-center gap-2.5 bg-[#07182b]/95 px-4">
+            <Network className="h-4 w-4 shrink-0 text-teal-300" />
+            {selected.boundary}
+          </span>
+        </aside>
       </section>
     </div>
   );
