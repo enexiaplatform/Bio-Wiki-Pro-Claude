@@ -272,13 +272,13 @@ export function DesktopNav() {
               type="button"
               className={clsx(
                 "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                resourceLinks.some((item) => location.startsWith(item.path))
+                location !== "/methods" && resourceLinks.some((item) => location.startsWith(item.path))
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               )}
               data-testid="nav-desktop-resources"
             >
-              <BookOpen className="h-4 w-4" />
+              {location !== "/methods" && <BookOpen className="h-4 w-4" />}
               Resources
               <ChevronDown className="h-3.5 w-3.5 opacity-60" />
             </button>
@@ -303,7 +303,7 @@ export function DesktopNav() {
           "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
           location.startsWith("/pricing") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
         )} data-testid="nav-desktop-pricing">
-          <Tag className="h-4 w-4" /> Pricing
+          {location !== "/methods" && <Tag className="h-4 w-4" />} Pricing
         </Link>
       </nav>
 

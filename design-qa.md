@@ -1,79 +1,78 @@
-# Design QA — Method & Standards Navigator
+# Methods Navigator Design QA
 
 ## Comparison target
 
-- Source visual truth: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-coverage-route.png`
-- Rendered implementation: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-implementation-final.png`
-- Route: `http://localhost:5000/methods`
-- State: desktop, dark theme, guest, query `microbial method suitability`, selected application `Microbial method suitability and recovery`
-- CSS viewport: `1440 × 1024`
-- Source pixels: `1440 × 1024`
-- Implementation pixels: `1432 × 1018`
-- Density normalization: device scale factor 1; implementation capture resized to `1440 × 1024` with bicubic interpolation only for the comparison composites. The original implementation evidence is preserved unchanged.
+- Source visual truth: `docs/design-references/methods-coverage-route.png`
+- Rendered implementation: `docs/design-references/methods-implementation-fidelity-final.png`
+- Normalized implementation: `docs/design-references/methods-implementation-fidelity-final-normalized.png`
+- Route: `/methods`
+- State: desktop, dark theme, guest, default query `microbial method suitability`, selected application `Microbial method suitability and recovery`
+- CSS viewport: 1487 × 1058 at device pixel ratio 1
+- Source pixels: 1487 × 1058
+- Browser capture pixels: 1479 × 1052
+- Density normalization: browser capture resampled once to 1487 × 1058 for equal-size comparison
+- Mobile evidence: `docs/design-references/methods-implementation-fidelity-mobile.png`, 390 × 844 CSS viewport, 382 × 3282 full-page capture
 
-## Visual evidence
+## Comparison evidence
 
-- Full-view comparison: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-comparison-full.png`
-- Focused route comparison: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-comparison-route.png`
-- Focused radar comparison: `E:\Antigravity project\Bio-Wiki-Pro\docs\design-references\methods-comparison-radar.png`
+- Full view: `docs/design-references/methods-comparison-fidelity-final.png`
+- Focused route and cards: `docs/design-references/methods-comparison-fidelity-route.png`
+- Focused coverage radar: `docs/design-references/methods-comparison-fidelity-radar.png`
 
-The focused route crop was required to evaluate heading scale, search geometry, node alignment, connector rhythm, card proportions, status color, source rows, and CTA hierarchy. The focused radar crop was required to evaluate the lower application selector, curvature, metric group, legend, and trust strip.
+The focused comparisons were required because source rows, evidence-boundary copy, radar labels, icon scale, and panel geometry are too small to judge reliably from a full-view comparison alone.
 
-## Required fidelity surfaces
+## Fidelity surfaces
 
-- Fonts and typography: passed. The implementation uses the product's Space Grotesk display face and Inter body face, with matching display weight, uppercase micro-label treatment, compact UI scale, and single-line desktop headline.
-- Spacing and layout rhythm: passed. The top navigation, centered headline/search, five-stage route, five aligned detail columns, boundary block, lower radar, metric group, and trust strip match the selected composition. All persistent content is visible at the target viewport.
-- Colors and visual tokens: passed. Deep navy, teal/cyan mapped states, slate support text, and restrained amber evidence boundaries follow both the mock and current Atlas tokens. Status color is semantic and consistent.
-- Image quality and asset fidelity: passed. The selected target contains no photographic or illustrated content. The implementation uses the existing high-resolution Atlas decision-grid asset as a restrained background and the product's established professional icon library; no placeholder images, emoji, handcrafted SVGs, or rasterized UI were introduced.
-- Copy and content: passed. The selected query, application, exact three named sources, five unresolved dimensions, evidence boundary, decision-use labels, and 8/9/0 counters are sourced from the current repository. The eight radar labels deliberately use the real Atlas application records rather than the inaccurate ImageGen labels.
-- Icons: passed. Icons use one consistent library already present across approved Atlas screens, with matched stroke weight, size, color, and alignment.
-- States and interactions: passed. Search, matched result, explicit not-covered state, application selection, source links, application-guide CTA, and Blueprint CTA were exercised in the in-app browser.
-- Accessibility: passed for the target state. The search has a programmatic label, route and radar regions are named, application controls are buttons with pressed state, links retain visible focus styling, and state is not communicated by color alone.
+- Fonts and typography: the implementation uses the product's Inter/Space Grotesk system, restores the source's 40 px headline scale, 20 px search text, readable card labels, and stronger radar labels. Weight, wrapping, and hierarchy now follow the source. The in-app browser's normalized capture is visibly softer than the generated source, but the DOM renders at DPR 1 without CSS zoom.
+- Spacing and layout rhythm: the five-stage route now uses a nine-track desktop grid with source-matched unequal card widths and gaps. Cards use independent heights instead of stretching to the tallest column. Header, search, route, cards, radar, and trust footer align to the same vertical landmarks as the source.
+- Colors and visual tokens: near-black navy, teal, blue, and amber states map to the source while retaining existing Atlas tokens. Glow is limited to active route, selected application, and state signals.
+- Image and asset fidelity: the existing generated observatory grid remains the background asset. Standard interface icons use the product's installed line-icon family. No screenshot, placeholder, emoji, handcrafted SVG, or fabricated customer asset replaces functional UI.
+- Copy and content: route copy, named sources, evidence boundary, and actions remain canonical. Radar labels intentionally use the eight real non-sterile microbiology applications instead of the visually similar but product-inaccurate category names in the mock.
+- Responsiveness and accessibility: the desktop visualization switches to a readable two-column application selector below the XL breakpoint. At 390 px there is no horizontal overflow (`scrollWidth` 382 for a 390 px viewport). Search, application buttons, links, and focus targets remain semantic and keyboard reachable.
 
 ## Comparison history
 
-### Iteration 1
+### Baseline — blocked
 
-- Earlier finding [P1]: the headline wrapped to two lines and materially changed the hierarchy.
-- Earlier finding [P2]: the lower radar and trust strip were clipped below the target viewport.
-- Fixes: widened the headline measure, reduced unnecessary helper copy, rebalanced route and lower-panel vertical rhythm, and preserved the single-screen composition.
-- Post-fix evidence: `methods-implementation-v2.png`.
+- P1: the five content columns stretched to a uniform height, creating large empty panels and losing the source hierarchy.
+- P1: the coverage radar was reduced to a flat row of small pills, removing the source's strongest visual device.
+- P2: source rows, status copy, and actions were undersized; the result looked like a dense technical table.
+- Evidence: `docs/design-references/methods-implementation-final.png` and `docs/design-references/methods-comparison-full.png`.
 
-### Iteration 2
+Fixes applied:
 
-- Earlier finding [P2]: connector arrows were missing and the evidence boundary appeared as a full-width strip rather than under the coverage state.
-- Fixes: added library-based arrow nodes between all five stages and moved the boundary into the coverage column.
-- Post-fix evidence: `methods-implementation-final.png` and `methods-comparison-route.png`.
+- Rebuilt the route with independent panel heights and source-matched unequal columns.
+- Restored 80 px route nodes, stronger connectors, larger typography, and source-aligned vertical spacing.
+- Rebuilt the radar as an interactive fanned visualization with real application states and larger metric blocks.
+- Removed the active Resources pill and unrelated navigation icons on this immersive surface to match the selected visual.
 
-### Iteration 3
+### Radar refinement — blocked
 
-- Earlier finding [P2]: the radar/metric group remained too tall, clipping the trust strip by approximately 16 pixels.
-- Fixes: reduced radar segment and metric padding while keeping the arc, legend, accurate application names, and 8/9/0 counters readable.
-- Post-fix evidence: `methods-implementation-final.png`, `methods-comparison-full.png`, and `methods-comparison-radar.png`.
+- P2: the first rebuilt radar pass still read as vertical columns and long application titles collided visually.
+- Evidence: `docs/design-references/methods-implementation-fidelity-v4.png` and `docs/design-references/methods-implementation-fidelity-v5.png`.
 
-## Findings
+Fixes applied:
 
-No actionable P0, P1, or P2 differences remain at the target viewport and state.
+- Fanned the eight segments around a shared lower origin.
+- Counter-rotated segment content for upright reading.
+- Added concise, factually equivalent radar labels while preserving full accessible button names.
+- Rebalanced segment height, color, and selected-state glow.
 
-## Follow-up polish
+### Final pass — passed
 
-- [P3] The raster mock uses a more pronounced semicircular arc and faint decorative sweep lines. The implementation keeps a flatter, more readable radar because the real application names are longer than the inaccurate labels generated in the mock.
-- [P3] The implementation uses the current Atlas global navigation exactly, so a few icon and spacing details differ slightly from the ImageGen approximation.
+- Full-view composition, major-region proportions, route rhythm, card hierarchy, radar emphasis, metrics, and footer now follow the selected visual target.
+- No actionable P0, P1, or P2 differences remain.
+- Accepted P3 difference: the generated source uses broader product-category labels in its radar; implementation uses the canonical eight method applications to avoid presenting incorrect coverage.
 
-## Verification
+## Functional verification
 
-- Primary interactions tested: search match, explicit no-result/not-covered state, selecting `Pharmaceutical water microbiology`, source and CTA href resolution, and restoring the selected reference state.
-- Browser console: 0 warnings or errors in the final state.
-- `npm run validate`: passed.
-- `npm test`: 81 files and 500 tests passed.
-- `npm run build`: passed.
+- Search with an unsupported query exposes `Not yet covered` without inventing a method.
+- Selecting `Environmental monitoring methods` updates the query and selected application.
+- Returning to `Microbial method suitability and recovery` restores the three named sources and guide action.
+- `Open application guide` resolves to the expected internal guide route with selection context.
+- Desktop and mobile states were rendered in the in-app browser.
+- Browser console errors checked: 0.
 
-## Implementation checklist
-
-- [x] Match the selected option 3 composition at `1440 × 1024`.
-- [x] Preserve the real eight-application evidence scope and named-source boundaries.
-- [x] Make search, selection, no-result, source, and CTA states functional.
-- [x] Keep all persistent controls visible in the target frame.
-- [x] Pass repository validation, unit tests, production build, browser interaction checks, and visual comparison.
+## Final result
 
 final result: passed
