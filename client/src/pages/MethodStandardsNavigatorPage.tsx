@@ -88,27 +88,28 @@ function ApplicationIndex({ selectedId, onSelect }: { selectedId?: string; onSel
       <h2 id="applications-title" className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Applications in scope</h2>
       <p className="mt-1 text-sm text-slate-400">Non-sterile microbiology</p>
 
-      <div className="mt-4 border-y border-slate-700/70" role="list" aria-label="Method applications">
+      <ul className="mt-4 border-y border-slate-700/70" aria-label="Method applications">
         {METHOD_NAVIGATOR_RECORDS.map((record, index) => {
           const active = selectedId === record.id;
           return (
-            <button
-              key={record.id}
-              type="button"
-              onClick={() => onSelect(record)}
-              aria-pressed={active}
-              aria-label={record.title}
-              className={`group relative flex min-h-[48px] w-full items-center gap-3 border-b border-slate-700/70 px-3 text-left transition-colors last:border-b-0 focus-visible:z-10 ${active ? "bg-teal-300/[0.075] text-white" : "text-slate-300 hover:bg-white/[0.025] hover:text-white"}`}
-            >
-              {active && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-0.5 bg-teal-300" />}
-              <RecordIcon record={record} className={`h-[18px] w-[18px] shrink-0 ${active ? "text-teal-200" : "text-slate-400"}`} />
-              <span className="w-4 shrink-0 text-center text-[11px] font-medium text-slate-400">{index + 1}</span>
-              <span className={`min-w-0 flex-1 text-[12px] leading-4 xl:text-[13px] ${active ? "font-semibold" : "font-medium"}`}>{conciseApplicationLabels[record.id] ?? record.title}</span>
-              <span aria-label={coverageLabels[record.coverage]} className={`h-2.5 w-2.5 shrink-0 rounded-full border ${active ? "border-teal-200 bg-teal-300" : record.coverage === "evidence-required" ? "border-amber-300/80" : record.coverage === "source-mapped" ? "border-sky-300/80" : "border-slate-400/70"}`} />
-            </button>
+            <li key={record.id} className="border-b border-slate-700/70 last:border-b-0">
+              <button
+                type="button"
+                onClick={() => onSelect(record)}
+                aria-pressed={active}
+                aria-label={record.title}
+                className={`group relative flex min-h-[48px] w-full items-center gap-3 px-3 text-left transition-colors focus-visible:z-10 ${active ? "bg-teal-300/[0.075] text-white" : "text-slate-300 hover:bg-white/[0.025] hover:text-white"}`}
+              >
+                {active && <span aria-hidden="true" className="absolute inset-y-0 left-0 w-0.5 bg-teal-300" />}
+                <RecordIcon record={record} className={`h-[18px] w-[18px] shrink-0 ${active ? "text-teal-200" : "text-slate-400"}`} />
+                <span className="w-4 shrink-0 text-center text-[11px] font-medium text-slate-400">{index + 1}</span>
+                <span className={`min-w-0 flex-1 text-[12px] leading-4 xl:text-[13px] ${active ? "font-semibold" : "font-medium"}`}>{conciseApplicationLabels[record.id] ?? record.title}</span>
+                <span aria-label={coverageLabels[record.coverage]} className={`h-2.5 w-2.5 shrink-0 rounded-full border ${active ? "border-teal-200 bg-teal-300" : record.coverage === "evidence-required" ? "border-amber-300/80" : record.coverage === "source-mapped" ? "border-sky-300/80" : "border-slate-400/70"}`} />
+              </button>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </section>
   );
 }

@@ -43,6 +43,7 @@
 ## Accessibility evidence and limits
 
 - Search, application choices, route, named sources, actions, and metrics expose semantic labels and roles; application selection uses `aria-pressed` and the unsupported state clears all pressed buttons.
+- The application index now uses a native list with list-item children; the automated WCAG 2.1 A/AA gate passes for Method Navigator on desktop and mobile.
 - Screenshot evidence supports visible contrast, hierarchy, target separation, and mobile reflow, but cannot establish full keyboard or assistive-technology behavior.
 - The in-app browser did not advance focus when synthetic Tab input was attempted, so manual keyboard traversal remains a verification gap rather than a claimed pass. Formal conformance still requires human assistive-technology review.
 
