@@ -321,7 +321,7 @@ export default function QualityLabReviewPage() {
         <Link href={project ? `/quality-lab/projects/${project.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {project ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
         <Link href="/quality-lab/sample" className="ml-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">View illustrative sample <ArrowRight className="h-4 w-4" /></Link>
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="order-2 lg:order-1">
+          <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>
             <h1 className="mt-5 text-4xl font-bold leading-tight">Leave with a scoped decision, evidence gap map and clear Blueprint basis.</h1>
             <p className="mt-4 leading-7 text-slate-400">The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope and decision memo within two business days after the workshop. The fee is credited to a Blueprint started within 30 days.</p>
@@ -338,7 +338,7 @@ export default function QualityLabReviewPage() {
             <details className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><summary className="cursor-pointer font-bold text-slate-200">What this is—and is not</summary><p className="mt-3">Atlas confirms fit, inputs, reviewer role coverage, timeline, payment schedule, revision policy, acceptance and data handling. The request does not create an approved design, regulatory opinion, supplier specification or investment recommendation. Travel, specialists, detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside scope unless quoted.</p></details>
           </div>
 
-          <form onSubmit={submit} className="order-1 rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7 lg:order-2">
+          <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7">
             <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Start here</p><p className="mt-1 text-sm font-semibold">About 4–6 minutes · no confidential data</p></div><span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">3 short sections</span></div>
             {transferredDecisionFrameReadiness && (
               <section className="mb-5 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4" aria-label="Transferred Blueprint decision frame">

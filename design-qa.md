@@ -2,76 +2,49 @@
 
 ## Comparison target
 
-- Source visual truth: `docs/design-references/methods-coverage-route.png`
-- Rendered implementation: `docs/design-references/methods-implementation-fidelity-final.png`
-- Normalized implementation: `docs/design-references/methods-implementation-fidelity-final-normalized.png`
+- Source visual truth: `docs/design-references/methods-enterprise-evidence-dossier-v2.png`
 - Route: `/methods`
 - State: desktop, dark theme, guest, default query `microbial method suitability`, selected application `Microbial method suitability and recovery`
-- CSS viewport: 1487 × 1058 at device pixel ratio 1
-- Source pixels: 1487 × 1058
-- Browser capture pixels: 1479 × 1052
-- Density normalization: browser capture resampled once to 1487 × 1058 for equal-size comparison
-- Mobile evidence: `docs/design-references/methods-implementation-fidelity-mobile.png`, 390 × 844 CSS viewport, 382 × 3282 full-page capture
+- Target and implementation viewport: 1487 × 1058 CSS pixels at device pixel ratio 1
+- Implementation evidence: `docs/design-references/methods-premium-redesign-audit/02-enterprise-desktop-1487x1058.png`
+- Mobile evidence: `docs/design-references/methods-premium-redesign-audit/05-mobile-viewport-390x844.png` and `06-mobile-full-flow.png`
 
-## Comparison evidence
+## Audit steps
 
-- Full view: `docs/design-references/methods-comparison-fidelity-final.png`
-- Focused route and cards: `docs/design-references/methods-comparison-fidelity-route.png`
-- Focused coverage radar: `docs/design-references/methods-comparison-fidelity-radar.png`
+1. **Default desktop dossier — healthy.** The query, five-stage evidence route, eight bounded applications, selected application, named sources, evidence boundary, decision-use controls, metrics, and trust note render in one coherent view.
+2. **Application selection — healthy.** Selecting Environmental monitoring updates the query, selected record, domain, sources, evidence boundary, coverage status, and action context together. Evidence: `03-environmental-monitoring-selected.png`.
+3. **Unsupported query — healthy after fix.** `impossible-unmapped-method-xyz` produces an explicit `Not yet covered` state, removes the stale active application highlight, asserts no source without a match, and builds a scoped-review URL containing the query. Evidence: `04-not-covered-desktop.png`.
+4. **Mobile reflow — healthy.** At 390 × 844 the route becomes a readable vertical sequence, all eight application controls remain reachable, and the document width stays within the viewport. Evidence: `05-mobile-viewport-390x844.png` and `06-mobile-full-flow.png`.
 
-The focused comparisons were required because source rows, evidence-boundary copy, radar labels, icon scale, and panel geometry are too small to judge reliably from a full-view comparison alone.
+## Findings
+
+- No actionable P0, P1, or P2 visual differences remain against the selected source.
+- Fixed a logic/UX defect found during the audit: after an unsupported search, the previously selected application remained visually active even though the result panel correctly said no bounded record existed.
+- Accepted P3 differences: the implementation keeps the existing 64 px Atlas navigation, slightly tighter global type scale, canonical full application title, and the product's current mobile shell. These preserve the established design system and do not weaken the source hierarchy.
 
 ## Fidelity surfaces
 
-- Fonts and typography: the implementation uses the product's Inter/Space Grotesk system, restores the source's 40 px headline scale, 20 px search text, readable card labels, and stronger radar labels. Weight, wrapping, and hierarchy now follow the source. The in-app browser's normalized capture is visibly softer than the generated source, but the DOM renders at DPR 1 without CSS zoom.
-- Spacing and layout rhythm: the five-stage route now uses a nine-track desktop grid with source-matched unequal card widths and gaps. Cards use independent heights instead of stretching to the tallest column. Header, search, route, cards, radar, and trust footer align to the same vertical landmarks as the source.
-- Colors and visual tokens: near-black navy, teal, blue, and amber states map to the source while retaining existing Atlas tokens. Glow is limited to active route, selected application, and state signals.
-- Image and asset fidelity: the existing generated observatory grid remains the background asset. Standard interface icons use the product's installed line-icon family. No screenshot, placeholder, emoji, handcrafted SVG, or fabricated customer asset replaces functional UI.
-- Copy and content: route copy, named sources, evidence boundary, and actions remain canonical. Radar labels intentionally use the eight real non-sterile microbiology applications instead of the visually similar but product-inaccurate category names in the mock.
-- Responsiveness and accessibility: the desktop visualization switches to a readable two-column application selector below the XL breakpoint. At 390 px there is no horizontal overflow (`scrollWidth` 382 for a 390 px viewport). Search, application buttons, links, and focus targets remain semantic and keyboard reachable.
-
-## Comparison history
-
-### Baseline — blocked
-
-- P1: the five content columns stretched to a uniform height, creating large empty panels and losing the source hierarchy.
-- P1: the coverage radar was reduced to a flat row of small pills, removing the source's strongest visual device.
-- P2: source rows, status copy, and actions were undersized; the result looked like a dense technical table.
-- Evidence: `docs/design-references/methods-implementation-final.png` and `docs/design-references/methods-comparison-full.png`.
-
-Fixes applied:
-
-- Rebuilt the route with independent panel heights and source-matched unequal columns.
-- Restored 80 px route nodes, stronger connectors, larger typography, and source-aligned vertical spacing.
-- Rebuilt the radar as an interactive fanned visualization with real application states and larger metric blocks.
-- Removed the active Resources pill and unrelated navigation icons on this immersive surface to match the selected visual.
-
-### Radar refinement — blocked
-
-- P2: the first rebuilt radar pass still read as vertical columns and long application titles collided visually.
-- Evidence: `docs/design-references/methods-implementation-fidelity-v4.png` and `docs/design-references/methods-implementation-fidelity-v5.png`.
-
-Fixes applied:
-
-- Fanned the eight segments around a shared lower origin.
-- Counter-rotated segment content for upright reading.
-- Added concise, factually equivalent radar labels while preserving full accessible button names.
-- Rebalanced segment height, color, and selected-state glow.
-
-### Final pass — passed
-
-- Full-view composition, major-region proportions, route rhythm, card hierarchy, radar emphasis, metrics, and footer now follow the selected visual target.
-- No actionable P0, P1, or P2 differences remain.
-- Accepted P3 difference: the generated source uses broader product-category labels in its radar; implementation uses the canonical eight method applications to avoid presenting incorrect coverage.
+- **Typography:** Inter and Space Grotesk, headline wrapping, all-caps section labels, body scale, status hierarchy, and numeric metrics follow the source.
+- **Layout:** the desktop three-column dossier, five-stage trace, active-row treatment, source rows, paired actions, and trust footer align with the source composition without the previous HUD/radar treatment.
+- **Color and states:** near-black navy, restrained teal, slate, and amber communicate selection, evidence boundaries, review requirements, and unsupported outcomes consistently.
+- **Assets:** the route uses the installed line-icon family and the existing Atlas mark; no placeholder, emoji, fabricated visual, or screenshot is used as interface content.
+- **Copy:** coverage, source, approval, and review language remains bounded and consistent with the canonical product trust model.
 
 ## Functional verification
 
-- Search with an unsupported query exposes `Not yet covered` without inventing a method.
-- Selecting `Environmental monitoring methods` updates the query and selected application.
-- Returning to `Microbial method suitability and recovery` restores the three named sources and guide action.
-- `Open application guide` resolves to the expected internal guide route with selection context.
-- Desktop and mobile states were rendered in the in-app browser.
-- Browser console errors checked: 0.
+- Search and application selection update the dossier deterministically.
+- Unsupported queries show no selected application and do not invent sources or method applicability.
+- `Open application guide` resolves to `/blog/method-suitability-to-microbiology-lab-capacity?source=method-route`.
+- `Use in Blueprint` resolves to `/quality-lab/planner?source=method-navigator`.
+- Desktop and mobile browser console errors: 0.
+- Mobile document width: 390 px at a 390 px viewport; no horizontal overflow.
+- Repository gates after the change: `npm run validate`, 500 unit/server tests, and production build passed.
+
+## Accessibility evidence and limits
+
+- Search, application choices, route, named sources, actions, and metrics expose semantic labels and roles; application selection uses `aria-pressed` and the unsupported state clears all pressed buttons.
+- Screenshot evidence supports visible contrast, hierarchy, target separation, and mobile reflow, but cannot establish full keyboard or assistive-technology behavior.
+- The in-app browser did not advance focus when synthetic Tab input was attempted, so manual keyboard traversal remains a verification gap rather than a claimed pass. Formal conformance still requires human assistive-technology review.
 
 ## Final result
 

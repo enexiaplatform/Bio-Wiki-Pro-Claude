@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { ArrowRight, BriefcaseBusiness, CheckCircle2, FileText, Lock, ShieldCheck, Target, Zap } from "lucide-react";
 import clsx from "clsx";
@@ -9,6 +9,7 @@ import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { EditorialImage } from "@/components/EditorialImage";
+import { authPath } from "@shared/auth-return";
 
 type ProductType = "pro_subscription" | "pro_subscription_annual";
 const cardClass = "rounded-xl border border-white/10 bg-white/[0.045] p-6 shadow-lg shadow-black/10";
@@ -28,6 +29,11 @@ export default function PricingPage() {
   const faqs = t("faq", { returnObjects: true }) as { q: string; a: string }[];
   const { isAuthenticated, isPro } = useUser();
   const [, navigate] = useLocation();
+  const resumeCheckoutProduct = useMemo<ProductType | null>(() => {
+    const candidate = new URLSearchParams(window.location.search).get("checkout");
+    return candidate === "pro_subscription" || candidate === "pro_subscription_annual" ? candidate : null;
+  }, []);
+  const resumeCheckoutAttempted = useRef(false);
   const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [annualAvailable, setAnnualAvailable] = useState(false);
@@ -46,8 +52,18 @@ export default function PricingPage() {
     return () => { active = false; };
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated || !resumeCheckoutProduct || resumeCheckoutAttempted.current) return;
+    resumeCheckoutAttempted.current = true;
+    window.history.replaceState(null, "", "/pricing#evidence-plans");
+    void handleCheckout(resumeCheckoutProduct);
+  }, [isAuthenticated, resumeCheckoutProduct]);
+
   async function handleCheckout(productType: ProductType) {
-    if (!isAuthenticated) { navigate("/register"); return; }
+    if (!isAuthenticated) {
+      navigate(authPath("/register", `/pricing?checkout=${productType}#evidence-plans`));
+      return;
+    }
     setLoadingProduct(productType); setError(null); analytics.checkoutStarted(productType);
     try { window.location.href = await createCheckoutSession(productType); }
     catch (err: any) { setError(err.message ?? t("genericError")); setLoadingProduct(null); }

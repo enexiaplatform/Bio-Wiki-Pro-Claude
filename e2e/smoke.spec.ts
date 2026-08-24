@@ -170,11 +170,43 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("img", { name: /researcher preparing biological samples/i })).toBeVisible();
     await expect(page.getByText(/Blueprint-first workspace/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Sign up/i })).toHaveAttribute("href", "/register?returnTo=%2Fmy-downloads");
+    await expect(page.getByLabel("Email")).toHaveAttribute("autocomplete", "email");
+    await expect(page.getByLabel("Password")).toHaveAttribute("autocomplete", "current-password");
 
     await page.goto("/register?returnTo=/quality-lab/review%3Foffer%3Ddiagnostic");
     await expect(page.getByRole("heading", { name: /Create your Atlas workspace/i })).toBeVisible();
     await expect(page.getByText(/supporting evidence to your account/i)).toBeVisible();
     await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute("href", "/login?returnTo=%2Fquality-lab%2Freview%3Foffer%3Ddiagnostic");
+    await expect(page.getByLabel("First name")).toHaveAttribute("autocomplete", "given-name");
+    await expect(page.getByLabel("Last name")).toHaveAttribute("autocomplete", "family-name");
+    await expect(page.getByLabel("Password")).toHaveAttribute("autocomplete", "new-password");
+    await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
+  });
+
+  test("guest Pro checkout preserves the selected plan through account creation", async ({ page }) => {
+    await page.goto("/pricing");
+    await page.getByRole("button", { name: /Start Pro|free trial/i }).first().click();
+    await expect(page).toHaveURL(/\/register\?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans$/);
+    await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute(
+      "href",
+      "/login?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans",
+    );
+  });
+
+  test("mobile review handoff explains the offer before asking for scope inputs", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/quality-lab/review?offer=diagnostic");
+
+    const offerHeading = page.getByRole("heading", { name: /Leave with a scoped decision/i });
+    const formStart = page.getByText("Start here", { exact: true });
+    await expect(offerHeading).toBeVisible();
+    await expect(formStart).toBeVisible();
+
+    const [headingBox, formBox] = await Promise.all([offerHeading.boundingBox(), formStart.boundingBox()]);
+    expect(headingBox).not.toBeNull();
+    expect(formBox).not.toBeNull();
+    expect(headingBox!.y).toBeLessThan(formBox!.y);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
   test("guest Diagnostic request survives account creation and returns to payment", async ({ page }) => {
@@ -1966,6 +1998,7 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Qualified review", { exact: true })).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
     await expect(page.getByRole("heading", { name: "Not yet covered" })).toBeVisible();
+    await expect(applicationList.getByRole("button", { pressed: true })).toHaveCount(0);
     await expect(page.getByRole("link", { name: /Request scoped review/i })).toHaveAttribute("href", /method=impossible-unmapped-method-xyz/);
   });
 

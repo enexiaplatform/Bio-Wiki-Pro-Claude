@@ -74,7 +74,10 @@ export default function LoginPage() {
             <Label htmlFor="email">{t("login.email")}</Label>
             <Input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
               placeholder="m.curie@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -90,7 +93,9 @@ export default function LoginPage() {
             </div>
             <Input
               id="password"
+              name="password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

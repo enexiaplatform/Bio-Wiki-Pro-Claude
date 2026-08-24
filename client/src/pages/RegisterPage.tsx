@@ -106,6 +106,8 @@ export default function RegisterPage() {
               <Label htmlFor="firstName">{t("register.firstName")}</Label>
               <Input
                 id="firstName"
+                name="firstName"
+                autoComplete="given-name"
                 placeholder="Marie"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -116,6 +118,8 @@ export default function RegisterPage() {
               <Label htmlFor="lastName">{t("register.lastName")}</Label>
               <Input
                 id="lastName"
+                name="lastName"
+                autoComplete="family-name"
                 placeholder="Curie"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -127,7 +131,10 @@ export default function RegisterPage() {
             <Label htmlFor="email">{t("register.email")}</Label>
             <Input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
               placeholder="m.curie@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -138,7 +145,9 @@ export default function RegisterPage() {
             <Label htmlFor="password">{t("register.password")}</Label>
             <Input
               id="password"
+              name="password"
               type="password"
+              autoComplete="new-password"
               placeholder={t("register.passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -150,7 +159,9 @@ export default function RegisterPage() {
             <Label htmlFor="confirmPassword">{t("register.confirmPassword")}</Label>
             <Input
               id="confirmPassword"
+              name="confirmPassword"
               type="password"
+              autoComplete="new-password"
               placeholder={t("register.confirmPlaceholder")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -161,6 +172,12 @@ export default function RegisterPage() {
         <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
           {isLoading ? t("register.submitting") : t("register.submit")}
         </Button>
+        <p className="text-center text-xs leading-5 text-muted-foreground">
+          By creating an account, you agree to our{" "}
+          <Link href="/terms" className="font-semibold text-teal-300 hover:text-teal-200">Terms</Link>{" "}
+          and acknowledge our{" "}
+          <Link href="/privacy" className="font-semibold text-teal-300 hover:text-teal-200">Privacy Policy</Link>.
+        </p>
         <GoogleSignInButton redirectTo={returnTo} />
       </form>
     </AuthShell>
