@@ -32,6 +32,7 @@ import { CareerAssessment } from "@/features/career/CareerAssessment";
 import { CareerResults } from "@/features/career/CareerResults";
 import { useUser } from "@/context/UserContext";
 import { analytics } from "@/hooks/use-analytics";
+import { isCheckoutAvailable, useBillingPlans } from "@/hooks/use-billing-plans";
 import { useSEO } from "@/hooks/use-seo";
 import { cacheCareerProfile, fetchServerCareerProfile, syncCareerProfileToServer } from "@/lib/career-profile";
 import {
@@ -59,6 +60,8 @@ export default function Career() {
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
   const [error, setError] = useState("");
+  const { plans: billingPlans, isLoading: billingPlansLoading, isError: billingPlansError } = useBillingPlans();
+  const careerCheckoutAvailable = isCheckoutAvailable("career_blueprint", billingPlans);
 
   useEffect(() => {
     try {
@@ -163,7 +166,7 @@ export default function Career() {
   }
 
   async function checkout() {
-    if (!profile) return;
+    if (!profile || !careerCheckoutAvailable) return;
     if (!isAuthenticated) {
       navigate("/register?returnTo=/career");
       return;
@@ -233,6 +236,9 @@ export default function Career() {
         profile={profile}
         entitled={entitled}
         checkingAccess={checkingAccess}
+        checkingCheckoutAvailability={billingPlansLoading}
+        checkoutAvailable={careerCheckoutAvailable}
+        checkoutAvailabilityError={billingPlansError}
         checkoutLoading={checkoutLoading}
         downloadLoading={downloadLoading}
         error={error}

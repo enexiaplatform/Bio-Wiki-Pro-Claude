@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
 import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
+import { isCheckoutAvailable, useBillingPlans } from "@/hooks/use-billing-plans";
 import { useSEO } from "@/hooks/use-seo";
 import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
 import { assessQualityLabReviewBrief, qualityLabPortfolioScaleFromProductCount, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
@@ -114,10 +115,11 @@ export default function QualityLabReviewPage() {
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
   const [snapshotError, setSnapshotError] = useState("");
   const [retryingSnapshot, setRetryingSnapshot] = useState(false);
-  const [diagnosticCheckoutAvailable, setDiagnosticCheckoutAvailable] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [diagnosticAccess, setDiagnosticAccess] = useState<{ entitled: boolean; purchasedAt: string | null } | null>(null);
+  const { plans: billingPlans, isLoading: billingPlansLoading } = useBillingPlans();
+  const diagnosticCheckoutAvailable = isCheckoutAvailable("scope_diagnostic", billingPlans);
   const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>({
     engagementIntent: requestedOffer,
     projectStage: "concept",
@@ -144,10 +146,6 @@ export default function QualityLabReviewPage() {
   useEffect(() => {
     analytics.commercialIntakeViewed(requestedOffer);
     if (transferredDecisionFrameReadiness) analytics.blueprintDecisionFrameLoaded(transferredDecisionFrameReadiness.percent, transferredDecisionFrameReadiness.completeCount);
-    fetch("/api/billing/plans", { credentials: "include" })
-      .then((response) => response.json())
-      .then((plans) => setDiagnosticCheckoutAvailable(Boolean(plans?.scopeDiagnostic)))
-      .catch(() => setDiagnosticCheckoutAvailable(false));
   }, [requestedOffer, transferredDecisionFrameReadiness]);
 
   useEffect(() => {
@@ -163,6 +161,7 @@ export default function QualityLabReviewPage() {
   }, [isAuthenticated, requestedOffer]);
 
   async function payForDiagnostic() {
+    if (!diagnosticCheckoutAvailable) return;
     setCheckoutLoading(true);
     setCheckoutError("");
     try {
@@ -309,17 +308,21 @@ export default function QualityLabReviewPage() {
               <p className="font-bold text-sky-100">Next: reserve the $149 Diagnostic</p>
               <p className="mt-2 text-sm leading-6 text-slate-400">Includes one 60-minute workshop and a written scope and decision memo within two business days after the workshop.</p>
               {checkoutError && <p role="alert" className="mt-3 text-xs text-red-300">{checkoutError}</p>}
-              {isAuthenticated && diagnosticCheckoutAvailable ? (
+              {billingPlansLoading ? (
+                <button type="button" disabled className="mt-4 inline-flex w-full cursor-wait items-center justify-center gap-2 rounded-xl bg-sky-300/60 px-5 py-3 text-sm font-bold text-slate-950">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Checking secure payment availability…
+                </button>
+              ) : isAuthenticated && diagnosticCheckoutAvailable ? (
                 <button type="button" onClick={payForDiagnostic} disabled={checkoutLoading} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 disabled:opacity-60">
                   {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Pay $149 securely
                 </button>
-              ) : isAuthenticated ? (
-                <p className="mt-3 text-xs leading-5 text-sky-100/75">Atlas will send secure payment instructions after confirming fit.</p>
-              ) : (
+              ) : diagnosticCheckoutAvailable ? (
                 <div className="mt-4 grid gap-2">
                   <Link href={authPath("/register", DIAGNOSTIC_RETURN_TO)} className="inline-flex w-full items-center justify-center rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Create an account to pay securely</Link>
                   <Link href={authPath("/login", DIAGNOSTIC_RETURN_TO)} className="inline-flex w-full items-center justify-center rounded-xl border border-sky-300/20 px-5 py-2.5 text-xs font-bold text-sky-100">Already have an account? Sign in</Link>
                 </div>
+              ) : (
+                <p role="status" className="mt-3 text-xs leading-5 text-sky-100/75">Secure checkout is not currently available. Atlas will confirm fit first and send payment instructions separately; no payment is due from this screen.</p>
               )}
             </div>
           )}
@@ -371,7 +374,7 @@ export default function QualityLabReviewPage() {
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
               ))}
             </div>
-            <p className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 text-xs leading-5 text-sky-100/80"><strong>No payment is taken when you submit this brief.</strong> Secure checkout appears as a separate step; Atlas confirms fit and availability before delivery begins.</p>
+            <p className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 text-xs leading-5 text-sky-100/80"><strong>No payment is taken when you submit this brief.</strong> {qualification.engagementIntent === "scope-diagnostic" ? billingPlansLoading ? "Atlas confirms fit and payment availability before showing any payment action." : diagnosticCheckoutAvailable ? "Secure checkout appears only after the brief; Atlas still confirms fit and availability before delivery begins." : "Atlas confirms fit first and sends payment instructions separately; no checkout action is shown until secure payment is available." : qualification.engagementIntent === "blueprint-pilot" ? "Atlas confirms scope, reviewer coverage, payment schedule and delivery basis before kickoff." : "Atlas recommends the right route and confirms its commercial basis before any commitment."}</p>
             <details className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><summary className="cursor-pointer font-bold text-slate-200">What this is—and is not</summary><p className="mt-3">Atlas confirms fit, inputs, reviewer role coverage, timeline, payment schedule, revision policy, acceptance and data handling. The request does not create an approved design, regulatory opinion, supplier specification or investment recommendation. Travel, specialists, detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside scope unless quoted.</p></details>
           </div>
 

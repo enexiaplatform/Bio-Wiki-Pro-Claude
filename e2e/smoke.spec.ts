@@ -286,6 +286,11 @@ test.describe("public smoke", () => {
   });
 
   test("mobile review handoff explains the offer before asking for scope inputs", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/quality-lab/review?offer=diagnostic");
 
@@ -298,7 +303,36 @@ test.describe("public smoke", () => {
     expect(headingBox).not.toBeNull();
     expect(formBox).not.toBeNull();
     expect(headingBox!.y).toBeLessThan(formBox!.y);
+    await expect(page.getByText(/sends payment instructions separately/i)).toBeVisible();
+    await expect(page.getByText(/Secure checkout appears as a separate step/i)).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test("unavailable Diagnostic checkout never turns a captured brief into a payment promise", async ({ page }) => {
+    let checkoutAttempts = 0;
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
+    }));
+    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 43 }) }));
+    await page.route("**/api/stripe/create-checkout-session", (route) => {
+      checkoutAttempts += 1;
+      return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
+    });
+
+    await page.goto("/quality-lab/review?offer=diagnostic");
+    await page.getByLabel("Name *").fill("Diagnostic Lead");
+    await page.getByLabel("Work email *").fill("lead@example.com");
+    await page.getByLabel(/Project context/i).fill("Decide the scope and evidence needed for a non-sterile microbiology capacity review before the next budget gate.");
+    await page.getByLabel(/I confirm this submission contains no confidential/i).check();
+    await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
+
+    await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Secure checkout is not currently available/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Create an account to pay securely/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Pay \$149 securely/i })).toHaveCount(0);
+    await expect.poll(() => checkoutAttempts).toBe(0);
   });
 
   test("guest Diagnostic request survives account creation and returns to payment", async ({ page }) => {
@@ -519,6 +553,11 @@ test.describe("public smoke", () => {
   // Subscription-first pivot: the GMP kit is folded into Pro — its page must
   // drive Pro (route to /pricing) and NOT start a standalone one-time checkout.
   test("GMP kit page promotes Pro, not a standalone purchase", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
     await page.goto("/toolkits/gmp-audit-kit");
     await expect(page.getByRole("heading", { name: /Prepare for a GMP audit/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /controlled cleanroom environment/i })).toBeVisible();
@@ -533,6 +572,21 @@ test.describe("public smoke", () => {
     await expect(cta).toBeVisible();
     await cta.click();
     await page.waitForURL(/\/pricing$/, { timeout: 10_000 });
+  });
+
+  test("GMP kit removes instant-access promises while Pro checkout is unavailable", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.goto("/toolkits/gmp-audit-kit");
+
+    await expect(page.getByRole("button", { name: /View Pro availability/i }).first()).toBeVisible();
+    await expect(page.getByText("Immediate access", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Free checklist available now", { exact: true })).toBeVisible();
+    await expect(page.getByText(/Pro checkout is temporarily unavailable/i)).toBeVisible();
+    await expect(page.getByText(/Stripe-secured checkout/i)).toHaveCount(0);
   });
 
   test("pricing & upgrade surface that toolkits are included in Pro", async ({ page }) => {
@@ -2058,6 +2112,11 @@ test.describe("public smoke", () => {
   });
 
   test("career assessment builds a personalised route comparison", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
     await page.goto("/career");
     await expect(page.getByRole("heading", { name: /Turn your next role into a proof plan/i })).toBeVisible();
     await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
@@ -2079,6 +2138,35 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: "Copy career snapshot", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copied career snapshot", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
+  });
+
+  test("career results keep the free proof path primary when checkout is unavailable", async ({ page }) => {
+    let checkoutAttempts = 0;
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
+    }));
+    await page.route("**/api/stripe/create-checkout-session", (route) => {
+      checkoutAttempts += 1;
+      return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
+    });
+    await page.goto("/career");
+    await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
+    await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
+    await page.getByRole("textbox", { name: /^Location$/i }).fill("Singapore");
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /Create my free Career Snapshot/i }).click();
+
+    await expect(page.getByText(/Career Blueprint checkout is temporarily unavailable/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint/i })).toHaveCount(0);
+    const freeProofPlan = page.getByRole("link", { name: /Continue with my free proof plan/i });
+    await expect(freeProofPlan).toBeVisible();
+    await freeProofPlan.click();
+    await expect(page).toHaveURL(/#career-recommendations$/);
+    await expect.poll(() => checkoutAttempts).toBe(0);
   });
 
   test("method navigator exposes bounded coverage and explicit no-result state", async ({ page }) => {
