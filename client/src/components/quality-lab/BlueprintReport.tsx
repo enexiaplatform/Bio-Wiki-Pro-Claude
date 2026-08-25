@@ -20,7 +20,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { getQualityLabReadiness, type QualityLabBlueprint, type QualityLabProject } from "@shared/quality-lab";
+import { getQualityLabReadiness, isIllustrativeQualityLabProject, type QualityLabBlueprint, type QualityLabProject } from "@shared/quality-lab";
 import { analyzeQualityLabSensitivity } from "@shared/quality-lab-sensitivity";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
@@ -198,6 +198,7 @@ function printBlueprint(mode: "executive" | "full") {
 
 export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
   const { blueprint } = project;
+  const isIllustrative = isIllustrativeQualityLabProject(project);
   const { input, current, future } = blueprint;
   const readiness = getQualityLabReadiness(blueprint);
   const lineageFor = (outputKey: string) => blueprint.decisionLineage.find((item) => item.outputKey === outputKey);
@@ -233,32 +234,42 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
           <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <Download className="h-4 w-4" /> Export model
           </button>
-          <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
+          {!isIllustrative && <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <ClipboardCheck className="h-4 w-4" /> Engagement packet
-          </button>
+          </button>}
           <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "working_brief_print"); printBlueprint("executive"); }} className="inline-flex items-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950 transition hover:bg-teal-200">
             <FileText className="h-4 w-4" /> Working brief / PDF
           </button>
           <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "full_report_print"); printBlueprint("full"); }} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold transition hover:border-white/25 hover:bg-white/10">
             <Printer className="h-4 w-4" /> Full report / PDF
           </button>
-          <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-300/15">
+          {isIllustrative ? <Link href="/quality-lab/planner" className="inline-flex items-center gap-2 rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-xs font-bold text-amber-100 transition hover:bg-amber-300/15">Build my own model <ArrowRight className="h-4 w-4" /></Link> : <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-300/15">
             {project.reviewRequestedAt ? "Review brief submitted" : "Request expert review"} <ArrowRight className="h-4 w-4" />
-          </Link>
+          </Link>}
         </div>
-        <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 sm:hidden">
+        {isIllustrative ? <Link href="/quality-lab/planner" className="inline-flex items-center gap-2 rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-xs font-bold text-amber-100 sm:hidden">Build my model <ArrowRight className="h-4 w-4" /></Link> : <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("blueprint_report", "expert_review")} className="inline-flex items-center gap-2 rounded-lg border border-teal-300/25 bg-teal-300/10 px-3 py-2 text-xs font-bold text-teal-200 sm:hidden">
           {project.reviewRequestedAt ? "Review submitted" : "Expert review"} <ArrowRight className="h-4 w-4" />
-        </Link>
+        </Link>}
         <details className="w-full rounded-xl border border-white/10 bg-white/[0.03] sm:hidden">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-xs font-bold text-slate-300">Exports and review tools <ChevronDown className="h-4 w-4" /></summary>
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 p-3">
             <button onClick={() => exportQualityLabProject(project)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><Download className="h-4 w-4" /> Export model</button>
-            <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Engagement packet</button>
+            {!isIllustrative && <button onClick={() => { exportQualityLabEngagementPacket(project); analytics.engagementPacketDownloaded("blueprint_report", blueprint.unresolvedInputs.length); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><ClipboardCheck className="h-4 w-4" /> Engagement packet</button>}
             <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "working_brief_print"); printBlueprint("executive"); }} className="inline-flex items-center justify-center gap-2 rounded-lg bg-teal-300 px-3 py-2 text-xs font-bold text-slate-950"><FileText className="h-4 w-4" /> Working brief</button>
             <button type="button" onClick={() => { analytics.blueprintCtaClicked("blueprint_report", "full_report_print"); printBlueprint("full"); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold"><Printer className="h-4 w-4" /> Full report</button>
           </div>
         </details>
       </div>
+
+      {isIllustrative && <section role="status" data-print="hide" className="mb-5 rounded-2xl border border-amber-300/25 bg-amber-300/[0.075] p-5 text-sm leading-6 text-amber-50">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="max-w-3xl">
+            <p className="font-bold">Illustrative example — excluded from commercial review and project reporting.</p>
+            <p className="mt-1 text-xs leading-5 text-amber-100/75">These Vietnam site, demand, cost and capacity values are synthetic. Explore the report and exports, but do not submit them as project facts, save them to an account, or use them in the active work queue.</p>
+          </div>
+          <Link href="/quality-lab/planner" className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-2.5 text-xs font-bold text-slate-950 transition hover:bg-amber-200">Build my own model <ArrowRight className="h-4 w-4" /></Link>
+        </div>
+      </section>}
 
       <header className="relative mb-5 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/12 via-slate-900 to-sky-300/5 p-6 shadow-2xl shadow-black/20 md:p-8 print:border-slate-400 print:bg-white print:shadow-none">
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] print:hidden" />
@@ -266,7 +277,7 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
           <div className="grid gap-6 md:grid-cols-[1fr_18rem] md:items-start">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-amber-200 print:border-slate-400 print:bg-white print:text-slate-700">
-              <ShieldCheck className="h-3.5 w-3.5" /> {project.reviewRequestedAt ? "Review requested · triage pending" : "Concept blueprint · SME review required"}
+              <ShieldCheck className="h-3.5 w-3.5" /> {isIllustrative ? "Illustrative synthetic example" : project.reviewRequestedAt ? "Review requested · triage pending" : "Concept blueprint · SME review required"}
             </span>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.18em] text-teal-300 print:text-slate-600">Atlas Quality Lab Blueprint</p>
             <h1 className="mt-2 max-w-4xl text-3xl font-bold leading-tight md:text-5xl print:text-slate-950">{project.name}</h1>
@@ -341,7 +352,7 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
               {blueprint.unresolvedInputs.filter((item) => item.severity === "blocking").slice(0, 3).map((item) => <div key={item.id} className="flex gap-2 text-xs leading-5 text-slate-300 print:text-slate-800"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-300 print:text-slate-600" /><span>{item.question}</span></div>)}
             </div>
           </div>
-          <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_brief", "expert_review")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 print:hidden">Prepare expert review <ArrowRight className="h-4 w-4" /></Link>
+          {isIllustrative ? <Link href="/quality-lab/planner" className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-amber-200 print:hidden">Build a real project <ArrowRight className="h-4 w-4" /></Link> : <Link href={`/quality-lab/review?project=${project.id}`} onClick={() => analytics.blueprintCtaClicked("decision_brief", "expert_review")} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 print:hidden">Prepare expert review <ArrowRight className="h-4 w-4" /></Link>}
         </div>
         <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 print:border-slate-300 lg:grid-cols-[0.8fr_1.2fr]">
           <div>

@@ -9,7 +9,7 @@ import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabR
 import { assessQualityLabReviewBrief, qualityLabPortfolioScaleFromProductCount, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
 import { authPath } from "@shared/auth-return";
-import { getQualityLabReadiness } from "@shared/quality-lab";
+import { getQualityLabReadiness, isIllustrativeQualityLabProject } from "@shared/quality-lab";
 import {
   assessQualityLabDecisionFrame,
   formatQualityLabDecisionFrameReviewContext,
@@ -99,11 +99,13 @@ export default function QualityLabReviewPage() {
   });
 
   const projectId = useMemo(() => new URLSearchParams(window.location.search).get("project"), []);
+  const sourceProject = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
+  const illustrativeProject = isIllustrativeQualityLabProject(sourceProject) ? sourceProject : null;
+  const project = illustrativeProject ? null : sourceProject;
   const requestedOffer = useMemo<QualityLabReviewRequest["qualification"]["engagementIntent"]>(() => {
     const offer = new URLSearchParams(window.location.search).get("offer");
-    return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || projectId ? "blueprint-pilot" : "unsure";
-  }, [projectId]);
-  const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
+    return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || project ? "blueprint-pilot" : "unsure";
+  }, [project]);
   const readiness = useMemo(() => project ? getQualityLabReadiness(project.blueprint) : null, [project]);
   const transferredDecisionFrame = useMemo(() => project ? null : loadDecisionFrameHandoff(), [project]);
   const transferredDecisionFrameReadiness = useMemo(() => transferredDecisionFrame ? assessQualityLabDecisionFrame(transferredDecisionFrame) : null, [transferredDecisionFrame]);
@@ -358,8 +360,17 @@ export default function QualityLabReviewPage() {
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-5xl">
-        <Link href={project ? `/quality-lab/projects/${project.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {project ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
+        <Link href={sourceProject ? `/quality-lab/projects/${sourceProject.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {sourceProject ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
         <Link href="/quality-lab/sample" className="ml-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">View illustrative sample <ArrowRight className="h-4 w-4" /></Link>
+
+        {illustrativeProject && <section role="alert" className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-300/[0.075] p-5 text-sm leading-6 text-amber-50">
+          <p className="font-bold">The illustrative project was not attached to this commercial request.</p>
+          <p className="mt-1 text-xs leading-5 text-amber-100/75">Its site, demand, cost and capacity values are synthetic, so Atlas excludes them from expert-review handoff, account sync and commercial reporting. Start a guided or blank model with your own project facts before requesting a Blueprint scope.</p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <Link href="/quality-lab/planner" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-2.5 text-xs font-bold text-slate-950 transition hover:bg-amber-200">Build my own model <ArrowRight className="h-4 w-4" /></Link>
+            <Link href={`/quality-lab/projects/${illustrativeProject.id}`} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-amber-300/20 px-4 py-2.5 text-xs font-bold text-amber-100">Return to the example</Link>
+          </div>
+        </section>}
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>

@@ -969,11 +969,21 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /See the blueprint take shape/i })).toBeVisible();
     await page.getByRole("link", { name: "Build a blueprint", exact: true }).last().click();
     await page.waitForURL(/\/quality-lab\/planner$/);
-    await page.getByRole("button", { name: /Explore a worked example/i }).click();
+    await page.getByRole("button", { name: /Atlas-guided/i }).click();
     await expect(page.getByText(/microbiology-pack\/v1\.1/i)).toBeVisible();
-    for (let step = 0; step < 3; step++) {
-      await page.getByRole("button", { name: /^Continue$/ }).click();
-    }
+    await page.getByLabel("Project name").fill("Vietnam non-sterile QC expansion");
+    await page.getByLabel("Facility country").fill("Vietnam");
+    await page.getByRole("button", { name: "Capacity expansion", exact: true }).click();
+    await page.getByLabel(/Primary decision to resolve/i).fill("Which microbiology operating model and phased capacity should the Vietnam site fund for current demand and the three-year growth scenario?");
+    await page.getByLabel("Decision window").selectOption("3-6-months");
+    await page.getByRole("button", { name: "Vietnam", exact: true }).click();
+    await page.getByRole("spinbutton", { name: /Finished products/i }).fill("40");
+    await page.getByRole("spinbutton", { name: /Raw materials/i }).fill("80");
+    await page.getByRole("button", { name: /^Continue$/ }).click();
+    await page.getByRole("button", { name: /Growing site/i }).click();
+    await page.getByRole("button", { name: /^Continue$/ }).click();
+    await page.getByRole("button", { name: /Apply recommendation/i }).click();
+    await page.getByRole("button", { name: /^Continue$/ }).click();
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.locator("#decision-brief").getByText(/^Decision mandate$/i)).toBeVisible();
@@ -1101,6 +1111,30 @@ test.describe("public smoke", () => {
       "review_viewed",
     ]));
     expect(new Set(funnelReceipts.map((receipt) => receipt.journeyId)).size).toBe(1);
+  });
+
+  test("illustrative Blueprint stays out of commercial review and active project reporting", async ({ page }) => {
+    await page.goto("/quality-lab/planner");
+    await page.getByRole("button", { name: /Explore a worked example/i }).click();
+    for (let step = 0; step < 3; step += 1) await page.getByRole("button", { name: /^Continue$/ }).click();
+    await page.getByRole("button", { name: /Compile blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+
+    await expect(page.getByText(/Illustrative example — excluded from commercial review and project reporting/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request expert review/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Engagement packet/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Build my own model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+
+    const projectId = new URL(page.url()).pathname.split("/").at(-1)!;
+    await page.goto(`/quality-lab/review?project=${projectId}`);
+    await expect(page.getByText(/illustrative project was not attached to this commercial request/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Confirm the right review route/i })).toBeVisible();
+    await expect(page.getByText(/Review handoff choice/i)).toHaveCount(0);
+
+    await page.goto("/quality-lab/projects");
+    await expect(page.getByText(/1 illustrative example kept separate/i)).toBeVisible();
+    await expect(page.getByLabel("Project portfolio summary").getByText("0", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/Synthetic browser-local example/i)).toBeVisible();
   });
 
   test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {

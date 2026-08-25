@@ -298,7 +298,11 @@ export default function QualityLabPlannerPage() {
       setError(parsed.error.issues[0]?.message ?? "Review the project inputs.");
       return;
     }
-    const saved = saveQualityLabProject(parsed.data, project?.id);
+    const saved = saveQualityLabProject(
+      parsed.data,
+      project?.id,
+      project?.origin ?? (startMode === "example" ? "illustrative-example" : "user-entered"),
+    );
     analytics.blueprintCompiled(
       saved.id,
       saved.input.facilityType,
