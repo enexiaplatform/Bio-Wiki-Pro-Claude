@@ -188,10 +188,17 @@ export default function QualityLabPlannerPage() {
   const [startMode, setStartMode] = useState<"guided" | "example" | "blank" | "import" | "existing" | null>(params?.id ? "existing" : null);
   const [appliedGuidance, setAppliedGuidance] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const plannerHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
     if (!params?.id) analytics.blueprintStarted("planner");
   }, [params?.id]);
+
+  useEffect(() => {
+    if (params?.id || startMode === null || view !== "form") return;
+    window.scrollTo({ top: 0 });
+    plannerHeadingRef.current?.focus({ preventScroll: true });
+  }, [params?.id, startMode, view]);
 
   useEffect(() => {
     if (!params?.id) return;
@@ -442,7 +449,7 @@ export default function QualityLabPlannerPage() {
               {startMode === "blank" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-teal-300/25 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200">Blank project</span>}
               {startMode === "import" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200">Imported input · not yet saved</span>}
               <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> {MICROBIOLOGY_DOMAIN_PACK.version} · concept</span>
-              <h1 className="mt-4 text-3xl font-bold md:mt-5 md:text-5xl">{startMode === "guided" ? "Build with Atlas guidance." : "Build the basis of design."}</h1>
+              <h1 ref={plannerHeadingRef} tabIndex={-1} className="mt-4 rounded-sm text-3xl font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-300 md:mt-5 md:text-5xl">{startMode === "guided" ? "Build with Atlas guidance." : "Build the basis of design."}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400 md:text-base md:leading-7">{startMode === "guided" ? "Choose the closest pattern first. Atlas exposes every suggested assumption so you can confirm it, replace it with site data or leave it open for expert review." : "Add the operational facts you know. Atlas separates your inputs, concept assumptions and decisions that still need site verification."}</p>
             </div>
             <details className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm">

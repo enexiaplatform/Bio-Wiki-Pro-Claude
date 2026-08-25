@@ -80,11 +80,26 @@ test.describe("automated accessibility", () => {
     await page.keyboard.press("Shift+Tab");
     await page.keyboard.press("Enter");
 
-    await expect(page.getByRole("heading", { name: /Build with Atlas guidance/i })).toBeVisible();
+    const plannerHeading = page.getByRole("heading", { name: /Build with Atlas guidance/i });
+    await expect(plannerHeading).toBeVisible();
+    await expect(plannerHeading).toBeFocused();
     await expect(page.getByRole("button", { name: "Non-sterile pharma" })).toHaveAttribute("aria-pressed", "true");
     const lockedStep = page.getByRole("button", { name: /Testing demand\. Locked\. Complete Project basis before opening Testing demand/i });
     await expect(lockedStep).toBeDisabled();
     await expect(lockedStep).toHaveAttribute("title", "Complete Project basis before opening Testing demand.");
+  });
+
+  test("planner start-mode transition restores the mobile viewport to the new form", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/quality-lab/planner");
+
+    await page.getByRole("button", { name: /Guide me from the decision/i }).click();
+
+    const plannerHeading = page.getByRole("heading", { name: /Build with Atlas guidance/i });
+    await expect(plannerHeading).toBeFocused();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    await expect(page.getByRole("button", { name: /Choose start/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Saved projects/i })).toBeVisible();
   });
 
   for (const target of [
