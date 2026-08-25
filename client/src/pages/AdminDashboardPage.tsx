@@ -16,6 +16,7 @@ import { DECISION_PACKAGES } from "@shared/decision-packages";
 import { CAREER_DOMAIN_TRACKS } from "@shared/career-domain-tracks";
 import { MANUFACTURING_QUALITY_PORTFOLIO } from "@shared/manufacturing-quality-portfolio";
 import { RUNTIME_SCHEMA_REMEDIATION } from "@shared/operational-readiness";
+import { authPath } from "@shared/auth-return";
 
 type Overview = {
   users: { total: number; pro: number; verified: number };
@@ -105,7 +106,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (isLoading) return;
-    if (!isAuthenticated) setLocation("/login?next=/admin");
+    if (!isAuthenticated) setLocation(authPath("/login", "/admin"));
     else if (!isAdmin) setLocation("/settings");
   }, [isAdmin, isAuthenticated, isLoading, setLocation]);
 

@@ -183,6 +183,45 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
   });
 
+  test("restricted delivery login preserves the exact operational destination", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Return-path QA Blueprint" }, "qlp_return_path");
+    await page.addInitScript(({ storedProject }) => {
+      localStorage.setItem("lsa:quality-lab-projects:v2", JSON.stringify({
+        version: "quality-lab-local-store/v2",
+        migratedFrom: null,
+        projects: [storedProject],
+      }));
+    }, { storedProject: project });
+
+    let signedIn = false;
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(signedIn
+        ? { id: "delivery-admin", email: "admin@example.com", isPro: true, isAdmin: true, verifiedEmail: true, subscriptionStatus: "active" }
+        : { message: "Authentication required" }),
+    }));
+    await page.route("**/api/auth/login", (route) => {
+      signedIn = true;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "delivery-admin", email: "admin@example.com", isAdmin: true }) });
+    });
+
+    await page.goto(`/quality-lab/engagements/${project.id}#pilot-evidence`);
+    await expect(page).toHaveURL(/\/login\?returnTo=%2Fquality-lab%2Fengagements%2Fqlp_return_path%23pilot-evidence$/);
+    await expect(page.getByRole("heading", { name: /Continue the controlled Atlas workflow/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Authorized sign-in/i })).toBeVisible();
+    await expect(page.getByText(/returns you to the exact delivery or governance workspace/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign up/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Return to Quality Lab projects/i })).toHaveAttribute("href", "/quality-lab/projects");
+
+    await page.getByLabel("Email").fill("admin@example.com");
+    await page.getByLabel("Password").fill("test-password");
+    await page.getByRole("button", { name: /^Sign in$/i }).click();
+    await expect(page).toHaveURL(/\/quality-lab\/engagements\/qlp_return_path#pilot-evidence$/);
+    await expect(page.getByRole("heading", { name: "Return-path QA Blueprint" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Paid-pilot record/i })).toBeVisible();
+  });
+
   test("guest Pro checkout preserves the selected plan through account creation", async ({ page }) => {
     await page.route("**/api/billing/plans", (route) => route.fulfill({
       status: 200,
@@ -1490,8 +1529,9 @@ test.describe("public smoke", () => {
 
   test("Governance history keeps account revisions separate from approval", async ({ page }) => {
     await page.goto("/quality-lab/governance-history");
-    await page.waitForURL(/\/login\?next=\/admin$/);
-    await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
+    await page.waitForURL(/\/login\?returnTo=%2Fquality-lab%2Fgovernance-history$/);
+    await expect(page.getByRole("heading", { name: /Continue the controlled Atlas workflow/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign up/i })).toHaveCount(0);
   });
 
   test("illustrative Blueprint sample is public and explicitly bounded", async ({ page }) => {

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { LogIn } from "lucide-react";
+import { LogIn, ShieldCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { AuthShell } from "@/components/AuthShell";
-import { authPath, safeAuthReturnTo } from "@shared/auth-return";
+import { authPath, isAdminWorkspaceReturnTo, safeAuthReturnTo } from "@shared/auth-return";
+import { useUser } from "@/context/UserContext";
 
 export default function LoginPage() {
   const { t } = useTranslation("auth");
@@ -22,7 +23,14 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { isAdmin, isAuthenticated, isLoading: userLoading } = useUser();
   const returnTo = useMemo(() => safeAuthReturnTo(window.location.search, "/quality-lab/projects"), []);
+  const adminWorkspace = isAdminWorkspaceReturnTo(returnTo);
+  const resolvedDestination = isAdmin && returnTo === "/quality-lab/projects" ? "/admin" : returnTo;
+
+  useEffect(() => {
+    if (!userLoading && isAuthenticated) setLocation(resolvedDestination);
+  }, [isAuthenticated, resolvedDestination, setLocation, userLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,11 +54,15 @@ export default function LoginPage() {
 
   return (
     <AuthShell
-      eyebrow="Member access"
-      title="Continue your Atlas workspace"
-      description="Return to your reviewed Blueprint projects, available downloads, learning progress, and supporting evidence."
+      eyebrow={adminWorkspace ? "Restricted delivery access" : "Member access"}
+      title={adminWorkspace ? "Continue the controlled Atlas workflow" : "Continue your Atlas workspace"}
+      description={adminWorkspace
+        ? "Sign in with an authorized Atlas administrator account. After authentication, Atlas returns you to the exact delivery or governance workspace you opened."
+        : "Return to your reviewed Blueprint projects, available downloads, learning progress, and supporting evidence."}
       footer={
-        <>
+        adminWorkspace ? <Link href="/quality-lab/projects" className="font-semibold text-teal-300 hover:text-teal-200">
+          Return to Quality Lab projects
+        </Link> : <>
           {t("login.noAccount")}{" "}
           <Link href={authPath("/register", returnTo)} className="font-semibold text-teal-300 hover:text-teal-200">
             {t("login.signUp")}
@@ -60,11 +72,11 @@ export default function LoginPage() {
     >
       <div className="mb-6 flex items-start gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-teal-400/20 bg-teal-400/10 text-teal-300">
-          <LogIn className="h-5 w-5" />
+          {adminWorkspace ? <ShieldCheck className="h-5 w-5" /> : <LogIn className="h-5 w-5" />}
         </div>
         <div>
-          <h2 className="text-2xl font-bold">{t("login.title")}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{t("login.subtitle")}</p>
+          <h2 className="text-2xl font-bold">{adminWorkspace ? "Authorized sign-in" : t("login.title")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{adminWorkspace ? "Your exact delivery destination is preserved." : t("login.subtitle")}</p>
         </div>
       </div>
 

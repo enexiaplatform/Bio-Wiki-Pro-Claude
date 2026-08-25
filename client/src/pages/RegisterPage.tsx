@@ -12,7 +12,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { analytics } from "@/hooks/use-analytics";
 import { AuthShell } from "@/components/AuthShell";
-import { authPath, safeAuthReturnTo } from "@shared/auth-return";
+import { authPath, isAdminWorkspaceReturnTo, safeAuthReturnTo } from "@shared/auth-return";
 
 export default function RegisterPage() {
   const { t } = useTranslation("auth");
@@ -26,7 +26,10 @@ export default function RegisterPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const returnTo = useMemo(() => safeAuthReturnTo(window.location.search, "/welcome"), []);
+  const returnTo = useMemo(() => {
+    const requested = safeAuthReturnTo(window.location.search, "/welcome");
+    return isAdminWorkspaceReturnTo(requested) ? "/quality-lab/projects" : requested;
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

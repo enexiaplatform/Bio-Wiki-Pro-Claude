@@ -12,6 +12,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { isResourceLocation, ResourceRail } from "@/components/ResourceRail";
 import { usePageTracking } from "@/hooks/use-analytics";
 import { useUser } from "@/context/UserContext";
+import { authPath } from "@shared/auth-return";
 import LandingPage from "@/pages/LandingPage";
 
 // Route components are code-split: each becomes its own chunk, loaded on demand.
@@ -103,7 +104,10 @@ function PageFallback() {
 function AdminOnlyRoute({ component: Component }: { component: ComponentType }) {
   const { isAdmin, isAuthenticated, isLoading } = useUser();
   if (isLoading) return <PageFallback />;
-  if (!isAuthenticated) return <Redirect to="/login?next=/admin" replace />;
+  if (!isAuthenticated) {
+    const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    return <Redirect to={authPath("/login", returnTo)} replace />;
+  }
   if (!isAdmin) return <Redirect to="/quality-lab/projects" replace />;
   return <Component />;
 }
