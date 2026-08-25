@@ -60,6 +60,12 @@ The Production listing does not yet contain `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, 
 
 The public pricing, Diagnostic review and illustrative sample routes returned HTTP 200. The production health endpoint returned HTTP 503 with `status: degraded`, `commerceMode: disabled`, `schema: false`, `diagnosticTestReady: false` and `commerceReady: false`. It reported database, session, Stripe test-mode, commercial-notification and cron configuration as present, while the Scope Diagnostic price, email, analytics and explicit public-origin readiness remained false. This is a dated names/booleans-only observation, not proof that any credential value, inbox delivery, webhook or payment journey works.
 
+### Public readiness recheck — 25 August 2026
+
+The current Vercel Production deployment remains `Ready`, and its stable Vercel alias responds, but `/api/health` still returns HTTP 503 with `status: degraded`, `commerceMode: disabled`, `schema: false`, `diagnosticTestReady: false` and `commerceReady: false`. The public probe reports database, session, Stripe test-mode, commercial-notification and cron configuration as present. Scope Diagnostic pricing, transactional email, analytics and explicit public-origin readiness remain false.
+
+The Production environment name-only listing confirms that `PUBLIC_APP_URL` and `COMMERCE_MODE` now exist, but the runtime result shows that their current values do not make the origin or commerce ready. `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, `RESEND_API_KEY`, `EMAIL_FROM` and `VITE_POSTHOG_KEY` remain absent; `ADMIN_EMAILS` is present as the permitted notification fallback. The intended `lifescienceatlas.com` custom domain did not resolve in DNS during this check. No credential values were read, no database rows were queried and no production settings were changed.
+
 ### Schema remediation procedure — approval required
 
 1. Load the protected target environment without copying connection values into source control, screenshots or chat.
