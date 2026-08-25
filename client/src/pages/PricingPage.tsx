@@ -12,7 +12,13 @@ import { EditorialImage } from "@/components/EditorialImage";
 import { authPath } from "@shared/auth-return";
 
 type ProductType = "pro_subscription" | "pro_subscription_annual";
+type BillingPlans = { monthly: boolean; annual: boolean; trialDays: number };
 const cardClass = "rounded-xl border border-white/10 bg-white/[0.045] p-6 shadow-lg shadow-black/10";
+
+function isProCheckoutAvailable(productType: ProductType, plans: BillingPlans | null): boolean {
+  if (!plans) return false;
+  return productType === "pro_subscription_annual" ? plans.annual : plans.monthly;
+}
 
 async function createCheckoutSession(productType: ProductType): Promise<string> {
   const res = await fetch("/api/stripe/create-checkout-session", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productType }) });
@@ -36,30 +42,50 @@ export default function PricingPage() {
   const resumeCheckoutAttempted = useRef(false);
   const [loadingProduct, setLoadingProduct] = useState<ProductType | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [annualAvailable, setAnnualAvailable] = useState(false);
-  const [trialDays, setTrialDays] = useState(0);
+  const [billingPlans, setBillingPlans] = useState<BillingPlans | null>(null);
+  const [billingPlansError, setBillingPlansError] = useState(false);
   const [proPlan, setProPlan] = useState<"monthly" | "annual">("monthly");
   const proProductType: ProductType = proPlan === "annual" ? "pro_subscription_annual" : "pro_subscription";
+  const annualAvailable = billingPlans?.annual === true;
+  const proCheckoutAvailable = billingPlans?.monthly === true || billingPlans?.annual === true;
+  const selectedCheckoutAvailable = isProCheckoutAvailable(proProductType, billingPlans);
+  const trialDays = billingPlans?.trialDays ?? 0;
+  const showTrial = selectedCheckoutAvailable && trialDays > 0;
+  const visibleProFeatures = proFeatures.filter((feature) => !/free trial/i.test(feature) || showTrial);
 
   useEffect(() => {
     analytics.commercialPricingViewed();
     let active = true;
-    fetch("/api/billing/plans", { credentials: "include" }).then((r) => r.json()).then((data) => {
+    fetch("/api/billing/plans", { credentials: "include" }).then(async (response) => {
+      if (!response.ok) throw new Error("Billing plans are unavailable");
+      return response.json();
+    }).then((data) => {
       if (!active) return;
-      if (data?.annual) setAnnualAvailable(true);
-      if (typeof data?.trialDays === "number") setTrialDays(data.trialDays);
-    }).catch(() => {});
+      const plans = {
+        monthly: data?.monthly === true,
+        annual: data?.annual === true,
+        trialDays: typeof data?.trialDays === "number" ? data.trialDays : 0,
+      };
+      setBillingPlans(plans);
+      if (!plans.monthly && plans.annual) setProPlan("annual");
+    }).catch(() => {
+      if (!active) return;
+      setBillingPlansError(true);
+      setBillingPlans({ monthly: false, annual: false, trialDays: 0 });
+    });
     return () => { active = false; };
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated || !resumeCheckoutProduct || resumeCheckoutAttempted.current) return;
+    if (!isAuthenticated || !resumeCheckoutProduct || !billingPlans || resumeCheckoutAttempted.current) return;
     resumeCheckoutAttempted.current = true;
     window.history.replaceState(null, "", "/pricing#evidence-plans");
+    if (!isProCheckoutAvailable(resumeCheckoutProduct, billingPlans)) return;
     void handleCheckout(resumeCheckoutProduct);
-  }, [isAuthenticated, resumeCheckoutProduct]);
+  }, [billingPlans, isAuthenticated, resumeCheckoutProduct]);
 
   async function handleCheckout(productType: ProductType) {
+    if (!isProCheckoutAvailable(productType, billingPlans)) return;
     if (!isAuthenticated) {
       navigate(authPath("/register", `/pricing?checkout=${productType}#evidence-plans`));
       return;
@@ -180,13 +206,14 @@ export default function PricingPage() {
           <span className="mb-4 w-fit rounded bg-teal-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-400">{t("pro.badge")}</span>
           {annualAvailable && !isPro && <div className="mb-3 inline-flex w-fit items-center gap-1 rounded-lg border border-white/10 bg-background/60 p-0.5">{(["monthly", "annual"] as const).map((plan) => <button key={plan} onClick={() => setProPlan(plan)} className={clsx("rounded-md px-3 py-1 text-xs font-semibold transition-colors", proPlan === plan ? "bg-teal-400 text-teal-950" : "text-muted-foreground hover:text-foreground")}>{plan === "monthly" ? "Monthly" : "Annual"}</button>)}</div>}
           <div className="mb-6">{proPlan === "annual" && annualAvailable ? <><span className="text-4xl font-bold text-teal-400">$80</span><span className="ml-1 text-sm text-muted-foreground">/year</span><span className="ml-2 text-[11px] font-bold text-emerald-400">$6.67/mo equivalent · 2 months free</span></> : <><span className="text-4xl font-bold text-teal-400">$8</span><span className="ml-1 text-sm text-muted-foreground">{t("perMonth")}</span></>}</div>
-          <ul className="mb-8 flex-1 space-y-3">{proFeatures.map((feature) => <li key={feature} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />{feature}</li>)}</ul>
-          {isPro ? <button disabled className="w-full cursor-default rounded-lg bg-teal-500/20 py-2.5 text-sm font-semibold text-teal-300">{t("pro.current")}</button> : <button onClick={() => handleCheckout(proProductType)} disabled={loadingProduct === proProductType} className="w-full rounded-lg bg-teal-400 py-2.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300 disabled:cursor-wait disabled:opacity-60">{loadingProduct === proProductType ? t("pro.redirecting") : trialDays > 0 ? `Start ${trialDays}-day free trial` : t("pro.cta")}</button>}
-          {trialDays > 0 && !isPro && <p className="mt-2 text-center text-[11px] font-medium text-emerald-400">{trialDays}-day free trial · cancel anytime</p>}
+          <ul className="mb-8 flex-1 space-y-3">{visibleProFeatures.map((feature) => <li key={feature} className="flex items-start gap-2 text-sm"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-teal-400" />{feature}</li>)}</ul>
+          {isPro ? <button disabled className="w-full cursor-default rounded-lg bg-teal-500/20 py-2.5 text-sm font-semibold text-teal-300">{t("pro.current")}</button> : !billingPlans ? <button disabled className="w-full cursor-wait rounded-lg bg-teal-400/60 py-2.5 text-sm font-bold text-teal-950">Checking checkout availability…</button> : selectedCheckoutAvailable ? <button onClick={() => handleCheckout(proProductType)} disabled={loadingProduct === proProductType} className="w-full rounded-lg bg-teal-400 py-2.5 text-sm font-bold text-teal-950 transition hover:bg-teal-300 disabled:cursor-wait disabled:opacity-60">{loadingProduct === proProductType ? t("pro.redirecting") : showTrial ? `Start ${trialDays}-day free trial` : t("pro.cta")}</button> : <Link href="/register" className="inline-flex w-full items-center justify-center rounded-lg border border-teal-300/30 bg-teal-300/10 py-2.5 text-sm font-bold text-teal-200 transition hover:bg-teal-300/15">Create a free workspace</Link>}
+          {showTrial && !isPro && <p className="mt-2 text-center text-[11px] font-medium text-emerald-400">{trialDays}-day free trial · cancel anytime</p>}
+          {billingPlans && !selectedCheckoutAvailable && !isPro && <p className="mt-3 text-center text-[11px] leading-5 text-slate-400">{billingPlansError ? "Checkout availability could not be confirmed. Start with the free workspace and return here later." : "Pro checkout is temporarily unavailable. Start free now; paid access and any trial will appear here only when secure checkout is ready."}</p>}
         </div>
       </div>
 
-      <TrustBadges className="mb-8" />
+      {proCheckoutAvailable && <TrustBadges className="mb-8" />}
       <div className="mb-8 flex items-start gap-3 rounded-lg border border-amber-300/20 bg-amber-300/[0.055] p-4 text-sm leading-relaxed text-muted-foreground"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-amber-200" /><p><strong className="text-foreground">Choose by outcome:</strong> Quality Lab for a project-specific operating decision; Career Blueprint for a personal one-time plan; Pro for recurring individual quality work backed by deeper evidence and reusable resources; Free for orientation and public tools.</p></div>
       <div className="grid gap-4 text-center sm:grid-cols-3">{faqs.map((item, index) => <div key={item.q} className={cardClass}>{[<Lock key="lock" className="mx-auto mb-2 h-5 w-5 text-teal-400" />, <Zap key="zap" className="mx-auto mb-2 h-5 w-5 text-teal-400" />, <ShieldCheck key="shield" className="mx-auto mb-2 h-5 w-5 text-teal-400" />][index]}<p className="mb-1 text-sm font-semibold">{item.q}</p><p className="text-xs text-muted-foreground">{item.a}</p></div>)}</div>
     </div>

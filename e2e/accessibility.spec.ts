@@ -108,6 +108,7 @@ test.describe("automated accessibility", () => {
     { name: "homepage", path: "/" },
     { name: "planner intake", path: "/quality-lab/planner" },
     { name: "Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic" },
+    { name: "pricing", path: "/pricing" },
     { name: "All Products Decision Router", path: "/products" },
     { name: "Atlas Pro review canvas", path: "/pro" },
     { name: "Career Proof Studio", path: "/career" },

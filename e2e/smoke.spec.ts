@@ -184,6 +184,11 @@ test.describe("public smoke", () => {
   });
 
   test("guest Pro checkout preserves the selected plan through account creation", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/pricing");
     const trialButton = page.getByRole("button", { name: /Start Pro|free trial/i }).first();
@@ -202,7 +207,69 @@ test.describe("public smoke", () => {
     );
   });
 
+  test("pricing does not promise a Pro trial while checkout is unavailable", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/pricing#evidence-plans");
+
+    const freeWorkspace = page.getByRole("link", { name: "Create a free workspace" });
+    await expect(freeWorkspace).toBeVisible();
+    await expect(page.getByRole("button", { name: /Start Pro|free trial/i })).toHaveCount(0);
+    await expect(page.getByText(/Pro checkout is temporarily unavailable/i)).toBeVisible();
+    await expect(page.getByText(/7-day free trial · cancel anytime/i)).toHaveCount(0);
+    await expect(page.getByRole("list", { name: "What you can count on" })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+
+    await freeWorkspace.click();
+    await expect(page).toHaveURL(/\/register$/);
+  });
+
+  test("an unavailable resumed Pro checkout stops safely before Stripe", async ({ page }) => {
+    let checkoutAttempts = 0;
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ id: "pricing-user", email: "pricing@example.com", isPro: false, isAdmin: false, verifiedEmail: true, subscriptionStatus: null }),
+    }));
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.route("**/api/stripe/create-checkout-session", (route) => {
+      checkoutAttempts += 1;
+      return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
+    });
+
+    await page.goto("/pricing?checkout=pro_subscription#evidence-plans");
+    await expect(page).toHaveURL(/\/pricing#evidence-plans$/);
+    await expect(page.getByRole("link", { name: "Create a free workspace" })).toBeVisible();
+    await expect.poll(() => checkoutAttempts).toBe(0);
+  });
+
+  test("pricing defaults to the available annual Pro plan when monthly is unavailable", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: true, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "test", trialDays: 0 }),
+    }));
+
+    await page.goto("/pricing#evidence-plans");
+    await expect(page.getByText("$80", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Start Pro/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create a free workspace" })).toHaveCount(0);
+  });
+
   test("deep pricing links settle on the requested plan section", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/pricing#evidence-plans");
     const plans = page.locator("#evidence-plans");
