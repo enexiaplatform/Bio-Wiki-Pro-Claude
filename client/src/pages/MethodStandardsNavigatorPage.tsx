@@ -22,6 +22,8 @@ import {
 import { analytics, capture } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { useResourceSelection } from "@/hooks/use-resource-selection";
+import { ResourceSystemNavigator } from "@/components/ResourceSystemNavigator";
+import { StageCoverageProfileCard } from "@/components/StageCoverageProfileCard";
 import {
   METHOD_NAVIGATOR_RECORDS,
   NAVIGATOR_STANDARDS,
@@ -130,7 +132,7 @@ export default function MethodStandardsNavigatorPage() {
   const initialRecord = findDefaultRecord();
   const [query, setQuery] = useState("microbial method suitability");
   const [selectedId, setSelectedId] = useState(initialRecord.id);
-  const { hrefWithSelection } = useResourceSelection();
+  const { hrefWithSelection, selection } = useResourceSelection();
   const result = useMemo(() => searchMethodNavigator(query), [query]);
   const selected = METHOD_NAVIGATOR_RECORDS.find((record) => record.id === selectedId) ?? initialRecord;
   const selectedSources = standardsForMethod(selected);
@@ -183,6 +185,16 @@ export default function MethodStandardsNavigatorPage() {
             />
           </label>
         </header>
+
+        <div className="mt-6">
+          <ResourceSystemNavigator area="methods" />
+          <StageCoverageProfileCard area="methods" />
+          {selection.systemId && selection.stageId && (
+            <p className="mt-3 rounded-xl border border-dashed border-amber-300/20 bg-amber-300/[0.04] p-4 text-xs leading-6 text-slate-400">
+              <strong className="text-amber-200">Stage profile only:</strong> the connected profile scopes the selected system and stage. The full application catalog below remains cross-system and does not imply a site-approved method.
+            </p>
+          )}
+        </div>
 
         <section className="mt-6 border-b border-slate-700/80 pb-5" aria-label="Method evidence route">
           <div className="grid gap-3 sm:grid-cols-5 sm:gap-0">

@@ -169,14 +169,14 @@ export default function PricingPage() {
 
       <div id="evidence-plans" className="mb-5 scroll-mt-24"><p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-300">Recurring professional workspace</p><h2 className="mt-2 text-2xl font-bold">Keep monthly quality work moving without confusing it with an engagement</h2><p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">Pro combines a repeatable monthly review, deeper evidence, tools, and working files for individual professional use. It does not replace a project-specific Blueprint review.</p></div>
       <div className="mb-8 grid gap-4 md:grid-cols-2">
-        <div className={`${cardClass} flex flex-col`}>
+        <div className={`${cardClass} order-2 flex flex-col md:order-1`}>
           <span className="mb-4 w-fit rounded bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{t("free.badge")}</span>
           <div className="mb-6"><span className="text-4xl font-bold">$0</span><span className="ml-1 text-sm text-muted-foreground">{t("perMonth")}</span></div>
           <ul className="mb-8 flex-1 space-y-3">{freeFeatures.map((feature) => <li key={feature} className="flex items-start gap-2 text-sm text-muted-foreground"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-white/30" />{feature}</li>)}</ul>
           <Link href="/register" className="inline-flex w-full items-center justify-center rounded-lg border border-white/10 py-2.5 text-sm font-semibold transition hover:border-white/30 hover:bg-white/5">{t("free.cta")}</Link>
         </div>
 
-        <div className="relative flex flex-col rounded-xl border-2 border-teal-400/60 bg-white/[0.06] p-6 shadow-[0_0_40px_rgba(20,184,166,0.16)]">
+        <div className="relative order-1 flex flex-col rounded-xl border-2 border-teal-400/60 bg-white/[0.06] p-6 shadow-[0_0_40px_rgba(20,184,166,0.16)] md:order-2">
           <span className="mb-4 w-fit rounded bg-teal-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-400">{t("pro.badge")}</span>
           {annualAvailable && !isPro && <div className="mb-3 inline-flex w-fit items-center gap-1 rounded-lg border border-white/10 bg-background/60 p-0.5">{(["monthly", "annual"] as const).map((plan) => <button key={plan} onClick={() => setProPlan(plan)} className={clsx("rounded-md px-3 py-1 text-xs font-semibold transition-colors", proPlan === plan ? "bg-teal-400 text-teal-950" : "text-muted-foreground hover:text-foreground")}>{plan === "monthly" ? "Monthly" : "Annual"}</button>)}</div>}
           <div className="mb-6">{proPlan === "annual" && annualAvailable ? <><span className="text-4xl font-bold text-teal-400">$80</span><span className="ml-1 text-sm text-muted-foreground">/year</span><span className="ml-2 text-[11px] font-bold text-emerald-400">$6.67/mo equivalent · 2 months free</span></> : <><span className="text-4xl font-bold text-teal-400">$8</span><span className="ml-1 text-sm text-muted-foreground">{t("perMonth")}</span></>}</div>

@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -108,10 +108,44 @@ function AdminOnlyRoute({ component: Component }: { component: ComponentType }) 
   return <Component />;
 }
 
+function RouteScrollManager({ location }: { location: string }) {
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    if (!hash) return;
+
+    let targetId = hash;
+    try {
+      targetId = decodeURIComponent(hash);
+    } catch {
+      // Keep the literal fragment when a legacy URL contains invalid encoding.
+    }
+    let frame = 0;
+    let attempts = 0;
+
+    const scrollToTarget = () => {
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ block: "start", behavior: "auto" });
+        return;
+      }
+
+      attempts += 1;
+      if (attempts < 120) frame = window.requestAnimationFrame(scrollToTarget);
+    };
+
+    frame = window.requestAnimationFrame(scrollToTarget);
+    return () => window.cancelAnimationFrame(frame);
+  }, [location]);
+
+  return null;
+}
+
 function Layout() {
   usePageTracking();
   const [location] = useLocation();
-  const resourceLocation = isResourceLocation(location) && location !== "/methods";
+  const resourceLocation = isResourceLocation(location);
   const immersiveQualityLab = location === "/quality-lab";
   const immersiveEvidence = ["/evidence", "/evidence/biopharma", "/evidence/pharma-api", "/evidence/drug-product"].includes(location);
   const immersivePro = location === "/pro";
@@ -119,6 +153,7 @@ function Layout() {
   const immersiveSurface = immersiveQualityLab || immersiveEvidence || immersivePro || immersiveCareer;
   return (
     <div className={`min-h-screen bg-background text-foreground ${immersiveSurface ? "" : "pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16"}`}>
+      <RouteScrollManager location={location} />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"

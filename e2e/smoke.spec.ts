@@ -179,18 +179,43 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute("href", "/login?returnTo=%2Fquality-lab%2Freview%3Foffer%3Ddiagnostic");
     await expect(page.getByLabel("First name")).toHaveAttribute("autocomplete", "given-name");
     await expect(page.getByLabel("Last name")).toHaveAttribute("autocomplete", "family-name");
-    await expect(page.getByLabel("Password")).toHaveAttribute("autocomplete", "new-password");
+    await expect(page.getByLabel("Password", { exact: true })).toHaveAttribute("autocomplete", "new-password");
     await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
   });
 
   test("guest Pro checkout preserves the selected plan through account creation", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/pricing");
-    await page.getByRole("button", { name: /Start Pro|free trial/i }).first().click();
+    const trialButton = page.getByRole("button", { name: /Start Pro|free trial/i }).first();
+    await trialButton.scrollIntoViewIfNeeded();
+    await trialButton.click();
     await expect(page).toHaveURL(/\/register\?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans$/);
+    await expect(page.getByRole("heading", { name: /Create your Atlas workspace/i })).toBeVisible();
+    expect(await page.evaluate(() => window.scrollY)).toBeLessThan(10);
+    await expect(page.getByTestId("button-login-mobile")).toHaveAttribute(
+      "href",
+      "/login?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans",
+    );
     await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute(
       "href",
       "/login?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans",
     );
+  });
+
+  test("deep pricing links settle on the requested plan section", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/pricing#evidence-plans");
+    const plans = page.locator("#evidence-plans");
+    await expect(plans).toBeVisible();
+    await expect.poll(async () => plans.evaluate((element) => Math.round(element.getBoundingClientRect().top))).toBeLessThan(130);
+    expect(await plans.evaluate((element) => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(60);
+
+    const proButton = page.getByRole("button", { name: /Start Pro|free trial/i }).first();
+    const freeButton = page.getByRole("link", { name: "Get Started" });
+    const [proBox, freeBox] = await Promise.all([proButton.boundingBox(), freeButton.boundingBox()]);
+    expect(proBox).not.toBeNull();
+    expect(freeBox).not.toBeNull();
+    expect(proBox!.y).toBeLessThan(freeBox!.y);
   });
 
   test("mobile review handoff explains the offer before asking for scope inputs", async ({ page }) => {

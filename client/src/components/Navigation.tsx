@@ -26,6 +26,13 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { analytics } from "@/hooks/use-analytics";
+import { authPath, safeAuthReturnTo } from "@shared/auth-return";
+
+function guestLoginPath(location: string): string {
+  if (!location.startsWith("/register")) return "/login";
+  const returnTo = safeAuthReturnTo(window.location.search, "");
+  return returnTo ? authPath("/login", returnTo) : "/login";
+}
 
 // Life Science Atlas "Knowledge Lattice" mark (molecule + knowledge graph).
 export function AtlasMark({ className }: { className?: string }) {
@@ -370,7 +377,7 @@ export function DesktopNav() {
             </DropdownMenu>
           </>
         ) : (
-          <Link href="/login" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white" data-testid="button-login">
+          <Link href={guestLoginPath(location)} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white" data-testid="button-login">
             <LogIn className="h-4 w-4" /> {t("signIn")}
           </Link>
         )}
@@ -383,6 +390,7 @@ export function DesktopNav() {
 }
 
 export function MobileHeader() {
+  const [location] = useLocation();
   const { t } = useTranslation("nav");
   const { user, isAuthenticated, isPro, logout } = useUser();
 
@@ -417,7 +425,7 @@ export function MobileHeader() {
           </>
         ) : (
           <Button size="sm" asChild data-testid="button-login-mobile">
-            <Link href="/login">{t("signIn")}</Link>
+            <Link href={guestLoginPath(location)}>{t("signIn")}</Link>
           </Button>
         )}
       </div>
