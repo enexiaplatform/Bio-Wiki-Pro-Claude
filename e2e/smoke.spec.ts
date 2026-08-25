@@ -954,7 +954,8 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await page.getByRole("link", { name: /Request expert review/i }).click();
     await page.waitForURL(/\/quality-lab\/review\?project=/);
-    await expect(page.getByRole("heading", { name: /Leave with a scoped decision, evidence gap map/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Turn your working model into an expert-reviewed decision package/i })).toBeVisible();
+    await expect(page.getByText(/The Expert-reviewed Blueprint Pilot starts from \$990/i)).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
     await expect(page.getByText(/Decision mandate carried into the brief/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /4 of 6 decision inputs described/i })).toBeVisible();
@@ -963,6 +964,9 @@ test.describe("public smoke", () => {
     await expect(page.getByText("2. Commercial fit", { exact: true })).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a Blueprint scope/i })).toBeVisible();
+    await page.getByRole("radio", { name: /Paid Scope Diagnostic/i }).check();
+    await expect(page.getByRole("heading", { name: /Leave with a scoped decision, evidence gap map/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Request the paid diagnostic/i })).toBeVisible();
     await expect.poll(() => funnelReceipts.map((receipt) => receipt.stage)).toEqual(expect.arrayContaining([
       "cta_clicked",
       "planner_started",

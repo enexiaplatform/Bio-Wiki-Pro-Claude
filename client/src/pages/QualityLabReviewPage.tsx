@@ -26,6 +26,36 @@ const offerCopy = {
   unsure: { label: "Engagement fit review", price: "No commitment", cta: "Request a fit review" },
 } as const;
 
+const offerHeroCopy = {
+  "scope-diagnostic": {
+    heading: "Leave with a scoped decision, evidence gap map and clear Blueprint basis.",
+    description: "The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope and decision memo within two business days after the workshop. The fee is credited to a Blueprint started within 30 days.",
+    highlights: [
+      "60-minute stakeholder workshop",
+      "Written scope and decision memo within two business days",
+      "Confirmed evidence gaps, reviewer interfaces and next engagement basis",
+    ],
+  },
+  "blueprint-pilot": {
+    heading: "Turn your working model into an expert-reviewed decision package.",
+    description: "The Expert-reviewed Blueprint Pilot starts from $990. Atlas challenges the model basis, reconciles priority evidence gaps and delivers a controlled workbook with an executive decision brief for the agreed scope.",
+    highlights: [
+      "Expert challenge of assumptions, demand, capacity and open evidence",
+      "Controlled workbook and executive decision brief",
+      "Reviewer coverage, timeline and acceptance basis confirmed before delivery",
+    ],
+  },
+  unsure: {
+    heading: "Confirm the right review route before making a commitment.",
+    description: "Share the decision, available evidence and timing. Atlas will recommend whether a fixed-fee Scope Diagnostic or an Expert-reviewed Blueprint Pilot is the appropriate next step.",
+    highlights: [
+      "No-commitment fit and scope review",
+      "Clear recommendation based on decision and evidence readiness",
+      "Commercial basis and reviewer coverage confirmed before delivery",
+    ],
+  },
+} as const;
+
 type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-required";
 
 const COMMERCIAL_HANDOFF_KEY = "atlas:commercial-request-handoff:v1";
@@ -103,6 +133,7 @@ export default function QualityLabReviewPage() {
       : "",
   });
   const briefReadiness = useMemo(() => assessQualityLabReviewBrief({ qualification, projectContext: form.need, hasProject: Boolean(project) }), [form.need, project, qualification]);
+  const activeOfferHero = offerHeroCopy[qualification.engagementIntent];
 
   useEffect(() => {
     analytics.commercialIntakeViewed(requestedOffer);
@@ -323,14 +354,14 @@ export default function QualityLabReviewPage() {
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight">Leave with a scoped decision, evidence gap map and clear Blueprint basis.</h1>
-            <p className="mt-4 leading-7 text-slate-400">The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope and decision memo within two business days after the workshop. The fee is credited to a Blueprint started within 30 days.</p>
+            <h1 className="mt-5 text-4xl font-bold leading-tight">{activeOfferHero.heading}</h1>
+            <p className="mt-4 leading-7 text-slate-400">{activeOfferHero.description}</p>
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-sky-200">Diagnostic</p><p className="mt-1 text-2xl font-bold">$149</p><p className="mt-1 text-xs text-slate-400">60-minute workshop + written scope memo</p></div>
-              <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-teal-200">Blueprint</p><p className="mt-1 text-2xl font-bold">From $990</p><p className="mt-1 text-xs text-slate-400">Controlled workbook + decision brief</p></div>
+              <div className={`rounded-2xl border p-4 transition ${qualification.engagementIntent === "scope-diagnostic" ? "border-sky-300/45 bg-sky-300/[0.12] ring-1 ring-sky-300/15" : "border-sky-300/15 bg-sky-300/[0.04]"}`}><p className="text-xs font-bold uppercase tracking-wide text-sky-200">Diagnostic</p><p className="mt-1 text-2xl font-bold">$149</p><p className="mt-1 text-xs text-slate-400">60-minute workshop + written scope memo</p></div>
+              <div className={`rounded-2xl border p-4 transition ${qualification.engagementIntent === "blueprint-pilot" ? "border-teal-300/45 bg-teal-300/[0.12] ring-1 ring-teal-300/15" : "border-teal-300/15 bg-teal-300/[0.04]"}`}><p className="text-xs font-bold uppercase tracking-wide text-teal-200">Blueprint</p><p className="mt-1 text-2xl font-bold">From $990</p><p className="mt-1 text-xs text-slate-400">Controlled workbook + decision brief</p></div>
             </div>
             <div className="mt-6 space-y-3">
-              {["60-minute stakeholder workshop", "Written scope and decision memo within two business days", "Confirmed evidence gaps, reviewer interfaces and next engagement basis"].map((item) => (
+              {activeOfferHero.highlights.map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
               ))}
             </div>
