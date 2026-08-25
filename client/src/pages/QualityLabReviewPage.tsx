@@ -5,7 +5,7 @@ import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
-import { assessQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
+import { assessQualityLabReviewBrief, qualityLabPortfolioScaleFromProductCount, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
 import { authPath } from "@shared/auth-return";
 import { getQualityLabReadiness } from "@shared/quality-lab";
@@ -54,6 +54,12 @@ const offerHeroCopy = {
       "Commercial basis and reviewer coverage confirmed before delivery",
     ],
   },
+} as const;
+
+const briefReadinessGuidance = {
+  "scope-diagnostic": "For a Diagnostic, the engagement choice and commercial basis can count before you type; they describe the route, not your project facts.",
+  "blueprint-pilot": "For a Blueprint Pilot, known project facts carried from a Blueprint count automatically; the commercial basis stays open until you confirm the budget status.",
+  unsure: "For a fit review, readiness reflects the project facts supplied so far; Atlas recommends the engagement route after reviewing the brief.",
 } as const;
 
 type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-required";
@@ -119,7 +125,7 @@ export default function QualityLabReviewPage() {
     budgetStatus: "exploring",
     decisionRole: "technical-lead",
     dataReadiness: project ? "substantial" : "initial",
-    portfolioScale: "not-set",
+    portfolioScale: qualityLabPortfolioScaleFromProductCount(project?.input.finishedProducts),
   });
   const [form, setForm] = useState({
     name: "",
@@ -127,7 +133,7 @@ export default function QualityLabReviewPage() {
     company: project?.input.companyName ?? "",
     role: "",
     need: project
-      ? `Decision to support: ${project.input.primaryDecision}\nProject intent: ${project.input.projectIntent.replaceAll("-", " ")}. Decision owner: ${project.input.decisionOwnerRole.replaceAll("-", " ")}. Decision window: ${project.input.decisionWindow.replaceAll("-", " ")}. Scenario: ${project.input.scenarioLabel}.\nExpert review requested for assumptions, testing demand, capacity, risks, implementation priorities and controlled-use evidence gaps.`
+      ? `Decision to support: ${project.input.primaryDecision}\nProject intent: ${project.input.projectIntent.replaceAll("-", " ")}. Decision owner: ${project.input.decisionOwnerRole.replaceAll("-", " ")}. Decision window: ${project.input.decisionWindow.replaceAll("-", " ")}. Scenario: ${project.input.scenarioLabel}.\nPortfolio basis: ${project.input.finishedProducts} finished products and ${project.input.rawMaterials} raw materials in the current intake; confirm the first-review boundary.\nExpert review requested for assumptions, testing demand, capacity, risks, implementation priorities and controlled-use evidence gaps.`
       : transferredDecisionFrame
         ? formatQualityLabDecisionFrameReviewContext(transferredDecisionFrame)
       : "",
@@ -394,7 +400,7 @@ export default function QualityLabReviewPage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] leading-5 text-slate-500">For a Diagnostic, the engagement choice and commercial basis can count before you type; they describe the route, not your project facts. {briefReadiness.boundary}</p>
+              <p className="mt-3 text-[10px] leading-5 text-slate-400">{briefReadinessGuidance[qualification.engagementIntent]} {briefReadiness.boundary}</p>
             </section>
             <section className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">1. Choose an engagement</p>
@@ -412,7 +418,7 @@ export default function QualityLabReviewPage() {
               <div className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Review handoff choice</p>
                 <p className="mt-1 font-semibold">{project.name}</p>
-                <p className="mt-1 text-xs text-slate-500">Choose whether Atlas receives only the scope brief or also a full Blueprint snapshot for expert review.</p>
+                <p className="mt-1 text-xs text-slate-400">Choose whether Atlas receives only the scope brief or also a full Blueprint snapshot for expert review.</p>
                 <div className="mt-3 rounded-xl border border-white/10 bg-black/15 p-3 text-xs leading-5 text-slate-400">
                   <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-sky-300">Decision mandate carried into the brief</p>
                   <p className="mt-1 font-semibold text-slate-100">{project.input.primaryDecision}</p>
@@ -444,7 +450,7 @@ export default function QualityLabReviewPage() {
                 <label className="text-xs font-semibold text-slate-300">Budget status *<select required value={qualification.budgetStatus} onChange={(event) => setQualification({ ...qualification, budgetStatus: event.target.value as QualityLabReviewRequest["qualification"]["budgetStatus"] })} className={fieldClass}><option value="exploring">Exploring / no range yet</option><option value="range-defined">Working range defined</option><option value="budget-approved">Budget approved</option><option value="procurement-ready">Procurement ready</option><option value="prefer-not-to-say">Prefer not to say</option></select></label>
                 <label className="text-xs font-semibold text-slate-300">Your decision role *<select required value={qualification.decisionRole} onChange={(event) => setQualification({ ...qualification, decisionRole: event.target.value as QualityLabReviewRequest["qualification"]["decisionRole"] })} className={fieldClass}><option value="decision-owner">Decision owner / budget holder</option><option value="technical-lead">Technical lead</option><option value="influencer">Project contributor / influencer</option><option value="advisor-or-partner">Engineering, distributor, or specialist partner</option><option value="other">Other</option></select></label>
                 <label className="text-xs font-semibold text-slate-300">Data readiness *<select required value={qualification.dataReadiness} onChange={(event) => setQualification({ ...qualification, dataReadiness: event.target.value as QualityLabReviewRequest["qualification"]["dataReadiness"] })} className={fieldClass}><option value="initial">Initial facts only</option><option value="partial">Partial product, demand, or site data</option><option value="substantial">Substantial working data</option><option value="review-ready">Controlled inputs ready for review</option></select></label>
-                <label className="text-xs font-semibold text-slate-300">Portfolio scale *<select required value={qualification.portfolioScale} onChange={(event) => setQualification({ ...qualification, portfolioScale: event.target.value as QualityLabReviewRequest["qualification"]["portfolioScale"] })} className={fieldClass}><option value="1-3-products">1–3 products</option><option value="4-10-products">4–10 products</option><option value="11-25-products">11–25 products</option><option value="over-25-products">Over 25 products</option><option value="not-set">Not confirmed</option></select></label>
+                <label className="text-xs font-semibold text-slate-300">Portfolio scale *<select required value={qualification.portfolioScale} onChange={(event) => setQualification({ ...qualification, portfolioScale: event.target.value as QualityLabReviewRequest["qualification"]["portfolioScale"] })} className={fieldClass}><option value="1-3-products">1–3 products</option><option value="4-10-products">4–10 products</option><option value="11-25-products">11–25 products</option><option value="over-25-products">Over 25 products</option><option value="not-set">Not confirmed</option></select>{project && <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-400">Started from {project.input.finishedProducts} finished products in this Blueprint. Change the band if the first-review scope is smaller.</span>}</label>
               </div>
             </section>
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">3. Contact and project context</p>
@@ -456,7 +462,7 @@ export default function QualityLabReviewPage() {
             </div>
             <label className="mt-5 block text-xs font-semibold text-slate-300">Project context *
               <textarea required minLength={20} rows={7} value={form.need} onChange={(event) => setForm({ ...form, need: event.target.value })} placeholder="Example: We are planning a non-sterile QC microbiology expansion and need to decide which capabilities to build now, phase later or outsource. The budget decision is due in Q4; product demand and current method lists are partially available." className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
-              <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-500">Useful brief: decision to resolve · site/product/market boundary · deadline · known evidence · constraints and open questions · who will use the output. Do not include confidential formulations or proprietary methods.</span>
+              <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-400">Useful brief: decision to resolve · site/product/market boundary · deadline · known evidence · constraints and open questions · who will use the output. Do not include confidential formulations or proprietary methods.</span>
             </label>
             <label className="mt-5 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-slate-400">
               <input required type="checkbox" checked={confidentialityConfirmed} onChange={(event) => setConfidentialityConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-teal-300" />
@@ -465,7 +471,7 @@ export default function QualityLabReviewPage() {
             <button type="submit" disabled={request.isPending || !confidentialityConfirmed} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60">
               {request.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending request</> : <>{offerCopy[qualification.engagementIntent].cta} <ArrowRight className="h-4 w-4" /></>}
             </button>
-            <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. Full Blueprint storage occurs only when you choose the full-snapshot handoff and secure save succeeds.</p>
+            <p className="mt-3 text-center text-[11px] leading-5 text-slate-400">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. Full Blueprint storage occurs only when you choose the full-snapshot handoff and secure save succeeds.</p>
           </form>
         </div>
       </div>

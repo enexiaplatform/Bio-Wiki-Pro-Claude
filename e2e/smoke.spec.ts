@@ -958,8 +958,12 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/The Expert-reviewed Blueprint Pilot starts from \$990/i)).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
     await expect(page.getByText(/Decision mandate carried into the brief/i)).toBeVisible();
-    await expect(page.getByRole("heading", { name: /4 of 6 decision inputs described/i })).toBeVisible();
-    await expect(page.getByRole("progressbar", { name: "Scope brief detail", exact: true })).toHaveAttribute("aria-valuenow", "67");
+    await expect(page.getByRole("heading", { name: /5 of 6 decision inputs described/i })).toBeVisible();
+    await expect(page.getByRole("progressbar", { name: "Scope brief detail", exact: true })).toHaveAttribute("aria-valuenow", "83");
+    await expect(page.getByLabel("Portfolio scale *")).toHaveValue("over-25-products");
+    await expect(page.getByText(/Started from 40 finished products in this Blueprint/i)).toBeVisible();
+    await expect(page.getByLabel("Project context *")).toHaveValue(/Portfolio basis: 40 finished products and 80 raw materials/i);
+    await expect(page.getByText(/known project facts carried from a Blueprint count automatically/i)).toBeVisible();
     await expect(page.getByText(/quality-lab-review-brief\/v3/i)).toBeVisible();
     await expect(page.getByText("2. Commercial fit", { exact: true })).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
@@ -967,6 +971,7 @@ test.describe("public smoke", () => {
     await page.getByRole("radio", { name: /Paid Scope Diagnostic/i }).check();
     await expect(page.getByRole("heading", { name: /Leave with a scoped decision, evidence gap map/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Request the paid diagnostic/i })).toBeVisible();
+    await expect(page.getByText(/For a Diagnostic, the engagement choice and commercial basis can count/i)).toBeVisible();
     await expect.poll(() => funnelReceipts.map((receipt) => receipt.stage)).toEqual(expect.arrayContaining([
       "cta_clicked",
       "planner_started",

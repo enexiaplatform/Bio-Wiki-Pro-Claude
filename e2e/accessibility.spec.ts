@@ -13,6 +13,7 @@ const strategicTargets: AuditTarget[] = [
   { name: "Quality Lab landing", path: "/quality-lab", readyHeading: /See the blueprint take shape/i },
   { name: "Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i },
   { name: "Quality Lab planner intake", path: "/quality-lab/planner", readyHeading: /You do not need to know every lab number/i },
+  { name: "Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic", readyHeading: /Leave with a scoped decision/i },
   { name: "public Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i },
   { name: "Method Navigator", path: "/methods", readyHeading: /Ask the method question/i },
   { name: "Academy trust-corridor lesson", path: "/library/method-suitability-nonsterile-products", readyHeading: /Method suitability for non-sterile products/i },
@@ -22,6 +23,7 @@ const strategicTargets: AuditTarget[] = [
   { name: "Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i },
   { name: "Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i },
   { name: "mobile Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic", readyHeading: /Leave with a scoped decision/i, viewport: { width: 390, height: 844 } },
   { name: "mobile Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i, viewport: { width: 390, height: 844 } },
   { name: "mobile Method Navigator", path: "/methods", readyHeading: /Ask the method question/i, viewport: { width: 390, height: 844 } },
   { name: "mobile All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i, viewport: { width: 390, height: 844 } },
@@ -105,6 +107,7 @@ test.describe("automated accessibility", () => {
   for (const target of [
     { name: "homepage", path: "/" },
     { name: "planner intake", path: "/quality-lab/planner" },
+    { name: "Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic" },
     { name: "All Products Decision Router", path: "/products" },
     { name: "Atlas Pro review canvas", path: "/pro" },
     { name: "Career Proof Studio", path: "/career" },
