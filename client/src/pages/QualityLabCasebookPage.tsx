@@ -76,7 +76,7 @@ export default function QualityLabCasebookPage() {
   });
 
   function openCase(item: (typeof compiledCases)[number]) {
-    const project = saveQualityLabProject(item.input);
+    const project = saveQualityLabProject(item.input, undefined, "illustrative-example");
     analytics.blueprintCtaClicked(`casebook_${item.id}`, "editable_project");
     setLocation(`/quality-lab/projects/${project.id}`);
   }
@@ -87,7 +87,7 @@ export default function QualityLabCasebookPage() {
         <QualityLabEditorialHero
           eyebrow={<span className="inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-sky-200"><BookOpenCheck className="h-3.5 w-3.5" /> Engine-calculated casebook</span>}
           title="See how one decision changes a Blueprint."
-          description="Compare requirements, physical workload, capacity and review blockers across three live-compiled scenarios, then open the closest case as an editable project."
+          description="Compare requirements, physical workload, capacity and review blockers across three live-compiled scenarios, then explore the closest case inside a quarantined local example."
           image={{ src: "/images/editorial/lab-team-collaboration.jpg", alt: "Laboratory team reviewing evidence and comparing planning scenarios", creditName: "Toon Lambrechts", creditUrl: "https://unsplash.com/photos/0q4ipgUIw5g", className: "object-[center_42%]" }}
           tone="sky"
           boundary={{ label: "Synthetic scenarios only", text: "These are not customer cases, calibrated benchmarks, validated designs, or claims of regulatory applicability." }}
@@ -141,7 +141,7 @@ export default function QualityLabCasebookPage() {
                     <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">{item.lesson}</p>
                     <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                       <button type="button" onClick={() => openCase(item)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-300 px-4 py-3 text-sm font-bold text-slate-950 hover:bg-teal-200">
-                        Open as editable project <ArrowRight className="h-4 w-4" />
+                        Explore synthetic Blueprint <ArrowRight className="h-4 w-4" />
                       </button>
                       <Link href="/quality-lab/discovery-pack" className="inline-flex items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold hover:border-white/30">Use the discovery templates</Link>
                     </div>
@@ -184,7 +184,7 @@ export default function QualityLabCasebookPage() {
 
         <section className="mt-10 rounded-3xl border border-teal-300/20 bg-teal-300/[0.06] p-6 md:p-8">
           <h2 className="text-2xl font-bold">Use cases to challenge assumptions, not to copy answers.</h2>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">Open a case as a local project, replace every illustrative input with site evidence, then use the assumptions and decision log before requesting expert review.</p>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">Explore a case in a quarantined browser-local project. When you are ready to use site facts or request expert review, start a separate model from your own inputs.</p>
           <Link href="/quality-lab/planner" className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-teal-300">Build from your own inputs <ArrowRight className="h-4 w-4" /></Link>
         </section>
       </div>

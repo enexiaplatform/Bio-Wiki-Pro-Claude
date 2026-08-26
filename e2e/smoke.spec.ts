@@ -1226,16 +1226,30 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("textbox", { name: /Project context/i })).toHaveValue(/Decide whether baseline release demand needs one shift or a planned second-shift scenario\./);
   });
 
-  test("Blueprint casebook compiles scenarios and opens one as an editable local project", async ({ page }) => {
+  test("Blueprint casebook keeps every synthetic scenario out of commercial review", async ({ page }) => {
     await page.goto("/quality-lab/casebook");
     await expect(page.getByRole("heading", { name: /See how one decision changes a Blueprint/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Laboratory team reviewing evidence/i })).toBeVisible();
     await expect(page.getByText(/Synthetic scenarios only/i).last()).toBeVisible();
-    await expect(page.getByRole("button", { name: /Open as editable project/i })).toHaveCount(3);
+    await expect(page.getByRole("button", { name: /Explore synthetic Blueprint/i })).toHaveCount(3);
     await expect(page.getByText(/reconciliation required|portfolio derived|aggregate input/i).first()).toBeVisible();
-    await page.getByRole("button", { name: /Open as editable project/i }).first().click();
+    await page.getByRole("button", { name: /Explore synthetic Blueprint/i }).first().click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByRole("heading", { name: /Illustrative case — reconciled in-house portfolio/i })).toBeVisible();
+    await expect(page.getByText(/Illustrative example — excluded from commercial review and project reporting/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request expert review/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Engagement packet/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Build my own model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+    const projectId = new URL(page.url()).pathname.split("/").at(-1);
+    await page.goto(`/quality-lab/review?project=${projectId}`);
+    await expect(page.getByText(/illustrative project was not attached to this commercial request/i)).toBeVisible();
+    await page.goto(`/quality-lab/engagements/${projectId}`);
+    await expect(page.getByRole("heading", { name: /Illustrative examples stay outside engagement operations/i })).toBeVisible();
+    await page.goto(`/quality-lab/engagements/${projectId}/commercial-handoff`);
+    await expect(page.getByRole("heading", { name: /Commercial handoff is unavailable for synthetic examples/i })).toBeVisible();
+    await page.goto(`/quality-lab/engagements/${projectId}/operating-model-review`);
+    await expect(page.getByRole("heading", { name: /Paid-diagnostic review is unavailable for synthetic examples/i })).toBeVisible();
+    await page.goto(`/quality-lab/projects/${projectId}`);
     await page.getByRole("button", { name: /Open technical detail/i }).click();
     await expect(page.getByRole("heading", { name: /Finished-product sizing basis/i })).toBeVisible();
     await page.getByRole("button", { name: /Show Sources and missing site evidence detail/i }).click();
@@ -1244,7 +1258,7 @@ test.describe("public smoke", () => {
 
   test("Skill Coverage & Shift Feasibility maps a Blueprint into shift-level gaps", async ({ page }) => {
     await page.goto("/quality-lab/casebook");
-    await page.getByRole("button", { name: /Open as editable project/i }).first().click();
+    await page.getByRole("button", { name: /Explore synthetic Blueprint/i }).first().click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     const projectId = new URL(page.url()).pathname.split("/").at(-1);
     await page.goto(`/quality-lab/skill-shift-coverage?project=${projectId}`);

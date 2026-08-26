@@ -3,6 +3,11 @@ import { createQualityLabProject, defaultQualityLabInput } from "./quality-lab";
 import { assessCalibrationCandidate, assessCasePublicationPermission, assessPaidPilotEvidence, calculateGrossMarginPercent, calculateVariancePercent, createCalibrationLearningCandidate, createQualityLabEngagementPacket, qualityLabEngagementPacketSchema, summarizeCalibration, varianceMagnitude } from "./quality-lab-engagement";
 
 describe("Quality Lab engagement packet", () => {
+  it("rejects illustrative projects at the engagement contract boundary", () => {
+    const example = createQualityLabProject(defaultQualityLabInput, "qlp_example", "illustrative-example");
+    expect(() => createQualityLabEngagementPacket(example)).toThrow(/cannot create commercial engagement packets/i);
+  });
+
   it("creates a validated review checklist and empty learning logs", () => {
     const project = createQualityLabProject(defaultQualityLabInput, "qlp_test");
     const packet = createQualityLabEngagementPacket(project, "2026-07-11T00:00:00.000Z");

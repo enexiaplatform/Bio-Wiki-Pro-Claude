@@ -396,7 +396,8 @@ export interface QualityLabProject {
   name: string;
   /**
    * Illustrative examples stay browser-local and cannot enter account sync or
-   * commercial review. Missing legacy values are treated as user-entered.
+   * commercial review. Reserved Casebook product IDs also fail closed so
+   * projects created before origin tagging cannot enter the commercial path.
    */
   origin?: QualityLabProjectOrigin;
   createdAt: string;
@@ -411,8 +412,9 @@ export interface QualityLabProject {
   reviewRequestedAt?: string;
 }
 
-export function isIllustrativeQualityLabProject(project: Pick<QualityLabProject, "origin"> | null | undefined) {
-  return project?.origin === "illustrative-example";
+export function isIllustrativeQualityLabProject(project: Pick<QualityLabProject, "origin" | "input"> | null | undefined) {
+  return project?.origin === "illustrative-example"
+    || project?.input.productProfiles.some((product) => product.id.startsWith("case-")) === true;
 }
 
 export const defaultQualityLabInput: QualityLabInput = {

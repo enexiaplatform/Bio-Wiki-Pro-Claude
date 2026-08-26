@@ -25,8 +25,10 @@ function safeParse(values: unknown[]): QualityLabProject[] {
       const actionPlan = storedActionPlan.success ? storedActionPlan.data : reconcileQualityLabActionPlan(blueprint, undefined, blueprint.generatedAt);
       const storedDecisionRegister = qualityLabDecisionRegisterSchema.safeParse(project.decisionRegister);
       const decisionRegister = storedDecisionRegister.success ? storedDecisionRegister.data : reconcileQualityLabDecisionRegister(blueprint, actionPlan, undefined, blueprint.generatedAt);
+      const normalizedOrigin = isIllustrativeQualityLabProject({ ...project, input: parsed.data }) ? "illustrative-example" : project.origin;
       return [ensureQualityLabProjectHistory({
         ...project,
+        origin: normalizedOrigin,
         name: parsed.data.projectName,
         input: parsed.data,
         blueprint,
