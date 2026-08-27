@@ -18,6 +18,12 @@ import {
   type QualityLabDecisionFrameInput,
 } from "@shared/quality-lab-decision-frame";
 import { getQualityLabFunnelJourneyId } from "@/lib/quality-lab-funnel";
+import {
+  createQualityLabRequestReceipt,
+  parseRecentQualityLabRequestReceipt,
+  qualityLabRequestScopeKey,
+  type QualityLabRequestReceipt,
+} from "@shared/quality-lab-request-receipt";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -68,15 +74,17 @@ type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-requi
 const COMMERCIAL_HANDOFF_KEY = "atlas:commercial-request-handoff:v1";
 const DIAGNOSTIC_RETURN_TO = "/quality-lab/review?offer=diagnostic";
 
-function hasRecentDiagnosticHandoff(): boolean {
+function loadRecentCommercialHandoff(scopeKey: string): QualityLabRequestReceipt | null {
   try {
-    const value = JSON.parse(sessionStorage.getItem(COMMERCIAL_HANDOFF_KEY) ?? "null") as { offer?: string; recordedAt?: number } | null;
-    const recent = value?.offer === "scope-diagnostic" && typeof value.recordedAt === "number" && Date.now() - value.recordedAt < 24 * 60 * 60 * 1000;
-    if (!recent) sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
-    return recent;
+    const receipt = parseRecentQualityLabRequestReceipt(
+      JSON.parse(sessionStorage.getItem(COMMERCIAL_HANDOFF_KEY) ?? "null"),
+      scopeKey,
+    );
+    if (!receipt) sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
+    return receipt;
   } catch {
     sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
-    return false;
+    return null;
   }
 }
 
@@ -106,12 +114,13 @@ export default function QualityLabReviewPage() {
     const offer = new URLSearchParams(window.location.search).get("offer");
     return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || project ? "blueprint-pilot" : "unsure";
   }, [project]);
+  const commercialScopeKey = useMemo(() => qualityLabRequestScopeKey(project?.id), [project?.id]);
   const readiness = useMemo(() => project ? getQualityLabReadiness(project.blueprint) : null, [project]);
   const transferredDecisionFrame = useMemo(() => project ? null : loadDecisionFrameHandoff(), [project]);
   const transferredDecisionFrameReadiness = useMemo(() => transferredDecisionFrame ? assessQualityLabDecisionFrame(transferredDecisionFrame) : null, [transferredDecisionFrame]);
   const request = useCreateQualityLabReview();
   const { isAuthenticated } = useUser();
-  const [submitted, setSubmitted] = useState(() => requestedOffer === "scope-diagnostic" && hasRecentDiagnosticHandoff());
+  const [submissionReceipt, setSubmissionReceipt] = useState(() => loadRecentCommercialHandoff(commercialScopeKey));
   const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
   const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">("brief-only");
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
@@ -186,9 +195,10 @@ export default function QualityLabReviewPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!confidentialityConfirmed) return;
     analytics.expertReviewStarted(project ? "blueprint_report" : "standalone", qualification.engagementIntent);
     try {
-      await request.mutateAsync({
+      const createdRequest = await request.mutateAsync({
         briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
         contact: { name: form.name, email: form.email, company: form.company || null, role: form.role || null },
         qualification,
@@ -214,7 +224,7 @@ export default function QualityLabReviewPage() {
           importantOpenCount: project.blueprint.dataQuality.importantOpenCount,
           unresolvedInputs: project.blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
         } : null,
-        confidentialityConfirmed: true,
+        confidentialityConfirmed,
       });
       if (project) {
         const reviewedProject = markQualityLabReviewRequested(project.id);
@@ -239,10 +249,13 @@ export default function QualityLabReviewPage() {
       }
       analytics.expertReviewRequested(Boolean(project), qualification.engagementIntent);
       sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
-      if (qualification.engagementIntent === "scope-diagnostic") {
-        sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify({ offer: "scope-diagnostic", recordedAt: Date.now() }));
-      }
-      setSubmitted(true);
+      const receipt = createQualityLabRequestReceipt({
+        scopeKey: commercialScopeKey,
+        offer: qualification.engagementIntent,
+        requestId: typeof createdRequest.id === "number" ? createdRequest.id : null,
+      });
+      sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify(receipt));
+      setSubmissionReceipt(receipt);
     } catch {
       // The shared mutation displays the actionable error toast.
     }
@@ -296,16 +309,19 @@ export default function QualityLabReviewPage() {
     );
   }
 
-  if (submitted) {
+  if (submissionReceipt) {
+    const submittedOffer = submissionReceipt.offer;
     return (
       <div className="min-h-[75vh] bg-[#08111f] px-4 py-16 text-slate-100">
         <div className="mx-auto max-w-2xl rounded-3xl border border-teal-300/25 bg-gradient-to-br from-teal-300/12 to-slate-950 p-7 text-center shadow-2xl shadow-black/25 md:p-10">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-300 text-slate-950"><CheckCircle2 className="h-7 w-7" /></div>
             <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Engagement request received</p>
-            <h1 className="mt-3 text-3xl font-bold">Your {offerCopy[qualification.engagementIntent].label} request has been captured.</h1>
-            <p className="mx-auto mt-3 text-sm font-semibold text-teal-200">{offerCopy[qualification.engagementIntent].price}</p>
+            <h1 className="mt-3 text-3xl font-bold">Your {offerCopy[submittedOffer].label} request has been captured.</h1>
+            <p className="mx-auto mt-3 text-sm font-semibold text-teal-200">{offerCopy[submittedOffer].price}</p>
+            {submissionReceipt.requestId && <p className="mx-auto mt-3 w-fit rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 font-mono text-xs font-bold text-teal-100">Request reference {submissionReceipt.requestId}</p>}
             <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">Atlas responds within two business days to confirm fit, available inputs, decision deadline, reviewer coverage and the delivery basis. No model output is approved by this request.</p>
-          {qualification.engagementIntent === "scope-diagnostic" && (
+            <p role="status" className="mx-auto mt-4 max-w-xl text-xs leading-5 text-slate-500">This receipt stays in this browser tab for 24 hours, so reloading will not send the same request again. The reference matches the acknowledgement email when email delivery is configured.</p>
+          {submittedOffer === "scope-diagnostic" && (
             <div className="mt-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-5 text-left">
               <p className="font-bold text-sky-100">Next: reserve the $149 Diagnostic</p>
               <p className="mt-2 text-sm leading-6 text-slate-400">Includes one 60-minute workshop and a written scope and decision memo within two business days after the workshop.</p>

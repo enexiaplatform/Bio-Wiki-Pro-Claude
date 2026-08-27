@@ -85,6 +85,19 @@ const funnelEventLimiter = rateLimit({
   skip: () => process.env.NODE_ENV === "test",
 });
 
+// Keeps automated retries and public-form abuse from flooding the small Gate 1
+// operator queue. The store is process-local, so it is a bounded first line of
+// defense rather than a distributed anti-abuse guarantee.
+const commercialRequestLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+  message: { message: "Too many commercial requests. Please wait before submitting another brief." },
+  skip: () => process.env.NODE_ENV === "test",
+});
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const qualityLabReminderCadenceSchema = z.enum(["off", "weekly", "daily", "weekdays"]);
 function isValidEmail(email: unknown): email is string {
@@ -917,7 +930,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post(api.quoteRequests.create.path, async (req, res) => {
+  app.post(api.quoteRequests.create.path, commercialRequestLimiter, async (req, res) => {
     try {
       const input = api.quoteRequests.create.input.parse(req.body);
       const quote = await storage.createQuoteRequest(input);
@@ -941,7 +954,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post(api.qualityLabReviews.create.path, async (req, res) => {
+  app.post(api.qualityLabReviews.create.path, commercialRequestLimiter, async (req, res) => {
     try {
       const input = api.qualityLabReviews.create.input.parse(req.body);
       const { formatQualityLabReviewBrief, qualityLabReviewOfferLabel } = await import("../shared/quality-lab-review.js");

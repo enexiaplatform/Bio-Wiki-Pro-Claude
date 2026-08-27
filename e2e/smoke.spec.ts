@@ -349,12 +349,16 @@ test.describe("public smoke", () => {
 
   test("unavailable Diagnostic checkout never turns a captured brief into a payment promise", async ({ page }) => {
     let checkoutAttempts = 0;
+    let reviewRequests = 0;
     await page.route("**/api/billing/plans", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
       body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
     }));
-    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 43 }) }));
+    await page.route("**/api/quality-lab/reviews", (route) => {
+      reviewRequests += 1;
+      return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 43 }) });
+    });
     await page.route("**/api/stripe/create-checkout-session", (route) => {
       checkoutAttempts += 1;
       return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
@@ -368,10 +372,16 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
 
     await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Request reference 43/i)).toBeVisible();
+    await expect(page.getByText(/reloading will not send the same request again/i)).toBeVisible();
     await expect(page.getByText(/Secure checkout is not currently available/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Create an account to pay securely/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Pay \$149 securely/i })).toHaveCount(0);
     await expect.poll(() => checkoutAttempts).toBe(0);
+    await page.reload();
+    await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Request reference 43/i)).toBeVisible();
+    await expect.poll(() => reviewRequests).toBe(1);
   });
 
   test("guest Diagnostic request survives account creation and returns to payment", async ({ page }) => {
