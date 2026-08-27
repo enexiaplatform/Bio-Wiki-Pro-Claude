@@ -947,7 +947,9 @@ test.describe("public smoke", () => {
         generatedAt: "2026-07-28T00:00:00.000Z",
         windowDays: 30,
         uniqueJourneys: 3,
+        illustrativeJourneys: 2,
         stages: [
+          { stage: "example_explored", journeys: 2, percentOfPlannerStarts: null },
           { stage: "planner_started", journeys: 3, percentOfPlannerStarts: 100 },
           { stage: "model_compiled", journeys: 2, percentOfPlannerStarts: 66.7 },
           { stage: "review_requested", journeys: 1, percentOfPlannerStarts: 33.3 },
@@ -984,7 +986,10 @@ test.describe("public smoke", () => {
     await expect(page.getByText(/does not prove webhook delivery, inbox receipt, payment acceptance or reviewer appointment/i)).toBeVisible();
     await page.getByRole("tab", { name: "Blueprint funnel" }).click();
     await expect(page.getByRole("heading", { name: /Blueprint funnel · last 30 days/i })).toBeVisible();
-    await expect(page.getByText("Unique Blueprint journeys observed")).toBeVisible();
+    await expect(page.getByText("Commercial-intent Blueprint journeys")).toBeVisible();
+    await expect(page.getByText("Illustrative journeys kept separate")).toBeVisible();
+    await expect(page.getByText("Illustrative example explored")).toBeVisible();
+    await expect(page.getByText("excluded", { exact: true })).toBeVisible();
     await expect(page.getByText("Initial model compiled")).toBeVisible();
     await expect(page.getByText("66.7% of starts")).toBeVisible();
     await expect(page.getByText(/No project inputs, contact details or evidence content are stored/i)).toBeVisible();
@@ -1153,6 +1158,11 @@ test.describe("public smoke", () => {
   });
 
   test("illustrative Blueprint stays out of commercial review and active project reporting", async ({ page }) => {
+    const funnelReceipts: Array<{ stage: string; startMode?: string }> = [];
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
     await page.goto("/quality-lab/planner");
     await page.getByRole("button", { name: /Explore a worked example/i }).click();
     for (let step = 0; step < 3; step += 1) await page.getByRole("button", { name: /^Continue$/ }).click();
@@ -1163,12 +1173,15 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Request expert review/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toHaveCount(0);
     await expect(page.getByRole("link", { name: /Build my own model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+    await expect.poll(() => funnelReceipts.some((receipt) => receipt.stage === "model_compiled" && receipt.startMode === "example")).toBe(true);
 
     const projectId = new URL(page.url()).pathname.split("/").at(-1)!;
+    const commercialViewsBeforeBoundaryCheck = funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length;
     await page.goto(`/quality-lab/review?project=${projectId}`);
     await expect(page.getByText(/illustrative project was not attached to this commercial request/i)).toBeVisible();
     await expect(page.getByRole("heading", { name: /Confirm the right review route/i })).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toHaveCount(0);
+    await expect.poll(() => funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length).toBe(commercialViewsBeforeBoundaryCheck);
 
     await page.goto("/quality-lab/projects");
     await expect(page.getByText(/1 illustrative example kept separate/i)).toBeVisible();
@@ -1227,6 +1240,11 @@ test.describe("public smoke", () => {
   });
 
   test("Blueprint casebook keeps every synthetic scenario out of commercial review", async ({ page }) => {
+    const funnelReceipts: Array<{ stage: string; placement?: string; destination?: string; startMode?: string }> = [];
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
     await page.goto("/quality-lab/casebook");
     await expect(page.getByRole("heading", { name: /See how one decision changes a Blueprint/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Laboratory team reviewing evidence/i })).toBeVisible();
@@ -1240,9 +1258,13 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Request expert review/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Engagement packet/i })).toHaveCount(0);
     await expect(page.getByRole("link", { name: /Build my own model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+    await expect.poll(() => funnelReceipts.some((receipt) => receipt.stage === "example_explored" && receipt.destination === "synthetic_blueprint" && receipt.startMode === "example")).toBe(true);
+    expect(funnelReceipts.some((receipt) => receipt.stage === "cta_clicked" && receipt.placement?.startsWith("casebook_"))).toBe(false);
     const projectId = new URL(page.url()).pathname.split("/").at(-1);
+    const commercialViewsBeforeBoundaryCheck = funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length;
     await page.goto(`/quality-lab/review?project=${projectId}`);
     await expect(page.getByText(/illustrative project was not attached to this commercial request/i)).toBeVisible();
+    await expect.poll(() => funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length).toBe(commercialViewsBeforeBoundaryCheck);
     await page.goto(`/quality-lab/engagements/${projectId}`);
     await expect(page.getByRole("heading", { name: /Illustrative examples stay outside engagement operations/i })).toBeVisible();
     await page.goto(`/quality-lab/engagements/${projectId}/commercial-handoff`);

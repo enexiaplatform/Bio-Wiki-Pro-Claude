@@ -77,7 +77,7 @@ export default function QualityLabCasebookPage() {
 
   function openCase(item: (typeof compiledCases)[number]) {
     const project = saveQualityLabProject(item.input, undefined, "illustrative-example");
-    analytics.blueprintCtaClicked(`casebook_${item.id}`, "editable_project");
+    analytics.blueprintExampleExplored(`casebook_${item.id}`, "synthetic_blueprint");
     setLocation(`/quality-lab/projects/${project.id}`);
   }
 

@@ -85,6 +85,7 @@ type Pipeline = {
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const date = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString("en-GB") : "—";
 const funnelLabels: Record<QualityLabFunnelStage, string> = {
+  example_explored: "Illustrative example explored",
   cta_clicked: "Blueprint CTA clicked",
   planner_started: "Planner started",
   start_mode_selected: "Start mode selected",
@@ -236,13 +237,13 @@ export default function AdminDashboardPage() {
           </TabsContent>
 
           <TabsContent value="funnel" className="mt-5">
-            <Panel title="Blueprint funnel · last 30 days" description="First-party stage receipts remain available when PostHog is absent. Counts are unique browser journeys; direct entry can make later-stage reach exceed earlier CTA reach.">
+            <Panel title="Blueprint funnel · last 30 days" description="Commercial stage counts exclude public samples, Casebook scenarios and worked examples. Their privacy-minimal exploration signal remains visible separately; direct entry can still make later-stage reach exceed earlier CTA reach.">
               {funnel.isError ? (
                 <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-100">Funnel receipts are unavailable in this environment. {RUNTIME_SCHEMA_REMEDIATION}</div>
               ) : (
                 <div className="space-y-3">
                   <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
-                    <div><p className="text-3xl font-bold text-white">{funnel.data?.uniqueJourneys ?? 0}</p><p className="mt-1 text-xs text-slate-500">Unique Blueprint journeys observed</p></div>
+                    <div className="flex flex-wrap gap-8"><div><p className="text-3xl font-bold text-white">{funnel.data?.uniqueJourneys ?? 0}</p><p className="mt-1 text-xs text-slate-500">Commercial-intent Blueprint journeys</p></div><div><p className="text-3xl font-bold text-amber-200">{funnel.data?.illustrativeJourneys ?? 0}</p><p className="mt-1 text-xs text-slate-500">Illustrative journeys kept separate</p></div></div>
                     <p className="text-xs text-slate-600">No project inputs, contact details or evidence content are stored.</p>
                   </div>
                   {(funnel.data?.stages ?? []).map((stage) => {
@@ -250,7 +251,7 @@ export default function AdminDashboardPage() {
                     return <div key={stage.stage} className="grid gap-2 border-b border-white/8 py-3 last:border-0 sm:grid-cols-[15rem_1fr_8.5rem] sm:items-center">
                       <div><p className="text-sm font-semibold text-slate-200">{funnelLabels[stage.stage]}</p><p className="mt-0.5 font-mono text-[10px] text-slate-600">{stage.stage}</p></div>
                       <div className="h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-teal-300" style={{ width: `${width}%` }} /></div>
-                      <div className="text-right"><span className="text-lg font-bold text-white">{stage.journeys}</span><span className="ml-2 text-xs text-slate-500">{stage.percentOfPlannerStarts === null ? "journeys" : `${stage.percentOfPlannerStarts}% of starts`}</span></div>
+                      <div className="text-right"><span className="text-lg font-bold text-white">{stage.journeys}</span><span className="ml-2 text-xs text-slate-500">{stage.stage === "example_explored" ? "excluded" : stage.percentOfPlannerStarts === null ? "journeys" : `${stage.percentOfPlannerStarts}% of starts`}</span></div>
                     </div>;
                   })}
                 </div>

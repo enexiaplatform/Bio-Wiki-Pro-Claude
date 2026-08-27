@@ -483,7 +483,7 @@ export default function QualityLabLandingPage() {
             <p className="mx-auto mt-3 max-w-3xl text-sm leading-6 text-slate-400 lg:text-[16px]">Atlas compiles your lab blueprint from product portfolio to decisions you can defend.</p>
             <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-8">
               <Link href="/quality-lab/planner" onClick={() => analytics.blueprintCtaClicked("quality_lab_flow_hero", "planner")} className="inline-flex min-h-12 min-w-52 items-center justify-center gap-8 rounded-lg bg-teal-300 px-5 text-sm font-bold text-slate-950 shadow-[0_12px_35px_rgba(20,184,166,0.18)] transition hover:-translate-y-0.5 hover:bg-teal-200">Build a blueprint <ArrowRight className="h-4 w-4" /></Link>
-              <Link href="/quality-lab/sample" onClick={() => analytics.blueprintCtaClicked("quality_lab_flow_hero", "sample")} className="inline-flex min-h-12 items-center justify-center text-sm font-bold text-teal-200 underline decoration-teal-300/40 decoration-dotted underline-offset-8 transition hover:text-teal-100">Inspect a sample</Link>
+              <Link href="/quality-lab/sample" onClick={() => analytics.blueprintExampleExplored("quality_lab_flow_hero", "sample")} className="inline-flex min-h-12 items-center justify-center text-sm font-bold text-teal-200 underline decoration-teal-300/40 decoration-dotted underline-offset-8 transition hover:text-teal-100">Inspect a sample</Link>
             </div>
           </motion.div>
         </section>

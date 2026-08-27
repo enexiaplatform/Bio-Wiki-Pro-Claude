@@ -307,6 +307,7 @@ export default function QualityLabPlannerPage() {
       saved.id,
       saved.input.facilityType,
       Object.values(saved.input.scope).filter(Boolean).length,
+      startMode ?? undefined,
     );
     setProject(saved);
     setInput(saved.input);

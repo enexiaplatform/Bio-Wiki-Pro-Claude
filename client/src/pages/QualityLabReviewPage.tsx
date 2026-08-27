@@ -146,9 +146,9 @@ export default function QualityLabReviewPage() {
   const activeOfferHero = offerHeroCopy[qualification.engagementIntent];
 
   useEffect(() => {
-    analytics.commercialIntakeViewed(requestedOffer);
+    if (!illustrativeProject) analytics.commercialIntakeViewed(requestedOffer);
     if (transferredDecisionFrameReadiness) analytics.blueprintDecisionFrameLoaded(transferredDecisionFrameReadiness.percent, transferredDecisionFrameReadiness.completeCount);
-  }, [requestedOffer, transferredDecisionFrameReadiness]);
+  }, [illustrativeProject, requestedOffer, transferredDecisionFrameReadiness]);
 
   useEffect(() => {
     if (requestedOffer !== "scope-diagnostic" || !isAuthenticated) return;

@@ -224,6 +224,11 @@ export const analytics = {
     recordQualityLabFunnelEvent({ stage: "cta_clicked", placement, destination });
   },
 
+  blueprintExampleExplored: (placement: string, destination: string) => {
+    capture("blueprint_example_explored", { placement, destination });
+    recordQualityLabFunnelEvent({ stage: "example_explored", placement, destination, startMode: "example" });
+  },
+
   blueprintDecisionFrameCopied: (detailPercent: number, describedInputs: number) =>
     capture("blueprint_decision_frame_copied", { detail_percent: detailPercent, described_inputs: describedInputs }),
 
@@ -257,13 +262,13 @@ export const analytics = {
   blueprintImported: (source: "input" | "project") =>
     capture("blueprint_imported", { source }),
 
-  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number) => {
+  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number, startMode?: "guided" | "example" | "blank" | "import" | "existing") => {
     capture("blueprint_compiled", {
       project_id: projectId,
       facility_type: facilityType,
       scope_count: scopeCount,
     });
-    recordQualityLabFunnelEvent({ stage: "model_compiled" });
+    recordQualityLabFunnelEvent({ stage: "model_compiled", startMode });
   },
 
   scenarioCompared: (baselineId: string, alternativeId: string, changedInputs: number) =>

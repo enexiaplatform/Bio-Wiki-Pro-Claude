@@ -227,7 +227,7 @@ export default function LandingPage() {
               <Link href="/quality-lab/planner" className={primaryCta} onClick={trackCta("home_hero", "planner")}>
                 Build the free model <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="/quality-lab/sample" className={secondaryCta} onClick={trackCta("home_hero", "sample")}>
+              <Link href="/quality-lab/sample" className={secondaryCta} onClick={() => analytics.blueprintExampleExplored("home_hero", "sample")}>
                 See a sample Blueprint
               </Link>
             </div>
