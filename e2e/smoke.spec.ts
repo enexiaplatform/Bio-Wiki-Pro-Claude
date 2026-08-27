@@ -347,6 +347,36 @@ test.describe("public smoke", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
   });
 
+  test("unfinished commercial briefs are restored only after explicit tab-local opt-in", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
+    }));
+
+    await page.goto("/quality-lab/review?offer=blueprint");
+    await page.getByLabel(/Keep this unfinished brief in this tab/i).check();
+    await page.getByLabel("Project stage *").selectOption("budget-planning");
+    await page.getByLabel("Name *").fill("Draft Lead");
+    await page.getByLabel("Work email *").fill("draft@company.example");
+    await page.getByLabel(/Project context/i).fill("Evaluate a non-sterile quality-control lab expansion before the next capital planning decision.");
+    await page.getByLabel(/I confirm this submission contains no confidential/i).check();
+
+    await page.reload();
+    await expect(page.getByLabel(/Keep this unfinished brief in this tab/i)).toBeChecked();
+    await expect(page.getByText(/Saved copy restored in this tab/i)).toBeVisible();
+    await expect(page.getByLabel("Project stage *")).toHaveValue("budget-planning");
+    await expect(page.getByLabel("Name *")).toHaveValue("Draft Lead");
+    await expect(page.getByLabel("Work email *")).toHaveValue("draft@company.example");
+    await expect(page.getByLabel(/I confirm this submission contains no confidential/i)).not.toBeChecked();
+
+    await page.getByRole("button", { name: /Delete saved copy/i }).click();
+    await expect(page.getByLabel(/Keep this unfinished brief in this tab/i)).not.toBeChecked();
+    await page.reload();
+    await expect(page.getByLabel("Name *")).toHaveValue("");
+    await expect(page.getByLabel("Work email *")).toHaveValue("");
+  });
+
   test("unavailable Diagnostic checkout never turns a captured brief into a payment promise", async ({ page }) => {
     let checkoutAttempts = 0;
     let reviewRequests = 0;
@@ -365,6 +395,7 @@ test.describe("public smoke", () => {
     });
 
     await page.goto("/quality-lab/review?offer=diagnostic");
+    await page.getByLabel(/Keep this unfinished brief in this tab/i).check();
     await page.getByLabel("Name *").fill("Diagnostic Lead");
     await page.getByLabel("Work email *").fill("lead@example.com");
     await page.getByLabel(/Project context/i).fill("Decide the scope and evidence needed for a non-sterile microbiology capacity review before the next budget gate.");
@@ -378,6 +409,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Create an account to pay securely/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Pay \$149 securely/i })).toHaveCount(0);
     await expect.poll(() => checkoutAttempts).toBe(0);
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:commercial-request-draft:v1:standalone"))).toBeNull();
     await page.reload();
     await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
     await expect(page.getByText(/Request reference 43/i)).toBeVisible();
@@ -1250,6 +1282,7 @@ test.describe("public smoke", () => {
   });
 
   test("Blueprint casebook keeps every synthetic scenario out of commercial review", async ({ page }) => {
+    await mockAdmin(page);
     const funnelReceipts: Array<{ stage: string; placement?: string; destination?: string; startMode?: string }> = [];
     await page.route("**/api/quality-lab/funnel-events", async (route) => {
       funnelReceipts.push(route.request().postDataJSON());

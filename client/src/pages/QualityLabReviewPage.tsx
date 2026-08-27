@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck, Trash2 } from "lucide-react";
 import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
 import { isCheckoutAvailable, useBillingPlans } from "@/hooks/use-billing-plans";
@@ -24,6 +24,11 @@ import {
   qualityLabRequestScopeKey,
   type QualityLabRequestReceipt,
 } from "@shared/quality-lab-request-receipt";
+import {
+  createQualityLabRequestDraft,
+  parseRecentQualityLabRequestDraft,
+  type QualityLabRequestDraft,
+} from "@shared/quality-lab-request-draft";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -72,7 +77,27 @@ const briefReadinessGuidance = {
 type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-required";
 
 const COMMERCIAL_HANDOFF_KEY = "atlas:commercial-request-handoff:v1";
+const COMMERCIAL_DRAFT_KEY_PREFIX = "atlas:commercial-request-draft:v1:";
 const DIAGNOSTIC_RETURN_TO = "/quality-lab/review?offer=diagnostic";
+
+function commercialDraftKey(scopeKey: string) {
+  return `${COMMERCIAL_DRAFT_KEY_PREFIX}${encodeURIComponent(scopeKey)}`;
+}
+
+function loadRecentCommercialDraft(scopeKey: string): QualityLabRequestDraft | null {
+  const storageKey = commercialDraftKey(scopeKey);
+  try {
+    const draft = parseRecentQualityLabRequestDraft(
+      JSON.parse(sessionStorage.getItem(storageKey) ?? "null"),
+      scopeKey,
+    );
+    if (!draft) sessionStorage.removeItem(storageKey);
+    return draft;
+  } catch {
+    sessionStorage.removeItem(storageKey);
+    return null;
+  }
+}
 
 function loadRecentCommercialHandoff(scopeKey: string): QualityLabRequestReceipt | null {
   try {
@@ -120,9 +145,15 @@ export default function QualityLabReviewPage() {
   const transferredDecisionFrameReadiness = useMemo(() => transferredDecisionFrame ? assessQualityLabDecisionFrame(transferredDecisionFrame) : null, [transferredDecisionFrame]);
   const request = useCreateQualityLabReview();
   const { isAuthenticated } = useUser();
+  const initialDraft = useMemo(() => loadRecentCommercialDraft(commercialScopeKey), [commercialScopeKey]);
   const [submissionReceipt, setSubmissionReceipt] = useState(() => loadRecentCommercialHandoff(commercialScopeKey));
   const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
-  const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">("brief-only");
+  const [draftPersistenceEnabled, setDraftPersistenceEnabled] = useState(Boolean(initialDraft));
+  const [draftRestored, setDraftRestored] = useState(Boolean(initialDraft));
+  const [draftStorageError, setDraftStorageError] = useState("");
+  const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">(
+    initialDraft?.attachMode === "full-snapshot" && isAuthenticated ? "full-snapshot" : "brief-only",
+  );
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
   const [snapshotError, setSnapshotError] = useState("");
   const [retryingSnapshot, setRetryingSnapshot] = useState(false);
@@ -131,7 +162,7 @@ export default function QualityLabReviewPage() {
   const [diagnosticAccess, setDiagnosticAccess] = useState<{ entitled: boolean; purchasedAt: string | null } | null>(null);
   const { plans: billingPlans, isLoading: billingPlansLoading } = useBillingPlans();
   const diagnosticCheckoutAvailable = isCheckoutAvailable("scope_diagnostic", billingPlans);
-  const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>({
+  const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>(initialDraft?.qualification ?? {
     engagementIntent: requestedOffer,
     projectStage: "concept",
     decisionWindow: project?.input.decisionWindow ?? "not-set",
@@ -140,7 +171,7 @@ export default function QualityLabReviewPage() {
     dataReadiness: project ? "substantial" : "initial",
     portfolioScale: qualityLabPortfolioScaleFromProductCount(project?.input.finishedProducts),
   });
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(initialDraft?.form ?? {
     name: "",
     email: "",
     company: project?.input.companyName ?? "",
@@ -153,6 +184,24 @@ export default function QualityLabReviewPage() {
   });
   const briefReadiness = useMemo(() => assessQualityLabReviewBrief({ qualification, projectContext: form.need, hasProject: Boolean(project) }), [form.need, project, qualification]);
   const activeOfferHero = offerHeroCopy[qualification.engagementIntent];
+
+  useEffect(() => {
+    if (!draftPersistenceEnabled) return;
+    try {
+      const draft = createQualityLabRequestDraft({
+        scopeKey: commercialScopeKey,
+        qualification,
+        form,
+        attachMode,
+      });
+      sessionStorage.setItem(commercialDraftKey(commercialScopeKey), JSON.stringify(draft));
+      setDraftStorageError("");
+    } catch {
+      setDraftPersistenceEnabled(false);
+      setDraftRestored(false);
+      setDraftStorageError("This browser could not keep a tab copy. Your on-screen entries are unchanged; keep this tab open until you submit.");
+    }
+  }, [attachMode, commercialScopeKey, draftPersistenceEnabled, form, qualification]);
 
   useEffect(() => {
     if (!illustrativeProject) analytics.commercialIntakeViewed(requestedOffer);
@@ -249,6 +298,9 @@ export default function QualityLabReviewPage() {
       }
       analytics.expertReviewRequested(Boolean(project), qualification.engagementIntent);
       sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
+      sessionStorage.removeItem(commercialDraftKey(commercialScopeKey));
+      setDraftPersistenceEnabled(false);
+      setDraftRestored(false);
       const receipt = createQualityLabRequestReceipt({
         scopeKey: commercialScopeKey,
         offer: qualification.engagementIntent,
@@ -259,6 +311,19 @@ export default function QualityLabReviewPage() {
     } catch {
       // The shared mutation displays the actionable error toast.
     }
+  }
+
+  function toggleDraftPersistence(enabled: boolean) {
+    setDraftPersistenceEnabled(enabled);
+    setDraftRestored(false);
+    setDraftStorageError("");
+    if (!enabled) sessionStorage.removeItem(commercialDraftKey(commercialScopeKey));
+  }
+
+  function deleteSavedDraft() {
+    sessionStorage.removeItem(commercialDraftKey(commercialScopeKey));
+    setDraftPersistenceEnabled(false);
+    setDraftRestored(false);
   }
 
   async function retrySnapshotSync() {
@@ -407,6 +472,24 @@ export default function QualityLabReviewPage() {
 
           <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7">
             <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Start here</p><p className="mt-1 text-sm font-semibold">About 4–6 minutes · no confidential data</p></div><span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">3 short sections</span></div>
+            <section className="mb-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4" aria-label="Unfinished brief storage">
+              <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={draftPersistenceEnabled}
+                  onChange={(event) => toggleDraftPersistence(event.target.checked)}
+                  className="mt-1 h-4 w-4 shrink-0 accent-teal-300"
+                />
+                <span><strong className="block text-sm text-slate-100">Keep this unfinished brief in this tab</strong>Optional. Stores your unfinished entries in this tab for up to 8 hours or until the tab closes. Nothing is sent until you submit.</span>
+              </label>
+              {draftPersistenceEnabled && (
+                <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p role="status" className="text-[11px] leading-5 text-teal-200">{draftRestored ? "Saved copy restored in this tab. Review it before submitting." : "Saving changes in this tab. The confidentiality confirmation is never saved."}</p>
+                  <button type="button" onClick={deleteSavedDraft} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-white/15 bg-black/15 px-3 py-2 text-xs font-bold text-slate-200 transition hover:border-red-300/30 hover:text-red-100"><Trash2 className="h-3.5 w-3.5" /> Delete saved copy</button>
+                </div>
+              )}
+              {draftStorageError && <p role="alert" className="mt-3 text-[11px] leading-5 text-amber-200">{draftStorageError}</p>}
+            </section>
             {transferredDecisionFrameReadiness && (
               <section className="mb-5 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4" aria-label="Transferred Blueprint decision frame">
                 <div className="flex items-start gap-3">
