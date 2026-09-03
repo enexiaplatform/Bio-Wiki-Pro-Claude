@@ -41,6 +41,7 @@ Health after change: **Healthy for browser-local acquisition use**. Retention, d
 - Before: `design-references/discovery-frame-storage-audit-2026-09-03/03-before-silent-retention-mobile.png`
 - After: `design-references/discovery-frame-storage-audit-2026-09-03/04-after-opt-in-desktop.png`
 - After: `design-references/discovery-frame-storage-audit-2026-09-03/05-after-saving-enabled-desktop.png`
+- After deployment: `design-references/discovery-frame-storage-audit-2026-09-03/06-after-deployed-mobile.png`
 
 Automated coverage verifies the default no-save state, legacy-record cleanup, explicit opt-in, bounded restore contract, delete-without-clearing behavior, full clear behavior, template downloads, and diagnostic handoff. Type checking, repository validation, unit/server tests, the public browser suite, accessibility suite, and production build are the release gates for this change.
 
