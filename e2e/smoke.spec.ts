@@ -1232,20 +1232,57 @@ test.describe("public smoke", () => {
   });
 
   test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.evaluate(() => {
+      localStorage.setItem("atlas:quality-lab-decision-frame:v1", JSON.stringify({
+        decision: "A legacy frame that must not be restored without explicit consent.",
+        decisionOwner: "Legacy decision owner",
+        firstScope: "Legacy scope that was silently retained in browser storage.",
+        decisionGate: "Legacy gate",
+        evidenceBasis: "Legacy evidence basis that should be removed during the privacy migration.",
+        unresolvedImpact: "Legacy unresolved impact.",
+        excludedDecisions: "Legacy decisions not authorized.",
+      }));
+    });
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Collect the facts a defensible Blueprint needs/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Laboratory glassware arranged for structured planning/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
     await expect(page.getByRole("heading", { name: "0 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i })).not.toBeChecked();
+    expect(await page.evaluate(() => localStorage.getItem("atlas:quality-lab-decision-frame:v1"))).toBeNull();
     await page.getByRole("textbox", { name: "Decision to support", exact: true }).fill("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
     await page.getByRole("textbox", { name: "Owner and reviewers", exact: true }).fill("Site quality director with QC, QA, engineering, and finance review.");
     await expect(page.getByRole("heading", { name: "2 of 7 decision inputs described", exact: true })).toBeVisible();
     await expect(page.getByRole("progressbar", { name: "Decision frame detail", exact: true })).toHaveAttribute("aria-valuenow", "29");
     await page.getByRole("button", { name: "Copy decision frame", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copied decision frame", exact: true })).toBeVisible();
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).toBeNull();
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "0 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("");
+    await page.getByRole("textbox", { name: "Decision to support", exact: true }).fill("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    await page.getByRole("textbox", { name: "Owner and reviewers", exact: true }).fill("Site quality director with QC, QA, engineering, and finance review.");
+    await page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i }).check();
+    await expect(page.getByText("Saving changes in this tab for up to 8 hours.", { exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).not.toBeNull();
     await page.reload();
     await expect(page.getByRole("heading", { name: "2 of 7 decision inputs described", exact: true })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    await expect(page.getByText("Saved frame restored in this tab. Review it before handing it off.", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Delete saved copy", exact: true }).click();
+    await expect(page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i })).not.toBeChecked();
+    await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).toBeNull();
+    await page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i }).check();
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).not.toBeNull();
+    await page.getByRole("button", { name: "Clear on-screen frame", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "0 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i })).not.toBeChecked();
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).toBeNull();
+    await page.getByRole("textbox", { name: "Decision to support", exact: true }).fill("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    await page.getByRole("textbox", { name: "Owner and reviewers", exact: true }).fill("Site quality director with QC, QA, engineering, and finance review.");
     await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(11);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();

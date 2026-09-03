@@ -32,7 +32,18 @@ export interface QualityLabDecisionFrameHandoff {
   recordedAt: number;
 }
 
+export const QUALITY_LAB_DECISION_FRAME_DRAFT_VERSION = "quality-lab-decision-frame-draft/v1" as const;
+
+export interface QualityLabDecisionFrameDraft {
+  version: typeof QUALITY_LAB_DECISION_FRAME_DRAFT_VERSION;
+  frame: QualityLabDecisionFrameInput;
+  savedAt: number;
+}
+
+/** @deprecated Removed from the UI in favor of explicit, expiring tab-local drafts. */
 export const QUALITY_LAB_DECISION_FRAME_STORAGE_KEY = "atlas:quality-lab-decision-frame:v1";
+export const QUALITY_LAB_DECISION_FRAME_DRAFT_KEY = "atlas:quality-lab-decision-frame-draft:v1";
+export const QUALITY_LAB_DECISION_FRAME_DRAFT_TTL_MS = 8 * 60 * 60 * 1000;
 export const QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY = "atlas:quality-lab-decision-frame-handoff:v1";
 export const QUALITY_LAB_DECISION_FRAME_HANDOFF_TTL_MS = 24 * 60 * 60 * 1000;
 
@@ -65,6 +76,22 @@ export function parseQualityLabDecisionFrame(value: unknown): QualityLabDecision
     if (typeof candidate[key] !== "string" || candidate[key].length > qualityLabDecisionFrameFieldLimits[key]) return null;
   }
   return Object.fromEntries(decisionFrameKeys.map((key) => [key, candidate[key]])) as unknown as QualityLabDecisionFrameInput;
+}
+
+export function createQualityLabDecisionFrameDraft(frame: QualityLabDecisionFrameInput, savedAt = Date.now()): QualityLabDecisionFrameDraft {
+  const parsedFrame = parseQualityLabDecisionFrame(frame);
+  if (!parsedFrame || !Number.isInteger(savedAt) || savedAt < 0) throw new Error("Invalid decision frame draft");
+  return { version: QUALITY_LAB_DECISION_FRAME_DRAFT_VERSION, frame: parsedFrame, savedAt };
+}
+
+export function parseRecentQualityLabDecisionFrameDraft(value: unknown, now = Date.now()): QualityLabDecisionFrameDraft | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const candidate = value as Partial<QualityLabDecisionFrameDraft>;
+  const frame = parseQualityLabDecisionFrame(candidate.frame);
+  if (candidate.version !== QUALITY_LAB_DECISION_FRAME_DRAFT_VERSION || !frame || !Number.isInteger(candidate.savedAt) || (candidate.savedAt ?? -1) < 0) return null;
+  const savedAt = candidate.savedAt as number;
+  if (savedAt > now || now - savedAt >= QUALITY_LAB_DECISION_FRAME_DRAFT_TTL_MS) return null;
+  return { version: QUALITY_LAB_DECISION_FRAME_DRAFT_VERSION, frame, savedAt };
 }
 
 export function createQualityLabDecisionFrameHandoff(frame: QualityLabDecisionFrameInput, recordedAt = Date.now()): QualityLabDecisionFrameHandoff {
