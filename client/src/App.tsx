@@ -112,6 +112,14 @@ function AdminOnlyRoute({ component: Component }: { component: ComponentType }) 
   return <Component />;
 }
 
+function WelcomeRoute() {
+  const { isAdmin, isAuthenticated, isLoading } = useUser();
+  if (isLoading) return <PageFallback />;
+  if (!isAuthenticated) return <Redirect to="/register" replace />;
+  if (isAdmin) return <Redirect to="/admin" replace />;
+  return <Welcome />;
+}
+
 function RouteScrollManager({ location }: { location: string }) {
   useEffect(() => {
     const hash = window.location.hash.slice(1);
@@ -250,7 +258,7 @@ function Layout() {
               and Solutions (equipment quote-requests) → home. */}
           <Route path="/insights"><Redirect to="/" replace /></Route>
           <Route path="/solutions"><Redirect to="/" replace /></Route>
-          <Route path="/welcome" component={Welcome} />
+          <Route path="/welcome" component={WelcomeRoute} />
           <Route path="/upgrade" component={UpgradePage} />
           <Route path="/toolkits/gmp-audit-kit" component={GMPAuditKit} />
           <Route path="/toolkits" component={ToolkitsPage} />

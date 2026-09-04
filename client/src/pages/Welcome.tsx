@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, BookOpen, Factory, FileSearch, LayoutDashboard, Sparkles } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Factory, FileSearch, LayoutDashboard, Sparkles } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { ContinueLearning } from "@/components/ContinueLearning";
@@ -25,12 +25,32 @@ export default function Welcome() {
       title: t("step1.title"),
       desc: t("step1.desc"),
       cta: t("step1.cta"),
+      eyebrow: t("step1.eyebrow"),
+      meta: t("step1.meta"),
       href: FIRST_PATH,
       primary: true,
-      onClick: () => analytics.onboardingCompleted("first_path"),
+      onClick: () => analytics.onboardingCompleted("capability_model"),
     },
-    { icon: FileSearch, title: t("step2.title"), desc: t("step2.desc"), cta: t("step2.cta"), href: "/quality-lab" },
-    { icon: BookOpen, title: t("step3.title"), desc: t("step3.desc"), cta: t("step3.cta"), href: "/academy" },
+    {
+      icon: FileSearch,
+      title: t("step2.title"),
+      desc: t("step2.desc"),
+      cta: t("step2.cta"),
+      eyebrow: t("step2.eyebrow"),
+      meta: t("step2.meta"),
+      href: "/quality-lab/sample",
+      onClick: () => analytics.onboardingCompleted("illustrative_sample"),
+    },
+    {
+      icon: BriefcaseBusiness,
+      title: t("step3.title"),
+      desc: t("step3.desc"),
+      cta: t("step3.cta"),
+      eyebrow: t("step3.eyebrow"),
+      meta: t("step3.meta"),
+      href: "/quality-lab/review?offer=diagnostic",
+      onClick: () => analytics.onboardingCompleted("scope_diagnostic"),
+    },
   ];
 
   const primaryStep = steps[0];
@@ -54,7 +74,7 @@ export default function Welcome() {
             creditName="Toon Lambrechts"
             creditUrl="https://unsplash.com/photos/RkG7wp75b48"
             eager
-            className="h-56 rounded-lg border border-white/10 lg:h-auto lg:min-h-72"
+            className="h-36 rounded-lg border border-white/10 sm:h-48 lg:h-auto lg:min-h-72"
             imageClassName="object-[center_46%] saturate-75"
           />
         </div>
@@ -82,8 +102,10 @@ export default function Welcome() {
                 <primaryStep.icon className="h-6 w-6" />
               </div>
               <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">{primaryStep.eyebrow}</p>
                 <p className="text-xl font-bold">{primaryStep.title}</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">{primaryStep.desc}</p>
+                <p className="mt-3 text-xs font-semibold text-teal-100/80">{primaryStep.meta}</p>
               </div>
             </div>
             <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-teal-300 transition-transform group-hover:translate-x-1" />
@@ -98,6 +120,7 @@ export default function Welcome() {
             <Link
               key={step.title}
               href={step.href}
+              onClick={step.onClick}
               className="group rounded-lg border border-white/10 bg-white/[0.045] p-5 shadow-lg shadow-black/10 transition-all hover:-translate-y-0.5 hover:border-teal-400/35 hover:bg-white/[0.07]"
             >
               <div className="flex items-start gap-3">
@@ -105,8 +128,10 @@ export default function Welcome() {
                   <step.icon className="h-5 w-5" />
                 </div>
                 <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">{step.eyebrow}</p>
                   <p className="font-semibold">{step.title}</p>
                   <p className="mt-1 text-sm leading-5 text-muted-foreground">{step.desc}</p>
+                  <p className="mt-2 text-xs font-semibold text-slate-300">{step.meta}</p>
                   <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-teal-300 group-hover:text-teal-200">
                     {step.cta}
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />

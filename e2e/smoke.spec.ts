@@ -183,6 +183,31 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
   });
 
+  test("first-session onboarding protects account state and offers three strategic starts", async ({ page }) => {
+    let signedIn = false;
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: signedIn
+        ? JSON.stringify({ id: "onboarding-user", email: "new-user@example.com", isPro: false, isAdmin: false, verifiedEmail: false, subscriptionStatus: "free" })
+        : JSON.stringify({ message: "Unauthorized" }),
+    }));
+
+    await page.goto("/welcome");
+    await expect(page).toHaveURL(/\/register$/);
+
+    signedIn = true;
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/welcome");
+    await expect(page.getByRole("heading", { name: "Welcome to your Atlas workspace" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Build a first capability model/i })).toHaveAttribute("href", "/quality-lab/planner");
+    await expect(page.getByRole("link", { name: /Inspect an illustrative Blueprint/i })).toHaveAttribute("href", "/quality-lab/sample");
+    await expect(page.getByRole("link", { name: /Frame a real project with an expert/i })).toHaveAttribute("href", "/quality-lab/review?offer=diagnostic");
+    await expect(page.getByText(/synthetic example · concept only/i)).toBeVisible();
+    await expect(page.getByText(/Atlas confirms fit before payment/i)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
   test("restricted delivery login preserves the exact operational destination", async ({ page }) => {
     const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Return-path QA Blueprint" }, "qlp_return_path");
     await page.addInitScript(({ storedProject }) => {
