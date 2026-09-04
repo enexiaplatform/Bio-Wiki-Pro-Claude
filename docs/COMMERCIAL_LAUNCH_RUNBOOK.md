@@ -66,6 +66,14 @@ The current Vercel Production deployment remains `Ready`, and its stable Vercel 
 
 The Production environment name-only listing confirms that `PUBLIC_APP_URL` and `COMMERCE_MODE` now exist, but the runtime result shows that their current values do not make the origin or commerce ready. `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, `RESEND_API_KEY`, `EMAIL_FROM` and `VITE_POSTHOG_KEY` remain absent; `ADMIN_EMAILS` is present as the permitted notification fallback. The intended `lifescienceatlas.com` custom domain did not resolve in DNS during this check. No credential values were read, no database rows were queried and no production settings were changed.
 
+### Public and PR-preview readiness recheck — 4 September 2026
+
+The stable Vercel production alias still serves the public Diagnostic intake with HTTP 200. Its public `/api/health` response remains HTTP 503 with `commerceMode: disabled`, `diagnosticTestReady: false`, `commerceReady: false` and `schema: false`. Database, sessions, Stripe test-mode credentials, the monitored commercial inbox and cron report ready. The Diagnostic Price, transactional email, analytics and custom public origin remain not ready. The intended `lifescienceatlas.com` hostname still does not resolve.
+
+PR #9 preview deployment `1706c73` completed successfully and serves the updated Diagnostic intake with HTTP 200. Its isolated Preview runtime reports `commerceMode: test` but remains HTTP 503: database and sessions are ready, while Stripe, Diagnostic Price, transactional email, commercial notifications, cron and schema are not. This preview is suitable for public UI review, but it is not suitable for the Stripe acceptance journey until the owner configures the Preview-scoped test credentials and reconciles the target schema under the procedure below.
+
+No credential values, application rows, billing settings, DNS records or production configuration were read or changed during this recheck.
+
 ### Schema remediation procedure — approval required
 
 1. Load the protected target environment without copying connection values into source control, screenshots or chat.
