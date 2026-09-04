@@ -8,7 +8,7 @@ import { ContinueLearning } from "@/components/ContinueLearning";
 import { EditorialImage } from "@/components/EditorialImage";
 import { useUser } from "@/context/UserContext";
 
-const FIRST_PATH = "/quality-lab/planner";
+const FIRST_PATH = "/quality-lab/planner?source=onboarding";
 
 export default function Welcome() {
   const { t } = useTranslation("onboarding");
@@ -38,7 +38,7 @@ export default function Welcome() {
       cta: t("step2.cta"),
       eyebrow: t("step2.eyebrow"),
       meta: t("step2.meta"),
-      href: "/quality-lab/sample",
+      href: "/quality-lab/sample?source=onboarding",
       onClick: () => analytics.onboardingCompleted("illustrative_sample"),
     },
     {
@@ -48,7 +48,7 @@ export default function Welcome() {
       cta: t("step3.cta"),
       eyebrow: t("step3.eyebrow"),
       meta: t("step3.meta"),
-      href: "/quality-lab/review?offer=diagnostic",
+      href: "/quality-lab/review?offer=diagnostic&source=onboarding",
       onClick: () => analytics.onboardingCompleted("scope_diagnostic"),
     },
   ];

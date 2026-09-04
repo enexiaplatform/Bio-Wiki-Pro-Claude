@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { recordQualityLabFunnelEvent } from "@/lib/quality-lab-funnel";
+import type { QualityLabOnboardingPath } from "@shared/quality-lab-funnel";
 
 declare global {
   interface Window {
@@ -151,10 +152,15 @@ export const analytics = {
     if (productType === "scope_diagnostic") recordQualityLabFunnelEvent({ stage: "diagnostic_purchased", offer: productType });
   },
 
-  onboardingStarted: () => capture("onboarding_started"),
+  onboardingStarted: () => {
+    capture("onboarding_started");
+    recordQualityLabFunnelEvent({ stage: "onboarding_viewed", source: "welcome" });
+  },
 
-  onboardingCompleted: (firstValue: string) =>
-    capture("onboarding_completed", { first_value: firstValue }),
+  onboardingCompleted: (firstValue: QualityLabOnboardingPath) => {
+    capture("onboarding_completed", { first_value: firstValue });
+    recordQualityLabFunnelEvent({ stage: "onboarding_path_selected", source: "welcome", destination: firstValue });
+  },
 
   upgradePromptShown: (placement: string) =>
     capture("upgrade_prompt_shown", { placement }),
@@ -244,9 +250,9 @@ export const analytics = {
 
   sampleBlueprintDownloaded: () => capture("sample_blueprint_downloaded", { format: "pdf" }),
 
-  commercialIntakeViewed: (offer: string) => {
-    capture("commercial_intake_viewed", { offer });
-    recordQualityLabFunnelEvent({ stage: "review_viewed", offer });
+  commercialIntakeViewed: (offer: string, source?: string) => {
+    capture("commercial_intake_viewed", { offer, source });
+    recordQualityLabFunnelEvent({ stage: "review_viewed", offer, source });
   },
 
   blueprintStarted: (source = "planner") => {

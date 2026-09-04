@@ -185,6 +185,7 @@ test.describe("public smoke", () => {
 
   test("first-session onboarding protects account state and offers three strategic starts", async ({ page }) => {
     let signedIn = false;
+    const funnelReceipts: Array<{ stage: string; destination?: string; source?: string; placement?: string }> = [];
     await page.route("**/api/auth/me", (route) => route.fulfill({
       status: signedIn ? 200 : 401,
       contentType: "application/json",
@@ -192,6 +193,10 @@ test.describe("public smoke", () => {
         ? JSON.stringify({ id: "onboarding-user", email: "new-user@example.com", isPro: false, isAdmin: false, verifiedEmail: false, subscriptionStatus: "free" })
         : JSON.stringify({ message: "Unauthorized" }),
     }));
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
 
     await page.goto("/welcome");
     await expect(page).toHaveURL(/\/register$/);
@@ -200,12 +205,21 @@ test.describe("public smoke", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/welcome");
     await expect(page.getByRole("heading", { name: "Welcome to your Atlas workspace" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Build a first capability model/i })).toHaveAttribute("href", "/quality-lab/planner");
-    await expect(page.getByRole("link", { name: /Inspect an illustrative Blueprint/i })).toHaveAttribute("href", "/quality-lab/sample");
-    await expect(page.getByRole("link", { name: /Frame a real project with an expert/i })).toHaveAttribute("href", "/quality-lab/review?offer=diagnostic");
+    await expect(page.getByRole("link", { name: /Build a first capability model/i })).toHaveAttribute("href", "/quality-lab/planner?source=onboarding");
+    await expect(page.getByRole("link", { name: /Inspect an illustrative Blueprint/i })).toHaveAttribute("href", "/quality-lab/sample?source=onboarding");
+    await expect(page.getByRole("link", { name: /Frame a real project with an expert/i })).toHaveAttribute("href", "/quality-lab/review?offer=diagnostic&source=onboarding");
     await expect(page.getByText(/synthetic example · concept only/i)).toBeVisible();
     await expect(page.getByText(/Atlas confirms fit before payment/i)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    await page.getByRole("link", { name: /Inspect an illustrative Blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/sample\?source=onboarding$/);
+    await expect.poll(() => funnelReceipts.map((receipt) => `${receipt.stage}:${receipt.destination ?? ""}`)).toEqual(expect.arrayContaining([
+      "onboarding_viewed:",
+      "onboarding_path_selected:illustrative_sample",
+      "example_explored:sample",
+    ]));
+    await expect.poll(() => funnelReceipts.find((receipt) => receipt.stage === "onboarding_path_selected")).toMatchObject({ source: "welcome", destination: "illustrative_sample" });
+    await expect.poll(() => funnelReceipts.find((receipt) => receipt.stage === "example_explored")).toMatchObject({ placement: "onboarding", destination: "sample" });
   });
 
   test("restricted delivery login preserves the exact operational destination", async ({ page }) => {
@@ -1040,6 +1054,18 @@ test.describe("public smoke", () => {
       "/api/admin/quality-lab-funnel?days=30": {
         generatedAt: "2026-07-28T00:00:00.000Z",
         windowDays: 30,
+        onboarding: {
+          viewedAccounts: 8,
+          selectedAccounts: 6,
+          selectionRate: 75,
+          destinationReachedAccounts: 5,
+          destinationReachRate: 62.5,
+          paths: [
+            { path: "capability_model", selectedAccounts: 3, reachedAccounts: 3, reachRate: 100 },
+            { path: "illustrative_sample", selectedAccounts: 2, reachedAccounts: 1, reachRate: 50 },
+            { path: "scope_diagnostic", selectedAccounts: 1, reachedAccounts: 1, reachRate: 100 },
+          ],
+        },
         uniqueJourneys: 3,
         illustrativeJourneys: 2,
         stages: [
@@ -1089,6 +1115,12 @@ test.describe("public smoke", () => {
     expect(await page.getByRole("button", { name: "Save pipeline update" }).first().evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole("tab", { name: "Blueprint funnel" }).click();
     await expect(page.getByRole("heading", { name: /Blueprint funnel · last 30 days/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "First-session activation" })).toBeVisible();
+    await expect(page.getByLabel("First-session activation")).toContainText("8Welcome viewers");
+    await expect(page.getByLabel("First-session activation")).toContainText("75%Strategic-start selection");
+    await expect(page.getByLabel("First-session activation")).toContainText("62.5%Destination reached");
+    await expect(page.getByLabel("First-session activation")).toContainText("Inspect the synthetic sample2 selected → 1 reached · 50% handoff");
+    await expect(page.getByText(/No target is asserted until a real baseline exists/i)).toBeVisible();
     await expect(page.getByText("Commercial-intent Blueprint journeys")).toBeVisible();
     await expect(page.getByText("Illustrative journeys kept separate")).toBeVisible();
     await expect(page.getByText("Illustrative example explored")).toBeVisible();

@@ -264,6 +264,23 @@ describe("Quality Lab funnel receipts", () => {
     }));
   });
 
+  it("attributes an onboarding receipt from the authenticated server session", async () => {
+    const app = await buildApp();
+    const agent = request.agent(app);
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "u1", email: "owner@example.com", isPro: false });
+    await agent.post("/api/auth/register").send({ email: "owner@example.com", password: "pw123456" }).expect(201);
+
+    const onboardingEvent = { ...event, stage: "onboarding_viewed", source: "welcome" };
+    storageMock.recordQualityLabFunnelEvent.mockResolvedValueOnce({ id: 2, ...onboardingEvent, userId: "u1" });
+    await agent.post("/api/quality-lab/funnel-events").send(onboardingEvent).expect(202);
+
+    expect(storageMock.recordQualityLabFunnelEvent).toHaveBeenCalledWith("u1", expect.objectContaining({
+      stage: "onboarding_viewed",
+      source: "welcome",
+    }));
+  });
+
   it("rejects fields that could smuggle project content", async () => {
     const app = await buildApp();
     const res = await request(app).post("/api/quality-lab/funnel-events").send({ ...event, projectName: "Secret project" });

@@ -191,7 +191,10 @@ export default function QualityLabPlannerPage() {
   const plannerHeadingRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
-    if (!params?.id) analytics.blueprintStarted("planner");
+    if (!params?.id) {
+      const source = new URLSearchParams(window.location.search).get("source");
+      analytics.blueprintStarted(source === "onboarding" ? "onboarding" : "planner");
+    }
   }, [params?.id]);
 
   useEffect(() => {

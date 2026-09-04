@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "wouter";
 import { AlertTriangle, ArrowRight, BarChart3, Boxes, Building2, CheckCircle2, Download, FileCheck2, Gauge, Network, ShieldCheck } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
@@ -29,6 +30,11 @@ export default function QualityLabSamplePage() {
     title: "Illustrative Quality Lab Blueprint Sample",
     description: "See the structure, boundaries, evidence register and controlled deliverables in an illustrative Atlas Quality Lab Blueprint.",
   });
+
+  useEffect(() => {
+    const source = new URLSearchParams(window.location.search).get("source");
+    analytics.blueprintExampleExplored(source === "onboarding" ? "onboarding" : "public_sample_view", "sample");
+  }, []);
 
   return (
     <div className="quality-lab-sample-page min-h-screen bg-[#07111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">

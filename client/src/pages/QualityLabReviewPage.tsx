@@ -132,6 +132,7 @@ export default function QualityLabReviewPage() {
   });
 
   const projectId = useMemo(() => new URLSearchParams(window.location.search).get("project"), []);
+  const onboardingSource = useMemo(() => new URLSearchParams(window.location.search).get("source") === "onboarding", []);
   const sourceProject = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
   const illustrativeProject = isIllustrativeQualityLabProject(sourceProject) ? sourceProject : null;
   const project = illustrativeProject ? null : sourceProject;
@@ -204,9 +205,9 @@ export default function QualityLabReviewPage() {
   }, [attachMode, commercialScopeKey, draftPersistenceEnabled, form, qualification]);
 
   useEffect(() => {
-    if (!illustrativeProject) analytics.commercialIntakeViewed(requestedOffer);
+    if (!illustrativeProject) analytics.commercialIntakeViewed(requestedOffer, onboardingSource ? "onboarding" : undefined);
     if (transferredDecisionFrameReadiness) analytics.blueprintDecisionFrameLoaded(transferredDecisionFrameReadiness.percent, transferredDecisionFrameReadiness.completeCount);
-  }, [illustrativeProject, requestedOffer, transferredDecisionFrameReadiness]);
+  }, [illustrativeProject, onboardingSource, requestedOffer, transferredDecisionFrameReadiness]);
 
   useEffect(() => {
     if (requestedOffer !== "scope-diagnostic" || !isAuthenticated) return;

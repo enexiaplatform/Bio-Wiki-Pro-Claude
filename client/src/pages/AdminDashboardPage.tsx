@@ -11,7 +11,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useSEO } from "@/hooks/use-seo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import type { QualityLabFunnelSnapshot, QualityLabFunnelStage } from "@shared/quality-lab-funnel";
+import type { QualityLabFunnelSnapshot, QualityLabFunnelStage, QualityLabOnboardingPath } from "@shared/quality-lab-funnel";
 import { DECISION_PACKAGES } from "@shared/decision-packages";
 import { CAREER_DOMAIN_TRACKS } from "@shared/career-domain-tracks";
 import { MANUFACTURING_QUALITY_PORTFOLIO } from "@shared/manufacturing-quality-portfolio";
@@ -86,6 +86,8 @@ type Pipeline = {
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const date = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString("en-GB") : "—";
 const funnelLabels: Record<QualityLabFunnelStage, string> = {
+  onboarding_viewed: "First-session onboarding viewed",
+  onboarding_path_selected: "Strategic start selected",
   example_explored: "Illustrative example explored",
   cta_clicked: "Blueprint CTA clicked",
   planner_started: "Planner started",
@@ -96,6 +98,11 @@ const funnelLabels: Record<QualityLabFunnelStage, string> = {
   review_requested: "Review requested",
   diagnostic_checkout_started: "Diagnostic checkout started",
   diagnostic_purchased: "Diagnostic purchased",
+};
+const onboardingPathLabels: Record<QualityLabOnboardingPath, string> = {
+  capability_model: "Build a capability model",
+  illustrative_sample: "Inspect the synthetic sample",
+  scope_diagnostic: "Review the $149 Diagnostic",
 };
 const decisionAnalyticsEvents = ["decision_package_viewed", "decision_package_asset_opened", "decision_package_completed", "decision_package_product_handoff", "career_domain_track_selected", "coverage_gap_opened"] as const;
 
@@ -248,6 +255,19 @@ export default function AdminDashboardPage() {
                 <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4 text-sm leading-6 text-amber-100">Funnel receipts are unavailable in this environment. {RUNTIME_SCHEMA_REMEDIATION}</div>
               ) : (
                 <div className="space-y-3">
+                  <section aria-label="First-session activation" className="mb-5 rounded-2xl border border-sky-300/15 bg-sky-300/[0.045] p-4 md:p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sky-300">Authenticated account cohort</p><h3 className="mt-2 text-lg font-bold text-white">First-session activation</h3><p className="mt-2 max-w-3xl text-xs leading-6 text-slate-400">Measures whether an account that saw the welcome choice selected a strategic start and reached its destination. No target is asserted until a real baseline exists.</p></div>
+                      <span className="rounded-full border border-sky-300/20 bg-sky-300/[0.06] px-3 py-1 text-[10px] font-bold uppercase text-sky-200">Measurement-first baseline</span>
+                    </div>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                      <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-white">{funnel.data?.onboarding.viewedAccounts ?? 0}</p><p className="mt-1 text-xs font-semibold text-slate-300">Welcome viewers</p><p className="mt-2 text-[11px] text-slate-500">Unique authenticated accounts</p></div>
+                      <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-white">{funnel.data?.onboarding.selectionRate === null || funnel.data?.onboarding.selectionRate === undefined ? "—" : `${funnel.data.onboarding.selectionRate}%`}</p><p className="mt-1 text-xs font-semibold text-slate-300">Strategic-start selection</p><p className="mt-2 text-[11px] text-slate-500">{funnel.data?.onboarding.selectedAccounts ?? 0} accounts selected a path</p></div>
+                      <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-teal-200">{funnel.data?.onboarding.destinationReachRate === null || funnel.data?.onboarding.destinationReachRate === undefined ? "—" : `${funnel.data.onboarding.destinationReachRate}%`}</p><p className="mt-1 text-xs font-semibold text-slate-300">Destination reached</p><p className="mt-2 text-[11px] text-slate-500">{funnel.data?.onboarding.destinationReachedAccounts ?? 0} accounts completed the handoff</p></div>
+                    </div>
+                    <div className="mt-4 grid gap-2 lg:grid-cols-3">{(funnel.data?.onboarding.paths ?? []).map((path) => <div key={path.path} className="rounded-xl border border-white/8 bg-white/[0.025] p-3"><p className="text-xs font-semibold text-slate-200">{onboardingPathLabels[path.path]}</p><p className="mt-2 text-[11px] text-slate-500">{path.selectedAccounts} selected → {path.reachedAccounts} reached · {path.reachRate === null ? "no baseline" : `${path.reachRate}% handoff`}</p></div>)}</div>
+                    <p className="mt-4 border-t border-white/8 pt-3 text-[11px] leading-5 text-slate-500">Guardrail: selections are not treated as value realization or purchase intent. Destination reach only confirms the expected handoff page emitted its first-party receipt.</p>
+                  </section>
                   <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
                     <div className="flex flex-wrap gap-8"><div><p className="text-3xl font-bold text-white">{funnel.data?.uniqueJourneys ?? 0}</p><p className="mt-1 text-xs text-slate-500">Commercial-intent Blueprint journeys</p></div><div><p className="text-3xl font-bold text-amber-200">{funnel.data?.illustrativeJourneys ?? 0}</p><p className="mt-1 text-xs text-slate-500">Illustrative journeys kept separate</p></div></div>
                     <p className="text-xs text-slate-600">No project inputs, contact details or evidence content are stored.</p>

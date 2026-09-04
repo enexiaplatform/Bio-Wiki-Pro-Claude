@@ -193,7 +193,9 @@ export function registerAdminRoutes(app: Express, isAuthenticated: RequestHandle
     try {
       const events = await db.select({
         journeyId: qualityLabFunnelEvents.journeyId,
+        userId: qualityLabFunnelEvents.userId,
         stage: qualityLabFunnelEvents.stage,
+        occurredAt: qualityLabFunnelEvents.occurredAt,
         placement: qualityLabFunnelEvents.placement,
         destination: qualityLabFunnelEvents.destination,
         startMode: qualityLabFunnelEvents.startMode,
