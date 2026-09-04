@@ -1003,7 +1003,15 @@ test.describe("public smoke", () => {
       "/api/admin/users": { users: [] },
       "/api/admin/documents": { products: [] },
       "/api/admin/content": { content: [] },
-      "/api/admin/pipeline": { leads: [], requests: [], purchases: [], projects: [] },
+      "/api/admin/pipeline": {
+        leads: [],
+        requests: [
+          { id: 11, name: "Priority Lead", email: "priority@example.com", company: "Example Pharma", productOfInterest: "Paid Scope Diagnostic", need: "Resolve the microbiology capacity basis before budget approval.", status: "new", owner: null, nextAction: null, nextActionAt: null, notes: null, createdAt: "2026-08-10T08:00:00.000Z", updatedAt: "2026-08-10T08:00:00.000Z" },
+          { id: 12, name: "Progressed Lead", email: "progressed@example.com", company: "Example Engineering", productOfInterest: "Blueprint Pilot", need: "Prepare a vendor-neutral capability basis.", status: "qualified", owner: "Founder", nextAction: "Confirm reviewer scope", nextActionAt: "2026-09-10T08:00:00.000Z", notes: null, createdAt: "2026-08-11T08:00:00.000Z", updatedAt: "2026-08-12T08:00:00.000Z" },
+        ],
+        purchases: [],
+        projects: [],
+      },
       "/api/admin/quality-lab-funnel?days=30": {
         generatedAt: "2026-07-28T00:00:00.000Z",
         windowDays: 30,
@@ -1045,6 +1053,15 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Gate 1 runtime schema")).toBeVisible();
     await expect(page.getByText(/Run the protected schema audit, then apply an approved versioned migration/i)).toBeVisible();
     await expect(page.getByText(/does not prove webhook delivery, inbox receipt, payment acceptance or reviewer appointment/i)).toBeVisible();
+    await page.getByRole("tab", { name: "Pipeline" }).click();
+    await expect(page.getByRole("heading", { name: "Commercial response control" })).toBeVisible();
+    await expect(page.getByLabel("Commercial response queue summary")).toContainText("1Overdue");
+    await expect(page.getByLabel("Commercial response queue summary")).toContainText("1Unowned");
+    await expect(page.getByText("Response control overdue", { exact: true })).toBeVisible();
+    await expect(page.getByText(/internal planning control, not proof that the buyer received a response/i)).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    expect(await page.getByRole("button", { name: "Save pipeline update" }).first().evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole("tab", { name: "Blueprint funnel" }).click();
     await expect(page.getByRole("heading", { name: /Blueprint funnel · last 30 days/i })).toBeVisible();
     await expect(page.getByText("Commercial-intent Blueprint journeys")).toBeVisible();

@@ -97,6 +97,8 @@ No credential values, application rows, billing settings, DNS records or product
 
 ## Service-delivery gate
 
+The private Admin Pipeline derives a weekday-based UTC response deadline from each stored request, keeps overdue and due-soon `new` requests first, and exposes missing owner or next-action controls. It is a planning queue only: moving a request beyond `new` is not evidence that the buyer received a response, so retain the external email or call reference in the authorized commercial record.
+
 Before a Blueprint kickoff, the proposal must identify:
 
 - the Atlas delivery owner;

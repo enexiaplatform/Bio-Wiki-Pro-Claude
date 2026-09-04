@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import {
-  Activity, BadgeDollarSign, BarChart3, BookOpenCheck, BriefcaseBusiness, Building2, CheckCircle2, Database,
+  Activity, AlertTriangle, BadgeDollarSign, BarChart3, BookOpenCheck, BriefcaseBusiness, Building2, CheckCircle2, Clock3, Database,
   Download, FileArchive, FileCheck2, FolderKanban, LayoutDashboard, Loader2,
   Mail, Network, Search, ShieldCheck, ShoppingCart, Users, XCircle,
 } from "lucide-react";
@@ -17,6 +17,7 @@ import { CAREER_DOMAIN_TRACKS } from "@shared/career-domain-tracks";
 import { MANUFACTURING_QUALITY_PORTFOLIO } from "@shared/manufacturing-quality-portfolio";
 import { RUNTIME_SCHEMA_REMEDIATION } from "@shared/operational-readiness";
 import { authPath } from "@shared/auth-return";
+import { buildCommercialRequestSlaQueue, type CommercialRequestSlaAssessment } from "@shared/commercial-request-sla";
 
 type Overview = {
   users: { total: number; pro: number; verified: number };
@@ -115,7 +116,7 @@ export default function AdminDashboardPage() {
   const users = useQuery<{ users: AdminUser[] }>({ queryKey: ["/api/admin/users"], enabled: isAdmin, staleTime: 30_000 });
   const documents = useQuery<{ products: DocumentProduct[] }>({ queryKey: ["/api/admin/documents"], enabled: isAdmin, staleTime: 60_000 });
   const content = useQuery<{ content: ContentControl[] }>({ queryKey: ["/api/admin/content"], enabled: isAdmin, staleTime: 30_000 });
-  const pipeline = useQuery<Pipeline>({ queryKey: ["/api/admin/pipeline"], enabled: isAdmin, staleTime: 30_000 });
+  const pipeline = useQuery<Pipeline>({ queryKey: ["/api/admin/pipeline"], enabled: isAdmin, staleTime: 30_000, refetchInterval: 60_000 });
   const funnel = useQuery<QualityLabFunnelSnapshot>({ queryKey: ["/api/admin/quality-lab-funnel?days=30"], enabled: isAdmin, staleTime: 30_000 });
   const readiness = useQuery<RuntimeHealth>({
     queryKey: ["/api/health", "admin-readiness"],
@@ -168,6 +169,10 @@ export default function AdminDashboardPage() {
     linkedAreas: MANUFACTURING_QUALITY_PORTFOLIO.flatMap((lane) => lane.areas).filter((area) => area.status !== "not-covered" && area.decisionPackageIds.length > 0).length,
     totalAreas: MANUFACTURING_QUALITY_PORTFOLIO.flatMap((lane) => lane.areas).filter((area) => area.status !== "not-covered").length,
   }), []);
+  const commercialResponseQueue = useMemo(
+    () => buildCommercialRequestSlaQueue(pipeline.data?.requests ?? []),
+    [pipeline.data?.requests],
+  );
 
   if (isLoading || !isAdmin) return <div className="flex min-h-[60vh] items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-teal-300" /></div>;
 
@@ -232,7 +237,8 @@ export default function AdminDashboardPage() {
           </TabsContent>
 
           <TabsContent value="pipeline" className="mt-5 space-y-5">
-            <Panel title="Blueprint and commercial requests" description="Move every request to a clear owner, next action and outcome. Request context is commercial intake, not confidential project evidence."><div className="space-y-3">{(pipeline.data?.requests ?? []).map((request) => <CommercialRequestCard key={request.id} request={request} saving={pipelineMutation.isPending} onSave={(patch) => pipelineMutation.mutate({ id: request.id, patch })} />)}</div></Panel>
+            <CommercialResponseControl metrics={commercialResponseQueue.metrics} />
+            <Panel title="Blueprint and commercial requests" description="Move every request to a clear owner, next action and outcome. Request context is commercial intake, not confidential project evidence."><div className="space-y-3">{commercialResponseQueue.items.map(({ request, sla }) => <CommercialRequestCard key={request.id} request={request} sla={sla} saving={pipelineMutation.isPending} onSave={(patch) => pipelineMutation.mutate({ id: request.id, patch })} />)}</div></Panel>
             <div className="grid gap-5 lg:grid-cols-2"><Panel title="Reviewed Blueprint projects" description="Account-held projects that entered expert review."><CompactRows rows={(pipeline.data?.projects ?? []).map((project) => ({ title: project.projectName, detail: `${project.inputCompletenessPercent ?? 0}% model completeness`, meta: date(project.updatedAt) }))} /></Panel><Panel title="Purchase records" description="Recent Stripe and manual purchase records."><CompactRows rows={(pipeline.data?.purchases ?? []).map((purchase) => ({ title: purchase.productType, detail: purchase.status || "pending", meta: purchase.amount ? money.format(purchase.amount / 100) : date(purchase.createdAt) }))} /></Panel></div>
           </TabsContent>
 
@@ -328,11 +334,44 @@ function SearchField({ value, onChange, placeholder }: { value: string; onChange
 function State({ good = false, label }: { good?: boolean; label: string }) { return <span className={`inline-flex items-center gap-1 text-xs font-semibold ${good ? "text-teal-300" : "text-amber-300"}`}>{good ? <CheckCircle2 className="h-3.5 w-3.5" /> : <XCircle className="h-3.5 w-3.5" />}{label}</span>; }
 function CompactRows({ rows }: { rows: Array<{ title: string; detail: string; meta: string }> }) { return <div className="space-y-2">{rows.length ? rows.map((row, index) => <div key={`${row.title}-${index}`} className="flex items-center justify-between gap-3 rounded-xl border border-white/8 bg-slate-950/35 p-3"><div><p className="text-sm font-semibold text-white">{row.title}</p><p className="mt-1 text-xs text-slate-500">{row.detail}</p></div><span className="text-xs text-slate-500">{row.meta}</span></div>) : <p className="py-6 text-center text-sm text-slate-600">No records yet.</p>}</div>; }
 
-function CommercialRequestCard({ request, saving, onSave }: { request: CommercialRequest; saving: boolean; onSave: (patch: Partial<Pick<CommercialRequest, "status" | "owner" | "nextAction" | "nextActionAt" | "notes">>) => void }) {
+function CommercialResponseControl({ metrics }: { metrics: ReturnType<typeof buildCommercialRequestSlaQueue>["metrics"] }) {
+  const urgent = metrics.overdue + metrics.dueSoon;
+  return <section className={`rounded-2xl border p-5 ${urgent ? "border-amber-300/25 bg-amber-300/[0.055]" : "border-teal-300/20 bg-teal-300/[0.045]"}`} aria-labelledby="commercial-response-control-title">
+    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div>
+        <div className="flex items-center gap-2">{urgent ? <AlertTriangle className="h-5 w-5 text-amber-300" /> : <Clock3 className="h-5 w-5 text-teal-300" />}<h2 id="commercial-response-control-title" className="text-lg font-bold text-white">Commercial response control</h2></div>
+        <p className="mt-2 max-w-3xl text-xs leading-6 text-slate-400">Prioritizes new requests against the two-business-day response promise. Weekends are skipped in UTC; public holidays are not modeled.</p>
+      </div>
+      <span className={`w-fit rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${urgent ? "border-amber-300/25 bg-amber-300/10 text-amber-100" : "border-teal-300/25 bg-teal-300/10 text-teal-100"}`}>{urgent ? `${urgent} time-critical` : "No time-critical requests"}</span>
+    </div>
+    <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-5" aria-label="Commercial response queue summary">
+      {[
+        ["New", metrics.newRequests],
+        ["Overdue", metrics.overdue],
+        ["Due within 24h", metrics.dueSoon],
+        ["Unowned", metrics.unowned],
+        ["No next action", metrics.missingNextAction],
+      ].map(([label, value], index) => <div key={label} className={`rounded-xl border border-white/8 bg-slate-950/35 p-3 ${index === 4 ? "col-span-2 lg:col-span-1" : ""}`}><p className="text-2xl font-bold text-white">{value}</p><p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p></div>)}
+    </div>
+    <p className="mt-4 text-[11px] leading-5 text-slate-500">This is an internal planning control, not proof that the buyer received a response. Retain the external email or call reference in the authorized commercial record.</p>
+  </section>;
+}
+
+const commercialSlaCopy: Record<CommercialRequestSlaAssessment["state"], { label: string; className: string }> = {
+  overdue: { label: "Response control overdue", className: "border-red-300/25 bg-red-300/10 text-red-100" },
+  "due-soon": { label: "Response due within 24h", className: "border-amber-300/25 bg-amber-300/10 text-amber-100" },
+  "on-track": { label: "Response window open", className: "border-sky-300/20 bg-sky-300/10 text-sky-100" },
+  progressed: { label: "Pipeline progressed", className: "border-teal-300/20 bg-teal-300/10 text-teal-100" },
+  unknown: { label: "Deadline unavailable", className: "border-white/10 bg-white/5 text-slate-300" },
+};
+
+function CommercialRequestCard({ request, sla, saving, onSave }: { request: CommercialRequest; sla: CommercialRequestSlaAssessment; saving: boolean; onSave: (patch: Partial<Pick<CommercialRequest, "status" | "owner" | "nextAction" | "nextActionAt" | "notes">>) => void }) {
   const [draft, setDraft] = useState({ status: request.status, owner: request.owner ?? "", nextAction: request.nextAction ?? "", nextActionAt: request.nextActionAt ? new Date(request.nextActionAt).toISOString().slice(0, 16) : "", notes: request.notes ?? "" });
   useEffect(() => { setDraft({ status: request.status, owner: request.owner ?? "", nextAction: request.nextAction ?? "", nextActionAt: request.nextActionAt ? new Date(request.nextActionAt).toISOString().slice(0, 16) : "", notes: request.notes ?? "" }); }, [request]);
+  const slaCopy = commercialSlaCopy[sla.state];
   return <article className="rounded-xl border border-white/8 bg-slate-950/35 p-4">
-    <div className="flex flex-wrap justify-between gap-2"><div><p className="font-semibold text-white">{request.name} · {request.company || "Company not supplied"}</p><a href={`mailto:${request.email}`} className="mt-1 inline-flex items-center gap-1 text-xs text-teal-300"><Mail className="h-3 w-3" />{request.email}</a></div><span className="text-xs text-slate-500">{date(request.createdAt)}</span></div>
+    <div className="flex flex-wrap justify-between gap-3"><div><p className="font-semibold text-white">{request.name} · {request.company || "Company not supplied"}</p><a href={`mailto:${request.email}`} className="mt-1 inline-flex items-center gap-1 text-xs text-teal-300"><Mail className="h-3 w-3" />{request.email}</a></div><div className="text-right"><span className={`inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${slaCopy.className}`}>{slaCopy.label}</span><p className="mt-2 text-xs text-slate-500">Received {date(request.createdAt)}{sla.deadline && sla.state !== "progressed" ? ` · due ${new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }).format(new Date(sla.deadline))} UTC` : ""}</p></div></div>
+    {(sla.missingOwner || sla.missingNextAction) && request.status === "new" && <p className="mt-3 rounded-lg border border-amber-300/15 bg-amber-300/[0.045] px-3 py-2 text-[11px] leading-5 text-amber-100">Missing response control: {[sla.missingOwner ? "owner" : null, sla.missingNextAction ? "next action" : null].filter(Boolean).join(" and ")}.</p>}
     <p className="mt-3 text-xs leading-6 text-slate-400">{request.need}</p>
     <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
       <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Stage<select value={draft.status} onChange={(event) => setDraft({ ...draft, status: event.target.value as CommercialStatus })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-2 text-xs text-white">{commercialStatuses.map((status) => <option key={status} value={status}>{status}</option>)}</select></label>
@@ -341,6 +380,6 @@ function CommercialRequestCard({ request, saving, onSave }: { request: Commercia
       <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Due<input type="datetime-local" value={draft.nextActionAt} onChange={(event) => setDraft({ ...draft, nextActionAt: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-2 text-xs text-white" /></label>
       <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 lg:col-span-3">Private notes<input value={draft.notes} onChange={(event) => setDraft({ ...draft, notes: event.target.value })} className="mt-1 h-10 w-full rounded-lg border border-white/10 bg-slate-950 px-3 text-xs text-white" placeholder="Qualification, objections or delivery notes" /></label>
     </div>
-    <div className="mt-3 flex justify-end"><button type="button" disabled={saving} onClick={() => onSave({ status: draft.status, owner: draft.owner || null, nextAction: draft.nextAction || null, nextActionAt: draft.nextActionAt ? new Date(draft.nextActionAt).toISOString() : null, notes: draft.notes || null })} className="rounded-lg bg-teal-300 px-4 py-2 text-xs font-bold text-slate-950 disabled:opacity-60">{saving ? "Saving…" : "Save pipeline update"}</button></div>
+    <div className="mt-3 flex justify-end"><button type="button" disabled={saving} onClick={() => onSave({ status: draft.status, owner: draft.owner || null, nextAction: draft.nextAction || null, nextActionAt: draft.nextActionAt ? new Date(draft.nextActionAt).toISOString() : null, notes: draft.notes || null })} className="min-h-11 rounded-lg bg-teal-300 px-4 py-2 text-xs font-bold text-slate-950 disabled:opacity-60">{saving ? "Saving…" : "Save pipeline update"}</button></div>
   </article>;
 }
