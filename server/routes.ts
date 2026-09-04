@@ -934,15 +934,15 @@ export async function registerRoutes(app: Express): Promise<void> {
     try {
       const input = api.quoteRequests.create.input.parse(req.body);
       const quote = await storage.createQuoteRequest(input);
-      sendCommercialRequestEmails({
+      const notifications = await sendCommercialRequestEmails({
         requestId: String(quote?.id ?? "pending"),
         name: input.name,
         email: input.email.toLowerCase(),
         company: input.company ?? undefined,
         offer: input.productOfInterest ?? "Commercial inquiry",
         summary: input.need,
-      }).catch((error) => console.error("[Commercial request] Email notification failed:", error));
-      res.status(201).json(quote);
+      });
+      res.status(201).json({ ...quote, notifications });
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({
@@ -965,15 +965,15 @@ export async function registerRoutes(app: Express): Promise<void> {
         need: formatQualityLabReviewBrief(input),
         productOfInterest: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
       });
-      sendCommercialRequestEmails({
+      const notifications = await sendCommercialRequestEmails({
         requestId: String(quote?.id ?? "pending"),
         name: input.contact.name,
         email: input.contact.email.toLowerCase(),
         company: input.contact.company ?? undefined,
         offer: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
         summary: formatQualityLabReviewBrief(input),
-      }).catch((error) => console.error("[Quality Lab review] Email notification failed:", error));
-      res.status(201).json(quote);
+      });
+      res.status(201).json({ ...quote, notifications });
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });

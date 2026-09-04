@@ -4,6 +4,7 @@ import { deliverablesForPurchase } from "./deliverables.js";
 import { commercialNotificationRecipients, getPublicOrigin } from "./runtime-config.js";
 import type { QualityLabPortfolioActionItem, QualityLabWeeklyPortfolioReview } from "../shared/quality-lab-actions.js";
 import type { RegulatoryCadence, RegulatoryUpdate } from "../shared/regulatory-monitor.js";
+import type { CommercialRequestDispatchState, CommercialRequestNotificationStatus } from "../shared/quality-lab-request-notifications.js";
 
 const resend = process.env.RESEND_API_KEY
   ? new Resend(process.env.RESEND_API_KEY)
@@ -635,11 +636,25 @@ export interface CommercialRequestEmailInput {
   summary: string;
 }
 
+async function dispatchCommercialEmail(kind: string, send: () => Promise<{ error?: unknown }>): Promise<CommercialRequestDispatchState> {
+  try {
+    const response = await send();
+    if (response.error) {
+      logEmailFailure(kind, response.error);
+      return "failed";
+    }
+    return "queued";
+  } catch (error) {
+    logEmailFailure(kind, error);
+    return "failed";
+  }
+}
+
 /** Sends the buyer acknowledgement and the internal work-queue alert together. */
-export async function sendCommercialRequestEmails(input: CommercialRequestEmailInput): Promise<void> {
+export async function sendCommercialRequestEmails(input: CommercialRequestEmailInput): Promise<CommercialRequestNotificationStatus> {
   if (!resend) {
     logEmailDisabled("commercial request acknowledgement");
-    return;
+    return { buyerAcknowledgement: "unavailable", ownerAlert: "unavailable" };
   }
 
   const safe = {
@@ -651,7 +666,7 @@ export async function sendCommercialRequestEmails(input: CommercialRequestEmailI
     summary: escapeHtml(input.summary).replace(/\n/g, "<br>"),
   };
   const ownerRecipients = commercialNotificationRecipients();
-  const messages = [
+  const buyerAcknowledgement = dispatchCommercialEmail("commercial request buyer acknowledgement", () =>
     resend.emails.send({
       from: FROM_EMAIL,
       to: input.email,
@@ -664,10 +679,10 @@ export async function sendCommercialRequestEmails(input: CommercialRequestEmailI
         <a href="${BASE_URL}/quality-lab/sample" class="cta">Review the illustrative deliverable →</a>
       `),
     }),
-  ];
+  );
 
-  if (ownerRecipients.length > 0) {
-    messages.push(resend.emails.send({
+  const ownerAlert = ownerRecipients.length > 0
+    ? dispatchCommercialEmail("commercial request owner alert", () => resend.emails.send({
       from: FROM_EMAIL,
       to: ownerRecipients,
       replyTo: input.email,
@@ -678,11 +693,9 @@ export async function sendCommercialRequestEmails(input: CommercialRequestEmailI
         <p>${safe.summary}</p>
         <a href="${BASE_URL}/admin" class="cta">Open Admin Control Center →</a>
       `),
-    }));
-  }
+    }))
+    : Promise.resolve<CommercialRequestDispatchState>("unavailable");
 
-  const results = await Promise.allSettled(messages);
-  results.forEach((result) => {
-    if (result.status === "rejected") logEmailFailure("commercial request notification", result.reason);
-  });
+  const [buyerStatus, ownerStatus] = await Promise.all([buyerAcknowledgement, ownerAlert]);
+  return { buyerAcknowledgement: buyerStatus, ownerAlert: ownerStatus };
 }

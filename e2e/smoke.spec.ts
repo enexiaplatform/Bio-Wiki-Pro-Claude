@@ -387,7 +387,14 @@ test.describe("public smoke", () => {
     }));
     await page.route("**/api/quality-lab/reviews", (route) => {
       reviewRequests += 1;
-      return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 43 }) });
+      return route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: 43,
+          notifications: { buyerAcknowledgement: "unavailable", ownerAlert: "unavailable" },
+        }),
+      });
     });
     await page.route("**/api/stripe/create-checkout-session", (route) => {
       checkoutAttempts += 1;
@@ -405,6 +412,10 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
     await expect(page.getByText(/Request reference 43/i)).toBeVisible();
     await expect(page.getByText(/reloading will not send the same request again/i)).toBeVisible();
+    await expect(page.getByText(/email routing is not currently available for every recipient/i)).toBeVisible();
+    await expect(page.locator("#main").getByRole("link", { name: "support@lifescienceatlas.com" })).toHaveAttribute("href", "mailto:support@lifescienceatlas.com");
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await expect(page.getByText(/Secure checkout is not currently available/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Create an account to pay securely/i })).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Pay \$149 securely/i })).toHaveCount(0);
@@ -426,7 +437,14 @@ test.describe("public smoke", () => {
         : JSON.stringify({ message: "Unauthorized" }),
     }));
     await page.route("**/api/billing/plans", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ scopeDiagnostic: true }) }));
-    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 42 }) }));
+    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: 42,
+        notifications: { buyerAcknowledgement: "queued", ownerAlert: "queued" },
+      }),
+    }));
     await page.route("**/api/auth/register", async (route) => {
       signedIn = true;
       await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: "diagnostic-user", email: "lead@example.com", isAdmin: false }) });
@@ -439,6 +457,7 @@ test.describe("public smoke", () => {
     await page.getByLabel(/I confirm this submission contains no confidential/i).check();
     await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
     await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Contact routing confirmed/i)).toBeVisible();
     await page.getByRole("link", { name: /Create an account to pay securely/i }).click();
 
     await page.getByLabel(/First name/i).fill("Diagnostic");

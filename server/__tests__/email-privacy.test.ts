@@ -24,7 +24,7 @@ describe("email fallback privacy", () => {
       unscheduledBlockingCount: 0,
       readyForReviewCount: 0,
     });
-    await email.sendCommercialRequestEmails({
+    const delivery = await email.sendCommercialRequestEmails({
       requestId: "request-private",
       name: blueprintContent,
       email: recipient,
@@ -37,5 +37,6 @@ describe("email fallback privacy", () => {
     expect(output).not.toContain(token);
     expect(output).not.toContain(blueprintContent);
     expect(output).toContain("transactional email is not configured");
+    expect(delivery).toEqual({ buyerAcknowledgement: "unavailable", ownerAlert: "unavailable" });
   });
 });

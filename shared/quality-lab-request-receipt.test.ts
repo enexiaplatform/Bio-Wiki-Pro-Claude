@@ -12,11 +12,27 @@ describe("Quality Lab commercial request receipt", () => {
       scopeKey: qualityLabRequestScopeKey("qlp_real_1"),
       offer: "blueprint-pilot",
       requestId: 43,
+      notifications: { buyerAcknowledgement: "queued", ownerAlert: "queued" },
       recordedAt: 1_000,
     });
 
     expect(parseRecentQualityLabRequestReceipt(receipt, "project:qlp_real_1", 2_000)).toEqual(receipt);
     expect(parseRecentQualityLabRequestReceipt(receipt, "project:qlp_real_2", 2_000)).toBeNull();
+  });
+
+  it("preserves failed or unavailable email routing without treating the stored request as failed", () => {
+    const receipt = createQualityLabRequestReceipt({
+      scopeKey: "standalone",
+      offer: "scope-diagnostic",
+      requestId: 45,
+      notifications: { buyerAcknowledgement: "failed", ownerAlert: "unavailable" },
+      recordedAt: 1_000,
+    });
+
+    expect(parseRecentQualityLabRequestReceipt(receipt, "standalone", 2_000)?.notifications).toEqual({
+      buyerAcknowledgement: "failed",
+      ownerAlert: "unavailable",
+    });
   });
 
   it("expires the receipt after the bounded duplicate-prevention window", () => {

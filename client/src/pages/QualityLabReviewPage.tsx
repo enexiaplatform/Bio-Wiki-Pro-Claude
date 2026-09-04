@@ -305,6 +305,7 @@ export default function QualityLabReviewPage() {
         scopeKey: commercialScopeKey,
         offer: qualification.engagementIntent,
         requestId: typeof createdRequest.id === "number" ? createdRequest.id : null,
+        notifications: createdRequest.notifications,
       });
       sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify(receipt));
       setSubmissionReceipt(receipt);
@@ -376,6 +377,10 @@ export default function QualityLabReviewPage() {
 
   if (submissionReceipt) {
     const submittedOffer = submissionReceipt.offer;
+    const notificationStatus = submissionReceipt.notifications;
+    const buyerAcknowledgementQueued = notificationStatus?.buyerAcknowledgement === "queued";
+    const ownerAlertQueued = notificationStatus?.ownerAlert === "queued";
+    const emailRoutingConfirmed = buyerAcknowledgementQueued && ownerAlertQueued;
     return (
       <div className="min-h-[75vh] bg-[#08111f] px-4 py-16 text-slate-100">
         <div className="mx-auto max-w-2xl rounded-3xl border border-teal-300/25 bg-gradient-to-br from-teal-300/12 to-slate-950 p-7 text-center shadow-2xl shadow-black/25 md:p-10">
@@ -385,7 +390,29 @@ export default function QualityLabReviewPage() {
             <p className="mx-auto mt-3 text-sm font-semibold text-teal-200">{offerCopy[submittedOffer].price}</p>
             {submissionReceipt.requestId && <p className="mx-auto mt-3 w-fit rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 font-mono text-xs font-bold text-teal-100">Request reference {submissionReceipt.requestId}</p>}
             <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">Atlas responds within two business days to confirm fit, available inputs, decision deadline, reviewer coverage and the delivery basis. No model output is approved by this request.</p>
-            <p role="status" className="mx-auto mt-4 max-w-xl text-xs leading-5 text-slate-500">This receipt stays in this browser tab for 24 hours, so reloading will not send the same request again. The reference matches the acknowledgement email when email delivery is configured.</p>
+            <p role="status" className="mx-auto mt-4 max-w-xl text-xs leading-5 text-slate-500">This receipt stays in this browser tab for 24 hours, so reloading will not send the same request again.</p>
+            <div
+              role="status"
+              className={`mt-5 rounded-2xl border p-4 text-left ${emailRoutingConfirmed ? "border-teal-300/20 bg-teal-300/[0.07]" : "border-amber-300/25 bg-amber-300/[0.075]"}`}
+            >
+              <div className="flex items-start gap-3">
+                {emailRoutingConfirmed
+                  ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-300" />
+                  : <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />}
+                <div>
+                  <p className={`text-sm font-bold ${emailRoutingConfirmed ? "text-teal-100" : "text-amber-100"}`}>
+                    {emailRoutingConfirmed ? "Contact routing confirmed" : "Keep your request reference"}
+                  </p>
+                  {emailRoutingConfirmed ? (
+                    <p className="mt-1 text-xs leading-5 text-slate-400">Your acknowledgement and the Atlas intake notification were queued. If the email does not arrive, contact support with the request reference above.</p>
+                  ) : notificationStatus ? (
+                    <p className="mt-1 text-xs leading-5 text-amber-100/80">Your request is saved, but email routing is not currently available for every recipient. To make sure Atlas can follow up, email <a href="mailto:support@lifescienceatlas.com" className="font-semibold text-amber-100 underline decoration-amber-300/40 underline-offset-2">support@lifescienceatlas.com</a> with the request reference above.</p>
+                  ) : (
+                    <p className="mt-1 text-xs leading-5 text-amber-100/80">Your request is saved, but this receipt does not include a confirmed email-delivery status. Keep the request reference above; if no acknowledgement arrives, email <a href="mailto:support@lifescienceatlas.com" className="font-semibold text-amber-100 underline decoration-amber-300/40 underline-offset-2">support@lifescienceatlas.com</a>.</p>
+                  )}
+                </div>
+              </div>
+            </div>
           {submittedOffer === "scope-diagnostic" && (
             <div className="mt-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-5 text-left">
               <p className="font-bold text-sky-100">Next: reserve the $149 Diagnostic</p>

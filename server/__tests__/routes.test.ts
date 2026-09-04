@@ -105,7 +105,7 @@ vi.mock("../email.js", () => ({
   sendQualityLabWorkQueueEmail: vi.fn(() => Promise.resolve(true)),
   sendQualityLabWeeklyReviewEmail: vi.fn(() => Promise.resolve(true)),
   sendRegulatoryDigestEmail: vi.fn(() => Promise.resolve(true)),
-  sendCommercialRequestEmails: vi.fn(() => Promise.resolve()),
+  sendCommercialRequestEmails: vi.fn(() => Promise.resolve({ buyerAcknowledgement: "queued", ownerAlert: "queued" })),
 }));
 
 import { createApiApp } from "../app.js";
@@ -330,6 +330,7 @@ describe("Quality Lab expert review", () => {
       offer: "Expert-reviewed Blueprint Pilot (from $990)",
       summary: expect.stringContaining("[quality-lab-review-brief/v3]"),
     }));
+    expect(res.body.notifications).toEqual({ buyerAcknowledgement: "queued", ownerAlert: "queued" });
   });
 
   it("serves the clearly labelled illustrative Blueprint PDF without authentication", async () => {
