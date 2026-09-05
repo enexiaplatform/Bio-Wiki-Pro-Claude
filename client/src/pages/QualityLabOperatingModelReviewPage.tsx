@@ -19,6 +19,7 @@ import {
 } from "@/lib/quality-lab-operating-model-reviews";
 import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
+import { isIllustrativeQualityLabProject } from "@shared/quality-lab";
 
 function decoded(value?: string) {
   if (!value) return "";
@@ -31,8 +32,9 @@ export default function QualityLabOperatingModelReviewPage() {
   const [, params] = useRoute("/quality-lab/engagements/:id/operating-model-review");
   const projectId = decoded(params?.id);
   const project = useMemo(() => getQualityLabProject(projectId), [projectId]);
+  const illustrativeProject = project ? isIllustrativeQualityLabProject(project) : false;
   const input = useMemo(() => project ? loadQualityLabOperatingModelInput(project) : null, [project]);
-  const engagement = useMemo(() => project ? getOrCreateEngagement(project) : null, [project]);
+  const engagement = useMemo(() => project && !isIllustrativeQualityLabProject(project) ? getOrCreateEngagement(project) : null, [project]);
   const analysis = useMemo(() => project && input ? analyzeQualityLabOperatingModel(project, input) : null, [project, input]);
   const [draft, setDraft] = useState<QualityLabOperatingModelReviewDraft | null>(() => project && input ? loadQualityLabOperatingModelReviewDraft(project, input) : null);
   const [applicationId, setApplicationId] = useState("");
@@ -78,6 +80,10 @@ export default function QualityLabOperatingModelReviewPage() {
       setNotice("");
       setError(reason instanceof Error ? reason.message : "Unable to freeze the operating-model review.");
     }
+  }
+
+  if (illustrativeProject && project) {
+    return <div className="min-h-screen bg-[#07111f] px-4 py-16 text-slate-100"><div className="mx-auto max-w-2xl rounded-3xl border border-amber-300/20 bg-amber-300/[0.045] p-8 text-center"><ShieldCheck className="mx-auto h-8 w-8 text-amber-300" /><h1 className="mt-5 text-2xl font-bold">Paid-diagnostic review is unavailable for synthetic examples</h1><p className="mt-3 text-sm leading-6 text-slate-400">Casebook scenarios can be explored, but they cannot create stakeholder attestations or frozen paid-engagement evidence.</p><Link href={`/quality-lab/projects/${project.id}`} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950"><ArrowLeft className="h-4 w-4" /> Return to synthetic Blueprint</Link></div></div>;
   }
 
   if (!project || !input || !engagement || !analysis || !draft || !assessment || !selected || !selectedReview) {

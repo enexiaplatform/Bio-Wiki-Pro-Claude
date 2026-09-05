@@ -46,7 +46,37 @@ During P0, do not run `db:push` or alter the production schema. `GET /api/health
 
 `GET /api/health` reports `commerceMode`, `diagnosticTestReady`, `commerceReady`, and boolean schema/origin readiness without returning connection details or secrets. `diagnosticTestReady` means a preview can complete a Stripe test-mode acceptance journey. `commerceReady` remains false unless `COMMERCE_MODE=live`, the Stripe key is live, all email/inbox/database/session requirements are ready, the schema check passes, and the origin is a custom domain. Production stays `COMMERCE_MODE=disabled` for this pilot cycle.
 
-`npm run audit:schema` is the protected operator companion to that public boolean. It queries `information_schema.columns` plus names-only `pg_catalog` index metadata, reads no application rows and prints only required object names, structural issues and counts. Use `npm run audit:schema -- --json` for a machine-readable handoff. Its contract is derived from the current Drizzle definitions and covers ten Gate 1 tables, 82 column contracts and the primary/unique keys required for identity, idempotency and conflict-safe persistence: users, sessions, purchases, Stripe-event idempotency, Scope Diagnostic intake, reviewed projects/revisions, governance records/revisions and the privacy-minimal funnel.
+`npm run audit:schema` is the protected operator companion to that public boolean. It queries `information_schema.columns` plus names-only `pg_catalog` index metadata, reads no application rows and prints only required object names, structural issues and counts. Use `npm run audit:schema -- --json` for a machine-readable handoff. Its contract is derived from the current Drizzle definitions and covers 15 Gate 1/lifecycle tables, 105 column contracts and 25 primary/unique keys. This includes identity, idempotency, conflict-safe persistence, the privacy-minimal funnel, regulatory preferences, lifecycle/nurture guards, checkout attempts and reading activity. Invalid or not-ready unique indexes do not satisfy the check.
+
+### Runtime foundation recheck — 5 September 2026
+
+Production and PR #9 preview health remain degraded with `schema:false`.
+Protected Production inspection confirms exactly two missing tables:
+`quality_lab_funnel_events` and `regulatory_alert_preferences`; the other 13
+required tables and 86 columns pass. The read-only repair preflight passes for
+the [versioned reconciliation proposal](../migrations/reconciliation/README.md).
+It has not been applied to Production or Preview. The historical migration
+ledger remains unreconciled.
+
+The environment-name audit still finds no Diagnostic Price, Resend key or email
+sender configuration; Preview additionally lacks a Stripe secret, commercial
+inbox and cron secret. Presence of other names does not prove credential validity,
+inbox monitoring or delivery. Separate test checkout/email acceptance is still
+required. Production commerce remains disabled.
+
+Funnel receipt persistence failures now return HTTP 503 with `accepted:false`;
+the browser makes at most three attempts using the same event ID, with bounded
+timeouts and no persistent project-data queue. Duplicate insertion is accepted.
+Retries remain best effort and do not recover receipts after page closure or
+historical events lost while the table was missing.
+
+Lifecycle jobs record a send guard only after provider acceptance. A rejected
+send, storage failure or official-feed outage produces an overall HTTP 503;
+independent jobs remain isolated and logs contain fixed operational codes rather
+than raw errors. Provider acceptance is not inbox delivery. Sending and recording
+the guard are separate operations, so a provider success followed by a database
+failure or concurrent cron invocations can still cause duplicate mail; this
+change does not claim exactly-once external delivery.
 
 The interim public/canonical origin is `https://life-science-atlas-enexiaplatforms-projects.vercel.app`. Preview deployments in `COMMERCE_MODE=test` derive Stripe redirect URLs from their own `VERCEL_URL` so they cannot redirect a test buyer to production.
 
@@ -59,6 +89,20 @@ The Production listing does not yet contain `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, 
 ### Public readiness probe — 15 August 2026
 
 The public pricing, Diagnostic review and illustrative sample routes returned HTTP 200. The production health endpoint returned HTTP 503 with `status: degraded`, `commerceMode: disabled`, `schema: false`, `diagnosticTestReady: false` and `commerceReady: false`. It reported database, session, Stripe test-mode, commercial-notification and cron configuration as present, while the Scope Diagnostic price, email, analytics and explicit public-origin readiness remained false. This is a dated names/booleans-only observation, not proof that any credential value, inbox delivery, webhook or payment journey works.
+
+### Public readiness recheck — 25 August 2026
+
+The current Vercel Production deployment remains `Ready`, and its stable Vercel alias responds, but `/api/health` still returns HTTP 503 with `status: degraded`, `commerceMode: disabled`, `schema: false`, `diagnosticTestReady: false` and `commerceReady: false`. The public probe reports database, session, Stripe test-mode, commercial-notification and cron configuration as present. Scope Diagnostic pricing, transactional email, analytics and explicit public-origin readiness remain false.
+
+The Production environment name-only listing confirms that `PUBLIC_APP_URL` and `COMMERCE_MODE` now exist, but the runtime result shows that their current values do not make the origin or commerce ready. `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID`, `RESEND_API_KEY`, `EMAIL_FROM` and `VITE_POSTHOG_KEY` remain absent; `ADMIN_EMAILS` is present as the permitted notification fallback. The intended `lifescienceatlas.com` custom domain did not resolve in DNS during this check. No credential values were read, no database rows were queried and no production settings were changed.
+
+### Public and PR-preview readiness recheck — 4 September 2026
+
+The stable Vercel production alias still serves the public Diagnostic intake with HTTP 200. Its public `/api/health` response remains HTTP 503 with `commerceMode: disabled`, `diagnosticTestReady: false`, `commerceReady: false` and `schema: false`. Database, sessions, Stripe test-mode credentials, the monitored commercial inbox and cron report ready. The Diagnostic Price, transactional email, analytics and custom public origin remain not ready. The intended `lifescienceatlas.com` hostname still does not resolve.
+
+PR #9 preview deployment `1706c73` completed successfully and serves the updated Diagnostic intake with HTTP 200. Its isolated Preview runtime reports `commerceMode: test` but remains HTTP 503: database and sessions are ready, while Stripe, Diagnostic Price, transactional email, commercial notifications, cron and schema are not. This preview is suitable for public UI review, but it is not suitable for the Stripe acceptance journey until the owner configures the Preview-scoped test credentials and reconciles the target schema under the procedure below.
+
+No credential values, application rows, billing settings, DNS records or production configuration were read or changed during this recheck.
 
 ### Schema remediation procedure — approval required
 
@@ -82,6 +126,8 @@ The public pricing, Diagnostic review and illustrative sample routes returned HT
 8. Confirm the success page directs the buyer back to Diagnostic intake.
 
 ## Service-delivery gate
+
+The private Admin Pipeline derives a weekday-based UTC response deadline from each stored request, keeps overdue and due-soon `new` requests first, and exposes missing owner or next-action controls. It is a planning queue only: moving a request beyond `new` is not evidence that the buyer received a response, so retain the external email or call reference in the authorized commercial record.
 
 Before a Blueprint kickoff, the proposal must identify:
 

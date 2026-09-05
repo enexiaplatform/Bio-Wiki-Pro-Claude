@@ -3,7 +3,6 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import mdx from "@mdx-js/rollup";
 import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
@@ -15,8 +14,6 @@ export default defineConfig({
       ...mdx({
         remarkPlugins: [
           remarkFrontmatter,
-          // exposes the YAML frontmatter as a named `frontmatter` export
-          [remarkMdxFrontmatter, { name: "frontmatter" }],
           // Existing articles use standard $...$ / $$...$$ notation. Parse it
           // as math rather than MDX JavaScript expressions during the build.
           remarkMath,

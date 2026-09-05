@@ -49,6 +49,25 @@ describe("reviewed Blueprint persistence contract", () => {
     expect(snapshot.frozenRevisions?.[0].revisionId).toBe(snapshot.activeRevisionId);
   });
 
+  it("fails closed when an illustrative example is promoted to an account record", () => {
+    const example = createQualityLabProject(defaultQualityLabInput, "qlp_example", "illustrative-example");
+    expect(() => createQualityLabAccountSnapshot(example)).toThrow(/Illustrative examples cannot be promoted/i);
+  });
+
+  it("quarantines legacy Casebook projects even when they were stored as user-entered", () => {
+    const legacyCasebookProject = createQualityLabProject({
+      ...defaultQualityLabInput,
+      projectName: "Illustrative case — reconciled in-house portfolio",
+      productProfiles: [{
+        ...defaultQualityLabInput.productProfiles[0],
+        id: "case-solid",
+        name: "Illustrative solid oral family",
+      }],
+    }, "qlp_legacy_casebook", "user-entered");
+
+    expect(() => createQualityLabAccountSnapshot(legacyCasebookProject)).toThrow(/Illustrative examples cannot be promoted/i);
+  });
+
   it("keeps the account sync payload bounded after twenty recompiles", () => {
     let project = createQualityLabProject(defaultQualityLabInput, "qlp_bounded_sync");
     for (let revision = 2; revision <= 20; revision += 1) {

@@ -12,7 +12,7 @@ import { useSEO } from "@/hooks/use-seo";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { analytics } from "@/hooks/use-analytics";
 import { AuthShell } from "@/components/AuthShell";
-import { authPath, safeAuthReturnTo } from "@shared/auth-return";
+import { authPath, isAdminWorkspaceReturnTo, safeAuthReturnTo } from "@shared/auth-return";
 
 export default function RegisterPage() {
   const { t } = useTranslation("auth");
@@ -26,7 +26,10 @@ export default function RegisterPage() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const returnTo = useMemo(() => safeAuthReturnTo(window.location.search, "/welcome"), []);
+  const returnTo = useMemo(() => {
+    const requested = safeAuthReturnTo(window.location.search, "/welcome");
+    return isAdminWorkspaceReturnTo(requested) ? "/quality-lab/projects" : requested;
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,6 +109,8 @@ export default function RegisterPage() {
               <Label htmlFor="firstName">{t("register.firstName")}</Label>
               <Input
                 id="firstName"
+                name="firstName"
+                autoComplete="given-name"
                 placeholder="Marie"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
@@ -116,6 +121,8 @@ export default function RegisterPage() {
               <Label htmlFor="lastName">{t("register.lastName")}</Label>
               <Input
                 id="lastName"
+                name="lastName"
+                autoComplete="family-name"
                 placeholder="Curie"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
@@ -127,7 +134,10 @@ export default function RegisterPage() {
             <Label htmlFor="email">{t("register.email")}</Label>
             <Input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
+              inputMode="email"
               placeholder="m.curie@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -138,7 +148,9 @@ export default function RegisterPage() {
             <Label htmlFor="password">{t("register.password")}</Label>
             <Input
               id="password"
+              name="password"
               type="password"
+              autoComplete="new-password"
               placeholder={t("register.passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -150,7 +162,9 @@ export default function RegisterPage() {
             <Label htmlFor="confirmPassword">{t("register.confirmPassword")}</Label>
             <Input
               id="confirmPassword"
+              name="confirmPassword"
               type="password"
+              autoComplete="new-password"
               placeholder={t("register.confirmPlaceholder")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
@@ -161,6 +175,12 @@ export default function RegisterPage() {
         <Button type="submit" className="w-full bg-teal-400 font-bold text-teal-950 hover:bg-teal-300" disabled={isLoading}>
           {isLoading ? t("register.submitting") : t("register.submit")}
         </Button>
+        <p className="text-center text-xs leading-5 text-muted-foreground">
+          By creating an account, you agree to our{" "}
+          <Link href="/terms" className="font-semibold text-teal-300 hover:text-teal-200">Terms</Link>{" "}
+          and acknowledge our{" "}
+          <Link href="/privacy" className="font-semibold text-teal-300 hover:text-teal-200">Privacy Policy</Link>.
+        </p>
         <GoogleSignInButton redirectTo={returnTo} />
       </form>
     </AuthShell>

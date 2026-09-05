@@ -1,6 +1,10 @@
 import { getTableColumns, getTableName } from "drizzle-orm";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import {
+  checkoutAttempts,
+  lessonReads,
+  lifecycleSends,
+  nurtureSends,
   processedStripeEvents,
   qualityLabFunnelEvents,
   qualityLabGovernanceRecords,
@@ -8,6 +12,7 @@ import {
   qualityLabReviewedProjectRevisions,
   qualityLabReviewedProjects,
   quoteRequests,
+  regulatoryAlertPreferences,
 } from "../shared/schema.js";
 import { purchases, sessions, users } from "../shared/models/auth.js";
 
@@ -22,6 +27,11 @@ const REQUIRED_RUNTIME_TABLE_OBJECTS = [
   qualityLabGovernanceRecords,
   qualityLabGovernanceRevisions,
   qualityLabFunnelEvents,
+  regulatoryAlertPreferences,
+  lifecycleSends,
+  nurtureSends,
+  checkoutAttempts,
+  lessonReads,
 ] as const;
 
 export type RuntimeSchemaRequirement = {
@@ -100,7 +110,7 @@ function tableUniqueKeys(table: (typeof REQUIRED_RUNTIME_TABLE_OBJECTS)[number])
 
 /**
  * Runtime-critical schema for the Gate 1 intake, payment, persistence,
- * governance and first-party funnel paths. Columns and primary/unique keys are
+ * governance, first-party funnel and lifecycle/digest paths. Columns and primary/unique keys are
  * derived from Drizzle so this audit cannot silently drift from the app model.
  */
 export const RUNTIME_SCHEMA_REQUIREMENTS: readonly RuntimeSchemaRequirement[] =

@@ -45,6 +45,25 @@ names belong in the protected operator output, not the public response.
 
 ## Baseline status
 
+### Inspected two-table repair — 5 September 2026
+
+The protected Production audit found exactly `quality_lab_funnel_events` and
+`regulatory_alert_preferences` absent. The expanded runtime audit includes
+lifecycle and digest dependencies: 15 tables, 105 columns and 25 primary/unique
+keys. Existing objects passed the checked structural contracts.
+
+The versioned [reconciliation proposal](../migrations/reconciliation/README.md)
+creates only these two missing tables. Its runner defaults to a read-only
+transaction, refuses other drift, and performs postflight on the same connection
+before committing an explicitly authorized apply. It is deliberately outside
+the unreconciled historical Drizzle ledger; `db:migrate` does not apply it.
+
+SQL, defaults, unique guards, conflict rollback and repeat-apply refusal were
+rehearsed against a synthetic in-memory PostgreSQL fixture. This is not a
+production backup/restore rehearsal. Production application still requires an
+owner-approved change window and verified backup/restore evidence. No deployed
+schema or application rows were changed during development.
+
 `migrations/0000_baseline.sql` captures an early seven-table schema (`users`,
 `sessions`, `purchases`, `leads`, `quote_requests`, `processed_stripe_events`,
 `content_entries`). It does **not** capture all tables currently declared in

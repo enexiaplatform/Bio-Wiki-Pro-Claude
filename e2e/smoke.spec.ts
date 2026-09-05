@@ -45,12 +45,12 @@ test.describe("public smoke", () => {
 
   test("decision package guides connect public evidence to Blueprint, Pro and Career", async ({ page }) => {
     await page.goto("/evidence");
-    await expect(page.getByRole("heading", { name: /A connected evidence path/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Trace evidence to the decision/i })).toBeVisible();
     await page.goto("/evidence/biopharma");
-    await expect(page.getByRole("heading", { name: /Biopharma evidence for the decision/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Cell substrate, materials.*upstream control/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Trace evidence to the decision/i })).toBeVisible();
+    await expect(page.getByText(/Cell substrate, materials.*upstream control/i)).toBeVisible();
     await page.goto("/evidence");
-    await page.getByRole("link", { name: /Cell substrate, materials.*upstream control/i }).click();
+    await page.getByRole("link", { name: /Open package/i }).click();
     await expect(page.getByText(/This package is editorial-reviewed but not SME-approved/i)).toBeVisible();
 
     await page.getByRole("link", { name: "Use in Blueprint context" }).click();
@@ -115,7 +115,8 @@ test.describe("public smoke", () => {
     await page.goto("/evidence");
     await expect(page.getByText("Ready for review", { exact: true })).toBeVisible();
     await page.goto("/pro");
-    await expect(page.getByText(/1\/12 packages ready for accountable review/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build this month's quality decision/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Prepare for a GMP audit/i })).toBeVisible();
 
     await page.goto("/career/domains");
     await expect(page.getByRole("heading", { name: /Choose the domain where you want to build proof/i })).toBeVisible();
@@ -145,14 +146,14 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Domain Pack not verified", { exact: true })).toBeVisible();
 
     await page.goto("/pro?package=drug-product-formulation-material-attributes");
-    await expect(page.getByText("Drug product formulation & material attributes", { exact: true }).first()).toBeVisible();
-    await expect(page.getByText(/bounded evidence support; this package is not SME-approved/i)).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open full learning flow/i })).toHaveAttribute("href", "/evidence/packages/drug-product-formulation-material-attributes#package-learning-flow");
+    await expect(page.getByRole("heading", { name: /How do formulation, API\/excipient attributes/i })).toBeVisible();
+    await expect(page.getByText("3 named sources", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("formulation development", { exact: true }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review?package=drug-product-formulation-material-attributes");
 
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: "Choose the decision chain you are working through." })).toBeVisible();
-    for (const lane of ["Biopharma decision chain", "Pharma/API decision chain", "Drug Product decision chain"]) {
-      await expect(page.getByRole("heading", { name: lane, exact: true })).toBeVisible();
+    for (const source of ["Evidence", "Lab Workbench", "Working File", "Audit Readiness"]) {
+      await expect(page.getByRole("button", { name: new RegExp(`^${source}:`, "i") })).toBeVisible();
     }
 
     await page.setViewportSize({ width: 390, height: 844 });
@@ -169,11 +170,300 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("img", { name: /researcher preparing biological samples/i })).toBeVisible();
     await expect(page.getByText(/Blueprint-first workspace/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /Sign up/i })).toHaveAttribute("href", "/register?returnTo=%2Fmy-downloads");
+    await expect(page.getByLabel("Email")).toHaveAttribute("autocomplete", "email");
+    await expect(page.getByLabel("Password")).toHaveAttribute("autocomplete", "current-password");
 
     await page.goto("/register?returnTo=/quality-lab/review%3Foffer%3Ddiagnostic");
     await expect(page.getByRole("heading", { name: /Create your Atlas workspace/i })).toBeVisible();
     await expect(page.getByText(/supporting evidence to your account/i)).toBeVisible();
     await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute("href", "/login?returnTo=%2Fquality-lab%2Freview%3Foffer%3Ddiagnostic");
+    await expect(page.getByLabel("First name")).toHaveAttribute("autocomplete", "given-name");
+    await expect(page.getByLabel("Last name")).toHaveAttribute("autocomplete", "family-name");
+    await expect(page.getByLabel("Password", { exact: true })).toHaveAttribute("autocomplete", "new-password");
+    await expect(page.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
+  });
+
+  test("first-session onboarding protects account state and offers three strategic starts", async ({ page }) => {
+    let signedIn = false;
+    const funnelReceipts: Array<{ stage: string; destination?: string; source?: string; placement?: string }> = [];
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: signedIn
+        ? JSON.stringify({ id: "onboarding-user", email: "new-user@example.com", isPro: false, isAdmin: false, verifiedEmail: false, subscriptionStatus: "free" })
+        : JSON.stringify({ message: "Unauthorized" }),
+    }));
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
+
+    await page.goto("/welcome");
+    await expect(page).toHaveURL(/\/register$/);
+
+    signedIn = true;
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/welcome");
+    await expect(page.getByRole("heading", { name: "Welcome to your Atlas workspace" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Build a first capability model/i })).toHaveAttribute("href", "/quality-lab/planner?source=onboarding");
+    await expect(page.getByRole("link", { name: /Inspect an illustrative Blueprint/i })).toHaveAttribute("href", "/quality-lab/sample?source=onboarding");
+    await expect(page.getByRole("link", { name: /Frame a real project with an expert/i })).toHaveAttribute("href", "/quality-lab/review?offer=diagnostic&source=onboarding");
+    await expect(page.getByText(/synthetic example · concept only/i)).toBeVisible();
+    await expect(page.getByText(/Atlas confirms fit before payment/i)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    await page.getByRole("link", { name: /Inspect an illustrative Blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/sample\?source=onboarding$/);
+    await expect.poll(() => funnelReceipts.map((receipt) => `${receipt.stage}:${receipt.destination ?? ""}`)).toEqual(expect.arrayContaining([
+      "onboarding_viewed:",
+      "onboarding_path_selected:illustrative_sample",
+      "example_explored:sample",
+    ]));
+    await expect.poll(() => funnelReceipts.find((receipt) => receipt.stage === "onboarding_path_selected")).toMatchObject({ source: "welcome", destination: "illustrative_sample" });
+    await expect.poll(() => funnelReceipts.find((receipt) => receipt.stage === "example_explored")).toMatchObject({ placement: "onboarding", destination: "sample" });
+  });
+
+  test("restricted delivery login preserves the exact operational destination", async ({ page }) => {
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Return-path QA Blueprint" }, "qlp_return_path");
+    await page.addInitScript(({ storedProject }) => {
+      localStorage.setItem("lsa:quality-lab-projects:v2", JSON.stringify({
+        version: "quality-lab-local-store/v2",
+        migratedFrom: null,
+        projects: [storedProject],
+      }));
+    }, { storedProject: project });
+
+    let signedIn = false;
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: signedIn ? 200 : 401,
+      contentType: "application/json",
+      body: JSON.stringify(signedIn
+        ? { id: "delivery-admin", email: "admin@example.com", isPro: true, isAdmin: true, verifiedEmail: true, subscriptionStatus: "active" }
+        : { message: "Authentication required" }),
+    }));
+    await page.route("**/api/auth/login", (route) => {
+      signedIn = true;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: "delivery-admin", email: "admin@example.com", isAdmin: true }) });
+    });
+
+    await page.goto(`/quality-lab/engagements/${project.id}#pilot-evidence`);
+    await expect(page).toHaveURL(/\/login\?returnTo=%2Fquality-lab%2Fengagements%2Fqlp_return_path%23pilot-evidence$/);
+    await expect(page.getByRole("heading", { name: /Continue the controlled Atlas workflow/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Authorized sign-in/i })).toBeVisible();
+    await expect(page.getByText(/returns you to the exact delivery or governance workspace/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign up/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Return to Quality Lab projects/i })).toHaveAttribute("href", "/quality-lab/projects");
+
+    await page.getByLabel("Email").fill("admin@example.com");
+    await page.getByLabel("Password").fill("test-password");
+    await page.getByRole("button", { name: /^Sign in$/i }).click();
+    await expect(page).toHaveURL(/\/quality-lab\/engagements\/qlp_return_path#pilot-evidence$/);
+    await expect(page.getByRole("heading", { name: "Return-path QA Blueprint" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Paid-pilot record/i })).toBeVisible();
+  });
+
+  test("guest Pro checkout preserves the selected plan through account creation", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/pricing");
+    const trialButton = page.getByRole("button", { name: /Start Pro|free trial/i }).first();
+    await trialButton.scrollIntoViewIfNeeded();
+    await trialButton.click();
+    await expect(page).toHaveURL(/\/register\?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans$/);
+    await expect(page.getByRole("heading", { name: /Create your Atlas workspace/i })).toBeVisible();
+    expect(await page.evaluate(() => window.scrollY)).toBeLessThan(10);
+    await expect(page.getByTestId("button-login-mobile")).toHaveAttribute(
+      "href",
+      "/login?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans",
+    );
+    await expect(page.getByRole("link", { name: "Sign in", exact: true })).toHaveAttribute(
+      "href",
+      "/login?returnTo=%2Fpricing%3Fcheckout%3Dpro_subscription%23evidence-plans",
+    );
+  });
+
+  test("pricing does not promise a Pro trial while checkout is unavailable", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/pricing#evidence-plans");
+
+    const freeWorkspace = page.getByRole("link", { name: "Create a free workspace" });
+    await expect(freeWorkspace).toBeVisible();
+    await expect(page.getByRole("button", { name: /Start Pro|free trial/i })).toHaveCount(0);
+    await expect(page.getByText(/Pro checkout is temporarily unavailable/i)).toBeVisible();
+    await expect(page.getByText(/7-day free trial · cancel anytime/i)).toHaveCount(0);
+    await expect(page.getByRole("list", { name: "What you can count on" })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+
+    await freeWorkspace.click();
+    await expect(page).toHaveURL(/\/register$/);
+  });
+
+  test("an unavailable resumed Pro checkout stops safely before Stripe", async ({ page }) => {
+    let checkoutAttempts = 0;
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ id: "pricing-user", email: "pricing@example.com", isPro: false, isAdmin: false, verifiedEmail: true, subscriptionStatus: null }),
+    }));
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.route("**/api/stripe/create-checkout-session", (route) => {
+      checkoutAttempts += 1;
+      return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
+    });
+
+    await page.goto("/pricing?checkout=pro_subscription#evidence-plans");
+    await expect(page).toHaveURL(/\/pricing#evidence-plans$/);
+    await expect(page.getByRole("link", { name: "Create a free workspace" })).toBeVisible();
+    await expect.poll(() => checkoutAttempts).toBe(0);
+  });
+
+  test("pricing defaults to the available annual Pro plan when monthly is unavailable", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: true, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "test", trialDays: 0 }),
+    }));
+
+    await page.goto("/pricing#evidence-plans");
+    await expect(page.getByText("$80", { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Start Pro/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create a free workspace" })).toHaveCount(0);
+  });
+
+  test("deep pricing links settle on the requested plan section", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/pricing#evidence-plans");
+    const plans = page.locator("#evidence-plans");
+    await expect(plans).toBeVisible();
+    await expect.poll(async () => plans.evaluate((element) => Math.round(element.getBoundingClientRect().top))).toBeLessThan(130);
+    expect(await plans.evaluate((element) => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(60);
+
+    const proButton = page.getByRole("button", { name: /Start Pro|free trial/i }).first();
+    const freeButton = page.getByRole("link", { name: "Get Started" });
+    const [proBox, freeBox] = await Promise.all([proButton.boundingBox(), freeButton.boundingBox()]);
+    expect(proBox).not.toBeNull();
+    expect(freeBox).not.toBeNull();
+    expect(proBox!.y).toBeLessThan(freeBox!.y);
+  });
+
+  test("mobile review handoff explains the offer before asking for scope inputs", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/quality-lab/review?offer=diagnostic");
+
+    const offerHeading = page.getByRole("heading", { name: /Leave with a scoped decision/i });
+    const formStart = page.getByText("Start here", { exact: true });
+    await expect(offerHeading).toBeVisible();
+    await expect(formStart).toBeVisible();
+
+    const [headingBox, formBox] = await Promise.all([offerHeading.boundingBox(), formStart.boundingBox()]);
+    expect(headingBox).not.toBeNull();
+    expect(formBox).not.toBeNull();
+    expect(headingBox!.y).toBeLessThan(formBox!.y);
+    await expect(page.getByText(/sends payment instructions separately/i)).toBeVisible();
+    await expect(page.getByText(/Secure checkout appears as a separate step/i)).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  });
+
+  test("unfinished commercial briefs are restored only after explicit tab-local opt-in", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
+    }));
+
+    await page.goto("/quality-lab/review?offer=blueprint");
+    await page.getByLabel(/Keep this unfinished brief in this tab/i).check();
+    await page.getByLabel("Project stage *").selectOption("budget-planning");
+    await page.getByLabel("Name *").fill("Draft Lead");
+    await page.getByLabel("Work email *").fill("draft@company.example");
+    await page.getByLabel(/Project context/i).fill("Evaluate a non-sterile quality-control lab expansion before the next capital planning decision.");
+    await page.getByLabel(/I confirm this submission contains no confidential/i).check();
+
+    await page.reload();
+    await expect(page.getByLabel(/Keep this unfinished brief in this tab/i)).toBeChecked();
+    await expect(page.getByText(/Saved copy restored in this tab/i)).toBeVisible();
+    await expect(page.getByLabel("Project stage *")).toHaveValue("budget-planning");
+    await expect(page.getByLabel("Name *")).toHaveValue("Draft Lead");
+    await expect(page.getByLabel("Work email *")).toHaveValue("draft@company.example");
+    await expect(page.getByLabel(/I confirm this submission contains no confidential/i)).not.toBeChecked();
+
+    await page.getByRole("button", { name: /Delete saved copy/i }).click();
+    await expect(page.getByLabel(/Keep this unfinished brief in this tab/i)).not.toBeChecked();
+    await page.reload();
+    await expect(page.getByLabel("Name *")).toHaveValue("");
+    await expect(page.getByLabel("Work email *")).toHaveValue("");
+  });
+
+  test("unavailable Diagnostic checkout never turns a captured brief into a payment promise", async ({ page }) => {
+    let checkoutAttempts = 0;
+    let reviewRequests = 0;
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
+    }));
+    await page.route("**/api/quality-lab/reviews", (route) => {
+      reviewRequests += 1;
+      return route.fulfill({
+        status: 201,
+        contentType: "application/json",
+        body: JSON.stringify({
+          id: 43,
+          notifications: { buyerAcknowledgement: "unavailable", ownerAlert: "unavailable" },
+        }),
+      });
+    });
+    await page.route("**/api/stripe/create-checkout-session", (route) => {
+      checkoutAttempts += 1;
+      return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
+    });
+
+    await page.goto("/quality-lab/review?offer=diagnostic");
+    await page.getByLabel(/Keep this unfinished brief in this tab/i).check();
+    await page.getByLabel("Name *").fill("Diagnostic Lead");
+    await page.getByLabel("Work email *").fill("lead@example.com");
+    await page.getByLabel(/Project context/i).fill("Decide the scope and evidence needed for a non-sterile microbiology capacity review before the next budget gate.");
+    await page.getByLabel(/I confirm this submission contains no confidential/i).check();
+    await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
+
+    await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Request reference 43/i)).toBeVisible();
+    await expect(page.getByText(/reloading will not send the same request again/i)).toBeVisible();
+    await expect(page.getByText(/email routing is not currently available for every recipient/i)).toBeVisible();
+    await expect(page.locator("#main").getByRole("link", { name: "support@lifescienceatlas.com" })).toHaveAttribute("href", "mailto:support@lifescienceatlas.com");
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    await expect(page.getByText(/Secure checkout is not currently available/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Create an account to pay securely/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Pay \$149 securely/i })).toHaveCount(0);
+    await expect.poll(() => checkoutAttempts).toBe(0);
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:commercial-request-draft:v1:standalone"))).toBeNull();
+    await page.reload();
+    await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Request reference 43/i)).toBeVisible();
+    await expect.poll(() => reviewRequests).toBe(1);
   });
 
   test("guest Diagnostic request survives account creation and returns to payment", async ({ page }) => {
@@ -186,7 +476,14 @@ test.describe("public smoke", () => {
         : JSON.stringify({ message: "Unauthorized" }),
     }));
     await page.route("**/api/billing/plans", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ scopeDiagnostic: true }) }));
-    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: 42 }) }));
+    await page.route("**/api/quality-lab/reviews", (route) => route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({
+        id: 42,
+        notifications: { buyerAcknowledgement: "queued", ownerAlert: "queued" },
+      }),
+    }));
     await page.route("**/api/auth/register", async (route) => {
       signedIn = true;
       await route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ id: "diagnostic-user", email: "lead@example.com", isAdmin: false }) });
@@ -199,6 +496,7 @@ test.describe("public smoke", () => {
     await page.getByLabel(/I confirm this submission contains no confidential/i).check();
     await page.getByRole("button", { name: /Request the paid diagnostic/i }).click();
     await expect(page.getByRole("heading", { name: /request has been captured/i })).toBeVisible();
+    await expect(page.getByText(/Contact routing confirmed/i)).toBeVisible();
     await page.getByRole("link", { name: /Create an account to pay securely/i }).click();
 
     await page.getByLabel(/First name/i).fill("Diagnostic");
@@ -394,6 +692,11 @@ test.describe("public smoke", () => {
   // Subscription-first pivot: the GMP kit is folded into Pro — its page must
   // drive Pro (route to /pricing) and NOT start a standalone one-time checkout.
   test("GMP kit page promotes Pro, not a standalone purchase", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
     await page.goto("/toolkits/gmp-audit-kit");
     await expect(page.getByRole("heading", { name: /Prepare for a GMP audit/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /controlled cleanroom environment/i })).toBeVisible();
@@ -408,6 +711,21 @@ test.describe("public smoke", () => {
     await expect(cta).toBeVisible();
     await cta.click();
     await page.waitForURL(/\/pricing$/, { timeout: 10_000 });
+  });
+
+  test("GMP kit removes instant-access promises while Pro checkout is unavailable", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 7 }),
+    }));
+    await page.goto("/toolkits/gmp-audit-kit");
+
+    await expect(page.getByRole("button", { name: /View Pro availability/i }).first()).toBeVisible();
+    await expect(page.getByText("Immediate access", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Free checklist available now", { exact: true })).toBeVisible();
+    await expect(page.getByText(/Pro checkout is temporarily unavailable/i)).toBeVisible();
+    await expect(page.getByText(/Stripe-secured checkout/i)).toHaveCount(0);
   });
 
   test("pricing & upgrade surface that toolkits are included in Pro", async ({ page }) => {
@@ -440,30 +758,42 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("heading", { name: /One evidence system/i })).toBeVisible();
 
     await page.goto("/products");
-    await expect(page.getByRole("heading", { name: /One Atlas\. Three ways to make a better decision/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "See Free vs Pro", exact: true })).toHaveAttribute("href", "/pro");
+    await expect(page.getByRole("heading", { name: /Choose the decision\. Atlas routes the work/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Select Quality Lab Blueprint", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("link", { name: "Open Quality Lab Blueprint", exact: true })).toHaveAttribute("href", "/quality-lab");
+    await page.getByRole("button", { name: "Select Atlas Pro", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Select Atlas Pro", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("link", { name: "Open Atlas Pro", exact: true })).toHaveAttribute("href", "/pro");
+    await page.getByRole("button", { name: "Select Personal Career Blueprint", exact: true }).click();
+    await expect(page.getByRole("link", { name: "Open Personal Career Blueprint", exact: true })).toHaveAttribute("href", "/career");
 
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /Evidence, tools, and working files/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /Start with work to be done, then pull the right depth/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Open the monthly workspace/i })).toHaveAttribute("href", "/pro/monthly-review");
-    await expect(page.getByRole("link", { name: "Inspect the audit kit", exact: true })).toHaveAttribute("href", "/toolkits/gmp-audit-kit");
-    await page.getByRole("button", { name: "Build Investigate a quality signal brief", exact: true }).click();
-    await expect(page.getByRole("heading", { name: "Investigate a quality signal", exact: true }).last()).toBeVisible();
-    await page.getByRole("button", { name: "Copy selected workflow brief", exact: true }).click();
-    await expect(page.getByRole("button", { name: "Copied workflow brief", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Build this month's quality decision/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review");
+    await page.getByRole("button", { name: /Lab Workbench/i }).click();
+    await expect(page.getByText("Selected source · Lab Workbench", { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Open selected source/i })).toHaveAttribute("href", "/pro/lab-workbench");
+    await page.getByRole("button", { name: /Make a method or capacity decision/i }).click();
+    await expect(page.getByRole("heading", { name: "Make a method or capacity decision", exact: true })).toBeVisible();
+    await page.getByRole("button", { name: /Verify: Check evidence and assumptions/i }).click();
+    await expect(page.getByRole("button", { name: /Verify: Check evidence and assumptions/i })).toHaveAttribute("aria-pressed", "true");
 
     await page.goto("/pro/monthly-review");
     await expect(page.getByRole("heading", { name: /A quality review you can run again next month/i })).toBeVisible();
     await expect(page.getByText(/editing, saving, history and export require an active Pro entitlement/i)).toBeVisible();
 
     await page.goto("/quality-lab");
-    await expect(page.getByRole("heading", { name: /See how a real planning question changes shape/i })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Inspect calculated cases", exact: true })).toHaveAttribute("href", "/quality-lab/casebook");
+    await expect(page.getByRole("heading", { name: /See the blueprint take shape/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Inspect a sample", exact: true })).toHaveAttribute("href", "/quality-lab/sample");
 
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /Turn a responsibility into a claim a reviewer can test/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Map my current evidence", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Turn your next role into a proof plan/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Build my free Career Snapshot", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Frame: Scope the proof", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Review: Evaluate the proof", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Review: Evaluate the proof", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("button", { name: "Adjust", exact: true }).click();
+    await expect(page.getByRole("button", { name: "Adjust", exact: true })).toHaveAttribute("aria-pressed", "true");
 
     await page.goto("/career/blueprint");
     await expect(page.getByRole("heading", { name: /Turn your Blueprint into 13 weeks of evidence/i })).toBeVisible();
@@ -662,13 +992,12 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("status")).toContainText("Started a new month");
   });
 
-  test("Atlas Pro explains a concrete seven-day activation path before checkout", async ({ page }) => {
+  test("Atlas Pro exposes the complete monthly review path before opening the workspace", async ({ page }) => {
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /Prove the workflow before you keep the membership/i })).toBeVisible();
-    for (const step of ["Frame", "Verify", "Decide", "Close or carry"]) {
-      await expect(page.getByRole("heading", { name: step, exact: true })).toBeVisible();
+    for (const step of ["Frame", "Verify", "Decide", "Close"]) {
+      await expect(page.getByRole("button", { name: new RegExp(`^${step}:`, "i") })).toBeVisible();
     }
-    await expect(page.getByRole("link", { name: /Start the first review/i })).toHaveAttribute("href", "/pro/monthly-review");
+    await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review");
   });
 
   test("Career Blueprint purchaser can create, track and export the 13-week workspace", async ({ page }) => {
@@ -713,12 +1042,34 @@ test.describe("public smoke", () => {
       "/api/admin/users": { users: [] },
       "/api/admin/documents": { products: [] },
       "/api/admin/content": { content: [] },
-      "/api/admin/pipeline": { leads: [], requests: [], purchases: [], projects: [] },
+      "/api/admin/pipeline": {
+        leads: [],
+        requests: [
+          { id: 11, name: "Priority Lead", email: "priority@example.com", company: "Example Pharma", productOfInterest: "Paid Scope Diagnostic", need: "Resolve the microbiology capacity basis before budget approval.", status: "new", owner: null, nextAction: null, nextActionAt: null, notes: null, createdAt: "2026-08-10T08:00:00.000Z", updatedAt: "2026-08-10T08:00:00.000Z" },
+          { id: 12, name: "Progressed Lead", email: "progressed@example.com", company: "Example Engineering", productOfInterest: "Blueprint Pilot", need: "Prepare a vendor-neutral capability basis.", status: "qualified", owner: "Founder", nextAction: "Confirm reviewer scope", nextActionAt: "2026-09-10T08:00:00.000Z", notes: null, createdAt: "2026-08-11T08:00:00.000Z", updatedAt: "2026-08-12T08:00:00.000Z" },
+        ],
+        purchases: [],
+        projects: [],
+      },
       "/api/admin/quality-lab-funnel?days=30": {
         generatedAt: "2026-07-28T00:00:00.000Z",
         windowDays: 30,
+        onboarding: {
+          viewedAccounts: 8,
+          selectedAccounts: 6,
+          selectionRate: 75,
+          destinationReachedAccounts: 5,
+          destinationReachRate: 62.5,
+          paths: [
+            { path: "capability_model", selectedAccounts: 3, reachedAccounts: 3, reachRate: 100 },
+            { path: "illustrative_sample", selectedAccounts: 2, reachedAccounts: 1, reachRate: 50 },
+            { path: "scope_diagnostic", selectedAccounts: 1, reachedAccounts: 1, reachRate: 100 },
+          ],
+        },
         uniqueJourneys: 3,
+        illustrativeJourneys: 2,
         stages: [
+          { stage: "example_explored", journeys: 2, percentOfPlannerStarts: null },
           { stage: "planner_started", journeys: 3, percentOfPlannerStarts: 100 },
           { stage: "model_compiled", journeys: 2, percentOfPlannerStarts: 66.7 },
           { stage: "review_requested", journeys: 1, percentOfPlannerStarts: 33.3 },
@@ -753,9 +1104,27 @@ test.describe("public smoke", () => {
     await expect(page.getByText("Gate 1 runtime schema")).toBeVisible();
     await expect(page.getByText(/Run the protected schema audit, then apply an approved versioned migration/i)).toBeVisible();
     await expect(page.getByText(/does not prove webhook delivery, inbox receipt, payment acceptance or reviewer appointment/i)).toBeVisible();
+    await page.getByRole("tab", { name: "Pipeline" }).click();
+    await expect(page.getByRole("heading", { name: "Commercial response control" })).toBeVisible();
+    await expect(page.getByLabel("Commercial response queue summary")).toContainText("1Overdue");
+    await expect(page.getByLabel("Commercial response queue summary")).toContainText("1Unowned");
+    await expect(page.getByText("Response control overdue", { exact: true })).toBeVisible();
+    await expect(page.getByText(/internal planning control, not proof that the buyer received a response/i)).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+    expect(await page.getByRole("button", { name: "Save pipeline update" }).first().evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await page.getByRole("tab", { name: "Blueprint funnel" }).click();
     await expect(page.getByRole("heading", { name: /Blueprint funnel · last 30 days/i })).toBeVisible();
-    await expect(page.getByText("Unique Blueprint journeys observed")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "First-session activation" })).toBeVisible();
+    await expect(page.getByLabel("First-session activation")).toContainText("8Welcome viewers");
+    await expect(page.getByLabel("First-session activation")).toContainText("75%Strategic-start selection");
+    await expect(page.getByLabel("First-session activation")).toContainText("62.5%Destination reached");
+    await expect(page.getByLabel("First-session activation")).toContainText("Inspect the synthetic sample2 selected → 1 reached · 50% handoff");
+    await expect(page.getByText(/No target is asserted until a real baseline exists/i)).toBeVisible();
+    await expect(page.getByText("Commercial-intent Blueprint journeys")).toBeVisible();
+    await expect(page.getByText("Illustrative journeys kept separate")).toBeVisible();
+    await expect(page.getByText("Illustrative example explored")).toBeVisible();
+    await expect(page.getByText("excluded", { exact: true })).toBeVisible();
     await expect(page.getByText("Initial model compiled")).toBeVisible();
     await expect(page.getByText("66.7% of starts")).toBeVisible();
     await expect(page.getByText(/No project inputs, contact details or evidence content are stored/i)).toBeVisible();
@@ -776,14 +1145,24 @@ test.describe("public smoke", () => {
       await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
     });
     await page.goto("/quality-lab");
-    await expect(page.getByRole("heading", { name: /defensible QC lab blueprint/i })).toBeVisible();
-    await page.getByRole("link", { name: /Build a blueprint/i }).click();
+    await expect(page.getByRole("heading", { name: /See the blueprint take shape/i })).toBeVisible();
+    await page.getByRole("link", { name: "Build a blueprint", exact: true }).last().click();
     await page.waitForURL(/\/quality-lab\/planner$/);
-    await page.getByRole("button", { name: /Explore a worked example/i }).click();
+    await page.getByRole("button", { name: /Atlas-guided/i }).click();
     await expect(page.getByText(/microbiology-pack\/v1\.1/i)).toBeVisible();
-    for (let step = 0; step < 3; step++) {
-      await page.getByRole("button", { name: /^Continue$/ }).click();
-    }
+    await page.getByLabel("Project name").fill("Vietnam non-sterile QC expansion");
+    await page.getByLabel("Facility country").fill("Vietnam");
+    await page.getByRole("button", { name: "Capacity expansion", exact: true }).click();
+    await page.getByLabel(/Primary decision to resolve/i).fill("Which microbiology operating model and phased capacity should the Vietnam site fund for current demand and the three-year growth scenario?");
+    await page.getByLabel("Decision window").selectOption("3-6-months");
+    await page.getByRole("button", { name: "Vietnam", exact: true }).click();
+    await page.getByRole("spinbutton", { name: /Finished products/i }).fill("40");
+    await page.getByRole("spinbutton", { name: /Raw materials/i }).fill("80");
+    await page.getByRole("button", { name: /^Continue$/ }).click();
+    await page.getByRole("button", { name: /Growing site/i }).click();
+    await page.getByRole("button", { name: /^Continue$/ }).click();
+    await page.getByRole("button", { name: /Apply recommendation/i }).click();
+    await page.getByRole("button", { name: /^Continue$/ }).click();
     await page.getByRole("button", { name: /Compile blueprint/i }).click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.locator("#decision-brief").getByText(/^Decision mandate$/i)).toBeVisible();
@@ -885,15 +1264,24 @@ test.describe("public smoke", () => {
     await expect(page.getByLabel(/Owner role for/i).first()).toHaveValue("Site QC lead");
     await page.getByRole("link", { name: /Request expert review/i }).click();
     await page.waitForURL(/\/quality-lab\/review\?project=/);
-    await expect(page.getByRole("heading", { name: /Leave with a scoped decision, evidence gap map/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Turn your working model into an expert-reviewed decision package/i })).toBeVisible();
+    await expect(page.getByText(/The Expert-reviewed Blueprint Pilot starts from \$990/i)).toBeVisible();
     await expect(page.getByText(/Review handoff choice/i)).toBeVisible();
     await expect(page.getByText(/Decision mandate carried into the brief/i)).toBeVisible();
-    await expect(page.getByRole("heading", { name: /4 of 6 decision inputs described/i })).toBeVisible();
-    await expect(page.getByRole("progressbar", { name: "Scope brief detail", exact: true })).toHaveAttribute("aria-valuenow", "67");
+    await expect(page.getByRole("heading", { name: /5 of 6 decision inputs described/i })).toBeVisible();
+    await expect(page.getByRole("progressbar", { name: "Scope brief detail", exact: true })).toHaveAttribute("aria-valuenow", "83");
+    await expect(page.getByLabel("Portfolio scale *")).toHaveValue("over-25-products");
+    await expect(page.getByText(/Started from 40 finished products in this Blueprint/i)).toBeVisible();
+    await expect(page.getByLabel("Project context *")).toHaveValue(/Portfolio basis: 40 finished products and 80 raw materials/i);
+    await expect(page.getByText(/known project facts carried from a Blueprint count automatically/i)).toBeVisible();
     await expect(page.getByText(/quality-lab-review-brief\/v3/i)).toBeVisible();
     await expect(page.getByText("2. Commercial fit", { exact: true })).toBeVisible();
     await expect(page.getByText(/contains no confidential formulations/i)).toBeVisible();
     await expect(page.getByRole("button", { name: /Request a Blueprint scope/i })).toBeVisible();
+    await page.getByRole("radio", { name: /Paid Scope Diagnostic/i }).check();
+    await expect(page.getByRole("heading", { name: /Leave with a scoped decision, evidence gap map/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Request the paid diagnostic/i })).toBeVisible();
+    await expect(page.getByText(/For a Diagnostic, the engagement choice and commercial basis can count/i)).toBeVisible();
     await expect.poll(() => funnelReceipts.map((receipt) => receipt.stage)).toEqual(expect.arrayContaining([
       "cta_clicked",
       "planner_started",
@@ -904,21 +1292,90 @@ test.describe("public smoke", () => {
     expect(new Set(funnelReceipts.map((receipt) => receipt.journeyId)).size).toBe(1);
   });
 
+  test("illustrative Blueprint stays out of commercial review and active project reporting", async ({ page }) => {
+    const funnelReceipts: Array<{ stage: string; startMode?: string }> = [];
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
+    await page.goto("/quality-lab/planner");
+    await page.getByRole("button", { name: /Explore a worked example/i }).click();
+    for (let step = 0; step < 3; step += 1) await page.getByRole("button", { name: /^Continue$/ }).click();
+    await page.getByRole("button", { name: /Compile blueprint/i }).click();
+    await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
+
+    await expect(page.getByText(/Illustrative example — excluded from commercial review and project reporting/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request expert review/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Engagement packet/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Build my own model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+    await expect.poll(() => funnelReceipts.some((receipt) => receipt.stage === "model_compiled" && receipt.startMode === "example")).toBe(true);
+
+    const projectId = new URL(page.url()).pathname.split("/").at(-1)!;
+    const commercialViewsBeforeBoundaryCheck = funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length;
+    await page.goto(`/quality-lab/review?project=${projectId}`);
+    await expect(page.getByText(/illustrative project was not attached to this commercial request/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Confirm the right review route/i })).toBeVisible();
+    await expect(page.getByText(/Review handoff choice/i)).toHaveCount(0);
+    await expect.poll(() => funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length).toBe(commercialViewsBeforeBoundaryCheck);
+
+    await page.goto("/quality-lab/projects");
+    await expect(page.getByText(/1 illustrative example kept separate/i)).toBeVisible();
+    await expect(page.getByLabel("Project portfolio summary").getByText("0", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/Synthetic browser-local example/i)).toBeVisible();
+  });
+
   test("Blueprint discovery pack exposes linked domain guidance and downloadable templates", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.evaluate(() => {
+      localStorage.setItem("atlas:quality-lab-decision-frame:v1", JSON.stringify({
+        decision: "A legacy frame that must not be restored without explicit consent.",
+        decisionOwner: "Legacy decision owner",
+        firstScope: "Legacy scope that was silently retained in browser storage.",
+        decisionGate: "Legacy gate",
+        evidenceBasis: "Legacy evidence basis that should be removed during the privacy migration.",
+        unresolvedImpact: "Legacy unresolved impact.",
+        excludedDecisions: "Legacy decisions not authorized.",
+      }));
+    });
     await page.goto("/quality-lab/discovery-pack");
     await expect(page.getByRole("heading", { name: /Collect the facts a defensible Blueprint needs/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Laboratory glassware arranged for structured planning/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Analytical chemistry/i })).toHaveAttribute("href", "/blog/analytical-chemistry-qc-capability-planning");
     await expect(page.getByRole("heading", { name: "0 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i })).not.toBeChecked();
+    expect(await page.evaluate(() => localStorage.getItem("atlas:quality-lab-decision-frame:v1"))).toBeNull();
     await page.getByRole("textbox", { name: "Decision to support", exact: true }).fill("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
     await page.getByRole("textbox", { name: "Owner and reviewers", exact: true }).fill("Site quality director with QC, QA, engineering, and finance review.");
     await expect(page.getByRole("heading", { name: "2 of 7 decision inputs described", exact: true })).toBeVisible();
     await expect(page.getByRole("progressbar", { name: "Decision frame detail", exact: true })).toHaveAttribute("aria-valuenow", "29");
     await page.getByRole("button", { name: "Copy decision frame", exact: true }).click();
     await expect(page.getByRole("button", { name: "Copied decision frame", exact: true })).toBeVisible();
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).toBeNull();
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "0 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("");
+    await page.getByRole("textbox", { name: "Decision to support", exact: true }).fill("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    await page.getByRole("textbox", { name: "Owner and reviewers", exact: true }).fill("Site quality director with QC, QA, engineering, and finance review.");
+    await page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i }).check();
+    await expect(page.getByText("Saving changes in this tab for up to 8 hours.", { exact: true })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).not.toBeNull();
     await page.reload();
     await expect(page.getByRole("heading", { name: "2 of 7 decision inputs described", exact: true })).toBeVisible();
     await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    await expect(page.getByText("Saved frame restored in this tab. Review it before handing it off.", { exact: true })).toBeVisible();
+    await page.getByRole("button", { name: "Delete saved copy", exact: true }).click();
+    await expect(page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i })).not.toBeChecked();
+    await expect(page.getByRole("textbox", { name: "Decision to support", exact: true })).toHaveValue("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).toBeNull();
+    await page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i }).check();
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).not.toBeNull();
+    await page.getByRole("button", { name: "Clear on-screen frame", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "0 of 7 decision inputs described", exact: true })).toBeVisible();
+    await expect(page.getByRole("checkbox", { name: /Keep this decision frame in this tab/i })).not.toBeChecked();
+    expect(await page.evaluate(() => sessionStorage.getItem("atlas:quality-lab-decision-frame-draft:v1"))).toBeNull();
+    await page.getByRole("textbox", { name: "Decision to support", exact: true }).fill("Decide whether baseline release demand needs one shift or a planned second-shift scenario.");
+    await page.getByRole("textbox", { name: "Owner and reviewers", exact: true }).fill("Site quality director with QC, QA, engineering, and finance review.");
     await expect(page.getByRole("button", { name: /Download CSV/i })).toHaveCount(11);
     const downloadPromise = page.waitForEvent("download");
     await page.getByRole("button", { name: /Download CSV/i }).first().click();
@@ -954,16 +1411,40 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("textbox", { name: /Project context/i })).toHaveValue(/Decide whether baseline release demand needs one shift or a planned second-shift scenario\./);
   });
 
-  test("Blueprint casebook compiles scenarios and opens one as an editable local project", async ({ page }) => {
+  test("Blueprint casebook keeps every synthetic scenario out of commercial review", async ({ page }) => {
+    await mockAdmin(page);
+    const funnelReceipts: Array<{ stage: string; placement?: string; destination?: string; startMode?: string }> = [];
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
     await page.goto("/quality-lab/casebook");
     await expect(page.getByRole("heading", { name: /See how one decision changes a Blueprint/i })).toBeVisible();
     await expect(page.getByRole("img", { name: /Laboratory team reviewing evidence/i })).toBeVisible();
     await expect(page.getByText(/Synthetic scenarios only/i).last()).toBeVisible();
-    await expect(page.getByRole("button", { name: /Open as editable project/i })).toHaveCount(3);
+    await expect(page.getByRole("button", { name: /Explore synthetic Blueprint/i })).toHaveCount(3);
     await expect(page.getByText(/reconciliation required|portfolio derived|aggregate input/i).first()).toBeVisible();
-    await page.getByRole("button", { name: /Open as editable project/i }).first().click();
+    await page.getByRole("button", { name: /Explore synthetic Blueprint/i }).first().click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     await expect(page.getByRole("heading", { name: /Illustrative case — reconciled in-house portfolio/i })).toBeVisible();
+    await expect(page.getByText(/Illustrative example — excluded from commercial review and project reporting/i)).toBeVisible();
+    await expect(page.getByRole("link", { name: /Request expert review/i })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: /Engagement packet/i })).toHaveCount(0);
+    await expect(page.getByRole("link", { name: /Build my own model/i }).first()).toHaveAttribute("href", "/quality-lab/planner");
+    await expect.poll(() => funnelReceipts.some((receipt) => receipt.stage === "example_explored" && receipt.destination === "synthetic_blueprint" && receipt.startMode === "example")).toBe(true);
+    expect(funnelReceipts.some((receipt) => receipt.stage === "cta_clicked" && receipt.placement?.startsWith("casebook_"))).toBe(false);
+    const projectId = new URL(page.url()).pathname.split("/").at(-1);
+    const commercialViewsBeforeBoundaryCheck = funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length;
+    await page.goto(`/quality-lab/review?project=${projectId}`);
+    await expect(page.getByText(/illustrative project was not attached to this commercial request/i)).toBeVisible();
+    await expect.poll(() => funnelReceipts.filter((receipt) => receipt.stage === "review_viewed").length).toBe(commercialViewsBeforeBoundaryCheck);
+    await page.goto(`/quality-lab/engagements/${projectId}`);
+    await expect(page.getByRole("heading", { name: /Illustrative examples stay outside engagement operations/i })).toBeVisible();
+    await page.goto(`/quality-lab/engagements/${projectId}/commercial-handoff`);
+    await expect(page.getByRole("heading", { name: /Commercial handoff is unavailable for synthetic examples/i })).toBeVisible();
+    await page.goto(`/quality-lab/engagements/${projectId}/operating-model-review`);
+    await expect(page.getByRole("heading", { name: /Paid-diagnostic review is unavailable for synthetic examples/i })).toBeVisible();
+    await page.goto(`/quality-lab/projects/${projectId}`);
     await page.getByRole("button", { name: /Open technical detail/i }).click();
     await expect(page.getByRole("heading", { name: /Finished-product sizing basis/i })).toBeVisible();
     await page.getByRole("button", { name: /Show Sources and missing site evidence detail/i }).click();
@@ -972,7 +1453,7 @@ test.describe("public smoke", () => {
 
   test("Skill Coverage & Shift Feasibility maps a Blueprint into shift-level gaps", async ({ page }) => {
     await page.goto("/quality-lab/casebook");
-    await page.getByRole("button", { name: /Open as editable project/i }).first().click();
+    await page.getByRole("button", { name: /Explore synthetic Blueprint/i }).first().click();
     await page.waitForURL(/\/quality-lab\/projects\/qlp_/);
     const projectId = new URL(page.url()).pathname.split("/").at(-1);
     await page.goto(`/quality-lab/skill-shift-coverage?project=${projectId}`);
@@ -1257,8 +1738,9 @@ test.describe("public smoke", () => {
 
   test("Governance history keeps account revisions separate from approval", async ({ page }) => {
     await page.goto("/quality-lab/governance-history");
-    await page.waitForURL(/\/login\?next=\/admin$/);
-    await expect(page.getByRole("heading", { name: /Continue your Atlas workspace/i })).toBeVisible();
+    await page.waitForURL(/\/login\?returnTo=%2Fquality-lab%2Fgovernance-history$/);
+    await expect(page.getByRole("heading", { name: /Continue the controlled Atlas workflow/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Sign up/i })).toHaveCount(0);
   });
 
   test("illustrative Blueprint sample is public and explicitly bounded", async ({ page }) => {
@@ -1913,8 +2395,13 @@ test.describe("public smoke", () => {
   });
 
   test("career assessment builds a personalised route comparison", async ({ page }) => {
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: true, annual: true, scopeDiagnostic: true, careerBlueprint: true, commerceMode: "test", trialDays: 7 }),
+    }));
     await page.goto("/career");
-    await expect(page.getByRole("heading", { name: /A career plan built around what you can prove/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Turn your next role into a proof plan/i })).toBeVisible();
     await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
     await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
     await page.getByRole("textbox", { name: /^Location$/i }).fill("Singapore");
@@ -1936,31 +2423,54 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint — \$20 one-time/i })).toBeVisible();
   });
 
+  test("career results keep the free proof path primary when checkout is unavailable", async ({ page }) => {
+    let checkoutAttempts = 0;
+    await page.route("**/api/billing/plans", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ monthly: false, annual: false, scopeDiagnostic: false, careerBlueprint: false, commerceMode: "disabled", trialDays: 0 }),
+    }));
+    await page.route("**/api/stripe/create-checkout-session", (route) => {
+      checkoutAttempts += 1;
+      return route.fulfill({ status: 503, contentType: "application/json", body: JSON.stringify({ message: "Checkout is currently disabled" }) });
+    });
+    await page.goto("/career");
+    await page.getByRole("button", { name: /Build my free Career Snapshot/i }).click();
+    await page.getByRole("textbox", { name: /^Your name$/i }).fill("Alex Morgan");
+    await page.getByRole("textbox", { name: /^Location$/i }).fill("Singapore");
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /^Continue$/i }).click();
+    await page.getByRole("button", { name: /Create my free Career Snapshot/i }).click();
+
+    await expect(page.getByText(/Career Blueprint checkout is temporarily unavailable/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: /Unlock my personalized Blueprint/i })).toHaveCount(0);
+    const freeProofPlan = page.getByRole("link", { name: /Continue with my free proof plan/i });
+    await expect(freeProofPlan).toBeVisible();
+    await freeProofPlan.click();
+    await expect(page).toHaveURL(/#career-recommendations$/);
+    await expect.poll(() => checkoutAttempts).toBe(0);
+  });
+
   test("method navigator exposes bounded coverage and explicit no-result state", async ({ page }) => {
     await page.goto("/methods");
-    await expect(page.getByRole("heading", { name: /Find what Atlas covers/i })).toBeVisible();
-    await expect(page.getByRole("region", { name: /Connected quality systems/i })).toBeVisible();
-    const coverageMatrix = page.getByRole("table", { name: /Method application coverage matrix/i });
-    await expect(coverageMatrix).toBeVisible();
-    await expect(page.getByText(/0 controlled revisions/i)).toBeVisible();
-    await expect(coverageMatrix).toContainText(/Same application record reused/i);
-    const mutedMatrixText = coverageMatrix.getByText(/Same application record reused/i).first();
-    const matrixContrast = await mutedMatrixText.evaluate((element) => {
-      const channels = getComputedStyle(element).color.match(/\d+(?:\.\d+)?/g)!.slice(0, 3).map(Number);
-      const luminance = (values: number[]) => values.map((value) => value / 255).map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4).reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
-      const foreground = luminance(channels);
-      const background = luminance([7, 24, 45]);
-      return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
-    });
-    expect(matrixContrast).toBeGreaterThanOrEqual(4.5);
-    await expect(page.getByRole("button", { name: "All coverage" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("heading", { name: /Ask the method question/i })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Method evidence route" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Applications in scope" })).toBeVisible();
+    const applicationList = page.getByRole("list", { name: "Method applications" });
+    await expect(applicationList.getByRole("button")).toHaveCount(8);
+    await expect(page.getByLabel("8 methods")).toBeVisible();
+    await expect(page.getByLabel("9 sources")).toBeVisible();
+    await expect(page.getByLabel("0 approved")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Microbial method suitability and recovery/i })).toHaveAttribute("aria-pressed", "true");
     await page.getByLabel("Search methods and standards").fill("USP-85");
     await expect(page.getByRole("heading", { name: /Bacterial endotoxins/i }).first()).toBeVisible();
-    await expect(coverageMatrix.getByRole("row")).toHaveCount(2);
-    await expect(coverageMatrix).toContainText(/workflow only/i);
-    await expect(coverageMatrix).toContainText(/Not recorded/i);
+    await expect(page.getByText("Open in 2 named sources", { exact: true })).toBeVisible();
+    await expect(page.getByText("Source mapped", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Qualified review", { exact: true })).toBeVisible();
     await page.getByLabel("Search methods and standards").fill("impossible-unmapped-method-xyz");
     await expect(page.getByRole("heading", { name: "Not yet covered" })).toBeVisible();
+    await expect(applicationList.getByRole("button", { pressed: true })).toHaveCount(0);
     await expect(page.getByRole("link", { name: /Request scoped review/i })).toHaveAttribute("href", /method=impossible-unmapped-method-xyz/);
   });
 

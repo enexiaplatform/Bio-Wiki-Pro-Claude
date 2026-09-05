@@ -11,6 +11,25 @@ export const qualityLabBudgetStatusSchema = z.enum(["exploring", "range-defined"
 export const qualityLabDecisionRoleSchema = z.enum(["decision-owner", "technical-lead", "influencer", "advisor-or-partner", "other"]);
 export const qualityLabDataReadinessSchema = z.enum(["initial", "partial", "substantial", "review-ready"]);
 export const qualityLabPortfolioScaleSchema = z.enum(["1-3-products", "4-10-products", "11-25-products", "over-25-products", "not-set"]);
+export type QualityLabPortfolioScale = z.infer<typeof qualityLabPortfolioScaleSchema>;
+
+export const qualityLabReviewQualificationSchema = z.object({
+  engagementIntent: qualityLabEngagementIntentSchema,
+  projectStage: qualityLabProjectStageSchema,
+  decisionWindow: qualityLabDecisionWindowSchema,
+  budgetStatus: qualityLabBudgetStatusSchema,
+  decisionRole: qualityLabDecisionRoleSchema,
+  dataReadiness: qualityLabDataReadinessSchema,
+  portfolioScale: qualityLabPortfolioScaleSchema,
+});
+
+export function qualityLabPortfolioScaleFromProductCount(productCount: number | null | undefined): QualityLabPortfolioScale {
+  if (typeof productCount !== "number" || !Number.isFinite(productCount) || productCount <= 0) return "not-set";
+  if (productCount <= 3) return "1-3-products";
+  if (productCount <= 10) return "4-10-products";
+  if (productCount <= 25) return "11-25-products";
+  return "over-25-products";
+}
 
 export const qualityLabReviewRequestSchema = z.object({
   briefVersion: z.enum([QUALITY_LAB_LEGACY_REVIEW_BRIEF_VERSION, QUALITY_LAB_REVIEW_BRIEF_VERSION]),
@@ -20,15 +39,7 @@ export const qualityLabReviewRequestSchema = z.object({
     company: z.string().trim().max(160).nullable(),
     role: z.string().trim().max(120).nullable(),
   }),
-  qualification: z.object({
-    engagementIntent: qualityLabEngagementIntentSchema,
-    projectStage: qualityLabProjectStageSchema,
-    decisionWindow: qualityLabDecisionWindowSchema,
-    budgetStatus: qualityLabBudgetStatusSchema,
-    decisionRole: qualityLabDecisionRoleSchema,
-    dataReadiness: qualityLabDataReadinessSchema,
-    portfolioScale: qualityLabPortfolioScaleSchema,
-  }),
+  qualification: qualityLabReviewQualificationSchema,
   projectContext: z.string().trim().min(20).max(4000),
   project: z.object({
     localProjectId: z.string().min(1).max(120),

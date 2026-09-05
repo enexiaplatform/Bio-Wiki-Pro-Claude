@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ComponentType } from "react";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
 import { Switch, Route, Redirect, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { isResourceLocation, ResourceRail } from "@/components/ResourceRail";
 import { usePageTracking } from "@/hooks/use-analytics";
 import { useUser } from "@/context/UserContext";
+import { authPath } from "@shared/auth-return";
 import LandingPage from "@/pages/LandingPage";
 
 // Route components are code-split: each becomes its own chunk, loaded on demand.
@@ -103,25 +104,76 @@ function PageFallback() {
 function AdminOnlyRoute({ component: Component }: { component: ComponentType }) {
   const { isAdmin, isAuthenticated, isLoading } = useUser();
   if (isLoading) return <PageFallback />;
-  if (!isAuthenticated) return <Redirect to="/login?next=/admin" replace />;
+  if (!isAuthenticated) {
+    const returnTo = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    return <Redirect to={authPath("/login", returnTo)} replace />;
+  }
   if (!isAdmin) return <Redirect to="/quality-lab/projects" replace />;
   return <Component />;
+}
+
+function WelcomeRoute() {
+  const { isAdmin, isAuthenticated, isLoading } = useUser();
+  if (isLoading) return <PageFallback />;
+  if (!isAuthenticated) return <Redirect to="/register" replace />;
+  if (isAdmin) return <Redirect to="/admin" replace />;
+  return <Welcome />;
+}
+
+function RouteScrollManager({ location }: { location: string }) {
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    if (!hash) return;
+
+    let targetId = hash;
+    try {
+      targetId = decodeURIComponent(hash);
+    } catch {
+      // Keep the literal fragment when a legacy URL contains invalid encoding.
+    }
+    let frame = 0;
+    let attempts = 0;
+
+    const scrollToTarget = () => {
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ block: "start", behavior: "auto" });
+        return;
+      }
+
+      attempts += 1;
+      if (attempts < 120) frame = window.requestAnimationFrame(scrollToTarget);
+    };
+
+    frame = window.requestAnimationFrame(scrollToTarget);
+    return () => window.cancelAnimationFrame(frame);
+  }, [location]);
+
+  return null;
 }
 
 function Layout() {
   usePageTracking();
   const [location] = useLocation();
   const resourceLocation = isResourceLocation(location);
+  const immersiveQualityLab = location === "/quality-lab";
+  const immersiveEvidence = ["/evidence", "/evidence/biopharma", "/evidence/pharma-api", "/evidence/drug-product"].includes(location);
+  const immersivePro = location === "/pro";
+  const immersiveCareer = location === "/career";
+  const immersiveSurface = immersiveQualityLab || immersiveEvidence || immersivePro || immersiveCareer;
   return (
-    <div className="min-h-screen bg-background text-foreground pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16">
+    <div className={`min-h-screen bg-background text-foreground ${immersiveSurface ? "" : "pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-0 md:pt-16"}`}>
+      <RouteScrollManager location={location} />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-primary-foreground"
       >
         Skip to content
       </a>
-      <DesktopNav />
-      <MobileHeader />
+      {!immersiveSurface && <DesktopNav />}
+      {!immersiveSurface && <MobileHeader />}
 
       <main id="main" className={resourceLocation ? "md:flex md:items-start" : undefined}>
         {resourceLocation && <ResourceRail />}
@@ -206,7 +258,7 @@ function Layout() {
               and Solutions (equipment quote-requests) → home. */}
           <Route path="/insights"><Redirect to="/" replace /></Route>
           <Route path="/solutions"><Redirect to="/" replace /></Route>
-          <Route path="/welcome" component={Welcome} />
+          <Route path="/welcome" component={WelcomeRoute} />
           <Route path="/upgrade" component={UpgradePage} />
           <Route path="/toolkits/gmp-audit-kit" component={GMPAuditKit} />
           <Route path="/toolkits" component={ToolkitsPage} />
@@ -228,8 +280,8 @@ function Layout() {
         </div>
       </main>
 
-      <BottomNav />
-      <Footer />
+      {!immersiveSurface && <BottomNav />}
+      {!immersiveSurface && <Footer />}
       <LazyCommandPalette />
     </div>
   );

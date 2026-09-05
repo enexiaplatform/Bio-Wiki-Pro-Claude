@@ -10,15 +10,25 @@ type AuditTarget = {
 
 const strategicTargets: AuditTarget[] = [
   { name: "homepage", path: "/", readyHeading: /A quality lab plan your whole project team can challenge/i },
-  { name: "Quality Lab landing", path: "/quality-lab", readyHeading: /From product portfolio to a defensible QC lab blueprint/i },
+  { name: "Quality Lab landing", path: "/quality-lab", readyHeading: /See the blueprint take shape/i },
+  { name: "Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i },
   { name: "Quality Lab planner intake", path: "/quality-lab/planner", readyHeading: /You do not need to know every lab number/i },
+  { name: "Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic", readyHeading: /Leave with a scoped decision/i },
   { name: "public Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i },
-  { name: "Method Navigator", path: "/methods", readyHeading: /Find what Atlas covers—and what it does not/i },
+  { name: "Method Navigator", path: "/methods", readyHeading: /Ask the method question/i },
   { name: "Academy trust-corridor lesson", path: "/library/method-suitability-nonsterile-products", readyHeading: /Method suitability for non-sterile products/i },
   { name: "Blog trust-corridor guide", path: "/blog/how-to-validate-a-quality-lab-domain-pack", readyHeading: /How to validate a Quality Lab Domain Pack/i },
   { name: "pricing", path: "/pricing", readyHeading: /Start with the decision you need to make/i },
+  { name: "All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i },
+  { name: "Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i },
+  { name: "Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i },
   { name: "mobile Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i, viewport: { width: 390, height: 844 } },
-  { name: "mobile Method Navigator", path: "/methods", readyHeading: /Find what Atlas covers—and what it does not/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic", readyHeading: /Leave with a scoped decision/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Method Navigator", path: "/methods", readyHeading: /Ask the method question/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i, viewport: { width: 390, height: 844 } },
 ];
 
 async function preparePage(page: Page, target: AuditTarget) {
@@ -72,16 +82,36 @@ test.describe("automated accessibility", () => {
     await page.keyboard.press("Shift+Tab");
     await page.keyboard.press("Enter");
 
-    await expect(page.getByRole("heading", { name: /Build with Atlas guidance/i })).toBeVisible();
+    const plannerHeading = page.getByRole("heading", { name: /Build with Atlas guidance/i });
+    await expect(plannerHeading).toBeVisible();
+    await expect(plannerHeading).toBeFocused();
     await expect(page.getByRole("button", { name: "Non-sterile pharma" })).toHaveAttribute("aria-pressed", "true");
     const lockedStep = page.getByRole("button", { name: /Testing demand\. Locked\. Complete Project basis before opening Testing demand/i });
     await expect(lockedStep).toBeDisabled();
     await expect(lockedStep).toHaveAttribute("title", "Complete Project basis before opening Testing demand.");
   });
 
+  test("planner start-mode transition restores the mobile viewport to the new form", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/quality-lab/planner");
+
+    await page.getByRole("button", { name: /Guide me from the decision/i }).click();
+
+    const plannerHeading = page.getByRole("heading", { name: /Build with Atlas guidance/i });
+    await expect(plannerHeading).toBeFocused();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    await expect(page.getByRole("button", { name: /Choose start/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Saved projects/i })).toBeVisible();
+  });
+
   for (const target of [
     { name: "homepage", path: "/" },
     { name: "planner intake", path: "/quality-lab/planner" },
+    { name: "Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic" },
+    { name: "pricing", path: "/pricing" },
+    { name: "All Products Decision Router", path: "/products" },
+    { name: "Atlas Pro review canvas", path: "/pro" },
+    { name: "Career Proof Studio", path: "/career" },
   ]) {
     test(`${target.name} reflows without document-level horizontal scrolling at 320 CSS pixels`, async ({ page }) => {
       await page.setViewportSize({ width: 320, height: 640 });

@@ -23,9 +23,10 @@ running a separate CMS.
   (`title, slug, lang, tier, category, seoDescription, updatedAt`) + MDX prose
   body. This is the canonical format for new content.
 - **Build-time loader** (`client/src/lib/content.ts`): `import.meta.glob` over
-  `content/**/*.mdx` (via `@mdx-js/rollup` + `remark-mdx-frontmatter`) exposes
-  `listContent()` / `getContentBySlug()` filtered by collection/lang/tier.
-  Adding a file makes it appear automatically — no component edits.
+  public blog bodies compiles MDX through `@mdx-js/rollup`. Listing and SEO
+  metadata come from the generated manifest, which parses YAML frontmatter
+  once with `gray-matter`; MDX modules do not duplicate that metadata as a
+  named export. Adding a file makes it appear automatically — no component edits.
 - **Postgres (`content_entries`)** stores publish state, sort order, and view
   counts keyed by `(slug, lang)`; a seed script syncs frontmatter → DB. The
   MDX file remains the source of truth for *content*; the DB is the source of

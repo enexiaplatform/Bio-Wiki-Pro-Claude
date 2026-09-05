@@ -388,9 +388,18 @@ export const qualityLabBlueprintSchema = z.object({
 
 export type QualityLabBlueprint = z.infer<typeof qualityLabBlueprintSchema>;
 
+export const qualityLabProjectOriginValues = ["user-entered", "illustrative-example"] as const;
+export type QualityLabProjectOrigin = typeof qualityLabProjectOriginValues[number];
+
 export interface QualityLabProject {
   id: string;
   name: string;
+  /**
+   * Illustrative examples stay browser-local and cannot enter account sync or
+   * commercial review. Reserved Casebook product IDs also fail closed so
+   * projects created before origin tagging cannot enter the commercial path.
+   */
+  origin?: QualityLabProjectOrigin;
   createdAt: string;
   updatedAt: string;
   input: QualityLabInput;
@@ -401,6 +410,11 @@ export interface QualityLabProject {
   revisions?: QualityLabFrozenRevision[];
   activeRevisionId?: string;
   reviewRequestedAt?: string;
+}
+
+export function isIllustrativeQualityLabProject(project: Pick<QualityLabProject, "origin" | "input"> | null | undefined) {
+  return project?.origin === "illustrative-example"
+    || project?.input.productProfiles.some((product) => product.id.startsWith("case-")) === true;
 }
 
 export const defaultQualityLabInput: QualityLabInput = {
@@ -1529,7 +1543,11 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
   return parsed;
 }
 
-export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date.now().toString(36)}`): QualityLabProject {
+export function createQualityLabProject(
+  input: QualityLabInput,
+  id = `qlp_${Date.now().toString(36)}`,
+  origin: QualityLabProjectOrigin = "user-entered",
+): QualityLabProject {
   const now = new Date().toISOString();
   const parsedInput = qualityLabInputSchema.parse(input);
   const blueprint = compileQualityLabBlueprint(parsedInput);
@@ -1537,6 +1555,7 @@ export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date
   return {
     id,
     name: parsedInput.projectName,
+    origin,
     createdAt: now,
     updatedAt: now,
     input: parsedInput,

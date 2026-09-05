@@ -26,6 +26,16 @@ function completeUniqueKeys(): RuntimeSchemaUniqueKeyRow[] {
 }
 
 describe("runtime schema assessment", () => {
+  it.each(["regulatory_alert_preferences", "lifecycle_sends", "nurture_sends", "checkout_attempts", "lesson_reads"])("fails readiness when lifecycle dependency %s is missing", (table) => {
+    const assessment = assessRuntimeSchema(completeRows().filter((row) => row.table_name !== table), completeUniqueKeys());
+    expect(assessment.ready).toBe(false);
+    expect(assessment.missingTables).toContain(table);
+  });
+
+  it("requires digest opt-in and send deduplication keys", () => {
+    expect(RUNTIME_SCHEMA_REQUIREMENTS.find((item) => item.table === "regulatory_alert_preferences")?.uniqueKeys).toContainEqual(["user_id"]);
+    expect(RUNTIME_SCHEMA_REQUIREMENTS.find((item) => item.table === "lifecycle_sends")?.uniqueKeys).toContainEqual(["user_id", "kind"]);
+  });
   it("accepts the exact current Gate 1 schema contract", () => {
     const assessment = assessRuntimeSchema(completeRows(), completeUniqueKeys());
 
