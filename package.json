@@ -30,7 +30,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:critical": "playwright test --grep \"homepage leads|first-session onboarding|quality lab funnel|signed-in user explicitly saves|Decision Workspace preserves|commercial handoff traces|illustrative Blueprint sample|method navigator|regulatory monitor|Pro Lab Workbench|decision package guides|admin can inspect|automated accessibility\"",
+    "test:e2e:critical": "playwright test --grep \"homepage leads|first-session onboarding|quality lab funnel|funnel recovery|Pro Workbench preview fits|signed-in user explicitly saves|Decision Workspace preserves|commercial handoff traces|illustrative Blueprint sample|method navigator|regulatory monitor|Pro Lab Workbench|decision package guides|admin can inspect|automated accessibility\"",
     "test:e2e:a11y": "playwright test e2e/accessibility.spec.ts"
   },
   "dependencies": {

@@ -46,7 +46,37 @@ During P0, do not run `db:push` or alter the production schema. `GET /api/health
 
 `GET /api/health` reports `commerceMode`, `diagnosticTestReady`, `commerceReady`, and boolean schema/origin readiness without returning connection details or secrets. `diagnosticTestReady` means a preview can complete a Stripe test-mode acceptance journey. `commerceReady` remains false unless `COMMERCE_MODE=live`, the Stripe key is live, all email/inbox/database/session requirements are ready, the schema check passes, and the origin is a custom domain. Production stays `COMMERCE_MODE=disabled` for this pilot cycle.
 
-`npm run audit:schema` is the protected operator companion to that public boolean. It queries `information_schema.columns` plus names-only `pg_catalog` index metadata, reads no application rows and prints only required object names, structural issues and counts. Use `npm run audit:schema -- --json` for a machine-readable handoff. Its contract is derived from the current Drizzle definitions and covers ten Gate 1 tables, 82 column contracts and the primary/unique keys required for identity, idempotency and conflict-safe persistence: users, sessions, purchases, Stripe-event idempotency, Scope Diagnostic intake, reviewed projects/revisions, governance records/revisions and the privacy-minimal funnel.
+`npm run audit:schema` is the protected operator companion to that public boolean. It queries `information_schema.columns` plus names-only `pg_catalog` index metadata, reads no application rows and prints only required object names, structural issues and counts. Use `npm run audit:schema -- --json` for a machine-readable handoff. Its contract is derived from the current Drizzle definitions and covers 15 Gate 1/lifecycle tables, 105 column contracts and 25 primary/unique keys. This includes identity, idempotency, conflict-safe persistence, the privacy-minimal funnel, regulatory preferences, lifecycle/nurture guards, checkout attempts and reading activity. Invalid or not-ready unique indexes do not satisfy the check.
+
+### Runtime foundation recheck — 5 September 2026
+
+Production and PR #9 preview health remain degraded with `schema:false`.
+Protected Production inspection confirms exactly two missing tables:
+`quality_lab_funnel_events` and `regulatory_alert_preferences`; the other 13
+required tables and 86 columns pass. The read-only repair preflight passes for
+the [versioned reconciliation proposal](../migrations/reconciliation/README.md).
+It has not been applied to Production or Preview. The historical migration
+ledger remains unreconciled.
+
+The environment-name audit still finds no Diagnostic Price, Resend key or email
+sender configuration; Preview additionally lacks a Stripe secret, commercial
+inbox and cron secret. Presence of other names does not prove credential validity,
+inbox monitoring or delivery. Separate test checkout/email acceptance is still
+required. Production commerce remains disabled.
+
+Funnel receipt persistence failures now return HTTP 503 with `accepted:false`;
+the browser makes at most three attempts using the same event ID, with bounded
+timeouts and no persistent project-data queue. Duplicate insertion is accepted.
+Retries remain best effort and do not recover receipts after page closure or
+historical events lost while the table was missing.
+
+Lifecycle jobs record a send guard only after provider acceptance. A rejected
+send, storage failure or official-feed outage produces an overall HTTP 503;
+independent jobs remain isolated and logs contain fixed operational codes rather
+than raw errors. Provider acceptance is not inbox delivery. Sending and recording
+the guard are separate operations, so a provider success followed by a database
+failure or concurrent cron invocations can still cause duplicate mail; this
+change does not claim exactly-once external delivery.
 
 The interim public/canonical origin is `https://life-science-atlas-enexiaplatforms-projects.vercel.app`. Preview deployments in `COMMERCE_MODE=test` derive Stripe redirect URLs from their own `VERCEL_URL` so they cannot redirect a test buyer to production.
 

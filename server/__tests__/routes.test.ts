@@ -98,10 +98,10 @@ vi.mock("../email.js", () => ({
   sendDunningEmail: vi.fn(() => Promise.resolve()),
   sendPasswordResetEmail: vi.fn(() => Promise.resolve()),
   sendVerificationEmail: vi.fn(() => Promise.resolve()),
-  sendNurtureEmail: vi.fn(() => Promise.resolve()),
-  sendTrialEndingEmail: vi.fn(() => Promise.resolve()),
-  sendAbandonedCheckoutEmail: vi.fn(() => Promise.resolve()),
-  sendReEngagementEmail: vi.fn(() => Promise.resolve()),
+  sendNurtureEmail: vi.fn(() => Promise.resolve(true)),
+  sendTrialEndingEmail: vi.fn(() => Promise.resolve(true)),
+  sendAbandonedCheckoutEmail: vi.fn(() => Promise.resolve(true)),
+  sendReEngagementEmail: vi.fn(() => Promise.resolve(true)),
   sendQualityLabWorkQueueEmail: vi.fn(() => Promise.resolve(true)),
   sendQualityLabWeeklyReviewEmail: vi.fn(() => Promise.resolve(true)),
   sendRegulatoryDigestEmail: vi.fn(() => Promise.resolve(true)),
@@ -111,6 +111,7 @@ vi.mock("../email.js", () => ({
 import { createApiApp } from "../app.js";
 import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
+import { fetchRegulatoryMonitor } from "../regulatory-monitor.js";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
 import { createQualityLabAccountSnapshot } from "../../shared/quality-lab-persistence.js";
 import { defaultCareerProfile } from "../../shared/career-blueprint.js";
@@ -288,9 +289,20 @@ describe("Quality Lab funnel receipts", () => {
     expect(storageMock.recordQualityLabFunnelEvent).not.toHaveBeenCalled();
   });
 
-  it("never blocks the journey when persistence is unavailable", async () => {
+  it("reports a retryable receipt failure without leaking database details", async () => {
     const app = await buildApp();
-    storageMock.recordQualityLabFunnelEvent.mockRejectedValueOnce(new Error("table missing"));
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    storageMock.recordQualityLabFunnelEvent.mockRejectedValueOnce(new Error("private database detail"));
+    const res = await request(app).post("/api/quality-lab/funnel-events").send(event);
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({ accepted: false, recorded: false });
+    expect(JSON.stringify(log.mock.calls)).not.toContain("private database detail");
+    log.mockRestore();
+  });
+
+  it("acknowledges an idempotent duplicate without requesting retries", async () => {
+    const app = await buildApp();
+    storageMock.recordQualityLabFunnelEvent.mockResolvedValueOnce(undefined);
     const res = await request(app).post("/api/quality-lab/funnel-events").send(event);
     expect(res.status).toBe(202);
     expect(res.body).toEqual({ accepted: true, recorded: false });
@@ -1200,6 +1212,67 @@ describe("lifecycle cron (/api/cron/nurture)", () => {
     else process.env.CRON_SECRET = OLD;
   });
   const auth = (a: request.Test) => a.set("Authorization", "Bearer s3cret");
+
+  it.each(["nurture", "trial", "checkout", "reengagement"])("preserves retry eligibility when %s email is rejected", async (job) => {
+    const app = await buildApp();
+    if (job === "nurture") {
+      storageMock.getNurtureCandidates.mockResolvedValueOnce([{ id: "u1", email: "a@b.com", createdAt: new Date(Date.now() - 2 * 86400000) }]);
+      vi.mocked(email.sendNurtureEmail).mockResolvedValueOnce(false);
+    } else if (job === "trial") {
+      storageMock.getTrialEndingCandidates.mockResolvedValueOnce([{ id: "u1", email: "a@b.com", proExpiresAt: new Date(Date.now() + 86400000) }]);
+      vi.mocked(email.sendTrialEndingEmail).mockResolvedValueOnce(false);
+    } else {
+      storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+      if (job === "checkout") {
+        storageMock.getRecentCheckoutAttempts.mockResolvedValueOnce([{ userId: "u1", productType: "pro_subscription" }]);
+        vi.mocked(email.sendAbandonedCheckoutEmail).mockResolvedValueOnce(false);
+      } else {
+        storageMock.getReEngagementCandidates.mockResolvedValueOnce(["u1"]);
+        vi.mocked(email.sendReEngagementEmail).mockResolvedValueOnce(false);
+      }
+    }
+    storageMock.wasLifecycleSent.mockResolvedValue(false);
+    const response = await auth(request(app).get("/api/cron/nurture"));
+    expect(response.status).toBe(503);
+    expect(response.body.ok).toBe(false);
+    expect(storageMock.recordLifecycleSend).not.toHaveBeenCalled();
+    expect(storageMock.recordNurtureSend).not.toHaveBeenCalled();
+  });
+
+  it("isolates storage failures, sanitizes logs, and reports degraded execution", async () => {
+    const app = await buildApp();
+    const log = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    storageMock.getRegulatoryDigestCandidates.mockRejectedValueOnce(new Error("private customer payload"));
+    const response = await auth(request(app).get("/api/cron/nurture"));
+    expect(response.status).toBe(503);
+    expect(response.body.ok).toBe(false);
+    expect(response.body.regulatoryDigest).toHaveProperty("error");
+    expect(response.body.nurture).toMatchObject({ sent: 0 });
+    expect(JSON.stringify(log.mock.calls)).not.toContain("private customer payload");
+    log.mockRestore();
+  });
+
+  it("does not send abandoned checkout mail when purchase status cannot be verified", async () => {
+    const app = await buildApp();
+    storageMock.getRecentCheckoutAttempts.mockResolvedValueOnce([{ userId: "u1", productType: "gmp_audit_kit" }]);
+    storageMock.getUser.mockResolvedValueOnce({ id: "u1", email: "a@b.com", isPro: false });
+    storageMock.hasCompletedPurchase.mockRejectedValueOnce(new Error("unavailable"));
+    const response = await auth(request(app).get("/api/cron/nurture"));
+    expect(response.status).toBe(503);
+    expect(email.sendAbandonedCheckoutEmail).not.toHaveBeenCalled();
+    expect(storageMock.recordLifecycleSend).not.toHaveBeenCalled();
+  });
+
+  it("reports official-source outages even when no digest is sent", async () => {
+    const app = await buildApp();
+    vi.mocked(fetchRegulatoryMonitor).mockResolvedValueOnce({
+      generatedAt: new Date().toISOString(), items: [],
+      sources: [{ ok: false }],
+    } as unknown as Awaited<ReturnType<typeof fetchRegulatoryMonitor>>);
+    const response = await auth(request(app).get("/api/cron/nurture"));
+    expect(response.status).toBe(503);
+    expect(response.body).toMatchObject({ ok: false, regulatoryDigest: { sourceFailures: 1 } });
+  });
 
   it("401 with a wrong secret", async () => {
     const app = await buildApp();

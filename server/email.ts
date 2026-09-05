@@ -335,10 +335,10 @@ export async function sendTrialEndingEmail(
   daysLeft: number,
   endDate: Date,
   firstName?: string,
-): Promise<void> {
+): Promise<boolean> {
   if (!resend) {
     logEmailDisabled("trial ending");
-    return;
+    return false;
   }
   const name = firstName ?? "there";
   const when = daysLeft <= 1 ? "tomorrow" : `in ${daysLeft} days`;
@@ -354,14 +354,20 @@ export async function sendTrialEndingEmail(
     <p style="font-size:13px;color:#64748b;">Questions about Pro? Just reply — we read every email.</p>
   `);
   try {
-    await resend.emails.send({
+    const response = await resend.emails.send({
       from: FROM_EMAIL,
       to,
       subject: daysLeft <= 1 ? "Your Pro trial ends tomorrow — Life Science Atlas" : `Your Pro trial ends in ${daysLeft} days`,
       html,
     });
+    if (response.error) {
+      logEmailFailure("trial ending", response.error);
+      return false;
+    }
+    return true;
   } catch (err) {
     logEmailFailure("trial ending", err);
+    return false;
   }
 }
 
@@ -381,10 +387,10 @@ export async function sendAbandonedCheckoutEmail(
   to: string,
   productType: string,
   firstName?: string,
-): Promise<void> {
+): Promise<boolean> {
   if (!resend) {
     logEmailDisabled("abandoned checkout");
-    return;
+    return false;
   }
   const name = firstName ?? "there";
   const label = PRODUCT_LABELS[productType] ?? "your Life Science Atlas order";
@@ -399,22 +405,28 @@ export async function sendAbandonedCheckoutEmail(
     <p style="font-size:13px;color:#64748b;">If something got in the way or you have a question, just reply — happy to help.</p>
   `);
   try {
-    await resend.emails.send({
+    const response = await resend.emails.send({
       from: FROM_EMAIL,
       to,
       subject: "You left something behind — Life Science Atlas",
       html,
     });
+    if (response.error) {
+      logEmailFailure("abandoned checkout", response.error);
+      return false;
+    }
+    return true;
   } catch (err) {
     logEmailFailure("abandoned checkout", err);
+    return false;
   }
 }
 
 // Re-engagement nudge for a learner who went quiet (last lesson 7–14 days ago).
-export async function sendReEngagementEmail(to: string, firstName?: string): Promise<void> {
+export async function sendReEngagementEmail(to: string, firstName?: string): Promise<boolean> {
   if (!resend) {
     logEmailDisabled("re-engagement");
-    return;
+    return false;
   }
   const name = firstName ?? "there";
   const html = htmlWrapper(`
@@ -427,14 +439,20 @@ export async function sendReEngagementEmail(to: string, firstName?: string): Pro
     <p style="font-size:13px;color:#64748b;">Not the right time? No problem — your spot will be here.</p>
   `);
   try {
-    await resend.emails.send({
+    const response = await resend.emails.send({
       from: FROM_EMAIL,
       to,
       subject: "Your QC/QA progress is waiting — Life Science Atlas",
       html,
     });
+    if (response.error) {
+      logEmailFailure("re-engagement", response.error);
+      return false;
+    }
+    return true;
   } catch (err) {
     logEmailFailure("re-engagement", err);
+    return false;
   }
 }
 
@@ -562,23 +580,29 @@ export async function sendQualityLabWeeklyReviewEmail(
   }
 }
 
-export async function sendNurtureEmail(to: string, step: number, firstName?: string): Promise<void> {
+export async function sendNurtureEmail(to: string, step: number, firstName?: string): Promise<boolean> {
   const content = NURTURE_CONTENT[step];
-  if (!content) return;
+  if (!content) return false;
   if (!resend) {
     logEmailDisabled("nurture");
-    return;
+    return false;
   }
   const name = firstName ?? "there";
   try {
-    await resend.emails.send({
+    const response = await resend.emails.send({
       from: FROM_EMAIL,
       to,
       subject: content.subject,
       html: htmlWrapper(content.body(name)),
     });
+    if (response.error) {
+      logEmailFailure(`nurture step ${step}`, response.error);
+      return false;
+    }
+    return true;
   } catch (err) {
     logEmailFailure(`nurture step ${step}`, err);
+    return false;
   }
 }
 
