@@ -74,6 +74,14 @@ export function candidatesFromMappings(
     const field = mapping.field as IntakeField;
     const cell = cells.find((c) => c.locator === mapping.locator);
     if (!cell) continue;
+    // The Compiler uses total horizon growth and a people reserve, not CAGR or N+1.
+    // Inspect the row and column heading before allowing an AI-selected numeric cell.
+    const sourceLabels = cells
+      .filter((c) => c.row === cell.row || (c.column === cell.column && c.row < cell.row))
+      .map((c) => c.text)
+      .join(" ");
+    if (field === "growthRatePercent" && /\b(annual|annually|cagr|yearly|per year)\b/i.test(sourceLabels)) continue;
+    if (field === "redundancyPercent" && /\b(equipment|incubator|autoclave|n\+1)\b/i.test(sourceLabels)) continue;
     const value = normalizeIntakeValue(field, cell.text);
     if (value === undefined) continue;
     const id = `${field}:${cell.locator}`;

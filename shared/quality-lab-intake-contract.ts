@@ -14,13 +14,13 @@ export const INTAKE_FIELDS = {
   emRoundsPerWeek: "Environmental monitoring rounds per week",
   mediaLotsPerMonth: "Media lots per month",
   targetTurnaroundDays: "Target turnaround days",
-  growthRatePercent: "Annual growth percent",
+  growthRatePercent: "Total growth over planning horizon percent",
   horizonYears: "Planning horizon years",
   workingDaysPerMonth: "Working days per month",
   shifts: "Shifts per day",
   productiveHoursPerShift: "Productive hours per shift",
   outsourcePercent: "Outsource percent",
-  redundancyPercent: "Redundancy percent",
+  redundancyPercent: "People capacity reserve percent",
 } as const;
 export type IntakeField = keyof typeof INTAKE_FIELDS;
 export const intakeFieldSchema = z.enum(

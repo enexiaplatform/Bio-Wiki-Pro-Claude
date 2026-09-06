@@ -6,6 +6,16 @@ import { createQualityLabAccountSnapshot,qualityLabProjectFromReviewedSnapshot }
 const file={fileName:"synthetic-plan.csv",fileSha256:"a".repeat(64)};
 const candidates=(text:string)=>extractCsvCandidates(parseQualityLabCsv(text).cells,file);
 describe("confirmed project intake",()=>{
+  it("does not reinterpret annual growth or equipment redundancy as canonical reserves",()=>{
+    expect(candidates("Annual growth percent,20")).toEqual([]);
+    for (const text of ["Annual growth percent,20", "Annual growth percent\n20"]) {
+      const cells=parseQualityLabCsv(text).cells;
+      expect(candidatesFromMappings(cells,[{field:"growthRatePercent",locator:cells[cells.length-1].locator}],file,"ai-csv-field-map/v1")).toEqual([]);
+    }
+    const cells=parseQualityLabCsv("Equipment redundancy percent,20").cells;
+    expect(candidatesFromMappings(cells,[{field:"redundancyPercent",locator:"B1"}],file,"ai-csv-field-map/v1")).toEqual([]);
+    expect(candidates("Total growth over planning horizon percent,70\nPeople capacity reserve percent,20").map(c=>[c.field,c.value])).toEqual([["growthRatePercent",70],["redundancyPercent",20]]);
+  });
   it("extracts literal facts and exact locators without changing input",()=>{
     const before=JSON.stringify(defaultQualityLabInput);
     const rows=candidates('Finished products,42\nMonthly batches,36\nMarkets,"EU,Vietnam"');
