@@ -30,7 +30,7 @@ code, verification, and external requirements; it does not redefine the full goa
 | Phase | Current evidence | Remaining outcome |
 | --- | --- | --- |
 | 0. Commercial/runtime foundation | Expanded schema audit; transactional two-table repair proposal; truthful lifecycle acceptance/status; bounded idempotent funnel retry; mobile Workbench correction | Owner-approved target repair with verified backup/restore and production-like staging rehearsal; isolated Preview credentials/schema; Stripe/email/inbox acceptance; deployed runtime verification |
-| 1. File intake | Browser-local CSV candidates; optional authenticated AI cell mapping; explicit confirmation; versioned source history in existing snapshots/revisions; privacy-safe journey stages; 63 focused tests and 20 endpoint tests | Publish and verify Preview; operator-configured synthetic AI acceptance. Native XLSX/PDF/DOCX deferred deliberately; export the relevant sheet as CSV |
+| 1. File intake | Published and Preview-verified browser-local CSV candidates; optional authenticated AI cell mapping; explicit confirmation; versioned source history in existing snapshots/revisions; privacy-safe journey stages; 64 focused tests and 20 endpoint tests | Operator-configured synthetic AI acceptance. Native XLSX/PDF/DOCX deferred deliberately; export the relevant sheet as CSV |
 | 2. Decision Twin | Existing scenario, sensitivity, turnaround, resilience, non-routine, skill/shift and operating-model engines | One project workspace and small assumption set; before/after consequences; exact first equipment/constraint threshold; stored/current engine mismatch guard and explicit revision save |
 | 3. Challenge | Readiness, sensitivity verification queue, decision register, unresolved evidence and lineage | Transparent deterministic impact ranking; concrete decision-changing findings/actions; source and score inspection; no arbitrary LLM numerical severity |
 | 4. Role lenses | Blueprint already has QC/QA/engineering/procurement and executive/technical modes | Consolidate same-model stakeholder decisions including finance; avoid parallel state or calculations |
@@ -82,7 +82,29 @@ source conflict, provenance edits, reflow/accessibility, empty/malformed recover
 AI consent, loading and service failure. Both screen sizes also compile, save
 and reload the imported basis with its provenance intact. Synthetic data only;
 no real provider call. The complete critical browser suite passes 49 tests.
-Preview verification follows publication of this slice.
+Published commits: `fe680d9` plus `19434f7`, which corrects total-horizon growth
+and people-reserve labels and rejects annual-rate/equipment-reserve mappings.
+CI on `19434f7` passed validation, unit/server tests, build, dependency audit
+and 49 critical browser journeys. All four intake journeys also passed against
+the Ready Preview `life-science-atlas-emwk968bd-enexiaplatforms-projects.vercel.app`.
+The deployed capability endpoint returns `aiAvailable:false`. Health and
+deployment-specific runtime logs still expose the known two missing tables and
+funnel receipt 503s; no target schema changes have occurred.
+
+Decision Twin work has begun locally: an orchestration core reuses the existing
+Compiler and scenario comparison, rejects stale saved input/output/engine bases,
+and exhaustively probes whole-batch equipment transitions within a declared range.
+Six focused tests pass. The synthetic default model's first observed transition
+is BSC planning-horizon quantity 5→6 at 53 batches/month; it is not an incubator
+or installed-capacity claim. The report now embeds a workspace with six
+assumptions, existing comparison outputs, first threshold, unresolved evidence,
+specialist links and an explicit separate-scenario save. The original and its
+review records remain unchanged. Full unit/server validation passes 680 tests;
+validation/type-check, build and 52 critical browser tests pass. Three Twin
+browser tests cover desktop/mobile scenario creation, accessibility/reflow and
+invalid-input recovery. Desktop/mobile rendered results were inspected.
+See [ADR 0006](adr/0006-decision-twin-orchestration.md) for limitations and the
+remaining Phase 2 consolidation; this is not yet the complete Decision Twin.
 
 Next: finish release verification, then compose the existing calculation engines
 into the Decision Twin with exact first decision thresholds and lineage. The

@@ -87,6 +87,8 @@ const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD
 const date = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString("en-GB") : "—";
 const funnelLabels: Record<QualityLabFunnelStage, string> = {
   intake_file_selected: "Project CSV selected",
+  twin_opened: "Decision Twin opened",
+  twin_scenario_changed: "Decision Twin assumptions compared",
   intake_candidates_generated: "Intake candidates generated",
   intake_candidate_confirmed: "Intake candidate confirmed",
   onboarding_viewed: "First-session onboarding viewed",
