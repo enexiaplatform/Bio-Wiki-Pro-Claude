@@ -1,3 +1,4 @@
+import { IntakeProvenance } from "./FileIntake";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -324,6 +325,7 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
         </section>
       )}
 
+      <IntakeProvenance input={project.input} />
       <section id="decision-brief" className="mb-5 scroll-mt-32 rounded-2xl border border-amber-300/20 bg-gradient-to-br from-amber-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
         <div className="mb-6 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 print:border-slate-300 print:bg-white">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

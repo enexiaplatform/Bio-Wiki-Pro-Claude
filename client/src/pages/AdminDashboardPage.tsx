@@ -86,6 +86,9 @@ type Pipeline = {
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 const date = (value: string | null | undefined) => value ? new Date(value).toLocaleDateString("en-GB") : "—";
 const funnelLabels: Record<QualityLabFunnelStage, string> = {
+  intake_file_selected: "Project CSV selected",
+  intake_candidates_generated: "Intake candidates generated",
+  intake_candidate_confirmed: "Intake candidate confirmed",
   onboarding_viewed: "First-session onboarding viewed",
   onboarding_path_selected: "Strategic start selected",
   example_explored: "Illustrative example explored",

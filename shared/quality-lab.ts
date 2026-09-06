@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { intakeConfirmationSchema } from "./quality-lab-intake-contract.js";
 import {
   QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
   QUALITY_LAB_COMPILER_CORE_VERSION,
@@ -133,6 +134,8 @@ export const qualityLabInputSchema = z.object({
   analystAnnualCostUsd: z.number().min(0).max(500_000),
   productProfiles: z.array(productProfileSchema).max(500).default([]),
   portfolioIsComplete: z.boolean().default(false),
+  // Self-declared, explicitly confirmed import provenance; never regulatory evidence.
+  intakeProvenance: z.array(intakeConfirmationSchema).max(20).optional(),
 });
 
 export type QualityLabInput = z.infer<typeof qualityLabInputSchema>;

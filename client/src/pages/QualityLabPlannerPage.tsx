@@ -51,6 +51,8 @@ import {
   type QualityLabOperatingPresetId,
 } from "@shared/quality-lab-guidance";
 import { BlueprintReport } from "@/components/quality-lab/BlueprintReport";
+import { FileIntake, IntakeProvenance } from "@/components/quality-lab/FileIntake";
+import { applyIntakeConfirmations } from "@shared/quality-lab-intake";
 import { getQualityLabProject, saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
@@ -423,6 +425,11 @@ export default function QualityLabPlannerPage() {
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> Microbiology concept intake</span>
             <h1 className="mt-5 max-w-3xl text-3xl font-bold md:text-5xl">You do not need to know every lab number.</h1>
             <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 md:text-base">Tell Atlas what decision you face. We will suggest a transparent starting model, explain where each input usually comes from and mark every suggestion that still needs site confirmation.</p>
+            <FileIntake onApply={(records)=>{
+              setInput(applyIntakeConfirmations(createBlankQualityLabInput(),records));
+              setProject(null);setStep(0);setFurthestStep(0);setError(null);setFieldErrors({});setAppliedGuidance([]);setStartMode("import");
+              analytics.blueprintStartModeSelected("import");
+            }} />
             {error && <div role="alert" className="mt-5 rounded-xl border border-red-300/20 bg-red-300/10 p-3 text-sm text-red-100">{error}</div>}
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               <button type="button" onClick={beginGuided} className="relative rounded-2xl border border-teal-300/40 bg-teal-300/[0.10] p-5 text-left transition hover:-translate-y-0.5 hover:border-teal-300/65"><span className="absolute right-4 top-4 rounded-full bg-teal-300 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-slate-950">Recommended</span><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">Atlas-guided</p><h2 className="mt-2 text-lg font-bold">Guide me from the decision</h2><p className="mt-2 max-w-md text-xs leading-5 text-slate-300">Choose the closest demand and resilience pattern. Atlas proposes the first model; you confirm, replace or leave evidence open.</p></button>
@@ -458,6 +465,7 @@ export default function QualityLabPlannerPage() {
               {startMode === "import" && <span className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-sky-200">Imported input · not yet saved</span>}
               <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><FlaskConical className="h-3.5 w-3.5" /> {MICROBIOLOGY_DOMAIN_PACK.version} · concept</span>
               <h1 ref={plannerHeadingRef} tabIndex={-1} className="mt-4 rounded-sm text-3xl font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-300 md:mt-5 md:text-5xl">{startMode === "guided" ? "Build with Atlas guidance." : "Build the basis of design."}</h1>
+              <IntakeProvenance input={input} />
               <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400 md:text-base md:leading-7">{startMode === "guided" ? "Choose the closest pattern first. Atlas exposes every suggested assumption so you can confirm it, replace it with site data or leave it open for expert review." : "Add the operational facts you know. Atlas separates your inputs, concept assumptions and decisions that still need site verification."}</p>
             </div>
             <details className="rounded-xl border border-amber-300/20 bg-amber-300/5 p-3 text-xs leading-5 text-amber-100 lg:max-w-sm">

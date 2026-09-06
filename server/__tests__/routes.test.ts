@@ -3,6 +3,7 @@ import express from "express";
 import request from "supertest";
 import bcrypt from "bcryptjs";
 import { ATLAS_PRO_MONTHLY_REVIEW_VERSION, exampleAtlasProMonthlyInput } from "../../shared/atlas-pro-monthly";
+import { INTAKE_FIELDS } from "../../shared/quality-lab-intake-contract.js";
 
 // ── Mocks (vi.hoisted so the vi.mock factories can reference them) ────────────
 const { storageMock, constructEvent, verifyIdToken, checkoutCreate, portalCreate, fulfillStripeEventOnce, checkRuntimeSchema } = vi.hoisted(() => ({
@@ -72,6 +73,10 @@ vi.mock("../storage.js", () => ({ storage: storageMock }));
 vi.mock("../db.js", () => ({ connectionString: undefined, checkRuntimeSchema }));
 vi.mock("../stripe-fulfillment.js", () => ({ fulfillStripeEventOnce }));
 vi.mock("../regulatory-monitor.js", () => ({ fetchRegulatoryMonitor: vi.fn(() => Promise.resolve({ generatedAt: "2026-07-20T00:00:00.000Z", items: [], sources: [] })) }));
+vi.mock("../quality-lab-intake-ai.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../quality-lab-intake-ai.js")>();
+  return { ...actual, isQualityLabIntakeAiAvailable: vi.fn(), suggestQualityLabIntakeMappings: vi.fn() };
+});
 
 vi.mock("google-auth-library", () => ({
   OAuth2Client: class {
@@ -112,6 +117,7 @@ import { createApiApp } from "../app.js";
 import { DELIVERABLES } from "../deliverables.js";
 import * as email from "../email.js";
 import { fetchRegulatoryMonitor } from "../regulatory-monitor.js";
+import { isQualityLabIntakeAiAvailable, suggestQualityLabIntakeMappings, QualityLabIntakeAiError } from "../quality-lab-intake-ai.js";
 import { createQualityLabProject, defaultQualityLabInput } from "../../shared/quality-lab.js";
 import { createQualityLabAccountSnapshot } from "../../shared/quality-lab-persistence.js";
 import { defaultCareerProfile } from "../../shared/career-blueprint.js";
@@ -125,6 +131,103 @@ beforeEach(() => {
   vi.clearAllMocks();
   fulfillStripeEventOnce.mockResolvedValue({ duplicate: false, userId: "u1" });
   checkRuntimeSchema.mockResolvedValue(true);
+  vi.mocked(isQualityLabIntakeAiAvailable).mockReset().mockReturnValue(false);
+  vi.mocked(suggestQualityLabIntakeMappings).mockReset().mockRejectedValue(new QualityLabIntakeAiError("unavailable"));
+});
+
+describe("file intake assistance", () => {
+  const cells = [{ locator: "B2", text: "36" }];
+
+  async function intakeAgent() {
+    const agent = request.agent(await buildApp());
+    storageMock.getUserByEmail.mockResolvedValueOnce(undefined);
+    storageMock.createUser.mockResolvedValueOnce({ id: "intake-user", email: "intake@example.test", isPro: false });
+    const registered = await agent.post("/api/auth/register").send({ email: "intake@example.test", password: "pw123456" });
+    expect(registered.status).toBe(201);
+    return agent;
+  }
+
+  it.each([false, true])("reports public availability %s without exposing configuration", async (available) => {
+    vi.mocked(isQualityLabIntakeAiAvailable).mockReturnValue(available);
+    const response = await request(await buildApp()).get("/api/quality-lab/intake-capabilities");
+    expect(response.status).toBe(200);
+    expect(response.headers["cache-control"]).toBe("no-store");
+    expect(response.body).toEqual({ aiAvailable: available });
+    expect(suggestQualityLabIntakeMappings).not.toHaveBeenCalled();
+  });
+
+  it("requires a session before sending cells for assistance", async () => {
+    const response = await request(await buildApp()).post("/api/quality-lab/intake-assistance").send({ consent: true, cells });
+    expect(response.status).toBe(401);
+    expect(suggestQualityLabIntakeMappings).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { cells },
+    { consent: false, cells },
+    { consent: "true", cells },
+    { consent: true, cells, allowedFields: [{ key: "isPro", description: "override" }] },
+    { consent: true, cells, filename: "private.csv" },
+    { consent: true, cells: [{ locator: "B2", text: "36", value: 900 }] },
+    { consent: true, cells: [{ locator: "../../secret", text: "36" }] },
+    { consent: true, cells: [{ locator: "A1", text: "x".repeat(501) }] },
+    { consent: true, cells: [] },
+    { consent: true, cells: Array.from({ length: 501 }, (_, i) => ({ locator: `A${i + 1}`, text: "1" })) },
+  ])("rejects missing permission or unsupported payload %# before invoking AI", async (payload) => {
+    const agent = await intakeAgent();
+    const response = await agent.post("/api/quality-lab/intake-assistance").send(payload);
+    expect(response.status).toBe(400);
+    expect(response.headers["cache-control"]).toBe("no-store");
+    expect(response.body).toEqual({ message: "Confirm permission and provide a bounded CSV cell set.", code: "INVALID_REQUEST", requestId: expect.any(String) });
+    expect(suggestQualityLabIntakeMappings).not.toHaveBeenCalled();
+  });
+
+  it("uses the server field allowlist and returns candidate locators without modifying a project", async () => {
+    const mappings = [{ field: "finishedBatchesPerMonth", locator: "B2" }];
+    vi.mocked(suggestQualityLabIntakeMappings).mockResolvedValueOnce(mappings);
+    const agent = await intakeAgent();
+    const response = await agent.post("/api/quality-lab/intake-assistance").send({ consent: true, cells });
+    expect(response.status).toBe(200);
+    expect(response.headers["cache-control"]).toBe("no-store");
+    expect(response.body).toEqual({ version: "ai-csv-field-map/v1", mappings });
+    expect(suggestQualityLabIntakeMappings).toHaveBeenCalledExactlyOnceWith({
+      cells,
+      allowedFields: Object.entries(INTAKE_FIELDS).map(([key, description]) => ({ key, description })),
+    });
+    expect(storageMock.upsertQualityLabReviewedProject).not.toHaveBeenCalled();
+    expect(storageMock.syncQualityLabReviewedProject).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["unavailable", 503], ["invalid_input", 400], ["provider_failed", 503], ["invalid_response", 503], ["timeout", 503],
+  ] as const)("returns a bounded %s failure while local intake remains available", async (code, status) => {
+    vi.mocked(suggestQualityLabIntakeMappings).mockRejectedValueOnce(new QualityLabIntakeAiError(code));
+    const agent = await intakeAgent();
+    const response = await agent.post("/api/quality-lab/intake-assistance").send({ consent: true, cells });
+    expect(response.status).toBe(status);
+    expect(response.headers["cache-control"]).toBe("no-store");
+    expect(response.body).toEqual({
+      message: "Intake assistance is unavailable for this request. Local candidate review remains available.", code, requestId: expect.any(String),
+    });
+  });
+
+  it("suppresses unexpected provider errors and uploaded text in responses and logs", async () => {
+    const privateText = "SYNTHETIC_PRIVATE_DOCUMENT_MARKER";
+    vi.mocked(suggestQualityLabIntakeMappings).mockRejectedValueOnce(new Error(`Upstream error: ${privateText}`));
+    const agent = await intakeAgent();
+    const loggedError = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const response = await agent.post("/api/quality-lab/intake-assistance").send({ consent: true, cells: [{ locator: "A1", text: privateText }] });
+      expect(response.status).toBe(503);
+      expect(response.body).toEqual({
+        message: "Intake assistance is unavailable for this request. Local candidate review remains available.", code: "provider_failed", requestId: expect.any(String),
+      });
+      expect(response.text).not.toContain(privateText);
+      expect(loggedError).not.toHaveBeenCalled();
+    } finally {
+      loggedError.mockRestore();
+    }
+  });
 });
 
 describe("runtime readiness", () => {

@@ -25,6 +25,13 @@ function initPostHog() {
       api_host: "https://app.posthog.com",
       capture_pageview: false, // we track manually
       autocapture: false,
+      // Project source text is confidential; only explicit journey events are allowed.
+      disable_session_recording: true,
+      capture_dead_clicks: false,
+      capture_exceptions: false,
+      capture_heatmaps: false,
+      mask_all_text: true,
+      mask_all_element_attributes: true,
       persistence: "localStorage+cookie",
     });
     initialized = true;

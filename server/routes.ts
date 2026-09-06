@@ -38,6 +38,10 @@ import { qualityLabFunnelEventSchema } from "../shared/quality-lab-funnel.js";
 import { fulfillStripeEventOnce, type StripeFulfillment } from "./stripe-fulfillment.js";
 import { DECISION_PACKAGES } from "../shared/decision-packages.js";
 import { getDecisionPackageLearningFlow } from "../shared/decision-package-learning.js";
+import { INTAKE_FIELDS } from "../shared/quality-lab-intake-contract.js";
+import { isQualityLabIntakeAiAvailable, suggestQualityLabIntakeMappings, QualityLabIntakeAiError } from "./quality-lab-intake-ai.js";
+
+const intakeAiLimiter = rateLimit({windowMs:15*60*1000,limit:5,standardHeaders:true,legacyHeaders:false,validate:false,skip:()=>process.env.NODE_ENV==="test",message:{message:"Please wait before requesting more intake assistance."}});
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -912,6 +916,25 @@ export async function registerRoutes(app: Express): Promise<void> {
   });
 
   // ── Other routes ─────────────────────────────────────────────────────────
+
+  app.get("/api/quality-lab/intake-capabilities", (_req,res)=>{
+    res.setHeader("Cache-Control","no-store");
+    return res.json({aiAvailable:isQualityLabIntakeAiAvailable()});
+  });
+
+  app.post("/api/quality-lab/intake-assistance", isAuthenticated, intakeAiLimiter, async (req,res)=>{
+    res.setHeader("Cache-Control","no-store");
+    const parsed=z.object({consent:z.literal(true),cells:z.array(z.object({locator:z.string().regex(/^[A-Z]{1,2}[1-9][0-9]{0,2}$/),text:z.string().min(1).max(500)}).strict()).min(1).max(500)}).strict().safeParse(req.body);
+    if(!parsed.success)return res.status(400).json({message:"Confirm permission and provide a bounded CSV cell set."});
+    try {
+      const mappings=await suggestQualityLabIntakeMappings({cells:parsed.data.cells,allowedFields:Object.entries(INTAKE_FIELDS).map(([key,description])=>({key,description}))});
+      return res.json({version:"ai-csv-field-map/v1",mappings});
+    } catch(error) {
+      const code=error instanceof QualityLabIntakeAiError?error.code:"provider_failed";
+      // No cells, filenames, provider payloads, or raw errors in logs/responses.
+      return res.status(code==="invalid_input"?400:503).json({message:"Intake assistance is unavailable for this request. Local candidate review remains available.",code});
+    }
+  });
 
   app.post("/api/quality-lab/funnel-events", funnelEventLimiter, async (req: any, res) => {
     const parsed = qualityLabFunnelEventSchema.safeParse(req.body);

@@ -14,6 +14,9 @@ export const QUALITY_LAB_ACTIVATION_STAGES = [
 ] as const;
 
 export const QUALITY_LAB_COMMERCIAL_FUNNEL_STAGES = [
+  "intake_file_selected",
+  "intake_candidates_generated",
+  "intake_candidate_confirmed",
   "example_explored",
   "cta_clicked",
   "planner_started",

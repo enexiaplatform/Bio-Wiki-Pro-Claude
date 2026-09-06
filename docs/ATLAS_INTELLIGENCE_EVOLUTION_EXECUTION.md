@@ -1,6 +1,6 @@
 # Atlas intelligence evolution — execution record
 
-Updated 5 September 2026. Founder brief: confirmed file intake → living model →
+Updated 6 September 2026. Founder brief: confirmed file intake → living model →
 Challenge → simulation → decision → project-aware monitoring → controlled learning.
 `PRODUCT_SOURCE_OF_TRUTH.md` remains canonical. This record distinguishes shipped
 code, verification, and external requirements; it does not redefine the full goal.
@@ -30,7 +30,7 @@ code, verification, and external requirements; it does not redefine the full goa
 | Phase | Current evidence | Remaining outcome |
 | --- | --- | --- |
 | 0. Commercial/runtime foundation | Expanded schema audit; transactional two-table repair proposal; truthful lifecycle acceptance/status; bounded idempotent funnel retry; mobile Workbench correction | Owner-approved target repair with verified backup/restore and production-like staging rehearsal; isolated Preview credentials/schema; Stripe/email/inbox acceptance; deployed runtime verification |
-| 1. File intake | Existing planner imports canonical JSON only; local project/evidence confirmation and immutable revisions can be reused | Versioned extraction candidates, field-level provenance, normalization, explicit material-value confirmation, safe CSV/XLSX parsing first, malicious-document tests, persisted confirmation history and journey measurement; AI assistance must stay outside authoritative Compiler input |
+| 1. File intake | Browser-local CSV candidates; optional authenticated AI cell mapping; explicit confirmation; versioned source history in existing snapshots/revisions; privacy-safe journey stages; 63 focused tests and 20 endpoint tests | Publish and verify Preview; operator-configured synthetic AI acceptance. Native XLSX/PDF/DOCX deferred deliberately; export the relevant sheet as CSV |
 | 2. Decision Twin | Existing scenario, sensitivity, turnaround, resilience, non-routine, skill/shift and operating-model engines | One project workspace and small assumption set; before/after consequences; exact first equipment/constraint threshold; stored/current engine mismatch guard and explicit revision save |
 | 3. Challenge | Readiness, sensitivity verification queue, decision register, unresolved evidence and lineage | Transparent deterministic impact ranking; concrete decision-changing findings/actions; source and score inspection; no arbitrary LLM numerical severity |
 | 4. Role lenses | Blueprint already has QC/QA/engineering/procurement and executive/technical modes | Consolidate same-model stakeholder decisions including finance; avoid parallel state or calculations |
@@ -67,6 +67,23 @@ Funnel retries remain bounded and best effort across page closure. Email provide
 acceptance is not confirmed inbox delivery, and external send plus database guard
 is not atomic. These limits must remain visible in release/operating evidence.
 
-Next implementation slice after safe foundation preparation: CSV/XLSX candidate
-intake with local parsing, exact locators and explicit review, integrated into the
-existing planner and revision path. No new primary navigation item is needed.
+## Confirmed intake implementation
+
+The planner now accepts CSV project facts without applying unreviewed values.
+Source review shows filename, cell, literal text, extraction method, confidence
+category and missing inputs. Applied sources follow the same input snapshot into
+the Blueprint and identify later edits. Optional AI suggests field/cell pairs;
+it cannot author values or approve them. See [ADR 0005](adr/0005-confirmed-file-intake.md)
+for formats, limits, compatibility, privacy and operator configuration.
+
+Local verification: 90 unit/server files, 673 tests pass; validation/type-check
+and build pass. Four new browser tests pass, covering desktop/mobile confirmation,
+source conflict, provenance edits, reflow/accessibility, empty/malformed recovery,
+AI consent, loading and service failure. Both screen sizes also compile, save
+and reload the imported basis with its provenance intact. Synthetic data only;
+no real provider call. The complete critical browser suite passes 49 tests.
+Preview verification follows publication of this slice.
+
+Next: finish release verification, then compose the existing calculation engines
+into the Decision Twin with exact first decision thresholds and lineage. The
+full founder goal remains active; Phases 2–6 are not implied complete by intake.
