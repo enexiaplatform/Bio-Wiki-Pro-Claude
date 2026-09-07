@@ -1,4 +1,5 @@
 import type { QualityLabProject } from "./quality-lab.js";
+import { compileQualityLabBlueprint } from "./quality-lab.js";
 import {
   specialistBasisSchema,
   type SpecialistBasis,
@@ -286,4 +287,51 @@ export async function compareTwinSpecialists(
       };
     }
   });
+}
+
+/** Bounded exhaustive search for status transitions, not a claim of spare capacity.
+ * Already-failing baseline statuses are retained in coverage, even without a transition.
+ */
+export async function findTwinSpecialistThreshold(
+  project: QualityLabProject,
+  steps = 100,
+) {
+  const demand = project.input.finishedBatchesPerMonth;
+  const coverage = await compareTwinSpecialists(project, project);
+  const count = Number.isInteger(steps) && steps >= 1 && steps <= 1000 ? steps : 100;
+  const end = Math.min(100000, Math.floor(demand) + count);
+  const base = {
+    baselineDemand: demand,
+    testedThrough: demand,
+    testedStep: 1 as const,
+    firstChangedDemand: null as number | null,
+    coverage,
+    changes: [] as TwinSpecialistSummary[],
+  };
+  if (
+    inspectTwinBaseline(project) ||
+    !project.input.scope.finishedProducts ||
+    project.blueprint.finishedProductDemand.source !== "aggregate-input" ||
+    !coverage.some((item) => item.status === "ready")
+  ) return { ...base, status: "not-applicable" as const };
+  for (let next = Math.floor(demand) + 1; next <= end; next++) {
+    const input = { ...project.input, finishedBatchesPerMonth: next };
+    const scenario = {
+      ...project,
+      id: `${project.id}:threshold-probe`,
+      input,
+      blueprint: compileQualityLabBlueprint(input),
+    };
+    const summaries = await compareTwinSpecialists(project, scenario);
+    // A lost evaluation invalidates the search; it must not masquerade as stability.
+    if (coverage.some((item) => item.status === "ready" &&
+      summaries.find((candidate) => candidate.kind === item.kind)?.status !== "ready"))
+      return { ...base, status: "evaluation-failed" as const, testedThrough: next - 1 };
+    const changes = summaries.filter((item) => item.status === "ready" && item.before !== item.after);
+    if (changes.length) return {
+      ...base, status: "found" as const, testedThrough: next,
+      firstChangedDemand: next, changes,
+    };
+  }
+  return { ...base, status: "none-in-range" as const, testedThrough: end };
 }

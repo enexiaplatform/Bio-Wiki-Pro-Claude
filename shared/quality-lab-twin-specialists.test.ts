@@ -4,6 +4,7 @@ import {
   captureSpecialistBasis,
   compareTwinSpecialists,
   twinSourceBasisHash,
+  findTwinSpecialistThreshold,
 } from "./quality-lab-twin-specialists";
 import {
   defaultTurnaroundFeasibilityInput,
@@ -19,6 +20,24 @@ import {
 } from "./quality-lab-persistence";
 
 describe("accepted specialist basis", () => {
+  it("finds the first actual engine status transition with fixed accepted staffing", async () => {
+    const source = createQualityLabProject(defaultQualityLabInput, "synthetic-threshold");
+    const input = { ...defaultTurnaroundFeasibilityInput(source), analystFteAvailable: 4 };
+    const record = await captureSpecialistBasis(source, "turnaround", input);
+    const baseline = createQualityLabProject({ ...source.input, specialistBasis: [record] }, source.id);
+    const result = await findTwinSpecialistThreshold(baseline);
+    expect(result.status).toBe("found");
+    const before = evaluateTurnaroundFeasibility(baseline, input).overallStatus;
+    for (let demand = Math.floor(baseline.input.finishedBatchesPerMonth) + 1; demand < result.firstChangedDemand!; demand++) {
+      const candidate = createQualityLabProject({ ...baseline.input, finishedBatchesPerMonth: demand }, source.id);
+      expect(evaluateTurnaroundFeasibility(candidate, input).overallStatus).toBe(before);
+    }
+    expect(result.changes[0].before).toBe(before);
+    expect(result.changes[0].after).not.toBe(before);
+    expect(result.coverage.filter((item) => item.status === "missing")).toHaveLength(4);
+    expect((await findTwinSpecialistThreshold(baseline, 1)).status).toBe("none-in-range");
+    expect((await findTwinSpecialistThreshold(source)).status).toBe("not-applicable");
+  });
   it("persists all five versioned assumption sets through frozen/account snapshots", async () => {
     const source = createQualityLabProject(
       defaultQualityLabInput,

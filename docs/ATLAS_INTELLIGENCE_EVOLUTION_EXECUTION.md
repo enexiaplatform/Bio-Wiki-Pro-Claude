@@ -129,6 +129,18 @@ synthetic example shows the accepted turnaround basis changing from concept-fail
 to capacity-overload when batch demand changes; unavailable evidence remains
 explicit in the operating-model result.
 
+Specialist handoff commit 924fe6f passed CI run 34072740707 and all four Twin
+journeys on its Ready Preview. Runtime inspection still showed only the known
+sanitized funnel persistence failures in the returned error records.
+
+The subsequent local slice adds exhaustive specialist status-transition probing
+with explicit baseline coverage. The synthetic accepted four-analyst basis first
+changes turnaround status at 32 batches/month from a baseline of 30; this is an
+engine status transition, not evidence of verified site capacity. All 685
+unit/server tests, validation/type-check and build pass. Desktop and mobile
+threshold cards have been visually inspected. Full release verification of
+this slice remains pending.
+
 Next: finish release verification, then compose the existing calculation engines
 into the Decision Twin with exact first decision thresholds and lineage. The
 full founder goal remains active; Phases 2–6 are not implied complete by intake.

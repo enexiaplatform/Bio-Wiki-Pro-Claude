@@ -14,6 +14,7 @@ import { saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { recordQualityLabFunnelEvent } from "@/lib/quality-lab-funnel";
 import {
   compareTwinSpecialists,
+  findTwinSpecialistThreshold,
   SPECIALIST_LABELS,
   type TwinSpecialistSummary,
 } from "@shared/quality-lab-twin-specialists";
@@ -46,6 +47,7 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
   const [message, setMessage] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
   const [specialists, setSpecialists] = useState<TwinSpecialistSummary[]>([]);
+  const [operationalThreshold, setOperationalThreshold] = useState<Awaited<ReturnType<typeof findTwinSpecialistThreshold>> | null>(null);
   const generation = useRef(0);
   useEffect(() => {
     generation.current++;
@@ -56,6 +58,7 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
     );
     setResult(null);
     setThreshold(null);
+    setOperationalThreshold(null);
     setDirty(false);
     setSaved(null);
     setOpen(false);
@@ -92,6 +95,9 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
         });
         if (revision !== generation.current) return;
         setSpecialists(summaries);
+        const operational = await findTwinSpecialistThreshold(project);
+        if (revision !== generation.current) return;
+        setOperationalThreshold(operational);
         setThreshold(findTwinEquipmentThreshold(project));
         setDirty(false);
         if (!initial)
@@ -186,6 +192,28 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
             >
               {result.message}
             </p>
+          )}
+          {ready && operationalThreshold && !busy && (
+            <div role="region" aria-label="Specialist threshold search" className="mt-4 rounded-xl border border-teal-300/20 p-4">
+              <h3 className="font-semibold">First specialist status change from the saved baseline</h3>
+              <p className="mt-2 text-sm leading-6">
+                {operationalThreshold.status === "found"
+                  ? `First change at ${format(operationalThreshold.firstChangedDemand!)} batches/month, checking every whole batch above ${format(operationalThreshold.baselineDemand)}.`
+                  : operationalThreshold.status === "none-in-range"
+                    ? `No status transition through ${format(operationalThreshold.testedThrough)} batches/month. Existing failures remain failures; this does not establish spare capacity.`
+                    : "A complete status search is unavailable. Review the accepted specialist bases and project demand scope."}
+              </p>
+              {operationalThreshold.changes.map((item) => (
+                <p key={item.kind} className="mt-2 text-sm">{SPECIALIST_LABELS[item.kind]} ({item.horizon}): {item.before} → {item.after}</p>
+              ))}
+              <details className="mt-3 text-sm">
+                <summary className="cursor-pointer">Search coverage and assumptions</summary>
+                <p className="mt-2">Accepted staffing, fleet and calendar stay fixed. This tests engine status transitions, not every utilization or equipment quantity change. Missing analyses are outside the search.</p>
+                {operationalThreshold.coverage.map((item) => (
+                  <p className="mt-2" key={item.kind}>{SPECIALIST_LABELS[item.kind]}: {item.status === "ready" ? item.before : item.status}. {item.boundary}</p>
+                ))}
+              </details>
+            </div>
           )}
           {ready && threshold && !busy && (
             <article className="mt-5 rounded-xl border border-amber-300/25 bg-amber-300/[0.04] p-4">

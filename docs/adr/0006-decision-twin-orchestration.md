@@ -97,3 +97,18 @@ only explicit handoffs become part of the Twin's revisioned basis. Specialist
 engine outputs remain concept screens, with their original evidence and human
 review boundaries. Broader first-constraint search and navigation consolidation
 remain outstanding Phase 2 work.
+
+The next slice adds a bounded specialist status-transition search over accepted
+bases. It probes every whole batch above baseline, up to 100 additional batches
+by default, using the existing engines with fixed assumptions. It retains all
+five coverage states and baseline statuses: an already-failing result does not
+become safe merely because its status stays unchanged. Missing, stale or invalid
+bases are excluded explicitly; loss of an otherwise evaluable engine aborts the
+search. Portfolio-derived demand is not probed as an aggregate input.
+
+The UI separates these transitions from equipment quantity thresholds. Neither
+is described as a universal first constraint: specialist status aggregation can
+hide changes within an existing failure state. Tests compare every preceding
+demand step to the turnaround engine and verify missing-basis and bounded-range
+outcomes. Broader metric-level constraint coverage, sensitivity consolidation
+and simplified navigation remain required.

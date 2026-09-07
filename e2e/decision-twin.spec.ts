@@ -209,12 +209,16 @@ test("Decision Twin reconnects explicitly accepted specialist inputs across page
     .getByRole("button", { name: "Compare assumptions", exact: true })
     .click();
   await expect(twin.getByText(/Execution utilization:/)).toBeVisible();
+  const thresholdSearch = twin.getByRole("region", { name: "Specialist threshold search" });
+  await expect(thresholdSearch).toContainText("First change at");
+  await expect(thresholdSearch).toContainText("Turnaround");
   for(const width of [1440,390]){
     await page.setViewportSize({width,height:900});
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     const audit=await new AxeBuilder({page}).include('#decision-twin').withTags(["wcag2a","wcag2aa","wcag21aa"]).analyze();
     expect(audit.violations).toEqual([]);
     await twin.getByRole("region",{name:"Specialist consequences"}).screenshot({path:`artifacts/twin-specialists-${width}.png`});
+    await thresholdSearch.screenshot({path:`artifacts/twin-threshold-${width}.png`});
   }
   await twin.getByLabel("Shifts per day", { exact: true }).fill("2");
   await twin
