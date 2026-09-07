@@ -62,3 +62,38 @@ unmodified source projects, comparison deltas and invalid changes. Desktop and
 mobile browser tests cover simulation, a separate saved scenario, preserved
 origin, invalid-input recovery, accessibility and reflow. Only synthetic
 projects are used. Funnel stages contain no project name, values or source text.
+
+## Accepted specialist basis — 7 September 2026
+
+Turnaround, equipment resilience, non-routine load, skill/shift coverage and
+operating-model pages now offer an explicit reviewed-assumptions handoff. The
+user accepts the current analysis input as a planning basis, including any
+illustrative defaults; this is not verified site evidence or expert approval.
+Editing the input clears acceptance. A restore action recovers the accepted
+input only when its source still matches.
+
+The optional canonical-input `specialistBasis` array contains at most five
+`quality-lab-specialist-basis/v1` records. Each is a discriminated, validated
+specialist input, a confirmation time and a SHA-256 source-basis fingerprint.
+The hash covers canonical model inputs, engine/core and domain versions,
+excluding intake/provenance annotations and the specialist records themselves.
+This allows adding a basis without invalidating it, but invalidates it when
+model inputs change. Project identity is checked separately. No new database
+table or parallel project store is introduced; these additive versioned
+annotations travel through the existing input snapshot and account contract.
+
+Accepting a basis creates a new browser revision through the existing save path.
+It follows frozen revisions, exports and explicit account saves. Existing
+projects without the optional annotation remain valid. The Twin displays missing,
+invalid, duplicate and stale states instead of substituting default site facts.
+It runs the existing specialist engines twice with the same accepted operating
+assumptions, exposing status and selected before/after metrics with their time
+horizon and limits. Calendar/shift changes require separate reconciliation;
+their specialist deltas are withheld rather than silently overriding deployment
+or calendar assumptions. Saved alternate project IDs also require reconnection.
+
+The standalone operating-model draft store is preserved for compatibility, but
+only explicit handoffs become part of the Twin's revisioned basis. Specialist
+engine outputs remain concept screens, with their original evidence and human
+review boundaries. Broader first-constraint search and navigation consolidation
+remain outstanding Phase 2 work.

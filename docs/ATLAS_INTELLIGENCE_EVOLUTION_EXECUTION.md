@@ -1,6 +1,6 @@
 # Atlas intelligence evolution — execution record
 
-Updated 6 September 2026. Founder brief: confirmed file intake → living model →
+Updated 7 September 2026. Founder brief: confirmed file intake → living model →
 Challenge → simulation → decision → project-aware monitoring → controlled learning.
 `PRODUCT_SOURCE_OF_TRUTH.md` remains canonical. This record distinguishes shipped
 code, verification, and external requirements; it does not redefine the full goal.
@@ -31,7 +31,7 @@ code, verification, and external requirements; it does not redefine the full goa
 | --- | --- | --- |
 | 0. Commercial/runtime foundation | Expanded schema audit; transactional two-table repair proposal; truthful lifecycle acceptance/status; bounded idempotent funnel retry; mobile Workbench correction | Owner-approved target repair with verified backup/restore and production-like staging rehearsal; isolated Preview credentials/schema; Stripe/email/inbox acceptance; deployed runtime verification |
 | 1. File intake | Published and Preview-verified browser-local CSV candidates; optional authenticated AI cell mapping; explicit confirmation; versioned source history in existing snapshots/revisions; privacy-safe journey stages; 64 focused tests and 20 endpoint tests | Operator-configured synthetic AI acceptance. Native XLSX/PDF/DOCX deferred deliberately; export the relevant sheet as CSV |
-| 2. Decision Twin | Existing scenario, sensitivity, turnaround, resilience, non-routine, skill/shift and operating-model engines | One project workspace and small assumption set; before/after consequences; exact first equipment/constraint threshold; stored/current engine mismatch guard and explicit revision save |
+| 2. Decision Twin | Embedded six-assumption workspace, Compiler/comparison reuse, exact bounded equipment transitions, stale-baseline guard, separate scenario save; five specialist bases connected through explicit revisioned handoffs | Broader first-constraint search, sensitivity consolidation and simpler project navigation; deployed verification of specialist integration |
 | 3. Challenge | Readiness, sensitivity verification queue, decision register, unresolved evidence and lineage | Transparent deterministic impact ranking; concrete decision-changing findings/actions; source and score inspection; no arbitrary LLM numerical severity |
 | 4. Role lenses | Blueprint already has QC/QA/engineering/procurement and executive/technical modes | Consolidate same-model stakeholder decisions including finance; avoid parallel state or calculations |
 | 5. Impact Watch | Official-source metadata triage and explicit Pro digest opt-in exist | Match updates to current project methods/evidence/assumptions; potential-impact queue; explicit human disposition; fail closed without changing rules or Blueprint |
@@ -105,6 +105,29 @@ browser tests cover desktop/mobile scenario creation, accessibility/reflow and
 invalid-input recovery. Desktop/mobile rendered results were inspected.
 See [ADR 0006](adr/0006-decision-twin-orchestration.md) for limitations and the
 remaining Phase 2 consolidation; this is not yet the complete Decision Twin.
+
+First Twin slice `ec1f393` passed CI (680 unit/server tests, 52 critical browser
+checks), and its Ready Preview is
+`life-science-atlas-ji7fl19r9-enexiaplatforms-projects.vercel.app`. All three Twin
+journeys passed on that deployment. Its inspected runtime errors remain the
+known funnel persistence 503s; no schema repair has been applied.
+
+Current follow-up integrates five explicitly accepted specialist input sets into
+the existing revision/account snapshot path. The Twin compares existing engine
+results for the same accepted basis; stale model hashes, project mismatches,
+duplicate records and calendar changes fail closed. Four shared tests cover
+round trips, fixed staffing, stale records and calendar reconciliation. Browser
+coverage connects all five specialist pages, saves revisions and reopens the
+Twin. Broader constraint thresholds and unified navigation remain to complete.
+
+Specialist integration validation: 684 unit/server tests pass. All four Twin
+browser journeys pass, including acceptance reset after edits, restored inputs,
+five-page handoff, revision persistence, and desktop/mobile accessibility/reflow
+for the connected results. All 53 critical browser checks, validation/type-check
+and build pass. The inspected
+synthetic example shows the accepted turnaround basis changing from concept-fail
+to capacity-overload when batch demand changes; unavailable evidence remains
+explicit in the operating-model result.
 
 Next: finish release verification, then compose the existing calculation engines
 into the Decision Twin with exact first decision thresholds and lineage. The

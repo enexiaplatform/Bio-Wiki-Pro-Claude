@@ -1,3 +1,4 @@
+import { SpecialistBasisHandoff } from "@/components/quality-lab/SpecialistBasisHandoff";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
 import {
@@ -80,6 +81,7 @@ export default function QualityLabTurnaroundPage() {
           <p className="mt-3 max-w-4xl text-sm leading-7 text-slate-400">Monthly capacity can look sufficient while peaks, closed days, batching, handoffs or technical review still miss the release target. Screen those constraints explicitly before commissioning a detailed site simulation.</p>
         </header>
 
+    {project && input && <SpecialistBasisHandoff key={project.id} project={project} kind="turnaround" input={input} onRestore={setInput} />}
         {!project || !input || !result ? (
           <section className="mt-6 rounded-3xl border border-dashed border-white/15 bg-white/[0.025] px-6 py-16 text-center"><FlaskConical className="mx-auto h-8 w-8 text-slate-500" /><h2 className="mt-5 text-xl font-bold">A compiled Blueprint is required</h2><p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">Create a project first. Atlas uses its method demand, workflow durations and workforce model as the queue-screening basis.</p><Link href="/quality-lab/planner" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950">Build a Blueprint <ArrowRight className="h-4 w-4" /></Link></section>
         ) : (

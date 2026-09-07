@@ -12,6 +12,11 @@ import {
 } from "@shared/quality-lab";
 import { saveQualityLabProject } from "@/lib/quality-lab-projects";
 import { recordQualityLabFunnelEvent } from "@/lib/quality-lab-funnel";
+import {
+  compareTwinSpecialists,
+  SPECIALIST_LABELS,
+  type TwinSpecialistSummary,
+} from "@shared/quality-lab-twin-specialists";
 
 const fields = [
   ["finishedBatchesPerMonth", "Finished batches per month", 0, 100000],
@@ -40,6 +45,7 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
   const [dirty, setDirty] = useState(false);
   const [message, setMessage] = useState("");
   const [saved, setSaved] = useState<string | null>(null);
+  const [specialists, setSpecialists] = useState<TwinSpecialistSummary[]>([]);
   const generation = useRef(0);
   useEffect(() => {
     generation.current++;
@@ -78,6 +84,14 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
       const next = simulateQualityLabTwin(project, changes);
       setResult(next);
       if (next.status === "ready") {
+        const summaries = await compareTwinSpecialists(project, {
+          ...project,
+          id: `${project.id}:twin-preview`,
+          input: next.scenario.input,
+          blueprint: next.scenario,
+        });
+        if (revision !== generation.current) return;
+        setSpecialists(summaries);
         setThreshold(findTwinEquipmentThreshold(project));
         setDirty(false);
         if (!initial)
@@ -87,12 +101,13 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
           });
       }
     } catch {
+      if (revision !== generation.current) return;
       setResult(null);
       setMessage(
         "This model could not be simulated. Review its saved basis in the planner.",
       );
     } finally {
-      setBusy(false);
+      if (revision === generation.current) setBusy(false);
     }
   }
   function saveScenario() {
@@ -347,6 +362,64 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
                   No equipment quantity changes under these assumptions.
                 </p>
               )}
+              <section aria-label="Specialist consequences" className="mt-5">
+                <h3 className="font-bold">Operational consequences</h3>
+                <p className="mt-2 text-xs leading-6 text-slate-400">
+                  Accepted operating assumptions are held fixed in both models.
+                  Missing or stale bases are not replaced by invented site
+                  facts.
+                </p>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  {specialists.map((summary) => (
+                    <article
+                      key={summary.kind}
+                      className="rounded-xl border border-white/15 p-4"
+                    >
+                      <h4 className="text-sm font-bold">
+                        {SPECIALIST_LABELS[summary.kind]}
+                      </h4>
+                      {summary.status === "ready" ? (
+                        <>
+                          <p className="mt-2 text-sm">
+                            {summary.before?.replaceAll("-", " ")} →{" "}
+                            {summary.after?.replaceAll("-", " ")} ·{" "}
+                            {summary.horizon === "future"
+                              ? "planning horizon"
+                              : "current demand"}
+                          </p>
+                          <ul className="mt-2 space-y-1 text-xs">
+                            {summary.metrics?.map((metric) => (
+                              <li key={metric.label}>
+                                {metric.label}: {format(metric.before)} →{" "}
+                                {format(metric.after)} {metric.unit}
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      ) : (
+                        <p className="mt-2 text-sm text-amber-100">
+                          {summary.status === "missing"
+                            ? "Analysis basis needed"
+                            : "Review the analysis basis"}
+                        </p>
+                      )}
+                      <details className="mt-2 text-xs leading-6 text-slate-400">
+                        <summary className="cursor-pointer">
+                          Basis and limits
+                        </summary>
+                        <p>{summary.boundary}</p>
+                      </details>
+                      <Link
+                        href={`/quality-lab/${summary.kind}?project=${project.id}`}
+                        className="mt-2 inline-block py-2 text-xs text-teal-200 underline"
+                      >
+                        Review {SPECIALIST_LABELS[summary.kind].toLowerCase()}{" "}
+                        basis
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+              </section>
               <details className="mt-5 text-sm">
                 <summary className="cursor-pointer font-semibold">
                   What remains unresolved?
