@@ -67,12 +67,20 @@ export async function captureSpecialistBasis(
   return record;
 }
 
+export interface TwinSpecialistSignal {
+  id: string;
+  severity: string;
+  title: string;
+  description: string;
+  relatedRuleIds: string[];
+}
 export interface TwinSpecialistSummary {
   kind: SpecialistKind;
   status: "ready" | "missing" | "stale" | "invalid";
   horizon?: "current" | "future";
   before?: string;
   after?: string;
+  newSignals?: TwinSpecialistSignal[];
   metrics?: Array<{
     label: string;
     before: number;
@@ -99,6 +107,7 @@ function evaluate(project: QualityLabProject, record: SpecialistBasis) {
             ? "evidence-required"
             : "bounded-modes-evaluated",
         boundary: result.boundary,
+        signals: [] as TwinSpecialistSignal[],
         metrics: [
           {
             label: "Applications needing evidence",
@@ -121,6 +130,7 @@ function evaluate(project: QualityLabProject, record: SpecialistBasis) {
       return {
         status: result.overallStatus,
         boundary: result.boundary,
+        signals: result.signals,
         metrics: [
           {
             label: "Execution utilization",
@@ -143,6 +153,7 @@ function evaluate(project: QualityLabProject, record: SpecialistBasis) {
       return {
         status: result.overallStatus,
         boundary: result.boundary,
+        signals: result.signals,
         metrics: [
           {
             label: "Single points of failure",
@@ -165,6 +176,7 @@ function evaluate(project: QualityLabProject, record: SpecialistBasis) {
       return {
         status: result.overallStatus,
         boundary: result.boundary,
+        signals: result.signals,
         metrics: [
           {
             label: "Analyst utilization",
@@ -187,6 +199,7 @@ function evaluate(project: QualityLabProject, record: SpecialistBasis) {
       return {
         status: result.overallStatus,
         boundary: result.boundary,
+        signals: result.signals,
         metrics: [
           {
             label: "Execution people gap",
@@ -270,6 +283,9 @@ export async function compareTwinSpecialists(
             : record.input.demandHorizon,
         before: before.status,
         after: after.status,
+        newSignals: after.signals.filter((signal) =>
+          (signal.severity === "critical" || signal.severity === "watch") &&
+          !before.signals.some((old) => old.id === signal.id && old.severity === signal.severity)),
         metrics: before.metrics.map((metric, index) => ({
           label: metric.label,
           before: metric.value,
@@ -289,7 +305,7 @@ export async function compareTwinSpecialists(
   });
 }
 
-/** Bounded exhaustive search for status transitions, not a claim of spare capacity.
+/** Bounded search for engine status transitions and new warning signals, not spare capacity.
  * Already-failing baseline statuses are retained in coverage, even without a transition.
  */
 export async function findTwinSpecialistThreshold(
@@ -327,7 +343,8 @@ export async function findTwinSpecialistThreshold(
     if (coverage.some((item) => item.status === "ready" &&
       summaries.find((candidate) => candidate.kind === item.kind)?.status !== "ready"))
       return { ...base, status: "evaluation-failed" as const, testedThrough: next - 1 };
-    const changes = summaries.filter((item) => item.status === "ready" && item.before !== item.after);
+    const changes = summaries.filter((item) => item.status === "ready" &&
+      (item.before !== item.after || Boolean(item.newSignals?.length)));
     if (changes.length) return {
       ...base, status: "found" as const, testedThrough: next,
       firstChangedDemand: next, changes,

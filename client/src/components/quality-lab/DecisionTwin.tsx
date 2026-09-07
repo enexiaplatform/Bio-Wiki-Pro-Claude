@@ -195,20 +195,27 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
           )}
           {ready && operationalThreshold && !busy && (
             <div role="region" aria-label="Specialist threshold search" className="mt-4 rounded-xl border border-teal-300/20 p-4">
-              <h3 className="font-semibold">First specialist status change from the saved baseline</h3>
+              <h3 className="font-semibold">First specialist warning or status change from the saved baseline</h3>
               <p className="mt-2 text-sm leading-6">
                 {operationalThreshold.status === "found"
                   ? `First change at ${format(operationalThreshold.firstChangedDemand!)} batches/month, checking every whole batch above ${format(operationalThreshold.baselineDemand)}.`
                   : operationalThreshold.status === "none-in-range"
-                    ? `No status transition through ${format(operationalThreshold.testedThrough)} batches/month. Existing failures remain failures; this does not establish spare capacity.`
+                    ? `No new warning or status transition through ${format(operationalThreshold.testedThrough)} batches/month. Existing failures remain failures; this does not establish spare capacity.`
                     : "A complete status search is unavailable. Review the accepted specialist bases and project demand scope."}
               </p>
               {operationalThreshold.changes.map((item) => (
-                <p key={item.kind} className="mt-2 text-sm">{SPECIALIST_LABELS[item.kind]} ({item.horizon}): {item.before} → {item.after}</p>
+                <div key={item.kind} className="mt-2 text-sm">
+                  <p>{SPECIALIST_LABELS[item.kind]} ({item.horizon}): {item.before} → {item.after}</p>
+                  {item.newSignals?.map((signal) => <div key={signal.id} className="mt-2">
+                    <p className="font-semibold">{signal.title}</p>
+                    <p>{signal.description}</p>
+                    <p className="mt-1 text-xs text-slate-400">Rule basis: {signal.relatedRuleIds.join(", ") || "No linked rule"}</p>
+                  </div>)}
+                </div>
               ))}
               <details className="mt-3 text-sm">
                 <summary className="cursor-pointer">Search coverage and assumptions</summary>
-                <p className="mt-2">Accepted staffing, fleet and calendar stay fixed. This tests engine status transitions, not every utilization or equipment quantity change. Missing analyses are outside the search.</p>
+                <p className="mt-2">Accepted staffing, fleet and calendar stay fixed. This tests engine status transitions and new watch or critical signals, not every utilization or equipment quantity change. Missing analyses are outside the search.</p>
                 {operationalThreshold.coverage.map((item) => (
                   <p className="mt-2" key={item.kind}>{SPECIALIST_LABELS[item.kind]}: {item.status === "ready" ? item.before : item.status}. {item.boundary}</p>
                 ))}

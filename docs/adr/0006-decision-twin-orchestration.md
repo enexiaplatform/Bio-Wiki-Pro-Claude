@@ -119,3 +119,12 @@ existing detail view before scrolling and receiving keyboard focus. The full
 section index remains available inside a disclosure, and existing section IDs
 and specialist deep links are retained. This is an initial navigation
 consolidation; sensitivity and the full decision orchestration remain unfinished.
+
+The specialist search now also detects newly emitted watch/critical engine
+signals by stable signal ID and severity. This prevents an existing aggregate
+failure status from hiding a new execution/review congestion or resource warning.
+Signal titles, descriptions and rule references come directly from the existing
+engine; changing numeric text within the same signal is not counted as another
+threshold. The operating-model engine currently contributes status transitions
+only. A regression case holds turnaround's aggregate failure status fixed while
+proving the first new execution-congestion signal and its preceding demand step.

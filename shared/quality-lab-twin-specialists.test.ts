@@ -20,6 +20,19 @@ import {
 } from "./quality-lab-persistence";
 
 describe("accepted specialist basis", () => {
+  it("finds a new engine congestion signal even when the overall failure status is unchanged", async () => {
+    const source = createQualityLabProject(defaultQualityLabInput, "synthetic-congestion");
+    const input = { ...defaultTurnaroundFeasibilityInput(source), analystFteAvailable: 5 };
+    const record = await captureSpecialistBasis(source, "turnaround", input);
+    const baseline = createQualityLabProject({ ...source.input, specialistBasis: [record] }, source.id);
+    const result = await findTwinSpecialistThreshold(baseline);
+    expect(result.status).toBe("found");
+    const change = result.changes[0];
+    expect(change.after).toBe(change.before);
+    expect(change.newSignals?.map((signal) => signal.id)).toContain("execution-congestion");
+    const preceding = createQualityLabProject({ ...baseline.input, finishedBatchesPerMonth: result.firstChangedDemand! - 1 }, source.id);
+    expect(evaluateTurnaroundFeasibility(preceding, input).signals.map((signal) => signal.id)).not.toContain("execution-congestion");
+  });
   it("finds the first actual engine status transition with fixed accepted staffing", async () => {
     const source = createQualityLabProject(defaultQualityLabInput, "synthetic-threshold");
     const input = { ...defaultTurnaroundFeasibilityInput(source), analystFteAvailable: 4 };
