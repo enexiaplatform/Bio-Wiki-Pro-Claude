@@ -263,6 +263,27 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
         </details>
       </div>
 
+      <nav aria-label="Blueprint workspace" data-print="hide" className="mb-5 grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-2 sm:grid-cols-4">
+        {([
+          ["decision-brief", "Decision brief", false],
+          ["decision-twin", "Decision Twin", false],
+          ["project-action-center", "Actions & deliverables", true],
+          ["evidence-trace", "Evidence", true],
+        ] as const).map(([id, label, technical]) => (
+          <a key={id} href={`#${id}`} onClick={(event) => {
+            event.preventDefault();
+            if (technical) setReportMode("technical");
+            window.history.replaceState(null, "", `#${id}`);
+            window.setTimeout(() => {
+              const target = document.getElementById(id);
+              target?.setAttribute("tabindex", "-1");
+              target?.focus({ preventScroll: true });
+              target?.scrollIntoView({ behavior: "auto", block: "start" });
+            }, 0);
+          }} className="flex min-h-11 items-center justify-center rounded-lg px-3 py-2 text-center text-sm font-semibold text-teal-100 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-300">{label}</a>
+        ))}
+      </nav>
+
       {isIllustrative && <section role="status" data-print="hide" className="mb-5 rounded-2xl border border-amber-300/25 bg-amber-300/[0.075] p-5 text-sm leading-6 text-amber-50">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-3xl">
@@ -459,11 +480,14 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
       {reportMode === "executive" && <div data-print="hide" className="mb-5 flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-center"><p className="max-w-2xl text-sm leading-6 text-slate-400">Executive mode keeps the decision, readiness, material uncertainties, scenario movement and next actions visible. The full model, formulas, evidence and versioned rule trace remain available.</p><button type="button" onClick={() => { setReportMode("technical"); window.setTimeout(() => document.getElementById("visual-decision-layer")?.scrollIntoView({ behavior: "smooth" }), 0); }} className="inline-flex items-center gap-2 rounded-xl border border-teal-300/25 bg-teal-300/10 px-4 py-2.5 text-sm font-bold text-teal-200">Open technical detail <ArrowRight className="h-4 w-4" /></button></div>}
 
       <div className={reportMode === "technical" ? "block" : "hidden"}>
-      <nav data-print="hide" aria-label="Blueprint report sections" className="sticky top-16 z-30 mb-5 overflow-x-auto rounded-xl border border-white/10 bg-[#08111f]/95 p-2 shadow-xl shadow-black/20 backdrop-blur">
-        <div className="flex min-w-max gap-1 text-xs font-semibold text-slate-400">
+      <details data-print="hide" className="mb-5 rounded-xl border border-white/10 bg-[#08111f]/95 p-2">
+        <summary className="min-h-11 cursor-pointer px-3 py-3 text-sm font-semibold text-slate-300">Browse technical report sections</summary>
+      <nav aria-label="Blueprint report sections">
+        <div className="flex flex-wrap gap-1 text-xs font-semibold text-slate-400">
           {[["#decision-brief", "Decision brief"], ["#decision-readiness", "Readiness"], ["#decision-lineage", "Lineage"], ["#decision-sensitivity", "Sensitivity"], ["#visual-decision-layer", "Visual model"], ["#project-action-center", "Action center"], ["#demand-model", "Demand & capacity"], ["#capability-plan", "Capability & cost"], ["#decision-risks", "Risks & actions"], ["#evidence-trace", "Evidence & trace"]].map(([href, label]) => <a key={href} href={href} className="rounded-lg px-3 py-2 transition hover:bg-white/5 hover:text-teal-200">{label}</a>)}
         </div>
       </nav>
+      </details>
 
       <BlueprintVisualDecisionLayer blueprint={blueprint} />
 

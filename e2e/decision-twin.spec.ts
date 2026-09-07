@@ -30,6 +30,17 @@ for (const width of [1440, 390]) {
       route.fulfill({ status: 202, json: { accepted: true, recorded: true } }),
     );
     await page.goto(`/quality-lab/projects/${baseline.id}`);
+    const workspace = page.getByRole("navigation", { name: "Blueprint workspace", exact: true });
+    await expect(workspace.getByRole("link")).toHaveCount(4);
+    await workspace.screenshot({ path: `artifacts/blueprint-workspace-${width}.png` });
+    await workspace.getByRole("link", { name: "Evidence", exact: true }).click();
+    await expect(page.locator("#evidence-trace")).toBeVisible();
+    await expect(page.locator("#evidence-trace")).toBeFocused();
+    await expect(page.getByRole("navigation", { name: "Blueprint report sections", exact: true })).toBeHidden();
+    await page.getByText("Browse technical report sections", { exact: true }).click();
+    await expect(page.getByRole("navigation", { name: "Blueprint report sections", exact: true })).toBeVisible();
+    await workspace.getByRole("link", { name: "Decision Twin", exact: true }).click();
+    await expect(page.locator("#decision-twin")).toBeFocused();
     await page
       .getByRole("button", { name: "Open Decision Twin", exact: true })
       .click();

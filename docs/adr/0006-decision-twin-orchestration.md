@@ -112,3 +112,10 @@ hide changes within an existing failure state. Tests compare every preceding
 demand step to the turnaround engine and verify missing-basis and bounded-range
 outcomes. Broader metric-level constraint coverage, sensitivity consolidation
 and simplified navigation remain required.
+
+Report navigation now leads with four destinations: Decision brief, Decision
+Twin, Actions & deliverables, and Evidence. Technical destinations reveal the
+existing detail view before scrolling and receiving keyboard focus. The full
+section index remains available inside a disclosure, and existing section IDs
+and specialist deep links are retained. This is an initial navigation
+consolidation; sensitivity and the full decision orchestration remain unfinished.
