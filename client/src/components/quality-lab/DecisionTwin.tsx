@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
+import type { SensitivityAnalysis } from "@shared/quality-lab-sensitivity";
 import {
   findTwinEquipmentThreshold,
   simulateQualityLabTwin,
@@ -37,7 +38,7 @@ const usd = (value: number) =>
   }).format(value);
 type Simulation = ReturnType<typeof simulateQualityLabTwin>;
 
-export function DecisionTwin({ project }: { project: QualityLabProject }) {
+export function DecisionTwin({ project, sensitivity }: { project: QualityLabProject; sensitivity?: SensitivityAnalysis }) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [result, setResult] = useState<Simulation | null>(null);
@@ -49,6 +50,7 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
   const [specialists, setSpecialists] = useState<TwinSpecialistSummary[]>([]);
   const [operationalThreshold, setOperationalThreshold] = useState<Awaited<ReturnType<typeof findTwinSpecialistThreshold>> | null>(null);
   const generation = useRef(0);
+  const compareButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     generation.current++;
     setDraft(
@@ -308,6 +310,7 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
           <button
             type="button"
             disabled={busy}
+            ref={compareButton}
             onClick={() => void run()}
             className="mt-3 min-h-11 rounded-xl bg-teal-300 px-5 py-3 font-bold text-slate-950 disabled:opacity-50"
           >
@@ -320,6 +323,26 @@ export function DecisionTwin({ project }: { project: QualityLabProject }) {
           )}
           {ready && !dirty && !busy && (
             <>
+              {sensitivity && <details className="mt-5 rounded-xl border border-violet-300/20 p-4">
+                <summary className="min-h-11 cursor-pointer font-semibold">Test evidence-sensitive assumptions</summary>
+                <p className="mt-2 text-sm text-slate-300">Use the existing sensitivity ranges to prepare a one-assumption scenario. Each selection resets the other controls to the saved baseline; compare to see the consequence. These ranges are stress tests, not validated operating limits.</p>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  {sensitivity.drivers.filter((driver) => fields.some(([key]) => key === driver.id) && (driver.id !== "finishedBatchesPerMonth" || project.blueprint.finishedProductDemand.source === "aggregate-input")).map((driver) => <article key={driver.id} className="rounded-lg border border-white/10 p-3">
+                    <h3 className="font-semibold">{driver.label}</h3>
+                    <p className="mt-2 text-sm">Verify: {driver.evidenceNeeded}</p>
+                    <p className="mt-2 text-xs text-slate-400">Model confidence: {driver.modelConfidence}. {driver.robustnessSummary}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {([ ["low", driver.lowValue], ["high", driver.highValue] ] as const).map(([direction, value]) => <button key={direction} type="button" onClick={() => {
+                        setDraft({ ...Object.fromEntries(fields.map(([key]) => [key, String(project.input[key])])), [driver.id]: String(value) });
+                        setDirty(true);
+                        setSaved(null);
+                        window.setTimeout(() => compareButton.current?.focus(), 0);
+                      }} className="min-h-11 rounded-lg border border-violet-300/30 px-3 py-2 text-sm text-violet-100">Test {driver.label}: {direction} ({format(value)} {driver.unit})</button>)}
+                    </div>
+                  </article>)}
+                </div>
+                <Link href={`/quality-lab/sensitivity?project=${project.id}`} className="mt-3 inline-flex min-h-11 items-center text-sm text-teal-200 underline">Inspect all ranked drivers, ranges and lineage</Link>
+              </details>}
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {ready.comparison.metrics
                   .filter((m) =>

@@ -128,3 +128,12 @@ engine; changing numeric text within the same signal is not counted as another
 threshold. The operating-model engine currently contributes status transitions
 only. A regression case holds turnaround's aggregate failure status fixed while
 proving the first new execution-congestion signal and its preceding demand step.
+
+The Twin also reuses the report's existing sensitivity analysis to prepare low
+or high one-assumption scenarios. Selections reset the six supported controls
+to the saved baseline, change only the selected driver, and require explicit
+comparison before results or saving. Evidence-to-confirm, model confidence and
+robustness explanations stay attached to each driver. Unsupported drivers keep
+the existing full-analysis link; portfolio-derived batch demand cannot be
+silently replaced with an aggregate stress input. No sensitivity engine or
+persisted model is duplicated. The original report/print summary remains intact.

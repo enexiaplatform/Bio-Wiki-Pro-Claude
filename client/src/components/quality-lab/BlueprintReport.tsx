@@ -436,7 +436,7 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">{blueprint.decisionLineage.filter((item) => ["current.totalTeamFte", "future.totalTeamFte", "future.estimatedAreaSqm", "future.capexHighUsd", "future.annualOpexHighUsd"].includes(item.outputKey)).map((lineage) => <article key={lineage.id} className="rounded-xl border border-white/10 bg-slate-950/25 p-4 print:border-slate-300 print:bg-white"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{lineage.decisionType}</p><p className="mt-2 text-lg font-bold text-slate-100 print:text-slate-950">{lineage.currentOutput}</p><p className="mt-2 min-h-10 text-[11px] leading-5 text-slate-500">{lineage.summary}</p><div className="mt-3"><DecisionTraceLink projectId={project.id} lineage={lineage} /></div></article>)}</div>
       </section>
 
-      <DecisionTwin project={project} />
+      <DecisionTwin project={project} sensitivity={sensitivity} />
       <section id="decision-sensitivity" data-testid="blueprint-sensitivity-summary" className="mb-5 scroll-mt-32 rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">

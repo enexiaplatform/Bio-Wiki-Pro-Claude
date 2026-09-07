@@ -51,6 +51,18 @@ for (const width of [1440, 390]) {
     await expect(
       twin.getByText(/First modeled equipment quantity change found at 53/),
     ).toBeVisible();
+    await twin.getByText("Test evidence-sensitive assumptions", { exact: true }).click();
+    await twin.getByText("Test evidence-sensitive assumptions", { exact: true }).locator("..").screenshot({ path: `artifacts/twin-sensitivity-${width}.png` });
+    expect((await new AxeBuilder({ page }).include("#decision-twin").withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+    await twin.getByRole("button", { name: /Test Growth over planning horizon: high/ }).click();
+    const compare = twin.getByRole("button", { name: "Compare assumptions", exact: true });
+    await expect(compare).toBeFocused();
+    await expect(twin.getByLabel("Total growth over planning horizon (%)", { exact: true })).toHaveValue(String(baseline.input.growthRatePercent + 10));
+    await compare.click();
+    await twin.getByText("Test evidence-sensitive assumptions", { exact: true }).click();
+    await twin.getByRole("button", { name: /Test Finished-product batches: high/ }).click();
+    await expect(twin.getByLabel("Total growth over planning horizon (%)", { exact: true })).toHaveValue(String(baseline.input.growthRatePercent));
+    await expect(twin.getByLabel("Finished batches per month", { exact: true })).toHaveValue("36");
     await twin
       .getByLabel("Finished batches per month", { exact: true })
       .fill("60");

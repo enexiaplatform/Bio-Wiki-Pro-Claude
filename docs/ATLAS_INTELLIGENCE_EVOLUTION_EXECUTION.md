@@ -144,3 +144,18 @@ this slice remains pending.
 Next: finish release verification, then compose the existing calculation engines
 into the Decision Twin with exact first decision thresholds and lineage. The
 full founder goal remains active; Phases 2–6 are not implied complete by intake.
+
+Release follow-ups through 5a0e439: specialist warning search now includes new
+engine watch/critical signals under unchanged aggregate status; navigation uses
+four primary report destinations with a disclosed technical index. Both passed
+CI and four deployed Twin journeys. Latest verified CI: 34090902726; Preview:
+`life-science-atlas-gx6y130kr-enexiaplatforms-projects.vercel.app`.
+
+Current sensitivity handoff reuses existing report analysis to prepare low/high
+one-assumption Twin scenarios, resets unrelated controls to baseline, restores
+Compare focus, and presents evidence requirements. Full local gates passed
+(686 unit/server tests and 53 critical browser checks); compact-card copy was
+then clarified to identify evidence rather than an unspecified output threshold.
+Release verification of this handoff remains pending. Phase 2 consolidation,
+Challenge, unified role lenses, project impact review and controlled learning
+remain part of the full objective.
