@@ -41,4 +41,42 @@ describe("Quality Lab paid-pilot portfolio", () => {
     expect(portfolio.eligibleCount).toBe(0);
     expect(portfolio.records[0].blockers).toContain("Capture at least one observed estimate-to-actual metric with complete provenance and variance classification.");
   });
+
+  it("cannot satisfy three engagements by copying one complete packet", () => {
+    const record = completeRecord("one_engagement");
+    const inputs = [record, structuredClone(record), structuredClone(record)];
+    const before = JSON.stringify(inputs);
+    const portfolio = assessPaidPilotPortfolio(inputs);
+    expect(portfolio).toMatchObject({ status: "in-progress", eligibleCount: 0, remainingCount: 3 });
+    expect(portfolio.records.every((item) => !item.gate1EvidenceComplete)).toBe(true);
+    expect(portfolio.records[0].blockers).toEqual(expect.arrayContaining([
+      expect.stringMatching(/duplicate project records/i),
+      expect.stringMatching(/commercial evidence reference is reused/i),
+    ]));
+    expect(JSON.stringify(inputs)).toBe(before);
+    const exported = createPaidPilotRegistry(inputs);
+    expect(exported.eligibleCount).toBe(0);
+    expect(exported.engagements.every((item) => !item.gate1EvidenceComplete && item.blockers.length > 0)).toBe(true);
+  });
+
+  it("holds duplicate project revisions even when their commercial references differ", () => {
+    const first = completeRecord("same_project");
+    const revision = structuredClone(first);
+    revision.packet.pilotControl.commercialEvidenceReference = "INV-second-reference";
+    const portfolio = assessPaidPilotPortfolio([first, revision, completeRecord("independent")]);
+    expect(portfolio).toMatchObject({ status: "in-progress", eligibleCount: 1, remainingCount: 2 });
+    expect(portfolio.records.map((item) => item.gate1EvidenceComplete)).toEqual([false, false, true]);
+  });
+
+  it("holds cloned projects that reuse commercial evidence and counts only independent candidates", () => {
+    const first = completeRecord("project_a");
+    const copied = completeRecord("project_b");
+    copied.packet.pilotControl.commercialEvidenceReference = `  ${first.packet.pilotControl.commercialEvidenceReference}  `;
+    const inputs = [first, copied, completeRecord("project_c")];
+    const portfolio = assessPaidPilotPortfolio(inputs);
+    expect(portfolio).toMatchObject({ status: "in-progress", eligibleCount: 1, remainingCount: 2 });
+    expect(portfolio.records.slice(0, 2).every((item) => item.blockers.some((blocker) => /commercial evidence reference is reused/i.test(blocker)))).toBe(true);
+    expect(assessPaidPilotPortfolio([...inputs].reverse()).eligibleCount).toBe(1);
+    expect(assessPaidPilotPortfolio([first, inputs[2]])).toMatchObject({ eligibleCount: 2, remainingCount: 1 });
+  });
 });

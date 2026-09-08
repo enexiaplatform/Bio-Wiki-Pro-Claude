@@ -19,7 +19,7 @@ export type PilotPortfolioInput = {
 };
 
 export function assessPaidPilotPortfolio(inputs: PilotPortfolioInput[]) {
-  const records = inputs.map(({ packet, deliveryReadiness }) => {
+  const assessedRecords = inputs.map(({ packet, deliveryReadiness }) => {
     const pilot = assessPaidPilotEvidence(packet, deliveryReadiness);
     const calibration = summarizeCalibration(packet);
     const blockers = [...pilot.blockers];
@@ -29,6 +29,29 @@ export function assessPaidPilotPortfolio(inputs: PilotPortfolioInput[]) {
     const gate1EvidenceComplete = pilot.eligibility === "eligible-gate-1-pilot-record" && calibration.reviewReady;
     const grossMarginPercent = pilot.grossMarginPercent ?? calculateGrossMarginPercent(packet.pilotControl.contractValueUsd, packet.pilotControl.directDeliveryCostUsd);
     return { packet, pilot, calibration, grossMarginPercent, gate1EvidenceComplete, blockers };
+  });
+
+  // A copied revision or reused commercial reference cannot establish another
+  // independent engagement. Hold every conflicting candidate for reconciliation.
+  const candidateRecords = assessedRecords.filter((record) => record.gate1EvidenceComplete);
+  const projectCounts = new Map<string, number>();
+  const commercialReferenceCounts = new Map<string, number>();
+  for (const { packet } of candidateRecords) {
+    const projectId = packet.project.id.trim();
+    const reference = packet.pilotControl.commercialEvidenceReference.trim();
+    projectCounts.set(projectId, (projectCounts.get(projectId) ?? 0) + 1);
+    commercialReferenceCounts.set(reference, (commercialReferenceCounts.get(reference) ?? 0) + 1);
+  }
+  const records = assessedRecords.map((record) => {
+    if (!record.gate1EvidenceComplete) return record;
+    const blockers = [...record.blockers];
+    if ((projectCounts.get(record.packet.project.id.trim()) ?? 0) > 1) {
+      blockers.push("This project appears in more than one evidence-complete candidate. Reconcile duplicate project records before counting a distinct Gate 1 engagement.");
+    }
+    if ((commercialReferenceCounts.get(record.packet.pilotControl.commercialEvidenceReference.trim()) ?? 0) > 1) {
+      blockers.push("This commercial evidence reference is reused by multiple evidence-complete candidates. Provide distinct engagement evidence before counting these records toward Gate 1.");
+    }
+    return { ...record, blockers, gate1EvidenceComplete: blockers.length === 0 };
   });
 
   const complete = records.filter((record) => record.gate1EvidenceComplete);
