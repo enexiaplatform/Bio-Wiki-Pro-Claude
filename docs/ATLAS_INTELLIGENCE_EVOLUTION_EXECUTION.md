@@ -1,6 +1,6 @@
 # Atlas intelligence evolution — execution record
 
-Updated 7 September 2026. Founder brief: confirmed file intake → living model →
+Updated 8 September 2026. Founder brief: confirmed file intake → living model →
 Challenge → simulation → decision → project-aware monitoring → controlled learning.
 `PRODUCT_SOURCE_OF_TRUTH.md` remains canonical. This record distinguishes shipped
 code, verification, and external requirements; it does not redefine the full goal.
@@ -31,11 +31,11 @@ code, verification, and external requirements; it does not redefine the full goa
 | --- | --- | --- |
 | 0. Commercial/runtime foundation | Expanded schema audit; transactional two-table repair proposal; truthful lifecycle acceptance/status; bounded idempotent funnel retry; mobile Workbench correction | Owner-approved target repair with verified backup/restore and production-like staging rehearsal; isolated Preview credentials/schema; Stripe/email/inbox acceptance; deployed runtime verification |
 | 1. File intake | Published and Preview-verified browser-local CSV candidates; optional authenticated AI cell mapping; explicit confirmation; versioned source history in existing snapshots/revisions; privacy-safe journey stages; 64 focused tests and 20 endpoint tests | Operator-configured synthetic AI acceptance. Native XLSX/PDF/DOCX deferred deliberately; export the relevant sheet as CSV |
-| 2. Decision Twin | Embedded six-assumption workspace, Compiler/comparison reuse, exact bounded equipment transitions, stale-baseline guard, separate scenario save; five specialist bases connected through explicit revisioned handoffs | Broader first-constraint search, sensitivity consolidation and simpler project navigation; deployed verification of specialist integration |
-| 3. Challenge | Readiness, sensitivity verification queue, decision register, unresolved evidence and lineage | Transparent deterministic impact ranking; concrete decision-changing findings/actions; source and score inspection; no arbitrary LLM numerical severity |
-| 4. Role lenses | Blueprint already has QC/QA/engineering/procurement and executive/technical modes | Consolidate same-model stakeholder decisions including finance; avoid parallel state or calculations |
-| 5. Impact Watch | Official-source metadata triage and explicit Pro digest opt-in exist | Match updates to current project methods/evidence/assumptions; potential-impact queue; explicit human disposition; fail closed without changing rules or Blueprint |
-| 6. Controlled learning | Frozen observations, append-only reviews, Gate 1 and validation-case controls exist | Verify new journey preserves permissioned actual-versus-predicted learning; no fabricated benchmarks or evidence claims |
+| 2. Decision Twin | Embedded six-assumption workspace, comparison and sensitivity handoff, exhaustive bounded equipment/specialist warning transitions, five accepted revisioned bases, four primary report destinations; Preview-verified through 5c23170 | Site evidence and qualified acceptance remain necessary; bounded probes are not universal operating limits |
+| 3. Challenge | Deterministic priority factors over unresolved inputs, exact equipment transitions, sensitivity and accepted specialist warnings including operating-model application blockers; evidence/action/lineage disclosure and activation events | Final release verification of this combined slice; scores are review policy, not regulatory severity or independent risks to sum |
+| 4. Role lenses | Six lightweight Executive/QC/QA/Engineering/Finance/Procurement views of the same Blueprint; unchanged calculations and saved state verified | Final release verification; no parallel stakeholder model |
+| 5. Impact Watch | Project-specific candidate links to actual method/evidence/assumption/unresolved records; explicit versioned human disposition; failed feeds/stale bases blocked; existing browser revisions and account snapshots reused | Final release verification; live digest readiness remains Phase 0; feed matching is not full-text regulatory review |
+| 6. Controlled learning | Existing frozen observations, append-only review, permission and validation-case controls verified; duplicate project/commercial references now withheld from Gate 1 counting | Real distinct paid engagements and qualified permissioned observations; no public benchmark or statistical-validation claim |
 
 Existing sensitivity searches aggregate cost/FTE/area/workload and peak resource
 utilization bands. It does not prove an individual incubator 3→4 transition, and
@@ -159,3 +159,38 @@ then clarified to identify evidence rather than an unspecified output threshold.
 Release verification of this handoff remains pending. Phase 2 consolidation,
 Challenge, unified role lenses, project impact review and controlled learning
 remain part of the full objective.
+
+## 8 September combined implementation and release gate
+
+This entry supersedes the earlier pending Phase 2–6 implementation notes above.
+Challenge, six role lenses and project-aware Impact Watch now connect the same
+Blueprint and existing engines. Operating-model application blockers/risks join
+accepted specialist findings. No new calculation engine, primary navigation
+destination, dependency or physical schema object was introduced.
+
+Impact reviews require explicit disposition, stated role, rationale and user
+confirmation. Records survive existing snapshots, but a changed publication,
+project basis or copied project invalidates current-review status. Failed feeds
+cannot produce a project all-clear. See ADRs 0007 and 0008 for bounded scoring,
+matching and provenance contracts. Confidential source/project details never
+enter the new analytics events.
+
+The existing calibration, permission, frozen-observation and append-only review
+architecture remains authoritative. Gate 1 now withholds conflicting project IDs
+and commercial references instead of counting duplicate packets as independent
+paid engagements. Three projects remain learning evidence, not statistical
+validation. No real observation, customer outcome or benchmark has been invented.
+
+Validation/type-check, production build, 703 unit/server tests and 58 critical
+browser tests pass. The operating-model regression was separated into bounded
+cases after a full-suite timeout; all resulting cases pass together with the
+complete suite. Desktop/mobile Challenge, Executive/Finance and Impact Watch
+were visually inspected; browser tests cover confirmation, saved state, source
+failure, context preservation, accessibility and reflow.
+
+The production read-only preflight was repeated: exactly the two prepared tables
+remain absent, while the other 13 tables/86 columns match the contract. No real
+DDL was applied. The remaining external launch actions are the reviewed repair
+under verified backup/restore and target approval, isolated payment/email/cron
+configuration and acceptance, and real qualified paid-project learning.
+Push, CI and deployed journey evidence are recorded below when complete.

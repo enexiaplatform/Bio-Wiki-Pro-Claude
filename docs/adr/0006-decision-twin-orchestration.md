@@ -125,8 +125,9 @@ signals by stable signal ID and severity. This prevents an existing aggregate
 failure status from hiding a new execution/review congestion or resource warning.
 Signal titles, descriptions and rule references come directly from the existing
 engine; changing numeric text within the same signal is not counted as another
-threshold. The operating-model engine currently contributes status transitions
-only. A regression case holds turnaround's aggregate failure status fixed while
+threshold. The operating-model engine now contributes application evidence
+blockers and major risks as review-priority signals as well as status transitions.
+A regression case holds turnaround's aggregate failure status fixed while
 proving the first new execution-congestion signal and its preceding demand step.
 
 The Twin also reuses the report's existing sensitivity analysis to prepare low

@@ -24,6 +24,7 @@ import { useMemo, useState } from "react";
 import { getQualityLabReadiness, isIllustrativeQualityLabProject, type QualityLabBlueprint, type QualityLabProject } from "@shared/quality-lab";
 import { analyzeQualityLabSensitivity } from "@shared/quality-lab-sensitivity";
 import { DecisionTwin } from "./DecisionTwin";
+import { ChallengeBlueprint } from "./ChallengeBlueprint";
 import { exportQualityLabEngagementPacket, exportQualityLabProject } from "@/lib/quality-lab-projects";
 import { Link } from "wouter";
 import { analytics } from "@/hooks/use-analytics";
@@ -39,12 +40,14 @@ interface Props {
   decisionPackageId?: string;
 }
 
-type RoleLens = "qc" | "qa" | "engineering" | "procurement";
+type RoleLens = "executive" | "qc" | "qa" | "engineering" | "finance" | "procurement";
 
 const roleLensCopy: Record<RoleLens, { label: string; focus: string; detail: string }> = {
+  executive: { label: "Executive", focus: "approval sequence, material uncertainties and investment exposure", detail: "Decide which assumptions require an owner before scope or budget approval, using the same Blueprint and Challenge priorities." },
   qc: { label: "QC", focus: "workload, method coverage and capacity", detail: "Use the workload model to challenge in-house capability, analyst demand, equipment loading and the inputs still needed from the laboratory." },
   qa: { label: "QA", focus: "evidence, review boundaries and unresolved controls", detail: "Use the evidence trace, assumptions and controlled-use blockers to define what must be confirmed before formal quality decisions." },
   engineering: { label: "Engineering", focus: "space, equipment and phased implementation", detail: "Use the capability, space and equipment allowance as a planning basis before detailed engineering, utilities or layout design." },
+  finance: { label: "Finance", focus: "CAPEX, recurring cost and the assumptions behind budget changes", detail: "Use concept cost bands and Twin scenarios to decide what needs quotation, labor-cost or make/buy evidence before allocating funds." },
   procurement: { label: "Procurement", focus: "vendor-neutral requirements and cost basis", detail: "Use the equipment rationale, method BOM and phased sequence to prepare a comparable request basis; supplier quotations remain required." },
 };
 
@@ -69,6 +72,11 @@ function roleDecisionPack(blueprint: QualityLabBlueprint): Record<RoleLens, { si
   const highestPressure = [...blueprint.methodCapacitySummary].sort((a, b) => b.utilizationPercent - a.utilizationPercent)[0];
   const capacitySignal = highestPressure ? `${highestPressure.resourceName} is the highest modeled resource pressure at ${number.format(highestPressure.utilizationPercent)}%.` : "Method-level resource pressure is not yet available.";
   return {
+    executive: {
+      signal: `${blueprint.dataQuality.blockingOpenCount} controlled-use blockers and ${blueprint.risks.filter((risk) => risk.severity === "high").length} high-priority model risks remain. Planning-horizon CAPEX is ${money.format(future.capexLowUsd)}–${money.format(future.capexHighUsd)}.`,
+      workingDecision: "Assign owners to the leading Challenge findings, confirm the decision window and choose which scope or investment assumptions need expert review next.",
+      blockedDecision: "Concept outputs support prioritization; approval still requires qualified review, site evidence and a confirmed commercial basis.",
+    },
     qc: {
       signal: `${number.format(current.monthlyTests)} monthly test units become ${number.format(future.monthlyTests)} in the future scenario; the team allowance moves from ${current.totalTeamFte} to ${future.totalTeamFte} FTE. ${capacitySignal}`,
       workingDecision: "Challenge workload ownership, shift coverage, method allocation and the capacity evidence that should be collected next.",
@@ -88,6 +96,11 @@ function roleDecisionPack(blueprint: QualityLabBlueprint): Record<RoleLens, { si
       signal: `${blueprint.equipment.length} vendor-neutral equipment classes produce a current CAPEX allowance of ${money.format(current.capexLowUsd)}–${money.format(current.capexHighUsd)} and future allowance of ${money.format(future.capexLowUsd)}–${money.format(future.capexHighUsd)}.`,
       workingDecision: "Prepare comparable budget-enquiry categories, quotation evidence needs and a phased sourcing sequence.",
       blockedDecision: "Do not issue a purchase recommendation or supplier award from concept quantities, generic specifications or unverified installed-cost bands.",
+    },
+    finance: {
+      signal: `Planning-horizon CAPEX is ${money.format(future.capexLowUsd)}–${money.format(future.capexHighUsd)}; annual OPEX is ${money.format(future.annualOpexLowUsd)}–${money.format(future.annualOpexHighUsd)}. Current annual OPEX is ${money.format(current.annualOpexLowUsd)}–${money.format(current.annualOpexHighUsd)}.`,
+      workingDecision: "Confirm local quotations, loaded labor costs and outsourced scope; compare a material assumption in the Decision Twin before setting a funding envelope.",
+      blockedDecision: "These are concept allowances, not supplier offers, approved budgets, cash-flow forecasts or a validated return-on-investment model.",
     },
   };
 }
@@ -437,6 +450,8 @@ export function BlueprintReport({ project, onEdit, decisionPackageId }: Props) {
       </section>
 
       <DecisionTwin project={project} sensitivity={sensitivity} />
+      <ChallengeBlueprint project={project} onEdit={onEdit} />
+      <p data-print="hide" className="mb-5 text-sm text-slate-300">Keep this decision current: <Link href={`/monitor?project=${encodeURIComponent(project.id)}`} className="inline-flex min-h-11 items-center font-semibold text-teal-200 underline">Review official updates for this Blueprint</Link></p>
       <section id="decision-sensitivity" data-testid="blueprint-sensitivity-summary" className="mb-5 scroll-mt-32 rounded-2xl border border-violet-300/20 bg-gradient-to-br from-violet-300/[0.07] via-white/[0.025] to-transparent p-5 md:p-6 print:border-slate-300 print:bg-white">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">

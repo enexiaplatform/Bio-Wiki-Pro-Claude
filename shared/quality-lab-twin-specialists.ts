@@ -33,6 +33,7 @@ export async function twinSourceBasisHash(
   const {
     specialistBasis: _specialists,
     intakeProvenance: _provenance,
+    impactReviewHistory: _impactReviews,
     ...input
   } = project.input;
   const bytes = new TextEncoder().encode(
@@ -81,6 +82,7 @@ export interface TwinSpecialistSummary {
   before?: string;
   after?: string;
   newSignals?: TwinSpecialistSignal[];
+  baselineSignals?: TwinSpecialistSignal[];
   metrics?: Array<{
     label: string;
     before: number;
@@ -107,7 +109,29 @@ function evaluate(project: QualityLabProject, record: SpecialistBasis) {
             ? "evidence-required"
             : "bounded-modes-evaluated",
         boundary: result.boundary,
-        signals: [] as TwinSpecialistSignal[],
+        // Review priority only: the engine's blocking evidence prevents an
+        // operating-mode conclusion; its named major risks warrant review.
+        // Keep source text and stable application/gap identities, not array
+        // positions, so an additional warning is detectable in a scenario.
+        signals: result.applications.flatMap((application): TwinSpecialistSignal[] => {
+          const relatedRuleIds = application.lineage.ruleRefs.map((ref) => ref.id);
+          return [
+            ...application.missingEvidence.filter((gap) => gap.blocking).map((gap) => ({
+              id: gap.id,
+              severity: "critical",
+              title: `${application.label}: ${gap.question}`,
+              description: `${gap.whyItMatters} Evidence needed: ${gap.evidenceNeeded}`,
+              relatedRuleIds,
+            })),
+            ...application.majorRisks.map((risk) => ({
+              id: `operating-model:${application.id}:risk:${encodeURIComponent(risk)}`,
+              severity: "watch",
+              title: `${application.label}: operating-route review`,
+              description: risk,
+              relatedRuleIds,
+            })),
+          ];
+        }),
         metrics: [
           {
             label: "Applications needing evidence",
@@ -283,6 +307,7 @@ export async function compareTwinSpecialists(
             : record.input.demandHorizon,
         before: before.status,
         after: after.status,
+        baselineSignals: before.signals,
         newSignals: after.signals.filter((signal) =>
           (signal.severity === "critical" || signal.severity === "watch") &&
           !before.signals.some((old) => old.id === signal.id && old.severity === signal.severity)),

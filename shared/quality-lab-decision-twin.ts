@@ -57,6 +57,11 @@ function materialBasis(blueprint: QualityLabBlueprint) {
     workflows: blueprint.workflows,
     methodCapacitySummary: blueprint.methodCapacitySummary,
     finishedProductDemand: blueprint.finishedProductDemand,
+    unresolvedInputs: blueprint.unresolvedInputs,
+    decisionLineage: blueprint.decisionLineage,
+    methodRequirements: blueprint.methodRequirements,
+    evidence: blueprint.evidence,
+    assumptions: blueprint.assumptions,
   };
 }
 

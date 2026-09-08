@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { intakeConfirmationSchema } from "./quality-lab-intake-contract.js";
 import { specialistBasisSchema } from "./quality-lab-specialist-basis.js";
+import { impactReviewSchema } from "./quality-lab-impact-contract.js";
 import {
   QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
   QUALITY_LAB_COMPILER_CORE_VERSION,
@@ -138,6 +139,7 @@ export const qualityLabInputSchema = z.object({
   // Self-declared, explicitly confirmed import provenance; never regulatory evidence.
   intakeProvenance: z.array(intakeConfirmationSchema).max(20).optional(),
   specialistBasis: z.array(specialistBasisSchema).max(5).optional(),
+  impactReviewHistory: z.array(impactReviewSchema).max(100).optional(),
 });
 
 export type QualityLabInput = z.infer<typeof qualityLabInputSchema>;

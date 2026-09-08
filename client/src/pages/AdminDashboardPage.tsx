@@ -88,6 +88,10 @@ const date = (value: string | null | undefined) => value ? new Date(value).toLoc
 const funnelLabels: Record<QualityLabFunnelStage, string> = {
   intake_file_selected: "Project CSV selected",
   twin_opened: "Decision Twin opened",
+  challenge_viewed: "Challenge viewed",
+  impact_watch_reviewed: "Project impact reviewed",
+  challenge_action_taken: "Challenge action taken",
+  decision_insight_reached: "Modeled decision insight reached",
   twin_scenario_changed: "Decision Twin assumptions compared",
   intake_candidates_generated: "Intake candidates generated",
   intake_candidate_confirmed: "Intake candidate confirmed",

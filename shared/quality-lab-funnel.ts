@@ -14,6 +14,10 @@ export const QUALITY_LAB_ACTIVATION_STAGES = [
 ] as const;
 
 export const QUALITY_LAB_COMMERCIAL_FUNNEL_STAGES = [
+  "challenge_viewed",
+  "impact_watch_reviewed",
+  "challenge_action_taken",
+  "decision_insight_reached",
   "twin_opened",
   "twin_scenario_changed",
   "intake_file_selected",
