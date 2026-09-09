@@ -90,7 +90,7 @@ script/build.ts     Custom build: Vite for client -> esbuild for server -> dist/
 
 ### Database
 
-PostgreSQL via `DATABASE_URL` env var. Drizzle ORM uses schema-push (no migration files). Auth/billing tables live in `shared/models/auth.ts`; content, leads, quote requests, Stripe event idempotency, lifecycle email guards, and lesson reads live in `shared/schema.ts`.
+PostgreSQL via `DATABASE_URL` or supported integration connection variables. Drizzle schemas and the historical migration ledger are not fully reconciled; follow `docs/DB_MIGRATIONS.md` before any database change. Schema push is restricted to local/throwaway databases. Auth/billing tables live in `shared/models/auth.ts`; content, leads, quote requests, Stripe event idempotency, lifecycle email guards, and lesson reads live in `shared/schema.ts`.
 
 ### Build Output
 

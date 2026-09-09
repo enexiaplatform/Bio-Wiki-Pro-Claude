@@ -7,7 +7,7 @@ import { getOrCreateEngagement } from "@/lib/quality-lab-engagements";
 import { downloadQualityLabDeliveryArtifact, fetchQualityLabReviewedProject, getQualityLabProject, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
 import { createQualityLabCommercialHandoff } from "@shared/quality-lab-commercial-handoff";
 import { qualityLabProjectFromReviewedSnapshot } from "@shared/quality-lab-persistence";
-import type { QualityLabProject } from "@shared/quality-lab";
+import { isIllustrativeQualityLabProject, type QualityLabProject } from "@shared/quality-lab";
 import type { QualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 
 export default function QualityLabCommercialHandoffPage() {
@@ -22,15 +22,18 @@ export default function QualityLabCommercialHandoffPage() {
     fetchQualityLabReviewedProject(params.id).then((snapshot) => {
       if (!snapshot) return;
       const project = qualityLabProjectFromReviewedSnapshot(snapshot);
+      if (isIllustrativeQualityLabProject(project)) return;
       setRecovered({ project, packet: snapshot.engagement ?? getOrCreateEngagement(project) });
     }).catch(() => undefined);
   }, [localProject, params?.id]);
 
   const project = localProject ?? recovered?.project;
-  const packet = localProject ? getOrCreateEngagement(localProject) : recovered?.packet;
+  const illustrativeProject = project ? isIllustrativeQualityLabProject(project) : false;
+  const packet = localProject && !illustrativeProject ? getOrCreateEngagement(localProject) : recovered?.packet;
   const handoff = useMemo(() => project && packet ? createQualityLabCommercialHandoff(project, packet) : null, [packet, project]);
   useSEO({ title: "Vendor-neutral URS & RFQ Handoff | Atlas Quality Lab", description: "Inspect traceable vendor-neutral requirements and generate controlled URS and RFQ drafting files from one Blueprint contract.", noIndex: true });
 
+  if (illustrativeProject && project) return <div className="min-h-screen bg-[#08111f] px-4 py-20 text-slate-100"><div className="mx-auto max-w-2xl rounded-3xl border border-amber-300/20 bg-amber-300/[0.045] p-8 text-center"><ShieldCheck className="mx-auto h-8 w-8 text-amber-300" /><h1 className="mt-5 text-2xl font-bold">Commercial handoff is unavailable for synthetic examples</h1><p className="mt-3 text-sm leading-6 text-slate-400">Start a separate Blueprint from your own inputs and submit it for expert review before generating controlled URS or RFQ drafting files.</p><Link href={`/quality-lab/projects/${project.id}`} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950"><ArrowLeft className="h-4 w-4" /> Return to synthetic Blueprint</Link></div></div>;
   if (!project || !packet || !handoff) return <div className="mx-auto max-w-2xl px-4 py-20 text-center"><h1 className="text-2xl font-bold">Loading commercial handoff…</h1><Link href="/quality-lab/projects" className="mt-5 inline-block text-teal-300">Open saved projects</Link></div>;
 
   const activeProject = project;

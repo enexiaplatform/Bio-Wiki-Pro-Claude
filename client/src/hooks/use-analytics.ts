@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { recordQualityLabFunnelEvent } from "@/lib/quality-lab-funnel";
+import type { QualityLabOnboardingPath } from "@shared/quality-lab-funnel";
 
 declare global {
   interface Window {
@@ -24,6 +25,13 @@ function initPostHog() {
       api_host: "https://app.posthog.com",
       capture_pageview: false, // we track manually
       autocapture: false,
+      // Project source text is confidential; only explicit journey events are allowed.
+      disable_session_recording: true,
+      capture_dead_clicks: false,
+      capture_exceptions: false,
+      capture_heatmaps: false,
+      mask_all_text: true,
+      mask_all_element_attributes: true,
       persistence: "localStorage+cookie",
     });
     initialized = true;
@@ -151,10 +159,15 @@ export const analytics = {
     if (productType === "scope_diagnostic") recordQualityLabFunnelEvent({ stage: "diagnostic_purchased", offer: productType });
   },
 
-  onboardingStarted: () => capture("onboarding_started"),
+  onboardingStarted: () => {
+    capture("onboarding_started");
+    recordQualityLabFunnelEvent({ stage: "onboarding_viewed", source: "welcome" });
+  },
 
-  onboardingCompleted: (firstValue: string) =>
-    capture("onboarding_completed", { first_value: firstValue }),
+  onboardingCompleted: (firstValue: QualityLabOnboardingPath) => {
+    capture("onboarding_completed", { first_value: firstValue });
+    recordQualityLabFunnelEvent({ stage: "onboarding_path_selected", source: "welcome", destination: firstValue });
+  },
 
   upgradePromptShown: (placement: string) =>
     capture("upgrade_prompt_shown", { placement }),
@@ -224,6 +237,11 @@ export const analytics = {
     recordQualityLabFunnelEvent({ stage: "cta_clicked", placement, destination });
   },
 
+  blueprintExampleExplored: (placement: string, destination: string) => {
+    capture("blueprint_example_explored", { placement, destination });
+    recordQualityLabFunnelEvent({ stage: "example_explored", placement, destination, startMode: "example" });
+  },
+
   blueprintDecisionFrameCopied: (detailPercent: number, describedInputs: number) =>
     capture("blueprint_decision_frame_copied", { detail_percent: detailPercent, described_inputs: describedInputs }),
 
@@ -239,9 +257,9 @@ export const analytics = {
 
   sampleBlueprintDownloaded: () => capture("sample_blueprint_downloaded", { format: "pdf" }),
 
-  commercialIntakeViewed: (offer: string) => {
-    capture("commercial_intake_viewed", { offer });
-    recordQualityLabFunnelEvent({ stage: "review_viewed", offer });
+  commercialIntakeViewed: (offer: string, source?: string) => {
+    capture("commercial_intake_viewed", { offer, source });
+    recordQualityLabFunnelEvent({ stage: "review_viewed", offer, source });
   },
 
   blueprintStarted: (source = "planner") => {
@@ -257,13 +275,13 @@ export const analytics = {
   blueprintImported: (source: "input" | "project") =>
     capture("blueprint_imported", { source }),
 
-  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number) => {
+  blueprintCompiled: (projectId: string, facilityType: string, scopeCount: number, startMode?: "guided" | "example" | "blank" | "import" | "existing") => {
     capture("blueprint_compiled", {
       project_id: projectId,
       facility_type: facilityType,
       scope_count: scopeCount,
     });
-    recordQualityLabFunnelEvent({ stage: "model_compiled" });
+    recordQualityLabFunnelEvent({ stage: "model_compiled", startMode });
   },
 
   scenarioCompared: (baselineId: string, alternativeId: string, changedInputs: number) =>

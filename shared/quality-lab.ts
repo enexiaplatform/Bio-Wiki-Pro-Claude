@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { intakeConfirmationSchema } from "./quality-lab-intake-contract.js";
+import { specialistBasisSchema } from "./quality-lab-specialist-basis.js";
+import { impactReviewSchema } from "./quality-lab-impact-contract.js";
 import {
   QUALITY_LAB_BLUEPRINT_CONTRACT_VERSION,
   QUALITY_LAB_COMPILER_CORE_VERSION,
@@ -133,6 +136,10 @@ export const qualityLabInputSchema = z.object({
   analystAnnualCostUsd: z.number().min(0).max(500_000),
   productProfiles: z.array(productProfileSchema).max(500).default([]),
   portfolioIsComplete: z.boolean().default(false),
+  // Self-declared, explicitly confirmed import provenance; never regulatory evidence.
+  intakeProvenance: z.array(intakeConfirmationSchema).max(20).optional(),
+  specialistBasis: z.array(specialistBasisSchema).max(5).optional(),
+  impactReviewHistory: z.array(impactReviewSchema).max(100).optional(),
 });
 
 export type QualityLabInput = z.infer<typeof qualityLabInputSchema>;
@@ -388,9 +395,18 @@ export const qualityLabBlueprintSchema = z.object({
 
 export type QualityLabBlueprint = z.infer<typeof qualityLabBlueprintSchema>;
 
+export const qualityLabProjectOriginValues = ["user-entered", "illustrative-example"] as const;
+export type QualityLabProjectOrigin = typeof qualityLabProjectOriginValues[number];
+
 export interface QualityLabProject {
   id: string;
   name: string;
+  /**
+   * Illustrative examples stay browser-local and cannot enter account sync or
+   * commercial review. Reserved Casebook product IDs also fail closed so
+   * projects created before origin tagging cannot enter the commercial path.
+   */
+  origin?: QualityLabProjectOrigin;
   createdAt: string;
   updatedAt: string;
   input: QualityLabInput;
@@ -401,6 +417,11 @@ export interface QualityLabProject {
   revisions?: QualityLabFrozenRevision[];
   activeRevisionId?: string;
   reviewRequestedAt?: string;
+}
+
+export function isIllustrativeQualityLabProject(project: Pick<QualityLabProject, "origin" | "input"> | null | undefined) {
+  return project?.origin === "illustrative-example"
+    || project?.input.productProfiles.some((product) => product.id.startsWith("case-")) === true;
 }
 
 export const defaultQualityLabInput: QualityLabInput = {
@@ -1529,7 +1550,11 @@ export function compileQualityLabBlueprint(rawInput: QualityLabInput): QualityLa
   return parsed;
 }
 
-export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date.now().toString(36)}`): QualityLabProject {
+export function createQualityLabProject(
+  input: QualityLabInput,
+  id = `qlp_${Date.now().toString(36)}`,
+  origin: QualityLabProjectOrigin = "user-entered",
+): QualityLabProject {
   const now = new Date().toISOString();
   const parsedInput = qualityLabInputSchema.parse(input);
   const blueprint = compileQualityLabBlueprint(parsedInput);
@@ -1537,6 +1562,7 @@ export function createQualityLabProject(input: QualityLabInput, id = `qlp_${Date
   return {
     id,
     name: parsedInput.projectName,
+    origin,
     createdAt: now,
     updatedAt: now,
     input: parsedInput,

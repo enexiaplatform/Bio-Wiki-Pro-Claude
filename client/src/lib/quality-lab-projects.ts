@@ -1,5 +1,5 @@
-import type { QualityLabInput, QualityLabProject, QualityLabProjectAction } from "@shared/quality-lab";
-import { compileQualityLabBlueprint, createQualityLabProject, createEmptyQualityLabEvidenceRegister, qualityLabActionPlanSchema, qualityLabBlueprintSchema, qualityLabDecisionRegisterSchema, qualityLabInputSchema, reconcileQualityLabActionPlan, reconcileQualityLabDecisionRegister, validateQualityLabDecisionRecord, QualityLabDecisionValidationError, type QualityLabDecisionRecord, type QualityLabEvidenceRecord } from "@shared/quality-lab";
+import type { QualityLabInput, QualityLabProject, QualityLabProjectAction, QualityLabProjectOrigin } from "@shared/quality-lab";
+import { compileQualityLabBlueprint, createQualityLabProject, createEmptyQualityLabEvidenceRegister, isIllustrativeQualityLabProject, qualityLabActionPlanSchema, qualityLabBlueprintSchema, qualityLabDecisionRegisterSchema, qualityLabInputSchema, reconcileQualityLabActionPlan, reconcileQualityLabDecisionRegister, validateQualityLabDecisionRecord, QualityLabDecisionValidationError, type QualityLabDecisionRecord, type QualityLabEvidenceRecord } from "@shared/quality-lab";
 import { ensureQualityLabProjectHistory, freezeQualityLabProjectRevision, recompileQualityLabProject } from "@shared/quality-lab-revisions";
 import { createQualityLabEngagementPacket } from "@shared/quality-lab-engagement";
 import {
@@ -25,8 +25,10 @@ function safeParse(values: unknown[]): QualityLabProject[] {
       const actionPlan = storedActionPlan.success ? storedActionPlan.data : reconcileQualityLabActionPlan(blueprint, undefined, blueprint.generatedAt);
       const storedDecisionRegister = qualityLabDecisionRegisterSchema.safeParse(project.decisionRegister);
       const decisionRegister = storedDecisionRegister.success ? storedDecisionRegister.data : reconcileQualityLabDecisionRegister(blueprint, actionPlan, undefined, blueprint.generatedAt);
+      const normalizedOrigin = isIllustrativeQualityLabProject({ ...project, input: parsed.data }) ? "illustrative-example" : project.origin;
       return [ensureQualityLabProjectHistory({
         ...project,
+        origin: normalizedOrigin,
         name: parsed.data.projectName,
         input: parsed.data,
         blueprint,
@@ -59,13 +61,13 @@ export function getQualityLabProject(id: string): QualityLabProject | undefined 
   return listQualityLabProjects().find((project) => project.id === id);
 }
 
-export function saveQualityLabProject(input: QualityLabInput, id?: string): QualityLabProject {
+export function saveQualityLabProject(input: QualityLabInput, id?: string, origin: QualityLabProjectOrigin = "user-entered"): QualityLabProject {
   const projects = listQualityLabProjects();
   const existing = id ? projects.find((project) => project.id === id) : undefined;
   const project = existing
     ? recompileQualityLabProject(existing, input)
     : (() => {
-        const created = { ...createQualityLabProject(input), evidenceRegister: createEmptyQualityLabEvidenceRegister() };
+        const created = { ...createQualityLabProject(input, undefined, origin), evidenceRegister: createEmptyQualityLabEvidenceRegister() };
         const revision = freezeQualityLabProjectRevision(created, 1, created.updatedAt);
         return { ...created, revisions: [revision], activeRevisionId: revision.revisionId };
       })();
@@ -80,7 +82,7 @@ export function duplicateQualityLabProject(id: string, scenarioLabel?: string): 
   return saveQualityLabProject({
     ...source.input,
     scenarioLabel: label,
-  });
+  }, undefined, source.origin ?? "user-entered");
 }
 
 /** Restores an account-held review snapshot into this browser without re-syncing it. */
@@ -211,7 +213,7 @@ export function deleteQualityLabProject(id: string) {
 export function markQualityLabReviewRequested(id: string): QualityLabProject | undefined {
   const projects = listQualityLabProjects();
   const project = projects.find((item) => item.id === id);
-  if (!project) return undefined;
+  if (!project || isIllustrativeQualityLabProject(project)) return undefined;
   const now = new Date().toISOString();
   const updated = { ...project, reviewRequestedAt: now, updatedAt: now };
   write([updated, ...projects.filter((item) => item.id !== id)]);
@@ -240,6 +242,7 @@ export function exportQualityLabEngagementPacket(project: QualityLabProject) {
 }
 
 export async function syncQualityLabReviewedProject(project: QualityLabProject, engagement = createQualityLabEngagementPacket(project)) {
+  if (isIllustrativeQualityLabProject(project)) throw new Error("Illustrative examples cannot be attached to expert review.");
   if (!project.reviewRequestedAt) throw new Error("Only requested-review projects may be synced");
   const snapshot = createQualityLabAccountSnapshot(project, engagement);
   const response = await fetch(`/api/quality-lab/reviewed-projects/${encodeURIComponent(project.id)}`, {
@@ -339,6 +342,7 @@ export async function fetchQualityLabAccountProjects() {
 }
 
 export async function syncQualityLabAccountProject(project: QualityLabProject, expectedUpdatedAt: string | null) {
+  if (isIllustrativeQualityLabProject(project)) throw new Error("Illustrative examples stay browser-local and cannot be saved to an account.");
   const response = await fetch(`/api/quality-lab/projects/${encodeURIComponent(project.id)}`, {
     method: "PUT",
     headers: { "content-type": "application/json" },

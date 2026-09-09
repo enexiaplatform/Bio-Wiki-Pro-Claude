@@ -26,6 +26,7 @@ import {
 import {
   priorityQualityLabActions,
   getQualityLabReadiness,
+  isIllustrativeQualityLabProject,
   qualityLabActionPlanMetrics,
   qualityLabPortfolioQueueMetrics,
   qualityLabPortfolioWorkQueue,
@@ -102,15 +103,17 @@ export default function QualityLabProjectsPage() {
   const [reminderSaving, setReminderSaving] = useState(false);
   const [reminderStatus, setReminderStatus] = useState("");
   const reminderAttributionCaptured = useRef(false);
-  const projectsWithBlockingInputs = projects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
-  const averageEvidenceReadiness = projects.length
-    ? Math.round(projects.reduce((sum, project) => sum + getQualityLabReadiness(project.blueprint).evidenceReadiness.score, 0) / projects.length)
+  const workingProjects = projects.filter((project) => !isIllustrativeQualityLabProject(project));
+  const illustrativeProjects = projects.filter(isIllustrativeQualityLabProject);
+  const projectsWithBlockingInputs = workingProjects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
+  const averageEvidenceReadiness = workingProjects.length
+    ? Math.round(workingProjects.reduce((sum, project) => sum + getQualityLabReadiness(project.blueprint).evidenceReadiness.score, 0) / workingProjects.length)
     : 0;
-  const activeProjectActions = projects.reduce((sum, project) => sum + qualityLabActionPlanMetrics(project.actionPlan).activeCount, 0);
-  const workQueue = qualityLabPortfolioWorkQueue(projects, localDateKey());
+  const activeProjectActions = workingProjects.reduce((sum, project) => sum + qualityLabActionPlanMetrics(project.actionPlan).activeCount, 0);
+  const workQueue = qualityLabPortfolioWorkQueue(workingProjects, localDateKey());
   const workQueueMetrics = qualityLabPortfolioQueueMetrics(workQueue);
   const visibleWorkQueue = workQueue.slice(0, 5);
-  const weeklyReview = qualityLabWeeklyPortfolioReview(projects, localDateKey());
+  const weeklyReview = qualityLabWeeklyPortfolioReview(workingProjects, localDateKey());
   const visibleWeeklyEvents = weeklyReview.recentEvents.slice(0, 5);
 
   const refresh = () => {
@@ -175,14 +178,14 @@ export default function QualityLabProjectsPage() {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    if (projects.length === 0) return;
-    analytics.projectWorkQueueViewed(projects.length, activeProjectActions, workQueueMetrics.overdueCount);
-  }, [projects.length, activeProjectActions, workQueueMetrics.overdueCount]);
+    if (workingProjects.length === 0) return;
+    analytics.projectWorkQueueViewed(workingProjects.length, activeProjectActions, workQueueMetrics.overdueCount);
+  }, [workingProjects.length, activeProjectActions, workQueueMetrics.overdueCount]);
 
   useEffect(() => {
-    if (projects.length === 0) return;
-    analytics.projectWeeklyReviewViewed(projects.length, weeklyReview.recentEvents.length, weeklyReview.activeBlockingCount);
-  }, [projects.length, weeklyReview.recentEvents.length, weeklyReview.activeBlockingCount]);
+    if (workingProjects.length === 0) return;
+    analytics.projectWeeklyReviewViewed(workingProjects.length, weeklyReview.recentEvents.length, weeklyReview.activeBlockingCount);
+  }, [workingProjects.length, weeklyReview.recentEvents.length, weeklyReview.activeBlockingCount]);
 
   function duplicate(id: string) {
     const source = projects.find((project) => project.id === id);
@@ -267,7 +270,7 @@ export default function QualityLabProjectsPage() {
     analytics.projectWorkQueueActionOpened(projectId, actionId, timing, attribution?.source, attribution?.attributionAgeMinutes);
   }
 
-  const firstProject = projects[0];
+  const firstProject = workingProjects[0];
   const recoverableProjects = reviewedProjects.filter((snapshot) => !projects.some((project) => project.id === snapshot.localProjectId));
 
   return (
@@ -300,8 +303,8 @@ export default function QualityLabProjectsPage() {
                 </Link>
               </>
             )}
-            {projects.length >= 2 && (
-              <Link href={`/quality-lab/compare?baseline=${projects[0].id}&alternative=${projects[1].id}`} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-sm font-bold text-violet-200 transition hover:bg-violet-300/10">
+            {workingProjects.length >= 2 && (
+              <Link href={`/quality-lab/compare?baseline=${workingProjects[0].id}&alternative=${workingProjects[1].id}`} className="inline-flex items-center gap-2 rounded-xl border border-violet-300/20 bg-violet-300/[0.06] px-4 py-2.5 text-sm font-bold text-violet-200 transition hover:bg-violet-300/10">
                 <GitCompareArrows className="h-4 w-4" /> Compare scenarios
               </Link>
             )}
@@ -325,7 +328,7 @@ export default function QualityLabProjectsPage() {
             {projects.length > 0 && (
               <div className="grid min-w-64 grid-cols-2 gap-2 sm:grid-cols-4" aria-label="Project portfolio summary">
                 <div className="rounded-xl border border-white/10 bg-black/15 p-3 text-center">
-                  <strong className="block text-lg text-white">{projects.length}</strong>
+                  <strong className="block text-lg text-white">{workingProjects.length}</strong>
                   <span className="text-[10px] text-slate-500">projects</span>
                 </div>
                 <div className="rounded-xl border border-amber-300/15 bg-amber-300/[0.04] p-3 text-center">
@@ -344,6 +347,8 @@ export default function QualityLabProjectsPage() {
             )}
           </div>
         </header>
+
+        {illustrativeProjects.length > 0 && <div role="status" className="mb-6 rounded-2xl border border-amber-300/20 bg-amber-300/[0.055] p-4 text-xs leading-5 text-amber-100/80"><strong className="text-amber-100">{illustrativeProjects.length} illustrative example{illustrativeProjects.length === 1 ? "" : "s"} kept separate.</strong> Examples remain available for exploration below, but they are excluded from portfolio metrics, reminders, today&apos;s work queue, account sync and commercial review.</div>}
 
         {snapshotActionError && <div role="alert" className="mb-6 rounded-xl border border-red-300/20 bg-red-300/10 p-4 text-sm text-red-100">{snapshotActionError}</div>}
         {snapshotActionStatus && <div role="status" className="mb-6 rounded-xl border border-teal-300/20 bg-teal-300/10 p-4 text-sm text-teal-100">{snapshotActionStatus}</div>}
@@ -475,7 +480,7 @@ export default function QualityLabProjectsPage() {
               <FileText className="h-6 w-6" />
             </div>
             <h2 className="mt-5 text-xl font-bold">No blueprints yet</h2>
-            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Start with the example assumptions, replace them with your site data and compile the first scenario.</p>
+            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">Start with Atlas guidance or an empty intake, add your own project facts and compile the first scenario.</p>
             <Link href="/quality-lab/planner" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200">
               Build a blueprint <ArrowRight className="h-4 w-4" />
             </Link>
@@ -483,6 +488,7 @@ export default function QualityLabProjectsPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {projects.map((project) => {
+              const illustrative = isIllustrativeQualityLabProject(project);
               const actionMetrics = qualityLabActionPlanMetrics(project.actionPlan);
               const nextAction = priorityQualityLabActions(project.actionPlan)[0];
               const stage = qualityLabProjectStage(project.actionPlan, project.reviewRequestedAt);
@@ -495,23 +501,23 @@ export default function QualityLabProjectsPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-300/10 text-teal-200">
                     <Building2 className="h-5 w-5" />
                   </div>
-                  <span className={`rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${project.blueprint.dataQuality.blockingOpenCount > 0 ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-sky-300/20 bg-sky-300/10 text-sky-200"}`}>
-                    {readiness.decisionReadiness.label}
+                  <span className={`rounded-full border px-2 py-1 text-[9px] font-bold uppercase tracking-wider ${illustrative || project.blueprint.dataQuality.blockingOpenCount > 0 ? "border-amber-300/20 bg-amber-300/10 text-amber-200" : "border-sky-300/20 bg-sky-300/10 text-sky-200"}`}>
+                    {illustrative ? "Illustrative example" : readiness.decisionReadiness.label}
                   </span>
                 </div>
                 <h2 className="mt-5 text-xl font-bold">{project.name}</h2>
                 <p className="mt-1 text-sm font-semibold text-teal-200">{project.input.scenarioLabel}</p>
                 <p className="mt-1 text-xs text-slate-500">{project.input.companyName || "Company not specified"} - {project.input.country} - Updated {new Date(project.updatedAt).toLocaleDateString()}</p>
                 <div className="mt-2 rounded-lg border border-sky-300/15 bg-sky-300/[0.04] px-3 py-3 text-[11px] leading-5 text-sky-100">
-                  <p>{accountSnapshot ? `Account copy saved · ${accountStatus?.revisionCount ?? 0} revision${(accountStatus?.revisionCount ?? 0) === 1 ? "" : "s"}${accountStatus?.lastSyncedAt ? ` · last saved ${new Date(accountStatus.lastSyncedAt).toLocaleDateString()}` : ""}.` : isAuthenticated ? "Browser-only working copy. Save explicitly when you want cross-device recovery." : "Browser-only working copy. Sign in to save an account copy."}{project.reviewRequestedAt ? ` Review request: ${new Date(project.reviewRequestedAt).toLocaleDateString()}.` : ""}</p>
-                  {isAuthenticated && <div className="mt-2 flex flex-wrap gap-3"><button type="button" disabled={syncingProjectId === project.id} onClick={() => void syncAccountProject(project)} className="inline-flex items-center gap-1.5 font-bold text-sky-200 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><CloudUpload className="h-3 w-3" /> {syncingProjectId === project.id ? "Saving…" : accountSnapshot ? "Save latest revision" : "Save to account"}</button>{accountSnapshot && <button type="button" disabled={deletingSnapshotId === project.id} onClick={() => void removeAccountSnapshot(project)} className="inline-flex items-center gap-1.5 font-bold text-slate-400 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><Trash2 className="h-3 w-3" /> {deletingSnapshotId === project.id ? "Removing…" : "Remove account copy"}</button>}</div>}
+                  <p>{illustrative ? "Synthetic browser-local example. Account sync and commercial review are disabled." : `${accountSnapshot ? `Account copy saved · ${accountStatus?.revisionCount ?? 0} revision${(accountStatus?.revisionCount ?? 0) === 1 ? "" : "s"}${accountStatus?.lastSyncedAt ? ` · last saved ${new Date(accountStatus.lastSyncedAt).toLocaleDateString()}` : ""}.` : isAuthenticated ? "Browser-only working copy. Save explicitly when you want cross-device recovery." : "Browser-only working copy. Sign in to save an account copy."}${project.reviewRequestedAt ? ` Review request: ${new Date(project.reviewRequestedAt).toLocaleDateString()}.` : ""}`}</p>
+                  {isAuthenticated && !illustrative && <div className="mt-2 flex flex-wrap gap-3"><button type="button" disabled={syncingProjectId === project.id} onClick={() => void syncAccountProject(project)} className="inline-flex items-center gap-1.5 font-bold text-sky-200 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><CloudUpload className="h-3 w-3" /> {syncingProjectId === project.id ? "Saving…" : accountSnapshot ? "Save latest revision" : "Save to account"}</button>{accountSnapshot && <button type="button" disabled={deletingSnapshotId === project.id} onClick={() => void removeAccountSnapshot(project)} className="inline-flex items-center gap-1.5 font-bold text-slate-400 underline underline-offset-2 hover:text-white disabled:cursor-wait disabled:opacity-60"><Trash2 className="h-3 w-3" /> {deletingSnapshotId === project.id ? "Removing…" : "Remove account copy"}</button>}</div>}
                 </div>
-                <div className="mt-4 rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-3">
+                {illustrative ? <div className="mt-4 rounded-xl border border-amber-300/15 bg-amber-300/[0.045] p-3 text-xs leading-5 text-amber-100/75">Explore the model and exports without adding its synthetic actions to today&apos;s project queue.</div> : <div className="mt-4 rounded-xl border border-teal-300/15 bg-teal-300/[0.045] p-3">
                   <div className="flex items-center justify-between gap-3"><span className="text-[10px] font-bold uppercase tracking-wider text-teal-200">{projectStageLabels[stage]}</span><span className="text-[10px] text-slate-500">{actionMetrics.activeCount} active</span></div>
                   <p className="mt-2 line-clamp-2 text-xs font-semibold leading-5 text-slate-200">{nextAction?.question ?? "No compiled input action remains open."}</p>
                   {nextAction && <p className="mt-1 text-[10px] text-slate-500">Owner: {nextAction.ownerRole || "Unassigned"}{nextAction.dueDate ? ` · due ${new Date(`${nextAction.dueDate}T00:00:00`).toLocaleDateString()}` : " · no due date"}</p>}
                   <Link href={`/quality-lab/projects/${project.id}/workspace`} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-teal-200 hover:text-white">Open decision workspace <ArrowRight className="h-3.5 w-3.5" /></Link>
-                </div>
+                </div>}
                 <div className="mt-3 rounded-xl border border-white/8 bg-slate-950/30 p-3">
                   <div className="flex items-center justify-between gap-3 text-xs">
                     <span className="font-semibold text-slate-300">Evidence readiness</span>

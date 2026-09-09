@@ -45,6 +45,31 @@ names belong in the protected operator output, not the public response.
 
 ## Baseline status
 
+### Bounded two-table repair — applied and verified 9 September 2026
+
+The protected pre-repair Production audit found exactly `quality_lab_funnel_events` and
+`regulatory_alert_preferences` absent. The expanded runtime audit includes
+lifecycle and digest dependencies: 15 tables, 105 columns and 25 primary/unique
+keys. Existing objects passed the checked structural contracts.
+
+The versioned [reconciliation record](../migrations/reconciliation/README.md)
+creates only these two missing tables. Its runner defaults to a read-only
+transaction, refuses other drift, and performs postflight on the same connection
+before committing an explicitly authorized apply. It is deliberately outside
+the unreconciled historical Drizzle ledger; `db:migrate` does not apply it.
+
+SQL, defaults, unique guards, conflict rollback and repeat-apply refusal were
+rehearsed against a synthetic in-memory PostgreSQL fixture. This is not a
+production backup/restore rehearsal. The latest founder brief explicitly authorized
+this bounded repair after exact preflight, transactional rollback and isolated
+rehearsal. One real apply through the protected Preview target passed postflight:
+15 tables, 105 columns and 25 primary/unique keys. Independent Preview and Production
+audits then passed the same repaired contract; no second apply was needed.
+Both deployed `/api/health` endpoints returned HTTP 200 with `schema:true` on
+9 September. Existing customer rows and unrelated schema were not changed.
+This does not establish separate Preview/Production database isolation or reconcile
+the historical ledger. Future changes still require the normal procedure below.
+
 `migrations/0000_baseline.sql` captures an early seven-table schema (`users`,
 `sessions`, `purchases`, `leads`, `quote_requests`, `processed_stripe_events`,
 `content_entries`). It does **not** capture all tables currently declared in

@@ -26,9 +26,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { analytics } from "@/hooks/use-analytics";
+import { authPath, safeAuthReturnTo } from "@shared/auth-return";
+
+function guestLoginPath(location: string): string {
+  if (!location.startsWith("/register")) return "/login";
+  const returnTo = safeAuthReturnTo(window.location.search, "");
+  return returnTo ? authPath("/login", returnTo) : "/login";
+}
 
 // Life Science Atlas "Knowledge Lattice" mark (molecule + knowledge graph).
-function AtlasMark({ className }: { className?: string }) {
+export function AtlasMark({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 100 100" className={className} aria-hidden="true">
       <g fill="none" stroke="#14B8A6" strokeOpacity="0.5" strokeWidth="3.4" strokeLinecap="round">
@@ -272,13 +279,13 @@ export function DesktopNav() {
               type="button"
               className={clsx(
                 "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                resourceLinks.some((item) => location.startsWith(item.path))
+                location !== "/methods" && resourceLinks.some((item) => location.startsWith(item.path))
                   ? "bg-primary/10 text-primary"
                   : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
               )}
               data-testid="nav-desktop-resources"
             >
-              <BookOpen className="h-4 w-4" />
+              {location !== "/methods" && <BookOpen className="h-4 w-4" />}
               Resources
               <ChevronDown className="h-3.5 w-3.5 opacity-60" />
             </button>
@@ -303,7 +310,7 @@ export function DesktopNav() {
           "flex items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors",
           location.startsWith("/pricing") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-white/5 hover:text-foreground"
         )} data-testid="nav-desktop-pricing">
-          <Tag className="h-4 w-4" /> Pricing
+          {location !== "/methods" && <Tag className="h-4 w-4" />} Pricing
         </Link>
       </nav>
 
@@ -370,7 +377,7 @@ export function DesktopNav() {
             </DropdownMenu>
           </>
         ) : (
-          <Link href="/login" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white" data-testid="button-login">
+          <Link href={guestLoginPath(location)} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-slate-200 transition hover:bg-white/5 hover:text-white" data-testid="button-login">
             <LogIn className="h-4 w-4" /> {t("signIn")}
           </Link>
         )}
@@ -383,6 +390,7 @@ export function DesktopNav() {
 }
 
 export function MobileHeader() {
+  const [location] = useLocation();
   const { t } = useTranslation("nav");
   const { user, isAuthenticated, isPro, logout } = useUser();
 
@@ -417,7 +425,7 @@ export function MobileHeader() {
           </>
         ) : (
           <Button size="sm" asChild data-testid="button-login-mobile">
-            <Link href="/login">{t("signIn")}</Link>
+            <Link href={guestLoginPath(location)}>{t("signIn")}</Link>
           </Button>
         )}
       </div>

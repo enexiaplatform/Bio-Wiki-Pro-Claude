@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, CheckCircle2, CircleDashed, ClipboardList, Copy, Download, FileSpreadsheet, Network, RotateCcw, ShieldCheck } from "lucide-react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { ArrowRight, Check, CheckCircle2, CircleDashed, ClipboardList, Copy, Download, FileSpreadsheet, Network, RotateCcw, ShieldCheck, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import { QualityLabEditorialHero } from "@/components/QualityLabEditorialHero";
 import { analytics } from "@/hooks/use-analytics";
@@ -10,11 +10,13 @@ import { copyText } from "@/lib/clipboard";
 import { blueprintDiscoveryTemplates } from "@/data/qualityLabDiscoveryTemplates";
 import {
   assessQualityLabDecisionFrame,
+  createQualityLabDecisionFrameDraft,
   createQualityLabDecisionFrameHandoff,
   emptyQualityLabDecisionFrame,
   formatQualityLabDecisionFrame,
-  parseQualityLabDecisionFrame,
+  parseRecentQualityLabDecisionFrameDraft,
   qualityLabDecisionFrameFieldLimits,
+  QUALITY_LAB_DECISION_FRAME_DRAFT_KEY,
   QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY,
   QUALITY_LAB_DECISION_FRAME_STORAGE_KEY,
   type QualityLabDecisionFrameInput,
@@ -40,13 +42,23 @@ const decisionFrameFields = [
   { key: "excludedDecisions", label: "Decisions not authorized", prompt: "What must this work not approve yet, such as supplier selection, detailed engineering, validation, or regulatory acceptance?" },
 ] as const satisfies ReadonlyArray<{ key: keyof QualityLabDecisionFrameInput; label: string; prompt: string }>;
 
-function loadStoredDecisionFrame(): QualityLabDecisionFrameInput {
+function loadRecentDecisionFrameDraft() {
   try {
-    const parsed = parseQualityLabDecisionFrame(JSON.parse(localStorage.getItem(QUALITY_LAB_DECISION_FRAME_STORAGE_KEY) ?? "null"));
-    return parsed ?? { ...emptyQualityLabDecisionFrame };
-  } catch {
     localStorage.removeItem(QUALITY_LAB_DECISION_FRAME_STORAGE_KEY);
-    return { ...emptyQualityLabDecisionFrame };
+  } catch {
+    // Legacy browser storage can be unavailable; the new opt-in flow remains tab-local.
+  }
+  try {
+    const draft = parseRecentQualityLabDecisionFrameDraft(JSON.parse(sessionStorage.getItem(QUALITY_LAB_DECISION_FRAME_DRAFT_KEY) ?? "null"));
+    if (!draft) sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_DRAFT_KEY);
+    return draft;
+  } catch {
+    try {
+      sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_DRAFT_KEY);
+    } catch {
+      // Ignore cleanup failures and fail closed without restoring a draft.
+    }
+    return null;
   }
 }
 
@@ -71,8 +83,13 @@ export default function QualityLabDiscoveryPackPage() {
   const requestedPackageId = typeof window === "undefined" ? "" : new URLSearchParams(window.location.search).get("package") ?? "";
   const decisionPackageId = getDecisionPackage(requestedPackageId)?.id ?? "cross-cutting-evidence-governance";
   const plannerHref = `/quality-lab/planner?package=${encodeURIComponent(decisionPackageId)}`;
-  const [decisionFrame, setDecisionFrame] = useState<QualityLabDecisionFrameInput>(loadStoredDecisionFrame);
+  const [initialDraft] = useState(loadRecentDecisionFrameDraft);
+  const [decisionFrame, setDecisionFrame] = useState<QualityLabDecisionFrameInput>(() => initialDraft?.frame ?? { ...emptyQualityLabDecisionFrame });
   const [decisionFrameCopied, setDecisionFrameCopied] = useState(false);
+  const [draftPersistenceEnabled, setDraftPersistenceEnabled] = useState(Boolean(initialDraft));
+  const [draftRestored, setDraftRestored] = useState(Boolean(initialDraft));
+  const [draftStorageError, setDraftStorageError] = useState("");
+  const [handoffStorageError, setHandoffStorageError] = useState("");
   const decisionFrameReadiness = useMemo(() => assessQualityLabDecisionFrame(decisionFrame), [decisionFrame]);
 
   useSEO({
@@ -81,12 +98,22 @@ export default function QualityLabDiscoveryPackPage() {
   });
 
   useEffect(() => {
-    localStorage.setItem(QUALITY_LAB_DECISION_FRAME_STORAGE_KEY, JSON.stringify(decisionFrame));
-  }, [decisionFrame]);
+    if (!draftPersistenceEnabled) return;
+    try {
+      sessionStorage.setItem(QUALITY_LAB_DECISION_FRAME_DRAFT_KEY, JSON.stringify(createQualityLabDecisionFrameDraft(decisionFrame)));
+      setDraftStorageError("");
+    } catch {
+      setDraftPersistenceEnabled(false);
+      setDraftRestored(false);
+      setDraftStorageError("This browser could not keep a tab copy. Your on-screen entries are unchanged; keep this tab open or copy the frame before leaving.");
+    }
+  }, [decisionFrame, draftPersistenceEnabled]);
 
   function updateDecisionFrame(key: keyof QualityLabDecisionFrameInput, value: string) {
     setDecisionFrame((current) => ({ ...current, [key]: value }));
     setDecisionFrameCopied(false);
+    setDraftRestored(false);
+    setHandoffStorageError("");
   }
 
   async function copyDecisionFrame() {
@@ -98,13 +125,45 @@ export default function QualityLabDiscoveryPackPage() {
 
   function clearDecisionFrame() {
     setDecisionFrame({ ...emptyQualityLabDecisionFrame });
-    sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
+    setDraftPersistenceEnabled(false);
+    setDraftRestored(false);
+    setDraftStorageError("");
+    setHandoffStorageError("");
+    try {
+      sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_DRAFT_KEY);
+      sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
+    } catch {
+      // On-screen clearing still succeeds if browser storage is unavailable.
+    }
     analytics.blueprintDecisionFrameCleared();
   }
 
-  function handoffDecisionFrame() {
-    sessionStorage.setItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY, JSON.stringify(createQualityLabDecisionFrameHandoff(decisionFrame)));
-    analytics.blueprintDecisionFrameHandoff(decisionFrameReadiness.percent, decisionFrameReadiness.completeCount);
+  function toggleDraftPersistence(enabled: boolean) {
+    setDraftPersistenceEnabled(enabled);
+    setDraftRestored(false);
+    setDraftStorageError("");
+    if (!enabled) {
+      try {
+        sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_DRAFT_KEY);
+      } catch {
+        // The visible opt-out still takes effect for the current page state.
+      }
+    }
+  }
+
+  function deleteSavedDraft() {
+    toggleDraftPersistence(false);
+  }
+
+  function handoffDecisionFrame(event: MouseEvent<HTMLAnchorElement>) {
+    try {
+      sessionStorage.setItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY, JSON.stringify(createQualityLabDecisionFrameHandoff(decisionFrame)));
+      setHandoffStorageError("");
+      analytics.blueprintDecisionFrameHandoff(decisionFrameReadiness.percent, decisionFrameReadiness.completeCount);
+    } catch {
+      event.preventDefault();
+      setHandoffStorageError("This browser could not transfer the frame. Copy it first, then open the diagnostic and paste only the details you are authorized to share.");
+    }
   }
 
   return (
@@ -145,6 +204,19 @@ export default function QualityLabDiscoveryPackPage() {
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Decision framing canvas</p>
               <h2 className="mt-3 text-3xl font-bold">Define the decision before collecting every possible input.</h2>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">A narrow decision frame prevents discovery from becoming an open-ended data request. Describe what must be decided, by whom, against which evidence, and what this work is not authorized to conclude.</p>
+              <section className="mt-6 rounded-2xl border border-white/10 bg-white/[0.035] p-4" aria-label="Decision frame storage">
+                <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-slate-300">
+                  <input type="checkbox" checked={draftPersistenceEnabled} onChange={(event) => toggleDraftPersistence(event.target.checked)} className="mt-1 h-4 w-4 shrink-0 accent-teal-300" />
+                  <span><strong className="block text-sm text-slate-100">Keep this decision frame in this tab</strong>Optional. Stores these entries in this tab for up to 8 hours or until the tab closes. Nothing is sent until you choose the diagnostic handoff.</span>
+                </label>
+                {draftPersistenceEnabled && (
+                  <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p role="status" className="text-[11px] leading-5 text-teal-200">{draftRestored ? "Saved frame restored in this tab. Review it before handing it off." : "Saving changes in this tab for up to 8 hours."}</p>
+                    <button type="button" onClick={deleteSavedDraft} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-white/15 bg-black/15 px-3 py-2 text-xs font-bold text-slate-200 transition hover:border-red-300/30 hover:text-red-100"><Trash2 className="h-3.5 w-3.5" /> Delete saved copy</button>
+                  </div>
+                )}
+                {draftStorageError && <p role="alert" className="mt-3 text-[11px] leading-5 text-amber-200">{draftStorageError}</p>}
+              </section>
               <div className="mt-7 grid gap-4 md:grid-cols-2">
                 {decisionFrameFields.map((field, index) => (
                   <label key={field.key} className={index === decisionFrameFields.length - 1 ? "md:col-span-2" : ""}>
@@ -181,8 +253,9 @@ export default function QualityLabDiscoveryPackPage() {
                 {decisionFrameCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{decisionFrameCopied ? "Copied decision frame" : "Copy decision frame"}
               </button>
               <Link href="/quality-lab/review?offer=diagnostic" onClick={handoffDecisionFrame} className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sky-300/25 bg-sky-300/10 px-5 py-3 text-sm font-bold text-sky-200 transition hover:bg-sky-300/15">Use in the $149 diagnostic <ArrowRight className="h-4 w-4" /></Link>
-              <button type="button" onClick={clearDecisionFrame} className="mt-3 inline-flex w-full items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-slate-500 transition hover:text-slate-300"><RotateCcw className="h-3.5 w-3.5" /> Clear this browser-local frame</button>
-              <p className="mt-3 text-center text-[10px] leading-5 text-slate-600">Saved only in this browser. It moves into the review form only when you choose the diagnostic handoff.</p>
+              {handoffStorageError && <p role="alert" className="mt-3 text-xs leading-5 text-amber-200">{handoffStorageError}</p>}
+              <button type="button" onClick={clearDecisionFrame} className="mt-3 inline-flex min-h-10 w-full items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-slate-500 transition hover:text-slate-300"><RotateCcw className="h-3.5 w-3.5" /> Clear on-screen frame</button>
+              <p className="mt-3 text-center text-[10px] leading-5 text-slate-600">By default, entries stay only on this page. The diagnostic handoff transfers them in this tab only when you choose it.</p>
               <p className="mt-4 text-[10px] leading-5 text-slate-600">{decisionFrameReadiness.boundary}</p>
             </aside>
           </div>

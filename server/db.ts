@@ -43,16 +43,16 @@ let schemaReadinessCache: { assessment: RuntimeSchemaAssessment; expiresAt: numb
 let schemaReadinessFailureExpiresAt = 0;
 
 /** Protected, read-only inspection. Callers must not expose names publicly. */
-export async function inspectRuntimeSchema(): Promise<RuntimeSchemaAssessment> {
-  if (!pool) throw new Error("Database connection is not configured");
+export async function inspectRuntimeSchema(queryable: Pick<pg.PoolClient, "query"> | null = pool): Promise<RuntimeSchemaAssessment> {
+  if (!queryable) throw new Error("Database connection is not configured");
 
   const requiredTables = RUNTIME_SCHEMA_REQUIREMENTS.map((item) => item.table);
   const [columnResult, uniqueKeyResult] = await Promise.all([
-    pool.query<RuntimeSchemaColumnRow>(
+    queryable.query<RuntimeSchemaColumnRow>(
       "select table_name, column_name, udt_name, is_nullable, column_default, is_identity from information_schema.columns where table_schema = 'public' and table_name = any($1::text[])",
       [requiredTables],
     ),
-    pool.query<RuntimeSchemaUniqueKeyRow>(
+    queryable.query<RuntimeSchemaUniqueKeyRow>(
       `select table_record.relname as table_name,
               array_agg(attribute_record.attname order by key_column.position)::text[] as columns
          from pg_catalog.pg_class table_record
@@ -65,6 +65,8 @@ export async function inspectRuntimeSchema(): Promise<RuntimeSchemaAssessment> {
         where namespace_record.nspname = 'public'
           and table_record.relname = any($1::text[])
           and index_record.indisunique = true
+          and index_record.indisvalid = true
+          and index_record.indisready = true
           and index_record.indpred is null
           and index_record.indexprs is null
           and key_column.position <= index_record.indnkeyatts

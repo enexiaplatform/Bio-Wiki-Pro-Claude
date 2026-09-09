@@ -49,7 +49,7 @@ import {
 import { assessQualityLabDeliveryReadiness } from "@shared/quality-lab-delivery";
 import { assessValidationCase } from "@shared/quality-lab-validation-cases";
 import { useUser } from "@/context/UserContext";
-import type { QualityLabProject } from "@shared/quality-lab";
+import { isIllustrativeQualityLabProject, type QualityLabProject } from "@shared/quality-lab";
 import { qualityLabProjectFromReviewedSnapshot } from "@shared/quality-lab-persistence";
 import { acceptedCalibrationEvidenceForProject, calibrationReviewStatus, type QualityLabCalibrationReviewCase } from "@shared/quality-lab-calibration-observation";
 
@@ -99,7 +99,8 @@ export default function QualityLabEngagementPage() {
   const [recoveredProject, setRecoveredProject] = useState<QualityLabProject | null>(null);
   const [revisions, setRevisions] = useState<Array<{ revisionNumber: number; createdAt: string; blockingOpenCount: number }>>([]);
   const project = localProject ?? recoveredProject ?? undefined;
-  const [packet, setPacket] = useState<QualityLabEngagementPacket | null>(() => (localProject ? getOrCreateEngagement(localProject) : null));
+  const illustrativeProject = project ? isIllustrativeQualityLabProject(project) : false;
+  const [packet, setPacket] = useState<QualityLabEngagementPacket | null>(() => (localProject && !isIllustrativeQualityLabProject(localProject) ? getOrCreateEngagement(localProject) : null));
   const [activeMetric, setActiveMetric] = useState<CalibrationMetricKey>("monthlyTests");
   const [correction, setCorrection] = useState({ fieldOrRuleId: "", previousValue: "", correctedValue: "", evidenceRef: "", rationale: "", reviewerRole: "" });
   const [decision, setDecision] = useState({ decision: "", rationale: "", owner: "", downstreamImpact: "", options: "" });
@@ -118,7 +119,7 @@ export default function QualityLabEngagementPage() {
   useEffect(() => {
     if (localProject) {
       setRecoveredProject(null);
-      setPacket(getOrCreateEngagement(localProject));
+      setPacket(isIllustrativeQualityLabProject(localProject) ? null : getOrCreateEngagement(localProject));
       return;
     }
     if (!isAuthenticated || !params?.id) return;
@@ -128,7 +129,7 @@ export default function QualityLabEngagementPage() {
         if (!active || !snapshot) return;
         const recovered: QualityLabProject = qualityLabProjectFromReviewedSnapshot(snapshot);
         setRecoveredProject(recovered);
-        setPacket(snapshot.engagement ?? getOrCreateEngagement(recovered));
+        setPacket(isIllustrativeQualityLabProject(recovered) ? null : snapshot.engagement ?? getOrCreateEngagement(recovered));
       })
       .catch(() => undefined);
     return () => {
@@ -145,6 +146,19 @@ export default function QualityLabEngagementPage() {
     if (!project) return;
     setFrozenCalibrationCases(listCalibrationReviewCases(project.id));
   }, [project?.id]);
+
+  if (illustrativeProject && project) {
+    return (
+      <div className="min-h-screen bg-[#08111f] px-4 py-20 text-slate-100">
+        <div className="mx-auto max-w-2xl rounded-3xl border border-amber-300/20 bg-amber-300/[0.045] p-8 text-center">
+          <ShieldCheck className="mx-auto h-8 w-8 text-amber-300" />
+          <h1 className="mt-5 text-2xl font-bold">Illustrative examples stay outside engagement operations</h1>
+          <p className="mt-3 text-sm leading-6 text-slate-400">This Casebook Blueprint is synthetic, so it cannot create an engagement packet, calibration record, paid-pilot record, or delivery artifact.</p>
+          <Link href={`/quality-lab/projects/${project.id}`} className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950"><ArrowLeft className="h-4 w-4" /> Return to synthetic Blueprint</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!project || !packet) {
     return (

@@ -3,20 +3,21 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import mdx from "@mdx-js/rollup";
 import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
+  worker: { format: "es" },
+  // Prebundle lazy readers in development so discovering one during an upload
+  // does not trigger a full-page dependency reload and discard review state.
+  optimizeDeps: { include: ["xlsx", "jszip", "pdfjs-dist"] },
   plugins: [
     {
       enforce: "pre",
       ...mdx({
         remarkPlugins: [
           remarkFrontmatter,
-          // exposes the YAML frontmatter as a named `frontmatter` export
-          [remarkMdxFrontmatter, { name: "frontmatter" }],
           // Existing articles use standard $...$ / $$...$$ notation. Parse it
           // as math rather than MDX JavaScript expressions during the build.
           remarkMath,

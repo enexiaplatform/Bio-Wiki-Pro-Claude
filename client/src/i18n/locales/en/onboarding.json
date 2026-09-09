@@ -1,20 +1,26 @@
 {
-  "welcomeTitle": "Welcome to Life Science Atlas",
-  "welcomeSubtitle": "Start with the site and product decision you need to make. Atlas will turn your inputs into an initial capability model with visible assumptions and gaps.",
+  "welcomeTitle": "Welcome to your Atlas workspace",
+  "welcomeSubtitle": "Choose the route that matches your decision today. Build a first model, inspect an illustrative deliverable, or frame a real project with an expert.",
   "step1": {
-    "title": "Build your first capability model",
-    "desc": "Describe the site, products, markets, testing strategy, and demand so Atlas can compile a traceable starting model.",
-    "cta": "Open the planner"
+    "eyebrow": "Build it yourself",
+    "title": "Build a first capability model",
+    "desc": "Choose a guided start, enter known site data, explore the worked example, or import compatible inputs. Atlas keeps assumptions and gaps visible.",
+    "meta": "Free · guided, blank, example, or import",
+    "cta": "Choose a starting mode"
   },
   "step2": {
-    "title": "See how the Blueprint works",
-    "desc": "Review the path from product inputs to methods, resources, capacity scenarios, evidence, and expert-reviewed outputs.",
-    "cta": "Explore Blueprint"
+    "eyebrow": "Inspect before input",
+    "title": "Inspect an illustrative Blueprint",
+    "desc": "See a synthetic decision brief, evidence register, capacity outputs, assumptions, and controlled-use boundaries before entering your own data.",
+    "meta": "Free · synthetic example · concept only",
+    "cta": "View the sample"
   },
   "step3": {
-    "title": "Use the supporting evidence library",
-    "desc": "Open workflows, lessons, glossary terms, and focused tools when you need to understand or challenge a model decision.",
-    "cta": "Browse evidence"
+    "eyebrow": "Expert-scoped start",
+    "title": "Frame a real project with an expert",
+    "desc": "The $149 Paid Scope Diagnostic includes a 60-minute workshop and written scope memo within two business days. Atlas confirms fit before payment.",
+    "meta": "$149 fixed fee · credited to a qualifying Blueprint",
+    "cta": "Review diagnostic fit"
   },
-  "skip": "View the Blueprint journey first"
+  "skip": "Explore how the Blueprint works"
 }

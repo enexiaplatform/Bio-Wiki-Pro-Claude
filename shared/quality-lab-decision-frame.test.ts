@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   assessQualityLabDecisionFrame,
+  createQualityLabDecisionFrameDraft,
   createQualityLabDecisionFrameHandoff,
   emptyQualityLabDecisionFrame,
   formatQualityLabDecisionFrame,
   formatQualityLabDecisionFrameReviewContext,
   parseQualityLabDecisionFrame,
   parseQualityLabDecisionFrameHandoff,
+  parseRecentQualityLabDecisionFrameDraft,
+  QUALITY_LAB_DECISION_FRAME_DRAFT_TTL_MS,
   qualityLabDecisionFrameFieldLimits,
   type QualityLabDecisionFrameInput,
 } from "./quality-lab-decision-frame";
@@ -54,6 +57,17 @@ describe("Quality Lab decision frame", () => {
     expect(parseQualityLabDecisionFrame({ ...completeFrame, decision: 42 })).toBeNull();
     expect(parseQualityLabDecisionFrameHandoff(handoff, recordedAt + 60_000)).toEqual(handoff);
     expect(parseQualityLabDecisionFrameHandoff(handoff, recordedAt + 24 * 60 * 60 * 1000)).toBeNull();
+  });
+
+  it("keeps only valid, recent decision-frame drafts in the current tab", () => {
+    const savedAt = Date.UTC(2026, 8, 3, 10, 0, 0);
+    const draft = createQualityLabDecisionFrameDraft(completeFrame, savedAt);
+
+    expect(parseRecentQualityLabDecisionFrameDraft(draft, savedAt + 60_000)).toEqual(draft);
+    expect(parseRecentQualityLabDecisionFrameDraft(draft, savedAt + QUALITY_LAB_DECISION_FRAME_DRAFT_TTL_MS)).toBeNull();
+    expect(parseRecentQualityLabDecisionFrameDraft({ ...draft, savedAt: savedAt + 60_000 }, savedAt)).toBeNull();
+    expect(parseRecentQualityLabDecisionFrameDraft({ ...draft, version: "future-version" }, savedAt + 60_000)).toBeNull();
+    expect(parseRecentQualityLabDecisionFrameDraft({ ...draft, frame: { ...completeFrame, decisionOwner: 42 } }, savedAt + 60_000)).toBeNull();
   });
 
   it("builds a review context that preserves every decision boundary without exceeding the intake limit", () => {

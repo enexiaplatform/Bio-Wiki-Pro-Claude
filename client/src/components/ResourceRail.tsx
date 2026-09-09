@@ -29,18 +29,25 @@ export const RESOURCE_DESTINATIONS: ResourceDestination[] = [
   { href: "/compliance", label: "Compliance", shortLabel: "Compliance", description: "Audit and GMP readiness", icon: PiShieldCheck },
 ];
 
+function resourcePathname(location: string) {
+  return location.split(/[?#]/, 1)[0];
+}
+
 export function isResourceLocation(location: string) {
-  return location.startsWith("/library/") || RESOURCE_DESTINATIONS.some(({ href }) => location === href || location.startsWith(`${href}/`));
+  const pathname = resourcePathname(location);
+  return pathname.startsWith("/library/") || RESOURCE_DESTINATIONS.some(({ href }) => pathname === href || pathname.startsWith(`${href}/`));
 }
 
 function isDestinationActive(location: string, href: string) {
-  return location === href || location.startsWith(`${href}/`) || (href === "/academy" && location.startsWith("/library/"));
+  const pathname = resourcePathname(location);
+  return pathname === href || pathname.startsWith(`${href}/`) || (href === "/academy" && pathname.startsWith("/library/"));
 }
 
 export function ResourceRail() {
   const [location] = useLocation();
   const { hrefWithSelection } = useResourceSelection();
-  const compact = location === "/workflows" || location.startsWith("/workflows/");
+  const pathname = resourcePathname(location);
+  const compact = pathname === "/workflows" || pathname.startsWith("/workflows/");
 
   return (
     <>

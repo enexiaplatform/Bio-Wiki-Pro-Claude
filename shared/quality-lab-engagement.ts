@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { QualityLabProject } from "./quality-lab.js";
+import { isIllustrativeQualityLabProject, type QualityLabProject } from "./quality-lab.js";
 
 export const QUALITY_LAB_ENGAGEMENT_PACKET_VERSION = "quality-lab-engagement-packet/v1" as const;
 
@@ -156,6 +156,9 @@ const ownerByCategory: Record<string, string> = {
 };
 
 export function createQualityLabEngagementPacket(project: QualityLabProject, generatedAt = new Date().toISOString()): QualityLabEngagementPacket {
+  if (isIllustrativeQualityLabProject(project)) {
+    throw new Error("Illustrative examples cannot create commercial engagement packets.");
+  }
   const { blueprint } = project;
   const packet = {
     packetVersion: QUALITY_LAB_ENGAGEMENT_PACKET_VERSION,

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getQualityLabReadiness, qualityLabBlueprintSchema, qualityLabInputSchema, type QualityLabProject } from "./quality-lab.js";
+import { getQualityLabReadiness, isIllustrativeQualityLabProject, qualityLabBlueprintSchema, qualityLabInputSchema, type QualityLabProject } from "./quality-lab.js";
 import { qualityLabEngagementPacketSchema } from "./quality-lab-engagement.js";
 import { qualityLabActionPlanSchema, reconcileQualityLabActionPlan } from "./quality-lab-actions.js";
 import { qualityLabDecisionRegisterSchema, reconcileQualityLabDecisionRegister } from "./quality-lab-decisions.js";
@@ -93,6 +93,9 @@ function rehydrateModelRegistry(blueprint: QualityLabProject["blueprint"]): Qual
 }
 
 export function createQualityLabAccountSnapshot(project: QualityLabProject, engagement: QualityLabReviewedProjectSnapshot["engagement"] = null): QualityLabReviewedProjectSnapshot {
+  if (isIllustrativeQualityLabProject(project)) {
+    throw new Error("Illustrative examples cannot be promoted into account-held project records.");
+  }
   const historical = ensureQualityLabProjectHistory(project);
   const activeRevision = historical.revisions?.find((revision) => revision.revisionId === historical.activeRevisionId)
     ?? historical.revisions?.at(-1);

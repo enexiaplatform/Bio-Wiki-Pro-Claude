@@ -2,8 +2,17 @@ import { z } from 'zod';
 import { insertQuoteRequestSchema, quoteRequests } from './schema.js';
 import { users } from './models/auth.js';
 import { qualityLabReviewRequestSchema } from './quality-lab-review.js';
+import { commercialRequestNotificationStatusSchema, type CommercialRequestNotificationStatus } from './quality-lab-request-notifications.js';
 
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
+export type CommercialRequestCreateResponse = typeof quoteRequests.$inferSelect & {
+  notifications?: CommercialRequestNotificationStatus;
+};
+const commercialRequestCreateResponseSchema = z.custom<CommercialRequestCreateResponse>((value) => {
+  if (!value || typeof value !== "object" || typeof (value as { id?: unknown }).id !== "number") return false;
+  const notifications = (value as { notifications?: unknown }).notifications;
+  return notifications === undefined || commercialRequestNotificationStatusSchema.safeParse(notifications).success;
+});
 const errorEnvelope = {
   code: z.string(),
   requestId: z.string(),
@@ -31,7 +40,7 @@ export const api = {
       path: '/api/quality-lab/reviews' as const,
       input: qualityLabReviewRequestSchema,
       responses: {
-        201: z.custom<typeof quoteRequests.$inferSelect>(),
+        201: commercialRequestCreateResponseSchema,
         400: errorSchemas.validation,
       },
     },
@@ -42,7 +51,7 @@ export const api = {
       path: '/api/quotes' as const,
       input: insertQuoteRequestSchema,
       responses: {
-        201: z.custom<typeof quoteRequests.$inferSelect>(),
+        201: commercialRequestCreateResponseSchema,
         400: errorSchemas.validation,
       },
     },

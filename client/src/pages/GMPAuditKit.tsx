@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
+import { useBillingPlans } from "@/hooks/use-billing-plans";
 import { JsonLd } from "@/components/JsonLd";
 import { LeadMagnetBanner } from "@/components/LeadMagnetBanner";
 import { EditorialImage } from "@/components/EditorialImage";
@@ -32,6 +33,7 @@ export default function GMPAuditKit() {
 
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [, navigate] = useLocation();
+  const { isLoading: billingPlansLoading, proCheckoutAvailable } = useBillingPlans();
 
   // Top-of-funnel signal: this page is a Pro upsell landing.
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function GMPAuditKit() {
   }, []);
 
   const trustBadges = t("trustBadges", { returnObjects: true }) as string[];
+  const visibleTrustBadges = proCheckoutAvailable ? trustBadges : trustBadges.map((badge) => badge === "Immediate access" ? "Free checklist available now" : badge);
   const pains = t("pains.items", { returnObjects: true }) as Pain[];
   const includes = t("includes.items", { returnObjects: true }) as Include[];
   const valueCards = t("testimonials.items", { returnObjects: true }) as ValueCard[];
@@ -46,9 +49,12 @@ export default function GMPAuditKit() {
   const faqs = t("faq.items", { returnObjects: true }) as Faq[];
 
   function handleUnlock() {
+    if (billingPlansLoading) return;
     analytics.upgradePromptClicked(PLACEMENT);
     navigate("/pricing");
   }
+
+  const proCtaLabel = billingPlansLoading ? "Checking Pro availability…" : proCheckoutAvailable ? t("hero.buyNow") : "View Pro availability";
 
   return (
     <div className="pb-24 pt-4 md:pt-8 max-w-4xl mx-auto px-4">
@@ -72,10 +78,10 @@ export default function GMPAuditKit() {
         className="mb-10 overflow-hidden rounded-3xl border border-teal-300/20 bg-gradient-to-br from-teal-300/10 via-white/[0.035] to-transparent p-4 md:p-6"
       >
         <div className="grid gap-5 lg:grid-cols-[1.04fr_0.96fr] lg:items-stretch">
-          <div className="flex flex-col justify-center p-2 md:p-4"><span className="inline-block w-fit rounded-full bg-teal-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-teal-400">{t("hero.badge")}</span><h1 className="mt-5 font-display text-3xl font-bold leading-tight md:text-5xl">{t("hero.titleLead")} <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">{t("hero.titleHighlight")}</span></h1><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">{t("hero.subtitle")}</p><button onClick={handleUnlock} className="mt-6 inline-flex w-fit items-center gap-2 rounded-xl bg-teal-500 px-6 py-3 text-base font-bold text-teal-950 shadow-lg shadow-teal-500/25 transition-all hover:bg-teal-400"><Package className="h-5 w-5" /> {t("hero.buyNow")}</button></div>
+          <div className="flex flex-col justify-center p-2 md:p-4"><span className="inline-block w-fit rounded-full bg-teal-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-teal-400">{t("hero.badge")}</span><h1 className="mt-5 font-display text-3xl font-bold leading-tight md:text-5xl">{t("hero.titleLead")} <span className="bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">{t("hero.titleHighlight")}</span></h1><p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">{t("hero.subtitle")}</p><button onClick={handleUnlock} disabled={billingPlansLoading} className="mt-6 inline-flex w-fit items-center gap-2 rounded-xl bg-teal-500 px-6 py-3 text-base font-bold text-teal-950 shadow-lg shadow-teal-500/25 transition-all hover:bg-teal-400 disabled:cursor-wait disabled:opacity-60"><Package className="h-5 w-5" /> {proCtaLabel}</button>{!billingPlansLoading && !proCheckoutAvailable && <p role="status" className="mt-3 max-w-lg text-xs leading-5 text-amber-100/75">Pro checkout is temporarily unavailable. You can still use the free checklist now and review current access options without starting a payment.</p>}</div>
           <EditorialImage src="/images/editorial/cleanroom-practice.jpg" alt="Quality professional working in a controlled cleanroom environment" creditName="Toon Lambrechts" creditUrl="https://unsplash.com/photos/RkG7wp75b48" eager className="h-52 rounded-2xl border border-white/10 sm:h-64 lg:h-auto lg:min-h-80" imageClassName="object-center saturate-75" />
         </div>
-        <div className="mt-4 grid gap-2 rounded-xl border border-white/10 bg-slate-950/40 p-3 sm:grid-cols-2 lg:grid-cols-4">{trustBadges.slice(0, 4).map((b, i) => { const Icon = TRUST_ICONS[i] ?? BadgeCheck; return <span key={b} className="flex items-center gap-2 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5 shrink-0 text-teal-400" /> {b}</span>; })}</div>
+        <div className="mt-4 grid gap-2 rounded-xl border border-white/10 bg-slate-950/40 p-3 sm:grid-cols-2 lg:grid-cols-4">{visibleTrustBadges.slice(0, 4).map((b, i) => { const Icon = TRUST_ICONS[i] ?? BadgeCheck; return <span key={b} className="flex items-center gap-2 text-xs text-muted-foreground"><Icon className="h-3.5 w-3.5 shrink-0 text-teal-400" /> {b}</span>; })}</div>
       </motion.div>
 
       {/* ── LEAD CAPTURE (guests only; nurtures toward Pro) ── */}
@@ -150,13 +156,16 @@ export default function GMPAuditKit() {
 
           <button
             onClick={handleUnlock}
-            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold text-lg px-10 py-4 rounded-xl transition-all shadow-xl shadow-teal-500/30 mb-6"
+            disabled={billingPlansLoading}
+            className="mb-6 inline-flex items-center gap-2 rounded-xl bg-teal-500 px-10 py-4 text-lg font-bold text-teal-950 shadow-xl shadow-teal-500/30 transition-all hover:bg-teal-400 disabled:cursor-wait disabled:opacity-60"
           >
-            {t("pricing.buyNow")} <ArrowRight className="w-5 h-5" />
+            {billingPlansLoading ? "Checking Pro availability…" : proCheckoutAvailable ? t("pricing.buyNow") : "View Pro availability"} <ArrowRight className="w-5 h-5" />
           </button>
 
+          {!billingPlansLoading && !proCheckoutAvailable && <p role="status" className="mx-auto mb-5 max-w-xl text-xs leading-5 text-amber-100/75">No checkout action is available from this page right now. The free checklist remains available while Pro commerce is offline.</p>}
+
           <div className="mt-6 pt-6 border-t border-white/5 flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-            <span>{t("pricing.secure")}</span>
+            <span>{proCheckoutAvailable ? t("pricing.secure") : "Checkout shown only when available"}</span>
             <span>{t("pricing.standards")}</span>
           </div>
         </div>
@@ -213,10 +222,11 @@ export default function GMPAuditKit() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
             onClick={handleUnlock}
-            className="inline-flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-400 text-teal-950 font-bold px-8 py-3 rounded-xl transition-all"
+            disabled={billingPlansLoading}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-500 px-8 py-3 font-bold text-teal-950 transition-all hover:bg-teal-400 disabled:cursor-wait disabled:opacity-60"
           >
             <Package className="w-4 h-4" />
-            {t("finalCta.buy")}
+            {billingPlansLoading ? "Checking Pro availability…" : proCheckoutAvailable ? t("finalCta.buy") : "View Pro availability"}
           </button>
           <a
             href="mailto:thongtran.hcmus@gmail.com"

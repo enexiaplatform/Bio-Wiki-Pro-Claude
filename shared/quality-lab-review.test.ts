@@ -1,8 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { compileQualityLabBlueprint, defaultQualityLabInput, getQualityLabReadiness } from "./quality-lab";
-import { assessQualityLabReviewBrief, formatQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, qualityLabReviewRequestSchema } from "./quality-lab-review";
+import { assessQualityLabReviewBrief, formatQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, qualityLabPortfolioScaleFromProductCount, qualityLabReviewRequestSchema } from "./quality-lab-review";
 
 describe("Quality Lab review brief", () => {
+  it("maps a known Blueprint product count into the commercial portfolio bands", () => {
+    expect(qualityLabPortfolioScaleFromProductCount(undefined)).toBe("not-set");
+    expect(qualityLabPortfolioScaleFromProductCount(0)).toBe("not-set");
+    expect(qualityLabPortfolioScaleFromProductCount(1)).toBe("1-3-products");
+    expect(qualityLabPortfolioScaleFromProductCount(3)).toBe("1-3-products");
+    expect(qualityLabPortfolioScaleFromProductCount(4)).toBe("4-10-products");
+    expect(qualityLabPortfolioScaleFromProductCount(10)).toBe("4-10-products");
+    expect(qualityLabPortfolioScaleFromProductCount(11)).toBe("11-25-products");
+    expect(qualityLabPortfolioScaleFromProductCount(25)).toBe("11-25-products");
+    expect(qualityLabPortfolioScaleFromProductCount(26)).toBe("over-25-products");
+  });
+
   it("creates a versioned, deterministic triage brief from a Blueprint", () => {
     const blueprint = compileQualityLabBlueprint(defaultQualityLabInput);
     const readiness = getQualityLabReadiness(blueprint);

@@ -38,6 +38,10 @@ import { qualityLabFunnelEventSchema } from "../shared/quality-lab-funnel.js";
 import { fulfillStripeEventOnce, type StripeFulfillment } from "./stripe-fulfillment.js";
 import { DECISION_PACKAGES } from "../shared/decision-packages.js";
 import { getDecisionPackageLearningFlow } from "../shared/decision-package-learning.js";
+import { INTAKE_FIELDS } from "../shared/quality-lab-intake-contract.js";
+import { isQualityLabIntakeAiAvailable, suggestQualityLabIntakeMappings, QualityLabIntakeAiError } from "./quality-lab-intake-ai.js";
+
+const intakeAiLimiter = rateLimit({windowMs:15*60*1000,limit:5,standardHeaders:true,legacyHeaders:false,validate:false,skip:()=>process.env.NODE_ENV==="test",message:{message:"Please wait before requesting more intake assistance."}});
 
 const googleClient = new OAuth2Client();
 import { readFile, readdir } from "fs/promises";
@@ -82,6 +86,19 @@ const funnelEventLimiter = rateLimit({
   legacyHeaders: false,
   validate: false,
   message: { message: "Too many funnel events. Please try again later." },
+  skip: () => process.env.NODE_ENV === "test",
+});
+
+// Keeps automated retries and public-form abuse from flooding the small Gate 1
+// operator queue. The store is process-local, so it is a bounded first line of
+// defense rather than a distributed anti-abuse guarantee.
+const commercialRequestLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: false,
+  message: { message: "Too many commercial requests. Please wait before submitting another brief." },
   skip: () => process.env.NODE_ENV === "test",
 });
 
@@ -900,6 +917,25 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   // ── Other routes ─────────────────────────────────────────────────────────
 
+  app.get("/api/quality-lab/intake-capabilities", (_req,res)=>{
+    res.setHeader("Cache-Control","no-store");
+    return res.json({aiAvailable:isQualityLabIntakeAiAvailable()});
+  });
+
+  app.post("/api/quality-lab/intake-assistance", isAuthenticated, intakeAiLimiter, async (req,res)=>{
+    res.setHeader("Cache-Control","no-store");
+    const parsed=z.object({consent:z.literal(true),cells:z.array(z.object({locator:z.string().max(100).regex(/^(?:[A-Z]{1,2}[1-9][0-9]{0,2}|xlsx:s[1-9][0-9]?:[A-Z]{1,3}[1-9][0-9]{0,3}|pdf:p[1-9][0-9]?:line[1-9][0-9]{0,3}|docx:(?:p[1-9][0-9]{0,3}|t[1-9][0-9]{0,2}:r[1-9][0-9]{0,3}:c[1-9][0-9]{0,2}))$/),text:z.string().min(1).max(500)}).strict()).min(1).max(500)}).strict().safeParse(req.body);
+    if(!parsed.success)return res.status(400).json({message:"Confirm permission and provide a bounded source-unit set."});
+    try {
+      const mappings=await suggestQualityLabIntakeMappings({cells:parsed.data.cells,allowedFields:Object.entries(INTAKE_FIELDS).map(([key,description])=>({key,description}))});
+      return res.json({version:"ai-csv-field-map/v1",mappings});
+    } catch(error) {
+      const code=error instanceof QualityLabIntakeAiError?error.code:"provider_failed";
+      // No cells, filenames, provider payloads, or raw errors in logs/responses.
+      return res.status(code==="invalid_input"?400:503).json({message:"Intake assistance is unavailable for this request. Local candidate review remains available.",code});
+    }
+  });
+
   app.post("/api/quality-lab/funnel-events", funnelEventLimiter, async (req: any, res) => {
     const parsed = qualityLabFunnelEventSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: "Invalid Blueprint funnel event" });
@@ -912,24 +948,24 @@ export async function registerRoutes(app: Express): Promise<void> {
     } catch (error) {
       // Analytics must never interrupt the user journey. Protected operator
       // diagnostics identify incomplete schema until an approved migration runs.
-      console.error("[Quality Lab funnel] receipt error:", error);
-      return res.status(202).json({ accepted: true, recorded: false });
+      console.error("[Quality Lab funnel] receipt unavailable", { code: "persistence_unavailable" });
+      return res.status(503).json({ accepted: false, recorded: false });
     }
   });
 
-  app.post(api.quoteRequests.create.path, async (req, res) => {
+  app.post(api.quoteRequests.create.path, commercialRequestLimiter, async (req, res) => {
     try {
       const input = api.quoteRequests.create.input.parse(req.body);
       const quote = await storage.createQuoteRequest(input);
-      sendCommercialRequestEmails({
+      const notifications = await sendCommercialRequestEmails({
         requestId: String(quote?.id ?? "pending"),
         name: input.name,
         email: input.email.toLowerCase(),
         company: input.company ?? undefined,
         offer: input.productOfInterest ?? "Commercial inquiry",
         summary: input.need,
-      }).catch((error) => console.error("[Commercial request] Email notification failed:", error));
-      res.status(201).json(quote);
+      });
+      res.status(201).json({ ...quote, notifications });
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({
@@ -941,7 +977,7 @@ export async function registerRoutes(app: Express): Promise<void> {
     }
   });
 
-  app.post(api.qualityLabReviews.create.path, async (req, res) => {
+  app.post(api.qualityLabReviews.create.path, commercialRequestLimiter, async (req, res) => {
     try {
       const input = api.qualityLabReviews.create.input.parse(req.body);
       const { formatQualityLabReviewBrief, qualityLabReviewOfferLabel } = await import("../shared/quality-lab-review.js");
@@ -952,15 +988,15 @@ export async function registerRoutes(app: Express): Promise<void> {
         need: formatQualityLabReviewBrief(input),
         productOfInterest: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
       });
-      sendCommercialRequestEmails({
+      const notifications = await sendCommercialRequestEmails({
         requestId: String(quote?.id ?? "pending"),
         name: input.contact.name,
         email: input.contact.email.toLowerCase(),
         company: input.contact.company ?? undefined,
         offer: qualityLabReviewOfferLabel(input.qualification.engagementIntent),
         summary: formatQualityLabReviewBrief(input),
-      }).catch((error) => console.error("[Quality Lab review] Email notification failed:", error));
-      res.status(201).json(quote);
+      });
+      res.status(201).json({ ...quote, notifications });
     } catch (err) {
       if (err instanceof z.ZodError) {
         return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join(".") });
@@ -1403,13 +1439,14 @@ export async function registerRoutes(app: Express): Promise<void> {
         const already = await storage.getSentNurtureSteps(u.id);
         const next = due.find((s) => !already.includes(s));
         if (next == null) continue;
-        await sendNurtureEmail(u.email, next, u.firstName ?? undefined);
+        const accepted = await sendNurtureEmail(u.email, next, u.firstName ?? undefined);
+        if (!accepted) throw new Error("email_not_accepted");
         await storage.recordNurtureSend(u.id, next);
         sent++;
       }
       result.nurture = { scanned, sent };
     } catch (err) {
-      console.error("[Cron] nurture error:", err);
+      console.error("[Cron] nurture unavailable", { code: "lifecycle_job_failed" });
       result.nurture = { error: `nurture_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
@@ -1421,13 +1458,14 @@ export async function registerRoutes(app: Express): Promise<void> {
         const daysLeft = Math.ceil((new Date(u.proExpiresAt).getTime() - Date.now()) / DAY);
         const kind = daysLeft <= 1 ? "trial_end_1d" : "trial_end_3d";
         if (await storage.wasLifecycleSent(u.id, kind)) continue;
-        await sendTrialEndingEmail(u.email, Math.max(1, daysLeft), new Date(u.proExpiresAt), u.firstName ?? undefined);
+        const accepted = await sendTrialEndingEmail(u.email, Math.max(1, daysLeft), new Date(u.proExpiresAt), u.firstName ?? undefined);
+        if (!accepted) throw new Error("email_not_accepted");
         await storage.recordLifecycleSend(u.id, kind);
         sent++;
       }
       result.trialEnding = { sent };
     } catch (err) {
-      console.error("[Cron] trial-ending error:", err);
+      console.error("[Cron] trial-ending unavailable", { code: "lifecycle_job_failed" });
       result.trialEnding = { error: `lifecycle_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
@@ -1439,19 +1477,20 @@ export async function registerRoutes(app: Express): Promise<void> {
         if (seen.has(a.userId)) continue;
         seen.add(a.userId);
         if (await storage.wasLifecycleSent(a.userId, "abandoned_checkout")) continue;
-        const user = await storage.getUser(a.userId).catch(() => undefined);
+        const user = await storage.getUser(a.userId);
         if (!user?.email) continue;
         const converted = a.productType.startsWith("pro_subscription")
           ? isProActive(user)
-          : await storage.hasCompletedPurchase(user.id, a.productType).catch(() => false);
+          : await storage.hasCompletedPurchase(user.id, a.productType);
         if (converted) continue;
-        await sendAbandonedCheckoutEmail(user.email, a.productType, user.firstName ?? undefined);
+        const accepted = await sendAbandonedCheckoutEmail(user.email, a.productType, user.firstName ?? undefined);
+        if (!accepted) throw new Error("email_not_accepted");
         await storage.recordLifecycleSend(user.id, "abandoned_checkout");
         sent++;
       }
       result.abandonedCheckout = { sent };
     } catch (err) {
-      console.error("[Cron] abandoned-checkout error:", err);
+      console.error("[Cron] abandoned-checkout unavailable", { code: "lifecycle_job_failed" });
       result.abandonedCheckout = { error: `checkout_attempts/lifecycle_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
@@ -1460,15 +1499,16 @@ export async function registerRoutes(app: Express): Promise<void> {
       let sent = 0;
       for (const userId of await storage.getReEngagementCandidates(7, 14)) {
         if (await storage.wasLifecycleSent(userId, "re_engagement")) continue;
-        const user = await storage.getUser(userId).catch(() => undefined);
+        const user = await storage.getUser(userId);
         if (!user?.email || isProActive(user)) continue;
-        await sendReEngagementEmail(user.email, user.firstName ?? undefined);
+        const accepted = await sendReEngagementEmail(user.email, user.firstName ?? undefined);
+        if (!accepted) throw new Error("email_not_accepted");
         await storage.recordLifecycleSend(userId, "re_engagement");
         sent++;
       }
       result.reEngagement = { sent };
     } catch (err) {
-      console.error("[Cron] re-engagement error:", err);
+      console.error("[Cron] re-engagement unavailable", { code: "lifecycle_job_failed" });
       result.reEngagement = { error: `lesson_reads/lifecycle_sends storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}` };
     }
 
@@ -1496,7 +1536,7 @@ export async function registerRoutes(app: Express): Promise<void> {
           const kind = `quality_lab_weekly_review_${today}`;
           if (await storage.wasLifecycleSent(candidate.id, kind)) continue;
           const accepted = await sendQualityLabWeeklyReviewEmail(candidate.email, candidate.firstName ?? undefined, review);
-          if (!accepted) continue;
+          if (!accepted) throw new Error("email_not_accepted");
           await storage.recordLifecycleSend(candidate.id, kind);
           weeklySent++;
           continue;
@@ -1521,14 +1561,14 @@ export async function registerRoutes(app: Express): Promise<void> {
           priority,
           qualityLabPortfolioQueueMetrics(queue),
         );
-        if (!accepted) continue;
+        if (!accepted) throw new Error("email_not_accepted");
         await storage.recordLifecycleSend(candidate.id, kind);
         sent++;
       }
       result.qualityLabWorkQueue = { scanned, sent, skippedNoPriority };
       result.qualityLabWeeklyReview = { scanned: weeklyScanned, sent: weeklySent, skippedNoChange: weeklySkippedNoChange };
     } catch (err) {
-      console.error("[Cron] Blueprint reminder error:", err);
+      console.error("[Cron] Blueprint reminder unavailable", { code: "lifecycle_job_failed" });
       const error = `Reminder preferences or reviewed-project storage may be absent. ${RUNTIME_SCHEMA_REMEDIATION}`;
       result.qualityLabWorkQueue = { error };
       result.qualityLabWeeklyReview = { error };
@@ -1544,7 +1584,7 @@ export async function registerRoutes(app: Express): Promise<void> {
       for (const candidate of await storage.getRegulatoryDigestCandidates()) {
         if (!candidate.email || (candidate.cadence !== "daily" && candidate.cadence !== "weekly")) continue;
         if (candidate.cadence === "weekly" && utcDay !== 1) continue;
-        const user = await storage.getUser(candidate.id).catch(() => undefined);
+        const user = await storage.getUser(candidate.id);
         if (!isProActive(user)) continue;
         scanned++;
         const lookbackHours = candidate.cadence === "daily" ? 36 : 8 * 24;
@@ -1557,17 +1597,22 @@ export async function registerRoutes(app: Express): Promise<void> {
         const kind = `regulatory_digest_${candidate.cadence}_${today}`;
         if (await storage.wasLifecycleSent(candidate.id, kind)) continue;
         const accepted = await sendRegulatoryDigestEmail(candidate.email, candidate.firstName ?? undefined, candidate.cadence, matching);
-        if (!accepted) continue;
+        if (!accepted) throw new Error("email_not_accepted");
         await storage.recordLifecycleSend(candidate.id, kind);
         sent++;
       }
       result.regulatoryDigest = { scanned, sent, skippedNoChange, sourceFailures: monitor.sources.filter((source) => !source.ok).length };
     } catch (err) {
-      console.error("[Cron] Regulatory digest error:", err);
+      console.error("[Cron] Regulatory digest unavailable", { code: "lifecycle_job_failed" });
       result.regulatoryDigest = { error: "regulatory preferences, lifecycle guard, or official feeds unavailable" };
     }
 
-    return res.json(result);
+    const failedJobs = Object.entries(result).filter(([, value]) =>
+      value && typeof value === "object" && ("error" in value || ("sourceFailures" in value && Number(value.sourceFailures) > 0)),
+    ).map(([name]) => name);
+    result.ok = failedJobs.length === 0;
+    if (failedJobs.length > 0) console.error("[Cron] lifecycle run degraded", { failedJobs });
+    return res.status(result.ok ? 200 : 503).json(result);
   });
 
   // ── Free lead-magnet checklist (public, no auth) ──────────────────────────

@@ -1,14 +1,15 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link } from "wouter";
-import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, CheckCircle2, ClipboardCheck, FileDown, Loader2, RotateCcw, ShieldCheck, Trash2 } from "lucide-react";
 import { useCreateQualityLabReview } from "@/hooks/use-data";
 import { analytics } from "@/hooks/use-analytics";
+import { isCheckoutAvailable, useBillingPlans } from "@/hooks/use-billing-plans";
 import { useSEO } from "@/hooks/use-seo";
 import { exportQualityLabEngagementPacket, getQualityLabProject, markQualityLabReviewRequested, syncQualityLabReviewedProject } from "@/lib/quality-lab-projects";
-import { assessQualityLabReviewBrief, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
+import { assessQualityLabReviewBrief, qualityLabPortfolioScaleFromProductCount, QUALITY_LAB_REVIEW_BRIEF_VERSION, type QualityLabReviewRequest } from "@shared/quality-lab-review";
 import { useUser } from "@/context/UserContext";
 import { authPath } from "@shared/auth-return";
-import { getQualityLabReadiness } from "@shared/quality-lab";
+import { getQualityLabReadiness, isIllustrativeQualityLabProject } from "@shared/quality-lab";
 import {
   assessQualityLabDecisionFrame,
   formatQualityLabDecisionFrameReviewContext,
@@ -17,6 +18,17 @@ import {
   type QualityLabDecisionFrameInput,
 } from "@shared/quality-lab-decision-frame";
 import { getQualityLabFunnelJourneyId } from "@/lib/quality-lab-funnel";
+import {
+  createQualityLabRequestReceipt,
+  parseRecentQualityLabRequestReceipt,
+  qualityLabRequestScopeKey,
+  type QualityLabRequestReceipt,
+} from "@shared/quality-lab-request-receipt";
+import {
+  createQualityLabRequestDraft,
+  parseRecentQualityLabRequestDraft,
+  type QualityLabRequestDraft,
+} from "@shared/quality-lab-request-draft";
 
 const fieldClass = "mt-2 h-11 w-full rounded-xl border border-white/10 bg-slate-950/55 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10";
 
@@ -26,20 +38,78 @@ const offerCopy = {
   unsure: { label: "Engagement fit review", price: "No commitment", cta: "Request a fit review" },
 } as const;
 
+const offerHeroCopy = {
+  "scope-diagnostic": {
+    heading: "Leave with a scoped decision, evidence gap map and clear Blueprint basis.",
+    description: "The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope and decision memo within two business days after the workshop. The fee is credited to a Blueprint started within 30 days.",
+    highlights: [
+      "60-minute stakeholder workshop",
+      "Written scope and decision memo within two business days",
+      "Confirmed evidence gaps, reviewer interfaces and next engagement basis",
+    ],
+  },
+  "blueprint-pilot": {
+    heading: "Turn your working model into an expert-reviewed decision package.",
+    description: "The Expert-reviewed Blueprint Pilot starts from $990. Atlas challenges the model basis, reconciles priority evidence gaps and delivers a controlled workbook with an executive decision brief for the agreed scope.",
+    highlights: [
+      "Expert challenge of assumptions, demand, capacity and open evidence",
+      "Controlled workbook and executive decision brief",
+      "Reviewer coverage, timeline and acceptance basis confirmed before delivery",
+    ],
+  },
+  unsure: {
+    heading: "Confirm the right review route before making a commitment.",
+    description: "Share the decision, available evidence and timing. Atlas will recommend whether a fixed-fee Scope Diagnostic or an Expert-reviewed Blueprint Pilot is the appropriate next step.",
+    highlights: [
+      "No-commitment fit and scope review",
+      "Clear recommendation based on decision and evidence readiness",
+      "Commercial basis and reviewer coverage confirmed before delivery",
+    ],
+  },
+} as const;
+
+const briefReadinessGuidance = {
+  "scope-diagnostic": "For a Diagnostic, the engagement choice and commercial basis can count before you type; they describe the route, not your project facts.",
+  "blueprint-pilot": "For a Blueprint Pilot, known project facts carried from a Blueprint count automatically; the commercial basis stays open until you confirm the budget status.",
+  unsure: "For a fit review, readiness reflects the project facts supplied so far; Atlas recommends the engagement route after reviewing the brief.",
+} as const;
+
 type SnapshotHandoffStatus = "not-requested" | "saved" | "failed" | "login-required";
 
 const COMMERCIAL_HANDOFF_KEY = "atlas:commercial-request-handoff:v1";
+const COMMERCIAL_DRAFT_KEY_PREFIX = "atlas:commercial-request-draft:v1:";
 const DIAGNOSTIC_RETURN_TO = "/quality-lab/review?offer=diagnostic";
 
-function hasRecentDiagnosticHandoff(): boolean {
+function commercialDraftKey(scopeKey: string) {
+  return `${COMMERCIAL_DRAFT_KEY_PREFIX}${encodeURIComponent(scopeKey)}`;
+}
+
+function loadRecentCommercialDraft(scopeKey: string): QualityLabRequestDraft | null {
+  const storageKey = commercialDraftKey(scopeKey);
   try {
-    const value = JSON.parse(sessionStorage.getItem(COMMERCIAL_HANDOFF_KEY) ?? "null") as { offer?: string; recordedAt?: number } | null;
-    const recent = value?.offer === "scope-diagnostic" && typeof value.recordedAt === "number" && Date.now() - value.recordedAt < 24 * 60 * 60 * 1000;
-    if (!recent) sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
-    return recent;
+    const draft = parseRecentQualityLabRequestDraft(
+      JSON.parse(sessionStorage.getItem(storageKey) ?? "null"),
+      scopeKey,
+    );
+    if (!draft) sessionStorage.removeItem(storageKey);
+    return draft;
+  } catch {
+    sessionStorage.removeItem(storageKey);
+    return null;
+  }
+}
+
+function loadRecentCommercialHandoff(scopeKey: string): QualityLabRequestReceipt | null {
+  try {
+    const receipt = parseRecentQualityLabRequestReceipt(
+      JSON.parse(sessionStorage.getItem(COMMERCIAL_HANDOFF_KEY) ?? "null"),
+      scopeKey,
+    );
+    if (!receipt) sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
+    return receipt;
   } catch {
     sessionStorage.removeItem(COMMERCIAL_HANDOFF_KEY);
-    return false;
+    return null;
   }
 }
 
@@ -62,56 +132,82 @@ export default function QualityLabReviewPage() {
   });
 
   const projectId = useMemo(() => new URLSearchParams(window.location.search).get("project"), []);
+  const onboardingSource = useMemo(() => new URLSearchParams(window.location.search).get("source") === "onboarding", []);
+  const sourceProject = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
+  const illustrativeProject = isIllustrativeQualityLabProject(sourceProject) ? sourceProject : null;
+  const project = illustrativeProject ? null : sourceProject;
   const requestedOffer = useMemo<QualityLabReviewRequest["qualification"]["engagementIntent"]>(() => {
     const offer = new URLSearchParams(window.location.search).get("offer");
-    return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || projectId ? "blueprint-pilot" : "unsure";
-  }, [projectId]);
-  const project = useMemo(() => projectId ? getQualityLabProject(projectId) : null, [projectId]);
+    return offer === "diagnostic" ? "scope-diagnostic" : offer === "blueprint" || project ? "blueprint-pilot" : "unsure";
+  }, [project]);
+  const commercialScopeKey = useMemo(() => qualityLabRequestScopeKey(project?.id), [project?.id]);
   const readiness = useMemo(() => project ? getQualityLabReadiness(project.blueprint) : null, [project]);
   const transferredDecisionFrame = useMemo(() => project ? null : loadDecisionFrameHandoff(), [project]);
   const transferredDecisionFrameReadiness = useMemo(() => transferredDecisionFrame ? assessQualityLabDecisionFrame(transferredDecisionFrame) : null, [transferredDecisionFrame]);
   const request = useCreateQualityLabReview();
   const { isAuthenticated } = useUser();
-  const [submitted, setSubmitted] = useState(() => requestedOffer === "scope-diagnostic" && hasRecentDiagnosticHandoff());
+  const initialDraft = useMemo(() => loadRecentCommercialDraft(commercialScopeKey), [commercialScopeKey]);
+  const [submissionReceipt, setSubmissionReceipt] = useState(() => loadRecentCommercialHandoff(commercialScopeKey));
   const [confidentialityConfirmed, setConfidentialityConfirmed] = useState(false);
-  const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">("brief-only");
+  const [draftPersistenceEnabled, setDraftPersistenceEnabled] = useState(Boolean(initialDraft));
+  const [draftRestored, setDraftRestored] = useState(Boolean(initialDraft));
+  const [draftStorageError, setDraftStorageError] = useState("");
+  const [attachMode, setAttachMode] = useState<"brief-only" | "full-snapshot">(
+    initialDraft?.attachMode === "full-snapshot" && isAuthenticated ? "full-snapshot" : "brief-only",
+  );
   const [snapshotStatus, setSnapshotStatus] = useState<SnapshotHandoffStatus>("not-requested");
   const [snapshotError, setSnapshotError] = useState("");
   const [retryingSnapshot, setRetryingSnapshot] = useState(false);
-  const [diagnosticCheckoutAvailable, setDiagnosticCheckoutAvailable] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [diagnosticAccess, setDiagnosticAccess] = useState<{ entitled: boolean; purchasedAt: string | null } | null>(null);
-  const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>({
+  const { plans: billingPlans, isLoading: billingPlansLoading } = useBillingPlans();
+  const diagnosticCheckoutAvailable = isCheckoutAvailable("scope_diagnostic", billingPlans);
+  const [qualification, setQualification] = useState<QualityLabReviewRequest["qualification"]>(initialDraft?.qualification ?? {
     engagementIntent: requestedOffer,
     projectStage: "concept",
     decisionWindow: project?.input.decisionWindow ?? "not-set",
     budgetStatus: "exploring",
     decisionRole: "technical-lead",
     dataReadiness: project ? "substantial" : "initial",
-    portfolioScale: "not-set",
+    portfolioScale: qualityLabPortfolioScaleFromProductCount(project?.input.finishedProducts),
   });
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(initialDraft?.form ?? {
     name: "",
     email: "",
     company: project?.input.companyName ?? "",
     role: "",
     need: project
-      ? `Decision to support: ${project.input.primaryDecision}\nProject intent: ${project.input.projectIntent.replaceAll("-", " ")}. Decision owner: ${project.input.decisionOwnerRole.replaceAll("-", " ")}. Decision window: ${project.input.decisionWindow.replaceAll("-", " ")}. Scenario: ${project.input.scenarioLabel}.\nExpert review requested for assumptions, testing demand, capacity, risks, implementation priorities and controlled-use evidence gaps.`
+      ? `Decision to support: ${project.input.primaryDecision}\nProject intent: ${project.input.projectIntent.replaceAll("-", " ")}. Decision owner: ${project.input.decisionOwnerRole.replaceAll("-", " ")}. Decision window: ${project.input.decisionWindow.replaceAll("-", " ")}. Scenario: ${project.input.scenarioLabel}.\nPortfolio basis: ${project.input.finishedProducts} finished products and ${project.input.rawMaterials} raw materials in the current intake; confirm the first-review boundary.\nExpert review requested for assumptions, testing demand, capacity, risks, implementation priorities and controlled-use evidence gaps.`
       : transferredDecisionFrame
         ? formatQualityLabDecisionFrameReviewContext(transferredDecisionFrame)
       : "",
   });
   const briefReadiness = useMemo(() => assessQualityLabReviewBrief({ qualification, projectContext: form.need, hasProject: Boolean(project) }), [form.need, project, qualification]);
+  const activeOfferHero = offerHeroCopy[qualification.engagementIntent];
 
   useEffect(() => {
-    analytics.commercialIntakeViewed(requestedOffer);
+    if (!draftPersistenceEnabled) return;
+    try {
+      const draft = createQualityLabRequestDraft({
+        scopeKey: commercialScopeKey,
+        qualification,
+        form,
+        attachMode,
+      });
+      sessionStorage.setItem(commercialDraftKey(commercialScopeKey), JSON.stringify(draft));
+      setDraftStorageError("");
+    } catch {
+      setDraftPersistenceEnabled(false);
+      setDraftRestored(false);
+      setDraftStorageError("This browser could not keep a tab copy. Your on-screen entries are unchanged; keep this tab open until you submit.");
+    }
+  }, [attachMode, commercialScopeKey, draftPersistenceEnabled, form, qualification]);
+
+  useEffect(() => {
+    if (!illustrativeProject) analytics.commercialIntakeViewed(requestedOffer, onboardingSource ? "onboarding" : undefined);
     if (transferredDecisionFrameReadiness) analytics.blueprintDecisionFrameLoaded(transferredDecisionFrameReadiness.percent, transferredDecisionFrameReadiness.completeCount);
-    fetch("/api/billing/plans", { credentials: "include" })
-      .then((response) => response.json())
-      .then((plans) => setDiagnosticCheckoutAvailable(Boolean(plans?.scopeDiagnostic)))
-      .catch(() => setDiagnosticCheckoutAvailable(false));
-  }, [requestedOffer, transferredDecisionFrameReadiness]);
+  }, [illustrativeProject, onboardingSource, requestedOffer, transferredDecisionFrameReadiness]);
 
   useEffect(() => {
     if (requestedOffer !== "scope-diagnostic" || !isAuthenticated) return;
@@ -126,6 +222,7 @@ export default function QualityLabReviewPage() {
   }, [isAuthenticated, requestedOffer]);
 
   async function payForDiagnostic() {
+    if (!diagnosticCheckoutAvailable) return;
     setCheckoutLoading(true);
     setCheckoutError("");
     try {
@@ -148,9 +245,10 @@ export default function QualityLabReviewPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!confidentialityConfirmed) return;
     analytics.expertReviewStarted(project ? "blueprint_report" : "standalone", qualification.engagementIntent);
     try {
-      await request.mutateAsync({
+      const createdRequest = await request.mutateAsync({
         briefVersion: QUALITY_LAB_REVIEW_BRIEF_VERSION,
         contact: { name: form.name, email: form.email, company: form.company || null, role: form.role || null },
         qualification,
@@ -176,7 +274,7 @@ export default function QualityLabReviewPage() {
           importantOpenCount: project.blueprint.dataQuality.importantOpenCount,
           unresolvedInputs: project.blueprint.unresolvedInputs.map(({ id, severity, question, resolution }) => ({ id, severity, question, resolution })),
         } : null,
-        confidentialityConfirmed: true,
+        confidentialityConfirmed,
       });
       if (project) {
         const reviewedProject = markQualityLabReviewRequested(project.id);
@@ -201,13 +299,33 @@ export default function QualityLabReviewPage() {
       }
       analytics.expertReviewRequested(Boolean(project), qualification.engagementIntent);
       sessionStorage.removeItem(QUALITY_LAB_DECISION_FRAME_HANDOFF_KEY);
-      if (qualification.engagementIntent === "scope-diagnostic") {
-        sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify({ offer: "scope-diagnostic", recordedAt: Date.now() }));
-      }
-      setSubmitted(true);
+      sessionStorage.removeItem(commercialDraftKey(commercialScopeKey));
+      setDraftPersistenceEnabled(false);
+      setDraftRestored(false);
+      const receipt = createQualityLabRequestReceipt({
+        scopeKey: commercialScopeKey,
+        offer: qualification.engagementIntent,
+        requestId: typeof createdRequest.id === "number" ? createdRequest.id : null,
+        notifications: createdRequest.notifications,
+      });
+      sessionStorage.setItem(COMMERCIAL_HANDOFF_KEY, JSON.stringify(receipt));
+      setSubmissionReceipt(receipt);
     } catch {
       // The shared mutation displays the actionable error toast.
     }
+  }
+
+  function toggleDraftPersistence(enabled: boolean) {
+    setDraftPersistenceEnabled(enabled);
+    setDraftRestored(false);
+    setDraftStorageError("");
+    if (!enabled) sessionStorage.removeItem(commercialDraftKey(commercialScopeKey));
+  }
+
+  function deleteSavedDraft() {
+    sessionStorage.removeItem(commercialDraftKey(commercialScopeKey));
+    setDraftPersistenceEnabled(false);
+    setDraftRestored(false);
   }
 
   async function retrySnapshotSync() {
@@ -258,31 +376,64 @@ export default function QualityLabReviewPage() {
     );
   }
 
-  if (submitted) {
+  if (submissionReceipt) {
+    const submittedOffer = submissionReceipt.offer;
+    const notificationStatus = submissionReceipt.notifications;
+    const buyerAcknowledgementQueued = notificationStatus?.buyerAcknowledgement === "queued";
+    const ownerAlertQueued = notificationStatus?.ownerAlert === "queued";
+    const emailRoutingConfirmed = buyerAcknowledgementQueued && ownerAlertQueued;
     return (
       <div className="min-h-[75vh] bg-[#08111f] px-4 py-16 text-slate-100">
         <div className="mx-auto max-w-2xl rounded-3xl border border-teal-300/25 bg-gradient-to-br from-teal-300/12 to-slate-950 p-7 text-center shadow-2xl shadow-black/25 md:p-10">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-300 text-slate-950"><CheckCircle2 className="h-7 w-7" /></div>
             <p className="mt-6 text-xs font-bold uppercase tracking-[0.18em] text-teal-300">Engagement request received</p>
-            <h1 className="mt-3 text-3xl font-bold">Your {offerCopy[qualification.engagementIntent].label} request has been captured.</h1>
-            <p className="mx-auto mt-3 text-sm font-semibold text-teal-200">{offerCopy[qualification.engagementIntent].price}</p>
+            <h1 className="mt-3 text-3xl font-bold">Your {offerCopy[submittedOffer].label} request has been captured.</h1>
+            <p className="mx-auto mt-3 text-sm font-semibold text-teal-200">{offerCopy[submittedOffer].price}</p>
+            {submissionReceipt.requestId && <p className="mx-auto mt-3 w-fit rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 font-mono text-xs font-bold text-teal-100">Request reference {submissionReceipt.requestId}</p>}
             <p className="mx-auto mt-4 max-w-xl leading-7 text-slate-400">Atlas responds within two business days to confirm fit, available inputs, decision deadline, reviewer coverage and the delivery basis. No model output is approved by this request.</p>
-          {qualification.engagementIntent === "scope-diagnostic" && (
+            <p role="status" className="mx-auto mt-4 max-w-xl text-xs leading-5 text-slate-500">This receipt stays in this browser tab for 24 hours, so reloading will not send the same request again.</p>
+            <div
+              role="status"
+              className={`mt-5 rounded-2xl border p-4 text-left ${emailRoutingConfirmed ? "border-teal-300/20 bg-teal-300/[0.07]" : "border-amber-300/25 bg-amber-300/[0.075]"}`}
+            >
+              <div className="flex items-start gap-3">
+                {emailRoutingConfirmed
+                  ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-300" />
+                  : <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />}
+                <div>
+                  <p className={`text-sm font-bold ${emailRoutingConfirmed ? "text-teal-100" : "text-amber-100"}`}>
+                    {emailRoutingConfirmed ? "Contact routing confirmed" : "Keep your request reference"}
+                  </p>
+                  {emailRoutingConfirmed ? (
+                    <p className="mt-1 text-xs leading-5 text-slate-400">Your acknowledgement and the Atlas intake notification were queued. If the email does not arrive, contact support with the request reference above.</p>
+                  ) : notificationStatus ? (
+                    <p className="mt-1 text-xs leading-5 text-amber-100/80">Your request is saved, but email routing is not currently available for every recipient. To make sure Atlas can follow up, email <a href="mailto:support@lifescienceatlas.com" className="font-semibold text-amber-100 underline decoration-amber-300/40 underline-offset-2">support@lifescienceatlas.com</a> with the request reference above.</p>
+                  ) : (
+                    <p className="mt-1 text-xs leading-5 text-amber-100/80">Your request is saved, but this receipt does not include a confirmed email-delivery status. Keep the request reference above; if no acknowledgement arrives, email <a href="mailto:support@lifescienceatlas.com" className="font-semibold text-amber-100 underline decoration-amber-300/40 underline-offset-2">support@lifescienceatlas.com</a>.</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          {submittedOffer === "scope-diagnostic" && (
             <div className="mt-6 rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-5 text-left">
               <p className="font-bold text-sky-100">Next: reserve the $149 Diagnostic</p>
               <p className="mt-2 text-sm leading-6 text-slate-400">Includes one 60-minute workshop and a written scope and decision memo within two business days after the workshop.</p>
               {checkoutError && <p role="alert" className="mt-3 text-xs text-red-300">{checkoutError}</p>}
-              {isAuthenticated && diagnosticCheckoutAvailable ? (
+              {billingPlansLoading ? (
+                <button type="button" disabled className="mt-4 inline-flex w-full cursor-wait items-center justify-center gap-2 rounded-xl bg-sky-300/60 px-5 py-3 text-sm font-bold text-slate-950">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Checking secure payment availability…
+                </button>
+              ) : isAuthenticated && diagnosticCheckoutAvailable ? (
                 <button type="button" onClick={payForDiagnostic} disabled={checkoutLoading} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950 disabled:opacity-60">
                   {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Pay $149 securely
                 </button>
-              ) : isAuthenticated ? (
-                <p className="mt-3 text-xs leading-5 text-sky-100/75">Atlas will send secure payment instructions after confirming fit.</p>
-              ) : (
+              ) : diagnosticCheckoutAvailable ? (
                 <div className="mt-4 grid gap-2">
                   <Link href={authPath("/register", DIAGNOSTIC_RETURN_TO)} className="inline-flex w-full items-center justify-center rounded-xl bg-sky-300 px-5 py-3 text-sm font-bold text-slate-950">Create an account to pay securely</Link>
                   <Link href={authPath("/login", DIAGNOSTIC_RETURN_TO)} className="inline-flex w-full items-center justify-center rounded-xl border border-sky-300/20 px-5 py-2.5 text-xs font-bold text-sky-100">Already have an account? Sign in</Link>
                 </div>
+              ) : (
+                <p role="status" className="mt-3 text-xs leading-5 text-sky-100/75">Secure checkout is not currently available. Atlas will confirm fit first and send payment instructions separately; no payment is due from this screen.</p>
               )}
             </div>
           )}
@@ -318,28 +469,55 @@ export default function QualityLabReviewPage() {
   return (
     <div className="min-h-screen bg-[#08111f] px-4 pb-24 pt-8 text-slate-100 md:pt-14">
       <div className="mx-auto max-w-5xl">
-        <Link href={project ? `/quality-lab/projects/${project.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {project ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
+        <Link href={sourceProject ? `/quality-lab/projects/${sourceProject.id}` : "/quality-lab"} className="inline-flex items-center gap-2 text-sm font-semibold text-slate-400 transition hover:text-white"><ArrowLeft className="h-4 w-4" /> {sourceProject ? "Back to blueprint" : "Quality Lab Blueprint"}</Link>
         <Link href="/quality-lab/sample" className="ml-5 inline-flex items-center gap-2 text-sm font-semibold text-teal-300 transition hover:text-teal-200">View illustrative sample <ArrowRight className="h-4 w-4" /></Link>
+
+        {illustrativeProject && <section role="alert" className="mt-6 rounded-2xl border border-amber-300/25 bg-amber-300/[0.075] p-5 text-sm leading-6 text-amber-50">
+          <p className="font-bold">The illustrative project was not attached to this commercial request.</p>
+          <p className="mt-1 text-xs leading-5 text-amber-100/75">Its site, demand, cost and capacity values are synthetic, so Atlas excludes them from expert-review handoff, account sync and commercial reporting. Start a guided or blank model with your own project facts before requesting a Blueprint scope.</p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <Link href="/quality-lab/planner" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-2.5 text-xs font-bold text-slate-950 transition hover:bg-amber-200">Build my own model <ArrowRight className="h-4 w-4" /></Link>
+            <Link href={`/quality-lab/projects/${illustrativeProject.id}`} className="inline-flex min-h-11 items-center justify-center rounded-xl border border-amber-300/20 px-4 py-2.5 text-xs font-bold text-amber-100">Return to the example</Link>
+          </div>
+        </section>}
         <div className="mt-8 grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
-          <div className="order-2 lg:order-1">
+          <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-teal-300/20 bg-teal-300/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-200"><ClipboardCheck className="h-3.5 w-3.5" /> Commercial fit and scope request</span>
-            <h1 className="mt-5 text-4xl font-bold leading-tight">Leave with a scoped decision, evidence gap map and clear Blueprint basis.</h1>
-            <p className="mt-4 leading-7 text-slate-400">The $149 Paid Scope Diagnostic includes one 60-minute stakeholder workshop and a written scope and decision memo within two business days after the workshop. The fee is credited to a Blueprint started within 30 days.</p>
+            <h1 className="mt-5 text-4xl font-bold leading-tight">{activeOfferHero.heading}</h1>
+            <p className="mt-4 leading-7 text-slate-400">{activeOfferHero.description}</p>
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-sky-300/20 bg-sky-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-sky-200">Diagnostic</p><p className="mt-1 text-2xl font-bold">$149</p><p className="mt-1 text-xs text-slate-400">60-minute workshop + written scope memo</p></div>
-              <div className="rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4"><p className="text-xs font-bold uppercase tracking-wide text-teal-200">Blueprint</p><p className="mt-1 text-2xl font-bold">From $990</p><p className="mt-1 text-xs text-slate-400">Controlled workbook + decision brief</p></div>
+              <div className={`rounded-2xl border p-4 transition ${qualification.engagementIntent === "scope-diagnostic" ? "border-sky-300/45 bg-sky-300/[0.12] ring-1 ring-sky-300/15" : "border-sky-300/15 bg-sky-300/[0.04]"}`}><p className="text-xs font-bold uppercase tracking-wide text-sky-200">Diagnostic</p><p className="mt-1 text-2xl font-bold">$149</p><p className="mt-1 text-xs text-slate-400">60-minute workshop + written scope memo</p></div>
+              <div className={`rounded-2xl border p-4 transition ${qualification.engagementIntent === "blueprint-pilot" ? "border-teal-300/45 bg-teal-300/[0.12] ring-1 ring-teal-300/15" : "border-teal-300/15 bg-teal-300/[0.04]"}`}><p className="text-xs font-bold uppercase tracking-wide text-teal-200">Blueprint</p><p className="mt-1 text-2xl font-bold">From $990</p><p className="mt-1 text-xs text-slate-400">Controlled workbook + decision brief</p></div>
             </div>
             <div className="mt-6 space-y-3">
-              {["60-minute stakeholder workshop", "Written scope and decision memo within two business days", "Confirmed evidence gaps, reviewer interfaces and next engagement basis"].map((item) => (
+              {activeOfferHero.highlights.map((item) => (
                 <div key={item} className="flex items-center gap-3 text-sm text-slate-300"><CheckCircle2 className="h-4 w-4 shrink-0 text-teal-300" /> {item}</div>
               ))}
             </div>
-            <p className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 text-xs leading-5 text-sky-100/80"><strong>No payment is taken when you submit this brief.</strong> Secure checkout appears as a separate step; Atlas confirms fit and availability before delivery begins.</p>
+            <p className="mt-5 rounded-xl border border-sky-300/15 bg-sky-300/[0.045] p-4 text-xs leading-5 text-sky-100/80"><strong>No payment is taken when you submit this brief.</strong> {qualification.engagementIntent === "scope-diagnostic" ? billingPlansLoading ? "Atlas confirms fit and payment availability before showing any payment action." : diagnosticCheckoutAvailable ? "Secure checkout appears only after the brief; Atlas still confirms fit and availability before delivery begins." : "Atlas confirms fit first and sends payment instructions separately; no checkout action is shown until secure payment is available." : qualification.engagementIntent === "blueprint-pilot" ? "Atlas confirms scope, reviewer coverage, payment schedule and delivery basis before kickoff." : "Atlas recommends the right route and confirms its commercial basis before any commitment."}</p>
             <details className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs leading-6 text-slate-400"><summary className="cursor-pointer font-bold text-slate-200">What this is—and is not</summary><p className="mt-3">Atlas confirms fit, inputs, reviewer role coverage, timeline, payment schedule, revision policy, acceptance and data handling. The request does not create an approved design, regulatory opinion, supplier specification or investment recommendation. Travel, specialists, detailed engineering, supplier selection, method validation, site approval and regulatory approval remain outside scope unless quoted.</p></details>
           </div>
 
-          <form onSubmit={submit} className="order-1 rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7 lg:order-2">
+          <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-slate-950/65 p-5 shadow-2xl shadow-black/25 md:p-7">
             <div className="mb-5 flex items-center justify-between border-b border-white/10 pb-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Start here</p><p className="mt-1 text-sm font-semibold">About 4–6 minutes · no confidential data</p></div><span className="rounded-full bg-white/5 px-3 py-1 text-xs text-slate-400">3 short sections</span></div>
+            <section className="mb-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4" aria-label="Unfinished brief storage">
+              <label className="flex cursor-pointer items-start gap-3 text-xs leading-5 text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={draftPersistenceEnabled}
+                  onChange={(event) => toggleDraftPersistence(event.target.checked)}
+                  className="mt-1 h-4 w-4 shrink-0 accent-teal-300"
+                />
+                <span><strong className="block text-sm text-slate-100">Keep this unfinished brief in this tab</strong>Optional. Stores your unfinished entries in this tab for up to 8 hours or until the tab closes. Nothing is sent until you submit.</span>
+              </label>
+              {draftPersistenceEnabled && (
+                <div className="mt-3 flex flex-col gap-2 border-t border-white/10 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p role="status" className="text-[11px] leading-5 text-teal-200">{draftRestored ? "Saved copy restored in this tab. Review it before submitting." : "Saving changes in this tab. The confidentiality confirmation is never saved."}</p>
+                  <button type="button" onClick={deleteSavedDraft} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-white/15 bg-black/15 px-3 py-2 text-xs font-bold text-slate-200 transition hover:border-red-300/30 hover:text-red-100"><Trash2 className="h-3.5 w-3.5" /> Delete saved copy</button>
+                </div>
+              )}
+              {draftStorageError && <p role="alert" className="mt-3 text-[11px] leading-5 text-amber-200">{draftStorageError}</p>}
+            </section>
             {transferredDecisionFrameReadiness && (
               <section className="mb-5 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4" aria-label="Transferred Blueprint decision frame">
                 <div className="flex items-start gap-3">
@@ -363,7 +541,7 @@ export default function QualityLabReviewPage() {
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[10px] leading-5 text-slate-500">For a Diagnostic, the engagement choice and commercial basis can count before you type; they describe the route, not your project facts. {briefReadiness.boundary}</p>
+              <p className="mt-3 text-[10px] leading-5 text-slate-400">{briefReadinessGuidance[qualification.engagementIntent]} {briefReadiness.boundary}</p>
             </section>
             <section className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.06] p-4">
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">1. Choose an engagement</p>
@@ -381,7 +559,7 @@ export default function QualityLabReviewPage() {
               <div className="mb-6 rounded-2xl border border-teal-300/20 bg-teal-300/[0.07] p-4">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Review handoff choice</p>
                 <p className="mt-1 font-semibold">{project.name}</p>
-                <p className="mt-1 text-xs text-slate-500">Choose whether Atlas receives only the scope brief or also a full Blueprint snapshot for expert review.</p>
+                <p className="mt-1 text-xs text-slate-400">Choose whether Atlas receives only the scope brief or also a full Blueprint snapshot for expert review.</p>
                 <div className="mt-3 rounded-xl border border-white/10 bg-black/15 p-3 text-xs leading-5 text-slate-400">
                   <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-sky-300">Decision mandate carried into the brief</p>
                   <p className="mt-1 font-semibold text-slate-100">{project.input.primaryDecision}</p>
@@ -413,7 +591,7 @@ export default function QualityLabReviewPage() {
                 <label className="text-xs font-semibold text-slate-300">Budget status *<select required value={qualification.budgetStatus} onChange={(event) => setQualification({ ...qualification, budgetStatus: event.target.value as QualityLabReviewRequest["qualification"]["budgetStatus"] })} className={fieldClass}><option value="exploring">Exploring / no range yet</option><option value="range-defined">Working range defined</option><option value="budget-approved">Budget approved</option><option value="procurement-ready">Procurement ready</option><option value="prefer-not-to-say">Prefer not to say</option></select></label>
                 <label className="text-xs font-semibold text-slate-300">Your decision role *<select required value={qualification.decisionRole} onChange={(event) => setQualification({ ...qualification, decisionRole: event.target.value as QualityLabReviewRequest["qualification"]["decisionRole"] })} className={fieldClass}><option value="decision-owner">Decision owner / budget holder</option><option value="technical-lead">Technical lead</option><option value="influencer">Project contributor / influencer</option><option value="advisor-or-partner">Engineering, distributor, or specialist partner</option><option value="other">Other</option></select></label>
                 <label className="text-xs font-semibold text-slate-300">Data readiness *<select required value={qualification.dataReadiness} onChange={(event) => setQualification({ ...qualification, dataReadiness: event.target.value as QualityLabReviewRequest["qualification"]["dataReadiness"] })} className={fieldClass}><option value="initial">Initial facts only</option><option value="partial">Partial product, demand, or site data</option><option value="substantial">Substantial working data</option><option value="review-ready">Controlled inputs ready for review</option></select></label>
-                <label className="text-xs font-semibold text-slate-300">Portfolio scale *<select required value={qualification.portfolioScale} onChange={(event) => setQualification({ ...qualification, portfolioScale: event.target.value as QualityLabReviewRequest["qualification"]["portfolioScale"] })} className={fieldClass}><option value="1-3-products">1–3 products</option><option value="4-10-products">4–10 products</option><option value="11-25-products">11–25 products</option><option value="over-25-products">Over 25 products</option><option value="not-set">Not confirmed</option></select></label>
+                <label className="text-xs font-semibold text-slate-300">Portfolio scale *<select required value={qualification.portfolioScale} onChange={(event) => setQualification({ ...qualification, portfolioScale: event.target.value as QualityLabReviewRequest["qualification"]["portfolioScale"] })} className={fieldClass}><option value="1-3-products">1–3 products</option><option value="4-10-products">4–10 products</option><option value="11-25-products">11–25 products</option><option value="over-25-products">Over 25 products</option><option value="not-set">Not confirmed</option></select>{project && <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-400">Started from {project.input.finishedProducts} finished products in this Blueprint. Change the band if the first-review scope is smaller.</span>}</label>
               </div>
             </section>
             <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">3. Contact and project context</p>
@@ -425,7 +603,7 @@ export default function QualityLabReviewPage() {
             </div>
             <label className="mt-5 block text-xs font-semibold text-slate-300">Project context *
               <textarea required minLength={20} rows={7} value={form.need} onChange={(event) => setForm({ ...form, need: event.target.value })} placeholder="Example: We are planning a non-sterile QC microbiology expansion and need to decide which capabilities to build now, phase later or outsource. The budget decision is due in Q4; product demand and current method lists are partially available." className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-slate-950/55 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-teal-300/50 focus:ring-2 focus:ring-teal-300/10" />
-              <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-500">Useful brief: decision to resolve · site/product/market boundary · deadline · known evidence · constraints and open questions · who will use the output. Do not include confidential formulations or proprietary methods.</span>
+              <span className="mt-2 block text-[11px] font-normal leading-5 text-slate-400">Useful brief: decision to resolve · site/product/market boundary · deadline · known evidence · constraints and open questions · who will use the output. Do not include confidential formulations or proprietary methods.</span>
             </label>
             <label className="mt-5 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 text-xs leading-5 text-slate-400">
               <input required type="checkbox" checked={confidentialityConfirmed} onChange={(event) => setConfidentialityConfirmed(event.target.checked)} className="mt-1 h-4 w-4 accent-teal-300" />
@@ -434,7 +612,7 @@ export default function QualityLabReviewPage() {
             <button type="submit" disabled={request.isPending || !confidentialityConfirmed} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950 transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60">
               {request.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending request</> : <>{offerCopy[qualification.engagementIntent].cta} <ArrowRight className="h-4 w-4" /></>}
             </button>
-            <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. Full Blueprint storage occurs only when you choose the full-snapshot handoff and secure save succeeds.</p>
+            <p className="mt-3 text-center text-[11px] leading-5 text-slate-400">Structured brief: {QUALITY_LAB_REVIEW_BRIEF_VERSION}. Full Blueprint storage occurs only when you choose the full-snapshot handoff and secure save succeeds.</p>
           </form>
         </div>
       </div>

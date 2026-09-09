@@ -13,6 +13,7 @@ import { analytics } from "@/hooks/use-analytics";
 import { useSEO } from "@/hooks/use-seo";
 import { loadQualityLabOperatingModelInput, saveQualityLabOperatingModelInput } from "@/lib/quality-lab-operating-model";
 import { listQualityLabProjects } from "@/lib/quality-lab-projects";
+import { SpecialistBasisHandoff } from "@/components/quality-lab/SpecialistBasisHandoff";
 
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -96,6 +97,7 @@ export default function QualityLabOperatingModelPage() {
           <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">Decide at application level—not with one site-wide percentage. Atlas combines transparent break-even ranges with turnaround, sample stability, qualification, data access, investigation response, surge capacity and strategic control.</p>
         </header>
 
+        {project && input && <SpecialistBasisHandoff key={project.id} project={project} kind="operating-model" input={input} onRestore={setInput} />}
         {projects.length === 0 ? (
           <section className="mt-6 rounded-3xl border border-dashed border-white/15 bg-white/[0.025] px-6 py-16 text-center"><FlaskConical className="mx-auto h-8 w-8 text-slate-500" /><h2 className="mt-5 text-xl font-bold">A compiled Blueprint is required</h2><p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">Build a project first so each application inherits demand, workflow, method, cost and evidence lineage.</p><Link href="/quality-lab/planner" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-300 px-5 py-3 text-sm font-bold text-slate-950">Build a blueprint <ArrowRight className="h-4 w-4" /></Link></section>
         ) : analysis && input && selected && selectedInput && project ? (
