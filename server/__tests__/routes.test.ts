@@ -178,7 +178,7 @@ describe("file intake assistance", () => {
     const response = await agent.post("/api/quality-lab/intake-assistance").send(payload);
     expect(response.status).toBe(400);
     expect(response.headers["cache-control"]).toBe("no-store");
-    expect(response.body).toEqual({ message: "Confirm permission and provide a bounded CSV cell set.", code: "INVALID_REQUEST", requestId: expect.any(String) });
+    expect(response.body).toEqual({ message: "Confirm permission and provide a bounded source-unit set.", code: "INVALID_REQUEST", requestId: expect.any(String) });
     expect(suggestQualityLabIntakeMappings).not.toHaveBeenCalled();
   });
 
@@ -196,6 +196,14 @@ describe("file intake assistance", () => {
     });
     expect(storageMock.upsertQualityLabReviewedProject).not.toHaveBeenCalled();
     expect(storageMock.syncQualityLabReviewedProject).not.toHaveBeenCalled();
+  });
+
+  it.each(["xlsx:s2:H17", "pdf:p2:line3", "docx:p2", "docx:t1:r2:c3"])("accepts bounded native source locator %s only with explicit consent",async(locator)=>{
+    vi.mocked(suggestQualityLabIntakeMappings).mockResolvedValueOnce([{field:"finishedBatchesPerMonth",locator}]);
+    const agent=await intakeAgent();
+    const response=await agent.post("/api/quality-lab/intake-assistance").send({consent:true,cells:[{locator,text:"36"}]});
+    expect(response.status).toBe(200);expect(response.body.mappings).toEqual([{field:"finishedBatchesPerMonth",locator}]);
+    expect(storageMock.upsertQualityLabReviewedProject).not.toHaveBeenCalled();
   });
 
   it.each([

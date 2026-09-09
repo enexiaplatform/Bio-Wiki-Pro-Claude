@@ -34,9 +34,12 @@ project files or automatically revise customer models.
 ## Presentation and measurement
 
 Blueprint links directly to the project-selected monitor. The existing monitor
-hosts one project selector, update queue and review form; there is no new primary
-navigation destination. Long publication titles remain visible below the selector
-on mobile. `impact_watch_reviewed` uses only allowlisted stage/source and random
+hosts one project selector, candidate-first update queue and review form; there is
+no new primary navigation destination. Updates with no bounded project-record match
+remain available in the full official feed but stay out of the project review
+selector. The empty queue explicitly states that no match is not an all-clear and
+links back to the source Blueprint. Long publication titles remain visible below
+the selector on mobile. `impact_watch_reviewed` uses only allowlisted stage/source and random
 journey/event IDs. No source title, rationale or project fact enters analytics.
 
 ## Verification and limits
@@ -45,5 +48,13 @@ Tests cover official-host spoofing, stale models, untrusted instruction text,
 record provenance, changed/copy invalidation, snapshot preservation, explicit
 confirmation, failed feeds and mobile/desktop accessibility. There is no claim of
 complete regulatory surveillance, verified applicability or public benchmark
-confidence. Production analytics/digest persistence still depends on the
-separately prepared runtime schema repair and operational configuration.
+confidence. Selected markets provide explicit source-jurisdiction context; an
+out-of-market update is retained for qualified cross-market review, never promoted
+to a local requirement. Candidate records expose only existing method, evidence,
+assumption or unresolved-input dependencies in Decision Lineage. A blocked model
+is reported separately from a genuine no-match queue. Existing dispositions remain
+inspectable, so candidate counts do not imply all updates are unreviewed.
+
+The bounded runtime schema repair was applied and independently audited on
+9 September; first-party persistence works. Actual digest delivery still requires
+configured email, a monitored recipient and explicit opt-in.

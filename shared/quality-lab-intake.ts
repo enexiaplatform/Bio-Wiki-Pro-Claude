@@ -1,4 +1,5 @@
 import { qualityLabInputSchema, type QualityLabInput } from "./quality-lab.js";
+import { reconstructNativeValue } from "./quality-lab-native-intake.js";
 import {
   INTAKE_FIELDS,
   intakeConfirmationSchema,
@@ -15,6 +16,10 @@ const aliases: Record<string, IntakeField> = Object.create(null);
 for (const [field, label] of Object.entries(INTAKE_FIELDS)) {
   aliases[key(field)] = field as IntakeField;
   aliases[key(label)] = field as IntakeField;
+}
+
+export function intakeFieldForLabel(label: string): IntakeField | undefined {
+  return aliases[key(label)];
 }
 for (const [label, field] of Object.entries({
   "monthly batches": "finishedBatchesPerMonth",
@@ -138,7 +143,7 @@ export function confirmIntakeCandidate(
   candidate: IntakeCandidate,
   now = new Date().toISOString(),
 ): IntakeConfirmation {
-  const value = normalizeIntakeValue(candidate.field, candidate.source.text);
+  const value = candidate.source.nativeBasis ? reconstructNativeValue(candidate.field, candidate.source) : normalizeIntakeValue(candidate.field, candidate.source.text);
   if (
     value === undefined ||
     JSON.stringify(value) !== JSON.stringify(candidate.value)
@@ -167,7 +172,7 @@ export function applyIntakeConfirmations(
     if (fields.has(record.field))
       throw new Error("Choose one source per input");
     fields.add(record.field);
-    const value = normalizeIntakeValue(record.field, record.source.text);
+    const value = record.source.nativeBasis ? reconstructNativeValue(record.field, record.source) : normalizeIntakeValue(record.field, record.source.text);
     if (
       value === undefined ||
       JSON.stringify(value) !== JSON.stringify(record.value)

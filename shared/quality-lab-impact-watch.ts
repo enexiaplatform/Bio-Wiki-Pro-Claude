@@ -47,11 +47,16 @@ export function isOfficialImpactSource(update: RegulatoryUpdate): boolean {
 
 /** Candidate record links only. Topic overlap cannot establish applicability. */
 export function mapProjectRegulatoryImpact(project: QualityLabProject, update: RegulatoryUpdate) {
+  const sourceMarket = update.sourceId.startsWith("fda-") ? "us" : update.sourceId.startsWith("ema-") ? "eu" : null;
+  const marketContext = sourceMarket && project.input.markets.includes(sourceMarket)
+    ? `The source jurisdiction (${sourceMarket.toUpperCase()}) is in the selected project markets. This is context, not a finding of applicability.`
+    : `The source jurisdiction is outside the selected project markets (${project.input.markets.join(", ")}). Topic links are retained for qualified cross-market review; no local requirement is inferred.`;
   const invalid = inspectTwinBaseline(project);
   if (invalid || !isOfficialImpactSource(update)) return {
     status: "blocked" as const,
     message: invalid ?? "The update does not have a verified official-source URL.",
     records: [],
+    marketContext,
   };
   const patterns = topicPatterns.filter((pattern) => pattern.test(`${update.title} ${update.sourceSummary ?? ""}`));
   const records: Array<{ kind: "method" | "evidence" | "unresolved-input" | "assumption"; id: string; label: string; basis: string }> = [];
@@ -80,9 +85,16 @@ export function mapProjectRegulatoryImpact(project: QualityLabProject, update: R
       basis: "Shared explicit topic with this model assumption; review the official text before deciding whether to revise it.",
     });
   }
+  const linkedRecords = records.map(record => ({...record, decisions: project.blueprint.decisionLineage.filter(lineage =>
+    record.kind === "evidence" ? lineage.evidenceRefs.some(ref => ref.id === record.id)
+    : record.kind === "assumption" ? lineage.assumptionIds.includes(record.id)
+    : record.kind === "unresolved-input" ? lineage.unresolvedInputIds.includes(record.id)
+    : lineage.methodIds.includes(project.blueprint.methodRequirements.find(method => method.id === record.id)?.methodId ?? "")
+  )}));
   return {
     status: records.length ? "review" as const : "no-match" as const,
-    records,
+    records: linkedRecords,
+    marketContext,
     message: records.length ? "Potentially related project records require human review. The model and executable rules are unchanged." : "No current affected record identified by this bounded topic/locator match. This does not prove the update is inapplicable.",
   };
 }

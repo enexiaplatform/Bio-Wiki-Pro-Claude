@@ -46,4 +46,13 @@ describe("project-specific official update triage", () => {
     expect(result.status).toBe("no-match");
     expect(result.records).toEqual([]);
   });
+  it("exposes market context and only existing decision dependencies",()=>{
+    const project=createQualityLabProject({...defaultQualityLabInput,markets:["us"]},"synthetic-markets");
+    const result=mapProjectRegulatoryImpact(project,update("Method suitability and growth promotion"));
+    expect(result.marketContext).toContain("in the selected project markets");
+    expect(result.records.flatMap(record=>record.decisions).length).toBeGreaterThan(0);
+    for(const record of result.records)for(const decision of record.decisions)expect(project.blueprint.decisionLineage).toContain(decision);
+    const other=createQualityLabProject({...defaultQualityLabInput,markets:["vietnam"]},"synthetic-other-market");
+    expect(mapProjectRegulatoryImpact(other,update("Method suitability")).marketContext).toContain("outside the selected project markets");
+  });
 });

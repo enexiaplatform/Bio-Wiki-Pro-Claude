@@ -8,6 +8,10 @@ import rehypeKatex from "rehype-katex";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
+  worker: { format: "es" },
+  // Prebundle lazy readers in development so discovering one during an upload
+  // does not trigger a full-page dependency reload and discard review state.
+  optimizeDeps: { include: ["xlsx", "jszip", "pdfjs-dist"] },
   plugins: [
     {
       enforce: "pre",

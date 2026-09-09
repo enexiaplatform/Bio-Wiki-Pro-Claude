@@ -2,6 +2,47 @@
 
 This checklist is the operational gate for accepting unattended public payment. Product direction remains governed by `PRODUCT_SOURCE_OF_TRUTH.md`.
 
+## Current runtime acceptance — 9 September 2026
+
+This section supersedes the dated degraded-schema observations below. The bounded
+two-table reconciliation is applied: one Preview-target transaction passed, then
+independent Preview and Production audits both passed 15 tables, 105 columns and
+25 primary/unique keys. Both deployed `/api/health` endpoints returned HTTP 200,
+`status:ok` and `schema:true`. Database and session readiness are true. The approved
+rehearsal used an isolated synthetic PGlite fixture, not a full Production restore.
+See the [applied reconciliation record](../migrations/reconciliation/README.md).
+
+Nine synthetic first-party funnel stages were accepted by the real Preview route
+with HTTP 202 and `recorded:true`; repeating each event ID returned HTTP 202 and
+`recorded:false`. Payloads contained only stage/source and random journey/event
+identifiers, not project facts, filenames or source text. This verifies persistence
+and duplicate suppression, not recovery of historical lost events. The real digest
+storage path passed missing-read, weekly opt-in, idempotent update, opt-out and
+read-back checks in a synthetic transaction which was rolled back. No email was
+sent and no customer preference was changed; provider and route acceptance remain
+separate from this storage check.
+
+| Capability | Preview observed | Production observed | Remaining acceptance |
+| --- | --- | --- | --- |
+| Commerce | Test mode, not ready | Disabled, not ready | Keep unavailable checkout gated |
+| Stripe | Secret unavailable | Test-key configuration present | Validate test key/webhook and same-environment $149 Price; configured names are not a completed payment |
+| Scope Diagnostic | Price not ready | Price not ready | `STRIPE_SCOPE_DIAGNOSTIC_PRICE_ID` for existing USD 149 offer and synthetic test checkout |
+| Email | Not ready | Not ready | `RESEND_API_KEY`, verified `EMAIL_FROM`, safe recipient and provider acceptance |
+| Notifications | Not ready | Configured | Preview monitored inbox; real monitored destination/receipt acceptance |
+| Cron | Configured | Configured | Preview now has a scoped secret; do not invoke lifecycle delivery until synthetic email acceptance is possible |
+| Advanced analytics | Not ready | Not ready | Optional `VITE_POSTHOG_KEY`; first-party funnel already persists |
+| Public origin | Explicit origin readiness false; own Preview URL | Explicit origin readiness false; stable Vercel alias | Valid approved public-origin configuration; live readiness requires custom domain |
+| Optional intake AI | `aiAvailable:false` | Recheck after release | Project-scoped `OPENAI_API_KEY` and explicit `QUALITY_LAB_INTAKE_MODEL`, then consented synthetic acceptance |
+
+The last released Preview at this checkpoint is `1943ba21b99a5c2ee647ca8c788cf0b1126d684a`
+(`life-science-atlas-6s99dtgsn-enexiaplatforms-projects.vercel.app`). Native
+XLSX/PDF/DOCX intake and the new recurring-value copy passed local validation,
+713 unit/server tests, production build and 170 public browser journeys; two
+Stripe opt-in journeys were skipped because test commerce is not configured.
+Exact-SHA deployed acceptance is still required. Do not infer their
+release from the successful schema repair. Final release evidence must replace
+this checkpoint after Preview and Production verification.
+
 For execution after a qualified request becomes a real engagement, use `QUALITY_LAB_GATE_1_GATE_2_FIELD_RUNBOOK.md`. It maps reviewer appointment, paid-pilot delivery, calibration, client acceptance, validation cases, publication permission and external Domain Pack release to the existing Atlas control surfaces.
 
 For target-account preparation, qualification and copy-ready founding-pilot outreach, use the current `SOFT_LAUNCH.md`. It supersedes the former Academy/Pro launch campaign and does not authorize external sending by itself.
@@ -29,7 +70,7 @@ For target-account preparation, qualification and copy-ready founding-pilot outr
 
 The commercial journey now has a strict, privacy-minimal first-party funnel receipt and an Admin 30-day report. It stores stage and limited operational attribution only; it rejects project identifiers, project inputs, contact details and evidence content. The Stripe webhook carries the anonymous journey identifier so a successful Scope Diagnostic purchase remains attributable even when the buyer does not return to the success page.
 
-During P0, do not run `db:push` or alter the production schema. `GET /api/health` performs a cached, read-only check of Gate 1 tables, column type/nullability/default compatibility and required primary/unique keys for the account, intake, payment, project revision, governance and funnel contract, then publishes only `readiness.schema: boolean`. If it is false, account sync and checkout stay fail-closed until a separately approved schema operation is completed. PostHog is an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
+Never run `db:push` against Production or alter unrelated schema. The explicitly authorized two-table repair is recorded above. `GET /api/health` performs a cached, read-only check of Gate 1 tables, column type/nullability/default compatibility and required primary/unique keys for the account, intake, payment, project revision, governance and funnel contract, then publishes only `readiness.schema: boolean`. If it is false, account sync and checkout stay fail-closed until an approved schema operation is completed. PostHog is an optional advanced-analysis layer rather than the sole source of Blueprint funnel measurement.
 
 ## Required production configuration
 
@@ -48,7 +89,9 @@ During P0, do not run `db:push` or alter the production schema. `GET /api/health
 
 `npm run audit:schema` is the protected operator companion to that public boolean. It queries `information_schema.columns` plus names-only `pg_catalog` index metadata, reads no application rows and prints only required object names, structural issues and counts. Use `npm run audit:schema -- --json` for a machine-readable handoff. Its contract is derived from the current Drizzle definitions and covers 15 Gate 1/lifecycle tables, 105 column contracts and 25 primary/unique keys. This includes identity, idempotency, conflict-safe persistence, the privacy-minimal funnel, regulatory preferences, lifecycle/nurture guards, checkout attempts and reading activity. Invalid or not-ready unique indexes do not satisfy the check.
 
-### Runtime foundation recheck — 5 September 2026
+### Historical runtime foundation recheck — 5 September 2026
+
+The applied 9 September repair supersedes this pre-repair observation.
 
 Production and PR #9 preview health remain degraded with `schema:false`.
 Protected Production inspection confirms exactly two missing tables:
@@ -104,7 +147,11 @@ PR #9 preview deployment `1706c73` completed successfully and serves the updated
 
 No credential values, application rows, billing settings, DNS records or production configuration were read or changed during this recheck.
 
-### Schema remediation procedure — approval required
+### Future schema remediation procedure
+
+The approved two-table exception has already been applied through its dedicated
+runner. Do not rerun it or replay the unreconciled ledger. The procedure below is
+for a separately reviewed future migration after ledger reconciliation.
 
 1. Load the protected target environment without copying connection values into source control, screenshots or chat.
 2. Run `npm run audit:schema` and retain only its names/counts output in the private release record.

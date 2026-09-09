@@ -16,7 +16,7 @@ for (const width of [1440, 390]) {
       return route.fulfill({ status: 202, json: { accepted: true, recorded: true } });
     });
     await page.goto("/quality-lab/planner");
-    await page.getByLabel("Project CSV").setInputFiles({ name: "synthetic-project.csv", mimeType: "text/csv", buffer: Buffer.from("Project name,Synthetic confirmation project\nFinished products,42\nFinished batches per month,36\nFinished batches per month,45") });
+    await page.getByLabel("Project file", { exact: true }).setInputFiles({ name: "synthetic-project.csv", mimeType: "text/csv", buffer: Buffer.from("Project name,Synthetic confirmation project\nFinished products,42\nFinished batches per month,36\nFinished batches per month,45") });
     await expect(page.getByRole("button", { name: "Use 0 confirmed values in planner" })).toBeDisabled();
     await page.getByLabel("Confirm Project name from B1").check();
     await page.getByLabel("Confirm Finished batches per month from B3").check();
@@ -63,11 +63,11 @@ for (const width of [1440, 390]) {
 
 test("file intake recovers from empty and malformed files without applying inputs", async ({ page }) => {
   await page.goto("/quality-lab/planner");
-  await page.getByLabel("Project CSV").setInputFiles({ name: "empty.csv", mimeType: "text/csv", buffer: Buffer.from("") });
+  await page.getByLabel("Project file", { exact: true }).setInputFiles({ name: "empty.csv", mimeType: "text/csv", buffer: Buffer.from("") });
   await expect(page.getByRole("status").filter({ hasText: "This CSV is empty" })).toBeVisible();
-  await page.getByLabel("Project CSV").setInputFiles({ name: "broken.csv", mimeType: "text/csv", buffer: Buffer.from('Project name,"unterminated') });
+  await page.getByLabel("Project file", { exact: true }).setInputFiles({ name: "broken.csv", mimeType: "text/csv", buffer: Buffer.from('Project name,"unterminated') });
   await expect(page.getByRole("button", { name: /Use .* confirmed values/ })).toHaveCount(0);
-  await page.getByLabel("Project CSV").setInputFiles({ name: "recovery.csv", mimeType: "text/csv", buffer: Buffer.from("Project name,Synthetic recovered") });
+  await page.getByLabel("Project file", { exact: true }).setInputFiles({ name: "recovery.csv", mimeType: "text/csv", buffer: Buffer.from("Project name,Synthetic recovered") });
   await expect(page.getByLabel("Confirm Project name from B1")).toBeVisible();
   await expect(page.getByRole("button", { name: "Use 0 confirmed values in planner" })).toBeDisabled();
 });
@@ -86,16 +86,16 @@ test("file intake AI assistance requires consent and leaves suggestions unconfir
     } else await route.fulfill({ status: 503, json: { message: "Unavailable" } });
   });
   await page.goto("/quality-lab/planner");
-  await page.getByLabel("Project CSV").setInputFiles({ name: "synthetic-ai.csv", mimeType: "text/csv", buffer: Buffer.from("Project name,Synthetic AI review\nExpected releases each month,36") });
+  await page.getByLabel("Project file", { exact: true }).setInputFiles({ name: "synthetic-ai.csv", mimeType: "text/csv", buffer: Buffer.from("Project name,Synthetic AI review\nExpected releases each month,36") });
   await page.getByLabel("Confirm Project name from B1").check();
   await page.getByText("Optional AI assistance for unfamiliar labels", { exact: true }).click();
   const suggest = page.getByRole("button", { name: "Suggest additional candidates" });
   await expect(suggest).toBeDisabled();
   expect(requests).toHaveLength(0);
-  await page.getByLabel(/I authorize sending this CSV/).check();
+  await page.getByLabel(/I authorize sending the eligible visible source text/).check();
   await suggest.click();
   await expect.poll(() => requests.length).toBe(1);
-  await expect(page.getByLabel("Project CSV")).toBeDisabled();
+  await expect(page.getByLabel("Project file", { exact: true })).toBeDisabled();
   await expect(page.getByRole("button", { name: "Use 1 confirmed values in planner" })).toBeDisabled();
   releaseResponse!();
   const candidate = page.getByLabel("Confirm Finished batches per month from B2");

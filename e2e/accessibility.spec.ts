@@ -20,14 +20,14 @@ const strategicTargets: AuditTarget[] = [
   { name: "Blog trust-corridor guide", path: "/blog/how-to-validate-a-quality-lab-domain-pack", readyHeading: /How to validate a Quality Lab Domain Pack/i },
   { name: "pricing", path: "/pricing", readyHeading: /Start with the decision you need to make/i },
   { name: "All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i },
-  { name: "Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i },
+  { name: "Atlas Pro review canvas", path: "/pro", readyHeading: /Keep your quality-lab decisions current/i },
   { name: "Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i },
   { name: "mobile Blueprint sample", path: "/quality-lab/sample", readyHeading: /See what a controlled Blueprint looks like before you buy/i, viewport: { width: 390, height: 844 } },
   { name: "mobile Quality Lab commercial review", path: "/quality-lab/review?offer=diagnostic", readyHeading: /Leave with a scoped decision/i, viewport: { width: 390, height: 844 } },
   { name: "mobile Atlas Evidence", path: "/evidence", readyHeading: /Trace evidence to the decision/i, viewport: { width: 390, height: 844 } },
   { name: "mobile Method Navigator", path: "/methods", readyHeading: /Ask the method question/i, viewport: { width: 390, height: 844 } },
   { name: "mobile All Products Decision Router", path: "/products", readyHeading: /Choose the decision\. Atlas routes the work/i, viewport: { width: 390, height: 844 } },
-  { name: "mobile Atlas Pro review canvas", path: "/pro", readyHeading: /Build this month's quality decision/i, viewport: { width: 390, height: 844 } },
+  { name: "mobile Atlas Pro review canvas", path: "/pro", readyHeading: /Keep your quality-lab decisions current/i, viewport: { width: 390, height: 844 } },
   { name: "mobile Career Proof Studio", path: "/career", readyHeading: /Turn your next role into a proof plan/i, viewport: { width: 390, height: 844 } },
 ];
 

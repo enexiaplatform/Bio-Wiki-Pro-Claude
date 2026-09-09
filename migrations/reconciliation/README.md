@@ -1,7 +1,7 @@
-# Runtime reconciliation — 5 September 2026
+# Runtime reconciliation — SQL dated 5 September, applied 9 September 2026
 
 `20260905_funnel_regulatory.sql` is a standalone, explicitly versioned repair
-proposal for the protected target audit that found exactly
+repair for the protected target audit that found exactly
 `quality_lab_funnel_events` and `regulatory_alert_preferences` absent. The other
 13 required tables and their 86 columns were structurally compatible, with no
 missing required unique keys. The complete current runtime contract is 15
@@ -29,7 +29,7 @@ npx tsx script/repair-runtime-schema.ts
 # Equivalent explicit dry run:
 npx tsx script/repair-runtime-schema.ts --dry-run
 
-# ONLY after owner authorization, a verified backup and staging rehearsal:
+# Historical apply entry point; do not rerun against the repaired target:
 npx tsx script/repair-runtime-schema.ts --apply
 ```
 
@@ -41,10 +41,24 @@ the entire transaction. A repeated apply is refused. Dry run ends in rollback
 and cannot create schema objects. Unknown or conflicting CLI arguments fail
 before connecting.
 
-Before applying, record the intended environment, backup/restore evidence,
-reviewed SQL version and names-only dry-run result in the private change record.
-After an approved apply, retain the post-audit output, independently rerun the
-protected schema audit and public health probe, and complete separate billing
-and email acceptance checks. Do not drop the tables to roll back once they may
-contain customer activity; use the approved backup/restore or forward-repair
-procedure. No production application is implied by committing this proposal.
+## Verified application
+
+The founder's finishing brief explicitly authorized this two-table operation after
+exact preflight, transaction recovery and an isolated rehearsal. The synthetic
+PGlite rehearsal checked dry-run behavior, SQL conflict rollback, postflight,
+repeat refusal, opt-in defaults and unique guards. It was not a full Production
+backup/restore rehearsal. Both protected preflights matched the intended absent
+objects without unrelated drift.
+
+A single real apply through the protected Preview target completed successfully.
+Postflight and independent Preview and Production audits passed 15 tables,
+105 columns and 25 primary/unique keys. Production already saw the repaired state;
+no second apply was run. This is not proof that the two environments have isolated
+databases. Both public health endpoints returned HTTP 200 and `schema:true` on
+9 September 2026. No existing customer rows were modified by the repair.
+
+Keep this applied SQL immutable. A repeated apply now refuses safely. Do not drop
+the tables as rollback after they may contain activity; any later correction needs
+an inspected forward repair or authorized recovery procedure. Future unrelated
+schema changes retain the backup, rehearsal and approval requirements in
+`docs/DB_MIGRATIONS.md`. Billing, email and provider acceptance remain separate.

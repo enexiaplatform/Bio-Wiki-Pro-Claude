@@ -17,6 +17,7 @@ import {
 import { type QualityLabInput } from "@shared/quality-lab";
 import { useUser } from "@/context/UserContext";
 import { recordQualityLabFunnelEvent } from "@/lib/quality-lab-funnel";
+import { nativeCandidatesFromMappings, type NativeIntakeUnit, type NativeFormat } from "@shared/quality-lab-native-intake";
 
 const valueText = (value: unknown) =>
   Array.isArray(value) ? value.join(", ") : String(value);
@@ -55,6 +56,7 @@ export function IntakeProvenance({ input }: { input: QualityLabInput }) {
             </p>
             <p>Source text: {record.source.text}</p>
             <p>Context: {record.source.context}</p>
+            {record.source.nativeBasis && <details><summary className="cursor-pointer">Contributing source values · {record.source.nativeBasis.operation}</summary><ul>{record.source.nativeBasis.units.map(unit => <li key={unit.locator}>{unit.locator}: {unit.text}{unit.rawText !== undefined && unit.rawText !== unit.text ? ` (raw: ${unit.rawText})` : ""}</li>)}</ul></details>}
             <p>
               {record.source.method} · {record.source.confidence} · confirmed{" "}
               {record.confirmedAt}
@@ -81,6 +83,9 @@ export function FileIntake({
     "fileName" | "fileSha256"
   > | null>(null);
   const [cells, setCells] = useState<QualityLabCsvCell[]>([]);
+  const [nativeUnits, setNativeUnits] = useState<NativeIntakeUnit[]>([]);
+  const [format, setFormat] = useState<"csv" | NativeFormat>("csv");
+  const [notices, setNotices] = useState<string[]>([]);
   const [candidates, setCandidates] = useState<IntakeCandidate[]>([]);
   const [confirmed, setConfirmed] = useState<
     Record<string, IntakeConfirmation>
@@ -90,6 +95,14 @@ export function FileIntake({
   const [aiReady, setAiReady] = useState(false);
   const [consent, setConsent] = useState(false);
   const generation = useRef(0);
+  const aiCells: {locator:string;text:string}[] = [];
+  let aiBytes = 0;
+  for (const unit of format === "csv" ? cells : nativeUnits.map(({id,text}) => ({locator:id,text}))) {
+    const cell = {locator:unit.locator,text:unit.text};
+    const size = new TextEncoder().encode(JSON.stringify(cell)).length + 1;
+    if (aiCells.length >= 500 || aiBytes + size > 90000) break;
+    aiCells.push(cell); aiBytes += size;
+  }
   useEffect(() => {
     const controller = new AbortController();
     void fetch("/api/quality-lab/intake-capabilities", {
@@ -110,16 +123,28 @@ export function FileIntake({
     setConfirmed({});
     setCandidates([]);
     setCells([]);
+    setNativeUnits([]); setNotices([]);
     setFile(null);
     setConsent(false);
     try {
+      if (/\.(xlsx|pdf|docx)$/i.test(selected.name)) {
+        if (selected.size > 8 * 1024 * 1024) throw new Error("Native files must be no larger than 8 MB.");
+        const parsed = await (await import("@/lib/quality-lab-native")).parseQualityLabNativeFile(await selected.arrayBuffer(),selected.name);
+        if(revision!==generation.current)return;
+        setFormat(parsed.format);setFile(parsed.file);setNativeUnits(parsed.units);setCandidates(parsed.candidates);setNotices(parsed.notices);
+        setMessage(parsed.candidates.length ? "Review the source basis and confirm each candidate. No model inputs have changed." : "No supported project facts matched. Inspect the missing inputs and enter them in the planner, or try optional AI mapping.");
+        recordQualityLabFunnelEvent({stage:"intake_file_selected",source:parsed.format});
+        if(parsed.candidates.length) recordQualityLabFunnelEvent({stage:"intake_candidates_generated",source:parsed.format});
+        return;
+      }
+      setFormat("csv");
       if (
         !/\.csv$/i.test(selected.name) ||
         selected.size > 256000 ||
         selected.name.length > 180
       )
         throw new Error(
-          "Choose a CSV file up to 256 KB with a filename under 180 characters.",
+          "Choose CSV up to 256 KB, or XLSX/PDF/DOCX up to 8 MB, with a filename under 180 characters.",
         );
       const buffer = await selected.arrayBuffer();
       let text: string;
@@ -182,7 +207,7 @@ export function FileIntake({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           consent: true,
-          cells: cells.map(({ locator, text }) => ({ locator, text })),
+          cells: aiCells,
         }),
         signal: AbortSignal.timeout(20000),
       });
@@ -209,7 +234,7 @@ export function FileIntake({
         throw new Error(
           "AI returned an unsupported result. Existing candidates were preserved.",
         );
-      const proposed = candidatesFromMappings(
+      const proposed = format !== "csv" ? nativeCandidatesFromMappings(nativeUnits,result.mappings,file,format) : candidatesFromMappings(
         cells,
         result.mappings,
         file,
@@ -228,7 +253,7 @@ export function FileIntake({
       if (proposed.length)
         recordQualityLabFunnelEvent({
           stage: "intake_candidates_generated",
-          source: "ai-csv",
+          source: `ai-${format}`,
         });
     } catch (error) {
       if (revision === generation.current)
@@ -251,20 +276,19 @@ export function FileIntake({
         Already have project files?
       </h2>
       <p className="mt-2 text-sm leading-6 text-slate-300">
-        Upload a CSV and review the project facts Atlas finds. Your file stays
+        Upload an Excel workbook, CSV, PDF or Word document and review the project facts Atlas finds. Your file stays
         in this browser unless you explicitly request AI assistance.
       </p>
       <p className="mt-2 text-xs leading-6 text-slate-400">
-        First release: UTF-8 comma CSV, up to 256 KB. Use two columns such as
-        “Finished batches per month,36”, or one header row and one value row.
-        Export the relevant sheet from Excel. Formulas, inferred totals, PDF and
-        DOCX extraction are not supported here.
+        XLSX, text-based PDF and DOCX: up to 8 MB. UTF-8 comma CSV: up to 256 KB.
+        Use your project tables or labeled facts. Formula results, macros, scanned PDFs
+        and regulatory applicability conclusions are not imported.
       </p>
       <label className="mt-4 block text-sm font-semibold">
-        Project CSV
+        Project file
         <input
           type="file"
-          accept=".csv,text/csv"
+          accept=".csv,.xlsx,.pdf,.docx"
           disabled={busy}
           onChange={(event) => {
             const selected = event.target.files?.[0];
@@ -284,6 +308,8 @@ export function FileIntake({
       </p>
       {file && (
         <>
+          <p className="mt-4 font-semibold">Atlas found {new Set(candidates.map(candidate=>candidate.field)).size} of {Object.keys(INTAKE_FIELDS).length} supported decision inputs · {count} confirmed</p>
+          {notices.length>0 && <details className="mt-3 text-xs leading-6 text-slate-400"><summary>What was read and what was excluded</summary>{notices.map(notice=><p key={notice}>{notice}</p>)}</details>}
           <p className="mt-3 break-words text-xs text-slate-400">
             {file.fileName} · {count} confirmed ·{" "}
             {candidates.filter((c) => !confirmed[c.id]).length} unconfirmed
@@ -299,10 +325,10 @@ export function FileIntake({
                   {INTAKE_FIELDS[candidate.field]}: {valueText(candidate.value)}
                 </h3>
                 <p className="mt-1 text-xs leading-6 text-slate-300">
-                  {file.fileName} → CSV → {candidate.source.locator} ·{" "}
+                  {file.fileName} → {candidate.source.section} → {candidate.source.locator} ·{" "}
                   {candidate.source.confidence === "label-match"
                     ? "Exact label match; accuracy unverified"
-                    : "AI suggestion; accuracy unverified"}
+                    : "Candidate needs review; accuracy unverified"}
                 </p>
                 <details className="mt-2 text-xs leading-6 text-slate-400">
                   <summary className="cursor-pointer">
@@ -311,6 +337,7 @@ export function FileIntake({
                   <p>Cell text: {candidate.source.text}</p>
                   <p>{candidate.source.context}</p>
                   <p>Extraction: {candidate.source.method}</p>
+                  {candidate.source.nativeBasis && <><p>Operation: {candidate.source.nativeBasis.operation}</p><ul>{candidate.source.nativeBasis.units.map(unit=><li key={unit.locator}>{unit.locator}: {unit.text}{unit.rawText!==undefined && unit.rawText!==unit.text ? ` (raw: ${unit.rawText})` : ""}</li>)}</ul></>}
                 </details>
                 <label className="mt-2 flex min-h-11 items-center gap-3 text-sm">
                   <input
@@ -335,7 +362,7 @@ export function FileIntake({
                       if (checked)
                         recordQualityLabFunnelEvent({
                           stage: "intake_candidate_confirmed",
-                          source: "csv",
+                          source: format,
                         });
                     }}
                   />
@@ -364,6 +391,7 @@ export function FileIntake({
                     {candidates.some((c) => c.field === field)
                       ? "not confirmed"
                       : "not found"}
+                    {field === "finishedBatchesPerMonth" ? " — demand thresholds and equipment sizing need this forecast." : field === "waterRoundsPerWeek" || field === "emRoundsPerWeek" ? " — test frequency drives analyst and incubation workload." : field === "shifts" || field === "workingDaysPerMonth" ? " — available work time changes capacity and turnaround exposure." : field === "markets" ? " — method applicability requires the intended market scope." : ""}
                   </li>
                 ))}
               <li>
@@ -385,6 +413,7 @@ export function FileIntake({
               applicability. This requires sign-in and an operator-configured
               service.
             </p>
+            <p className="mt-2 text-xs text-slate-400">Only the first {aiCells.length} visible source units are eligible for AI mapping; filenames and hidden metadata are excluded. Whole files are not sent.</p>
             {!aiReady && (
               <p className="mt-2 text-xs text-amber-200">
                 AI assistance is not configured. Local review works without it.
@@ -397,7 +426,7 @@ export function FileIntake({
                 checked={consent}
                 onChange={(event) => setConsent(event.target.checked)}
               />
-              I authorize sending this CSV’s cell text to OpenAI for candidate
+              I authorize sending the eligible visible source text to OpenAI for candidate
               mapping. I have permission to share this project information.
             </label>
             <button
@@ -413,7 +442,7 @@ export function FileIntake({
             Applying stores confirmed source text and locators with your working
             inputs when you save a Blueprint. These sources also travel with
             explicit account saves and exports. Unconfirmed candidates and the
-            full CSV are not saved.
+            full file are not saved.
           </p>
           <button
             type="button"

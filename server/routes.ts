@@ -924,8 +924,8 @@ export async function registerRoutes(app: Express): Promise<void> {
 
   app.post("/api/quality-lab/intake-assistance", isAuthenticated, intakeAiLimiter, async (req,res)=>{
     res.setHeader("Cache-Control","no-store");
-    const parsed=z.object({consent:z.literal(true),cells:z.array(z.object({locator:z.string().regex(/^[A-Z]{1,2}[1-9][0-9]{0,2}$/),text:z.string().min(1).max(500)}).strict()).min(1).max(500)}).strict().safeParse(req.body);
-    if(!parsed.success)return res.status(400).json({message:"Confirm permission and provide a bounded CSV cell set."});
+    const parsed=z.object({consent:z.literal(true),cells:z.array(z.object({locator:z.string().max(100).regex(/^(?:[A-Z]{1,2}[1-9][0-9]{0,2}|xlsx:s[1-9][0-9]?:[A-Z]{1,3}[1-9][0-9]{0,3}|pdf:p[1-9][0-9]?:line[1-9][0-9]{0,3}|docx:(?:p[1-9][0-9]{0,3}|t[1-9][0-9]{0,2}:r[1-9][0-9]{0,3}:c[1-9][0-9]{0,2}))$/),text:z.string().min(1).max(500)}).strict()).min(1).max(500)}).strict().safeParse(req.body);
+    if(!parsed.success)return res.status(400).json({message:"Confirm permission and provide a bounded source-unit set."});
     try {
       const mappings=await suggestQualityLabIntakeMappings({cells:parsed.data.cells,allowedFields:Object.entries(INTAKE_FIELDS).map(([key,description])=>({key,description}))});
       return res.json({version:"ai-csv-field-map/v1",mappings});

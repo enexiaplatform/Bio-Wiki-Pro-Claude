@@ -115,7 +115,7 @@ test.describe("public smoke", () => {
     await page.goto("/evidence");
     await expect(page.getByText("Ready for review", { exact: true })).toBeVisible();
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /Build this month's quality decision/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Keep your quality-lab decisions current/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Prepare for a GMP audit/i })).toBeVisible();
 
     await page.goto("/career/domains");
@@ -764,11 +764,11 @@ test.describe("public smoke", () => {
     await page.getByRole("button", { name: "Select Atlas Pro", exact: true }).click();
     await expect(page.getByRole("button", { name: "Select Atlas Pro", exact: true })).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByRole("link", { name: "Open Atlas Pro", exact: true })).toHaveAttribute("href", "/pro");
-    await page.getByRole("button", { name: "Select Personal Career Blueprint", exact: true }).click();
-    await expect(page.getByRole("link", { name: "Open Personal Career Blueprint", exact: true })).toHaveAttribute("href", "/career");
+    await expect(page.getByRole("button", { name: "Select Personal Career Blueprint", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("region", { name: "For individuals" }).getByRole("link", { name: "Explore Personal Career Blueprint", exact: true })).toHaveAttribute("href", "/career");
 
     await page.goto("/pro");
-    await expect(page.getByRole("heading", { name: /Build this month's quality decision/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Keep your quality-lab decisions current/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /Open review canvas/i })).toHaveAttribute("href", "/pro/monthly-review");
     await page.getByRole("button", { name: /Lab Workbench/i }).click();
     await expect(page.getByText("Selected source · Lab Workbench", { exact: true })).toBeVisible();

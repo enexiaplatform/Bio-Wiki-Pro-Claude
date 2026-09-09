@@ -1,11 +1,46 @@
 # Atlas intelligence evolution — execution record
 
-Updated 8 September 2026. Founder brief: confirmed file intake → living model →
+Updated 9 September 2026. Founder brief: confirmed file intake → living model →
 Challenge → simulation → decision → project-aware monitoring → controlled learning.
 `PRODUCT_SOURCE_OF_TRUTH.md` remains canonical. This record distinguishes shipped
 code, verification, and external requirements; it does not redefine the full goal.
 
-## Verified baseline
+## Current checkpoint — 9 September
+
+The last released branch SHA is `1943ba21b99a5c2ee647ca8c788cf0b1126d684a`, with
+Ready Preview `life-science-atlas-6s99dtgsn-enexiaplatforms-projects.vercel.app`.
+CI run `34216374088` passed validation, 703 unit/server tests, build, audit and
+58 critical browser checks; nine deployed Twin/Challenge/Impact journeys passed.
+Main remains `bae6bcb43b282167994eb720d570b41c7943e677` at this checkpoint.
+
+The explicitly authorized two-table repair has now been applied once through the
+Preview target. Independent Preview and Production audits pass 15 tables,
+105 columns and 25 primary/unique keys. Both real health routes report HTTP 200
+and `schema:true`. The isolated PGlite rehearsal established transaction rollback
+and repeat refusal, not a full Production backup/restore. Nine real synthetic
+funnel stages persist and suppress duplicate event IDs. Digest storage completed
+synthetic read/write/opt-in/opt-out/idempotency checks inside a rolled-back
+transaction; no customer preference or email was affected.
+
+Native XLSX/PDF/DOCX extraction and Pro/product presentation changes passed the
+local release gates: 713 unit/server tests, production build and 170 public browser
+journeys passed; the two separately opt-in Stripe journeys were skipped because
+test commerce is not configured. Parsers are browser-local, bounded and lazy-loaded;
+all facts require source inspection and confirmation. Exact-SHA deployed acceptance
+remains required before this becomes a shipped claim.
+[ADR 0005](adr/0005-confirmed-file-intake.md) records the native source contract,
+format limits and privacy boundary. Existing CSV deployed evidence does not prove
+native-format release. Final test counts and exact-SHA Preview/Production evidence
+must be recorded after the full finishing slice is verified.
+
+Schema is no longer an external blocker. Test payments, email, configured AI and
+advanced analytics remain dependent on unavailable provider configuration; public
+origin and Preview notification readiness still require completion/recheck. A
+Preview-scoped cron secret was added without invoking lifecycle delivery.
+See the [current runtime table](COMMERCIAL_LAUNCH_RUNBOOK.md). Historical observations
+below are retained as dated evidence and do not describe the repaired runtime.
+
+## Historical verified baseline — before repair
 
 - Main: `bae6bcb`; active continuation: `codex/resource-coverage-v2`, PR #9,
   baseline `de50d54`. Branch was clean, 25 commits ahead with no missing main
@@ -29,8 +64,8 @@ code, verification, and external requirements; it does not redefine the full goa
 
 | Phase | Current evidence | Remaining outcome |
 | --- | --- | --- |
-| 0. Commercial/runtime foundation | Expanded schema audit; transactional two-table repair proposal; truthful lifecycle acceptance/status; bounded idempotent funnel retry; mobile Workbench correction | Owner-approved target repair with verified backup/restore and production-like staging rehearsal; isolated Preview credentials/schema; Stripe/email/inbox acceptance; deployed runtime verification |
-| 1. File intake | Published and Preview-verified browser-local CSV candidates; optional authenticated AI cell mapping; explicit confirmation; versioned source history in existing snapshots/revisions; privacy-safe journey stages; 64 focused tests and 20 endpoint tests | Operator-configured synthetic AI acceptance. Native XLSX/PDF/DOCX deferred deliberately; export the relevant sheet as CSV |
+| 0. Commercial/runtime foundation | Applied bounded repair; both target audits and deployed health pass; nine real synthetic funnel stages persist/idempotently retry; digest storage lifecycle verified with rollback | Test payment/email/inbox and safe job acceptance; explicit runtime configuration; deployment recheck |
+| 1. File intake | Published and Preview-verified CSV; native XLSX/PDF/DOCX candidates passed edge cases and complete local gates with explicit confirmation and versioned provenance; bounded optional AI source mapping | Exact-SHA deployed acceptance; configured synthetic AI acceptance |
 | 2. Decision Twin | Embedded six-assumption workspace, comparison and sensitivity handoff, exhaustive bounded equipment/specialist warning transitions, five accepted revisioned bases, four primary report destinations; Preview-verified through 5c23170 | Site evidence and qualified acceptance remain necessary; bounded probes are not universal operating limits |
 | 3. Challenge | Deterministic priority factors over unresolved inputs, exact equipment transitions, sensitivity and accepted specialist warnings including operating-model application blockers; evidence/action/lineage disclosure and activation events | Final release verification of this combined slice; scores are review policy, not regulatory severity or independent risks to sum |
 | 4. Role lenses | Six lightweight Executive/QC/QA/Engineering/Finance/Procurement views of the same Blueprint; unchanged calculations and saved state verified | Final release verification; no parallel stakeholder model |
@@ -42,7 +77,7 @@ utilization bands. It does not prove an individual incubator 3→4 transition, a
 currently recompiles its baseline using the current engine. Those are explicit
 Phase 2 gaps, not capabilities to imply in new copy.
 
-## Foundation verification and boundaries
+## Historical foundation verification and boundaries — before repair
 
 - Full validation, type-check and production build pass.
 - Full unit/server suite: 87 files, 590 tests passed, including 15 repair-runner
@@ -58,7 +93,7 @@ Phase 2 gaps, not capabilities to imply in new copy.
 - Protected Production repair dry-run passes. No Production or Preview DDL,
   billing configuration, DNS, permissions, customer writes or real mail occurred.
 
-The exact external schema action is documented in
+The subsequently applied schema action is documented in
 [`migrations/reconciliation/README.md`](../migrations/reconciliation/README.md).
 The historical Drizzle ledger remains unreconciled. Do not silently replay its
 baseline or present this focused repair as a complete migration history.
@@ -67,7 +102,7 @@ Funnel retries remain bounded and best effort across page closure. Email provide
 acceptance is not confirmed inbox delivery, and external send plus database guard
 is not atomic. These limits must remain visible in release/operating evidence.
 
-## Confirmed intake implementation
+## Historical CSV and Twin implementation evidence — 6–8 September
 
 The planner now accepts CSV project facts without applying unreviewed values.
 Source review shows filename, cell, literal text, extraction method, confidence
@@ -87,9 +122,9 @@ and people-reserve labels and rejects annual-rate/equipment-reserve mappings.
 CI on `19434f7` passed validation, unit/server tests, build, dependency audit
 and 49 critical browser journeys. All four intake journeys also passed against
 the Ready Preview `life-science-atlas-emwk968bd-enexiaplatforms-projects.vercel.app`.
-The deployed capability endpoint returns `aiAvailable:false`. Health and
-deployment-specific runtime logs still expose the known two missing tables and
-funnel receipt 503s; no target schema changes have occurred.
+At that release the deployed capability endpoint returned `aiAvailable:false`.
+Health and deployment-specific runtime logs exposed the two missing tables and
+funnel receipt 503s. The 9 September repair supersedes that runtime observation.
 
 Decision Twin work has begun locally: an orchestration core reuses the existing
 Compiler and scenario comparison, rejects stale saved input/output/engine bases,
@@ -109,8 +144,8 @@ remaining Phase 2 consolidation; this is not yet the complete Decision Twin.
 First Twin slice `ec1f393` passed CI (680 unit/server tests, 52 critical browser
 checks), and its Ready Preview is
 `life-science-atlas-ji7fl19r9-enexiaplatforms-projects.vercel.app`. All three Twin
-journeys passed on that deployment. Its inspected runtime errors remain the
-known funnel persistence 503s; no schema repair has been applied.
+journeys passed on that deployment. Its inspected runtime errors were the
+then-known funnel persistence 503s, before the 9 September repair.
 
 Current follow-up integrates five explicitly accepted specialist input sets into
 the existing revision/account snapshot path. The Twin compares existing engine
@@ -188,9 +223,20 @@ complete suite. Desktop/mobile Challenge, Executive/Finance and Impact Watch
 were visually inspected; browser tests cover confirmation, saved state, source
 failure, context preservation, accessibility and reflow.
 
-The production read-only preflight was repeated: exactly the two prepared tables
-remain absent, while the other 13 tables/86 columns match the contract. No real
-DDL was applied. The remaining external launch actions are the reviewed repair
-under verified backup/restore and target approval, isolated payment/email/cron
-configuration and acceptance, and real qualified paid-project learning.
+The 8 September production read-only preflight was repeated: exactly the two
+prepared tables were absent, while the other 13 tables/86 columns matched the
+contract. No real DDL had been applied at that checkpoint. The 9 September entry
+above records the later authorized repair; payment/email configuration and
+acceptance, safe job acceptance and real qualified paid-project learning remain
+separate requirements.
 Push, CI and deployed journey evidence are recorded below when complete.
+
+## 8 September candidate-first Impact Watch follow-up
+
+A read-only review of the deployed Blueprint-to-monitor journey found that the
+project queue mixed bounded candidates with every successful-feed item carrying
+zero candidate records. The queue now presents candidate reviews only, keeps the
+no-match count and non-all-clear boundary visible, links to the full official feed
+for manual inspection, and preserves a direct return to the source Blueprint.
+This is a presentation correction only: the deterministic matcher, official-source
+checks, stored review contract and executable project model are unchanged.

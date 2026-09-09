@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
 import {
   ArrowRight,
@@ -12,13 +12,6 @@ import {
   Network,
   ShieldCheck,
 } from "lucide-react";
-import {
-  ReactFlow,
-  type Edge,
-  type Node,
-  Position,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
 import { useSEO } from "@/hooks/use-seo";
 
 type ProductKey = "quality-lab" | "pro" | "career";
@@ -61,9 +54,9 @@ const products: Product[] = [
   },
   {
     id: "pro",
-    intent: "Strengthen my professional quality work",
+    intent: "Keep quality-lab decisions current",
     title: "Atlas Pro",
-    summary: "Deeper reusable evidence, tools, and working files for recurring quality work across the organization.",
+    summary: "Revisit project assumptions, review official-source changes and carry decisions forward with the same Blueprint basis.",
     href: "/pro",
     image: "/images/products/atlas-pro-review-canvas.png",
     imageAlt: "Atlas Pro monthly quality review canvas",
@@ -102,10 +95,10 @@ const qualityOffers = [
 ];
 
 const proFeatures = [
-  "Reusable evidence",
-  "Professional tools",
-  "Working files",
-  "Current standards",
+  "Project impact review",
+  "Recurring decision review",
+  "Saved assumptions",
+  "Evidence and workbench",
 ];
 
 const careerFeatures = [
@@ -114,75 +107,6 @@ const careerFeatures = [
   "Evidence-led",
   "Lifetime workspace",
 ];
-
-function DecisionBranches() {
-  const nodes = useMemo<Node[]>(() => [
-    {
-      id: "question",
-      position: { x: 639, y: 2 },
-      sourcePosition: Position.Bottom,
-      style: { width: 2, height: 2, opacity: 0, padding: 0, border: 0 },
-      data: { label: "" },
-    },
-    ...[
-      ["quality", 203],
-      ["pro", 639],
-      ["career", 1076],
-    ].map(([id, x]) => ({
-      id: String(id),
-      position: { x: Number(x), y: 70 },
-      targetPosition: Position.Top,
-      style: { width: 2, height: 2, opacity: 0, padding: 0, border: 0 },
-      data: { label: "" },
-    })),
-  ], []);
-
-  const edges = useMemo<Edge[]>(() => [
-    {
-      id: "question-quality",
-      source: "question",
-      target: "quality",
-      type: "bezier",
-      style: { stroke: "#2dd4bf", strokeWidth: 2 },
-    },
-    {
-      id: "question-pro",
-      source: "question",
-      target: "pro",
-      type: "bezier",
-      style: { stroke: "#38bdf8", strokeWidth: 2 },
-    },
-    {
-      id: "question-career",
-      source: "question",
-      target: "career",
-      type: "bezier",
-      style: { stroke: "#fbbf24", strokeWidth: 2 },
-    },
-  ], []);
-
-  return (
-    <div className="pointer-events-none hidden h-20 w-full xl:block" aria-hidden="true">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        defaultViewport={{ x: 0, y: 0, zoom: 1 }}
-        nodesDraggable={false}
-        nodesConnectable={false}
-        nodesFocusable={false}
-        edgesFocusable={false}
-        elementsSelectable={false}
-        panOnDrag={false}
-        zoomOnDoubleClick={false}
-        zoomOnPinch={false}
-        zoomOnScroll={false}
-        preventScrolling={false}
-        tabIndex={-1}
-        proOptions={{ hideAttribution: true }}
-      />
-    </div>
-  );
-}
 
 function ProductCard({
   product,
@@ -326,9 +250,9 @@ export default function ProductsPage() {
         </div>
 
         <div className="mx-auto w-full max-w-7xl">
-          <DecisionBranches />
-          <div className="mt-6 grid gap-5 lg:grid-cols-3 xl:mt-2 xl:gap-8">
-            {products.map((product) => {
+          <p className="mt-6 text-xs font-bold uppercase tracking-wider text-teal-300">For quality laboratories · flagship and recurring support</p>
+          <div className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_1fr] xl:mt-2 xl:gap-8">
+            {products.filter((product) => product.id !== "career").map((product) => {
               const isSelected = product.id === selectedProduct;
               return (
                 <div key={product.id} className="flex flex-col">
@@ -360,6 +284,11 @@ export default function ProductsPage() {
           </Link>
           <p className="mt-1.5 text-[11px] text-slate-500">You can change your decision at any time.</p>
         </div>
+
+        <section aria-label="For individuals" className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 py-5 text-sm text-slate-400">
+          <div><h2 className="font-semibold text-slate-200">For individuals</h2><p className="mt-1">Personal Career Blueprint supports your next career decision.</p></div>
+          <Link href="/career" className="inline-flex min-h-11 items-center gap-2 font-semibold text-amber-200">Explore Personal Career Blueprint <ArrowRight className="h-4 w-4" /></Link>
+        </section>
 
         <aside className="mt-2 grid gap-px overflow-hidden rounded-xl border border-white/10 bg-white/10 text-[11px] text-slate-400 sm:grid-cols-2 lg:grid-cols-4" aria-label="Atlas product boundaries">
           <span className="flex min-h-11 items-center gap-2.5 bg-[#07182b]/95 px-4">

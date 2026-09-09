@@ -334,7 +334,7 @@ export default function ProPage() {
 
   useSEO({
     title: "Atlas Pro Quality Review Canvas",
-    description: "Build one bounded monthly quality decision from evidence, practical tools, working files, review steps and accountable carryover.",
+    description: "Revisit Blueprint assumptions, review project-aware official-source changes and carry decisions into the next review.",
   });
 
   function selectWorkflow(id: AtlasProWorkflowId) {
@@ -353,7 +353,7 @@ export default function ProPage() {
             <header className="relative z-20 lg:absolute lg:left-10">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">Quality review canvas</p>
               <h1 className="mt-3 max-w-[390px] font-display text-4xl font-bold leading-[1.03] tracking-[-0.035em] text-slate-50 sm:text-5xl">
-                Build this month&apos;s quality <span className="text-sky-300">decision.</span>
+                Keep your quality-lab decisions <span className="text-sky-300">current.</span>
               </h1>
             </header>
 
@@ -393,6 +393,9 @@ export default function ProPage() {
 
           <aside className="pt-2 lg:pl-8 lg:pt-11" aria-label="Review path">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-300">Review path</p>
+            <p className="mt-3 text-xs leading-6 text-slate-300">Return to your saved Blueprint when workload or evidence changes. Review potential impact, test assumptions, then record the next decision.</p>
+            <Link href="/monitor" className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm font-bold text-teal-200">Review project impact <ArrowRight className="h-4 w-4" /></Link>
+            <p className="text-[10px] leading-5 text-slate-400">Project impact review is available with a saved browser project. Pro adds opt-in digests and the recurring workbench; qualified review remains required.</p>
             <div className="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-1 lg:gap-3">
               {reviewSteps.map((step, index) => {
                 const Icon = step.icon;
