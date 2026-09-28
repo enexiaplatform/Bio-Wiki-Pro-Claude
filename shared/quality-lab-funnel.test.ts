@@ -26,6 +26,7 @@ describe("Quality Lab funnel contract", () => {
     } as const;
 
     expect(qualityLabFunnelEventSchema.safeParse({ ...base, destination: "scope_diagnostic" }).success).toBe(true);
+    expect(qualityLabFunnelEventSchema.safeParse({ ...base, destination: "blueprint_workspace" }).success).toBe(true);
     expect(qualityLabFunnelEventSchema.safeParse({ ...base, destination: "academy" }).success).toBe(false);
     expect(qualityLabFunnelEventSchema.safeParse(base).success).toBe(false);
   });
@@ -82,6 +83,9 @@ describe("Quality Lab funnel contract", () => {
       { journeyId: "model-journey", userId: "user-a", stage: "onboarding_viewed" },
       { journeyId: "model-journey", userId: "user-a", stage: "onboarding_path_selected", destination: "capability_model" },
       { journeyId: "model-journey", userId: "user-a", stage: "planner_started", source: "onboarding" },
+      { journeyId: "workspace-journey", userId: "user-e", stage: "onboarding_viewed" },
+      { journeyId: "workspace-journey", userId: "user-e", stage: "onboarding_path_selected", destination: "blueprint_workspace" },
+      { journeyId: "workspace-journey", userId: "user-e", stage: "workspace_opened", source: "onboarding" },
       { journeyId: "sample-journey", userId: "user-b", stage: "onboarding_viewed" },
       { journeyId: "sample-journey", userId: "user-b", stage: "onboarding_path_selected", destination: "illustrative_sample" },
       { journeyId: "sample-journey", userId: "user-b", stage: "example_explored", placement: "onboarding", destination: "sample", startMode: "example" },
@@ -94,14 +98,15 @@ describe("Quality Lab funnel contract", () => {
     ], 30, "2026-08-26T00:00:00.000Z");
 
     expect(snapshot.onboarding).toMatchObject({
-      viewedAccounts: 4,
-      selectedAccounts: 3,
-      selectionRate: 75,
-      destinationReachedAccounts: 3,
-      destinationReachRate: 75,
+      viewedAccounts: 5,
+      selectedAccounts: 4,
+      selectionRate: 80,
+      destinationReachedAccounts: 4,
+      destinationReachRate: 80,
     });
     expect(snapshot.onboarding.paths).toEqual([
       { path: "capability_model", selectedAccounts: 1, reachedAccounts: 1, reachRate: 100 },
+      { path: "blueprint_workspace", selectedAccounts: 1, reachedAccounts: 1, reachRate: 100 },
       { path: "illustrative_sample", selectedAccounts: 1, reachedAccounts: 1, reachRate: 100 },
       { path: "scope_diagnostic", selectedAccounts: 1, reachedAccounts: 1, reachRate: 100 },
     ]);

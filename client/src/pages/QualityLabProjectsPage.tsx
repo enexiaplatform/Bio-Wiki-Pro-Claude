@@ -103,6 +103,7 @@ export default function QualityLabProjectsPage() {
   const [reminderSaving, setReminderSaving] = useState(false);
   const [reminderStatus, setReminderStatus] = useState("");
   const reminderAttributionCaptured = useRef(false);
+  const onboardingWorkspaceReceiptCaptured = useRef(false);
   const workingProjects = projects.filter((project) => !isIllustrativeQualityLabProject(project));
   const illustrativeProjects = projects.filter(isIllustrativeQualityLabProject);
   const projectsWithBlockingInputs = workingProjects.filter((project) => project.blueprint.dataQuality.blockingOpenCount > 0).length;
@@ -124,6 +125,13 @@ export default function QualityLabProjectsPage() {
     refresh();
     return subscribeToQualityLabProjects(refresh);
   }, []);
+
+  useEffect(() => {
+    if (!projectsLoaded || onboardingWorkspaceReceiptCaptured.current) return;
+    if (new URLSearchParams(window.location.search).get("source") !== "onboarding") return;
+    onboardingWorkspaceReceiptCaptured.current = true;
+    analytics.onboardingWorkspaceOpened();
+  }, [projectsLoaded]);
 
   useEffect(() => {
     if (!isAuthenticated) {

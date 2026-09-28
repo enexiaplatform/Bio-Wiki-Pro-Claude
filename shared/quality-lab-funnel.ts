@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const QUALITY_LAB_ONBOARDING_PATHS = [
   "capability_model",
+  "blueprint_workspace",
   "illustrative_sample",
   "scope_diagnostic",
 ] as const;
@@ -11,6 +12,7 @@ export type QualityLabOnboardingPath = (typeof QUALITY_LAB_ONBOARDING_PATHS)[num
 export const QUALITY_LAB_ACTIVATION_STAGES = [
   "onboarding_viewed",
   "onboarding_path_selected",
+  "workspace_opened",
 ] as const;
 
 export const QUALITY_LAB_COMMERCIAL_FUNNEL_STAGES = [
@@ -121,6 +123,7 @@ export function buildQualityLabFunnelSnapshot(
   );
   const reachStageByPath: Record<QualityLabOnboardingPath, QualityLabFunnelStage> = {
     capability_model: "planner_started",
+    blueprint_workspace: "workspace_opened",
     illustrative_sample: "example_explored",
     scope_diagnostic: "review_viewed",
   };

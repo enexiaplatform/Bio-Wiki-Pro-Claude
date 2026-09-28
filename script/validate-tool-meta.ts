@@ -164,7 +164,7 @@ async function workflowCategoryPairs(): Promise<Array<{ slug: string; categorySl
   const workflowBlock = txt.match(/export const workflows:[\s\S]*?\n\];/);
   if (!workflowBlock) throw new Error("Could not locate the workflows array in client/src/data/workflows.ts");
 
-  return [...workflowBlock[0].matchAll(/\n  \{\n\s+slug: "([a-z0-9-]+)",\n\s+categorySlug: "([a-z0-9-]+)"/g)].map(
+  return [...workflowBlock[0].matchAll(/\r?\n  \{\r?\n\s+slug: "([a-z0-9-]+)",\r?\n\s+categorySlug: "([a-z0-9-]+)"/g)].map(
     (m) => ({ slug: m[1], categorySlug: m[2] }),
   );
 }
@@ -178,7 +178,7 @@ async function workflowCategoryRefs(): Promise<
   if (!categoryBlock) throw new Error("Could not locate workflowCategories in client/src/data/workflows.ts");
 
   const categories: Array<{ slug: string; pathSlug?: string; href?: string; workflowSlugs: string[] }> = [];
-  for (const match of categoryBlock[0].matchAll(/\n  \{\n([\s\S]*?)\n  \},/g)) {
+  for (const match of categoryBlock[0].matchAll(/\r?\n  \{\r?\n([\s\S]*?)\r?\n  \},/g)) {
     const block = match[1];
     const slug = block.match(/^\s+slug: "([a-z0-9-]+)"/m)?.[1];
     if (!slug) continue;

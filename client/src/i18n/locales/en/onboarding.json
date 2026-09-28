@@ -8,6 +8,15 @@
     "meta": "Free · guided, blank, example, or import",
     "cta": "Choose a starting mode"
   },
+  "resume": {
+    "eyebrow": "Continue existing work",
+    "title": "Continue your Blueprint workspace",
+    "desc_one": "This browser already holds one non-illustrative Blueprint. Review its assumptions and open inputs, then explicitly save an account copy when you want cross-device recovery.",
+    "desc_other": "This browser already holds {{count}} non-illustrative Blueprints. Review their assumptions and open inputs, then explicitly save account copies when you want cross-device recovery.",
+    "meta_one": "1 browser-held project · account save remains explicit",
+    "meta_other": "{{count}} browser-held projects · account save remains explicit",
+    "cta": "Open your projects"
+  },
   "step2": {
     "eyebrow": "Inspect before input",
     "title": "Inspect an illustrative Blueprint",
