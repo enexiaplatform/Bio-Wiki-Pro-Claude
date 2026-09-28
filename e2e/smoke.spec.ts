@@ -249,7 +249,7 @@ test.describe("public smoke", () => {
     await expect(page.getByRole("link", { name: /Build a first capability model/i })).toHaveCount(0);
     await resumeLink.click();
     await page.waitForURL(/\/quality-lab\/projects\?source=onboarding$/);
-    await expect(page.getByText("Existing onboarding Blueprint")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Existing onboarding Blueprint", exact: true })).toBeVisible();
     await expect.poll(() => funnelReceipts.map((receipt) => `${receipt.stage}:${receipt.destination ?? ""}`)).toEqual(expect.arrayContaining([
       "onboarding_viewed:",
       "onboarding_path_selected:blueprint_workspace",
