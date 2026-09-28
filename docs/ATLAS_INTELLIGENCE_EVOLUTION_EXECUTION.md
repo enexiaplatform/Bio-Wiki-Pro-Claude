@@ -7,11 +7,13 @@ code, verification, and external requirements; it does not redefine the full goa
 
 ## Current checkpoint — 9 September
 
-The last released branch SHA is `1943ba21b99a5c2ee647ca8c788cf0b1126d684a`, with
-Ready Preview `life-science-atlas-6s99dtgsn-enexiaplatforms-projects.vercel.app`.
-CI run `34216374088` passed validation, 703 unit/server tests, build, audit and
-58 critical browser checks; nine deployed Twin/Challenge/Impact journeys passed.
-Main remains `bae6bcb43b282167994eb720d570b41c7943e677` at this checkpoint.
+The finishing slice shipped through PR #9. Implementation SHA
+`a072fefc863cb08a27ef22ffc43da6d6faf0aef7` passed CI run `34368835544`
+and exact-SHA Preview acceptance at
+`life-science-atlas-9v3gt0gsu-enexiaplatforms-projects.vercel.app`. It merged as
+main SHA `f52ac2ed602b6f4f103a4a54811b199e125d51dc`; CI run `34369679411`
+passed the complete release gate and Vercel Production deployment
+`dpl_GSzCGWhqktoUKJM5jMkVGFKiCH4b` became Ready at that exact merge SHA.
 
 The explicitly authorized two-table repair has now been applied once through the
 Preview target. Independent Preview and Production audits pass 15 tables,
@@ -22,12 +24,16 @@ funnel stages persist and suppress duplicate event IDs. Digest storage completed
 synthetic read/write/opt-in/opt-out/idempotency checks inside a rolled-back
 transaction; no customer preference or email was affected.
 
-Native XLSX/PDF/DOCX extraction and Pro/product presentation changes passed the
-local release gates: 713 unit/server tests, production build and 170 public browser
-journeys passed; the two separately opt-in Stripe journeys were skipped because
-test commerce is not configured. Parsers are browser-local, bounded and lazy-loaded;
-all facts require source inspection and confirmation. Exact-SHA deployed acceptance
-remains required before this becomes a shipped claim.
+Native XLSX/PDF/DOCX extraction and Pro/product presentation changes passed 713
+unit/server tests, production build and 170 local browser journeys; the two
+separately opt-in Stripe journeys were skipped because test commerce is not
+configured. Parsers are browser-local, bounded and lazy-loaded; all facts require
+source inspection and confirmation. Exact-SHA Preview acceptance passed 18/18
+native-intake, Twin, Challenge and Impact Watch journeys. Production acceptance
+passed 66 critical journeys in the combined run; the sole 30-second network timeout
+passed when isolated with a 60-second budget (57.5 seconds), so all 67 behaviors
+were exercised successfully. Production logs showed no 5xx or fatal events; one
+successful 200 request emitted a Node `url.parse()` dependency deprecation warning.
 [ADR 0005](adr/0005-confirmed-file-intake.md) records the native source contract,
 format limits and privacy boundary. Existing CSV deployed evidence does not prove
 native-format release. Final test counts and exact-SHA Preview/Production evidence
@@ -64,12 +70,12 @@ below are retained as dated evidence and do not describe the repaired runtime.
 
 | Phase | Current evidence | Remaining outcome |
 | --- | --- | --- |
-| 0. Commercial/runtime foundation | Applied bounded repair; both target audits and deployed health pass; nine real synthetic funnel stages persist/idempotently retry; digest storage lifecycle verified with rollback | Test payment/email/inbox and safe job acceptance; explicit runtime configuration; deployment recheck |
-| 1. File intake | Published and Preview-verified CSV; native XLSX/PDF/DOCX candidates passed edge cases and complete local gates with explicit confirmation and versioned provenance; bounded optional AI source mapping | Exact-SHA deployed acceptance; configured synthetic AI acceptance |
+| 0. Commercial/runtime foundation | Applied bounded repair; both target audits and deployed health pass; nine real synthetic funnel stages persist/idempotently retry; digest storage lifecycle verified with rollback; exact-SHA Production rechecked | Test payment/email/inbox and safe job acceptance; complete external provider configuration |
+| 1. File intake | Published CSV plus exact-SHA Preview/Production-verified native XLSX/PDF/DOCX with explicit confirmation, versioned provenance and bounded optional AI source mapping | Configured synthetic AI acceptance |
 | 2. Decision Twin | Embedded six-assumption workspace, comparison and sensitivity handoff, exhaustive bounded equipment/specialist warning transitions, five accepted revisioned bases, four primary report destinations; Preview-verified through 5c23170 | Site evidence and qualified acceptance remain necessary; bounded probes are not universal operating limits |
-| 3. Challenge | Deterministic priority factors over unresolved inputs, exact equipment transitions, sensitivity and accepted specialist warnings including operating-model application blockers; evidence/action/lineage disclosure and activation events | Final release verification of this combined slice; scores are review policy, not regulatory severity or independent risks to sum |
-| 4. Role lenses | Six lightweight Executive/QC/QA/Engineering/Finance/Procurement views of the same Blueprint; unchanged calculations and saved state verified | Final release verification; no parallel stakeholder model |
-| 5. Impact Watch | Project-specific candidate links to actual method/evidence/assumption/unresolved records; explicit versioned human disposition; failed feeds/stale bases blocked; existing browser revisions and account snapshots reused | Final release verification; live digest readiness remains Phase 0; feed matching is not full-text regulatory review |
+| 3. Challenge | Deterministic priority factors over unresolved inputs, exact equipment transitions, sensitivity and accepted specialist warnings including operating-model application blockers; evidence/action/lineage disclosure and activation events; deployed acceptance passed | Scores are review policy, not regulatory severity or independent risks to sum |
+| 4. Role lenses | Six lightweight Executive/QC/QA/Engineering/Finance/Procurement views of the same Blueprint; unchanged calculations and saved state verified in the released slice | No parallel stakeholder model; qualified user calibration remains required |
+| 5. Impact Watch | Project-specific candidate links to actual method/evidence/assumption/unresolved records; explicit versioned human disposition; failed feeds/stale bases blocked; existing browser revisions and account snapshots reused; deployed acceptance passed | Live digest readiness remains Phase 0; feed matching is not full-text regulatory review |
 | 6. Controlled learning | Existing frozen observations, append-only review, permission and validation-case controls verified; duplicate project/commercial references now withheld from Gate 1 counting | Real distinct paid engagements and qualified permissioned observations; no public benchmark or statistical-validation claim |
 
 Existing sensitivity searches aggregate cost/FTE/area/workload and peak resource

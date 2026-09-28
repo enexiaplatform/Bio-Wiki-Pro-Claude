@@ -32,16 +32,20 @@ separate from this storage check.
 | Cron | Configured | Configured | Preview now has a scoped secret; do not invoke lifecycle delivery until synthetic email acceptance is possible |
 | Advanced analytics | Not ready | Not ready | Optional `VITE_POSTHOG_KEY`; first-party funnel already persists |
 | Public origin | Explicit origin readiness false; own Preview URL | Explicit origin readiness false; stable Vercel alias | Valid approved public-origin configuration; live readiness requires custom domain |
-| Optional intake AI | `aiAvailable:false` | Recheck after release | Project-scoped `OPENAI_API_KEY` and explicit `QUALITY_LAB_INTAKE_MODEL`, then consented synthetic acceptance |
+| Optional intake AI | `aiAvailable:false` | `aiAvailable:false` | Project-scoped `OPENAI_API_KEY` and explicit `QUALITY_LAB_INTAKE_MODEL`, then consented synthetic acceptance |
 
-The last released Preview at this checkpoint is `1943ba21b99a5c2ee647ca8c788cf0b1126d684a`
-(`life-science-atlas-6s99dtgsn-enexiaplatforms-projects.vercel.app`). Native
-XLSX/PDF/DOCX intake and the new recurring-value copy passed local validation,
-713 unit/server tests, production build and 170 public browser journeys; two
-Stripe opt-in journeys were skipped because test commerce is not configured.
-Exact-SHA deployed acceptance is still required. Do not infer their
-release from the successful schema repair. Final release evidence must replace
-this checkpoint after Preview and Production verification.
+Native XLSX/PDF/DOCX intake and the project decision-intelligence slice shipped
+through PR #9. Implementation SHA `a072fefc863cb08a27ef22ffc43da6d6faf0aef7`
+passed exact-SHA Preview acceptance; merge SHA
+`f52ac2ed602b6f4f103a4a54811b199e125d51dc` passed main CI run `34369679411`
+and reached Ready Production deployment `dpl_GSzCGWhqktoUKJM5jMkVGFKiCH4b`.
+Local gates passed validation, 713 unit/server tests, production build and 170
+public browser journeys; two Stripe opt-in journeys were skipped because test
+commerce is not configured. Preview acceptance passed 18/18 selected journeys.
+Production passed 66 critical journeys in the combined run, and the one
+30-second network timeout passed in isolation with a 60-second budget. Both
+target schema audits remain green at 15 tables, 105 compatible columns and 25
+keys. Production logs showed no 5xx or fatal events during acceptance.
 
 For execution after a qualified request becomes a real engagement, use `QUALITY_LAB_GATE_1_GATE_2_FIELD_RUNBOOK.md`. It maps reviewer appointment, paid-pilot delivery, calibration, client acceptance, validation cases, publication permission and external Domain Pack release to the existing Atlas control surfaces.
 
