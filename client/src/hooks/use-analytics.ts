@@ -169,6 +169,11 @@ export const analytics = {
     recordQualityLabFunnelEvent({ stage: "onboarding_path_selected", source: "welcome", destination: firstValue });
   },
 
+  onboardingWorkspaceOpened: () => {
+    capture("onboarding_workspace_opened");
+    recordQualityLabFunnelEvent({ stage: "workspace_opened", source: "onboarding" });
+  },
+
   upgradePromptShown: (placement: string) =>
     capture("upgrade_prompt_shown", { placement }),
 

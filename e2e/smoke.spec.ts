@@ -222,6 +222,42 @@ test.describe("public smoke", () => {
     await expect.poll(() => funnelReceipts.find((receipt) => receipt.stage === "example_explored")).toMatchObject({ placement: "onboarding", destination: "sample" });
   });
 
+  test("first-session onboarding resumes a real browser Blueprint instead of starting over", async ({ page }) => {
+    const funnelReceipts: Array<{ stage: string; destination?: string; source?: string }> = [];
+    const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Existing onboarding Blueprint" }, "qlp_onboarding_resume");
+    await page.route("**/api/auth/me", (route) => route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ id: "returning-onboarding-user", email: "returning@example.com", isPro: false, isAdmin: false, verifiedEmail: false, subscriptionStatus: "free" }),
+    }));
+    await page.route("**/api/quality-lab/funnel-events", async (route) => {
+      funnelReceipts.push(route.request().postDataJSON());
+      await route.fulfill({ status: 202, contentType: "application/json", body: JSON.stringify({ accepted: true, recorded: true }) });
+    });
+    await page.addInitScript(({ storedProject }) => {
+      localStorage.setItem("lsa:quality-lab-projects:v2", JSON.stringify({
+        version: "quality-lab-local-store/v2",
+        migratedFrom: null,
+        projects: [storedProject],
+      }));
+    }, { storedProject: project });
+
+    await page.goto("/welcome");
+    const resumeLink = page.getByRole("link", { name: /Continue your Blueprint workspace/i });
+    await expect(resumeLink).toHaveAttribute("href", "/quality-lab/projects?source=onboarding");
+    await expect(resumeLink).toContainText("1 browser-held project");
+    await expect(page.getByRole("link", { name: /Build a first capability model/i })).toHaveCount(0);
+    await resumeLink.click();
+    await page.waitForURL(/\/quality-lab\/projects\?source=onboarding$/);
+    await expect(page.getByText("Existing onboarding Blueprint")).toBeVisible();
+    await expect.poll(() => funnelReceipts.map((receipt) => `${receipt.stage}:${receipt.destination ?? ""}`)).toEqual(expect.arrayContaining([
+      "onboarding_viewed:",
+      "onboarding_path_selected:blueprint_workspace",
+      "workspace_opened:",
+    ]));
+    await expect.poll(() => funnelReceipts.find((receipt) => receipt.stage === "workspace_opened")).toMatchObject({ source: "onboarding" });
+  });
+
   test("restricted delivery login preserves the exact operational destination", async ({ page }) => {
     const project = createQualityLabProject({ ...defaultQualityLabInput, projectName: "Return-path QA Blueprint" }, "qlp_return_path");
     await page.addInitScript(({ storedProject }) => {

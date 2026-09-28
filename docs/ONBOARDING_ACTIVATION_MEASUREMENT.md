@@ -6,7 +6,7 @@ Decision cadence: weekly during controlled onboarding
 
 ## Initiative decision
 
-The first-session screen exists to move a newly authenticated account into one of three strategic Quality Lab starts: build a capability model, inspect the synthetic Blueprint, or review the USD 149 Paid Scope Diagnostic. The operating question is not whether the welcome page received traffic. It is whether a new account made an explicit choice and reached the intended next step without Atlas overstating purchase intent or value realization.
+The first-session screen exists to move a newly authenticated account into the next honest Quality Lab action. A browser with no real Blueprint offers three strategic starts: build a capability model, inspect the synthetic Blueprint, or review the USD 149 Paid Scope Diagnostic. A browser that already holds a non-illustrative Blueprint replaces the build-from-zero action with a direct return to the project workspace. The operating question is not whether the welcome page received traffic. It is whether an account made an explicit choice and reached the intended next step without Atlas discarding existing work, overstating purchase intent or implying value realization.
 
 ## Primary KPIs
 
@@ -23,6 +23,7 @@ This is the primary choice-clarity signal. It changes the product decision: weak
 Matching receipts are:
 
 - capability model → planner opened;
+- existing Blueprint → browser project workspace opened;
 - illustrative sample → sample explored;
 - Scope Diagnostic → commercial review intake viewed.
 

@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
-import { ArrowRight, BriefcaseBusiness, Factory, FileSearch, LayoutDashboard, Sparkles } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Factory, FileSearch, FolderKanban, LayoutDashboard, Sparkles } from "lucide-react";
 import { useSEO } from "@/hooks/use-seo";
 import { analytics } from "@/hooks/use-analytics";
 import { ContinueLearning } from "@/components/ContinueLearning";
 import { EditorialImage } from "@/components/EditorialImage";
 import { useUser } from "@/context/UserContext";
+import { listQualityLabProjects } from "@/lib/quality-lab-projects";
+import { isIllustrativeQualityLabProject } from "@shared/quality-lab";
 
 const FIRST_PATH = "/quality-lab/planner?source=onboarding";
 
@@ -14,23 +16,37 @@ export default function Welcome() {
   const { t } = useTranslation("onboarding");
   const { isAdmin } = useUser();
   useSEO({ title: t("welcomeTitle") });
+  const workingProjects = listQualityLabProjects().filter((project) => !isIllustrativeQualityLabProject(project));
+  const hasWorkingProjects = workingProjects.length > 0;
 
   useEffect(() => {
     analytics.onboardingStarted();
   }, []);
 
   const steps = [
-    {
-      icon: Factory,
-      title: t("step1.title"),
-      desc: t("step1.desc"),
-      cta: t("step1.cta"),
-      eyebrow: t("step1.eyebrow"),
-      meta: t("step1.meta"),
-      href: FIRST_PATH,
-      primary: true,
-      onClick: () => analytics.onboardingCompleted("capability_model"),
-    },
+    hasWorkingProjects
+      ? {
+          icon: FolderKanban,
+          title: t("resume.title"),
+          desc: t("resume.desc", { count: workingProjects.length }),
+          cta: t("resume.cta"),
+          eyebrow: t("resume.eyebrow"),
+          meta: t("resume.meta", { count: workingProjects.length }),
+          href: "/quality-lab/projects?source=onboarding",
+          primary: true,
+          onClick: () => analytics.onboardingCompleted("blueprint_workspace"),
+        }
+      : {
+          icon: Factory,
+          title: t("step1.title"),
+          desc: t("step1.desc"),
+          cta: t("step1.cta"),
+          eyebrow: t("step1.eyebrow"),
+          meta: t("step1.meta"),
+          href: FIRST_PATH,
+          primary: true,
+          onClick: () => analytics.onboardingCompleted("capability_model"),
+        },
     {
       icon: FileSearch,
       title: t("step2.title"),

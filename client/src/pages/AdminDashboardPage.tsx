@@ -97,6 +97,7 @@ const funnelLabels: Record<QualityLabFunnelStage, string> = {
   intake_candidate_confirmed: "Intake candidate confirmed",
   onboarding_viewed: "First-session onboarding viewed",
   onboarding_path_selected: "Strategic start selected",
+  workspace_opened: "Browser Blueprint workspace opened",
   example_explored: "Illustrative example explored",
   cta_clicked: "Blueprint CTA clicked",
   planner_started: "Planner started",
@@ -110,6 +111,7 @@ const funnelLabels: Record<QualityLabFunnelStage, string> = {
 };
 const onboardingPathLabels: Record<QualityLabOnboardingPath, string> = {
   capability_model: "Build a capability model",
+  blueprint_workspace: "Continue a browser Blueprint",
   illustrative_sample: "Inspect the synthetic sample",
   scope_diagnostic: "Review the $149 Diagnostic",
 };
@@ -274,7 +276,7 @@ export default function AdminDashboardPage() {
                       <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-white">{funnel.data?.onboarding.selectionRate === null || funnel.data?.onboarding.selectionRate === undefined ? "—" : `${funnel.data.onboarding.selectionRate}%`}</p><p className="mt-1 text-xs font-semibold text-slate-300">Strategic-start selection</p><p className="mt-2 text-[11px] text-slate-500">{funnel.data?.onboarding.selectedAccounts ?? 0} accounts selected a path</p></div>
                       <div className="rounded-xl border border-white/8 bg-slate-950/30 p-4"><p className="text-2xl font-bold text-teal-200">{funnel.data?.onboarding.destinationReachRate === null || funnel.data?.onboarding.destinationReachRate === undefined ? "—" : `${funnel.data.onboarding.destinationReachRate}%`}</p><p className="mt-1 text-xs font-semibold text-slate-300">Destination reached</p><p className="mt-2 text-[11px] text-slate-500">{funnel.data?.onboarding.destinationReachedAccounts ?? 0} accounts completed the handoff</p></div>
                     </div>
-                    <div className="mt-4 grid gap-2 lg:grid-cols-3">{(funnel.data?.onboarding.paths ?? []).map((path) => <div key={path.path} className="rounded-xl border border-white/8 bg-white/[0.025] p-3"><p className="text-xs font-semibold text-slate-200">{onboardingPathLabels[path.path]}</p><p className="mt-2 text-[11px] text-slate-500">{path.selectedAccounts} selected → {path.reachedAccounts} reached · {path.reachRate === null ? "no baseline" : `${path.reachRate}% handoff`}</p></div>)}</div>
+                    <div className="mt-4 grid gap-2 lg:grid-cols-4">{(funnel.data?.onboarding.paths ?? []).map((path) => <div key={path.path} className="rounded-xl border border-white/8 bg-white/[0.025] p-3"><p className="text-xs font-semibold text-slate-200">{onboardingPathLabels[path.path]}</p><p className="mt-2 text-[11px] text-slate-500">{path.selectedAccounts} selected → {path.reachedAccounts} reached · {path.reachRate === null ? "no baseline" : `${path.reachRate}% handoff`}</p></div>)}</div>
                     <p className="mt-4 border-t border-white/8 pt-3 text-[11px] leading-5 text-slate-500">Guardrail: selections are not treated as value realization or purchase intent. Destination reach only confirms the expected handoff page emitted its first-party receipt.</p>
                   </section>
                   <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
