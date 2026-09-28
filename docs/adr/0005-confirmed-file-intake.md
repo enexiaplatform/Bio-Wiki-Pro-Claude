@@ -7,9 +7,9 @@
 ## Decision
 
 The existing planner accepts UTF-8 comma CSV and browser-local native XLSX,
-PDF and DOCX project-fact extraction. The native extension is implemented in the
-working branch on 9 September 2026; local release gates pass and final exact-SHA
-deployed acceptance remains pending.
+PDF and DOCX project-fact extraction. The native extension shipped on 9 September
+2026 through PR #9. Exact-SHA Preview and Production acceptance passed for the
+native formats on desktop and mobile.
 It reuses the same candidate, confirmation and Compiler input contracts without
 introducing a document store or a second calculation engine.
 
@@ -115,9 +115,9 @@ authentication, consent, server allowlists and sanitized failures. Desktop and
 mobile browser journeys cover source review, partial application, edited-source
 labels, accessibility, reflow, invalid-file recovery, AI consent and failure.
 
-Native parser and browser coverage uses synthetic XLSX/PDF/DOCX fixtures. Final
-full-suite counts and exact-SHA deployed evidence belong in the release record;
-local implementation is not a claim that native formats are already deployed.
-No customer files or real AI call were used for parser verification. Preview
-reported `aiAvailable:false` on 9 September. Configured-provider acceptance remains
-an operator prerequisite, not a claim established by mocked tests.
+Native parser and browser coverage uses synthetic XLSX/PDF/DOCX fixtures. The
+release record contains full-suite counts and exact-SHA deployed evidence. No
+customer files or real AI call were used for parser verification. Preview and
+Production reported `aiAvailable:false` on 9 September. Configured-provider
+acceptance remains an operator prerequisite, not a claim established by mocked
+tests.
